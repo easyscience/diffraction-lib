@@ -1,0 +1,125 @@
+"""
+General utilities and helpers for easydiffraction.
+"""
+
+import os
+import sys
+import urllib.request
+from pathlib import Path
+
+def download_from_repository(url: str, save_path: str = ".", overwrite: bool = False):
+    """
+    Downloads a file from a remote repository and saves it locally.
+
+    Args:
+        url (str): URL to the file to be downloaded.
+        save_path (str): Local directory or file path where the file will be saved.
+        overwrite (bool): If True, overwrites the existing file.
+
+    Returns:
+        str: Full path to the downloaded file.
+    """
+    save_path = Path(save_path)
+
+    # Determine if save_path is a directory or file
+    if save_path.is_dir():
+        filename = os.path.basename(url)
+        file_path = save_path / filename
+    else:
+        file_path = save_path
+
+    if file_path.exists() and not overwrite:
+        print(f"[INFO] File already exists: {file_path}. Use overwrite=True to replace it.")
+        return str(file_path)
+
+    try:
+        print(f"[INFO] Downloading from {url} to {file_path}")
+        urllib.request.urlretrieve(url, file_path)
+        print(f"[INFO] Download complete: {file_path}")
+    except Exception as e:
+        print(f"[ERROR] Failed to download {url}. Error: {e}")
+        raise
+
+    return str(file_path)
+
+
+def is_notebook() -> bool:
+    """
+    Determines if the current environment is a Jupyter Notebook.
+
+    Returns:
+        bool: True if running inside a Jupyter Notebook, False otherwise.
+    """
+    try:
+        shell = get_ipython().__class__.__name__  # noqa: F821
+        if shell == "ZMQInteractiveShell":
+            return True   # Jupyter notebook or qtconsole
+        elif shell == "TerminalInteractiveShell":
+            return False  # Terminal running IPython
+        else:
+            return False  # Other type (unlikely)
+    except NameError:
+        return False  # Probably standard Python interpreter
+
+
+def ensure_dir(directory: str):
+    """
+    Ensures that a directory exists. Creates it if it doesn't exist.
+
+    Args:
+        directory (str): Path to the directory to ensure.
+
+    Returns:
+        str: Absolute path of the ensured directory.
+    """
+    path = Path(directory)
+    if not path.exists():
+        print(f"[INFO] Creating directory: {directory}")
+        path.mkdir(parents=True, exist_ok=True)
+    return str(path.resolve())
+
+
+def human_readable_size(size_bytes: int, decimal_places: int = 2) -> str:
+    """
+    Converts a file size in bytes to a human-readable string.
+
+    Args:
+        size_bytes (int): The size in bytes.
+        decimal_places (int): Number of decimal places for formatted output.
+
+    Returns:
+        str: Human-readable file size (e.g., '1.23 MB').
+    """
+    if size_bytes == 0:
+        return "0B"
+
+    size_name = ("B", "KB", "MB", "GB", "TB", "PB")
+    index = int(min(len(size_name) - 1, (size_bytes.bit_length() - 1) / 10))
+    power = 1024 ** index
+    size = size_bytes / power
+
+    return f"{size:.{decimal_places}f} {size_name[index]}"
+
+
+def list_files(directory: str, extension: str = "", recursive: bool = False):
+    """
+    Lists files in a directory with an optional extension filter.
+
+    Args:
+        directory (str): Directory path to search.
+        extension (str): Optional file extension to filter by (e.g., '.cif').
+        recursive (bool): Whether to search directories recursively.
+
+    Returns:
+        list[str]: List of file paths matching the criteria.
+    """
+    path = Path(directory)
+    if not path.is_dir():
+        raise ValueError(f"{directory} is not a valid directory.")
+
+    if recursive:
+        files = path.rglob(f"*{extension}")
+    else:
+        files = path.glob(f"*{extension}")
+
+    return [str(file.resolve()) for file in files if file.is_file()]
