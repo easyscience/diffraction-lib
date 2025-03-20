@@ -204,7 +204,10 @@ project.analysis.show_available_minimizers()
 print(project.analysis.current_minimizer)
 
 # Set minimizer
-# project.analysis.current_minimizer = 'bumps (lm)'
+project.analysis.current_minimizer = 'bumps (lm)'
+
+# Print current minimizer
+print(project.analysis.current_minimizer)
 
 # Run the fitting process
 project.analysis.fit()
