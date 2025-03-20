@@ -65,19 +65,11 @@ class DiffractionMinimizer:
         def residual_func(params):
             return self._residual_function(sample_models, experiments, calculator)
 
-        if self.engine == 'lmfit':
-            self.results = self.minimizer.fit(
-                parameters,
-                sample_models,
-                experiments,
-                calculator
-            )
-
-        elif self.engine == 'bumps':
-            self.results = self.minimizer.fit(residual_func, parameters)
-
-        else:
-            raise ValueError(f"Unsupported minimizer engine: {self.engine}")
+        self.results = self.minimizer.fit(
+            sample_models,
+            experiments,
+            calculator
+        )
 
         print("✅ Fitting complete.\n")
         self._display_results()
@@ -90,11 +82,4 @@ class DiffractionMinimizer:
             print("⚠️ No fitting results to display.")
             return
 
-        print("📊 Fitting Results:")
-        # Custom result display depending on engine:
-        if self.engine == 'lmfit':
-            print(lmfit.fit_report(self.results))  # lmfit fit_report is a function, not a method of MinimizerResult
-        elif self.engine == 'bumps':
-            print(self.results)
-        else:
-            print(self.results)
+        self.minimizer.display_results(self.results)

@@ -33,11 +33,10 @@ class LmfitMinimizer(MinimizerBase):
 
         return lm_params
 
-    def fit(self, parameters, sample_models, experiments, calculator=None):
+    def fit(self, sample_models, experiments, calculator=None):
         """
         Fit function using lmfit.
 
-        :param parameters: List of parameters to refine. Each parameter dictionary should include a 'parameter' key that holds the actual lmfit Parameter instance.
         :param sample_models: Sample models object.
         :param experiments: Experiments object.
         :param calculator: Calculator instance to compute theoretical patterns.
@@ -87,22 +86,8 @@ class LmfitMinimizer(MinimizerBase):
         self.result = self.minimizer.minimize()
         return self.result
 
-        # Update parameters with refined values
-        for param in parameters:
-            raw_name = param['cif_name']
-            lmfit_name = (
-                raw_name.replace("[", "_")
-                .replace("]", "")
-                .replace(".", "_")
-                .replace("'", "")
-            )
-            lm_params.add(
-                name=lmfit_name,
-                value=param['value'],
-                vary=param['free'],
-                min=param.get('min', None),
-                max=param.get('max', None)
-            )
+    def display_results(self, result):
+        print(lmfit.fit_report(result))
 
     def results(self):
         return self.result
