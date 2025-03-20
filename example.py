@@ -195,6 +195,8 @@ project.analysis.refinement_strategy = 'single'
 #project.analysis.show_meas_vs_calc_chart("expt1")
 
 
+project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
+
 
 # Run the fitting process
 project.analysis.fit()

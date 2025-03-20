@@ -120,7 +120,8 @@ class BaseCollection:
                                 "cif_name": cif_name,
                                 "value": attr.value,
                                 "error": '' if attr.uncertainty == 0.0 else attr.uncertainty,
-                                "free": attr.free
+                                "free": attr.free,
+                                "parameter": attr
                             }
                             free_params.append(param_info)
 

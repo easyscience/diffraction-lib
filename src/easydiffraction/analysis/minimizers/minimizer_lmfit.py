@@ -15,7 +15,7 @@ class LmfitMinimizer(MinimizerBase):
         """
         Fit function using lmfit.
 
-        :param parameters: List of parameters to refine.
+        :param parameters: List of parameters to refine. Each parameter dictionary should include a 'parameter' key that holds the actual lmfit Parameter instance.
         :param sample_models: Sample models object.
         :param experiments: Experiments object.
         :param calculator: Calculator instance to compute theoretical patterns.
@@ -50,7 +50,10 @@ class LmfitMinimizer(MinimizerBase):
                     .replace("'", "")
                 )
                 param_obj = lm_params[lmfit_name]
-                param['value'] = param_obj.value
+                if 'parameter' in param:
+                    param['parameter'].value = param_obj.value
+                else:
+                    param['value'] = param_obj.value
 
             residuals = []
 
