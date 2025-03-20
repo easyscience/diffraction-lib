@@ -8,7 +8,10 @@ class Background:
 class PointBackground(Background):
     def __init__(self):
         super().__init__()
-        self.points = [(2000.0, 221.1), (4000.0, 169.5), (6000.0, 135.4)]  # Example points
+
+    def add(self, x, y):
+        """Add a background point."""
+        self.points.append((x, y))
 
 
 class PolynomialBackground(Background):

@@ -71,7 +71,8 @@ model1.atom_sites.add(label='O3',
 print(project.sample_models["pbso4"].as_cif())
 
 # Show sample model structure
-#project.sample_models["model1"].show_structure()
+#project.sample_models["pbso4"].show_structure(plane='xy')
+
 
 print("\n")
 
@@ -146,6 +147,15 @@ project.analysis.show_calc_chart("expt1", x_min=62, x_max=66)
 # Compare measured vs calculated patterns
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 
+
+# add background points
+project.experiments["expt1"].background.add(x=11.0, y=206.0)
+project.experiments["expt1"].background.add(x=153.0, y=226.1)
+
+# Show measured vs calculated data uncluding background
+project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
+
+
 exit()
 
 # Show all refinable parameters
@@ -171,12 +181,10 @@ project.analysis.refinement_strategy = 'single'
 print(project.analysis.describe_refinement_strategy())
 
 
-exit()
 
 # Preview calculated patterns vs measured data
 #project.analysis.show_meas_vs_calc_chart("expt1")
 
-exit()
 
 
 # Run the fitting process
@@ -184,6 +192,9 @@ project.analysis.fit()
 
 # Show results after fitting
 project.analysis.show_fit_results()
+
+exit()
+
 
 # === Step 5: Summary & Save ===
 # Generate final report (HTML or CIF)

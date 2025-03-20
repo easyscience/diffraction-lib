@@ -2,6 +2,7 @@ from .space_group import SpaceGroup
 from .cell import Cell
 from .atom_sites import AtomSites, AtomSite
 from easydiffraction.base_collection import BaseCollection
+from easydiffraction.utils.structure_plotter import StructurePlotter
 
 
 class SampleModel:
@@ -32,9 +33,18 @@ class SampleModel:
         # TODO: Implement CIF parsing from a string
         print("Loading SampleModel from CIF string.")
 
-    def show_structure(self):
-        """Visualize the structure (stub for 3D visualization)."""
-        print(f"Showing 3D structure for sample model '{self.id}'")
+    def show_structure(self, plane='xy', grid_size=20):
+        """
+        Show an ASCII projection of the structure on a 2D plane.
+
+        Args:
+            plane (str): 'xy', 'xz', or 'yz' plane to project.
+            grid_size (int): Size of the ASCII grid (default is 20).
+        """
+
+        print(f"\nDisplaying structure for sample model '{self.id}' ...")
+        plotter = StructurePlotter(grid_size=grid_size)
+        plotter.draw_from_cif(self.as_cif())
 
     def show_params(self):
         """Display structural parameters (space group, unit cell, atomic sites)."""

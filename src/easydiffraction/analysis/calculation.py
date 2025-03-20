@@ -1,5 +1,3 @@
-# calculation.py                                        # Controller for diffraction calculations
-
 from .calculators.factory import CalculatorFactory
 
 class DiffractionCalculator:
