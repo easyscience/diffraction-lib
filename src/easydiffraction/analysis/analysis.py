@@ -2,6 +2,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 from .calculators.factory import CalculatorFactory
+from .minimization import DiffractionMinimizer
 from easydiffraction.utils.chart_plotter import ChartPlotter
 
 
@@ -12,6 +13,7 @@ class Analysis:
         self.project = project
         self.calculator = Analysis._calculator  # Default calculator shared by project
         self._refinement_strategy = 'single'
+        self.fitter = DiffractionMinimizer(engine='lmfit')  # Or configurable!
 
     def show_refinable_params(self):
         print("\nSample Models Parameters:")
@@ -147,22 +149,22 @@ class Analysis:
         print("Starting the fitting process...")
 
         sample_models = self.project.sample_models
-        experiments = self.project.experiments
-
-        if not sample_models or not experiments:
-            print("No sample models or experiments found in the project. Fit aborted.")
+        if not sample_models:
+            print("No sample models found in the project. Cannot run fit.")
             return
 
-        if not self.calculator:
-            raise ValueError("No calculator is set. Cannot run fit.")
+        experiments = self.project.experiments
+        if not experiments:
+            print("No experiments found in the project. Cannot run fit.")
+            return
 
-        # Create an instance of DiffractionMinimizer if not already there
-        if not hasattr(self, 'fitter') or self.fitter is None:
-            from .minimization import DiffractionMinimizer
-            self.fitter = DiffractionMinimizer(engine='lmfit')  # Or configurable!
+        calculator = self.calculator
+        if not calculator:
+            print("No calculator is set. Cannot run fit.")
+            return
 
         # Run the fitting process
-        self.fitter.fit(sample_models, experiments, self.calculator)
+        self.fitter.fit(sample_models, experiments, calculator)
 
         # After fitting, get the results
         self.fit_results = self.fitter.results

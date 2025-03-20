@@ -209,14 +209,13 @@ project.analysis.show_fit_results()
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 
 
-exit()
 
 
 # === Step 5: Summary & Save ===
 # Generate final report (HTML or CIF)
-project.summary.show_report()
+#project.summary.show_report()
 
 # Save the final state of the project
-project.save()
+#project.save()
 
-print("Analysis completed successfully!")
+#print("Analysis completed successfully!")
