@@ -52,43 +52,53 @@ class LmfitMinimizer(MinimizerBase):
 
         engine_parameters = self.prepare_parameters(parameters)
 
-        def objective_function(engine_parameters):
-            # Update parameter values in models/experiments
-            for param in parameters:
-                cif_name = param['cif_name']
-                lmfit_name = (
-                    cif_name.replace("[", "_")
-                    .replace("]", "")
-                    .replace(".", "_")
-                    .replace("'", "")
-                )
-                param_obj = engine_parameters[lmfit_name]
-                if 'parameter' in param:
-                    param['parameter'].value = param_obj.value
-                else:
-                    param['value'] = param_obj.value
-
-            residuals = []
-
-            for expt_id, experiment in experiments._items.items():
-                y_calc = calculator.calculate_pattern(sample_models, experiment)
-
-                y_meas = experiment.datastore.pattern.meas
-                y_meas_su = experiment.datastore.pattern.meas_su
-
-                diff = (y_meas - y_calc) / y_meas_su
-                residuals.extend(diff)
-
-            return np.array(residuals)
-
-        # Perform minimization
-        self.minimizer = lmfit.Minimizer(objective_function, engine_parameters)
+        # Perform minimization using the new _objective_function
+        self.minimizer = lmfit.Minimizer(
+            self._objective_function,
+            engine_parameters,
+            fcn_args=(parameters, sample_models, experiments, calculator)
+        )
         self.result = self.minimizer.minimize()
         return self.result
 
     @staticmethod
     def display_results(result):
         print(lmfit.fit_report(result))
+
+    def _objective_function(self, engine_params, parameters, sample_models, experiments, calculator):
+        """Objective function passed to lmfit.Minimizer"""
+        # Update the parameter values in models and experiments
+        self._sync_parameters(engine_params, parameters)
+
+        residuals = []
+
+        for expt_id, experiment in experiments._items.items():
+            y_calc = calculator.calculate_pattern(sample_models, experiment)
+            y_meas = experiment.datastore.pattern.meas
+            y_meas_su = experiment.datastore.pattern.meas_su
+
+            diff = (y_meas - y_calc) / y_meas_su
+            residuals.extend(diff)
+
+        return np.array(residuals)
+
+    @staticmethod
+    def _sync_parameters(engine_params, parameters):
+        """Synchronize engine parameter values back to Parameter instances."""
+        for param in parameters:
+            cif_name = param['cif_name']
+            param_name = (
+                cif_name.replace("[", "_")
+                        .replace("]", "")
+                        .replace(".", "_")
+                        .replace("'", "")
+            )
+            param_obj = engine_params[param_name]
+
+            if 'parameter' in param:
+                param['parameter'].value = param_obj.value
+            else:
+                param['value'] = param_obj.value
 
     def results(self):
         return self.result
