@@ -53,8 +53,8 @@ class DiffractionMinimizer:
         print(f"\n🚀 Starting {self.engine.upper()} fitting process...")
 
         fit_params = (
-                sample_models.get_free_params() +  # <<< FIXED HERE
-                experiments.get_free_params()  # <<< FIXED HERE
+                sample_models.get_free_params() +
+                experiments.get_free_params()
         )
 
         if not fit_params:
