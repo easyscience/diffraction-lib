@@ -16,3 +16,11 @@ class MinimizerBase(ABC):
     @abstractmethod
     def results(self):
         pass
+
+    @staticmethod
+    @abstractmethod
+    def display_results(result):
+        """
+        Display results of the fitting procedure.
+        """
+        pass

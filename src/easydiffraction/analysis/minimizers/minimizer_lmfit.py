@@ -86,7 +86,8 @@ class LmfitMinimizer(MinimizerBase):
         self.result = self.minimizer.minimize()
         return self.result
 
-    def display_results(self, result):
+    @staticmethod
+    def display_results(result):
         print(lmfit.fit_report(result))
 
     def results(self):
