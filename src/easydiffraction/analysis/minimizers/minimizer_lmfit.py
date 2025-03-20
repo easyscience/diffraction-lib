@@ -11,10 +11,7 @@ class LmfitMinimizer(MinimizerBase):
         self.minimizer = None
 
     def fit(self, sample_models, experiments, calculator):
-        parameters = (
-            sample_models.get_free_params() +
-            experiments.get_free_params()
-        )
+        parameters = self._collect_free_parameters(sample_models, experiments)
 
         if not parameters:
             print("⚠️ No parameters selected for refinement. Aborting fit.")
@@ -42,9 +39,8 @@ class LmfitMinimizer(MinimizerBase):
         engine_parameters = lmfit.Parameters()
 
         for param in input_parameters:
-            lmfit_name = param.id
             engine_parameters.add(
-                name=lmfit_name,
+                name=param.id,
                 value=param.value,
                 vary=param.free,
                 min=param.min,

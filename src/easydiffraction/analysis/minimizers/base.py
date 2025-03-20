@@ -53,3 +53,9 @@ class MinimizerBase(ABC):
             param_name = param.id
             param_obj = engine_params[param_name]
             param.value = param_obj.value
+
+    def _collect_free_parameters(self, sample_models, experiments):
+        """
+        Collect free parameters from sample models and experiments.
+        """
+        return sample_models.get_free_params() + experiments.get_free_params()
