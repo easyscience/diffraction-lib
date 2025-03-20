@@ -6,14 +6,10 @@ class DiffractionMinimizer:
     Handles the fitting workflow using a pluggable minimizer.
     """
 
-    def __init__(self, engine='lmfit'):
-        """
-        Initialize the minimizer.
-
-        :param engine: Minimization engine to use ('lmfit', 'bumps', etc.)
-        """
-        self.engine = engine
-        self.minimizer = MinimizerFactory.create_minimizer(engine)
+    def __init__(self, selection: str = 'lmfit (leastsq)'):
+        self.selection = selection
+        self.engine = selection.split(' ')[0]  # Extracts 'lmfit' or 'bumps'
+        self.minimizer = MinimizerFactory.create_minimizer(selection)
         self.results = None
 
     def _residual_function(self, sample_models, experiments, calculator):

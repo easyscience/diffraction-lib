@@ -6,9 +6,10 @@ class LmfitMinimizer(MinimizerBase):
     Minimizer using the lmfit package.
     """
 
-    def __init__(self):
+    def __init__(self, method='leastsq'):
         self.result = None
         self.minimizer = None
+        self.method = method
 
     def fit(self, sample_models, experiments, calculator):
         parameters = self._collect_free_parameters(sample_models, experiments)
@@ -25,7 +26,7 @@ class LmfitMinimizer(MinimizerBase):
             engine_parameters,
             fcn_args=(parameters, sample_models, experiments, calculator)
         )
-        self.result = self.minimizer.minimize()
+        self.result = self.minimizer.minimize(method=self.method)
         return self.result
 
     def results(self):

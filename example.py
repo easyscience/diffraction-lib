@@ -197,6 +197,14 @@ project.analysis.refinement_strategy = 'single'
 
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 
+# Show available minimizers
+project.analysis.show_available_minimizers()
+
+# Print current minimizer
+print(project.analysis.current_minimizer)
+
+# Set minimizer
+# project.analysis.current_minimizer = 'bumps (lm)'
 
 # Run the fitting process
 project.analysis.fit()

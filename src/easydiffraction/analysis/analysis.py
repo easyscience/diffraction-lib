@@ -1,10 +1,11 @@
 import numpy as np
+import pandas as pd
 from scipy.interpolate import interp1d
 
 from .calculators.factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
+from .minimizers.factory import MinimizerFactory
 from easydiffraction.utils.chart_plotter import ChartPlotter
-import pandas as pd
 
 
 class Analysis:
@@ -14,7 +15,7 @@ class Analysis:
         self.project = project
         self.calculator = Analysis._calculator  # Default calculator shared by project
         self._refinement_strategy = 'single'
-        self.fitter = DiffractionMinimizer(engine='lmfit')  # Or configurable!
+        self.fitter = DiffractionMinimizer('lmfit (leastsq)')
 
     def show_refinable_params(self):
         print("\nSample Models Parameters:")
@@ -161,7 +162,7 @@ class Analysis:
         )
 
     def fit(self):
-        print("Starting the fitting process...")
+        print(f"\n🚀 Starting fitting process...")
 
         sample_models = self.project.sample_models
         if not sample_models:
@@ -198,3 +199,18 @@ class Analysis:
                 print(f"  {param_name}: {param_obj.value} (init = {param_obj.init_value})")
         else:
             print("No refined parameters found in fit results.")
+
+    @staticmethod
+    def show_available_minimizers():
+        print(f"\nAvailable minimizers:")
+        MinimizerFactory.show_available_minimizers()
+
+    @property
+    def current_minimizer(self):
+        print(f"\nCurrent minimizer:")
+        return self.fitter.selection if self.fitter else None
+
+    @current_minimizer.setter
+    def current_minimizer(self, selection):
+        print(f"Switching minimizer to: {selection}")
+        self.fitter = DiffractionMinimizer(selection)
