@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class MinimizerBase(ABC):
     @abstractmethod
-    def prepare_parameters(self, parameters):
+    def _prepare_parameters(self, parameters):
         """
         Prepare the parameters for the minimizer engine.
         """

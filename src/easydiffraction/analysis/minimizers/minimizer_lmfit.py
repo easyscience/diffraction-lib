@@ -11,7 +11,7 @@ class LmfitMinimizer(MinimizerBase):
         self.result = None
         self.minimizer = None
 
-    def prepare_parameters(self, input_parameters):
+    def _prepare_parameters(self, input_parameters):
         engine_parameters = lmfit.Parameters()
 
         for param in input_parameters:
@@ -44,7 +44,7 @@ class LmfitMinimizer(MinimizerBase):
             print("⚠️ No parameters selected for refinement. Aborting fit.")
             return None
 
-        engine_parameters = self.prepare_parameters(parameters)
+        engine_parameters = self._prepare_parameters(parameters)
 
         # Perform minimization using the new _objective_function
         self.minimizer = lmfit.Minimizer(
