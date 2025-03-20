@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 
+
 class MinimizerBase(ABC):
     @abstractmethod
-    def fit(self, parameters, sample_models, experiments, calculator=None):
+    def fit(self, sample_models, experiments, calculator):
         pass
 
     @abstractmethod

@@ -33,7 +33,7 @@ class LmfitMinimizer(MinimizerBase):
 
         return lm_params
 
-    def fit(self, sample_models, experiments, calculator=None):
+    def fit(self, sample_models, experiments, calculator):
         """
         Fit function using lmfit.
 

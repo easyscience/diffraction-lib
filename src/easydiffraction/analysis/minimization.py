@@ -1,5 +1,4 @@
 from .minimizers.factory import MinimizerFactory
-import lmfit
 
 
 class DiffractionMinimizer:
@@ -50,7 +49,7 @@ class DiffractionMinimizer:
         :param experiments: Experiments instance.
         :param calculator: Calculator instance.
         """
-        print(f"\n🚀 Starting {self.engine.upper()} fitting process...")
+        print(f"\n🚀 Starting fitting process with {self.engine.upper()}...")
 
         parameters = (
             sample_models.get_free_params() +
@@ -60,10 +59,6 @@ class DiffractionMinimizer:
         if not parameters:
             print("⚠️ No parameters selected for refinement. Aborting fit.")
             return None
-
-        # Residual function partial to minimize passing of sample_models etc.
-        def residual_func(params):
-            return self._residual_function(sample_models, experiments, calculator)
 
         self.results = self.minimizer.fit(
             sample_models,
