@@ -17,11 +17,10 @@ class DiffractionMinimizer:
         self.minimizer = MinimizerFactory.create_minimizer(engine)
         self.results = None
 
-    def _residual_function(self, params, sample_models, experiments, calculator):
+    def _residual_function(self, sample_models, experiments, calculator):
         """
         Computes residuals for all experiments.
 
-        :param params: Current parameters for fitting.
         :param sample_models: SampleModels instance.
         :param experiments: Experiments instance.
         :param calculator: Calculator instance.
@@ -64,7 +63,7 @@ class DiffractionMinimizer:
 
         # Residual function partial to minimize passing of sample_models etc.
         def residual_func(params):
-            return self._residual_function(params, sample_models, experiments, calculator)
+            return self._residual_function(sample_models, experiments, calculator)
 
         if self.engine == 'lmfit':
             self.results = self.minimizer.fit(
