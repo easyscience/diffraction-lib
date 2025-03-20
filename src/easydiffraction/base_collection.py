@@ -82,7 +82,7 @@ class BaseCollection:
     def get_free_params(self):
         """
         Collects only the parameters marked as free (refinable).
-        Returns a list of parameter dictionaries.
+        Returns a list of Parameter instances.
         """
         free_params = []
 
@@ -102,8 +102,6 @@ class BaseCollection:
                     if not hasattr(subcomponent, '__dict__'):
                         continue
 
-                    category = getattr(subcomponent, 'cif_category_name', '')
-
                     for attr_name in dir(subcomponent):
                         if attr_name.startswith('_'):
                             continue
@@ -114,16 +112,10 @@ class BaseCollection:
                             continue
 
                         if getattr(attr, 'is_parameter', False) and attr.free:
-                            cif_name = self._compose_cif_name(subcomponent, category, attr)
-                            param_info = {
-                                "block": item_id,
-                                "cif_name": cif_name,
-                                "value": attr.value,
-                                "error": '' if attr.uncertainty == 0.0 else attr.uncertainty,
-                                "free": attr.free,
-                                "parameter": attr
-                            }
-                            free_params.append(param_info)
+                            # Set the block_name for the parameter to generate its unique id
+                            attr.block_name = item_id
+                            attr.id = attr._generate_unique_id()
+                            free_params.append(attr)
 
         return free_params
 
@@ -134,6 +126,19 @@ class BaseCollection:
         if not params:
             print(f"{title}\nNo parameters found.")
             return
+
+        # If it's a list of Parameters, convert them to dicts for display
+        if params and hasattr(params[0], 'cif_name'):
+            params = [
+                {
+                    'block': param.block_name,
+                    'cif_name': param.cif_name,
+                    'value': param.value,
+                    'error': '' if getattr(param, 'uncertainty', 0.0) == 0.0 else param.uncertainty,
+                    'free': param.free
+                }
+                for param in params
+            ]
 
         df = pd.DataFrame(params)
 
@@ -165,4 +170,29 @@ class BaseCollection:
         Displays only the parameters that are free to refine.
         """
         params = self.get_free_params()
-        self._display_table(params, "Free Parameters:")
+
+        if params and hasattr(params[0], 'cif_name'):
+            params = [
+                {
+                    'block': param.block_name,
+                    'cif_name': param.cif_name,
+                    'value': param.value,
+                    'error': '' if getattr(param, 'uncertainty', 0.0) == 0.0 else param.uncertainty,
+                    'free': param.free
+                }
+                for param in params
+            ]
+
+        df = pd.DataFrame(params)
+
+        # Ensure columns exist
+        expected_cols = ["block", "cif_name", "value", "error", "free"]
+        valid_cols = [col for col in expected_cols if col in df.columns]
+
+        if not valid_cols:
+            print("No valid columns found in free parameters DataFrame.")
+            return
+
+        df = df[valid_cols]
+
+        self._display_table(df, "Free Parameters:")

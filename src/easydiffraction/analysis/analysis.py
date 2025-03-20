@@ -4,6 +4,7 @@ from scipy.interpolate import interp1d
 from .calculators.factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from easydiffraction.utils.chart_plotter import ChartPlotter
+import pandas as pd
 
 
 class Analysis:
@@ -23,6 +24,9 @@ class Analysis:
         self.project.experiments.show_all_parameters_table()
 
     def show_free_params(self):
+        """
+        Displays only the parameters that are free to refine.
+        """
         free_params = self.project.sample_models.get_free_params() + \
                       self.project.experiments.get_free_params()
 
@@ -32,21 +36,32 @@ class Analysis:
             print("No free parameters found.")
             return
 
-        import pandas as pd
-        df = pd.DataFrame(free_params)
+        # Convert Parameter objects to dicts for display
+        params_data = [
+            {
+                'block': param.block_name,
+                'cif_name': param.cif_name,
+                'value': param.value,
+                'error': '' if getattr(param, 'uncertainty', 0.0) == 0.0 else param.uncertainty,
+                'free': param.free
+            }
+            for param in free_params
+        ]
+
+        df = pd.DataFrame(params_data)
 
         if df.empty:
             print("No free parameters found.")
             return
 
-        df.rename(columns={
-            "item_id": "block",
-            "cif_full_name": "cif_name",
-            "uncertainty": "error",
-            "free": "free"
-        }, inplace=True)
+        expected_cols = ["block", "cif_name", "value", "error", "free"]
+        valid_cols = [col for col in expected_cols if col in df.columns]
 
-        df = df[["block", "cif_name", "value", "error", "free"]]
+        if not valid_cols:
+            print("No valid columns found in free parameters DataFrame.")
+            return
+
+        df = df[valid_cols]
 
         try:
             from tabulate import tabulate

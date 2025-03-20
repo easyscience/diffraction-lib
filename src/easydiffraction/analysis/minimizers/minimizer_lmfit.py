@@ -15,20 +15,14 @@ class LmfitMinimizer(MinimizerBase):
         engine_parameters = lmfit.Parameters()
 
         for param in input_parameters:
-            raw_name = param["cif_name"]
-            lmfit_name = (
-                raw_name.replace("[", "_")
-                .replace("]", "")
-                .replace(".", "_")
-                .replace("'", "")
-            )
+            lmfit_name = param.id
 
             engine_parameters.add(
                 name=lmfit_name,
-                value=param["value"],
-                vary=param["free"],
-                min=param.get('min', None),
-                max=param.get('max', None)
+                value=param.value,
+                vary=param.free,
+                min=param.min,
+                max=param.max
             )
 
         return engine_parameters
@@ -86,19 +80,11 @@ class LmfitMinimizer(MinimizerBase):
     def _sync_parameters(engine_params, parameters):
         """Synchronize engine parameter values back to Parameter instances."""
         for param in parameters:
-            cif_name = param['cif_name']
-            param_name = (
-                cif_name.replace("[", "_")
-                        .replace("]", "")
-                        .replace(".", "_")
-                        .replace("'", "")
-            )
+            param_name = param.id  # Use the unique id directly
             param_obj = engine_params[param_name]
 
-            if 'parameter' in param:
-                param['parameter'].value = param_obj.value
-            else:
-                param['value'] = param_obj.value
+            # Update the parameter value directly
+            param.value = param_obj.value
 
     def results(self):
         return self.result
