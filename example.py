@@ -36,9 +36,9 @@ project.sample_models.show_ids()
 #project.sample_models["model1"].show_params()
 
 # Modify parameters via project object
-project.sample_models["pbso4"].cell.length_a = 8.46924
-project.sample_models["pbso4"].cell.length_b = 5.391
-project.sample_models["pbso4"].cell.length_c = 6.9506
+project.sample_models["pbso4"].cell.length_a.value = 8.46924
+project.sample_models["pbso4"].cell.length_b.value = 5.391
+project.sample_models["pbso4"].cell.length_c.value = 6.9506
 project.sample_models["pbso4"].atom_sites.add(label='Pb',
                                              type_symbol='Pb',
                                              fract_x=0.1876,
@@ -155,31 +155,40 @@ project.experiments["expt1"].background.add(x=153.0, y=226.1)
 # Show measured vs calculated data uncluding background
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 
-
-exit()
+print('AAA')
 
 # Show all refinable parameters
 project.analysis.show_refinable_params()
 
+print('BBB')
+
 project.analysis.show_free_params()
 
-
+print('CCC')
 
 
 
 # Select specific parameters for refinement
-project.sample_models["model1"].atom_sites["La"].fract_x.vary = True
-project.experiments["expt1"].peak_broad.gauss_u.vary = True
+project.sample_models["pbso4"].cell.length_a.value = 8.4
+project.sample_models["pbso4"].cell.length_a.free = True
+#project.sample_models["pbso4"].atom_sites["Pb"].fract_x.free = True
+#project.experiments["expt1"].peak_broad.gauss_u.free = True
+
+project.analysis.show_refinable_params()
+
 
 project.analysis.show_free_params()
+
+
+
+#exit()
 
 
 # Set refinement strategy
 project.analysis.refinement_strategy = 'single'
 
 # Show strategy description
-print(project.analysis.describe_refinement_strategy())
-
+#print(project.analysis.describe_refinement_strategy())
 
 
 # Preview calculated patterns vs measured data
@@ -190,8 +199,13 @@ print(project.analysis.describe_refinement_strategy())
 # Run the fitting process
 project.analysis.fit()
 
+
+
 # Show results after fitting
 project.analysis.show_fit_results()
+
+project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
+
 
 exit()
 

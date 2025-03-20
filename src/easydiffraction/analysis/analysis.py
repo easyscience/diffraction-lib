@@ -13,6 +13,47 @@ class Analysis:
         self.calculator = Analysis._calculator  # Default calculator shared by project
         self._refinement_strategy = 'single'
 
+    def show_refinable_params(self):
+        print("\nSample Models Parameters:")
+        self.project.sample_models.show_all_parameters_table()
+
+        print("\nExperiment Parameters:")
+        self.project.experiments.show_all_parameters_table()
+
+    def show_free_params(self):
+        free_params = self.project.sample_models.get_free_params() + \
+                      self.project.experiments.get_free_params()
+
+        print("\nFree Parameters:")
+
+        if not free_params:
+            print("No free parameters found.")
+            return
+
+        import pandas as pd
+        df = pd.DataFrame(free_params)
+
+        if df.empty:
+            print("No free parameters found.")
+            return
+
+        df.rename(columns={
+            "item_id": "block",
+            "cif_full_name": "cif_name",
+            "uncertainty": "error",
+            "free": "free"
+        }, inplace=True)
+
+        df = df[["block", "cif_name", "value", "error", "free"]]
+
+        try:
+            from tabulate import tabulate
+            print(tabulate(df, headers="keys", tablefmt="psql", showindex=False))
+        except ImportError:
+            print(df.to_string(index=False))
+
+        return free_params
+
     def show_available_calculators(self):
         CalculatorFactory.show_available_calculators()
 
@@ -29,15 +70,12 @@ class Analysis:
         experiment = self.project.experiments[expt_id]
         sample_models = self.project.sample_models
 
-        # Get x-values from measured pattern
         x_points = experiment.datastore.pattern.x
 
-        # Interpolate background from control points (experiment.background)
         if experiment.background.points:
             background_points = np.array(experiment.background.points)
             bg_x, bg_y = background_points[:, 0], background_points[:, 1]
 
-            # Create interpolation function
             interp_func = interp1d(
                 bg_x, bg_y,
                 kind='linear',
@@ -45,20 +83,14 @@ class Analysis:
                 fill_value=(bg_y[0], bg_y[-1])
             )
             interpolated_bkg = interp_func(x_points)
-
-            # Save background to datastore
             experiment.datastore.pattern.bkg = interpolated_bkg
         else:
-            interpolated_bkg = 0
-            experiment.datastore.pattern.bkg = np.zeros_like(x_points)
+            interpolated_bkg = np.zeros_like(x_points)
+            experiment.datastore.pattern.bkg = interpolated_bkg
 
-        # Calculate diffraction pattern (without background)
         calculated_pattern = self.calculator.calculate_pattern(sample_models, experiment)
-
-        # Add background to calculated pattern
         calculated_pattern_with_bkg = calculated_pattern + interpolated_bkg
 
-        # Store the final calculated pattern
         experiment.datastore.pattern.calc = calculated_pattern_with_bkg
 
         return calculated_pattern_with_bkg
@@ -85,9 +117,6 @@ class Analysis:
     def show_meas_vs_calc_chart(self, expt_id, x_min=None, x_max=None, show_residual=False):
         experiment = self.project.experiments[expt_id]
 
-        #if experiment.datastore.pattern.calc is None:
-        #    print(f"No calculated pattern found for {expt_id}. Running calculation...")
-        #    self.calculate_pattern(expt_id)
         self.calculate_pattern(expt_id)
 
         pattern = experiment.datastore.pattern
@@ -96,7 +125,6 @@ class Analysis:
             print(f"No data available for {expt_id}. Cannot display chart.")
             return
 
-        # Prepare series for plotting
         series = [pattern.meas, pattern.calc]
         labels = ['meas', 'calc']
 
@@ -115,49 +143,41 @@ class Analysis:
             labels=labels
         )
 
-def fit(self):
-    """
-    Run the fitting process.
-    """
-    print("Starting the fitting process...")
+    def fit(self):
+        print("Starting the fitting process...")
 
-    sample_models = self.project.sample_models
-    experiments = self.project.experiments
+        sample_models = self.project.sample_models
+        experiments = self.project.experiments
 
-    if not sample_models or not experiments:
-        print("No sample models or experiments found in the project. Fit aborted.")
-        return
+        if not sample_models or not experiments:
+            print("No sample models or experiments found in the project. Fit aborted.")
+            return
 
-    # Ensure the calculator is set
-    if not self.calculator:
-        raise ValueError("No calculator is set. Cannot run fit.")
+        if not self.calculator:
+            raise ValueError("No calculator is set. Cannot run fit.")
 
-    # Placeholder for actual fitting logic
-    # In a real implementation, you would pass sample_models, experiments, and possibly a calculator to the optimizer
-    print("Fitting algorithm would execute here...")
-    print("Fit completed.")
+        # Create an instance of DiffractionMinimizer if not already there
+        if not hasattr(self, 'fitter') or self.fitter is None:
+            from .minimization import DiffractionMinimizer
+            self.fitter = DiffractionMinimizer(engine='lmfit')  # Or configurable!
 
-    # Store dummy results for demonstration
-    self.fit_results = {
-        'rwp': 10.5,
-        'chi2': 1.2,
-        'params': {
-            'lattice_a': 5.431,
-            'lattice_c': 10.12
-        }
-    }
+        # Run the fitting process
+        self.fitter.fit(sample_models, experiments, self.calculator)
 
-def show_fit_results(self):
-    """
-    Show fitting results after the fit.
-    """
-    if not hasattr(self, 'fit_results') or not self.fit_results:
-        print("No fit results found. Run fit() first.")
-        return
+        # After fitting, get the results
+        self.fit_results = self.fitter.results
 
-    print("\nFitting Results:")
-    print(f"Rwp: {self.fit_results['rwp']:.2f}%")
-    print(f"Chi^2: {self.fit_results['chi2']:.2f}")
-    print("Refined Parameters:")
-    for param, value in self.fit_results['params'].items():
-        print(f"  {param}: {value}")
+        print("Fit completed.")
+
+    def show_fit_results(self):
+        if not hasattr(self, 'fit_results') or not self.fit_results:
+            print("No fit results found. Run fit() first.")
+            return
+
+        print("\nFitting Results:")
+        print(f"Reduced Chi-square: {self.fit_results.redchi:.2f}")
+        if hasattr(self.fit_results, "params"):
+            for param_name, param_obj in self.fit_results.params.items():
+                print(f"  {param_name}: {param_obj.value} (init = {param_obj.init_value})")
+        else:
+            print("No refined parameters found in fit results.")

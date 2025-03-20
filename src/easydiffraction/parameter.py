@@ -22,10 +22,10 @@ class Parameter(Descriptor):
     A parameter with a value, uncertainty, units, and CIF representation.
     """
 
-    def __init__(self, value, cif_name, uncertainty=0.0, vary=False, units=None):
+    def __init__(self, value, cif_name, uncertainty=0.0, free=False, units=None):
         super().__init__(value, cif_name, units)
         self.uncertainty = uncertainty
-        self.vary = vary
+        self.free = free
         self.is_parameter = True  # Flag to detect parameters
 
     def __get__(self, instance, owner):
