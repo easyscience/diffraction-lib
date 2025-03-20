@@ -21,6 +21,7 @@ class LmfitMinimizer(MinimizerBase):
 
         # Preparing parameters for lmfit engine
         engine_parameters = self._prepare_parameters(parameters)
+        print(f"🔧 [DEBUG] Engine parameters: {engine_parameters}")
 
         # Create the lmfit model using the parameters
         lmfit_model = self._create_lmfit_model(parameters,
@@ -29,7 +30,6 @@ class LmfitMinimizer(MinimizerBase):
                                                calculator)
 
         # Perform minimization using lmfit
-        print(f"🔧 [DEBUG] Running lmfit minimize with method: {self.method}")
         fit_result = lmfit.minimize(lmfit_model,
                                     params=engine_parameters,
                                     method=self.method)
@@ -47,7 +47,6 @@ class LmfitMinimizer(MinimizerBase):
 
     def _prepare_parameters(self, input_parameters):
         engine_parameters = lmfit.Parameters()
-
         for param in input_parameters:
             engine_parameters.add(
                 name=param.id,
@@ -56,13 +55,9 @@ class LmfitMinimizer(MinimizerBase):
                 min=param.min,
                 max=param.max
             )
-
         return engine_parameters
 
     def _create_lmfit_model(self, parameters, sample_models, experiments, calculator):
-        """
-        Create the lmfit model function based on the parameters and models.
-        """
         def lmfit_model(params):
             residuals = self._objective_function(params, parameters, sample_models, experiments, calculator)
             return residuals
@@ -70,9 +65,6 @@ class LmfitMinimizer(MinimizerBase):
         return lmfit_model
 
     def _objective_function(self, engine_params, parameters, sample_models, experiments, calculator):
-        """
-        Objective function for lmfit minimizer to compute residuals.
-        """
         LmfitMinimizer._sync_parameters(engine_params, parameters)
 
         residuals = []
@@ -87,13 +79,9 @@ class LmfitMinimizer(MinimizerBase):
 
     @staticmethod
     def _sync_parameters(engine_params, parameters):
-        """
-        Synchronize parameters for LMFIT engine.
-        engine_params: lmfit.Parameters (dict-like)
-        parameters: list of Parameter objects
-        """
-        for param in parameters:
-            param_name = param.id
-            param_obj = engine_params[param_name]
-            param.value = param_obj.value
-            param.error = param_obj.stderr  # Assuming the error is in stderr of lmfit
+        print(f"🔧 [DEBUG] Syncing parameters with engine_params: {engine_params}")
+        # engine_params is a list of floats representing parameter values
+        for idx, param in enumerate(parameters):
+            new_value = engine_params[idx]
+            print(f"🔧 [DEBUG] Updating parameter '{param.id}' from {param.value} to {new_value}")
+            param.value = new_value
