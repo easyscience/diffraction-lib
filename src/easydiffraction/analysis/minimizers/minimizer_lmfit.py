@@ -11,7 +11,7 @@ class LmfitMinimizer(MinimizerBase):
         self.result = None
         self.minimizer = None
 
-    def _prepare_lmfit_params(self, fit_params):
+    def prepare_parameters(self, fit_params):
         lm_params = lmfit.Parameters()
 
         for param in fit_params:
@@ -50,7 +50,7 @@ class LmfitMinimizer(MinimizerBase):
             print("⚠️ No parameters selected for refinement. Aborting fit.")
             return None
 
-        lm_params = self._prepare_lmfit_params(parameters)
+        lm_params = self.prepare_parameters(parameters)
 
         def objective_function(lm_params):
             # Update parameter values in models/experiments

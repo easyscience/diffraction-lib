@@ -9,3 +9,10 @@ class MinimizerBase(ABC):
     @abstractmethod
     def results(self):
         pass
+
+    @abstractmethod
+    def prepare_parameters(self, parameters):
+        """
+        Prepare the parameters for the minimizer engine.
+        """
+        pass
