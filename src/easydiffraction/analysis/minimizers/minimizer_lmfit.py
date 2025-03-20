@@ -11,10 +11,10 @@ class LmfitMinimizer(MinimizerBase):
         self.result = None
         self.minimizer = None
 
-    def prepare_parameters(self, fit_params):
-        lm_params = lmfit.Parameters()
+    def prepare_parameters(self, input_parameters):
+        engine_parameters = lmfit.Parameters()
 
-        for param in fit_params:
+        for param in input_parameters:
             raw_name = param["cif_name"]
             lmfit_name = (
                 raw_name.replace("[", "_")
@@ -23,7 +23,7 @@ class LmfitMinimizer(MinimizerBase):
                 .replace("'", "")
             )
 
-            lm_params.add(
+            engine_parameters.add(
                 name=lmfit_name,
                 value=param["value"],
                 vary=param["free"],
@@ -31,7 +31,7 @@ class LmfitMinimizer(MinimizerBase):
                 max=param.get('max', None)
             )
 
-        return lm_params
+        return engine_parameters
 
     def fit(self, sample_models, experiments, calculator):
         """
@@ -50,7 +50,7 @@ class LmfitMinimizer(MinimizerBase):
             print("⚠️ No parameters selected for refinement. Aborting fit.")
             return None
 
-        lm_params = self.prepare_parameters(parameters)
+        engine_parameters = self.prepare_parameters(parameters)
 
         def objective_function(lm_params):
             # Update parameter values in models/experiments
@@ -82,7 +82,7 @@ class LmfitMinimizer(MinimizerBase):
             return np.array(residuals)
 
         # Perform minimization
-        self.minimizer = lmfit.Minimizer(objective_function, lm_params)
+        self.minimizer = lmfit.Minimizer(objective_function, engine_parameters)
         self.result = self.minimizer.minimize()
         return self.result
 
