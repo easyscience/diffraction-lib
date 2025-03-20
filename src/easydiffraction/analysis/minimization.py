@@ -52,14 +52,14 @@ class DiffractionMinimizer:
         """
         print(f"\n🚀 Starting {self.engine.upper()} fitting process...")
 
-        fit_params = (
-                sample_models.get_free_params() +
-                experiments.get_free_params()
+        parameters = (
+            sample_models.get_free_params() +
+            experiments.get_free_params()
         )
 
-        if not fit_params:
+        if not parameters:
             print("⚠️ No parameters selected for refinement. Aborting fit.")
-            return
+            return None
 
         # Residual function partial to minimize passing of sample_models etc.
         def residual_func(params):
@@ -67,14 +67,14 @@ class DiffractionMinimizer:
 
         if self.engine == 'lmfit':
             self.results = self.minimizer.fit(
-                fit_params,
+                parameters,
                 sample_models,
                 experiments,
                 calculator
             )
 
         elif self.engine == 'bumps':
-            self.results = self.minimizer.fit(residual_func, fit_params)
+            self.results = self.minimizer.fit(residual_func, parameters)
 
         else:
             raise ValueError(f"Unsupported minimizer engine: {self.engine}")

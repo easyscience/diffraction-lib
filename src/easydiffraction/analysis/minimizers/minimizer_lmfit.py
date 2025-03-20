@@ -42,6 +42,15 @@ class LmfitMinimizer(MinimizerBase):
         :param experiments: Experiments object.
         :param calculator: Calculator instance to compute theoretical patterns.
         """
+        parameters = (
+            sample_models.get_free_params() +
+            experiments.get_free_params()
+        )
+
+        if not parameters:
+            print("⚠️ No parameters selected for refinement. Aborting fit.")
+            return None
+
         lm_params = self._prepare_lmfit_params(parameters)
 
         def objective_function(lm_params):
