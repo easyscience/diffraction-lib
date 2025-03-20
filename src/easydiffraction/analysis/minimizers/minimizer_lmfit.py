@@ -11,6 +11,28 @@ class LmfitMinimizer(MinimizerBase):
         self.result = None
         self.minimizer = None
 
+    def _prepare_lmfit_params(self, fit_params):
+        lm_params = lmfit.Parameters()
+
+        for param in fit_params:
+            raw_name = param["cif_name"]
+            lmfit_name = (
+                raw_name.replace("[", "_")
+                .replace("]", "")
+                .replace(".", "_")
+                .replace("'", "")
+            )
+
+            lm_params.add(
+                name=lmfit_name,
+                value=param["value"],
+                vary=param["free"],
+                min=param.get('min', None),
+                max=param.get('max', None)
+            )
+
+        return lm_params
+
     def fit(self, parameters, sample_models, experiments, calculator=None):
         """
         Fit function using lmfit.
@@ -20,24 +42,7 @@ class LmfitMinimizer(MinimizerBase):
         :param experiments: Experiments object.
         :param calculator: Calculator instance to compute theoretical patterns.
         """
-        lm_params = lmfit.Parameters()
-
-        # Convert parameters into lmfit Parameters
-        for param in parameters:
-            raw_name = param['cif_name']
-            lmfit_name = (
-                raw_name.replace("[", "_")
-                .replace("]", "")
-                .replace(".", "_")
-                .replace("'", "")
-            )
-            lm_params.add(
-                name=lmfit_name,
-                value=param['value'],
-                vary=param['free'],
-                min=param.get('min', None),
-                max=param.get('max', None)
-            )
+        lm_params = self._prepare_lmfit_params(parameters)
 
         def objective_function(lm_params):
             # Update parameter values in models/experiments

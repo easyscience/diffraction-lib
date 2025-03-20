@@ -42,34 +42,6 @@ class DiffractionMinimizer:
 
         return residuals
 
-    def _prepare_lmfit_params(self, fit_params):
-        """
-        Converts fit parameters into lmfit.Parameters object.
-
-        :param fit_params: List of Parameter instances.
-        :return: lmfit.Parameters object.
-        """
-        from lmfit import Parameters
-
-        lmfit_params = Parameters()
-
-        for param in fit_params:
-            raw_name = param["cif_name"]
-            # Sanitize the parameter name for lmfit
-            lmfit_name = (
-                raw_name.replace("[", "_")
-                .replace("]", "")
-                .replace(".", "_")
-                .replace("'", "")
-            )
-
-            lmfit_params.add(
-                lmfit_name,
-                value=param["value"],
-                vary=param["free"]
-            )
-
-        return lmfit_params
 
     def fit(self, sample_models, experiments, calculator):
         """
