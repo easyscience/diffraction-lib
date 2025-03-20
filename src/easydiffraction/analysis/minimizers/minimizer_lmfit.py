@@ -52,7 +52,7 @@ class LmfitMinimizer(MinimizerBase):
 
         engine_parameters = self.prepare_parameters(parameters)
 
-        def objective_function(lm_params):
+        def objective_function(engine_parameters):
             # Update parameter values in models/experiments
             for param in parameters:
                 cif_name = param['cif_name']
@@ -62,7 +62,7 @@ class LmfitMinimizer(MinimizerBase):
                     .replace(".", "_")
                     .replace("'", "")
                 )
-                param_obj = lm_params[lmfit_name]
+                param_obj = engine_parameters[lmfit_name]
                 if 'parameter' in param:
                     param['parameter'].value = param_obj.value
                 else:
