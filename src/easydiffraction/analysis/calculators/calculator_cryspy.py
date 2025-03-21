@@ -35,15 +35,25 @@ class CryspyCalculator(CalculatorBase):
     def calculate_pattern(self, sample_models, experiment):
         self._cryspy_obj = str_to_globaln('')
 
-        cryspy_sample_models_cif = self._convert_sample_models_to_cif(sample_models)
-        cryspy_sample_models_obj = str_to_globaln(cryspy_sample_models_cif)
-        self._cryspy_obj.add_items(cryspy_sample_models_obj.items)
+        # TODO: Temporary workaround to avoid re-creating the cryspy object every time!
+        # Speed up the calculation 10 times!
 
-        cryspy_experiment_cif = self._convert_experiment_to_cif(experiment)
-        cryspy_experiment_obj = str_to_globaln(cryspy_experiment_cif)
-        self._cryspy_obj.add_items(cryspy_experiment_obj.items)
+        if not self._cryspy_dict:
+            cryspy_sample_models_cif = self._convert_sample_models_to_cif(sample_models)
+            cryspy_sample_models_obj = str_to_globaln(cryspy_sample_models_cif)
+            self._cryspy_obj.add_items(cryspy_sample_models_obj.items)
 
-        self._cryspy_dict = self._cryspy_obj.get_dictionary()
+            cryspy_experiment_cif = self._convert_experiment_to_cif(experiment)
+            cryspy_experiment_obj = str_to_globaln(cryspy_experiment_cif)
+            self._cryspy_obj.add_items(cryspy_experiment_obj.items)
+
+            self._cryspy_dict = self._cryspy_obj.get_dictionary()
+
+        else:
+            cell = self._cryspy_dict['crystal_pbso4']['unit_cell_parameters']
+            cell[0] = sample_models['pbso4'].cell.length_a.value
+            cell[1] = sample_models['pbso4'].cell.length_b.value
+            cell[2] = sample_models['pbso4'].cell.length_c.value
 
         calc_result = rhochi_calc_chi_sq_by_dictionary(
             self._cryspy_dict,
