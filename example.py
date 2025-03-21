@@ -205,7 +205,7 @@ print(project.analysis.current_minimizer)
 
 # Set minimizer
 #project.analysis.current_minimizer = 'bumps (lm)'
-project.analysis.current_minimizer = 'dfols (leastsq)'
+#project.analysis.current_minimizer = 'dfols (leastsq)'
 
 
 # Print current minimizer
@@ -222,6 +222,15 @@ project.analysis.show_fit_results()
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 
 
+
+# Change minimizer, and start fitting again
+
+project.sample_models["pbso4"].cell.length_a.value = 8.4
+project.analysis.current_minimizer = 'dfols (leastsq)'
+print(project.analysis.current_minimizer)
+project.analysis.fit()
+project.analysis.show_fit_results()
+project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 
 
 # === Step 5: Summary & Save ===
