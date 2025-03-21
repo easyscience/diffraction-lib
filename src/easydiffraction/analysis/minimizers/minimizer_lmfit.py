@@ -10,7 +10,7 @@ class LmfitMinimizer(MinimizerBase):
     """
 
     def __init__(self, method=DEFAULT_METHOD, max_iterations=DEFAULT_MAX_ITERATIONS):
-        super().__init__(method=method, maxfun=max_iterations)
+        super().__init__(method=method, max_iterations=max_iterations)
 
     def _prepare_solver_args(self, parameters):
         engine_parameters = lmfit.Parameters()
@@ -29,7 +29,7 @@ class LmfitMinimizer(MinimizerBase):
         return lmfit.minimize(objective_function,
                               params=engine_parameters,
                               method=self.method,
-                              max_nfev=self.maxfun)
+                              max_nfev=self.max_iterations)
 
 
     def _sync_result_to_parameters(self, parameters, raw_result):

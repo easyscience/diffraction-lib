@@ -11,7 +11,7 @@ class DfolsMinimizer(MinimizerBase):
     """
 
     def __init__(self, method=DEFAULT_METHOD, max_iterations=DEFAULT_MAX_ITERATIONS):
-        super().__init__(method=method, maxfun=max_iterations)
+        super().__init__(method=method, max_iterations=max_iterations)
 
     def _prepare_solver_args(self, parameters):
         x0 = []
@@ -30,7 +30,7 @@ class DfolsMinimizer(MinimizerBase):
         return solve(objective_function,
                      x0=x0,
                      bounds=bounds,
-                     maxfun=self.maxfun)
+                     maxfun=self.max_iterations)
 
 
     def _sync_result_to_parameters(self, parameters, raw_result):

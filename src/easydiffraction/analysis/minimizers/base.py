@@ -38,9 +38,9 @@ class MinimizerBase(ABC):
     Abstract base class for minimizer implementations.
     Provides shared logic and structure for concrete minimizers.
     """
-    def __init__(self, method=None, maxfun=None):
+    def __init__(self, method=None, max_iterations=None):
         self.method = method
-        self.maxfun = maxfun
+        self.max_iterations = max_iterations
         self.result = None
         self._previous_chi2 = None
         self._iteration = 0
