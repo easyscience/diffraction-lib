@@ -4,7 +4,7 @@ try:
     from cryspy.H_functions_global.function_1_cryspy_objects import str_to_globaln
 except ImportError:
     cryspy = None
-    print('[CryspyCalculator] Warning: Cryspy module not found. This calculator will not work.')
+    print('Warning: cryspy module not found. This calculator will not work.')
 
 from .base import CalculatorBase  # Assuming you have a base interface
 
