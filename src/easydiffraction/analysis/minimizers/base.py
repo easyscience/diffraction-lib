@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 import tabulate
+import sys
 
 class FitResults:
     def __init__(self, success=False, parameters=None, chi_square=None,
@@ -22,12 +23,13 @@ class FitResults:
             setattr(self, key, value)
 
     def display_results(self):
+        print(f"\nFit results:")
         print(f"✅ Success: {self.success}")
         print(f"🔧 Reduced Chi-square: {self.reduced_chi_square:.2f}")
-        print(f"📈 Parameters:\n")
+        print(f"📈 Parameters:")
 
         table_data = []
-        headers = ["block", "cif_name", "start", "refined", "error"]
+        headers = ["block", "cif_name", "start", "refined", "error", "units", "change [%]"]
 
         for param in self.parameters:
             block_name = getattr(param, 'block_name', 'N/A')
@@ -35,8 +37,16 @@ class FitResults:
             start = f"{getattr(param, 'start_value', 'N/A'):.4f}" if param.start_value is not None else "N/A"
             refined = f"{param.value:.4f}" if param.value is not None else "N/A"
             error = f"{param.error:.4f}" if param.error is not None else "N/A"
+            units = getattr(param, 'units', 'N/A')
 
-            table_data.append([block_name, cif_name, start, refined, error])
+            if param.start_value and param.value:
+                change = ((param.value - param.start_value) / param.start_value) * 100
+                arrow = "↑" if change > 0 else "↓"
+                relative_change = f"{arrow} {abs(change):.1f}%"
+            else:
+                relative_change = "N/A"
+
+            table_data.append([block_name, cif_name, start, refined, error, units, relative_change])
 
         print(tabulate.tabulate(table_data, headers=headers, tablefmt="grid"))
 
@@ -91,19 +101,40 @@ class MinimizerBase(ABC):
         n_points = len(residuals)
         red_chi2 = chi2 / (n_points - len(parameters))
 
+        row = []
+        # Add initial row
         if self._previous_chi2 is None:
             self._previous_chi2 = red_chi2
             self._best_chi2 = red_chi2
             self._best_iteration = self._iteration
-            print(f"🔧 Iteration {self._iteration}: Starting Reduced Chi-square = {red_chi2:.2f}")
+            row = [self._iteration, f"{red_chi2:<12.2f}", "-".ljust(12), "-".ljust(12)]
+            #self._chi_square_history.append(row)
+        # Check for improvement and append new row
         elif (self._previous_chi2 - red_chi2) / self._previous_chi2 > 0.01:
+            change_percent = (self._previous_chi2 - red_chi2) / self._previous_chi2 * 100
             self._iteration += 1
-            print(f"🔧 Iteration {self._iteration}: Reduced Chi-square improved from {self._previous_chi2:.2f} to {red_chi2:.2f}")
+            row = [
+                self._iteration,
+                f"{self._previous_chi2:<12.2f}",
+                f"{red_chi2:<12.2f}",
+                f"↓ {change_percent:.1f}%".ljust(10)
+            ]
+            #self._chi_square_history.append(row)
             self._previous_chi2 = red_chi2
 
         if self._best_chi2 is None or red_chi2 < self._best_chi2:
             self._best_chi2 = red_chi2
             self._best_iteration = self._iteration
+
+        if not hasattr(self, "_header_printed"):
+            self._header_printed = True
+            print("📈 Reduced Chi-square change:")
+            print("+-------------+--------------+--------------+--------------+")
+            print(f"| {'iteration':<11} | {'start':<12} | {'improved':<12} | {'change [%]':<12} |")
+            print("+=============+==============+==============+==============+")
+        if len(row):
+            print(f"| {row[0]:<11} | {row[1]:<12} | {row[2]:<12} | {row[3]:<12} |")
+            print("+-------------+--------------+--------------+--------------+")
 
         return residuals
 
@@ -132,15 +163,8 @@ class MinimizerBase(ABC):
         solver_args = self._prepare_solver_args(self.parameters)
         objective_function = self._create_objective_function(self.parameters, sample_models, experiments, calculator)
 
-        #objective_function = self._create_objective_function(self.parameters, sample_models, experiments, calculator)
-        #solver_args = self._prepare_solver_args(objective_function)
-
         raw_result = self._run_solver(objective_function, **solver_args)
         result = self._finalize_fit(self.parameters, raw_result)
-
-        #raw_result = self._run_solver(**solver_args)
-        #self.result = self._finalize_fit(self.parameters, raw_result)
-        #self.display_results(self.result)
 
         print(f"🔧 Final iteration {self._iteration}: Reduced Chi-square = {self._previous_chi2:.2f}")
         print(f"🏆 Best Reduced Chi-square: {self._best_chi2:.2f} at iteration {self._best_iteration}")

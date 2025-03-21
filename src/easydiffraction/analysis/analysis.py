@@ -185,19 +185,6 @@ class Analysis:
         # After fitting, get the results
         self.fit_results = self.fitter.results
 
-    def show_fit_results(self):
-        if not hasattr(self, 'fit_results') or not self.fit_results:
-            print("No fit results found. Run fit() first.")
-            return
-
-        print("\nFitting Results:")
-        print(f"Reduced Chi-square: {self.fit_results.redchi:.2f}")
-        if hasattr(self.fit_results, "params"):
-            for param_name, param_obj in self.fit_results.params.items():
-                print(f"  {param_name}: {param_obj.value} (init = {param_obj.init_value})")
-        else:
-            print("No refined parameters found in fit results.")
-
     def show_current_minimizer(self):
         print(f"\nCurrent minimizer:\n{self.current_minimizer}")
 
