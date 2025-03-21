@@ -31,7 +31,6 @@ class LmfitMinimizer(MinimizerBase):
                               method=self.method,
                               max_nfev=self.max_iterations)
 
-
     def _sync_result_to_parameters(self, parameters, raw_result):
         if hasattr(raw_result, 'params'):
             param_values = raw_result.params

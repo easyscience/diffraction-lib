@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 import numpy as np
 import tabulate
+import time  # Add at the top of the file
 
 class FitResults:
     def __init__(self, success=False, parameters=None, chi_square=None,
-                 reduced_chi_square=None, message='', iterations=0, engine_result=None, starting_parameters=None, **kwargs):
+                 reduced_chi_square=None, message='', iterations=0, engine_result=None, starting_parameters=None, fitting_time=None, **kwargs):
         self.success = success
         self.parameters = parameters if parameters is not None else []
         self.chi_square = chi_square
@@ -14,6 +15,7 @@ class FitResults:
         self.engine_result = engine_result
         self.result = None
         self.starting_parameters = starting_parameters if starting_parameters is not None else []
+        self.fitting_time = fitting_time  # Store fitting time
 
         if 'redchi' in kwargs and self.reduced_chi_square is None:
             self.reduced_chi_square = kwargs.get('redchi')
@@ -25,6 +27,7 @@ class FitResults:
         print(f"\nFit results:")
         print(f"✅ Success: {self.success}")
         print(f"🔧 Reduced Chi-square: {self.reduced_chi_square:.2f}")
+        print(f"⏱️  Fitting time: {self.fitting_time:.2f} seconds")
         print(f"📈 Parameters:")
 
         table_data = []
@@ -65,6 +68,7 @@ class MinimizerBase(ABC):
         self._iteration = 0
         self._best_chi2 = None
         self._best_iteration = None
+        self._fitting_time = None  # New attribute to store fitting time
 
     @abstractmethod
     def _prepare_solver_args(self, parameters):
@@ -77,7 +81,6 @@ class MinimizerBase(ABC):
     def _run_solver(self, objective_function, engine_parameters):
         pass
 
-
     @abstractmethod
     def _sync_result_to_parameters(self, raw_result, parameters):
         pass
@@ -88,7 +91,8 @@ class MinimizerBase(ABC):
             parameters=parameters,
             redchi=self._best_chi2,
             raw_result=raw_result,
-            starting_parameters=parameters  # Pass starting parameters to the results
+            starting_parameters=parameters,  # Pass starting parameters to the results
+            fitting_time=self._fitting_time  # Pass fitting time
         )
         return self.result
 
@@ -163,12 +167,19 @@ class MinimizerBase(ABC):
         print(f"| {'iteration':<11} | {'start':<12} | {'improved':<12} | {'change [%]':<12} |")
         print("+=============+==============+==============+==============+")
 
+        start_time = time.time()  # Start timing
+
         raw_result = self._run_solver(objective_function, **solver_args)
+
+        end_time = time.time()  # End timing
+        self._fitting_time = end_time - start_time  # Store elapsed time in seconds
+
         result = self._finalize_fit(self.parameters, raw_result)
 
         print("+-------------+--------------+--------------+--------------+")
         print(f"🔧 Final iteration {self._iteration}: Reduced Chi-square = {self._previous_chi2:.2f}")
         print(f"🏆 Best Reduced Chi-square: {self._best_chi2:.2f} at iteration {self._best_iteration}")
+        print(f"⏱️ Fitting time: {self._fitting_time:.2f} seconds")
         print("✅ Fitting complete.")
 
         return result
