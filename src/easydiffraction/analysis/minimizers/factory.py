@@ -4,10 +4,26 @@ from .minimizer_dfols import DfolsMinimizer  # NEW IMPORT
 
 class MinimizerFactory:
     _available_minimizers = {
-        'lmfit (leastsq)': {'engine': 'lmfit', 'method': 'leastsq'},
-        'lmfit (least_squares)': {'engine': 'lmfit', 'method': 'least_squares'},
-        'bumps (lm)': {'engine': 'bumps', 'method': 'lm'},
-        'dfols (leastsq)': {'engine': 'dfols', 'method': 'leastsq'}
+        'lmfit': {
+            'engine': 'lmfit',
+            'method': 'leastsq',
+            'description': 'LMFIT library using the default Levenberg-Marquardt least squares method.'
+        },
+        'lmfit (leastsq)': {
+            'engine': 'lmfit',
+            'method': 'leastsq',
+            'description': 'LMFIT library with Levenberg-Marquardt least squares method.'
+        },
+        'lmfit (least_squares)': {
+            'engine': 'lmfit',
+            'method': 'least_squares',
+            'description': 'LMFIT library with SciPy’s trust region reflective algorithm.'
+        },
+        'dfols': {
+            'engine': 'dfols',
+            'method': None,
+            'description': 'DFOLS library for derivative-free least-squares optimization.'
+        }
     }
 
     @staticmethod
@@ -16,8 +32,25 @@ class MinimizerFactory:
 
     @staticmethod
     def show_available_minimizers():
-        for name in MinimizerFactory.list_available_minimizers():
-            print(name)
+        print("\nAvailable Minimizers:")
+
+        header = ["Minimizer", "Description"]
+        minimizer_width = max(len(header[0]), max(len(name) for name in MinimizerFactory._available_minimizers.keys())) + 2
+        description_width = max(len(header[1]), max(len(config['description']) for config in MinimizerFactory._available_minimizers.values())) + 2
+
+        border = f"+{'-' * minimizer_width}+{'-' * description_width}+"
+
+        # Print header
+        print(border)
+        print(f"| {header[0]:<{minimizer_width - 1}}| {header[1]:<{description_width - 1}}|")
+        print(border)
+
+        # Print minimizer rows
+        for name, config in MinimizerFactory._available_minimizers.items():
+            description = config.get('description', 'No description provided.')
+            print(f"| {name:<{minimizer_width - 1}}| {description:<{description_width - 1}}|")
+
+        print(border)
 
     @staticmethod
     def create_minimizer(selection: str):
@@ -30,6 +63,6 @@ class MinimizerFactory:
         elif config['engine'] == 'bumps':
             return BumpsMinimizer(method=config['method'])
         elif config['engine'] == 'dfols':
-            return DfolsMinimizer(method=config['method'])  # NEW BLOCK
+            return DfolsMinimizer()  # no method passed
 
         raise ValueError(f"Unsupported minimizer engine '{config['engine']}'")

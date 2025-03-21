@@ -45,8 +45,6 @@ class DiffractionMinimizer:
         :param experiments: Experiments instance.
         :param calculator: Calculator instance.
         """
-        print(f"\n🚀 Starting fitting process with {self.engine.upper()}...")
-
         parameters = (
             sample_models.get_free_params() +
             experiments.get_free_params()
@@ -62,7 +60,6 @@ class DiffractionMinimizer:
             calculator
         )
 
-        print("✅ Fitting complete.\n")
         self._display_results()
 
     def _display_results(self):

@@ -157,12 +157,12 @@ class Analysis:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=f"Measured vs Calculated diffraction pattern for {expt_id}",
+            title=f"Measured vs Calculated diffraction pattern for '{expt_id}':",
             labels=labels
         )
 
     def fit(self):
-        print(f"\n🚀 Starting fitting process...")
+        print(f"\nFitting:")
 
         sample_models = self.project.sample_models
         if not sample_models:
@@ -185,8 +185,6 @@ class Analysis:
         # After fitting, get the results
         self.fit_results = self.fitter.results
 
-        print("Fit completed.")
-
     def show_fit_results(self):
         if not hasattr(self, 'fit_results') or not self.fit_results:
             print("No fit results found. Run fit() first.")
@@ -200,9 +198,11 @@ class Analysis:
         else:
             print("No refined parameters found in fit results.")
 
+    def show_current_minimizer(self):
+        print(f"\nCurrent minimizer:\n{self.current_minimizer}")
+
     @staticmethod
     def show_available_minimizers():
-        print(f"\nAvailable minimizers:")
         MinimizerFactory.show_available_minimizers()
 
     @property
@@ -212,3 +212,4 @@ class Analysis:
     @current_minimizer.setter
     def current_minimizer(self, selection):
         self.fitter = DiffractionMinimizer(selection)
+        print(f"\nCurrent minimizer changed to:\n{self.current_minimizer}")

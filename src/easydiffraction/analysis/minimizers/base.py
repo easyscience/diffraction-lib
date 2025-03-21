@@ -20,6 +20,7 @@ class FitResults:
             setattr(self, key, value)
 
     def display_results(self):
+        print(f"\nFit results:")
         print(f"✅ Success: {self.success}")
         print(f"🔧 Reduced Chi-square: {self.reduced_chi_square:.2f}")
         print(f"📈 Parameters:")
@@ -86,7 +87,7 @@ class MinimizerBase(ABC):
             self._previous_chi2 = red_chi2
             self._best_chi2 = red_chi2
             self._best_iteration = self._iteration
-            print(f"🔧 Iteration {self._iteration}: starting Reduced Chi-square = {red_chi2:.2f}")
+            print(f"🔧 Iteration {self._iteration}: Starting Reduced Chi-square = {red_chi2:.2f}")
         elif (self._previous_chi2 - red_chi2) / self._previous_chi2 > 0.01:
             self._iteration += 1
             print(f"🔧 Iteration {self._iteration}: Reduced Chi-square improved from {self._previous_chi2:.2f} to {red_chi2:.2f}")
@@ -113,7 +114,7 @@ class MinimizerBase(ABC):
         return self._track_chi_square(residuals, parameters)
 
     def fit(self, sample_models, experiments, calculator):
-        print(f"🚀 Starting fitting process with {self.__class__.__name__.upper()}...")
+        print(f"🚀 Starting fitting process with {self.__class__.__name__.upper()} ({self.method})...")
 
         parameters = self._collect_free_parameters(sample_models, experiments)
         solver_args = self._prepare_solver_args(parameters)

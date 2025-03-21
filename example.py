@@ -185,10 +185,6 @@ project.analysis.show_free_params()
 
 
 # Set refinement strategy
-project.analysis.refinement_strategy = 'single'
-
-# Show strategy description
-#print(project.analysis.describe_refinement_strategy())
 
 
 # Preview calculated patterns vs measured data
@@ -196,28 +192,20 @@ project.analysis.refinement_strategy = 'single'
 
 
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
-
-# Show available minimizers
 project.analysis.show_available_minimizers()
+project.analysis.show_current_minimizer()
+project.analysis.current_minimizer = 'lmfit (least_squares)'
+project.analysis.show_current_minimizer()
 
-# Print current minimizer
-print(project.analysis.current_minimizer)
-
-# Set minimizer
-#project.analysis.current_minimizer = 'bumps (lm)'
-#project.analysis.current_minimizer = 'dfols (leastsq)'
-
-
-# Print current minimizer
-print(project.analysis.current_minimizer)
-
-# Run the fitting process
+project.analysis.refinement_strategy = 'single'
+#print(project.analysis.describe_refinement_strategy())
 project.analysis.fit()
-
 
 
 # Show results after fitting
 project.analysis.show_fit_results()
+
+exit()
 
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 
@@ -226,8 +214,8 @@ project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 # Change minimizer, and start fitting again
 
 project.sample_models["pbso4"].cell.length_a.value = 8.4
-project.analysis.current_minimizer = 'dfols (leastsq)'
-print(project.analysis.current_minimizer)
+project.analysis.current_minimizer = 'dfols'
+project.analysis.show_current_minimizer()
 project.analysis.fit()
 project.analysis.show_fit_results()
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
