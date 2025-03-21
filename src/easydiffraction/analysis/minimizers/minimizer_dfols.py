@@ -2,7 +2,6 @@ import numpy as np
 from dfols import solve
 from .base import MinimizerBase, FitResults
 
-DEFAULT_METHOD = 'leastsq'
 DEFAULT_MAX_ITERATIONS = 1000
 
 class DfolsMinimizer(MinimizerBase):
@@ -10,8 +9,8 @@ class DfolsMinimizer(MinimizerBase):
     Minimizer using the DFO-LS package (Derivative-Free Optimization for Least-Squares).
     """
 
-    def __init__(self, method=DEFAULT_METHOD, max_iterations=DEFAULT_MAX_ITERATIONS):
-        super().__init__(method=method, max_iterations=max_iterations)
+    def __init__(self, max_iterations=DEFAULT_MAX_ITERATIONS):
+        super().__init__(method=None, max_iterations=max_iterations)
 
     def _prepare_solver_args(self, parameters):
         x0 = []

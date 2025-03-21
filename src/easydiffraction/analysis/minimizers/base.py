@@ -39,6 +39,7 @@ class MinimizerBase(ABC):
     Provides shared logic and structure for concrete minimizers.
     """
     def __init__(self, method=None, max_iterations=None):
+        # 'method' is used only by solvers supporting multiple methods (e.g., lmfit). For solvers like dfols, pass None.
         self.method = method
         self.max_iterations = max_iterations
         self.result = None
