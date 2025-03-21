@@ -195,7 +195,7 @@ project.analysis.show_current_minimizer()
 project.analysis.current_minimizer = 'lmfit (least_squares)'
 
 
-project.analysis.show_meas_vs_calc_chart("expt1", x_min=10, x_max=150, show_residual=True, chart_height=30)
+#project.analysis.show_meas_vs_calc_chart("expt1", x_min=10, x_max=150, show_residual=True, chart_height=30)
 
 
 project.analysis.fit()

@@ -203,3 +203,9 @@ class MinimizerBase(ABC):
         return lambda engine_params: self._objective_function(
             engine_params, parameters, sample_models, experiments, calculator
         )
+
+    def _iteration_callback(self, params, iter, resid, *args, **kwargs):
+        pass
+        #self._iteration = iter
+        #red_chi2 = np.sum(resid**2) / (len(resid) - len(self.parameters))
+        #print(f"🔄 Iteration {iter}: Reduced Chi-square = {red_chi2:.2f}")
