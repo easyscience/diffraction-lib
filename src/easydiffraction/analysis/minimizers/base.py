@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 import numpy as np
+import tabulate
 
 class FitResults:
     def __init__(self, success=False, parameters=None, chi_square=None,
-                 reduced_chi_square=None, message='', iterations=0, engine_result=None, **kwargs):
+                 reduced_chi_square=None, message='', iterations=0, engine_result=None, starting_parameters=None, **kwargs):
         self.success = success
         self.parameters = parameters if parameters is not None else []
         self.chi_square = chi_square
@@ -12,6 +13,7 @@ class FitResults:
         self.iterations = iterations
         self.engine_result = engine_result
         self.result = None
+        self.starting_parameters = starting_parameters if starting_parameters is not None else []
 
         if 'redchi' in kwargs and self.reduced_chi_square is None:
             self.reduced_chi_square = kwargs.get('redchi')
@@ -20,18 +22,23 @@ class FitResults:
             setattr(self, key, value)
 
     def display_results(self):
-        print(f"\nFit results:")
         print(f"✅ Success: {self.success}")
         print(f"🔧 Reduced Chi-square: {self.reduced_chi_square:.2f}")
-        print(f"📈 Parameters:")
-        if isinstance(self.parameters, list):
-            for param in self.parameters:
-                print(f"   - {param.id}: {param.value} (±{getattr(param, 'error', 'N/A')})")
-        elif isinstance(self.parameters, dict):
-            for name, value in self.parameters.items():
-                print(f"   - {name}: {value}")
-        else:
-            print(f"   Parameters format not recognized: {self.parameters}")
+        print(f"📈 Parameters:\n")
+
+        table_data = []
+        headers = ["block", "cif_name", "start", "refined", "error"]
+
+        for param in self.parameters:
+            block_name = getattr(param, 'block_name', 'N/A')
+            cif_name = getattr(param, 'cif_name', 'N/A')
+            start = f"{getattr(param, 'start_value', 'N/A'):.4f}" if param.start_value is not None else "N/A"
+            refined = f"{param.value:.4f}" if param.value is not None else "N/A"
+            error = f"{param.error:.4f}" if param.error is not None else "N/A"
+
+            table_data.append([block_name, cif_name, start, refined, error])
+
+        print(tabulate.tabulate(table_data, headers=headers, tablefmt="grid"))
 
 
 class MinimizerBase(ABC):
@@ -71,6 +78,7 @@ class MinimizerBase(ABC):
             parameters=parameters,
             redchi=self._best_chi2,
             raw_result=raw_result,
+            starting_parameters=parameters  # Pass starting parameters to the results
         )
         return self.result
 
@@ -116,12 +124,23 @@ class MinimizerBase(ABC):
     def fit(self, sample_models, experiments, calculator):
         print(f"🚀 Starting fitting process with {self.__class__.__name__.upper()} ({self.method})...")
 
-        parameters = self._collect_free_parameters(sample_models, experiments)
-        solver_args = self._prepare_solver_args(parameters)
-        objective_function = self._create_objective_function(parameters, sample_models, experiments, calculator)
+        self.parameters = self._collect_free_parameters(sample_models, experiments)
+
+        for parameter in self.parameters:
+            parameter.start_value = parameter.value
+
+        solver_args = self._prepare_solver_args(self.parameters)
+        objective_function = self._create_objective_function(self.parameters, sample_models, experiments, calculator)
+
+        #objective_function = self._create_objective_function(self.parameters, sample_models, experiments, calculator)
+        #solver_args = self._prepare_solver_args(objective_function)
 
         raw_result = self._run_solver(objective_function, **solver_args)
-        result = self._finalize_fit(parameters, raw_result)
+        result = self._finalize_fit(self.parameters, raw_result)
+
+        #raw_result = self._run_solver(**solver_args)
+        #self.result = self._finalize_fit(self.parameters, raw_result)
+        #self.display_results(self.result)
 
         print(f"🔧 Final iteration {self._iteration}: Reduced Chi-square = {self._previous_chi2:.2f}")
         print(f"🏆 Best Reduced Chi-square: {self._best_chi2:.2f} at iteration {self._best_iteration}")
