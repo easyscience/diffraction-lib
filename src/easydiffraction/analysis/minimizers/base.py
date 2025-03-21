@@ -47,24 +47,37 @@ class MinimizerBase(ABC):
         self._best_chi2 = None
         self._best_iteration = None
 
-    @staticmethod
     @abstractmethod
-    def _sync_parameters(engine_params, parameters):
+    def _prepare_solver_args(self, parameters):
+        """
+        Prepare the solver arguments directly from the list of free parameters.
+        """
         pass
 
     @abstractmethod
     def _run_solver(self, objective_function, engine_parameters):
         pass
 
+    @staticmethod
+    @abstractmethod
+    def _sync_parameters(engine_params, parameters):
+        pass
+
     @abstractmethod
     def _sync_result_to_parameters(self, raw_result, parameters):
         pass
 
-    @abstractmethod
     def _finalize_fit(self, parameters, raw_result):
-        pass
+        self._sync_result_to_parameters(parameters, raw_result)
+        self.result = FitResults(
+            parameters=parameters,
+            redchi=self._best_chi2,
+            raw_result=raw_result,
+        )
+        return self.result
 
-    def _collect_free_parameters(self, sample_models, experiments):
+    @staticmethod
+    def _collect_free_parameters(sample_models, experiments):
         return sample_models.get_free_params() + experiments.get_free_params()
 
     def _track_chi_square(self, residuals, parameters):
@@ -128,17 +141,7 @@ class MinimizerBase(ABC):
     def _objective_function(self, engine_params, parameters, sample_models, experiments, calculator):
         return self._compute_residuals(engine_params, parameters, sample_models, experiments, calculator)
 
-    @abstractmethod
-    def _prepare_solver_args(self, parameters):
-        """
-        Prepare the solver arguments directly from the list of free parameters.
-        """
-        pass
-
     def _create_objective_function(self, parameters, sample_models, experiments, calculator):
-        """
-        Creates the objective function wrapper expected by solvers.
-        """
         return lambda engine_params: self._objective_function(
             engine_params, parameters, sample_models, experiments, calculator
         )
