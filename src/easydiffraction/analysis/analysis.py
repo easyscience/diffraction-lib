@@ -5,7 +5,7 @@ from scipy.interpolate import interp1d
 from .calculators.factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from .minimizers.factory import MinimizerFactory
-from easydiffraction.utils.chart_plotter import ChartPlotter
+from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
 
 
 class Analysis:
@@ -128,7 +128,12 @@ class Analysis:
             labels=['calc']
         )
 
-    def show_meas_vs_calc_chart(self, expt_id, x_min=None, x_max=None, show_residual=False):
+    def show_meas_vs_calc_chart(self,
+                                expt_id,
+                                x_min=None,
+                                x_max=None,
+                                show_residual=False,
+                                chart_height=DEFAULT_HEIGHT):
         experiment = self.project.experiments[expt_id]
 
         self.calculate_pattern(expt_id)
@@ -147,7 +152,7 @@ class Analysis:
             series.append(residual)
             labels.append('residual')
 
-        plotter = ChartPlotter()
+        plotter = ChartPlotter(height=chart_height)
         plotter.plot(
             y_values_list=series,
             x_values=pattern.x,
