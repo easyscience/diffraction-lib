@@ -70,7 +70,7 @@ class MinimizerBase(ABC):
         self.max_iterations = max_iterations
         self.result = None
         self._previous_chi2 = None
-        self._iteration = 0
+        self._iteration = None
         self._best_chi2 = None
         self._best_iteration = None
         self._fitting_time = None  # New attribute to store fitting time
@@ -123,14 +123,16 @@ class MinimizerBase(ABC):
         # Check for improvement and append new row to print
         elif (self._previous_chi2 - red_chi2) / self._previous_chi2 > 0.01:
             change_percent = (self._previous_chi2 - red_chi2) / self._previous_chi2 * 100
-            self._iteration += 1
             row = [self._iteration,
                    f"{self._previous_chi2:<12.2f}",
                    f"{red_chi2:<12.2f}",
                    f"↓ {change_percent:.1f}%".ljust(10)]
             self._previous_chi2 = red_chi2
         if len(row):
-            print(f"| {row[0]:<11} | {row[1]:<12} | {row[2]:<12} | {row[3]:<12} |")
+            if self._iteration is None:
+                print(f"| N/A         | {row[1]:<12} | {row[2]:<12} | {row[3]:<12} |")
+            else:
+                print(f"| {row[0]:<11} | {row[1]:<12} | {row[2]:<12} | {row[3]:<12} |")
 
         if self._best_chi2 is None or red_chi2 < self._best_chi2:
             self._best_chi2 = red_chi2
@@ -205,9 +207,3 @@ class MinimizerBase(ABC):
         return lambda engine_params: self._objective_function(
             engine_params, parameters, sample_models, experiments, calculator
         )
-
-    def _iteration_callback(self, params, iter, resid, *args, **kwargs):
-        pass
-        #self._iteration = iter
-        #red_chi2 = np.sum(resid**2) / (len(resid) - len(self.parameters))
-        #print(f"🔄 Iteration {iter}: Reduced Chi-square = {red_chi2:.2f}")
