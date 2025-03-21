@@ -31,16 +31,15 @@ class LmfitMinimizer(MinimizerBase):
                               method=self.method,
                               max_nfev=self.maxfun)
 
-    @staticmethod
-    def _sync_parameters(engine_params, parameters):
-        for param in parameters:
-            param_result = engine_params.get(param.id)
-            if param_result is not None:
-                param.value = param_result.value
 
     def _sync_result_to_parameters(self, parameters, raw_result):
+        if hasattr(raw_result, 'params'):
+            param_values = raw_result.params
+        else:
+            param_values = raw_result  # fallback if params attribute is not present
+
         for param in parameters:
-            param_result = raw_result.params.get(param.id)
+            param_result = param_values.get(param.id)
             if param_result is not None:
                 param.value = param_result.value
-                param.error = param_result.stderr
+                param.error = getattr(param_result, 'stderr', None)

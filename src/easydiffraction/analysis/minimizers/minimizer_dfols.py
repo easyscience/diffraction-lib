@@ -32,11 +32,15 @@ class DfolsMinimizer(MinimizerBase):
                      bounds=bounds,
                      maxfun=self.maxfun)
 
-    @staticmethod
-    def _sync_parameters(engine_params, parameters):
-        for i, param in enumerate(parameters):
-            param.value = engine_params[i]
 
-    def _sync_result_to_parameters(self, parameters, result):
+    def _sync_result_to_parameters(self, parameters, raw_result):
+        # Ensure compatibility with raw_result coming from dfols.solve()
+        if hasattr(raw_result, 'x'):
+            result_values = raw_result.x
+        else:
+            result_values = raw_result  # fallback for raw_result being directly a list/array
+
         for i, param in enumerate(parameters):
-            param.value = result.x[i]
+            param.value = result_values[i]
+            # DFO-LS doesn't provide errors; set to None or calculate later if needed
+            param.error = None

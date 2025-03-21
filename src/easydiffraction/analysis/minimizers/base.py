@@ -58,10 +58,6 @@ class MinimizerBase(ABC):
     def _run_solver(self, objective_function, engine_parameters):
         pass
 
-    @staticmethod
-    @abstractmethod
-    def _sync_parameters(engine_params, parameters):
-        pass
 
     @abstractmethod
     def _sync_result_to_parameters(self, raw_result, parameters):
@@ -102,7 +98,7 @@ class MinimizerBase(ABC):
         return residuals
 
     def _compute_residuals(self, engine_params, parameters, sample_models, experiments, calculator):
-        self._sync_parameters(engine_params, parameters)
+        self._sync_result_to_parameters(parameters, engine_params)
 
         residuals = []
         for expt_id, experiment in experiments._items.items():
