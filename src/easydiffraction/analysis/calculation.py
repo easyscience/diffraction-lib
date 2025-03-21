@@ -1,5 +1,6 @@
 from .calculators.factory import CalculatorFactory
 
+
 class DiffractionCalculator:
     """
     Invokes calculation engines for pattern generation.

@@ -36,36 +36,41 @@ project.sample_models.show_ids()
 #project.sample_models["model1"].show_params()
 
 # Modify parameters via project object
-project.sample_models["pbso4"].cell.length_a.value = 8.46924
+project.sample_models["pbso4"].cell.length_a.value = 8.4693
 project.sample_models["pbso4"].cell.length_b.value = 5.391
 project.sample_models["pbso4"].cell.length_c.value = 6.9506
 project.sample_models["pbso4"].atom_sites.add(label='Pb',
-                                             type_symbol='Pb',
-                                             fract_x=0.1876,
-                                             fract_y=0.25,
-                                             fract_z=0.167)
+                                              type_symbol='Pb',
+                                              fract_x=0.1876,
+                                              fract_y=0.25,
+                                              fract_z=0.167,
+                                              b_iso=1.3729)
 
 # Modify parameters via model object (same object reference)
 model1.atom_sites.add(label='S',
                       type_symbol='S',
                       fract_x=0.0654,
                       fract_y=0.25,
-                      fract_z=0.684)
+                      fract_z=0.684,
+                      b_iso=0.3777)
 model1.atom_sites.add(label='O1',
                       type_symbol='O',
                       fract_x=0.9082,
                       fract_y=0.25,
-                      fract_z=0.5954)
+                      fract_z=0.5954,
+                      b_iso=1.9764)
 model1.atom_sites.add(label='O2',
                       type_symbol='O',
                       fract_x=0.1935,
                       fract_y=0.25,
-                      fract_z=0.5432)
+                      fract_z=0.5432,
+                      b_iso=1.4456)
 model1.atom_sites.add(label='O3',
                       type_symbol='O',
                       fract_x=0.0811,
                       fract_y=0.0272,
-                      fract_z=0.8086)
+                      fract_z=0.8086,
+                      b_iso=1.2822)
 
 # Show model as CIF string
 print(project.sample_models["pbso4"].as_cif())
@@ -145,8 +150,14 @@ project.analysis.show_calc_chart("expt1", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 
 print('\n### Add background points')
-project.experiments["expt1"].background.add(x=11.0, y=206.0)
-project.experiments["expt1"].background.add(x=153.0, y=226.1)
+project.experiments["expt1"].background.add(x=11.0, y=206.1624)
+project.experiments["expt1"].background.add(x=15.0, y=194.75)
+project.experiments["expt1"].background.add(x=20.0, y=194.505)
+project.experiments["expt1"].background.add(x=30.0, y=188.4375)
+project.experiments["expt1"].background.add(x=50.0, y=207.7633)
+project.experiments["expt1"].background.add(x=70.0, y=201.7002)
+project.experiments["expt1"].background.add(x=120.0, y=244.4525)
+project.experiments["expt1"].background.add(x=153.0, y=226.0595)
 
 print('\n### Show data chart including a background')
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
