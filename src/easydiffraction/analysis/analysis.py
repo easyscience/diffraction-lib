@@ -207,10 +207,8 @@ class Analysis:
 
     @property
     def current_minimizer(self):
-        print(f"\nCurrent minimizer:")
         return self.fitter.selection if self.fitter else None
 
     @current_minimizer.setter
     def current_minimizer(self, selection):
-        print(f"\nSwitching minimizer to: \n{selection}")
         self.fitter = DiffractionMinimizer(selection)

@@ -10,6 +10,10 @@ class LmfitMinimizer(MinimizerBase):
     def __init__(self, method='leastsq'):
         self.result = None
         self.method = method
+        self._previous_chi2 = None
+        self._iteration = 0
+        self._best_chi2 = None
+        self._best_iteration = None
 
     def fit(self, sample_models, experiments, calculator):
         # Collecting free parameters from models and experiments
@@ -21,7 +25,6 @@ class LmfitMinimizer(MinimizerBase):
 
         # Preparing parameters for lmfit engine
         engine_parameters = self._prepare_parameters(parameters)
-        print(f"🔧 [DEBUG] Engine parameters: {engine_parameters}")
 
         # Create the lmfit model using the parameters
         lmfit_model = self._create_lmfit_model(parameters,
@@ -34,6 +37,10 @@ class LmfitMinimizer(MinimizerBase):
                                     params=engine_parameters,
                                     method=self.method)
         self.result = fit_result
+
+        print(f"✅ Fitting complete.\n")
+        print(f"🔧 Final iteration {self._iteration}: Reduced Chi-square = {self._previous_chi2:.2f}")
+        print(f"🏆 Best Reduced Chi-square: {self._best_chi2:.2f} at iteration {self._best_iteration}")
 
         # Return fit results
         return self.result
@@ -75,13 +82,29 @@ class LmfitMinimizer(MinimizerBase):
             diff = (y_meas - y_calc) / y_meas_su
             residuals.extend(diff)
 
+        chi2 = np.sum(np.array(residuals) ** 2)
+        n_points = len(residuals)
+        red_chi2 = chi2 / (n_points - len(parameters))
+
+        if self._previous_chi2 is None:
+            self._previous_chi2 = red_chi2
+            self._best_chi2 = red_chi2
+            self._best_iteration = self._iteration
+            print(f"🔧 Iteration {self._iteration}: starting Reduced Chi-square = {red_chi2:.2f}")
+        elif (self._previous_chi2 - red_chi2) / self._previous_chi2 > 0.01:
+            self._iteration += 1
+            print(
+                f"🔧 Iteration {self._iteration}: Reduced Chi-square improved from {self._previous_chi2:.2f} to {red_chi2:.2f}")
+            self._previous_chi2 = red_chi2
+
+        if self._best_chi2 is None or red_chi2 < self._best_chi2:
+            self._best_chi2 = red_chi2
+            self._best_iteration = self._iteration
+
         return np.array(residuals)
 
     @staticmethod
     def _sync_parameters(engine_params, parameters):
-        print(f"🔧 [DEBUG] Syncing parameters with engine_params: {engine_params}")
-        # engine_params is a list of floats representing parameter values
-        for idx, param in enumerate(parameters):
-            new_value = engine_params[idx]
-            print(f"🔧 [DEBUG] Updating parameter '{param.id}' from {param.value} to {new_value}")
+        for param in parameters:
+            new_value = engine_params[param.id].value
             param.value = new_value

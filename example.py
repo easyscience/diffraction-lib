@@ -204,7 +204,9 @@ project.analysis.show_available_minimizers()
 print(project.analysis.current_minimizer)
 
 # Set minimizer
-project.analysis.current_minimizer = 'bumps (lm)'
+#project.analysis.current_minimizer = 'bumps (lm)'
+project.analysis.current_minimizer = 'dfols (leastsq)'
+
 
 # Print current minimizer
 print(project.analysis.current_minimizer)
