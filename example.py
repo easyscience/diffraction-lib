@@ -192,7 +192,8 @@ print('\n### Start fitting')
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 project.analysis.show_available_minimizers()
 project.analysis.show_current_minimizer()
-project.analysis.current_minimizer = 'lmfit (least_squares)'
+#project.analysis.current_minimizer = 'lmfit (least_squares)'
+project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 
 #project.analysis.show_meas_vs_calc_chart("expt1", x_min=10, x_max=150, show_residual=True, chart_height=30)
