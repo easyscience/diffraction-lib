@@ -107,7 +107,7 @@ class CryspyCalculator(CalculatorBase):
         cif_lines.append("  _phase_scale")
 
         for model_id in self._get_phase_labels(experiment):
-            cif_lines.append(f"  {model_id}   1.0")
+            cif_lines.append(f"  {model_id}   1.4602")  # TODO: Replace with actual scale
 
         cif_lines.append("\nloop_")
         cif_lines.append("  _pd_background_2theta")

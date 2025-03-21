@@ -27,7 +27,7 @@ class FitResults:
         print(f"\nFit results:")
         print(f"✅ Success: {self.success}")
         print(f"🔧 Reduced Chi-square: {self.reduced_chi_square:.2f}")
-        print(f"⏱️  Fitting time: {self.fitting_time:.2f} seconds")
+        print(f"⏱️ Fitting time: {self.fitting_time:.2f} seconds")
         print(f"📈 Parameters:")
 
         table_data = []
@@ -50,7 +50,12 @@ class FitResults:
 
             table_data.append([block_name, cif_name, start, refined, error, units, relative_change])
 
-        print(tabulate.tabulate(table_data, headers=headers, tablefmt="grid"))
+        print(tabulate.tabulate(table_data,
+                                headers=headers,
+                                tablefmt="fancy_outline",
+                                numalign="center",
+                                stralign="center",
+                                showindex=False))
 
 
 class MinimizerBase(ABC):

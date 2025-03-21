@@ -169,8 +169,14 @@ print('\n### Show only free parameters')
 project.analysis.show_free_params()
 
 print('\n### Select specific parameters for refinement')
-project.sample_models["pbso4"].cell.length_a.value = 8.4
+#project.sample_models["pbso4"].cell.length_a.value = 8.4
+project.sample_models["pbso4"].cell.length_a.value = 8.5
+project.sample_models["pbso4"].cell.length_b.value = 5.35
+project.sample_models["pbso4"].cell.length_c.value = 6.9
+
 project.sample_models["pbso4"].cell.length_a.free = True
+project.sample_models["pbso4"].cell.length_b.free = True
+project.sample_models["pbso4"].cell.length_c.free = True
 #project.sample_models["pbso4"].atom_sites["Pb"].fract_x.free = True
 #project.experiments["expt1"].peak_broad.gauss_u.free = True
 
@@ -193,7 +199,10 @@ project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 
 print('\n### Change minimizer, and start fitting again')
 
-project.sample_models["pbso4"].cell.length_a.value = 8.4
+#project.sample_models["pbso4"].cell.length_a.value = 8.4
+project.sample_models["pbso4"].cell.length_a.value = 8.5
+project.sample_models["pbso4"].cell.length_b.value = 5.35
+project.sample_models["pbso4"].cell.length_c.value = 6.9
 
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 project.analysis.current_minimizer = 'dfols'
