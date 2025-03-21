@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
 import tabulate
-import sys
 
 class FitResults:
     def __init__(self, success=False, parameters=None, chi_square=None,
@@ -56,8 +55,9 @@ class MinimizerBase(ABC):
     Abstract base class for minimizer implementations.
     Provides shared logic and structure for concrete minimizers.
     """
-    def __init__(self, method=None, max_iterations=None):
-        # 'method' is used only by solvers supporting multiple methods (e.g., lmfit). For solvers like dfols, pass None.
+    def __init__(self, name=None, method=None, max_iterations=None):
+        # 'method' is used only by minimizers supporting multiple methods (e.g., lmfit). For minimizers like dfols, pass None.
+        self.name = name
         self.method = method
         self.max_iterations = max_iterations
         self.result = None
@@ -102,39 +102,30 @@ class MinimizerBase(ABC):
         red_chi2 = chi2 / (n_points - len(parameters))
 
         row = []
-        # Add initial row
+        # Add initial row to print
         if self._previous_chi2 is None:
             self._previous_chi2 = red_chi2
             self._best_chi2 = red_chi2
             self._best_iteration = self._iteration
-            row = [self._iteration, f"{red_chi2:<12.2f}", "-".ljust(12), "-".ljust(12)]
-            #self._chi_square_history.append(row)
-        # Check for improvement and append new row
+            row = [self._iteration,
+                   f"{red_chi2:<12.2f}",
+                   "-".ljust(12),
+                   "-".ljust(12)]
+        # Check for improvement and append new row to print
         elif (self._previous_chi2 - red_chi2) / self._previous_chi2 > 0.01:
             change_percent = (self._previous_chi2 - red_chi2) / self._previous_chi2 * 100
             self._iteration += 1
-            row = [
-                self._iteration,
-                f"{self._previous_chi2:<12.2f}",
-                f"{red_chi2:<12.2f}",
-                f"↓ {change_percent:.1f}%".ljust(10)
-            ]
-            #self._chi_square_history.append(row)
+            row = [self._iteration,
+                   f"{self._previous_chi2:<12.2f}",
+                   f"{red_chi2:<12.2f}",
+                   f"↓ {change_percent:.1f}%".ljust(10)]
             self._previous_chi2 = red_chi2
+        if len(row):
+            print(f"| {row[0]:<11} | {row[1]:<12} | {row[2]:<12} | {row[3]:<12} |")
 
         if self._best_chi2 is None or red_chi2 < self._best_chi2:
             self._best_chi2 = red_chi2
             self._best_iteration = self._iteration
-
-        if not hasattr(self, "_header_printed"):
-            self._header_printed = True
-            print("📈 Reduced Chi-square change:")
-            print("+-------------+--------------+--------------+--------------+")
-            print(f"| {'iteration':<11} | {'start':<12} | {'improved':<12} | {'change [%]':<12} |")
-            print("+=============+==============+==============+==============+")
-        if len(row):
-            print(f"| {row[0]:<11} | {row[1]:<12} | {row[2]:<12} | {row[3]:<12} |")
-            print("+-------------+--------------+--------------+--------------+")
 
         return residuals
 
@@ -153,7 +144,11 @@ class MinimizerBase(ABC):
         return self._track_chi_square(residuals, parameters)
 
     def fit(self, sample_models, experiments, calculator):
-        print(f"🚀 Starting fitting process with {self.__class__.__name__.upper()} ({self.method})...")
+        minimizer_name = self.name
+        if self.method is not None:
+            minimizer_name += f" ({self.method})"
+
+        print(f"🚀 Starting fitting process with {minimizer_name}...")
 
         self.parameters = self._collect_free_parameters(sample_models, experiments)
 
@@ -163,9 +158,15 @@ class MinimizerBase(ABC):
         solver_args = self._prepare_solver_args(self.parameters)
         objective_function = self._create_objective_function(self.parameters, sample_models, experiments, calculator)
 
+        print("📈 Reduced Chi-square change:")
+        print("+-------------+--------------+--------------+--------------+")
+        print(f"| {'iteration':<11} | {'start':<12} | {'improved':<12} | {'change [%]':<12} |")
+        print("+=============+==============+==============+==============+")
+
         raw_result = self._run_solver(objective_function, **solver_args)
         result = self._finalize_fit(self.parameters, raw_result)
 
+        print("+-------------+--------------+--------------+--------------+")
         print(f"🔧 Final iteration {self._iteration}: Reduced Chi-square = {self._previous_chi2:.2f}")
         print(f"🏆 Best Reduced Chi-square: {self._best_chi2:.2f} at iteration {self._best_iteration}")
         print("✅ Fitting complete.")

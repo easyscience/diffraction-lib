@@ -18,10 +18,7 @@ class Analysis:
         self.fitter = DiffractionMinimizer('lmfit (leastsq)')
 
     def show_refinable_params(self):
-        print("\nSample Models Parameters:")
         self.project.sample_models.show_all_parameters_table()
-
-        print("\nExperiment Parameters:")
         self.project.experiments.show_all_parameters_table()
 
     def show_free_params(self):
@@ -43,8 +40,7 @@ class Analysis:
                 'block': param.block_name,
                 'cif_name': param.cif_name,
                 'value': param.value,
-                'error': '' if getattr(param, 'uncertainty', 0.0) == 0.0 else param.uncertainty,
-                'free': param.free
+                'error': '' if getattr(param, 'uncertainty', 0.0) == 0.0 else param.uncertainty
             }
             for param in free_params
         ]
@@ -55,7 +51,7 @@ class Analysis:
             print("No free parameters found.")
             return
 
-        expected_cols = ["block", "cif_name", "value", "error", "free"]
+        expected_cols = ["block", "cif_name", "value", "error"]
         valid_cols = [col for col in expected_cols if col in df.columns]
 
         if not valid_cols:

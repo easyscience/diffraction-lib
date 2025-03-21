@@ -9,8 +9,8 @@ class DfolsMinimizer(MinimizerBase):
     Minimizer using the DFO-LS package (Derivative-Free Optimization for Least-Squares).
     """
 
-    def __init__(self, max_iterations=DEFAULT_MAX_ITERATIONS, **kwargs):
-        super().__init__(method=None, max_iterations=max_iterations)
+    def __init__(self, name='dfols', max_iterations=DEFAULT_MAX_ITERATIONS, **kwargs):
+        super().__init__(name=name, method=None, max_iterations=max_iterations)
 
     def _prepare_solver_args(self, parameters):
         x0 = []

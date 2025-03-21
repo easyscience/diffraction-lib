@@ -9,8 +9,8 @@ class LmfitMinimizer(MinimizerBase):
     Minimizer using the lmfit package.
     """
 
-    def __init__(self, method=DEFAULT_METHOD, max_iterations=DEFAULT_MAX_ITERATIONS):
-        super().__init__(method=method, max_iterations=max_iterations)
+    def __init__(self, name='lmfit', method=DEFAULT_METHOD, max_iterations=DEFAULT_MAX_ITERATIONS):
+        super().__init__(name=name, method=method, max_iterations=max_iterations)
 
     def _prepare_solver_args(self, parameters):
         engine_parameters = lmfit.Parameters()

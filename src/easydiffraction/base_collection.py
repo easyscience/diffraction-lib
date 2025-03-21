@@ -163,36 +163,4 @@ class BaseCollection:
         Displays all parameters as a table.
         """
         params = self.get_all_parameters()
-        self._display_table(params, "All Parameters:")
-
-    def show_free_params(self):
-        """
-        Displays only the parameters that are free to refine.
-        """
-        params = self.get_free_params()
-
-        if params and hasattr(params[0], 'cif_name'):
-            params = [
-                {
-                    'block': param.block_name,
-                    'cif_name': param.cif_name,
-                    'value': param.value,
-                    'error': '' if getattr(param, 'uncertainty', 0.0) == 0.0 else param.uncertainty,
-                    'free': param.free
-                }
-                for param in params
-            ]
-
-        df = pd.DataFrame(params)
-
-        # Ensure columns exist
-        expected_cols = ["block", "cif_name", "value", "error", "free"]
-        valid_cols = [col for col in expected_cols if col in df.columns]
-
-        if not valid_cols:
-            print("No valid columns found in free parameters DataFrame.")
-            return
-
-        df = df[valid_cols]
-
-        self._display_table(df, "Free Parameters:")
+        self._display_table(params, f"All '{self.__class__.__name__}' Parameters:")

@@ -134,84 +134,58 @@ print(project.experiments["expt1"].as_cif())
 
 
 
-# === Step 4: Analysis ===
+print('\n=== Step 4: Analysis ===')
 
+print('\n### Set calculator')
 project.analysis.show_available_calculators()
-
 project.analysis.set_calculator_by_name('cryspy')
 
-
-# Preview calculated patterns
+print('\n### Show data charts')
 project.analysis.show_calc_chart("expt1", x_min=62, x_max=66)
-
-# Compare measured vs calculated patterns
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 
-
-# add background points
+print('\n### Add background points')
 project.experiments["expt1"].background.add(x=11.0, y=206.0)
 project.experiments["expt1"].background.add(x=153.0, y=226.1)
 
-# Show measured vs calculated data uncluding background
+print('\n### Show data chart including a background')
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 
-print('AAA')
-
-# Show all refinable parameters
+print('\n### Show all refinable parameters')
 project.analysis.show_refinable_params()
 
-print('BBB')
-
+print('\n### Show only free parameters')
 project.analysis.show_free_params()
 
-print('CCC')
-
-
-
-# Select specific parameters for refinement
+print('\n### Select specific parameters for refinement')
 project.sample_models["pbso4"].cell.length_a.value = 8.4
 project.sample_models["pbso4"].cell.length_a.free = True
 #project.sample_models["pbso4"].atom_sites["Pb"].fract_x.free = True
 #project.experiments["expt1"].peak_broad.gauss_u.free = True
 
-project.analysis.show_refinable_params()
-
-
+print('\n### Show free parameters again')
 project.analysis.show_free_params()
 
-
-
-#exit()
-
-
-# Set refinement strategy
-
-
-# Preview calculated patterns vs measured data
-#project.analysis.show_meas_vs_calc_chart("expt1")
-
+print('\n### Set refinement strategy')
 project.analysis.refinement_strategy = 'single'
 #print(project.analysis.describe_refinement_strategy())
 
-
-# Start fitting
+print('\n### Start fitting')
 
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 project.analysis.show_available_minimizers()
 project.analysis.show_current_minimizer()
 project.analysis.current_minimizer = 'lmfit (least_squares)'
-project.analysis.show_current_minimizer()
 
 project.analysis.fit()
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 
-# Change minimizer, and start fitting again
+print('\n### Change minimizer, and start fitting again')
 
 project.sample_models["pbso4"].cell.length_a.value = 8.4
 
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
 project.analysis.current_minimizer = 'dfols'
-project.analysis.show_current_minimizer()
 
 project.analysis.fit()
 project.analysis.show_meas_vs_calc_chart("expt1", x_min=62, x_max=66)
