@@ -1,9 +1,11 @@
+import os
+import datetime
+
+from easydiffraction.utils.utils import paragraph
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.summary import Summary
-import os
-import datetime
 
 
 class ProjectInfo:
@@ -81,7 +83,8 @@ class Project:
         """
         if not self.info.path:
             raise ValueError("Project path not specified. Use save_as() to define the path first.")
-        print(f"Saving project to {self.info.path}")
+        print(paragraph("Saving project to"))
+        print(self.info.path)
         # TODO: serialize project components to files
         self.info.update_last_modified()
         self._saved = True

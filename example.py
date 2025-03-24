@@ -9,11 +9,9 @@ project = ed.Project(project_id="joint_refinement")
 
 # Set project metadata
 project.info.title = "Joint refinement from neutron and X-ray diffraction"
-project.info.description = """
-This project performs joint refinement of neutron and X-ray diffraction data 
-collected with constant wavelength instruments to refine the crystal structure
-of PbSO4.
-"""
+project.info.description = """This project performs joint refinement of neutron 
+and X-ray diffraction data collected with constant wavelength instruments to 
+refine the crystal structure of PbSO4."""
 
 # Show project metadata
 print(ed.paragraph("Project info as cif"))
