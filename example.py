@@ -248,7 +248,7 @@ print(ed.section('Set minimizer'))
 project.analysis.show_available_minimizers()
 project.analysis.show_current_minimizer()
 #project.analysis.current_minimizer = 'lmfit (least_squares)'
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+#project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 print(ed.section('Show data charts before fitting'))
 
