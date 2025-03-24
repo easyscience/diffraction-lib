@@ -73,6 +73,10 @@ class CryspyCalculator(CalculatorBase):
 
         return y_calc_total
 
+    def _calculate_single_model_pattern(self, sample_model, experiment):
+        # TODO: Implement this method as in CrysfmlCalculator
+        pass
+
     def _convert_sample_models_to_dict(self, sample_models):
         phases = []
         for model_id, model in sample_models._models.items():

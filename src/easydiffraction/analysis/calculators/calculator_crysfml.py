@@ -1,6 +1,3 @@
-import numpy as np
-from scipy.interpolate import interp1d
-
 try:
     from pycrysfml import cfml_py_utilities
 except ImportError:
@@ -27,72 +24,14 @@ class CrysfmlCalculator(CalculatorBase):
         # Call Crysfml to calculate structure factors
         raise NotImplementedError("HKL calculation is not implemented for CryspyCalculator.")
 
-    def calculate_pattern(self, sample_models, experiment):
+    def _calculate_single_model_pattern(self, sample_model, experiment):
         """
-        Calculates the diffraction pattern using Crysfml for the given sample models and experiment.
+        Calculates the diffraction pattern using Crysfml for the given sample model and experiment.
         """
-        x_data = experiment.datastore.pattern.x
-        y_calc_scaled = np.zeros_like(x_data)
-
-        # Validate linked phases
-        if not experiment.linked_phases:
-            print('Warning: No linked phases found. Returning empty pattern.')
-            return y_calc_scaled
-
-        valid_linked_phases = []
-        for linked_phase in experiment.linked_phases:
-            if linked_phase.id.value not in sample_models.get_ids():
-                print(f'Warning: Linked phase {linked_phase.id.value} not found in Sample Models {sample_models.get_ids()}')
-                continue
-            valid_linked_phases.append(linked_phase)
-
-        if not valid_linked_phases:
-            print('Warning: None of the linked phases found in Sample Models. Returning empty pattern.')
-            return y_calc_scaled
-
-        # Calculate contributions from valid linked sample models
-        for linked_phase in valid_linked_phases:
-            sample_model_id = linked_phase.id.value
-            sample_model_scale = linked_phase.scale.value
-            sample_model = sample_models[sample_model_id]
-
-            crysfml_dict = self._crysfml_dict(sample_model, experiment)
-            _, sample_model_y_calc = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
-
-            # Match Crysfml output length with x_data if necessary
-            # TODO: Find the reason for the mismatch from Crysfml!
-            if len(sample_model_y_calc) > len(x_data):
-                sample_model_y_calc = sample_model_y_calc[:len(x_data)]
-            elif len(sample_model_y_calc) < len(x_data):
-                padding = len(x_data) - len(sample_model_y_calc)
-                sample_model_y_calc = np.pad(sample_model_y_calc, (0, padding), 'constant')
-
-            sample_model_y_calc_scaled = sample_model_scale * sample_model_y_calc
-            y_calc_scaled += sample_model_y_calc_scaled
-
-        # Calculate background
-        if experiment.background.points:
-            background_points = np.array(experiment.background.points)
-            bg_x, bg_y = background_points[:, 0], background_points[:, 1]
-
-            interp_func = interp1d(
-                bg_x, bg_y,
-                kind='linear',
-                bounds_error=False,
-                fill_value=(bg_y[0], bg_y[-1])
-            )
-            y_bkg = interp_func(x_data)
-        else:
-            print('Warning: No background points found. Setting background to zero.')
-            y_bkg = np.zeros_like(x_data)
-
-        experiment.datastore.pattern.bkg = y_bkg
-
-        y_calc_total = y_calc_scaled + y_bkg
-
-        experiment.datastore.pattern.calc = y_calc_total
-
-        return y_calc_total
+        crysfml_dict = self._crysfml_dict(sample_model, experiment)
+        _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
+        y = self._adjust_pattern_length(y, len(experiment.datastore.pattern.x))
+        return y
 
     def _crysfml_dict(self, sample_model, experiment):
         sample_model_dict = self._convert_sample_model_to_dict(sample_model)
@@ -101,6 +40,14 @@ class CrysfmlCalculator(CalculatorBase):
             "phases": [sample_model_dict],
             "experiments": [experiment_dict]
         }
+
+    def _adjust_pattern_length(self, pattern, target_length):
+        if len(pattern) > target_length:
+            return pattern[:target_length]
+        elif len(pattern) < target_length:
+            padding = target_length - len(pattern)
+            return np.pad(pattern, (0, padding), 'constant')
+        return pattern
 
     def _convert_sample_model_to_dict(self, sample_model):
         sample_model_dict = {
