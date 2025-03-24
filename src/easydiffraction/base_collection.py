@@ -154,7 +154,7 @@ class BaseCollection:
 
         print(f"\n{title}")
         try:
-            print(tabulate(df, headers="keys", tablefmt="psql", showindex=False))
+            print(tabulate(df, headers="keys", tablefmt="fancy_outline", showindex=False))
         except ImportError:
             print(df.to_string(index=False))
 
@@ -163,4 +163,4 @@ class BaseCollection:
         Displays all parameters as a table.
         """
         params = self.get_all_parameters()
-        self._display_table(params, f"All '{self.__class__.__name__}' Parameters:")
+        self._display_table(params, f"All '{self.__class__.__name__}' parameters:")

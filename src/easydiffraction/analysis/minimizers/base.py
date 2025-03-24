@@ -52,7 +52,7 @@ class FitResults:
             print(f"📏 Weighted R-factors (wR): {wr:.2f}%")
         if br is not None:
             print(f"📏 Bragg R-factor (BR): {br:.2f}%")
-        print(f"📈 Parameters:")
+        print(f"📈 Refined parameters:")
 
         table_data = []
         headers = ["cif block", "cif parameter", "start", "refined", "error", "units", "change [%]"]
@@ -155,17 +155,8 @@ class MinimizerBase(ABC):
         self.tracker.finish_tracking()
 
         result = self._finalize_fit(parameters, raw_result)
-        if result:
-            result.display_results()
 
         return result
-
-    def results(self):
-        return self.result
-
-    @staticmethod
-    def display_results(result):
-        result.display_results()
 
     def _objective_function(self, engine_params, parameters, sample_models, experiments, calculator):
         return self._compute_residuals(engine_params, parameters, sample_models, experiments, calculator)

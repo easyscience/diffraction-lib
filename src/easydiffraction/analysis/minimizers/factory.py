@@ -1,3 +1,5 @@
+import tabulate
+
 from .minimizer_lmfit import LmfitMinimizer
 from .minimizer_bumps import BumpsMinimizer
 from .minimizer_dfols import DfolsMinimizer  # NEW IMPORT
@@ -32,25 +34,22 @@ class MinimizerFactory:
 
     @staticmethod
     def show_available_minimizers():
-        print("\nAvailable Minimizers:")
-
         header = ["Minimizer", "Description"]
-        minimizer_width = max(len(header[0]), max(len(name) for name in MinimizerFactory._available_minimizers.keys())) + 2
-        description_width = max(len(header[1]), max(len(config['description']) for config in MinimizerFactory._available_minimizers.values())) + 2
+        table_data = []
 
-        border = f"+{'-' * minimizer_width}+{'-' * description_width}+"
-
-        # Print header
-        print(border)
-        print(f"| {header[0]:<{minimizer_width - 1}}| {header[1]:<{description_width - 1}}|")
-        print(border)
-
-        # Print minimizer rows
         for name, config in MinimizerFactory._available_minimizers.items():
             description = config.get('description', 'No description provided.')
-            print(f"| {name:<{minimizer_width - 1}}| {description:<{description_width - 1}}|")
+            table_data.append([name, description])
 
-        print(border)
+        print("\nAvailable Minimizers:\n")
+        print(tabulate.tabulate(
+            table_data,
+            headers=header,
+            tablefmt="fancy_outline",
+            numalign="left",
+            stralign="left",
+            showindex=False
+        ))
 
     @staticmethod
     def create_minimizer(selection: str):
