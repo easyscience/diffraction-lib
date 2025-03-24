@@ -167,7 +167,7 @@ class SampleModels(BaseCollection):
         """
         Add a pre-built SampleModel instance.
         """
-        from easydiffraction.sample_models.models import SampleModel  # avoid circular import
+        from easydiffraction.sample_models.sample_models import SampleModel  # avoid circular import
         if not isinstance(model, SampleModel):
             raise TypeError("Expected an instance of SampleModel")
         self._models[model.id] = model
@@ -176,7 +176,7 @@ class SampleModels(BaseCollection):
         """
         Create a SampleModel instance and add it to the collection.
         """
-        from easydiffraction.sample_models.models import SampleModel  # avoid circular import
+        from easydiffraction.sample_models.sample_models import SampleModel  # avoid circular import
 
         if cif_path:
             sample = SampleModel(cif_path=cif_path)

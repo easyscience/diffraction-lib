@@ -1,6 +1,6 @@
 import easydiffraction as ed
 
-print(ed.chapter('EasyDiffraction Workflow Example'))
+print(ed.chapter('EasyDiffraction API Example'))
 
 print(ed.chapter('Step 1: Create a Project'))
 

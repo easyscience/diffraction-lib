@@ -2,7 +2,7 @@
 from easydiffraction.project import Project, ProjectInfo
 
 # Sample model management
-from easydiffraction.sample_models.models import SampleModel, SampleModels
+from easydiffraction.sample_models.sample_models import SampleModel, SampleModels
 
 # Experiment creation and collection management
 from easydiffraction.experiments.experiments import Experiment, Experiments

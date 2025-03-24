@@ -1,4 +1,4 @@
-from easydiffraction.sample_models.models import SampleModels
+from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.summary import Summary
