@@ -38,7 +38,8 @@ class Summary:
         self.project.experiments.show_params()
 
         print("\n--- Analysis ---")
-        self.project.analysis.show_fit_results()
+        print("Bla bla bla")
+        #self.project.analysis.show_fit_results()
 
     # ------------------------------------------
     #  Exporting

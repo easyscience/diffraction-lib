@@ -1,7 +1,3 @@
-"""
-EasyDiffraction - High-level interface for diffraction data modeling and analysis.
-"""
-
 # Project management
 from easydiffraction.project import Project, ProjectInfo
 
@@ -15,8 +11,8 @@ from easydiffraction.experiments.experiments import Experiment, Experiments
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.summary import Summary
 
-# Version
-__version__ = "0.1.0"
+# Utils
+from easydiffraction.utils.utils import section, chapter, paragraph
 
 # Expose the public API
 __all__ = [
@@ -28,4 +24,7 @@ __all__ = [
     "Experiments",
     "Analysis",
     "Summary",
+    "chapter",
+    "section",
+    "paragraph"
 ]

@@ -134,7 +134,7 @@ def chapter(title: str) -> str:
     full_title = f" {title.upper()} "
     pad_len = (width - len(full_title)) // 2
     padding = symbol * pad_len
-    line = f"{Fore.RED + Style.BRIGHT}{padding}{full_title}{padding}{Style.RESET_ALL}"
+    line = f"{Fore.MAGENTA + Style.BRIGHT}{padding}{full_title}{padding}{Style.RESET_ALL}"
     if len(line) < width:
         line += symbol
     return f'\n{line}'

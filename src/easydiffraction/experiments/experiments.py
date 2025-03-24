@@ -2,6 +2,7 @@ import numpy as np
 from easydiffraction.experiments.factory import ExperimentFactory
 from easydiffraction.experiments.base_experiment import BaseExperiment
 from easydiffraction.base_collection import BaseCollection
+from easydiffraction.utils.utils import paragraph
 
 
 # ==========================================================================
@@ -159,7 +160,8 @@ class Experiments(BaseCollection):
             del self._experiments[experiment_id]
 
     def show_ids(self):
-        print("Defined experiments:", list(self._experiments.keys()))
+        print(paragraph("Defined experiments"))
+        print(list(self._experiments.keys()))
 
     def show_params(self):
         for exp in self._experiments.values():

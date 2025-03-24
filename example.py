@@ -1,25 +1,28 @@
 import easydiffraction as ed
-from easydiffraction.utils.utils import section, chapter
 
-# === Step 1: Create a Project ===
+print(ed.chapter('EasyDiffraction Workflow Example'))
+
+print(ed.chapter('Step 1: Create a Project'))
 
 # Create a new project
-project = ed.Project(project_id="JointDiffractionAnalysis")
+project = ed.Project(project_id="joint_refinement")
 
 # Set project metadata
-project.info.title = "Joint CW/TOF Neutron Diffraction Analysis"
+project.info.title = "Joint refinement from neutron and X-ray diffraction"
 project.info.description = """
-This project performs joint refinement of constant wavelength and 
-time-of-flight neutron diffraction data for a polycrystalline sample.
+This project performs joint refinement of neutron and X-ray diffraction data 
+collected with constant wavelength instruments to refine the crystal structure
+of PbSO4.
 """
 
 # Show project metadata
+print(ed.paragraph("Project info as cif"))
 print(project.info.as_cif())
 
 # Save the initial project (directory must exist)
-# project.save_as("projects/my_diffraction_project")
+project.save_as("examples/pbso4_joint")
 
-# === Step 2: Add Sample Models ===
+print(ed.chapter('Step 2: Add Sample Models'))
 
 # Create a model with default parameters
 model1 = ed.SampleModel(id="pbso4")
@@ -74,30 +77,17 @@ model1.atom_sites.add(label='O3',
                       b_iso=1.2822)
 
 # Show model as CIF string
+print(ed.paragraph("Sample model 'pbso4' as cif"))
 print(project.sample_models["pbso4"].as_cif())
 
 # Show sample model structure
 #project.sample_models["pbso4"].show_structure(plane='xy')
 
+print(ed.chapter('Step 3: Add Experiments (Instrument models and measured data)'))
 
-print("\n")
+print(ed.section('Load 1st real experiment'))
 
-# === Step 3: Add Experiments (Measurements) ===
-
-
-# Create a virtual experiment (no measured data) with default parameters
-
-# Create an experiment dynamically
-#expt_high = ed.Experiment(
-#    id="expt_high",
-#    diffr_mode="powder", # "powder" or "single_crystal"
-#    expt_mode="constant_wavelength", # "time_of_flight" or "constant_wavelength"
-#    radiation_probe="neutron" # "neutron" or "xray"
-#)
-
-# Load real experiment (including measured data) with default parameters
-
-# Create an experiment dynamically
+# Load real experiment with default parameters
 expt_high = ed.Experiment(
     id="expt_high",
     diffr_mode="powder", # "powder" or "single_crystal"
@@ -106,9 +96,11 @@ expt_high = ed.Experiment(
     data_path="data/pbso4_powder_neutron_cw_60-100.dat" # Path to ASCII data file (x, y, sy)
 )
 
+# Link sample model to experiment
 expt_high.linked_phases.add(id='pbso4', scale=1.0)
 
 # Show experiment with default parameters as CIF string
+print(ed.paragraph("Experiment 'expt_high' as cif"))
 print(expt_high.as_cif())
 
 # Show measured data
@@ -120,11 +112,8 @@ expt_high.instr_setup.wavelength = 1.91
 # Add experiment to collection of experiments in the project
 project.experiments.add(expt_high)
 
-# Show defined experiments
+print(ed.section('Show defined experiments'))
 project.experiments.show_ids()
-
-
-
 
 # Modify experiment parameters via project object and experiment ID
 project.experiments["expt_high"].instr_calib.twotheta_offset = -0.1406
@@ -135,17 +124,12 @@ project.experiments["expt_high"].peak_broad.gauss_w = 0.386
 project.experiments["expt_high"].peak_broad.lorentz_x = 0
 project.experiments["expt_high"].peak_broad.lorentz_y = 0.088
 
-
-# Show experiment as CIF string. Now via the project object
+print(ed.paragraph("Experiment 'expt_high' as cif"))
 print(project.experiments["expt_high"].as_cif())
 
+print(ed.section('Load 2nd real experiment'))
 
-
-
-
-# Load 2nd real experiment (including measured data)
-
-# Create an experiment dynamically
+# Load real experiment with default parameters
 expt_low = ed.Experiment(
     id="expt_low",
     diffr_mode="powder", # "powder" or "single_crystal"
@@ -154,9 +138,11 @@ expt_low = ed.Experiment(
     data_path="data/pbso4_powder_neutron_cw_10-60.dat" # Path to ASCII data file (x, y, sy)
 )
 
+# Link sample model to experiment
 expt_low.linked_phases.add(id='pbso4', scale=1.0)
 
 # Show experiment with default parameters as CIF string
+print(ed.paragraph("Experiment 'expt_low' as cif"))
 print(expt_low.as_cif())
 
 # Show measured data
@@ -168,41 +154,30 @@ expt_low.instr_setup.wavelength = 1.91
 # Add experiment to collection of experiments in the project
 project.experiments.add(expt_low)
 
-# Show defined experiments
+print(ed.section('Show defined experiments'))
 project.experiments.show_ids()
-
-
-
 
 # Modify experiment parameters via project object and experiment ID
 project.experiments["expt_low"].instr_calib.twotheta_offset = -0.1406
-
 project.experiments["expt_low"].peak_broad.gauss_u = 0.139
 project.experiments["expt_low"].peak_broad.gauss_v = -0.412
 project.experiments["expt_low"].peak_broad.gauss_w = 0.386
 project.experiments["expt_low"].peak_broad.lorentz_x = 0
 project.experiments["expt_low"].peak_broad.lorentz_y = 0.088
 
-
 # Show experiment as CIF string. Now via the project object
+print(ed.paragraph("Experiment 'expt_low' as cif"))
 print(project.experiments["expt_low"].as_cif())
 
+print(ed.chapter('Step 4: Analysis'))
 
-
-
-
-
-
-
-print(chapter('Step 4: Analysis'))
-
-print(section('Set calculator'))
+print(ed.section('Set calculator'))
 
 project.analysis.show_available_calculators()
 project.analysis.show_current_calculator()
 project.analysis.current_calculator = 'crysfml'
 
-print(section('Show data charts'))
+print(ed.section('Show data charts'))
 
 project.analysis.show_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
@@ -210,7 +185,7 @@ project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_calc_chart("expt_low", x_min=54, x_max=57)
 project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
 
-print(section('Add background'))
+print(ed.section('Add background'))
 
 project.experiments["expt_high"].background.add(x=11.0, y=206.1624)
 project.experiments["expt_high"].background.add(x=15.0, y=194.75)
@@ -232,20 +207,20 @@ project.experiments["expt_low"].background.add(x=153.0, y=226.0595)
 
 project.experiments["expt_low"].background.show()
 
-print(section('Show data chart including a background'))
+print(ed.section('Show data chart including a background'))
 
 project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
 
-print(section('Show all refinable parameters'))
+print(ed.section('Show all refinable parameters'))
 
 project.analysis.show_refinable_params()
 
-print(section('Show only free parameters'))
+print(ed.section('Show only free parameters'))
 
 project.analysis.show_free_params()
 
-print(section('Select specific parameters for refinement'))
+print(ed.section('Select specific parameters for refinement'))
 
 expt_high.linked_phases['pbso4'].scale.value = 1.0
 expt_low.linked_phases['pbso4'].scale.value = 1.0
@@ -266,38 +241,38 @@ project.sample_models["pbso4"].cell.length_c.free = True
 
 project.analysis.show_free_params()
 
-print(section('Set refinement strategy'))
+print(ed.section('Set refinement strategy'))
 project.analysis.refinement_strategy = 'single'
 #print(project.analysis.describe_refinement_strategy())
 
-print(section('Set minimizer'))
+print(ed.section('Set minimizer'))
 
 project.analysis.show_available_minimizers()
 project.analysis.show_current_minimizer()
 #project.analysis.current_minimizer = 'lmfit (least_squares)'
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
-print(section('Show data charts before fitting'))
+print(ed.section('Show data charts before fitting'))
 
 project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
 #project.analysis.show_meas_vs_calc_chart("expt_high", x_min=10, x_max=150, show_residual=True, chart_height=30)
 
-print(section('Start fitting'))
+print(ed.section('Start fitting'))
 
 project.analysis.fit()
 
-print(section('Show data charts after fitting'))
+print(ed.section('Show data charts after fitting'))
 
 project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
 #project.analysis.show_meas_vs_calc_chart("expt_high", x_min=10, x_max=150, show_residual=True, chart_height=30)
 
-print(section('Change minimizer, and start fitting again'))
+print(ed.section('Change minimizer, and start fitting again'))
 
 project.analysis.current_minimizer = 'dfols'
 
-print(section('Reset parameters'))
+print(ed.section('Reset parameters'))
 
 expt_high.linked_phases['pbso4'].scale.value = 1.0
 expt_low.linked_phases['pbso4'].scale.value = 1.0
@@ -307,26 +282,26 @@ project.sample_models["pbso4"].cell.length_c.value = 6.9
 
 project.analysis.show_free_params()
 
-print(section('Show data charts before 2nd fitting'))
+print(ed.section('Show data charts before 2nd fitting'))
 
 project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
 
-print(section('Start 2nd fitting'))
+print(ed.section('Start 2nd fitting'))
 
 project.analysis.fit()
 
-print(section('Show data charts after 2nd fitting'))
+print(ed.section('Show data charts after 2nd fitting'))
 
 project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
 
+print(ed.chapter("Step 5: Summary"))
 
-# === Step 5: Summary & Save ===
 # Generate final report (HTML or CIF)
-#project.summary.show_report()
+project.summary.show_report()
 
 # Save the final state of the project
-#project.save()
+print(ed.chapter('Analysis completed successfully!'))
 
-#print("Analysis completed successfully!")
+project.save()
