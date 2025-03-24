@@ -11,7 +11,7 @@ class PdffitCalculator(CalculatorBase):
     def name(self):
         return "Pdffit"
 
-    def calculate_hkl(self, sample_models, experiments):
+    def calculate_structure_factors(self, sample_models, experiments):
         # PDF doesn't compute HKL but we keep interface consistent
         print("[Pdffit] Calculating HKLs (not applicable)...")
         return []

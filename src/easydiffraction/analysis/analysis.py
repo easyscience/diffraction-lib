@@ -81,33 +81,11 @@ class Analysis:
         print(f"Calculator switched to: {calculator_name}")
 
     def calculate_pattern(self, expt_id):
+        # Pattern is calculated for the given experiment
         experiment = self.project.experiments[expt_id]
         sample_models = self.project.sample_models
-
-        x_points = experiment.datastore.pattern.x
-
-        if experiment.background.points:
-            background_points = np.array(experiment.background.points)
-            bg_x, bg_y = background_points[:, 0], background_points[:, 1]
-
-            interp_func = interp1d(
-                bg_x, bg_y,
-                kind='linear',
-                bounds_error=False,
-                fill_value=(bg_y[0], bg_y[-1])
-            )
-            interpolated_bkg = interp_func(x_points)
-            experiment.datastore.pattern.bkg = interpolated_bkg
-        else:
-            interpolated_bkg = np.zeros_like(x_points)
-            experiment.datastore.pattern.bkg = interpolated_bkg
-
         calculated_pattern = self.calculator.calculate_pattern(sample_models, experiment)
-        calculated_pattern_with_bkg = calculated_pattern + interpolated_bkg
-
-        experiment.datastore.pattern.calc = calculated_pattern_with_bkg
-
-        return calculated_pattern_with_bkg
+        return calculated_pattern
 
     def show_calc_chart(self, expt_id, x_min=None, x_max=None):
         experiment = self.project.experiments[expt_id]

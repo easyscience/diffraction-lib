@@ -29,7 +29,7 @@ class CryspyCalculator(CalculatorBase):
     def name(self):
         return "cryspy"
 
-    def calculate_hkl(self, sample_models, experiments):
+    def calculate_structure_factors(self, sample_models, experiments):
         raise NotImplementedError("HKL calculation is not implemented for CryspyCalculator.")
 
     def calculate_pattern(self, sample_models, experiment):
@@ -72,16 +72,6 @@ class CryspyCalculator(CalculatorBase):
             y_calc_total = []
 
         return y_calc_total
-
-    def _crysfml_dict(self, sample_models, experiments):
-        phases = self._convert_sample_models_to_dict(sample_models)
-        experiments_list = []
-        for experiment in experiments:
-            experiments_list.append(self._convert_experiment_to_dict(experiment))
-        return {
-            "phases": phases,
-            "experiments": experiments_list
-        }
 
     def _convert_sample_models_to_dict(self, sample_models):
         phases = []

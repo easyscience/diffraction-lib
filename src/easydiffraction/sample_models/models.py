@@ -128,11 +128,17 @@ class SampleModels(BaseCollection):
         if model_id in self._models:
             del self._models[model_id]
 
+    def get_ids(self):
+        """
+        Return a list of all model IDs in the collection.
+        """
+        return list(self._models.keys())
+
     def show_ids(self):
         """
         List all model IDs in the collection.
         """
-        print("Available sample models:", list(self._models.keys()))
+        print("Available sample models:", self.get_ids())
 
     def show_params(self):
         """

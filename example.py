@@ -105,6 +105,8 @@ expt1 = ed.Experiment(
     data_path="data/pbso4_powder_neutron_cw.dat" # Path to ASCII data file (x, y, sy)
 )
 
+expt1.linked_phases.add(id='pbso4', scale=1.0)
+
 # Show experiment with default parameters as CIF string
 print(expt1.as_cif())
 
@@ -170,11 +172,13 @@ print('\n### Show only free parameters')
 project.analysis.show_free_params()
 
 print('\n### Select specific parameters for refinement')
+expt1.linked_phases['pbso4'].scale.value = 1.0
 #project.sample_models["pbso4"].cell.length_a.value = 8.4
 project.sample_models["pbso4"].cell.length_a.value = 8.5
 project.sample_models["pbso4"].cell.length_b.value = 5.35
 project.sample_models["pbso4"].cell.length_c.value = 6.9
 
+expt1.linked_phases['pbso4'].scale.free = True
 project.sample_models["pbso4"].cell.length_a.free = True
 project.sample_models["pbso4"].cell.length_b.free = True
 project.sample_models["pbso4"].cell.length_c.free = True

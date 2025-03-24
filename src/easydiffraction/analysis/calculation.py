@@ -27,7 +27,7 @@ class DiffractionCalculator:
         """
         self._calculator = self.calculator_factory.create_calculator(engine)
 
-    def calculate_hkl(self, sample_models, experiments):
+    def calculate_structure_factors(self, sample_models, experiments):
         """
         Calculate HKL intensities (structure factors) for sample models and experiments.
 
@@ -38,7 +38,7 @@ class DiffractionCalculator:
         Returns:
             HKL intensities calculated by the backend calculator.
         """
-        return self._calculator.calculate_hkl(sample_models, experiments)
+        return self._calculator.calculate_structure_factors(sample_models, experiments)
 
     def calculate_pattern(self, sample_models, experiment):
         """

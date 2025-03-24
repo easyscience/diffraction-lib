@@ -38,6 +38,11 @@ from easydiffraction.experiments.components.peak_asymm import (
     PeakAsymmTimeOfFlightMixin,
 )
 
+from easydiffraction.experiments.components.linked_phases import (
+    LinkedPhase,
+    LinkedPhases,
+)
+
 from easydiffraction.experiments.background import BackgroundFactory
 from easydiffraction.experiments.datastore import DatastoreFactory
 
@@ -118,6 +123,7 @@ class ExperimentFactory:
                 ExperimentFactory.get_peak_asymm_mixins(diffr_mode, expt_mode),
                 "PeakAsymm"
             )
+            instance.linked_phases = LinkedPhases()
             instance.background = BackgroundFactory.create_background("point")
 
         instance.datastore = DatastoreFactory.create_datastore(diffr_mode, instance)

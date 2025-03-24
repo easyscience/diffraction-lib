@@ -13,9 +13,11 @@ class CalculatorBase(ABC):
         pass
 
     @abstractmethod
-    def calculate_hkl(self, sample_models, experiments):
+    def calculate_structure_factors(self, sample_model, experiment):
+        # Single sample model, single experiment
         pass
 
     @abstractmethod
-    def calculate_pattern(self, sample_models, experiments):
+    def calculate_pattern(self, sample_models, experiment):
+        # Multiple sample models, single experiment
         pass

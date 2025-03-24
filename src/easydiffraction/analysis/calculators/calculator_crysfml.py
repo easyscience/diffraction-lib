@@ -1,3 +1,6 @@
+import numpy as np
+from scipy.interpolate import interp1d
+
 try:
     from pycrysfml import cfml_py_utilities
 except ImportError:
@@ -20,66 +23,113 @@ class CrysfmlCalculator(CalculatorBase):
     def name(self):
         return "crysfml"
 
-    def calculate_hkl(self, sample_models, experiments):
+    def calculate_structure_factors(self, sample_models, experiments):
         # Call Crysfml to calculate structure factors
         raise NotImplementedError("HKL calculation is not implemented for CryspyCalculator.")
 
-    def calculate_pattern(self, sample_models, experiments):
-        # Call Crysfml to calculate diffraction pattern
-        crysfml_dict = self._crysfml_dict(sample_models, experiments)
-        #import json
-        #print(json.dumps(crysfml_dict, indent=4))
-        #exit()
+    def calculate_pattern(self, sample_models, experiment):
+        """
+        Calculates the diffraction pattern using Crysfml for the given sample models and experiment.
+        """
+        x_data = experiment.datastore.pattern.x
+        y_calc_scaled = np.zeros_like(x_data)
 
-        _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
-        y = y[:-1] # Remove the last point (it's a duplicate)
+        # Validate linked phases
+        if not experiment.linked_phases:
+            print('Warning: No linked phases found. Returning empty pattern.')
+            return y_calc_scaled
 
-        scale = 1.4602
-        y = y * scale
+        valid_linked_phases = []
+        for linked_phase in experiment.linked_phases:
+            if linked_phase.id.value not in sample_models.get_ids():
+                print(f'Warning: Linked phase {linked_phase.id.value} not found in Sample Models {sample_models.get_ids()}')
+                continue
+            valid_linked_phases.append(linked_phase)
 
-        return y
+        if not valid_linked_phases:
+            print('Warning: None of the linked phases found in Sample Models. Returning empty pattern.')
+            return y_calc_scaled
 
-    def _crysfml_dict(self, sample_models, experiment):
-        phases = self._convert_sample_models_to_dict(sample_models)
-        experiments_list = []
-        experiments_list.append(self._convert_experiment_to_dict(experiment))
+        # Calculate contributions from valid linked sample models
+        for linked_phase in valid_linked_phases:
+            sample_model_id = linked_phase.id.value
+            sample_model_scale = linked_phase.scale.value
+            sample_model = sample_models[sample_model_id]
+
+            crysfml_dict = self._crysfml_dict(sample_model, experiment)
+            _, sample_model_y_calc = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
+
+            # Match Crysfml output length with x_data if necessary
+            # TODO: Find the reason for the mismatch from Crysfml!
+            if len(sample_model_y_calc) > len(x_data):
+                sample_model_y_calc = sample_model_y_calc[:len(x_data)]
+            elif len(sample_model_y_calc) < len(x_data):
+                padding = len(x_data) - len(sample_model_y_calc)
+                sample_model_y_calc = np.pad(sample_model_y_calc, (0, padding), 'constant')
+
+            sample_model_y_calc_scaled = sample_model_scale * sample_model_y_calc
+            y_calc_scaled += sample_model_y_calc_scaled
+
+        # Calculate background
+        if experiment.background.points:
+            background_points = np.array(experiment.background.points)
+            bg_x, bg_y = background_points[:, 0], background_points[:, 1]
+
+            interp_func = interp1d(
+                bg_x, bg_y,
+                kind='linear',
+                bounds_error=False,
+                fill_value=(bg_y[0], bg_y[-1])
+            )
+            y_bkg = interp_func(x_data)
+        else:
+            print('Warning: No background points found. Setting background to zero.')
+            y_bkg = np.zeros_like(x_data)
+
+        experiment.datastore.pattern.bkg = y_bkg
+
+        y_calc_total = y_calc_scaled + y_bkg
+
+        experiment.datastore.pattern.calc = y_calc_total
+
+        return y_calc_total
+
+    def _crysfml_dict(self, sample_model, experiment):
+        sample_model_dict = self._convert_sample_model_to_dict(sample_model)
+        experiment_dict = self._convert_experiment_to_dict(experiment)
         return {
-            "phases": phases,
-            "experiments": experiments_list
+            "phases": [sample_model_dict],
+            "experiments": [experiment_dict]
         }
 
-    def _convert_sample_models_to_dict(self, sample_models):
-        phases = []
-        for model_id, model in sample_models._models.items():
-            phase_dict = {
-                model_id: {
-                    "_space_group_name_H-M_alt": model.space_group.name,
-                    "_cell_length_a": model.cell.length_a.value,
-                    "_cell_length_b": model.cell.length_b.value,
-                    "_cell_length_c": model.cell.length_c.value,
-                    "_cell_angle_alpha": model.cell.angle_alpha.value,
-                    "_cell_angle_beta": model.cell.angle_beta.value,
-                    "_cell_angle_gamma": model.cell.angle_gamma.value,
-                    "_atom_site": []
-                }
+    def _convert_sample_model_to_dict(self, sample_model):
+        sample_model_dict = {
+            sample_model.id: {
+                "_space_group_name_H-M_alt": sample_model.space_group.name,
+                "_cell_length_a": sample_model.cell.length_a.value,
+                "_cell_length_b": sample_model.cell.length_b.value,
+                "_cell_length_c": sample_model.cell.length_c.value,
+                "_cell_angle_alpha": sample_model.cell.angle_alpha.value,
+                "_cell_angle_beta": sample_model.cell.angle_beta.value,
+                "_cell_angle_gamma": sample_model.cell.angle_gamma.value,
+                "_atom_site": []
             }
+        }
 
-            for atom in model.atom_sites:
-                atom_site = {
-                    "_label": atom.label.value,
-                    "_type_symbol": atom.type_symbol.value,
-                    "_fract_x": atom.fract_x.value,
-                    "_fract_y": atom.fract_y.value,
-                    "_fract_z": atom.fract_z.value,
-                    "_occupancy": atom.occupancy.value,
-                    "_adp_type": "Biso",  # Assuming Biso for simplicity
-                    "_B_iso_or_equiv": atom.b_iso.value
-                }
-                phase_dict[model_id]["_atom_site"].append(atom_site)
+        for atom in sample_model.atom_sites:
+            atom_site = {
+                "_label": atom.label.value,
+                "_type_symbol": atom.type_symbol.value,
+                "_fract_x": atom.fract_x.value,
+                "_fract_y": atom.fract_y.value,
+                "_fract_z": atom.fract_z.value,
+                "_occupancy": atom.occupancy.value,
+                "_adp_type": "Biso",  # Assuming Biso for simplicity
+                "_B_iso_or_equiv": atom.b_iso.value
+            }
+            sample_model_dict[sample_model.id]["_atom_site"].append(atom_site)
 
-            phases.append(phase_dict)
-
-        return phases
+        return sample_model_dict
 
     def _convert_experiment_to_dict(self, experiment):
         instr_setup = getattr(experiment, "instr_setup", None)

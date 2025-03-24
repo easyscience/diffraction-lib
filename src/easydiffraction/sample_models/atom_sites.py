@@ -1,5 +1,5 @@
-from easydiffraction.parameter import Parameter, Descriptor
 from typing import List, Union, Iterator
+from easydiffraction.parameter import Parameter, Descriptor
 
 
 class AtomSite:

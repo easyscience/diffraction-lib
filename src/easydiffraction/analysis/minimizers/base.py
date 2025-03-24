@@ -140,17 +140,33 @@ class MinimizerBase(ABC):
 
         return residuals
 
+    def _compute_residuals_SINGLE_SAMPLE(self, engine_params, parameters, sample_models, experiments, calculator):
+        self._sync_result_to_parameters(parameters, engine_params)
+
+        residuals = []
+        for expt_id, experiment in experiments._items.items():
+            y_calc = calculator.calculate_pattern(sample_models, experiment)
+            sample1_scale = experiment.linked_phases[0].scale.value  # TODO: Support multiple phases
+
+            y_bkg = experiment.datastore.pattern.bkg
+            y_calc_total = sample1_scale * y_calc + y_bkg
+            y_meas = experiment.datastore.pattern.meas
+            y_meas_su = experiment.datastore.pattern.meas_su
+            diff = (y_meas - y_calc_total) / y_meas_su
+            residuals.extend(diff)
+
+        residuals = np.array(residuals)
+        return self._track_chi_square(residuals, parameters)
+
     def _compute_residuals(self, engine_params, parameters, sample_models, experiments, calculator):
         self._sync_result_to_parameters(parameters, engine_params)
 
         residuals = []
         for expt_id, experiment in experiments._items.items():
             y_calc = calculator.calculate_pattern(sample_models, experiment)
-            y_bkg = experiment.datastore.pattern.bkg
-            y_calc_with_bkg = y_calc + y_bkg
             y_meas = experiment.datastore.pattern.meas
             y_meas_su = experiment.datastore.pattern.meas_su
-            diff = (y_meas - y_calc_with_bkg) / y_meas_su
+            diff = (y_meas - y_calc) / y_meas_su
             residuals.extend(diff)
 
         residuals = np.array(residuals)
