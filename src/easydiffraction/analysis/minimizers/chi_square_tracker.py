@@ -1,5 +1,7 @@
 import numpy as np
 
+from easydiffraction.utils.utils import calculate_reduced_chi_square
+
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
 FIXED_WIDTH = 14
 
@@ -49,11 +51,7 @@ class ChiSquareTracker:
         """
         self._iteration += 1
 
-        chi2 = np.sum(residuals ** 2)
-        n_points = len(residuals)
-        n_parameters = len(parameters)
-
-        reduced_chi2 = chi2 / max((n_points - n_parameters), 1)
+        reduced_chi2 = calculate_reduced_chi_square(residuals, len(parameters))
 
         row = []
 

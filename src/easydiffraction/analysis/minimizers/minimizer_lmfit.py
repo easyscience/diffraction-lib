@@ -46,6 +46,12 @@ class LmfitMinimizer(MinimizerBase):
                 param.value = param_result.value
                 param.error = getattr(param_result, 'stderr', None)
 
+    def _check_success(self, raw_result):
+        """
+        Determines success from lmfit MinimizerResult.
+        """
+        return getattr(raw_result, 'success', False)
+
     def _iteration_callback(self, params, iter, resid, *args, **kwargs):
         # Temporary do not use this callback, as trying to track both the
         # iteration number and chi-square using _track_chi_square method.

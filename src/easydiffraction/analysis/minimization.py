@@ -31,7 +31,25 @@ class DiffractionMinimizer:
 
         self.results = self.minimizer.fit(parameters, objective_function)
 
-        self._display_results()
+    def get_reliability_inputs(self, sample_models, experiments, calculator):
+        y_obs_all = []
+        y_calc_all = []
+        y_err_all = []
+        for expt_id, experiment in experiments._items.items():
+            y_calc = calculator.calculate_pattern(sample_models, experiment)
+            y_meas = experiment.datastore.pattern.meas
+            y_meas_su = experiment.datastore.pattern.meas_su
+
+            if y_meas is not None and y_calc is not None:
+                y_obs_all.extend(y_meas)
+                y_calc_all.extend(y_calc)
+                y_err_all.extend(y_meas_su if y_meas_su is not None else np.ones_like(y_meas))
+
+        return (
+            np.array(y_obs_all),
+            np.array(y_calc_all),
+            np.array(y_err_all) if y_err_all else None
+        )
 
     def _collect_free_parameters(self, sample_models, experiments):
         return sample_models.get_free_params() + experiments.get_free_params()
@@ -55,12 +73,19 @@ class DiffractionMinimizer:
         residuals = np.array(residuals)
         return self.minimizer.tracker.track(residuals, parameters)
 
-    def _display_results(self):
-        """
-        Prints a summary of the fitting results.
-        """
-        if self.results is None:
-            print("⚠️ No fitting results to display.")
-            return
+def calculate_r_factor_squared(y_obs, y_calc):
+    """
+    Calculates R-factor squared (Rf²).
 
-        self.minimizer.display_results(self.results)
+    Args:
+        y_obs (array-like): Observed intensities.
+        y_calc (array-like): Calculated intensities.
+
+    Returns:
+        float: R-factor squared.
+    """
+    y_obs = np.asarray(y_obs)
+    y_calc = np.asarray(y_calc)
+    numerator = np.sum((y_obs - y_calc) ** 2)
+    denominator = np.sum(y_obs ** 2)
+    return np.sqrt(numerator / denominator) if denominator != 0 else np.nan

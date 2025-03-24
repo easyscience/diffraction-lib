@@ -1,7 +1,13 @@
 from abc import ABC, abstractmethod
-import numpy as np
 import tabulate
-import time  # Add at the top of the file
+import time
+from easydiffraction.utils.utils import (
+    calculate_r_factor,
+    calculate_r_factor_squared,
+    calculate_weighted_r_factor,
+    calculate_rb_factor
+)
+from .chi_square_tracker import ChiSquareTracker
 
 class FitResults:
     def __init__(self, success=False, parameters=None, chi_square=None,
@@ -23,11 +29,28 @@ class FitResults:
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def display_results(self):
+    def display_results(self, y_obs=None, y_calc=None, y_err=None, f_obs=None, f_calc=None):
+        status_icon = "✅" if self.success else "❌"
+        rf = rf2 = wr = br = None
+        if y_obs is not None and y_calc is not None:
+            rf = calculate_r_factor(y_obs, y_calc)
+            rf2 = calculate_r_factor_squared(y_obs, y_calc)
+        if y_obs is not None and y_calc is not None and y_err is not None:
+            wr = calculate_weighted_r_factor(y_obs, y_calc, y_err)
+        if f_obs is not None and f_calc is not None:
+            br = calculate_rb_factor(f_obs, f_calc)
+
         print(f"\nFit results:")
-        print(f"✅ Success: {self.success}")
-        red_chi_str = f"{self.reduced_chi_square:.2f}" if self.reduced_chi_square is not None else "N/A"
-        print(f"🔧 Reduced Chi-square: {red_chi_str}")
+        print(f"{status_icon} Success: {self.success}")
+        print(f"🔧 Goodness-of-fit (reduced χ²): {self.reduced_chi_square:.2f}")
+        if rf is not None:
+            print(f"📏 R-factor (Rf): {rf:.2f}")
+        if rf2 is not None:
+            print(f"📏 R-factor squared (Rf²): {rf2:.2f}")
+        if wr is not None:
+            print(f"📏 Weighted R-factors (wR): {wr:.2f}")
+        if br is not None:
+            print(f"📏 Bragg R-factor (BR): {br:.2f}")
         print(f"⏱️ Fitting time: {self.fitting_time:.2f} seconds")
         print(f"📈 Parameters:")
 
@@ -74,8 +97,7 @@ class MinimizerBase(ABC):
         self._iteration = None
         self._best_chi2 = None
         self._best_iteration = None
-        self._fitting_time = None  # New attribute to store fitting time
-        from .chi_square_tracker import ChiSquareTracker
+        self._fitting_time = None
         self.tracker = ChiSquareTracker()
 
     @abstractmethod
@@ -95,14 +117,24 @@ class MinimizerBase(ABC):
 
     def _finalize_fit(self, parameters, raw_result):
         self._sync_result_to_parameters(parameters, raw_result)
+        success = self._check_success(raw_result)
         self.result = FitResults(
+            success=success,
             parameters=parameters,
-            redchi=self._best_chi2,
+            reduced_chi_square=self.tracker.best_chi2,
             raw_result=raw_result,
-            starting_parameters=parameters,  # Pass starting parameters to the results
-            fitting_time=self._fitting_time  # Pass fitting time
+            starting_parameters=parameters,
+            fitting_time=self._fitting_time
         )
         return self.result
+
+    @abstractmethod
+    def _check_success(self, raw_result):
+        """
+        Determine whether the fit was successful.
+        This must be implemented by concrete minimizers.
+        """
+        pass
 
     def fit(self, parameters, objective_function):
         minimizer_name = self.name
@@ -111,20 +143,20 @@ class MinimizerBase(ABC):
 
         self.tracker.reset()
         self.tracker.start_tracking(minimizer_name)
-        self.parameters = parameters
 
-        start_time = time.time()
+        self.parameters = parameters
+        start_time = time.perf_counter()
 
         raw_result = self._run_solver(objective_function, **self._prepare_solver_args(parameters))
 
-        end_time = time.time()
+        end_time = time.perf_counter()
         self._fitting_time = end_time - start_time
-
-        #result = self._finalize_fit(parameters, raw_result)
 
         self.tracker.finish_tracking()
 
         result = self._finalize_fit(parameters, raw_result)
+        if result:
+            result.display_results()
 
         return result
 

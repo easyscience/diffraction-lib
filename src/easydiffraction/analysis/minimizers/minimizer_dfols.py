@@ -43,3 +43,10 @@ class DfolsMinimizer(MinimizerBase):
             param.value = result_values[i]
             # DFO-LS doesn't provide errors; set to None or calculate later if needed
             param.error = None
+
+    def _check_success(self, raw_result):
+        """
+        Determines success from DFO-LS result dictionary.
+        Typically, status == 0 means success.
+        """
+        return raw_result.get('status', -1) == 0
