@@ -7,7 +7,7 @@ from ..reliability_factors import (
     calculate_weighted_r_factor,
     calculate_rb_factor
 )
-from .chi_square_tracker import ChiSquareTracker
+from .fitting_progress_tracker import FittingProgressTracker
 
 class FitResults:
     def __init__(self, success=False, parameters=None, chi_square=None,
@@ -98,7 +98,7 @@ class MinimizerBase(ABC):
         self._best_chi2 = None
         self._best_iteration = None
         self._fitting_time = None
-        self.tracker = ChiSquareTracker()
+        self.tracker = FittingProgressTracker()
 
     @abstractmethod
     def _prepare_solver_args(self, parameters):
@@ -124,7 +124,7 @@ class MinimizerBase(ABC):
             reduced_chi_square=self.tracker.best_chi2,
             raw_result=raw_result,
             starting_parameters=parameters,
-            fitting_time=self._fitting_time
+            fitting_time=self.tracker.fitting_time
         )
         return self.result
 
@@ -145,12 +145,11 @@ class MinimizerBase(ABC):
         self.tracker.start_tracking(minimizer_name)
 
         self.parameters = parameters
-        start_time = time.perf_counter()
+        self.tracker.start_timer()
 
         raw_result = self._run_solver(objective_function, **self._prepare_solver_args(parameters))
 
-        end_time = time.perf_counter()
-        self._fitting_time = end_time - start_time
+        self.tracker.stop_timer()
 
         self.tracker.finish_tracking()
 

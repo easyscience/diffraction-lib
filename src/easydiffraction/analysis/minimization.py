@@ -1,5 +1,4 @@
 from .minimizers.factory import MinimizerFactory
-from .minimizers.chi_square_tracker import ChiSquareTracker
 from ..analysis.reliability_factors import get_reliability_inputs
 import numpy as np
 

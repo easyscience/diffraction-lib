@@ -17,7 +17,7 @@ def format_cell(cell, width=FIXED_WIDTH, align="center"):
         return cell_str
 
 
-class ChiSquareTracker:
+class FittingProgressTracker:
     """
     Tracks and reports the reduced chi-square during the optimization process.
     """
@@ -29,6 +29,7 @@ class ChiSquareTracker:
         self._last_iteration = None
         self._best_chi2 = None
         self._best_iteration = None
+        self._fitting_time = None
 
     def reset(self):
         self._iteration = 0
@@ -37,6 +38,7 @@ class ChiSquareTracker:
         self._last_iteration = None
         self._best_chi2 = None
         self._best_iteration = None
+        self._fitting_time = None
 
     def track(self, residuals, parameters):
         """
@@ -107,6 +109,19 @@ class ChiSquareTracker:
     @property
     def iteration(self):
         return self._iteration
+
+    @property
+    def fitting_time(self):
+        return self._fitting_time
+
+    def start_timer(self):
+        import time
+        self._start_time = time.perf_counter()
+
+    def stop_timer(self):
+        import time
+        self._end_time = time.perf_counter()
+        self._fitting_time = self._end_time - self._start_time
 
     def start_tracking(self, minimizer_name):
         headers = ["iteration", "start", "improved", "improvement [%]"]
