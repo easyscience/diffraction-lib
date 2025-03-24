@@ -198,7 +198,7 @@ print('\n=== Step 4: Analysis ===')
 print('\n### Set calculator')
 project.analysis.show_available_calculators()
 project.analysis.set_calculator_by_name('cryspy')
-#project.analysis.set_calculator_by_name('crysfml')
+project.analysis.set_calculator_by_name('crysfml')
 
 print('\n### Show data charts')
 project.analysis.show_calc_chart("expt_high", x_min=62, x_max=66)

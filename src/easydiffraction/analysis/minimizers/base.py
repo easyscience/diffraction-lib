@@ -26,7 +26,8 @@ class FitResults:
     def display_results(self):
         print(f"\nFit results:")
         print(f"✅ Success: {self.success}")
-        print(f"🔧 Reduced Chi-square: {self.reduced_chi_square:.2f}")
+        red_chi_str = f"{self.reduced_chi_square:.2f}" if self.reduced_chi_square is not None else "N/A"
+        print(f"🔧 Reduced Chi-square: {red_chi_str}")
         print(f"⏱️ Fitting time: {self.fitting_time:.2f} seconds")
         print(f"📈 Parameters:")
 
@@ -74,6 +75,8 @@ class MinimizerBase(ABC):
         self._best_chi2 = None
         self._best_iteration = None
         self._fitting_time = None  # New attribute to store fitting time
+        from .chi_square_tracker import ChiSquareTracker
+        self.tracker = ChiSquareTracker()
 
     @abstractmethod
     def _prepare_solver_args(self, parameters):
@@ -101,98 +104,25 @@ class MinimizerBase(ABC):
         )
         return self.result
 
-    @staticmethod
-    def _collect_free_parameters(sample_models, experiments):
-        return sample_models.get_free_params() + experiments.get_free_params()
-
-    def _track_chi_square(self, residuals, parameters):
-        self._iteration += 1 # Increment iteration counter
-
-        chi2 = np.sum(residuals ** 2)
-        n_points = len(residuals)
-        red_chi2 = chi2 / (n_points - len(parameters))
-
-        row = []
-        # Add initial row to print
-        if self._previous_chi2 is None:
-            self._previous_chi2 = red_chi2
-            self._best_chi2 = red_chi2
-            self._best_iteration = self._iteration
-            row = [self._iteration,
-                   f"{red_chi2:<12.2f}",
-                   "-".ljust(12),
-                   "-".ljust(12)]
-        # Check for improvement and append new row to print
-        elif (self._previous_chi2 - red_chi2) / self._previous_chi2 > 0.01:
-            change_percent = (self._previous_chi2 - red_chi2) / self._previous_chi2 * 100
-            row = [self._iteration,
-                   f"{self._previous_chi2:<12.2f}",
-                   f"{red_chi2:<12.2f}",
-                   f"↓ {change_percent:.1f}%".ljust(10)]
-            self._previous_chi2 = red_chi2
-
-        if len(row):
-            if self._iteration is None:
-                print(f"| N/A         | {row[1]:<12} | {row[2]:<12} | {row[3]:<12} |")
-            else:
-                print(f"| {row[0]:<11} | {row[1]:<12} | {row[2]:<12} | {row[3]:<12} |")
-
-        if self._best_chi2 is None or red_chi2 < self._best_chi2:
-            self._best_chi2 = red_chi2
-            self._best_iteration = self._iteration
-
-        return residuals
-
-    def _compute_residuals(self, engine_params, parameters, sample_models, experiments, calculator):
-        self._sync_result_to_parameters(parameters, engine_params)
-
-        residuals = []
-        for expt_id, experiment in experiments._items.items():
-            y_calc = calculator.calculate_pattern(sample_models, experiment)
-            y_meas = experiment.datastore.pattern.meas
-            y_meas_su = experiment.datastore.pattern.meas_su
-            diff = (y_meas - y_calc) / y_meas_su
-            residuals.extend(diff)
-
-        residuals = np.array(residuals)
-        return self._track_chi_square(residuals, parameters)
-
-    def fit(self, sample_models, experiments, calculator):
+    def fit(self, parameters, objective_function):
         minimizer_name = self.name
         if self.method is not None:
             minimizer_name += f" ({self.method})"
 
-        print(f"🚀 Starting fitting process with {minimizer_name}...")
+        self.tracker.reset()
+        self.tracker.start_tracking(minimizer_name)
+        self.parameters = parameters
 
-        self._iteration = 0 # Reset iteration counter
+        start_time = time.time()
 
-        self.parameters = self._collect_free_parameters(sample_models, experiments)
+        raw_result = self._run_solver(objective_function, **self._prepare_solver_args(parameters))
 
-        for parameter in self.parameters:
-            parameter.start_value = parameter.value
+        end_time = time.time()
+        self._fitting_time = end_time - start_time
 
-        solver_args = self._prepare_solver_args(self.parameters)
-        objective_function = self._create_objective_function(self.parameters, sample_models, experiments, calculator)
+        result = self._finalize_fit(parameters, raw_result)
 
-        print("📈 Reduced Chi-square change:")
-        print("+-------------+--------------+--------------+--------------+")
-        print(f"| {'iteration':<11} | {'start':<12} | {'improved':<12} | {'change [%]':<12} |")
-        print("+=============+==============+==============+==============+")
-
-        start_time = time.time()  # Start timing
-
-        raw_result = self._run_solver(objective_function, **solver_args)
-
-        end_time = time.time()  # End timing
-        self._fitting_time = end_time - start_time  # Store elapsed time in seconds
-
-        result = self._finalize_fit(self.parameters, raw_result)
-
-        print("+-------------+--------------+--------------+--------------+")
-        print(f"🔧 Final iteration {self._iteration}: Reduced Chi-square = {self._previous_chi2:.2f}")
-        print(f"🏆 Best Reduced Chi-square: {self._best_chi2:.2f} at iteration {self._best_iteration}")
-        print(f"⏱️ Fitting time: {self._fitting_time:.2f} seconds")
-        print("✅ Fitting complete.")
+        self.tracker.finish_tracking(self._fitting_time)
 
         return result
 
