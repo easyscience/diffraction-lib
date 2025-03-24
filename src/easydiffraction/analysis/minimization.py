@@ -1,5 +1,6 @@
 from .minimizers.factory import MinimizerFactory
 from .minimizers.chi_square_tracker import ChiSquareTracker
+from ..analysis.reliability_factors import get_reliability_inputs
 import numpy as np
 
 
@@ -29,27 +30,18 @@ class DiffractionMinimizer:
 
         objective_function = lambda engine_params: self._residual_function(engine_params, parameters, sample_models, experiments, calculator)
 
+        # Perform fitting
         self.results = self.minimizer.fit(parameters, objective_function)
 
-    def get_reliability_inputs(self, sample_models, experiments, calculator):
-        y_obs_all = []
-        y_calc_all = []
-        y_err_all = []
-        for expt_id, experiment in experiments._items.items():
-            y_calc = calculator.calculate_pattern(sample_models, experiment)
-            y_meas = experiment.datastore.pattern.meas
-            y_meas_su = experiment.datastore.pattern.meas_su
+        # After fit, collect reliability inputs
+        y_obs, y_calc, y_err = get_reliability_inputs(sample_models, experiments, calculator)
 
-            if y_meas is not None and y_calc is not None:
-                y_obs_all.extend(y_meas)
-                y_calc_all.extend(y_calc)
-                y_err_all.extend(y_meas_su if y_meas_su is not None else np.ones_like(y_meas))
+        # For now, set f_obs and f_calc to None since they are not returned
+        f_obs, f_calc = None, None
 
-        return (
-            np.array(y_obs_all),
-            np.array(y_calc_all),
-            np.array(y_err_all) if y_err_all else None
-        )
+        # Pass them to display_results
+        if self.results:
+            self.results.display_results(y_obs=y_obs, y_calc=y_calc, y_err=y_err, f_obs=f_obs, f_calc=f_calc)
 
     def _collect_free_parameters(self, sample_models, experiments):
         return sample_models.get_free_params() + experiments.get_free_params()

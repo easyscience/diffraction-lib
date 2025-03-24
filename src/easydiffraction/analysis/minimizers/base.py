@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import tabulate
 import time
-from easydiffraction.utils.utils import (
+from ..reliability_factors import (
     calculate_r_factor,
     calculate_r_factor_squared,
     calculate_weighted_r_factor,
@@ -30,38 +30,32 @@ class FitResults:
             setattr(self, key, value)
 
     def display_results(self, y_obs=None, y_calc=None, y_err=None, f_obs=None, f_calc=None):
-        print('[DEBUG] y_obs', y_obs)
-        print('[DEBUG] y_calc', y_calc)
-        print('[DEBUG] y_err', y_err)
-        print('[DEBUG] f_obs', f_obs)
-        print('[DEBUG] f_calc', f_calc)
-
         status_icon = "✅" if self.success else "❌"
         rf = rf2 = wr = br = None
         if y_obs is not None and y_calc is not None:
-            rf = calculate_r_factor(y_obs, y_calc)
-            rf2 = calculate_r_factor_squared(y_obs, y_calc)
+            rf = calculate_r_factor(y_obs, y_calc) * 100
+            rf2 = calculate_r_factor_squared(y_obs, y_calc) * 100
         if y_obs is not None and y_calc is not None and y_err is not None:
-            wr = calculate_weighted_r_factor(y_obs, y_calc, y_err)
+            wr = calculate_weighted_r_factor(y_obs, y_calc, y_err) * 100
         if f_obs is not None and f_calc is not None:
-            br = calculate_rb_factor(f_obs, f_calc)
+            br = calculate_rb_factor(f_obs, f_calc) * 100
 
         print(f"\nFit results:")
         print(f"{status_icon} Success: {self.success}")
-        print(f"🔧 Goodness-of-fit (reduced χ²): {self.reduced_chi_square:.2f}")
-        if rf is not None:
-            print(f"📏 R-factor (Rf): {rf:.2f}")
-        if rf2 is not None:
-            print(f"📏 R-factor squared (Rf²): {rf2:.2f}")
-        if wr is not None:
-            print(f"📏 Weighted R-factors (wR): {wr:.2f}")
-        if br is not None:
-            print(f"📏 Bragg R-factor (BR): {br:.2f}")
         print(f"⏱️ Fitting time: {self.fitting_time:.2f} seconds")
+        print(f"📏 Goodness-of-fit (reduced χ²): {self.reduced_chi_square:.2f}")
+        if rf is not None:
+            print(f"📏 R-factor (Rf): {rf:.2f}%")
+        if rf2 is not None:
+            print(f"📏 R-factor squared (Rf²): {rf2:.2f}%")
+        if wr is not None:
+            print(f"📏 Weighted R-factors (wR): {wr:.2f}%")
+        if br is not None:
+            print(f"📏 Bragg R-factor (BR): {br:.2f}%")
         print(f"📈 Parameters:")
 
         table_data = []
-        headers = ["block", "cif_name", "start", "refined", "error", "units", "change [%]"]
+        headers = ["cif block", "cif parameter", "start", "refined", "error", "units", "change [%]"]
 
         for param in self.parameters:
             block_name = getattr(param, 'block_name', 'N/A')

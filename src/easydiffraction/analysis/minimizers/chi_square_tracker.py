@@ -1,6 +1,6 @@
 import numpy as np
 
-from easydiffraction.utils.utils import calculate_reduced_chi_square
+from easydiffraction.analysis.reliability_factors import calculate_reduced_chi_square
 
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
 FIXED_WIDTH = 17
