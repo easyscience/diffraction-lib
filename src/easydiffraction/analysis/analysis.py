@@ -2,7 +2,7 @@ import pandas as pd
 
 from .calculators.factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
-from .minimizers.factory import MinimizerFactory
+from .minimizers.minimizer_factory import MinimizerFactory
 from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
 
 

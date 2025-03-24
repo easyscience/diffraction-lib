@@ -1,4 +1,4 @@
-from .minimizers.factory import MinimizerFactory
+from .minimizers.minimizer_factory import MinimizerFactory
 from ..analysis.reliability_factors import get_reliability_inputs
 import numpy as np
 
