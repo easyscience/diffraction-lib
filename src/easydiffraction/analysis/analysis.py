@@ -66,17 +66,41 @@ class Analysis:
 
         return free_params
 
-    def show_available_calculators(self):
+    def show_current_calculator(self):
+        print(f"\nCurrent calculator:\n{self.current_calculator}")
+
+    @staticmethod
+    def show_available_calculators():
         CalculatorFactory.show_available_calculators()
 
-    def set_calculator_by_name(self, calculator_name):
-        if calculator_name not in CalculatorFactory.available_calculators():
-            raise ValueError(
-                f"Unknown calculator '{calculator_name}'. Available calculators: {CalculatorFactory.available_calculators()}"
-            )
+    @property
+    def current_calculator(self):
+        return self._get_calculator_key_from_instance(self.calculator)
 
+    @current_calculator.setter
+    def current_calculator(self, calculator_name):
+        if calculator_name not in CalculatorFactory.list_available_calculators():
+            raise ValueError(
+                f"Unknown calculator '{calculator_name}'. Available calculators: {CalculatorFactory.list_available_calculators()}"
+            )
         self.calculator = CalculatorFactory.create_calculator(calculator_name)
-        print(f"Calculator switched to: {calculator_name}")
+        print(f"\nCurrent calculator changed to:\n{self.current_calculator}")
+
+    def show_current_minimizer(self):
+        print(f"\nCurrent minimizer:\n{self.current_minimizer}")
+
+    @staticmethod
+    def show_available_minimizers():
+        MinimizerFactory.show_available_minimizers()
+
+    @property
+    def current_minimizer(self):
+        return self.fitter.selection if self.fitter else None
+
+    @current_minimizer.setter
+    def current_minimizer(self, selection):
+        self.fitter = DiffractionMinimizer(selection)
+        print(f"\nCurrent minimizer changed to:\n{self.current_minimizer}")
 
     def calculate_pattern(self, expt_id):
         # Pattern is calculated for the given experiment
@@ -162,18 +186,8 @@ class Analysis:
         # After fitting, get the results
         self.fit_results = self.fitter.results
 
-    def show_current_minimizer(self):
-        print(f"\nCurrent minimizer:\n{self.current_minimizer}")
-
-    @staticmethod
-    def show_available_minimizers():
-        MinimizerFactory.show_available_minimizers()
-
-    @property
-    def current_minimizer(self):
-        return self.fitter.selection if self.fitter else None
-
-    @current_minimizer.setter
-    def current_minimizer(self, selection):
-        self.fitter = DiffractionMinimizer(selection)
-        print(f"\nCurrent minimizer changed to:\n{self.current_minimizer}")
+    def _get_calculator_key_from_instance(self, instance):
+        for key, config in CalculatorFactory._available_calculators.items():
+            if isinstance(instance, config['class']):
+                return key
+        return type(instance).__name__  # fallback

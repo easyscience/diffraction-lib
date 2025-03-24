@@ -9,39 +9,43 @@ class MinimizerFactory:
         'lmfit': {
             'engine': 'lmfit',
             'method': 'leastsq',
-            'description': 'LMFIT library using the default Levenberg-Marquardt least squares method.'
+            'description': 'LMFIT library using the default Levenberg-Marquardt least squares method.',
+            'class': LmfitMinimizer
         },
         'lmfit (leastsq)': {
             'engine': 'lmfit',
             'method': 'leastsq',
-            'description': 'LMFIT library with Levenberg-Marquardt least squares method.'
+            'description': 'LMFIT library with Levenberg-Marquardt least squares method.',
+            'class': LmfitMinimizer
         },
         'lmfit (least_squares)': {
             'engine': 'lmfit',
             'method': 'least_squares',
-            'description': 'LMFIT library with SciPy’s trust region reflective algorithm.'
+            'description': 'LMFIT library with SciPy’s trust region reflective algorithm.',
+            'class': LmfitMinimizer
         },
         'dfols': {
             'engine': 'dfols',
             'method': None,
-            'description': 'DFOLS library for derivative-free least-squares optimization.'
+            'description': 'DFOLS library for derivative-free least-squares optimization.',
+            'class': DfolsMinimizer
         }
     }
 
-    @staticmethod
-    def list_available_minimizers():
-        return list(MinimizerFactory._available_minimizers.keys())
+    @classmethod
+    def list_available_minimizers(cls):
+        return list(cls._available_minimizers.keys())
 
-    @staticmethod
-    def show_available_minimizers():
+    @classmethod
+    def show_available_minimizers(cls):
         header = ["Minimizer", "Description"]
         table_data = []
 
-        for name, config in MinimizerFactory._available_minimizers.items():
+        for name, config in cls._available_minimizers.items():
             description = config.get('description', 'No description provided.')
             table_data.append([name, description])
 
-        print("\nAvailable Minimizers:\n")
+        print("\nAvailable minimizers:\n")
         print(tabulate.tabulate(
             table_data,
             headers=header,
@@ -51,17 +55,17 @@ class MinimizerFactory:
             showindex=False
         ))
 
-    @staticmethod
-    def create_minimizer(selection: str):
-        config = MinimizerFactory._available_minimizers.get(selection)
+    @classmethod
+    def create_minimizer(cls, selection: str):
+        config = cls._available_minimizers.get(selection)
         if not config:
-            raise ValueError(f"Unknown minimizer '{selection}'. Use one of {MinimizerFactory.list_available_minimizers()}")
+            raise ValueError(f"Unknown minimizer '{selection}'. Use one of {cls.list_available_minimizers()}")
 
-        if config['engine'] == 'lmfit':
-            return LmfitMinimizer(method=config['method'])
-        elif config['engine'] == 'bumps':
-            return BumpsMinimizer(method=config['method'])
-        elif config['engine'] == 'dfols':
-            return DfolsMinimizer()  # no method passed
+        minimizer_class = config.get('class')
+        method = config.get('method')
 
-        raise ValueError(f"Unsupported minimizer engine '{config['engine']}'")
+        kwargs = {}
+        if method is not None:
+            kwargs['method'] = method
+
+        return minimizer_class(**kwargs)
