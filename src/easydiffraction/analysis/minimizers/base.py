@@ -120,9 +120,11 @@ class MinimizerBase(ABC):
         end_time = time.time()
         self._fitting_time = end_time - start_time
 
-        result = self._finalize_fit(parameters, raw_result)
+        #result = self._finalize_fit(parameters, raw_result)
 
-        self.tracker.finish_tracking(self._fitting_time)
+        self.tracker.finish_tracking()
+
+        result = self._finalize_fit(parameters, raw_result)
 
         return result
 

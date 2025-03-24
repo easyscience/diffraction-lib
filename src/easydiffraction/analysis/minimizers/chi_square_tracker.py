@@ -1,5 +1,19 @@
 import numpy as np
 
+SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
+FIXED_WIDTH = 14
+
+def format_cell(cell, width=FIXED_WIDTH, align="center"):
+    cell_str = str(cell)
+    if align == "center":
+        return cell_str.center(width)
+    elif align == "left":
+        return cell_str.ljust(width)
+    elif align == "right":
+        return cell_str.rjust(width)
+    else:
+        return cell_str
+
 
 class ChiSquareTracker:
     """
@@ -9,12 +23,16 @@ class ChiSquareTracker:
     def __init__(self):
         self._iteration = 0
         self._previous_chi2 = None
+        self._last_chi2 = None
+        self._last_iteration = None
         self._best_chi2 = None
         self._best_iteration = None
 
     def reset(self):
         self._iteration = 0
         self._previous_chi2 = None
+        self._last_chi2 = None
+        self._last_iteration = None
         self._best_chi2 = None
         self._best_iteration = None
 
@@ -35,44 +53,48 @@ class ChiSquareTracker:
         n_points = len(residuals)
         n_parameters = len(parameters)
 
-        red_chi2 = chi2 / max((n_points - n_parameters), 1)
+        reduced_chi2 = chi2 / max((n_points - n_parameters), 1)
 
         row = []
 
         # First iteration, initialize tracking
         if self._previous_chi2 is None:
-            self._previous_chi2 = red_chi2
-            self._best_chi2 = red_chi2
+            self._previous_chi2 = reduced_chi2
+            self._best_chi2 = reduced_chi2
             self._best_iteration = self._iteration
 
             row = [
                 self._iteration,
-                f"{red_chi2:<12.2f}",
-                "-".ljust(12),
-                "-".ljust(12)
+                f"{reduced_chi2:.2f}",
+                "",
+                ""
             ]
 
         # Improvement check
-        elif (self._previous_chi2 - red_chi2) / self._previous_chi2 > 0.01:
-            change_percent = (self._previous_chi2 - red_chi2) / self._previous_chi2 * 100
+        elif (self._previous_chi2 - reduced_chi2) / self._previous_chi2 > SIGNIFICANT_CHANGE_THRESHOLD:
+            change_percent = (self._previous_chi2 - reduced_chi2) / self._previous_chi2 * 100
 
             row = [
                 self._iteration,
-                f"{self._previous_chi2:<12.2f}",
-                f"{red_chi2:<12.2f}",
-                f"↓ {change_percent:.1f}%".ljust(10)
+                f"{self._previous_chi2:.2f}",
+                f"{reduced_chi2:.2f}",
+                f"↓ {change_percent:.1f}%"
             ]
 
-            self._previous_chi2 = red_chi2
+            self._previous_chi2 = reduced_chi2
 
         # Output if there is something new to display
         if row:
-            print(f"| {row[0]:<11} | {row[1]:<12} | {row[2]:<12} | {row[3]:<12} |")
+            self.add_tracking_info(row)
 
         # Update best chi-square if better
-        if self._best_chi2 is None or red_chi2 < self._best_chi2:
-            self._best_chi2 = red_chi2
+        if reduced_chi2 < self._best_chi2:
+            self._best_chi2 = reduced_chi2
             self._best_iteration = self._iteration
+
+        # Store last chi-square and iteration
+        self._last_chi2 = reduced_chi2
+        self._last_iteration = self._iteration
 
         return residuals
 
@@ -89,19 +111,45 @@ class ChiSquareTracker:
         return self._iteration
 
     def start_tracking(self, minimizer_name):
-        print("🚀 Starting fitting process with {}...".format(minimizer_name))
-        print("📈 Reduced Chi-square change:")
-        print("+-------------+--------------+--------------+--------------+")
-        print(f"| {'iteration':<11} | {'start':<12} | {'improved':<12} | {'change [%]':<12} |")
-        print("+=============+==============+==============+==============+")
+        headers = ["iteration", "start", "improved", "change [%]"]
 
-    def finish_tracking(self, fitting_time):
-        print("+-------------+--------------+--------------+--------------+")
-        final_chi2 = self._previous_chi2 if self._previous_chi2 is not None else (self._best_chi2 if self._best_chi2 is not None else 0.0)
-        final_iteration = self._iteration if self._iteration is not None else "N/A"
-        best_chi2_str = f"{self._best_chi2:.2f}" if self._best_chi2 is not None else "N/A"
+        print(f"🚀 Starting fitting process with '{minimizer_name}'...")
+        print("📈 Goodness-of-fit (reduced χ²) change:")
 
-        print(f"🔧 Final iteration {final_iteration}: Reduced Chi-square = {final_chi2:.2f}")
-        print(f"🏆 Best Reduced Chi-square: {best_chi2_str} at iteration {self._best_iteration if self._best_iteration is not None else 'N/A'}")
-        print(f"⏱️ Fitting time: {fitting_time:.2f} seconds")
+        # Top border
+        print("╒" + "╤".join(["═" * FIXED_WIDTH for _ in headers]) + "╕")
+
+        # Header row (all centered)
+        header_row = "│" + "│".join([format_cell(h, align="center") for h in headers]) + "│"
+        print(header_row)
+
+        # Separator
+        print("╞" + "╪".join(["═" * FIXED_WIDTH for _ in headers]) + "╡")
+
+    def add_tracking_info(self, row):
+        # Alignments for each column: iteration, start, improved, change [%]
+        aligns = ["center", "center", "center", "center"]
+
+        formatted_row = "│" + "│".join([
+            format_cell(cell, align=aligns[i])
+            for i, cell in enumerate(row)
+        ]) + "│"
+
+        print(formatted_row)
+
+    def finish_tracking(self):
+        # Print last iteration as last row
+        row = [
+            self._last_iteration,
+            "",
+            f"{self._last_chi2:.2f}",
+            ""
+        ]
+        self.add_tracking_info(row)
+
+        # Print bottom border
+        print("╘" + "╧".join(["═" * FIXED_WIDTH for _ in range(4)]) + "╛")
+
+        # Print best result
+        print(f"🏆 Best goodness-of-fit (reduced χ²) is {self._best_chi2:.2f} at iteration {self._best_iteration}")
         print("✅ Fitting complete.")

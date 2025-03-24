@@ -13,7 +13,6 @@ class DiffractionMinimizer:
         self.engine = selection.split(' ')[0]  # Extracts 'lmfit' or 'bumps'
         self.minimizer = MinimizerFactory.create_minimizer(selection)
         self.results = None
-        self.tracker = ChiSquareTracker()  # Add tracker instance
 
     def fit(self, sample_models, experiments, calculator):
         """
@@ -54,7 +53,7 @@ class DiffractionMinimizer:
             residuals.extend(diff)
 
         residuals = np.array(residuals)
-        return self.tracker.track(residuals, parameters)
+        return self.minimizer.tracker.track(residuals, parameters)
 
     def _display_results(self):
         """

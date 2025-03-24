@@ -278,6 +278,7 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 project.analysis.fit()
 
+exit()
 
 project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
