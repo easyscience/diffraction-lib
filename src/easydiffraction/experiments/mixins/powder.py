@@ -1,5 +1,6 @@
 import numpy as np
 
+from easydiffraction.utils.utils import paragraph
 from easydiffraction.utils.chart_plotter import ChartPlotter
 
 class PowderExperimentMixin:
@@ -19,6 +20,6 @@ class PowderExperimentMixin:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=f"Measured diffraction pattern for {self.id}",
+            title=paragraph("Measured") + f" {self.id}",
             labels=['meas']
         )

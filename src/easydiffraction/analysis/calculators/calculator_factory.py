@@ -3,6 +3,8 @@ import tabulate
 from .calculator_crysfml import CrysfmlCalculator
 from .calculator_cryspy import CryspyCalculator
 from .calculator_pdffit import PdffitCalculator
+from ...utils.utils import paragraph
+
 
 class CalculatorFactory:
     _available_calculators = {
@@ -33,7 +35,7 @@ class CalculatorFactory:
             description = config.get('description', 'No description provided.')
             table_data.append([name, description])
 
-        print("\nAvailable calculators:\n")
+        print(paragraph("Available calculators"))
         print(tabulate.tabulate(
             table_data,
             headers=header,
@@ -60,8 +62,11 @@ class CalculatorFactory:
             'description': description
         }
 
-    def _get_calculator_key_from_instance(self, instance):
-        for key, config in CalculatorFactory._available_calculators.items():
-            if isinstance(instance, config['class']):
-                return key
-        return type(instance).__name__  # fallback
+    @classmethod
+    def register_minimizer(cls, name, minimizer_cls, method=None, description='No description provided.'):
+        cls._available_minimizers[name] = {
+            'engine': name,
+            'method': method,
+            'description': description,
+            'class': minimizer_cls
+        }

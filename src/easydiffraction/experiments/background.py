@@ -1,6 +1,9 @@
 import numpy as np
 from scipy.interpolate import interp1d
 
+from easydiffraction.utils.utils import paragraph
+
+
 class Background:
     """Base background class."""
 
@@ -32,6 +35,11 @@ class PointBackground(Background):
             fill_value=(bg_y[0], bg_y[-1])
         )
         return interp_func(x_data)
+
+    def show(self):
+        print(paragraph("Background points"))
+        for point in self.points:
+            print(f"({point[0]}, {point[1]})")
 
 
 class PolynomialBackground(Background):

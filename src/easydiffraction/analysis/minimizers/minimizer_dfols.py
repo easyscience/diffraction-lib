@@ -49,4 +49,4 @@ class DfolsMinimizer(MinimizerBase):
         Determines success from DFO-LS result dictionary.
         Typically, status == 0 means success.
         """
-        return raw_result.get('status', -1) == 0
+        return raw_result.flag == raw_result.EXIT_SUCCESS

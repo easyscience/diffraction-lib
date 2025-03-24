@@ -1,9 +1,11 @@
 import pandas as pd
 
+from easydiffraction.utils.utils import paragraph
+from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
+
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from .minimizers.minimizer_factory import MinimizerFactory
-from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
 
 
 class Analysis:
@@ -12,6 +14,7 @@ class Analysis:
     def __init__(self, project):
         self.project = project
         self.calculator = Analysis._calculator  # Default calculator shared by project
+        self._calculator_key = 'cryspy'  # Added to track the current calculator
         self._refinement_strategy = 'single'
         self.fitter = DiffractionMinimizer('lmfit (leastsq)')
 
@@ -26,7 +29,7 @@ class Analysis:
         free_params = self.project.sample_models.get_free_params() + \
                       self.project.experiments.get_free_params()
 
-        print("\nFree Parameters:")
+        print(paragraph("Free Parameters"))
 
         if not free_params:
             print("No free parameters found.")
@@ -67,7 +70,8 @@ class Analysis:
         return free_params
 
     def show_current_calculator(self):
-        print(f"\nCurrent calculator:\n{self.current_calculator}")
+        print(paragraph("Current calculator"))
+        print(self.current_calculator)
 
     @staticmethod
     def show_available_calculators():
@@ -75,7 +79,7 @@ class Analysis:
 
     @property
     def current_calculator(self):
-        return self._get_calculator_key_from_instance(self.calculator)
+        return self._calculator_key
 
     @current_calculator.setter
     def current_calculator(self, calculator_name):
@@ -84,10 +88,13 @@ class Analysis:
                 f"Unknown calculator '{calculator_name}'. Available calculators: {CalculatorFactory.list_available_calculators()}"
             )
         self.calculator = CalculatorFactory.create_calculator(calculator_name)
-        print(f"\nCurrent calculator changed to:\n{self.current_calculator}")
+        self._calculator_key = calculator_name
+        print(paragraph("Current calculator changed to"))
+        print(self.current_calculator)
 
     def show_current_minimizer(self):
-        print(f"\nCurrent minimizer:\n{self.current_minimizer}")
+        print(paragraph("Current minimizer"))
+        print(self.current_minimizer)
 
     @staticmethod
     def show_available_minimizers():
@@ -100,7 +107,8 @@ class Analysis:
     @current_minimizer.setter
     def current_minimizer(self, selection):
         self.fitter = DiffractionMinimizer(selection)
-        print(f"\nCurrent minimizer changed to:\n{self.current_minimizer}")
+        print(paragraph(f"Current minimizer changed to"))
+        print(self.current_minimizer)
 
     def calculate_pattern(self, expt_id):
         # Pattern is calculated for the given experiment
@@ -124,7 +132,7 @@ class Analysis:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=f"Calculated diffraction pattern for {expt_id}",
+            title=paragraph("Calculated") + f' {expt_id}',
             labels=['calc']
         )
 
@@ -158,12 +166,12 @@ class Analysis:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=f"Measured vs Calculated diffraction pattern for '{expt_id}':",
+            title=paragraph("Measured vs Calculated") + f' {expt_id}',
             labels=labels
         )
 
     def fit(self):
-        print(f"\nFitting:")
+        print(paragraph("Fitting"))
 
         sample_models = self.project.sample_models
         if not sample_models:
@@ -185,9 +193,3 @@ class Analysis:
 
         # After fitting, get the results
         self.fit_results = self.fitter.results
-
-    def _get_calculator_key_from_instance(self, instance):
-        for key, config in CalculatorFactory._available_calculators.items():
-            if isinstance(instance, config['class']):
-                return key
-        return type(instance).__name__  # fallback

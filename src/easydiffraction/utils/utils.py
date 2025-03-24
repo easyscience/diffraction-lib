@@ -3,8 +3,8 @@ General utilities and helpers for easydiffraction.
 """
 
 import os
-import numpy as np
 import urllib.request
+from colorama import Fore, Style
 from pathlib import Path
 
 
@@ -124,3 +124,33 @@ def list_files(directory: str, extension: str = "", recursive: bool = False):
         files = path.glob(f"*{extension}")
 
     return [str(file.resolve()) for file in files if file.is_file()]
+
+def chapter(title: str) -> str:
+    """
+    Formats a chapter header with bold blue text, uppercase, and padded with '-' to 80 characters.
+    """
+    width = 100
+    symbol = "═"
+    full_title = f" {title.upper()} "
+    pad_len = (width - len(full_title)) // 2
+    padding = symbol * pad_len
+    line = f"{Fore.RED + Style.BRIGHT}{padding}{full_title}{padding}{Style.RESET_ALL}"
+    if len(line) < width:
+        line += symbol
+    return f'\n{line}'
+
+def section(title: str) -> str:
+    """
+    Formats a section header with bold green text.
+    """
+    full_title = f'*** {title.upper()} ***'
+    colorized = f"{Fore.GREEN + Style.BRIGHT}{full_title}{Style.RESET_ALL}"
+    return f"\n{colorized}"
+
+def paragraph(title: str) -> str:
+    """
+    Formats a subsection header with bold green text.
+    """
+    full_title = f'{title}:'
+    colorized = f"{Fore.BLUE + Style.BRIGHT}{full_title}{Style.RESET_ALL}"
+    return f"\n{colorized}"

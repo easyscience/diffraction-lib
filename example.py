@@ -1,4 +1,5 @@
 import easydiffraction as ed
+from easydiffraction.utils.utils import section, chapter
 
 # === Step 1: Create a Project ===
 
@@ -193,23 +194,24 @@ print(project.experiments["expt_low"].as_cif())
 
 
 
-print('\n=== Step 4: Analysis ===')
+print(chapter('Step 4: Analysis'))
 
-print('\n### Set calculator')
+print(section('Set calculator'))
+
 project.analysis.show_available_calculators()
 project.analysis.show_current_calculator()
 project.analysis.current_calculator = 'crysfml'
 
-exit()
+print(section('Show data charts'))
 
-print('\n### Show data charts')
 project.analysis.show_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
 
 project.analysis.show_calc_chart("expt_low", x_min=54, x_max=57)
 project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
 
-print('\n### Add background points')
+print(section('Add background'))
+
 project.experiments["expt_high"].background.add(x=11.0, y=206.1624)
 project.experiments["expt_high"].background.add(x=15.0, y=194.75)
 project.experiments["expt_high"].background.add(x=20.0, y=194.505)
@@ -228,18 +230,23 @@ project.experiments["expt_low"].background.add(x=70.0, y=201.7002)
 project.experiments["expt_low"].background.add(x=120.0, y=244.4525)
 project.experiments["expt_low"].background.add(x=153.0, y=226.0595)
 
-print('\n### Show data chart including a background')
-project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
+project.experiments["expt_low"].background.show()
 
+print(section('Show data chart including a background'))
+
+project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
 
-print('\n### Show all refinable parameters')
+print(section('Show all refinable parameters'))
+
 project.analysis.show_refinable_params()
 
-print('\n### Show only free parameters')
+print(section('Show only free parameters'))
+
 project.analysis.show_free_params()
 
-print('\n### Select specific parameters for refinement')
+print(section('Select specific parameters for refinement'))
+
 expt_high.linked_phases['pbso4'].scale.value = 1.0
 expt_low.linked_phases['pbso4'].scale.value = 1.0
 
@@ -257,40 +264,40 @@ project.sample_models["pbso4"].cell.length_c.free = True
 #project.sample_models["pbso4"].atom_sites["Pb"].fract_x.free = True
 #project.experiments["expt_high"].peak_broad.gauss_u.free = True
 
-print('\n### Show free parameters again')
 project.analysis.show_free_params()
 
-print('\n### Set refinement strategy')
+print(section('Set refinement strategy'))
 project.analysis.refinement_strategy = 'single'
 #print(project.analysis.describe_refinement_strategy())
 
-print('\n### Start fitting')
-
-project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
-project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
+print(section('Set minimizer'))
 
 project.analysis.show_available_minimizers()
 project.analysis.show_current_minimizer()
 #project.analysis.current_minimizer = 'lmfit (least_squares)'
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
-
-#project.analysis.show_meas_vs_calc_chart("expt_high", x_min=10, x_max=150, show_residual=True, chart_height=30)
-
-
-project.analysis.fit()
-
-exit()
+print(section('Show data charts before fitting'))
 
 project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
-
-
 #project.analysis.show_meas_vs_calc_chart("expt_high", x_min=10, x_max=150, show_residual=True, chart_height=30)
 
-#exit()
+print(section('Start fitting'))
 
-print('\n### Change minimizer, and start fitting again')
+project.analysis.fit()
+
+print(section('Show data charts after fitting'))
+
+project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
+project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
+#project.analysis.show_meas_vs_calc_chart("expt_high", x_min=10, x_max=150, show_residual=True, chart_height=30)
+
+print(section('Change minimizer, and start fitting again'))
+
+project.analysis.current_minimizer = 'dfols'
+
+print(section('Reset parameters'))
 
 expt_high.linked_phases['pbso4'].scale.value = 1.0
 expt_low.linked_phases['pbso4'].scale.value = 1.0
@@ -298,12 +305,18 @@ project.sample_models["pbso4"].cell.length_a.value = 8.5
 project.sample_models["pbso4"].cell.length_b.value = 5.35
 project.sample_models["pbso4"].cell.length_c.value = 6.9
 
+project.analysis.show_free_params()
+
+print(section('Show data charts before 2nd fitting'))
 
 project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
 
-project.analysis.current_minimizer = 'dfols'
+print(section('Start 2nd fitting'))
+
 project.analysis.fit()
+
+print(section('Show data charts after 2nd fitting'))
 
 project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)

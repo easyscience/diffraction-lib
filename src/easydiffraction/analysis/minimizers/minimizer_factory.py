@@ -1,8 +1,10 @@
 import tabulate
 
+from easydiffraction.utils.utils import paragraph
+
 from .minimizer_lmfit import LmfitMinimizer
 from .minimizer_bumps import BumpsMinimizer
-from .minimizer_dfols import DfolsMinimizer  # NEW IMPORT
+from .minimizer_dfols import DfolsMinimizer
 
 class MinimizerFactory:
     _available_minimizers = {
@@ -45,7 +47,7 @@ class MinimizerFactory:
             description = config.get('description', 'No description provided.')
             table_data.append([name, description])
 
-        print("\nAvailable minimizers:\n")
+        print(paragraph("Available minimizers"))
         print(tabulate.tabulate(
             table_data,
             headers=header,
@@ -69,3 +71,12 @@ class MinimizerFactory:
             kwargs['method'] = method
 
         return minimizer_class(**kwargs)
+
+    @classmethod
+    def register_minimizer(cls, name, minimizer_cls, method=None, description='No description provided.'):
+        cls._available_minimizers[name] = {
+            'engine': name,
+            'method': method,
+            'description': description,
+            'class': minimizer_cls
+        }

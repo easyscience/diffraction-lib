@@ -64,7 +64,7 @@ class ChartPlotter:
         chart = asciichartpy.plot(filtered_series, config)
 
         # Print title
-        print(f"\n{title}")
+        print(f"{title}")
         print(f"Displaying data from x = {x_filtered[0]} to {x_filtered[-1]} (filtered {np.sum(mask)} points)")
 
         # Print legends if labels are present

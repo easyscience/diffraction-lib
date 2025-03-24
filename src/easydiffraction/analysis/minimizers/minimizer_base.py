@@ -7,6 +7,7 @@ from ..reliability_factors import (
     calculate_rb_factor
 )
 from .fitting_progress_tracker import FittingProgressTracker
+from easydiffraction.utils.utils import paragraph
 
 class FitResults:
     def __init__(self, success=False, parameters=None, chi_square=None,
@@ -39,7 +40,7 @@ class FitResults:
         if f_obs is not None and f_calc is not None:
             br = calculate_rb_factor(f_obs, f_calc) * 100
 
-        print(f"\nFit results:")
+        print(paragraph("Fit results"))
         print(f"{status_icon} Success: {self.success}")
         print(f"⏱️ Fitting time: {self.fitting_time:.2f} seconds")
         print(f"📏 Goodness-of-fit (reduced χ²): {self.reduced_chi_square:.2f}")
@@ -48,7 +49,7 @@ class FitResults:
         if rf2 is not None:
             print(f"📏 R-factor squared (Rf²): {rf2:.2f}%")
         if wr is not None:
-            print(f"📏 Weighted R-factors (wR): {wr:.2f}%")
+            print(f"📏 Weighted R-factor (wR): {wr:.2f}%")
         if br is not None:
             print(f"📏 Bragg R-factor (BR): {br:.2f}%")
         print(f"📈 Refined parameters:")
@@ -167,3 +168,4 @@ class MinimizerBase(ABC):
         return lambda engine_params: self._objective_function(
             engine_params, parameters, sample_models, experiments, calculator
         )
+
