@@ -3,7 +3,7 @@ import numpy as np
 from easydiffraction.utils.utils import calculate_reduced_chi_square
 
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
-FIXED_WIDTH = 14
+FIXED_WIDTH = 17
 
 def format_cell(cell, width=FIXED_WIDTH, align="center"):
     cell_str = str(cell)
@@ -76,7 +76,7 @@ class ChiSquareTracker:
                 self._iteration,
                 f"{self._previous_chi2:.2f}",
                 f"{reduced_chi2:.2f}",
-                f"↓ {change_percent:.1f}%"
+                f"{change_percent:.1f}% ↓"
             ]
 
             self._previous_chi2 = reduced_chi2
@@ -109,7 +109,7 @@ class ChiSquareTracker:
         return self._iteration
 
     def start_tracking(self, minimizer_name):
-        headers = ["iteration", "start", "improved", "change [%]"]
+        headers = ["iteration", "start", "improved", "improvement [%]"]
 
         print(f"🚀 Starting fitting process with '{minimizer_name}'...")
         print("📈 Goodness-of-fit (reduced χ²) change:")

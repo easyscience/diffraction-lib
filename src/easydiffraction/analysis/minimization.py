@@ -72,20 +72,3 @@ class DiffractionMinimizer:
 
         residuals = np.array(residuals)
         return self.minimizer.tracker.track(residuals, parameters)
-
-def calculate_r_factor_squared(y_obs, y_calc):
-    """
-    Calculates R-factor squared (Rf²).
-
-    Args:
-        y_obs (array-like): Observed intensities.
-        y_calc (array-like): Calculated intensities.
-
-    Returns:
-        float: R-factor squared.
-    """
-    y_obs = np.asarray(y_obs)
-    y_calc = np.asarray(y_calc)
-    numerator = np.sum((y_obs - y_calc) ** 2)
-    denominator = np.sum(y_obs ** 2)
-    return np.sqrt(numerator / denominator) if denominator != 0 else np.nan

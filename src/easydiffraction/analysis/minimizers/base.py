@@ -30,6 +30,12 @@ class FitResults:
             setattr(self, key, value)
 
     def display_results(self, y_obs=None, y_calc=None, y_err=None, f_obs=None, f_calc=None):
+        print('[DEBUG] y_obs', y_obs)
+        print('[DEBUG] y_calc', y_calc)
+        print('[DEBUG] y_err', y_err)
+        print('[DEBUG] f_obs', f_obs)
+        print('[DEBUG] f_calc', f_calc)
+
         status_icon = "✅" if self.success else "❌"
         rf = rf2 = wr = br = None
         if y_obs is not None and y_calc is not None:
@@ -68,7 +74,7 @@ class FitResults:
             if param.start_value and param.value:
                 change = ((param.value - param.start_value) / param.start_value) * 100
                 arrow = "↑" if change > 0 else "↓"
-                relative_change = f"{arrow} {abs(change):.1f}%"
+                relative_change = f"{abs(change):.1f}% {arrow}"
             else:
                 relative_change = "N/A"
 
