@@ -24,16 +24,20 @@ class CrysfmlCalculator(CalculatorBase):
         Calculates the diffraction pattern using Crysfml for the given sample model and experiment.
         """
         crysfml_dict = self._crysfml_dict(sample_model, experiment)
-        _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
-        y = self._adjust_pattern_length(y, len(experiment.datastore.pattern.x))
+        try:
+            _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
+            y = self._adjust_pattern_length(y, len(experiment.datastore.pattern.x))
+        except KeyError:
+            print(f"[CrysfmlCalculator] Error: No calculated data")
+            y = []
         return y
 
     def _adjust_pattern_length(self, pattern, target_length):
         if len(pattern) > target_length:
             return pattern[:target_length]
-        elif len(pattern) < target_length:
-            padding = target_length - len(pattern)
-            return np.pad(pattern, (0, padding), 'constant')
+        #elif len(pattern) < target_length:
+        #    padding = target_length - len(pattern)
+        #    return np.pad(pattern, (0, padding), 'constant')
         return pattern
 
     def _crysfml_dict(self, sample_model, experiment):

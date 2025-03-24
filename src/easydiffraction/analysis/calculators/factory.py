@@ -1,5 +1,3 @@
-# factory.py                                          # Manages available calculators and their instantiation
-
 from .calculator_crysfml import CrysfmlCalculator
 from .calculator_cryspy import CryspyCalculator
 from .calculator_pdffit import PdffitCalculator

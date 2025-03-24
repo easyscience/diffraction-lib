@@ -1,6 +1,4 @@
-import numpy as np
 import pandas as pd
-from scipy.interpolate import interp1d
 
 from .calculators.factory import CalculatorFactory
 from .minimization import DiffractionMinimizer

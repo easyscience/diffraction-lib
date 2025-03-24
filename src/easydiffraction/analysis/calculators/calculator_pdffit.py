@@ -1,10 +1,8 @@
-# pdffit.py                                          # Wrapper for Pdffit calculation backend
-
 from .base import CalculatorBase
 
 class PdffitCalculator(CalculatorBase):
     """
-    Adapter for Pdffit library.
+    Wrapper for Pdffit library.
     """
 
     @property
