@@ -1,4 +1,4 @@
-from .base import CalculatorBase
+from .calculator_base import CalculatorBase
 
 class PdffitCalculator(CalculatorBase):
     """

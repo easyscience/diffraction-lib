@@ -1,7 +1,7 @@
 from .analysis import Analysis
 from .calculation import DiffractionCalculator
 from .minimization import DiffractionMinimizer
-from .calculators.factory import CalculatorFactory
+from .calculators.calculator_factory import CalculatorFactory
 
 __all__ = [
     "Analysis",

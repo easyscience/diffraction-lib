@@ -3,7 +3,7 @@ try:
 except ImportError:
     print('Warning: pycrysfml module not found. This calculator will not work.')
 
-from .base import CalculatorBase
+from .calculator_base import CalculatorBase
 
 
 class CrysfmlCalculator(CalculatorBase):

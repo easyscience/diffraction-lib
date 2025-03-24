@@ -5,7 +5,7 @@ try:
 except ImportError:
     print('Warning: cryspy module not found. This calculator will not work.')
 
-from .base import CalculatorBase  # Assuming you have a base interface
+from .calculator_base import CalculatorBase  # Assuming you have a base interface
 
 
 class CryspyCalculator(CalculatorBase):

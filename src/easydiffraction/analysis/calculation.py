@@ -1,4 +1,4 @@
-from .calculators.factory import CalculatorFactory
+from .calculators.calculator_factory import CalculatorFactory
 
 
 class DiffractionCalculator:
