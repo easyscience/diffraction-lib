@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import tabulate
-import time
 from ..reliability_factors import (
     calculate_r_factor,
     calculate_r_factor_squared,

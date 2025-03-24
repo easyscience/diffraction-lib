@@ -1,5 +1,5 @@
 import lmfit
-from .base import MinimizerBase
+from .minimizer_base import MinimizerBase
 
 DEFAULT_METHOD = 'leastsq'
 DEFAULT_MAX_ITERATIONS = 1000

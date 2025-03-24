@@ -1,6 +1,6 @@
 import numpy as np
 from dfols import solve
-from .base import MinimizerBase, FitResults
+from .minimizer_base import MinimizerBase, FitResults
 
 DEFAULT_MAX_ITERATIONS = 1000
 

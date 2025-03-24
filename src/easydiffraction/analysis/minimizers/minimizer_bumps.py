@@ -2,7 +2,7 @@ import numpy as np
 from bumps.fitproblem import FitProblem
 from bumps.fitters import fit as bumps_fit
 from bumps.parameter import Parameter as BumpsParameter
-from .base import MinimizerBase
+from .minimizer_base import MinimizerBase
 
 
 class BumpsMinimizer(MinimizerBase):
