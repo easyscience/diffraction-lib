@@ -99,6 +99,15 @@ class MinimizerBase(ABC):
         self._fitting_time = None
         self.tracker = FittingProgressTracker()
 
+    def _start_tracking(self, minimizer_name):
+        self.tracker.reset()
+        self.tracker.start_tracking(minimizer_name)
+        self.tracker.start_timer()
+
+    def _stop_tracking(self):
+        self.tracker.stop_timer()
+        self.tracker.finish_tracking()
+
     @abstractmethod
     def _prepare_solver_args(self, parameters):
         """
@@ -140,17 +149,12 @@ class MinimizerBase(ABC):
         if self.method is not None:
             minimizer_name += f" ({self.method})"
 
-        self.tracker.reset()
-        self.tracker.start_tracking(minimizer_name)
+        self._start_tracking(minimizer_name)
 
-        self.parameters = parameters
-        self.tracker.start_timer()
+        solver_args = self._prepare_solver_args(parameters)
+        raw_result = self._run_solver(objective_function, **solver_args)
 
-        raw_result = self._run_solver(objective_function, **self._prepare_solver_args(parameters))
-
-        self.tracker.stop_timer()
-
-        self.tracker.finish_tracking()
+        self._stop_tracking()
 
         result = self._finalize_fit(parameters, raw_result)
 
