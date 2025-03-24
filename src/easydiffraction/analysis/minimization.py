@@ -32,13 +32,18 @@ class DiffractionMinimizer:
         # Perform fitting
         self.results = self.minimizer.fit(parameters, objective_function)
 
-        # After fit, collect reliability inputs
+        # Post-fit processing
+        self._process_fit_results(sample_models, experiments, calculator)
+
+    def _process_fit_results(self, sample_models, experiments, calculator):
+        """
+        Collect reliability inputs and display results after fitting.
+        """
         y_obs, y_calc, y_err = get_reliability_inputs(sample_models, experiments, calculator)
 
-        # For now, set f_obs and f_calc to None since they are not returned
+        # Placeholder for future f_obs / f_calc retrieval
         f_obs, f_calc = None, None
 
-        # Pass them to display_results
         if self.results:
             self.results.display_results(y_obs=y_obs, y_calc=y_calc, y_err=y_err, f_obs=f_obs, f_calc=f_calc)
 
