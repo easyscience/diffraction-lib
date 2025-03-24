@@ -31,7 +31,7 @@ class LmfitMinimizer(MinimizerBase):
         return lmfit.minimize(objective_function,
                               params=engine_parameters,
                               method=self.method,
-                              iter_cb=self._iteration_callback,
+                              #iter_cb=self._iteration_callback,
                               nan_policy='propagate',
                               max_nfev=self.max_iterations)
 
@@ -48,6 +48,11 @@ class LmfitMinimizer(MinimizerBase):
                 param.error = getattr(param_result, 'stderr', None)
 
     def _iteration_callback(self, params, iter, resid, *args, **kwargs):
+        # Temporary do not use this callback, as trying to track both the
+        # iteration number and chi-square using _track_chi_square method.
+        # Results are a bit different, so need to investigate further.
+        # _track_chi_square is used because DFO-LS minimizer seems to
+        # not provide the way to call _iteration_callback
         self._iteration = iter
         #red_chi2 = np.sum(resid**2) / (len(resid) - len(self.parameters))
         #print(f"🔄 Iteration {iter}: Reduced Chi-square = {red_chi2:.2f}")

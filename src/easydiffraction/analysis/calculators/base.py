@@ -21,14 +21,12 @@ class CalculatorBase(ABC):
         # Multiple sample models, single experiment
 
         x_data = experiment.datastore.pattern.x
-        y_calc_scaled = np.zeros_like(x_data)
+        y_calc_zeros = np.zeros_like(x_data)
 
         valid_linked_phases = self._get_valid_linked_phases(sample_models, experiment)
 
-        if not valid_linked_phases:
-            return y_calc_scaled
-
         # Calculate contributions from valid linked sample models
+        y_calc_scaled = y_calc_zeros
         for linked_phase in valid_linked_phases:
             sample_model_id = linked_phase.id.value
             sample_model_scale = linked_phase.scale.value
@@ -62,7 +60,7 @@ class CalculatorBase(ABC):
         valid_linked_phases = []
         for linked_phase in experiment.linked_phases:
             if linked_phase.id.value not in sample_models.get_ids():
-                print(f'Warning: Linked phase {linked_phase.id.value} not found in Sample Models {sample_models.get_ids()}')
+                print(f"Warning: Linked phase '{linked_phase.id.value}' not found in Sample Models {sample_models.get_ids()}")
                 continue
             valid_linked_phases.append(linked_phase)
 

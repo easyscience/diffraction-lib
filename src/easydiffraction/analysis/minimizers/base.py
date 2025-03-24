@@ -106,6 +106,8 @@ class MinimizerBase(ABC):
         return sample_models.get_free_params() + experiments.get_free_params()
 
     def _track_chi_square(self, residuals, parameters):
+        self._iteration += 1 # Increment iteration counter
+
         chi2 = np.sum(residuals ** 2)
         n_points = len(residuals)
         red_chi2 = chi2 / (n_points - len(parameters))
@@ -128,6 +130,7 @@ class MinimizerBase(ABC):
                    f"{red_chi2:<12.2f}",
                    f"↓ {change_percent:.1f}%".ljust(10)]
             self._previous_chi2 = red_chi2
+
         if len(row):
             if self._iteration is None:
                 print(f"| N/A         | {row[1]:<12} | {row[2]:<12} | {row[3]:<12} |")
@@ -139,24 +142,6 @@ class MinimizerBase(ABC):
             self._best_iteration = self._iteration
 
         return residuals
-
-    def _compute_residuals_SINGLE_SAMPLE(self, engine_params, parameters, sample_models, experiments, calculator):
-        self._sync_result_to_parameters(parameters, engine_params)
-
-        residuals = []
-        for expt_id, experiment in experiments._items.items():
-            y_calc = calculator.calculate_pattern(sample_models, experiment)
-            sample1_scale = experiment.linked_phases[0].scale.value  # TODO: Support multiple phases
-
-            y_bkg = experiment.datastore.pattern.bkg
-            y_calc_total = sample1_scale * y_calc + y_bkg
-            y_meas = experiment.datastore.pattern.meas
-            y_meas_su = experiment.datastore.pattern.meas_su
-            diff = (y_meas - y_calc_total) / y_meas_su
-            residuals.extend(diff)
-
-        residuals = np.array(residuals)
-        return self._track_chi_square(residuals, parameters)
 
     def _compute_residuals(self, engine_params, parameters, sample_models, experiments, calculator):
         self._sync_result_to_parameters(parameters, engine_params)
@@ -178,6 +163,8 @@ class MinimizerBase(ABC):
             minimizer_name += f" ({self.method})"
 
         print(f"🚀 Starting fitting process with {minimizer_name}...")
+
+        self._iteration = 0 # Reset iteration counter
 
         self.parameters = self._collect_free_parameters(sample_models, experiments)
 

@@ -1,7 +1,6 @@
 try:
     from pycrysfml import cfml_py_utilities
 except ImportError:
-    #pycrysfml = None
     print('Warning: pycrysfml module not found. This calculator will not work.')
 
 from .base import CalculatorBase
@@ -9,12 +8,8 @@ from .base import CalculatorBase
 
 class CrysfmlCalculator(CalculatorBase):
     """
-    Adapter for Crysfml library.
+    Wrapper for Crysfml library.
     """
-
-    #def __init__(self):
-        #if pycrysfml is None:
-        #    raise ImportError('pycrysfml module is required for CryspyCalculator.')
 
     @property
     def name(self):
@@ -33,14 +28,6 @@ class CrysfmlCalculator(CalculatorBase):
         y = self._adjust_pattern_length(y, len(experiment.datastore.pattern.x))
         return y
 
-    def _crysfml_dict(self, sample_model, experiment):
-        sample_model_dict = self._convert_sample_model_to_dict(sample_model)
-        experiment_dict = self._convert_experiment_to_dict(experiment)
-        return {
-            "phases": [sample_model_dict],
-            "experiments": [experiment_dict]
-        }
-
     def _adjust_pattern_length(self, pattern, target_length):
         if len(pattern) > target_length:
             return pattern[:target_length]
@@ -48,6 +35,14 @@ class CrysfmlCalculator(CalculatorBase):
             padding = target_length - len(pattern)
             return np.pad(pattern, (0, padding), 'constant')
         return pattern
+
+    def _crysfml_dict(self, sample_model, experiment):
+        sample_model_dict = self._convert_sample_model_to_dict(sample_model)
+        experiment_dict = self._convert_experiment_to_dict(experiment)
+        return {
+            "phases": [sample_model_dict],
+            "experiments": [experiment_dict]
+        }
 
     def _convert_sample_model_to_dict(self, sample_model):
         sample_model_dict = {
