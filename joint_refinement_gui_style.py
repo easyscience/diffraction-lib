@@ -200,6 +200,16 @@ project.experiments["xrd"].background.add(x=90.0, y=113.7473)
 project.experiments["xrd"].background.add(x=110.0, y=132.4643)
 project.experiments["xrd"].background.show()
 
+# Show experiments as CIF. Now the background points are included.
+print(ed.paragraph("Experiment 'npd' as cif"))
+print(project.experiments["npd"].as_cif())
+
+print(ed.paragraph("Experiment 'xrd' as cif"))
+print(project.experiments["xrd"].as_cif())
+
+exit()
+
+
 print(ed.section('Show data chart including a background'))
 project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28)
