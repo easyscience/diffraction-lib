@@ -225,7 +225,7 @@ project.analysis.show_free_params()
 print(ed.section('Set refinement strategy'))
 project.analysis.show_available_refinement_strategies()
 project.analysis.show_current_refinement_strategy()
-project.analysis.refinement_strategy = 'combined'
+project.analysis.refinement_strategy = 'single'
 
 print(ed.section('Set fitting engine'))
 project.analysis.show_available_minimizers()
@@ -264,7 +264,7 @@ project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28, show_residua
 print(ed.section('Change refinement strategy'))
 project.analysis.show_available_refinement_strategies()
 project.analysis.show_current_refinement_strategy()
-project.analysis.refinement_strategy = 'single'
+project.analysis.refinement_strategy = 'combined'
 
 print(ed.section('Change calculator'))
 project.analysis.show_available_calculators()
