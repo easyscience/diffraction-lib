@@ -95,6 +95,18 @@ class ProjectInfo:
             f"_project.last_modified    '{self._last_modified.strftime('%d %b %Y %H:%M:%S')}'\n"
         )
 
+    def show_as_cif(self):
+        cif_text = self.as_cif()
+        lines = cif_text.splitlines()
+        max_width = max(len(line) for line in lines)
+        padded_lines = [f"│ {line.ljust(max_width)} │" for line in lines]
+        top = f"╒{'═' * (max_width + 2)}╕"
+        bottom = f"╘{'═' * (max_width + 2)}╛"
+
+        print(paragraph(f"Project 📦 '{self.id}' info as cif"))
+        print(top)
+        print("\n".join(padded_lines))
+        print(bottom)
 
 class Project:
     """
@@ -145,7 +157,7 @@ class Project:
         """
         if not self.info.path:
             raise ValueError("Project path not specified. Use save_as() to define the path first.")
-        print(paragraph("Saving project to"))
+        print(paragraph(f"Saving project 📦 '{self.id}' to"))
         print(os.path.abspath(self.info.path))
         # TODO: serialize project components to files
         self.info.update_last_modified()

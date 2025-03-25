@@ -165,7 +165,7 @@ class Experiments(BaseCollection):
             del self._experiments[experiment_id]
 
     def show_ids(self):
-        print(paragraph("Defined experiments"))
+        print(paragraph("Defined experiments" + " 🔬"))
         print(list(self._experiments.keys()))
 
     def show_params(self):
@@ -214,4 +214,4 @@ def _load_ascii_data_to_experiment(experiment, data_path):
     experiment.datastore.pattern.meas_su = sy
 
     print(paragraph("Data loaded successfully"))
-    print(f"Experiment '{experiment.id}'. Number of data points: {len(x)}")
+    print(f"Experiment 🔬 '{experiment.id}'. Number of data points: {len(x)}")

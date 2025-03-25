@@ -20,6 +20,6 @@ class PowderExperimentMixin:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=paragraph(f"Measured data for experiment '{self.id}'"),
+            title=paragraph(f"Measured data for experiment 🔬 '{self.id}'"),
             labels=['meas']
         )

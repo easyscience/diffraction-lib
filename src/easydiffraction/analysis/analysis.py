@@ -147,7 +147,7 @@ class Analysis:
         experiment = self.project.experiments[expt_id]
 
         if experiment.datastore.pattern.calc is None:
-            print(info(f"No calculated pattern found for '{expt_id}'. Calculating."))
+            print(info(f"No calculated pattern found for 🔬 '{expt_id}'. Calculating."))
             self.calculate_pattern(expt_id)
 
         pattern = experiment.datastore.pattern
@@ -158,7 +158,7 @@ class Analysis:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=paragraph(f"Calculated data for experiment '{expt_id}'"),
+            title=paragraph(f"Calculated data for experiment 🔬 '{expt_id}'"),
             labels=['calc']
         )
 
@@ -192,7 +192,7 @@ class Analysis:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=paragraph(f"Measured vs Calculated data for experiment '{expt_id}'"),
+            title=paragraph(f"Measured vs Calculated data for experiment 🔬 '{expt_id}'"),
             labels=labels
         )
 
@@ -217,11 +217,11 @@ class Analysis:
         experiment_ids = list(experiments._items.keys())
 
         if self.refinement_strategy == 'combined':
-            print(paragraph(f"Using all experiments {experiment_ids} for joint refinement."))
+            print(paragraph(f"Using all experiments 🔬 {experiment_ids} for joint refinement."))
             self.fitter.fit(sample_models, experiments, calculator)
         elif self.refinement_strategy == 'single':
             for expt_id in list(experiments._items.keys()):
-                print(paragraph(f"Using experiment '{expt_id}' for decoupled refinement."))
+                print(paragraph(f"Using experiment 🔬 '{expt_id}' for decoupled refinement."))
                 experiment = experiments[expt_id]
                 dummy_experiments = Experiments()
                 dummy_experiments.add(experiment)

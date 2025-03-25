@@ -35,8 +35,7 @@ The objective is to accurately refine the crystal structure of PbSO4."""
 project.save_as("examples/pbso4_joint")
 
 # Show project metadata
-print(ed.paragraph("Project info as cif"))
-print(project.info.as_cif())
+project.info.show_as_cif()
 
 ########################################################################
 # This section covers how to add sample models and modify their
@@ -90,8 +89,7 @@ project.sample_models["pbso4"].atom_sites.add(label='O3',
                                               b_iso=1.2822)
 
 # Show model as CIF string
-print(ed.paragraph("Sample model 'pbso4' as cif"))
-print(project.sample_models["pbso4"].as_cif())
+project.sample_models["pbso4"].show_as_cif()
 
 # Show sample model structure
 project.sample_models["pbso4"].show_structure()
@@ -110,14 +108,14 @@ print(ed.section('Add experiments'))
 
 # Add two experiments
 project.experiments.add(id="npd",
-                        diffr_mode="powder", # "powder" or "single_crystal"
-                        expt_mode="constant_wavelength", # "time_of_flight" or "constant_wavelength"
-                        radiation_probe="neutron", # "neutron" or "xray"
+                        diffr_mode="powder",
+                        expt_mode="constant_wavelength",
+                        radiation_probe="neutron",
                         data_path="data/pbso4_powder_neutron_cw.dat")
 project.experiments.add(id="xrd",
-                        diffr_mode="powder", # "powder" or "single_crystal"
-                        expt_mode="constant_wavelength", # "time_of_flight" or "constant_wavelength"
-                        radiation_probe="xray", # "neutron" or "xray"
+                        diffr_mode="powder",
+                        expt_mode="constant_wavelength",
+                        radiation_probe="xray",
                         data_path="data/pbso4_powder_xray.dat")
 
 print(ed.section('Show defined experiments'))
@@ -127,7 +125,7 @@ project.experiments.show_ids()
 project.experiments['npd'].show_meas_chart(x_min=62, x_max=66)
 project.experiments['xrd'].show_meas_chart(x_min=26, x_max=28)
 
-# Modify experiment parameters
+# Modify experimental parameters
 project.experiments['npd'].instr_setup.wavelength = 1.91
 project.experiments["npd"].instr_calib.twotheta_offset = -0.1406
 project.experiments["npd"].peak_broad.gauss_u = 0.139
@@ -136,24 +134,21 @@ project.experiments["npd"].peak_broad.gauss_w = 0.386
 project.experiments["npd"].peak_broad.lorentz_x = 0
 project.experiments["npd"].peak_broad.lorentz_y = 0.088
 
-project.experiments['xrd'].instr_setup.wavelength = 1.5418
-project.experiments["xrd"].instr_calib.twotheta_offset = -0.04741
-project.experiments["xrd"].peak_broad.gauss_u = 0.199632
-project.experiments["xrd"].peak_broad.gauss_v = -0.055022
-project.experiments["xrd"].peak_broad.gauss_w = 0.026227
-project.experiments["xrd"].peak_broad.lorentz_x = 0.009323
-project.experiments["xrd"].peak_broad.lorentz_y = 0
+project.experiments['xrd'].instr_setup.wavelength = 1.540567
+project.experiments["xrd"].instr_calib.twotheta_offset = -0.05181
+project.experiments["xrd"].peak_broad.gauss_u = 0.304138
+project.experiments["xrd"].peak_broad.gauss_v = -0.112622
+project.experiments["xrd"].peak_broad.gauss_w = 0.021272
+project.experiments["xrd"].peak_broad.lorentz_x = 0
+project.experiments["xrd"].peak_broad.lorentz_y = 0.057691
 
 # Link sample model to experiments
 project.experiments['npd'].linked_phases.add(id='pbso4', scale=1.0)
-project.experiments['xrd'].linked_phases.add(id='pbso4', scale=0.0007)
+project.experiments['xrd'].linked_phases.add(id='pbso4', scale=0.005)
 
 # Show experiments as CIF
-print(ed.paragraph("Experiment 'npd' as cif"))
-print(project.experiments["npd"].as_cif())
-
-print(ed.paragraph("Experiment 'xrd' as cif"))
-print(project.experiments["xrd"].as_cif())
+project.experiments["npd"].show_as_cif()
+project.experiments["xrd"].show_as_cif()
 
 # Save the project state after adding experiments
 project.save()
@@ -171,12 +166,12 @@ project.analysis.show_current_calculator()
 project.analysis.current_calculator = 'crysfml'
 
 print(ed.section('Show calculated data'))
-project.analysis.show_calc_chart("npd", x_min=62, x_max=66)
-project.analysis.show_calc_chart("xrd", x_min=26, x_max=28)
+project.analysis.show_calc_chart(expt_id="npd", x_min=62, x_max=66)
+project.analysis.show_calc_chart(expt_id="xrd", x_min=26, x_max=28)
 
 print(ed.section('Show calculated vs measured data'))
-project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66)
-project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28)
+project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66)
+project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28)
 
 # The following background points represent the baseline noise in the diffraction data.
 print(ed.section('Add background'))
@@ -200,19 +195,13 @@ project.experiments["xrd"].background.add(x=90.0, y=113.7473)
 project.experiments["xrd"].background.add(x=110.0, y=132.4643)
 project.experiments["xrd"].background.show()
 
-# Show experiments as CIF. Now the background points are included.
-print(ed.paragraph("Experiment 'npd' as cif"))
-print(project.experiments["npd"].as_cif())
-
-print(ed.paragraph("Experiment 'xrd' as cif"))
-print(project.experiments["xrd"].as_cif())
-
-exit()
-
+print(ed.section('Show experiments as CIF. Now the background points are included'))
+project.experiments["npd"].show_as_cif()
+project.experiments["xrd"].show_as_cif()
 
 print(ed.section('Show data chart including a background'))
-project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66)
-project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28)
+project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66)
+project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28)
 
 print(ed.section('Show all refinable parameters'))
 project.analysis.show_refinable_params()
@@ -235,7 +224,7 @@ project.analysis.show_free_params()
 print(ed.section('Set refinement strategy'))
 project.analysis.show_available_refinement_strategies()
 project.analysis.show_current_refinement_strategy()
-project.analysis.refinement_strategy = 'single'
+#project.analysis.refinement_strategy = 'single'
 
 print(ed.section('Set fitting engine'))
 project.analysis.show_available_minimizers()
@@ -246,8 +235,8 @@ print(ed.section('Start fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after fitting'))
-project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66)
-project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28)
+project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66)
+project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28)
 
 print(ed.section('Change minimizer'))
 project.analysis.show_available_minimizers()
@@ -257,8 +246,8 @@ print(ed.section('Start 2nd fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after 2nd fitting'))
-project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66, show_residual=True)
-project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28, show_residual=True)
+project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66, show_residual=True)
+project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28, show_residual=True)
 
 print(ed.section('Change calculator'))
 project.analysis.show_available_calculators()
@@ -268,8 +257,8 @@ print(ed.section('Start 3rd fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after 3rd fitting'))
-project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66, show_residual=True)
-project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28, show_residual=True)
+project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66, show_residual=True)
+project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28, show_residual=True)
 
 print(ed.section('Change refinement strategy'))
 project.analysis.show_available_refinement_strategies()
@@ -285,8 +274,8 @@ print(ed.section('Start 4th fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after 4th fitting'))
-project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66, show_residual=True)
-project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28, show_residual=True)
+project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66, show_residual=True)
+project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28, show_residual=True)
 
 # Save the project state after analysis
 project.save()

@@ -43,7 +43,7 @@ class SampleModel:
             grid_size (int): Size of the ASCII grid (default is 20).
         """
 
-        print(paragraph(f"Sample model '{self.model_id}' structure view"))
+        print(paragraph(f"Sample model 🧩 '{self.model_id}' structure view"))
         print("Not implemented yet.")
         #plotter = StructurePlotter(grid_size=grid_size)
         #plotter.draw_from_cif(self.as_cif())
@@ -103,6 +103,18 @@ class SampleModel:
 
         return "\n".join(cif_lines)
 
+    def show_as_cif(self):
+        cif_text = self.as_cif()
+        lines = cif_text.splitlines()
+        max_width = max(len(line) for line in lines)
+        padded_lines = [f"│ {line.ljust(max_width)} │" for line in lines]
+        top = f"╒{'═' * (max_width + 2)}╕"
+        bottom = f"╘{'═' * (max_width + 2)}╛"
+
+        print(paragraph(f"Sample model 🧩 '{self.model_id}' as cif"))
+        print(top)
+        print("\n".join(padded_lines))
+        print(bottom)
 
 class SampleModels(BaseCollection):
     """
@@ -140,7 +152,7 @@ class SampleModels(BaseCollection):
         """
         List all model IDs in the collection.
         """
-        print(paragraph("Available sample models"))
+        print(paragraph("Defined sample models" + " 🧩"))
         print(self.get_ids())
 
     def show_params(self):
