@@ -60,15 +60,15 @@ class FitResults:
         for param in self.parameters:
             block_name = getattr(param, 'block_name', 'N/A')
             cif_name = getattr(param, 'cif_name', 'N/A')
-            start = f"{getattr(param, 'start_value', 'N/A'):.4f}" if param.start_value is not None else "N/A"
-            refined = f"{param.value:.4f}" if param.value is not None else "N/A"
-            error = f"{param.error:.4f}" if param.error is not None else "N/A"
+            start = f"{getattr(param, 'start_value', 'N/A'):.5f}" if param.start_value is not None else "N/A"
+            refined = f"{param.value:.5f}" if param.value is not None else "N/A"
+            error = f"{param.error:.5f}" if param.error is not None else "N/A"
             units = getattr(param, 'units', 'N/A')
 
             if param.start_value and param.value:
                 change = ((param.value - param.start_value) / param.start_value) * 100
                 arrow = "↑" if change > 0 else "↓"
-                relative_change = f"{abs(change):.1f}% {arrow}"
+                relative_change = f"{abs(change):.2f}% {arrow}"
             else:
                 relative_change = "N/A"
 

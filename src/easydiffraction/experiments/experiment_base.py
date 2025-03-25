@@ -1,16 +1,23 @@
 from abc import ABC, abstractmethod
 
+from easydiffraction.experiments.components.expt_type import ExperimentType
+
 
 class BaseExperiment(ABC):
     """
     Base class for all dynamically generated experiments.
     """
 
-    def __init__(self, id, diffr_mode, expt_mode, radiation_probe, **kwargs):
+    def __init__(self,
+                 id,
+                 diffr_mode="powder",
+                 expt_mode="constant_wavelength",
+                 radiation_probe="neutron",
+                 **kwargs):
         self.id = id
-        self.diffr_mode = diffr_mode
-        self.expt_mode = expt_mode
-        self.radiation_probe = radiation_probe
+        self.expt_type = ExperimentType(diffr_mode=diffr_mode,
+                                        expt_mode=expt_mode,
+                                        radiation_probe=radiation_probe)
         super().__init__(**kwargs)
 
     def as_cif(self):

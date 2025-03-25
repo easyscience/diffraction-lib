@@ -109,51 +109,51 @@ print(ed.chapter('Step 3: Add Experiments (Instrument models and measured data)'
 print(ed.section('Add experiments'))
 
 # Add two experiments
-project.experiments.add(id="expt_high",
+project.experiments.add(id="npd",
                         diffr_mode="powder", # "powder" or "single_crystal"
                         expt_mode="constant_wavelength", # "time_of_flight" or "constant_wavelength"
                         radiation_probe="neutron", # "neutron" or "xray"
-                        data_path="data/pbso4_powder_neutron_cw_60-100.dat")
-project.experiments.add(id="expt_low",
+                        data_path="data/pbso4_powder_neutron_cw.dat")
+project.experiments.add(id="xrd",
                         diffr_mode="powder", # "powder" or "single_crystal"
                         expt_mode="constant_wavelength", # "time_of_flight" or "constant_wavelength"
                         radiation_probe="xray", # "neutron" or "xray"
-                        data_path="data/pbso4_powder_neutron_cw_10-60.dat")
+                        data_path="data/pbso4_powder_xray.dat")
 
 print(ed.section('Show defined experiments'))
 project.experiments.show_ids()
 
 # Show measured data
-project.experiments['expt_high'].show_meas_chart(x_min=62, x_max=66)
-project.experiments['expt_low'].show_meas_chart(x_min=53, x_max=57)
+project.experiments['npd'].show_meas_chart(x_min=62, x_max=66)
+project.experiments['xrd'].show_meas_chart(x_min=26, x_max=28)
 
 # Modify experiment parameters
-project.experiments['expt_high'].instr_setup.wavelength = 1.91
-project.experiments["expt_high"].instr_calib.twotheta_offset = -0.1406
-project.experiments["expt_high"].peak_broad.gauss_u = 0.139
-project.experiments["expt_high"].peak_broad.gauss_v = -0.412
-project.experiments["expt_high"].peak_broad.gauss_w = 0.386
-project.experiments["expt_high"].peak_broad.lorentz_x = 0
-project.experiments["expt_high"].peak_broad.lorentz_y = 0.088
+project.experiments['npd'].instr_setup.wavelength = 1.91
+project.experiments["npd"].instr_calib.twotheta_offset = -0.1406
+project.experiments["npd"].peak_broad.gauss_u = 0.139
+project.experiments["npd"].peak_broad.gauss_v = -0.412
+project.experiments["npd"].peak_broad.gauss_w = 0.386
+project.experiments["npd"].peak_broad.lorentz_x = 0
+project.experiments["npd"].peak_broad.lorentz_y = 0.088
 
-project.experiments['expt_low'].instr_setup.wavelength = 1.91
-project.experiments["expt_low"].instr_calib.twotheta_offset = -0.1406
-project.experiments["expt_low"].peak_broad.gauss_u = 0.139
-project.experiments["expt_low"].peak_broad.gauss_v = -0.412
-project.experiments["expt_low"].peak_broad.gauss_w = 0.386
-project.experiments["expt_low"].peak_broad.lorentz_x = 0
-project.experiments["expt_low"].peak_broad.lorentz_y = 0.088
+project.experiments['xrd'].instr_setup.wavelength = 1.5418
+project.experiments["xrd"].instr_calib.twotheta_offset = -0.04741
+project.experiments["xrd"].peak_broad.gauss_u = 0.199632
+project.experiments["xrd"].peak_broad.gauss_v = -0.055022
+project.experiments["xrd"].peak_broad.gauss_w = 0.026227
+project.experiments["xrd"].peak_broad.lorentz_x = 0.009323
+project.experiments["xrd"].peak_broad.lorentz_y = 0
 
 # Link sample model to experiments
-project.experiments['expt_high'].linked_phases.add(id='pbso4', scale=1.0)
-project.experiments['expt_low'].linked_phases.add(id='pbso4', scale=1.0)
+project.experiments['npd'].linked_phases.add(id='pbso4', scale=1.0)
+project.experiments['xrd'].linked_phases.add(id='pbso4', scale=0.0007)
 
 # Show experiments as CIF
-print(ed.paragraph("Experiment 'expt_high' as cif"))
-print(project.experiments["expt_high"].as_cif())
+print(ed.paragraph("Experiment 'npd' as cif"))
+print(project.experiments["npd"].as_cif())
 
-print(ed.paragraph("Experiment 'expt_low' as cif"))
-print(project.experiments["expt_low"].as_cif())
+print(ed.paragraph("Experiment 'xrd' as cif"))
+print(project.experiments["xrd"].as_cif())
 
 # Save the project state after adding experiments
 project.save()
@@ -171,38 +171,38 @@ project.analysis.show_current_calculator()
 project.analysis.current_calculator = 'crysfml'
 
 print(ed.section('Show calculated data'))
-project.analysis.show_calc_chart("expt_high", x_min=62, x_max=66)
-project.analysis.show_calc_chart("expt_low", x_min=53, x_max=57)
+project.analysis.show_calc_chart("npd", x_min=62, x_max=66)
+project.analysis.show_calc_chart("xrd", x_min=26, x_max=28)
 
 print(ed.section('Show calculated vs measured data'))
-project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
-project.analysis.show_meas_vs_calc_chart("expt_low", x_min=53, x_max=57)
+project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66)
+project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28)
 
 # The following background points represent the baseline noise in the diffraction data.
 print(ed.section('Add background'))
-project.experiments["expt_high"].background.add(x=11.0, y=206.1624)
-project.experiments["expt_high"].background.add(x=15.0, y=194.75)
-project.experiments["expt_high"].background.add(x=20.0, y=194.505)
-project.experiments["expt_high"].background.add(x=30.0, y=188.4375)
-project.experiments["expt_high"].background.add(x=50.0, y=207.7633)
-project.experiments["expt_high"].background.add(x=70.0, y=201.7002)
-project.experiments["expt_high"].background.add(x=120.0, y=244.4525)
-project.experiments["expt_high"].background.add(x=153.0, y=226.0595)
-project.experiments["expt_high"].background.show()
+project.experiments["npd"].background.add(x=11.0, y=206.1624)
+project.experiments["npd"].background.add(x=15.0, y=194.75)
+project.experiments["npd"].background.add(x=20.0, y=194.505)
+project.experiments["npd"].background.add(x=30.0, y=188.4375)
+project.experiments["npd"].background.add(x=50.0, y=207.7633)
+project.experiments["npd"].background.add(x=70.0, y=201.7002)
+project.experiments["npd"].background.add(x=120.0, y=244.4525)
+project.experiments["npd"].background.add(x=153.0, y=226.0595)
+project.experiments["npd"].background.show()
 
-project.experiments["expt_low"].background.add(x=11.0, y=206.1624)
-project.experiments["expt_low"].background.add(x=15.0, y=194.75)
-project.experiments["expt_low"].background.add(x=20.0, y=194.505)
-project.experiments["expt_low"].background.add(x=30.0, y=188.4375)
-project.experiments["expt_low"].background.add(x=50.0, y=207.7633)
-project.experiments["expt_low"].background.add(x=70.0, y=201.7002)
-project.experiments["expt_low"].background.add(x=120.0, y=244.4525)
-project.experiments["expt_low"].background.add(x=153.0, y=226.0595)
-project.experiments["expt_low"].background.show()
+project.experiments["xrd"].background.add(x=11.0, y=141.8516)
+project.experiments["xrd"].background.add(x=13.0, y=102.8838)
+project.experiments["xrd"].background.add(x=16.0, y=78.0551)
+project.experiments["xrd"].background.add(x=20.0, y=124.0121)
+project.experiments["xrd"].background.add(x=30.0, y=123.7123)
+project.experiments["xrd"].background.add(x=50.0, y=120.8266)
+project.experiments["xrd"].background.add(x=90.0, y=113.7473)
+project.experiments["xrd"].background.add(x=110.0, y=132.4643)
+project.experiments["xrd"].background.show()
 
 print(ed.section('Show data chart including a background'))
-project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
-project.analysis.show_meas_vs_calc_chart("expt_low", x_min=53, x_max=57)
+project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66)
+project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28)
 
 print(ed.section('Show all refinable parameters'))
 project.analysis.show_refinable_params()
@@ -217,8 +217,8 @@ project.sample_models["pbso4"].cell.length_a.free = True
 project.sample_models["pbso4"].cell.length_b.free = True
 project.sample_models["pbso4"].cell.length_c.free = True
 
-project.experiments["expt_high"].linked_phases['pbso4'].scale.free = True
-project.experiments["expt_low"].linked_phases['pbso4'].scale.free = True
+project.experiments["npd"].linked_phases['pbso4'].scale.free = True
+project.experiments["xrd"].linked_phases['pbso4'].scale.free = True
 
 project.analysis.show_free_params()
 
@@ -236,8 +236,8 @@ print(ed.section('Start fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after fitting'))
-project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
-project.analysis.show_meas_vs_calc_chart("expt_low", x_min=53, x_max=57)
+project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66)
+project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28)
 
 print(ed.section('Change minimizer'))
 project.analysis.show_available_minimizers()
@@ -247,8 +247,8 @@ print(ed.section('Start 2nd fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after 2nd fitting'))
-project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
-project.analysis.show_meas_vs_calc_chart("expt_low", x_min=53, x_max=57)
+project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66, show_residual=True)
+project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28, show_residual=True)
 
 print(ed.section('Change calculator'))
 project.analysis.show_available_calculators()
@@ -258,8 +258,8 @@ print(ed.section('Start 3rd fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after 3rd fitting'))
-project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66, show_residual=True)
-project.analysis.show_meas_vs_calc_chart("expt_low", x_min=53, x_max=57, show_residual=True)
+project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66, show_residual=True)
+project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28, show_residual=True)
 
 # Save the project state after analysis
 project.save()

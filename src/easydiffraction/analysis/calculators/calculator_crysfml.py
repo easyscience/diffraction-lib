@@ -78,6 +78,7 @@ class CrysfmlCalculator(CalculatorBase):
         return sample_model_dict
 
     def _convert_experiment_to_dict(self, experiment):
+        expt_type = getattr(experiment, "expt_type", None)
         instr_setup = getattr(experiment, "instr_setup", None)
         instr_calib = getattr(experiment, "instr_calib", None)
         peak_broad = getattr(experiment, "peak_broad", None)
@@ -89,7 +90,7 @@ class CrysfmlCalculator(CalculatorBase):
 
         exp_dict = {
             "NPD": {
-                "_diffrn_radiation_probe": "neutron",
+                "_diffrn_radiation_probe": expt_type.radiation_probe if expt_type else "neutron",
                 "_diffrn_radiation_wavelength": instr_setup.wavelength.value if instr_setup else 1.0,
                 "_pd_instr_resolution_u": peak_broad.gauss_u.value if peak_broad else 0.0,
                 "_pd_instr_resolution_v": peak_broad.gauss_v.value if peak_broad else 0.0,

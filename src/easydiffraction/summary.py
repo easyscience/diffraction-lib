@@ -1,4 +1,5 @@
 from tabulate import tabulate
+from textwrap import wrap
 
 from easydiffraction.utils.utils import paragraph, section
 
@@ -37,7 +38,7 @@ class Summary:
         print(self.project.info.title)
 
         print(paragraph("Description"))
-        print(self.project.info.description)
+        print('\n'.join(wrap(self.project.info.description, width=60)))
 
         print(section("Crystallographic data"))
         for model in self.project.sample_models._models.values():

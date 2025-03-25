@@ -1,11 +1,5 @@
-import asciichartpy
-import numpy as np
-
-from easydiffraction.experiments.base_experiment import BaseExperiment
+from easydiffraction.experiments.experiment_base import BaseExperiment
 from easydiffraction.experiments.mixins.powder import PowderExperimentMixin
-
-from easydiffraction.experiments.datastore import Datastore
-
 
 # Component imports
 from easydiffraction.experiments.components.instr_setup import (
@@ -13,59 +7,32 @@ from easydiffraction.experiments.components.instr_setup import (
     InstrSetupConstWavelengthMixin,
     InstrSetupTimeOfFlightMixin,
 )
-
 from easydiffraction.experiments.components.instr_calib import (
     InstrCalibBase,
     InstrCalibConstWavelengthMixin,
     InstrCalibTimeOfFlightMixin,
 )
-
 from easydiffraction.experiments.components.peak_profile import (
     PeakProfileBase,
     PeakProfileConstWavelengthMixin,
     PeakProfileTimeOfFlightMixin,
 )
-
 from easydiffraction.experiments.components.peak_broad import (
     PeakBroadBase,
     PeakBroadConstWavelengthMixin,
     PeakBroadTimeOfFlightMixin,
 )
-
 from easydiffraction.experiments.components.peak_asymm import (
     PeakAsymmBase,
     PeakAsymmConstWavelengthMixin,
     PeakAsymmTimeOfFlightMixin,
 )
-
 from easydiffraction.experiments.components.linked_phases import (
     LinkedPhase,
     LinkedPhases,
 )
-
 from easydiffraction.experiments.background import BackgroundFactory
 from easydiffraction.experiments.datastore import DatastoreFactory
-
-def show_meas_chart(self, x_min=None, x_max=None):
-    pattern = self.datastore.pattern
-    if pattern is None or pattern.meas is None:
-        print(f"No measured data found for {self.id}")
-        return
-
-    x_values = pattern.x
-    y_values = pattern.meas
-
-    if x_min is not None or x_max is not None:
-        mask = np.ones_like(x_values, dtype=bool)
-        if x_min is not None:
-            mask &= x_values >= x_min
-        if x_max is not None:
-            mask &= x_values <= x_max
-        x_values = x_values[mask]
-        y_values = y_values[mask]
-
-    print(f"\nMeasured diffraction pattern for {self.id}:\n")
-    print(asciichartpy.plot(y_values.tolist(), {'height': 15}))
 
 
 class ExperimentFactory:
@@ -81,51 +48,55 @@ class ExperimentFactory:
         # BaseExperiment comes last
         bases = tuple(experiment_mixins + [BaseExperiment])
 
+        # Dynamically assemble class
         ExperimentCls = type(
             f"Experiment_{diffr_mode}_{expt_mode}_{radiation_probe}",
             bases,
             {}
         )
 
-        instance = ExperimentCls(
-            id=id,
-            diffr_mode=diffr_mode,
-            expt_mode=expt_mode,
-            radiation_probe=radiation_probe
-        )
+        # Create instance of dynamically assembled class
+        instance = ExperimentCls(id=id,
+                                 diffr_mode=diffr_mode,
+                                 expt_mode=expt_mode,
+                                 radiation_probe=radiation_probe)
 
-        # Attach components
+        # Attach instrument setup and calibration components
         instance.instr_setup = ExperimentFactory._create_component(
             InstrSetupBase,
             ExperimentFactory.get_instr_setup_mixins(expt_mode),
             "InstrSetup"
         )
-
         instance.instr_calib = ExperimentFactory._create_component(
             InstrCalibBase,
             ExperimentFactory.get_instr_calib_mixins(expt_mode),
             "InstrCalib"
         )
 
-        if diffr_mode == "powder":
-            instance.peak_profile = ExperimentFactory._create_component(
-                PeakProfileBase,
-                ExperimentFactory.get_peak_profile_mixins(diffr_mode, expt_mode),
-                "PeakProfile"
-            )
-            instance.peak_broad = ExperimentFactory._create_component(
-                PeakBroadBase,
-                ExperimentFactory.get_peak_broad_mixins(diffr_mode, expt_mode),
-                "PeakBroad"
-            )
-            instance.peak_asymm = ExperimentFactory._create_component(
-                PeakAsymmBase,
-                ExperimentFactory.get_peak_asymm_mixins(diffr_mode, expt_mode),
-                "PeakAsymm"
-            )
-            instance.linked_phases = LinkedPhases()
-            instance.background = BackgroundFactory.create_background("point")
+        # Attach peak profile, broadening, and asymmetry components
+        instance.peak_profile = ExperimentFactory._create_component(
+            PeakProfileBase,
+            ExperimentFactory.get_peak_profile_mixins(diffr_mode, expt_mode),
+            "PeakProfile"
+        )
+        instance.peak_broad = ExperimentFactory._create_component(
+            PeakBroadBase,
+            ExperimentFactory.get_peak_broad_mixins(diffr_mode, expt_mode),
+            "PeakBroad"
+        )
+        instance.peak_asymm = ExperimentFactory._create_component(
+            PeakAsymmBase,
+            ExperimentFactory.get_peak_asymm_mixins(diffr_mode, expt_mode),
+            "PeakAsymm"
+        )
 
+        # Attach linked phases component
+        instance.linked_phases = LinkedPhases()
+
+        # Attach background component
+        instance.background = BackgroundFactory.create_background("point")
+
+        # Attach datastore component
         instance.datastore = DatastoreFactory.create_datastore(diffr_mode, instance)
 
         return instance

@@ -66,6 +66,7 @@ class CryspyCalculator(CalculatorBase):
         return sample_model.as_cif()
 
     def _convert_experiment_to_cif(self, experiment, linked_phase):
+        expt_type = getattr(experiment, "expt_type", None)
         instr_setup = getattr(experiment, "instr_setup", None)
         instr_calib = getattr(experiment, "instr_calib", None)
         peak_broad = getattr(experiment, "peak_broad", None)
@@ -80,6 +81,12 @@ class CryspyCalculator(CalculatorBase):
         two_theta_max = float(x_data.max())
         cif_lines.append(f"_range_2theta_min   {two_theta_min}")
         cif_lines.append(f"_range_2theta_max   {two_theta_max}\n")
+
+        if expt_type:
+            radiation_probe = expt_type.radiation_probe
+            radiation_probe = radiation_probe.replace("neutron", "neutrons")
+            radiation_probe = radiation_probe.replace("xray", "X-rays")
+            cif_lines.append(f"_setup_radiation   {radiation_probe}")
 
         if instr_setup:
             wavelength = instr_setup.wavelength.value
