@@ -8,10 +8,10 @@ print(ed.chapter('Step 1: Create a Project'))
 project = ed.Project(project_id="joint_refinement")
 
 # Set project metadata
-project.info.title = "Joint refinement from neutron and X-ray diffraction"
-project.info.description = """This project performs joint refinement of neutron 
-and X-ray diffraction data collected with constant wavelength instruments to 
-refine the crystal structure of PbSO4."""
+project.info.title = "Joint refinement of PbSO4 from neutron and X-ray diffraction"
+project.info.description = """This project demonstrates joint refinement of neutron 
+and X-ray diffraction data, both measured using with constant wavelength instruments. 
+The objective is to accurately refine the crystal structure of PbSO4."""
 
 # Show project metadata
 print(ed.paragraph("Project info as cif"))

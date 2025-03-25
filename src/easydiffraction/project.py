@@ -1,5 +1,6 @@
 import os
 import datetime
+from textwrap import wrap
 
 from easydiffraction.utils.utils import paragraph
 from easydiffraction.sample_models.sample_models import SampleModels
@@ -13,13 +14,55 @@ class ProjectInfo:
     Stores metadata about the project, such as ID, title, description, and file paths.
     """
 
-    def __init__(self, project_id="untitled_project", title="Untitled Project", description="", path=None):
-        self.id = project_id  # Short unique project identifier
-        self.title = title
-        self.description = description
-        self.path = path or os.getcwd()
+    def __init__(self):
+        self._id = "untitled_project"  # Short unique project identifier
+        self._title = "Untitled Project"
+        self._description = ""
+        self._path = os.getcwd()
         self._created = datetime.datetime.now()
         self._last_modified = datetime.datetime.now()
+
+    @property
+    def id(self):
+        """Return the project ID."""
+        return self._id
+
+    @property
+    def title(self):
+        """Return the project title."""
+        return self._title
+
+    @title.setter
+    def title(self, value):
+        self._title = value
+
+    @property
+    def description(self):
+        """Return sanitized description with single spaces."""
+        return ' '.join(self._description.split())
+
+    @description.setter
+    def description(self, value):
+        self._description = ' '.join(value.split())
+
+    @property
+    def path(self):
+        """Return the project path."""
+        return self._path
+
+    @path.setter
+    def path(self, value):
+        self._path = value
+
+    @property
+    def created(self):
+        """Return the creation timestamp."""
+        return self._created
+
+    @property
+    def last_modified(self):
+        """Return the last modified timestamp."""
+        return self._last_modified
 
     def update_last_modified(self):
         """Update the last modified timestamp."""
@@ -27,12 +70,29 @@ class ProjectInfo:
 
     def as_cif(self) -> str:
         """Export project metadata to CIF."""
+        wrapped_title = wrap(self.title, width=60)
+        wrapped_description = wrap(self.description, width=60)
+
+        title_str = f"_project.title            '{wrapped_title[0]}'"
+        for line in wrapped_title[1:]:
+            title_str += f"\n{' ' * 27}'{line}'"
+
+        if wrapped_description:
+            base_indent = "_project.description      "
+            indent_spaces = " " * len(base_indent)
+            formatted_description = f"{base_indent}'{wrapped_description[0]}"
+            for line in wrapped_description[1:]:
+                formatted_description += f"\n{indent_spaces}{line}"
+            formatted_description += "'"
+        else:
+            formatted_description = "_project.description      ''"
+
         return (
-            f"_project_id               '{self.id}'\n"
-            f"_project_title            '{self.title}'\n"
-            f"_project_description      '{self.description}'\n"
-            f"_project_created          '{self._created.isoformat()}'\n"
-            f"_project_last_modified    '{self._last_modified.isoformat()}'\n"
+            f"_project.id               {self.id}\n"
+            f"{title_str}\n"
+            f"{formatted_description}\n"
+            f"_project.created          '{self._created.strftime('%d %b %Y %H:%M:%S')}'\n"
+            f"_project.last_modified    '{self._last_modified.strftime('%d %b %Y %H:%M:%S')}'\n"
         )
 
 
@@ -43,7 +103,10 @@ class Project:
     """
 
     def __init__(self, project_id="untitled_project", title="Untitled Project", description=""):
-        self.info = ProjectInfo(project_id=project_id, title=title, description=description)
+        self.info = ProjectInfo()
+        self.info._id = project_id
+        self.info.title = title
+        self.info.description = description
         self.sample_models = SampleModels()
         self.experiments = Experiments()
         self.analysis = Analysis(self)

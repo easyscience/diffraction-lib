@@ -101,7 +101,7 @@ class CryspyCalculator(CalculatorBase):
         cif_lines.append("\nloop_")
         cif_lines.append("  _phase_label")
         cif_lines.append("  _phase_scale")
-        cif_lines.append(f"  {linked_phase.id}   1.0")
+        cif_lines.append(f"  {linked_phase.model_id}   1.0")
 
         # Force background to be zero, as we handle it independently of the
         # calculation engines

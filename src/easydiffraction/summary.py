@@ -42,7 +42,7 @@ class Summary:
         print(section("Crystallographic data"))
         for model in self.project.sample_models._models.values():
             print(paragraph("Phase datablock"))
-            print(model.id)
+            print(model.model_id)
 
             print(paragraph("Space group"))
             print(model.space_group.name)

@@ -3,6 +3,7 @@ from .cell import Cell
 from .atom_sites import AtomSites, AtomSite
 from easydiffraction.base_collection import BaseCollection
 from easydiffraction.utils.structure_plotter import StructurePlotter
+from easydiffraction.utils.utils import paragraph
 
 
 class SampleModel:
@@ -11,8 +12,8 @@ class SampleModel:
     Wraps crystallographic information including space group, cell, and atomic sites.
     """
 
-    def __init__(self, id=None, cif_path=None, cif_str=None):
-        self.id = id or "sample_model"
+    def __init__(self, model_id=None, cif_path=None, cif_str=None):
+        self.model_id = model_id or "sample_model"
         self.space_group = SpaceGroup()
         self.cell = Cell()
         self.atom_sites = AtomSites()
@@ -42,13 +43,14 @@ class SampleModel:
             grid_size (int): Size of the ASCII grid (default is 20).
         """
 
-        print(f"\nDisplaying structure for sample model '{self.id}' ...")
-        plotter = StructurePlotter(grid_size=grid_size)
-        plotter.draw_from_cif(self.as_cif())
+        print(paragraph(f"Structure view of the sample model '{self.model_id}'"))
+        print("Not implemented yet.")
+        #plotter = StructurePlotter(grid_size=grid_size)
+        #plotter.draw_from_cif(self.as_cif())
 
     def show_params(self):
         """Display structural parameters (space group, unit cell, atomic sites)."""
-        print(f"\nSampleModel ID: {self.id}")
+        print(f"\nSampleModel ID: {self.model_id}")
         print(f"Space group: {self.space_group.name}")
         print(f"Cell parameters: {self.cell.as_dict()}")
         print("Atom sites:")
@@ -60,7 +62,7 @@ class SampleModel:
         Returns:
             str: CIF string representation of the sample model.
         """
-        cif_lines = [f"data_{self.id}", ""]
+        cif_lines = [f"data_{self.model_id}", ""]
 
         # Unit Cell Parameters
         cif_lines += [
@@ -138,7 +140,8 @@ class SampleModels(BaseCollection):
         """
         List all model IDs in the collection.
         """
-        print("Available sample models:", self.get_ids())
+        print(paragraph("Available sample models"))
+        print(self.get_ids())
 
     def show_params(self):
         """
@@ -170,7 +173,7 @@ class SampleModels(BaseCollection):
         from easydiffraction.sample_models.sample_models import SampleModel  # avoid circular import
         if not isinstance(model, SampleModel):
             raise TypeError("Expected an instance of SampleModel")
-        self._models[model.id] = model
+        self._models[model.model_id] = model
 
     def _create_and_add_sample_model(self, model_id=None, cif_path=None, cif_str=None):
         """
@@ -179,12 +182,12 @@ class SampleModels(BaseCollection):
         from easydiffraction.sample_models.sample_models import SampleModel  # avoid circular import
 
         if cif_path:
-            sample = SampleModel(cif_path=cif_path)
+            model = SampleModel(cif_path=cif_path)
         elif cif_str:
-            sample = SampleModel(cif_str=cif_str)
+            model = SampleModel(cif_str=cif_str)
         elif model_id:
-            sample = SampleModel(model_id=model_id)
+            model = SampleModel(model_id=model_id)
         else:
             raise ValueError("You must provide a model_id, cif_path, or cif_str.")
 
-        self._models[sample.id] = sample
+        self._models[model.model_id] = model

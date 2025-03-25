@@ -50,7 +50,7 @@ class CrysfmlCalculator(CalculatorBase):
 
     def _convert_sample_model_to_dict(self, sample_model):
         sample_model_dict = {
-            sample_model.id: {
+            sample_model.model_id: {
                 "_space_group_name_H-M_alt": sample_model.space_group.name,
                 "_cell_length_a": sample_model.cell.length_a.value,
                 "_cell_length_b": sample_model.cell.length_b.value,
@@ -73,7 +73,7 @@ class CrysfmlCalculator(CalculatorBase):
                 "_adp_type": "Biso",  # Assuming Biso for simplicity
                 "_B_iso_or_equiv": atom.b_iso.value
             }
-            sample_model_dict[sample_model.id]["_atom_site"].append(atom_site)
+            sample_model_dict[sample_model.model_id]["_atom_site"].append(atom_site)
 
         return sample_model_dict
 
