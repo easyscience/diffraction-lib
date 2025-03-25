@@ -32,6 +32,7 @@ class Summary:
         - Experiment configurations and results
         - Analysis and refinement results
         """
+        ##############################
         print(section("Project info"))
 
         print(paragraph("Title"))
@@ -40,10 +41,11 @@ class Summary:
         print(paragraph("Description"))
         print('\n'.join(wrap(self.project.info.description, width=60)))
 
+        #######################################
         print(section("Crystallographic data"))
         for model in self.project.sample_models._models.values():
             print(paragraph("Phase datablock"))
-            print(model.model_id)
+            print(f'🧩 {model.model_id}')
 
             print(paragraph("Space group"))
             print(model.space_group.name)
@@ -68,12 +70,51 @@ class Summary:
             headers = ["Label", "Type", "fract_x", "fract_y", "fract_z", "Occupancy", "B_iso"]
             print(tabulate(atom_table, headers=headers, tablefmt="fancy_outline"))
 
+        #############################
         print(section("Experiments"))
-        self.project.experiments.show_params()
+        for expt in self.project.experiments._experiments.values():
+            print(paragraph("Experiment datablock"))
+            print(f'🔬 {expt.id}')
 
-        print(section("Analysis"))
-        print("Bla bla bla")
-        #self.project.analysis.show_fit_results()
+            print(paragraph("Experiment type"))
+            print(f'{expt.expt_type.diffr_mode}, {expt.expt_type.radiation_probe}, {expt.expt_type.expt_mode}')
+
+            print(paragraph("Wavelength"))
+            print(expt.instr_setup.wavelength.value)
+
+            print(paragraph("2θ offset"))
+            print(expt.instr_calib.twotheta_offset.value)
+
+            print(paragraph("Profile type"))
+            print(expt.peak_profile.profile_type)
+
+            print(paragraph("Peak broadening (Gaussian)"))
+            print(tabulate([
+                ["U", expt.peak_broad.gauss_u.value],
+                ["V", expt.peak_broad.gauss_v.value],
+                ["W", expt.peak_broad.gauss_w.value]
+            ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
+
+            print(paragraph("Peak broadening (Lorentzian)"))
+            print(tabulate([
+                ["X", expt.peak_broad.lorentz_x.value],
+                ["Y", expt.peak_broad.lorentz_y.value]
+            ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
+
+        ############################
+        print(section("Refinement"))
+
+        print(paragraph("Calculation engine"))
+        print(self.project.analysis.current_calculator)
+
+        print(paragraph("Minimization engine"))
+        print(self.project.analysis.current_minimizer)
+
+        print(paragraph("Fit quality"))
+        fit_metrics = [
+            ["Goodness-of-fit (reduced χ²)", f"{self.project.analysis.fit_results.reduced_chi_square:.2f}"]
+        ]
+        print(tabulate(fit_metrics, tablefmt="fancy_outline"))
 
     # ------------------------------------------
     #  Exporting
