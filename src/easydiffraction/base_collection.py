@@ -127,23 +127,22 @@ class BaseCollection:
             print(f"{title}\nNo parameters found.")
             return
 
-        # If it's a list of Parameters, convert them to dicts for display
-        if params and hasattr(params[0], 'cif_name'):
-            params = [
-                {
-                    'block': param.block_name,
-                    'cif_name': param.cif_name,
-                    'value': param.value,
-                    'error': '' if getattr(param, 'uncertainty', 0.0) == 0.0 else param.uncertainty,
-                    'free': param.free
-                }
-                for param in params
-            ]
+        # Convert a list of parameters to custom dictionaries
+        params = [
+            {
+                'cif block': param['block'],
+                'cif parameter': param['cif_name'],
+                'value': param['value'],
+                'error': param['error'] if param['error'] else '',
+                'free': param['free']
+            }
+            for param in params
+        ]
 
         df = pd.DataFrame(params)
 
         # Ensure columns exist
-        expected_cols = ["block", "cif_name", "value", "error", "free"]
+        expected_cols = ["cif block", "cif parameter", "value", "error", "free"]
         valid_cols = [col for col in expected_cols if col in df.columns]
 
         if not valid_cols:

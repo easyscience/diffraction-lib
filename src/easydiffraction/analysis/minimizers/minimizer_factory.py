@@ -11,25 +11,25 @@ class MinimizerFactory:
         'lmfit': {
             'engine': 'lmfit',
             'method': 'leastsq',
-            'description': 'LMFIT library using the default Levenberg-Marquardt least squares method.',
+            'description': 'LMFIT library using the default Levenberg-Marquardt least squares method',
             'class': LmfitMinimizer
         },
         'lmfit (leastsq)': {
             'engine': 'lmfit',
             'method': 'leastsq',
-            'description': 'LMFIT library with Levenberg-Marquardt least squares method.',
+            'description': 'LMFIT library with Levenberg-Marquardt least squares method',
             'class': LmfitMinimizer
         },
         'lmfit (least_squares)': {
             'engine': 'lmfit',
             'method': 'least_squares',
-            'description': 'LMFIT library with SciPy’s trust region reflective algorithm.',
+            'description': 'LMFIT library with SciPy’s trust region reflective algorithm',
             'class': LmfitMinimizer
         },
         'dfols': {
             'engine': 'dfols',
             'method': None,
-            'description': 'DFOLS library for derivative-free least-squares optimization.',
+            'description': 'DFO-LS library for derivative-free least-squares optimization',
             'class': DfolsMinimizer
         }
     }

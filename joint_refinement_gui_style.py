@@ -43,7 +43,7 @@ print(project.info.as_cif())
 # parameters.
 ########################################################################
 
-print(ed.chapter('Step 2: Add Sample Models'))
+print(ed.chapter('Step 2: Add Sample Model'))
 
 # Add a sample model with default parameters
 project.sample_models.add(model_id="pbso4")
@@ -106,6 +106,8 @@ project.save()
 
 print(ed.chapter('Step 3: Add Experiments (Instrument models and measured data)'))
 
+print(ed.section('Add experiments'))
+
 # Add two experiments
 project.experiments.add(id="expt_high",
                         diffr_mode="powder", # "powder" or "single_crystal"
@@ -115,7 +117,7 @@ project.experiments.add(id="expt_high",
 project.experiments.add(id="expt_low",
                         diffr_mode="powder", # "powder" or "single_crystal"
                         expt_mode="constant_wavelength", # "time_of_flight" or "constant_wavelength"
-                        radiation_probe="neutron", # "neutron" or "xray"
+                        radiation_probe="xray", # "neutron" or "xray"
                         data_path="data/pbso4_powder_neutron_cw_10-60.dat")
 
 print(ed.section('Show defined experiments'))
@@ -221,8 +223,9 @@ project.experiments["expt_low"].linked_phases['pbso4'].scale.free = True
 project.analysis.show_free_params()
 
 print(ed.section('Set refinement strategy'))
-project.analysis.refinement_strategy = 'single'
-# print(project.analysis.describe_refinement_strategy())
+project.analysis.show_available_refinement_strategies()
+project.analysis.show_current_refinement_strategy()
+project.analysis.refinement_strategy = 'combined'
 
 print(ed.section('Set fitting engine'))
 project.analysis.show_available_minimizers()
@@ -243,7 +246,7 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 print(ed.section('Start 2nd fitting'))
 project.analysis.fit()
 
-print(ed.section('Show data charts after fitting'))
+print(ed.section('Show data charts after 2nd fitting'))
 project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart("expt_low", x_min=53, x_max=57)
 
@@ -254,9 +257,9 @@ project.analysis.current_calculator = 'cryspy'
 print(ed.section('Start 3rd fitting'))
 project.analysis.fit()
 
-print(ed.section('Show data charts after fitting'))
-project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
-project.analysis.show_meas_vs_calc_chart("expt_low", x_min=53, x_max=57)
+print(ed.section('Show data charts after 3rd fitting'))
+project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66, show_residual=True)
+project.analysis.show_meas_vs_calc_chart("expt_low", x_min=53, x_max=57, show_residual=True)
 
 # Save the project state after analysis
 project.save()
@@ -266,6 +269,4 @@ project.save()
 # save their project state.
 ########################################################################
 print(ed.chapter("Step 5: Summary"))
-
-print(ed.section('Show summary report'))
 project.summary.show_report()

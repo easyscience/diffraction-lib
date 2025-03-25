@@ -43,7 +43,7 @@ class SampleModel:
             grid_size (int): Size of the ASCII grid (default is 20).
         """
 
-        print(paragraph(f"Structure view of the sample model '{self.model_id}'"))
+        print(paragraph(f"Sample model '{self.model_id}' structure view"))
         print("Not implemented yet.")
         #plotter = StructurePlotter(grid_size=grid_size)
         #plotter.draw_from_cif(self.as_cif())

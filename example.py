@@ -291,8 +291,8 @@ project.analysis.fit()
 
 print(ed.section('Show data charts after 2nd fitting'))
 
-project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66)
-project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57)
+project.analysis.show_meas_vs_calc_chart("expt_high", x_min=62, x_max=66, show_residual=True)
+project.analysis.show_meas_vs_calc_chart("expt_low", x_min=54, x_max=57, show_residual=True)
 
 print(ed.chapter("Step 5: Summary"))
 

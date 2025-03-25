@@ -149,8 +149,30 @@ def section(title: str) -> str:
 
 def paragraph(title: str) -> str:
     """
-    Formats a subsection header with bold green text.
+    Formats a subsection header with bold blue text.
+    If input text includes quoted content, the quoted part is not colorized.
     """
-    full_title = f'{title}:'
-    colorized = f"{Fore.BLUE + Style.BRIGHT}{full_title}{Style.RESET_ALL}"
-    return f"\n{colorized}"
+    import re
+
+    # Split around quoted text
+    parts = re.split(r"('.*?')", title)
+    formatted = f"{Fore.BLUE + Style.BRIGHT}"
+    for part in parts:
+        if part.startswith("'") and part.endswith("'"):
+            formatted += Style.RESET_ALL + part + Fore.BLUE + Style.BRIGHT
+        else:
+            formatted += part
+    formatted += Style.RESET_ALL
+    return f"\n{formatted}"
+
+def warning(title: str) -> str:
+    """
+    Formats a warning message with yellow text.
+    """
+    return f"\n⚠️ {Fore.YELLOW}Warning:{Style.RESET_ALL}\n{title}"
+
+def info(title: str) -> str:
+    """
+    Formats a warning message with yellow text.
+    """
+    return f"\nℹ️️ {Fore.CYAN}Info:{Style.RESET_ALL}\n{title}"

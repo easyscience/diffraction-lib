@@ -136,7 +136,6 @@ class Project:
         """
         Save the project into a new directory.
         """
-        print(f"Saving project as new at {dir_path}")
         self.info.path = dir_path
         self.save()
 
@@ -147,7 +146,7 @@ class Project:
         if not self.info.path:
             raise ValueError("Project path not specified. Use save_as() to define the path first.")
         print(paragraph("Saving project to"))
-        print(self.info.path)
+        print(os.path.abspath(self.info.path))
         # TODO: serialize project components to files
         self.info.update_last_modified()
         self._saved = True

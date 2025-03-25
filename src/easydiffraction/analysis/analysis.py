@@ -1,6 +1,7 @@
 import pandas as pd
+from tabulate import tabulate
 
-from easydiffraction.utils.utils import paragraph
+from easydiffraction.utils.utils import paragraph, info
 from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
 
 from .calculators.calculator_factory import CalculatorFactory
@@ -35,24 +36,22 @@ class Analysis:
             print("No free parameters found.")
             return
 
-        # Convert Parameter objects to dicts for display
-        params_data = [
+        # Convert a list of parameters to custom dictionaries
+        params = [
             {
-                'block': param.block_name,
-                'cif_name': param.cif_name,
+                'cif block': param.block_name,
+                'cif parameter': param.cif_name,
                 'value': param.value,
-                'error': '' if getattr(param, 'uncertainty', 0.0) == 0.0 else param.uncertainty
+                'error': '' if getattr(param, 'uncertainty', 0.0) == 0.0 else param.uncertainty,
+                'units': param.units,
             }
             for param in free_params
         ]
 
-        df = pd.DataFrame(params_data)
+        df = pd.DataFrame(params)
 
-        if df.empty:
-            print("No free parameters found.")
-            return
-
-        expected_cols = ["block", "cif_name", "value", "error"]
+        # Ensure columns exist
+        expected_cols = ["cif block", "cif parameter", "value", "error", "units"]
         valid_cols = [col for col in expected_cols if col in df.columns]
 
         if not valid_cols:
@@ -62,8 +61,7 @@ class Analysis:
         df = df[valid_cols]
 
         try:
-            from tabulate import tabulate
-            print(tabulate(df, headers="keys", tablefmt="psql", showindex=False))
+            print(tabulate(df, headers="keys", tablefmt="fancy_outline", showindex=False))
         except ImportError:
             print(df.to_string(index=False))
 
@@ -110,6 +108,33 @@ class Analysis:
         print(paragraph(f"Current minimizer changed to"))
         print(self.current_minimizer)
 
+    @property
+    def refinement_strategy(self):
+        return self._refinement_strategy
+
+    @refinement_strategy.setter
+    def refinement_strategy(self, strategy):
+        if strategy not in ['single', 'combined']:
+            raise ValueError("Refinement strategy must be either 'single' or 'combined'")
+        self._refinement_strategy = strategy
+        print(paragraph("Current refinement strategy changed to"))
+        print(self._refinement_strategy)
+
+    def show_available_refinement_strategies(self):
+        strategies = [
+            {"Strategy": "single", "Description": "Refine each experiment separately"},
+            {"Strategy": "combined", "Description": "Perform joint refinement of all experiments"},
+            {"Strategy": "sequential*", "Description": "Refine experiments one after another"},
+            {"Strategy": "decoupled*", "Description": "Refine all experiments independently"},
+        ]
+        print(paragraph("Available refinement strategies"))
+        print(tabulate(strategies, headers="keys", tablefmt="fancy_outline", showindex=False))
+        print("* Strategies marked with an asterisk are not implemented yet.")
+
+    def show_current_refinement_strategy(self):
+        print(paragraph("Current refinement strategy"))
+        print(self.refinement_strategy)
+
     def calculate_pattern(self, expt_id):
         # Pattern is calculated for the given experiment
         experiment = self.project.experiments[expt_id]
@@ -121,7 +146,7 @@ class Analysis:
         experiment = self.project.experiments[expt_id]
 
         if experiment.datastore.pattern.calc is None:
-            print(f"No calculated pattern found for {expt_id}. Running calculation...")
+            print(info(f"No calculated pattern found for '{expt_id}'. Calculating."))
             self.calculate_pattern(expt_id)
 
         pattern = experiment.datastore.pattern
@@ -132,7 +157,7 @@ class Analysis:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=paragraph("Calculated") + f' {expt_id}',
+            title=paragraph(f"Calculated data for experiment '{expt_id}'"),
             labels=['calc']
         )
 
@@ -166,7 +191,7 @@ class Analysis:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=paragraph("Measured vs Calculated") + f' {expt_id}',
+            title=paragraph(f"Measured vs Calculated data for experiment '{expt_id}'"),
             labels=labels
         )
 

@@ -11,8 +11,8 @@ class PowderExperimentMixin:
             print(f"No measured data available for experiment {self.id}")
             return
 
-        print(f"pattern.x shape: {np.shape(pattern.x)}")
-        print(f"pattern.meas shape: {np.shape(pattern.meas)}")
+        #print(f"pattern.x shape: {np.shape(pattern.x)}")
+        #print(f"pattern.meas shape: {np.shape(pattern.meas)}")
 
         plotter = ChartPlotter()
         plotter.plot(
@@ -20,6 +20,6 @@ class PowderExperimentMixin:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=paragraph("Measured") + f" {self.id}",
+            title=paragraph(f"Measured data for experiment '{self.id}'"),
             labels=['meas']
         )

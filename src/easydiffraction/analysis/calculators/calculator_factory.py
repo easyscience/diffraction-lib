@@ -9,15 +9,15 @@ from ...utils.utils import paragraph
 class CalculatorFactory:
     _available_calculators = {
         'crysfml': {
-            'description': 'CrysFML library for crystallographic calculations.',
+            'description': 'CrysFML library for crystallographic calculations',
             'class': CrysfmlCalculator
         },
         'cryspy': {
-            'description': 'CrysPy library for crystallographic calculations.',
+            'description': 'CrysPy library for crystallographic calculations',
             'class': CryspyCalculator
         },
         'pdffit': {
-            'description': 'PDFfit2 library for pair distribution function calculations.',
+            'description': 'PDFfit2 library for pair distribution function calculations',
             'class': PdffitCalculator,
         }
     }

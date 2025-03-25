@@ -1,3 +1,5 @@
+import os.path
+
 import numpy as np
 from easydiffraction.experiments.factory import ExperimentFactory
 from easydiffraction.experiments.base_experiment import BaseExperiment
@@ -49,7 +51,9 @@ def Experiment(
 
     # Support loading from ASCII data (experimental)
     if data_path:
-        print(f"Loading Experiment from ASCII data path: {data_path}")
+        print(paragraph("Loading measured data from ASCII file"))
+        print(os.path.abspath(data_path))
+
         # Example experiment - user needs to provide modes for context
         if not all([id, diffr_mode, expt_mode, radiation_probe]):
             raise ValueError("To create an experiment from data_path, you must specify id, diffr_mode, expt_mode, and radiation_probe.")
@@ -145,7 +149,8 @@ class Experiments(BaseCollection):
         """
         Load an experiment from raw data ASCII file.
         """
-        print(f"Loading Experiment from ASCII data file: {data_path}")
+        print(paragraph("Loading measured data from ASCII file"))
+        print(os.path.abspath(data_path))
         experiment = Experiment(
             id=id,
             diffr_mode=diffr_mode,
@@ -208,4 +213,5 @@ def _load_ascii_data_to_experiment(experiment, data_path):
     experiment.datastore.pattern.meas = y
     experiment.datastore.pattern.meas_su = sy
 
-    print(f"Loaded data for experiment '{experiment.id}' with {len(x)} points.")
+    print(paragraph("Data loaded successfully"))
+    print(f"Experiment '{experiment.id}'. Number of data points: {len(x)}")

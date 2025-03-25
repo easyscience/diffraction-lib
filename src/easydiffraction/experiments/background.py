@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.interpolate import interp1d
 
-from easydiffraction.utils.utils import paragraph
+from easydiffraction.utils.utils import paragraph, warning
 
 
 class Background:
@@ -22,7 +22,7 @@ class PointBackground(Background):
     def interpolate(self, x_data):
         """Interpolate background points over x_data."""
         if not self.points:
-            print('Warning: No background points found. Setting background to zero.')
+            print(warning('No background points found. Setting background to zero.'))
             return np.zeros_like(x_data)
 
         background_points = np.array(self.points)

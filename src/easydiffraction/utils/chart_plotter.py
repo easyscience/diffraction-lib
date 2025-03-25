@@ -65,7 +65,7 @@ class ChartPlotter:
 
         # Print title
         print(f"{title}")
-        print(f"Displaying data from x = {x_filtered[0]} to {x_filtered[-1]} (filtered {np.sum(mask)} points)")
+        print(f"Displaying data for selected x-range from {x_filtered[0]} to {x_filtered[-1]} ({np.sum(mask)} data points)")
 
         # Print legends if labels are present
         if labels:
