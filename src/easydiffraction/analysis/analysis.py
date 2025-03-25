@@ -3,6 +3,7 @@ from tabulate import tabulate
 
 from easydiffraction.utils.utils import paragraph, info
 from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
+from easydiffraction.experiments import Experiments
 
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
@@ -196,8 +197,6 @@ class Analysis:
         )
 
     def fit(self):
-        print(paragraph("Fitting"))
-
         sample_models = self.project.sample_models
         if not sample_models:
             print("No sample models found in the project. Cannot run fit.")
@@ -214,7 +213,21 @@ class Analysis:
             return
 
         # Run the fitting process
-        self.fitter.fit(sample_models, experiments, calculator)
+        print(paragraph(f"Fitting using refinement strategy '{self.refinement_strategy}'"))
+        experiment_ids = list(experiments._items.keys())
+
+        if self.refinement_strategy == 'combined':
+            print(paragraph(f"Using all experiments {experiment_ids} for joint refinement."))
+            self.fitter.fit(sample_models, experiments, calculator)
+        elif self.refinement_strategy == 'single':
+            for expt_id in list(experiments._items.keys()):
+                print(paragraph(f"Using experiment '{expt_id}' for decoupled refinement."))
+                experiment = experiments[expt_id]
+                dummy_experiments = Experiments()
+                dummy_experiments.add(experiment)
+                self.fitter.fit(sample_models, dummy_experiments, calculator)
+        else:
+            raise NotImplementedError(f"Refinement strategy {self.refinement_strategy} not implemented yet.")
 
         # After fitting, get the results
         self.fit_results = self.fitter.results

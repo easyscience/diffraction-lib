@@ -261,6 +261,23 @@ print(ed.section('Show data charts after 3rd fitting'))
 project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66, show_residual=True)
 project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28, show_residual=True)
 
+print(ed.section('Change refinement strategy'))
+project.analysis.show_available_refinement_strategies()
+project.analysis.show_current_refinement_strategy()
+project.analysis.refinement_strategy = 'single'
+
+print(ed.section('Change calculator'))
+project.analysis.show_available_calculators()
+project.analysis.show_current_calculator()
+project.analysis.current_calculator = 'crysfml'
+
+print(ed.section('Start 4th fitting'))
+project.analysis.fit()
+
+print(ed.section('Show data charts after 4th fitting'))
+project.analysis.show_meas_vs_calc_chart("npd", x_min=62, x_max=66, show_residual=True)
+project.analysis.show_meas_vs_calc_chart("xrd", x_min=26, x_max=28, show_residual=True)
+
 # Save the project state after analysis
 project.save()
 
