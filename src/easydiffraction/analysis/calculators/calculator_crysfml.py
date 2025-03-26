@@ -1,15 +1,19 @@
+from .calculator_base import CalculatorBase
+from easydiffraction.utils.utils import error
+
 try:
     from pycrysfml import cfml_py_utilities
 except ImportError:
-    print('Warning: pycrysfml module not found. This calculator will not work.')
-
-from .calculator_base import CalculatorBase
+    print(error('Warning: pycrysfml module not found. This calculator will not work.'))
+    cfml_py_utilities = None
 
 
 class CrysfmlCalculator(CalculatorBase):
     """
     Wrapper for Crysfml library.
     """
+
+    engine_imported = cfml_py_utilities is not None
 
     @property
     def name(self):

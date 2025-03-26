@@ -111,12 +111,12 @@ project.experiments.add(id="npd",
                         diffr_mode="powder",
                         expt_mode="constant_wavelength",
                         radiation_probe="neutron",
-                        data_path="data/pbso4_powder_neutron_cw.dat")
+                        data_path="examples/data/pbso4_powder_neutron_cw.dat")
 project.experiments.add(id="xrd",
                         diffr_mode="powder",
                         expt_mode="constant_wavelength",
                         radiation_probe="xray",
-                        data_path="data/pbso4_powder_xray.dat")
+                        data_path="examples/data/pbso4_powder_xray.dat")
 
 print(ed.section('Show defined experiments'))
 project.experiments.show_ids()

@@ -12,6 +12,11 @@ class CalculatorBase(ABC):
     def name(self):
         pass
 
+    @property
+    @abstractmethod
+    def engine_imported(self):
+        pass
+
     @abstractmethod
     def calculate_structure_factors(self, sample_model, experiment):
         # Single sample model, single experiment

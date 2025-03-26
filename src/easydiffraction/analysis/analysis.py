@@ -1,7 +1,7 @@
 import pandas as pd
 from tabulate import tabulate
 
-from easydiffraction.utils.utils import paragraph, info
+from easydiffraction.utils.utils import paragraph, info, error
 from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
 from easydiffraction.experiments import Experiments
 
@@ -83,9 +83,8 @@ class Analysis:
     @current_calculator.setter
     def current_calculator(self, calculator_name):
         if calculator_name not in CalculatorFactory.list_available_calculators():
-            raise ValueError(
-                f"Unknown calculator '{calculator_name}'. Available calculators: {CalculatorFactory.list_available_calculators()}"
-            )
+            print(error(f"Unknown calculator '{calculator_name}'. Available calculators: {CalculatorFactory.list_available_calculators()}"))
+            return
         self.calculator = CalculatorFactory.create_calculator(calculator_name)
         self._calculator_key = calculator_name
         print(paragraph("Current calculator changed to"))

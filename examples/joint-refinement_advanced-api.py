@@ -28,7 +28,7 @@ model.atom_sites.add("O3", "O", 0.0811, 0.0272, 0.8086, b_iso=1.2822)
 # Create and configure experiments
 
 # Experiment 1: Neutron powder diffraction
-expt1 = Experiment(id="npd", radiation_probe="neutron", data_path="data/pbso4_powder_neutron_cw.dat")
+expt1 = Experiment(id="npd", radiation_probe="neutron", data_path="examples/data/pbso4_powder_neutron_cw.dat")
 expt1.instr_setup.wavelength = 1.91
 expt1.instr_calib.twotheta_offset = -0.1406
 expt1.peak_broad.gauss_u = 0.139
@@ -50,7 +50,7 @@ for x, y in [
     expt1.background.add(x, y)
 
 # Experiment 2: X-ray powder diffraction
-expt2 = Experiment(id="xrd", radiation_probe="xray", data_path="data/pbso4_powder_xray.dat")
+expt2 = Experiment(id="xrd", radiation_probe="xray", data_path="examples/data/pbso4_powder_xray.dat")
 expt2.instr_setup.wavelength = 1.540567
 expt2.instr_calib.twotheta_offset = -0.05181
 expt2.peak_broad.gauss_u = 0.304138

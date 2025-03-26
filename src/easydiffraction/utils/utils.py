@@ -165,6 +165,12 @@ def paragraph(title: str) -> str:
     formatted += Style.RESET_ALL
     return f"\n{formatted}"
 
+def error(title: str) -> str:
+    """
+    Formats an error message with red text.
+    """
+    return f"\n❌️ {Fore.RED}Error:{Style.RESET_ALL}\n{title}"
+
 def warning(title: str) -> str:
     """
     Formats a warning message with yellow text.

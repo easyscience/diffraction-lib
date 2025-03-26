@@ -1,0 +1,10 @@
+scipy
+lmfit
+bumps
+dfo-ls
+cryspy
+gemmi
+pandas
+tabulate
+asciichartpy
+colorama

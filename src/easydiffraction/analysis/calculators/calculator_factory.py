@@ -7,7 +7,7 @@ from ...utils.utils import paragraph
 
 
 class CalculatorFactory:
-    _available_calculators = {
+    _potential_calculators = {
         'crysfml': {
             'description': 'CrysFML library for crystallographic calculations',
             'class': CrysfmlCalculator
@@ -23,15 +23,23 @@ class CalculatorFactory:
     }
 
     @classmethod
+    def _available_calculators(cls):
+        return {
+            name: cfg
+            for name, cfg in cls._potential_calculators.items()
+            if cfg['class']().engine_imported  # instantiate and check the @property
+        }
+
+    @classmethod
     def list_available_calculators(cls):
-        return list(cls._available_calculators.keys())
+        return list(cls._available_calculators().keys())
 
     @classmethod
     def show_available_calculators(cls):
         header = ["Calculator", "Description"]
         table_data = []
 
-        for name, config in cls._available_calculators.items():
+        for name, config in cls._available_calculators().items():
             description = config.get('description', 'No description provided.')
             table_data.append([name, description])
 
@@ -47,13 +55,11 @@ class CalculatorFactory:
 
     @classmethod
     def create_calculator(cls, selection):
-        config = cls._available_calculators.get(selection)
+        config = cls._available_calculators().get(selection)
         if not config:
             raise ValueError(f"Unknown calculator type '{selection}'. Available: {cls.list_available_calculators()}")
 
-        calculator_class = config.get('class')
-
-        return calculator_class()
+        return config['class']()
 
     @classmethod
     def register_calculator(cls, calculator_type, calculator_cls, description='No description provided.'):
