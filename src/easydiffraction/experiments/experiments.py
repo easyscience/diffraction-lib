@@ -13,9 +13,9 @@ from easydiffraction.utils.utils import paragraph
 def Experiment(
     *,
     id=None,
-    diffr_mode=None,
-    expt_mode=None,
-    radiation_probe=None,
+    diffr_mode='powder',
+    expt_mode='constant_wavelength',
+    radiation_probe='neutron',
     experiment=None,
     cif_path=None,
     cif_str=None,

@@ -31,7 +31,7 @@ class AtomSite:
         self.occupancy = Parameter(occupancy, cif_name="occupancy")
         self.b_iso = Parameter(b_iso, cif_name="B_iso_or_equiv")
 
-    def as_cif_row(self) -> str:
+    def as_cif(self) -> str:
         """
         Export this atom site as a CIF row string.
         """
@@ -107,7 +107,7 @@ class AtomSites:
         """
         return len(self.sites)
 
-    def as_cif_loop(self) -> str:
+    def as_cif(self) -> str:
         """
         Export all atom sites as a CIF loop string.
         """
@@ -123,5 +123,5 @@ class AtomSites:
             "_atom_site.B_iso_or_equiv"
         ]
         for site in self.sites:
-            lines.append(site.as_cif_row())
+            lines.append(site.as_cif())
         return "\n".join(lines)

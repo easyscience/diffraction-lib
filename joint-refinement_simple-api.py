@@ -1,5 +1,5 @@
 """
-Joint Refinement Example (GUI-Style API)
+Joint Refinement Example (Simplified API)
 
 This example demonstrates the use of the EasyDiffraction API using a simplified,
 user-friendly approach that mimics the GUI workflow. It is intended for users
@@ -51,7 +51,7 @@ project.sample_models.add(model_id="pbso4")
 project.sample_models.show_ids()
 
 # Modify sample model parameters via project object
-project.sample_models["pbso4"].space_group.name = "P n m a"
+project.sample_models["pbso4"].space_group.name.value = "P n m a"
 
 project.sample_models["pbso4"].cell.length_a.value = 8.5
 project.sample_models["pbso4"].cell.length_b.value = 5.35

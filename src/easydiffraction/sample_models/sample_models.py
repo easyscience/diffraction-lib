@@ -62,44 +62,17 @@ class SampleModel:
         Returns:
             str: CIF string representation of the sample model.
         """
-        cif_lines = [f"data_{self.model_id}", ""]
-
-        # Unit Cell Parameters
-        cif_lines += [
-            f"_cell.length_a {self.cell.length_a}",
-            f"_cell.length_b {self.cell.length_b}",
-            f"_cell.length_c {self.cell.length_c}",
-            f"_cell.angle_alpha {self.cell.angle_alpha}",
-            f"_cell.angle_beta {self.cell.angle_beta}",
-            f"_cell.angle_gamma {self.cell.angle_gamma}",
-            ""
-        ]
+        # Data block header
+        cif_lines = [f"data_{self.model_id}"]
 
         # Space Group
-        cif_lines += [
-            f'_space_group.name_H-M_alt "{self.space_group.name}"',
-            ""
-        ]
+        cif_lines += ["", self.space_group.as_cif()]
 
-        # Atom Sites Block
-        cif_lines += [
-            "loop_",
-            "_atom_site.label",
-            "_atom_site.type_symbol",
-            "_atom_site.fract_x",
-            "_atom_site.fract_y",
-            "_atom_site.fract_z",
-            "_atom_site.occupancy",
-            "_atom_site.ADP_type",
-            "_atom_site.B_iso_or_equiv"
-        ]
+        # Unit Cell
+        cif_lines += ["", self.cell.as_cif()]
 
-        for site in self.atom_sites:
-            cif_lines.append(
-                f"{site.label} {site.type_symbol} {site.fract_x} "
-                f"{site.fract_y} {site.fract_z} {site.occupancy} "
-                f"{site.adp_type} {site.b_iso}"
-            )
+        # Atom Sites
+        cif_lines += ["", self.atom_sites.as_cif()]
 
         return "\n".join(cif_lines)
 

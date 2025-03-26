@@ -51,7 +51,7 @@ class CrysfmlCalculator(CalculatorBase):
     def _convert_sample_model_to_dict(self, sample_model):
         sample_model_dict = {
             sample_model.model_id: {
-                "_space_group_name_H-M_alt": sample_model.space_group.name,
+                "_space_group_name_H-M_alt": sample_model.space_group.name.value,
                 "_cell_length_a": sample_model.cell.length_a.value,
                 "_cell_length_b": sample_model.cell.length_b.value,
                 "_cell_length_c": sample_model.cell.length_c.value,
