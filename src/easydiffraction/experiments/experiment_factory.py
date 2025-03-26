@@ -27,10 +27,7 @@ from easydiffraction.experiments.components.peak_asymm import (
     PeakAsymmConstWavelengthMixin,
     PeakAsymmTimeOfFlightMixin,
 )
-from easydiffraction.experiments.components.linked_phases import (
-    LinkedPhase,
-    LinkedPhases,
-)
+from easydiffraction.experiments.linked_phases import LinkedPhases
 from easydiffraction.experiments.background import BackgroundFactory
 from easydiffraction.experiments.datastore import DatastoreFactory
 
@@ -40,17 +37,20 @@ class ExperimentFactory:
 
     @staticmethod
     def create_experiment(id, diffr_mode, expt_mode, radiation_probe):
-        experiment_mixins = ExperimentFactory._collect_experiment_mixins(diffr_mode, expt_mode)
+        # Collect mixins based on the experiment type
+        experiment_mixins = []
 
         if diffr_mode == "powder":
             experiment_mixins.append(PowderExperimentMixin)
+        elif diffr_mode == "single_crystal":
+            raise NotImplementedError("Single crystal experiments are not yet supported.")
 
-        # BaseExperiment comes last
+        # Create class bases. BaseExperiment comes last
         bases = tuple(experiment_mixins + [BaseExperiment])
 
         # Dynamically assemble class
         ExperimentCls = type(
-            f"Experiment_{diffr_mode}_{expt_mode}_{radiation_probe}",
+            f"Experiment__{diffr_mode}__{expt_mode}__{radiation_probe}",
             bases,
             {}
         )
@@ -64,39 +64,39 @@ class ExperimentFactory:
         # Attach instrument setup and calibration components
         instance.instr_setup = ExperimentFactory._create_component(
             InstrSetupBase,
-            ExperimentFactory.get_instr_setup_mixins(expt_mode),
+            ExperimentFactory._get_instr_setup_mixins(expt_mode),
             "InstrSetup"
         )
         instance.instr_calib = ExperimentFactory._create_component(
             InstrCalibBase,
-            ExperimentFactory.get_instr_calib_mixins(expt_mode),
+            ExperimentFactory._get_instr_calib_mixins(expt_mode),
             "InstrCalib"
         )
 
         # Attach peak profile, broadening, and asymmetry components
         instance.peak_profile = ExperimentFactory._create_component(
             PeakProfileBase,
-            ExperimentFactory.get_peak_profile_mixins(diffr_mode, expt_mode),
+            ExperimentFactory._get_peak_profile_mixins(diffr_mode, expt_mode),
             "PeakProfile"
         )
         instance.peak_broad = ExperimentFactory._create_component(
             PeakBroadBase,
-            ExperimentFactory.get_peak_broad_mixins(diffr_mode, expt_mode),
+            ExperimentFactory._get_peak_broad_mixins(diffr_mode, expt_mode),
             "PeakBroad"
         )
         instance.peak_asymm = ExperimentFactory._create_component(
             PeakAsymmBase,
-            ExperimentFactory.get_peak_asymm_mixins(diffr_mode, expt_mode),
+            ExperimentFactory._get_peak_asymm_mixins(diffr_mode, expt_mode),
             "PeakAsymm"
         )
 
-        # Attach linked phases component
+        # Attach a linked phases component
         instance.linked_phases = LinkedPhases()
 
-        # Attach background component
+        # Attach a background component
         instance.background = BackgroundFactory.create_background("point")
 
-        # Attach datastore component
+        # Attach a datastore component
         instance.datastore = DatastoreFactory.create_datastore(diffr_mode, instance)
 
         return instance
@@ -110,30 +110,21 @@ class ExperimentFactory:
         return ComponentCls()
 
     @staticmethod
-    def _collect_experiment_mixins(diffr_mode, expt_mode):
-        mixins = []
-        mixins.extend(ExperimentFactory.get_instr_calib_mixins(expt_mode))
-        mixins.extend(ExperimentFactory.get_peak_profile_mixins(diffr_mode, expt_mode))
-        mixins.extend(ExperimentFactory.get_peak_broad_mixins(diffr_mode, expt_mode))
-        mixins.extend(ExperimentFactory.get_peak_asymm_mixins(diffr_mode, expt_mode))
-        return mixins
-
-    @staticmethod
-    def get_instr_setup_mixins(expt_mode):
+    def _get_instr_setup_mixins(expt_mode):
         return {
             "constant_wavelength": [InstrSetupConstWavelengthMixin],
             "time_of_flight": [InstrSetupTimeOfFlightMixin]
         }.get(expt_mode, [])
 
     @staticmethod
-    def get_instr_calib_mixins(expt_mode):
+    def _get_instr_calib_mixins(expt_mode):
         return {
             "constant_wavelength": [InstrCalibConstWavelengthMixin],
             "time_of_flight": [InstrCalibTimeOfFlightMixin]
         }.get(expt_mode, [])
 
     @staticmethod
-    def get_peak_profile_mixins(diffr_mode, expt_mode):
+    def _get_peak_profile_mixins(diffr_mode, expt_mode):
         if diffr_mode != "powder":
             return []
         return {
@@ -142,7 +133,7 @@ class ExperimentFactory:
         }.get(expt_mode, [])
 
     @staticmethod
-    def get_peak_broad_mixins(diffr_mode, expt_mode):
+    def _get_peak_broad_mixins(diffr_mode, expt_mode):
         if diffr_mode != "powder":
             return []
         return {
@@ -151,7 +142,7 @@ class ExperimentFactory:
         }.get(expt_mode, [])
 
     @staticmethod
-    def get_peak_asymm_mixins(diffr_mode, expt_mode):
+    def _get_peak_asymm_mixins(diffr_mode, expt_mode):
         if diffr_mode != "powder":
             return []
         return {

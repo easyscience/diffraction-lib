@@ -87,7 +87,7 @@ class CryspyCalculator(CalculatorBase):
         cif_lines.append(f"_range_2theta_max   {two_theta_max}\n")
 
         if expt_type:
-            radiation_probe = expt_type.radiation_probe
+            radiation_probe = expt_type.radiation_probe.value
             radiation_probe = radiation_probe.replace("neutron", "neutrons")
             radiation_probe = radiation_probe.replace("xray", "X-rays")
             cif_lines.append(f"_setup_radiation   {radiation_probe}")

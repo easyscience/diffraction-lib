@@ -29,41 +29,23 @@ class BaseExperiment(ABC):
 
         # Experiment type
         lines.append("")
-        lines.append(f"{self.expt_type.cif_category_name}.diffr_mode {self.expt_type.diffr_mode}")
-        lines.append(f"{self.expt_type.cif_category_name}.expt_mode {self.expt_type.expt_mode}")
-        lines.append(f"{self.expt_type.cif_category_name}.radiation_probe {self.expt_type.radiation_probe}")
+        lines.append(self.expt_type.as_cif())
 
-        # Instrument setup
+        # Instrument setup and calibration
         if hasattr(self, "instr_setup"):
             lines.append("")
-            if hasattr(self.instr_setup, "wavelength"):
-                lines.append(f"{self.instr_setup.cif_category_name}.wavelength {self.instr_setup.wavelength}")
-
-        # Instrument calibration
+            lines.append(self.instr_setup.as_cif())
         if hasattr(self, "instr_calib"):
-            lines.append("")
-            if hasattr(self.instr_calib, "twotheta_offset"):
-                lines.append(f"{self.instr_calib.cif_category_name}.twotheta_offset {self.instr_calib.twotheta_offset}")
+            lines.append(self.instr_calib.as_cif())
 
-        # Peak profile
+        # Peak profile, broadening and asymmetry
         if hasattr(self, "peak_profile"):
             lines.append("")
-            if hasattr(self.peak_profile, "profile_type"):
-                lines.append(f"{self.peak_profile.cif_category_name}.profile_type {self.peak_profile.profile_type}")
-
-        # Peak broadening
+            lines.append(self.peak_profile.as_cif())
         if hasattr(self, "peak_broad"):
-            lines.append("")
-            if hasattr(self.peak_broad, "gauss_u"):
-                lines.append(f"{self.peak_broad.cif_category_name}.gauss_u {self.peak_broad.gauss_u}")
-            if hasattr(self.peak_broad, "gauss_v"):
-                lines.append(f"{self.peak_broad.cif_category_name}.gauss_v {self.peak_broad.gauss_v}")
-            if hasattr(self.peak_broad, "gauss_w"):
-                lines.append(f"{self.peak_broad.cif_category_name}.gauss_w {self.peak_broad.gauss_w}")
-            if hasattr(self.peak_broad, "lorentz_x"):
-                lines.append(f"{self.peak_broad.cif_category_name}.lorentz_x {self.peak_broad.lorentz_x}")
-            if hasattr(self.peak_broad, "lorentz_y"):
-                lines.append(f"{self.peak_broad.cif_category_name}.lorentz_y {self.peak_broad.lorentz_y}")
+            lines.append(self.peak_broad.as_cif())
+        if hasattr(self, "peak_asymm"):
+            lines.append(self.peak_asymm.as_cif())
 
         # Phase scale factors
         if hasattr(self, "linked_phases") and self.linked_phases:

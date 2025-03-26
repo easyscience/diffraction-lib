@@ -1,4 +1,4 @@
-from easydiffraction.parameter import Parameter
+from easydiffraction.parameter import Parameter, Descriptor
 
 
 class ComponentBase:
@@ -21,7 +21,7 @@ class ComponentBase:
     def __getattr__(self, name):
         # If the attribute is a Parameter, return its value by default
         attr = self.__dict__.get(name)
-        if isinstance(attr, Parameter):
+        if isinstance(attr, (Parameter, Descriptor)):
             return attr.value
         raise AttributeError(f"{name} not found")
 
@@ -34,33 +34,25 @@ class ComponentBase:
 
         lines = []
 
+        # Iterate over all attributes of the instance
         for attr_name in dir(self):
+            
             # Skip internal attributes and methods
             if attr_name.startswith('_'):
                 continue
 
-            attr_value = getattr(self, attr_name)
+            attr_obj = getattr(self, attr_name)
 
-            # Skip methods and non-Parameter attributes
-            if not isinstance(attr_value, Parameter):
+            # Skip methods and non-Descriptor/non-Parameter attributes
+            if not isinstance(attr_obj, (Descriptor, Parameter)):
                 continue
 
-            # Format value with uncertainty (if non-zero)
-            value = attr_value.value
-            uncertainty = attr_value.uncertainty
-
-            if uncertainty:
-                value_str = f"{value}({uncertainty})"
-            else:
-                value_str = str(value)
-
-            # Compose CIF field name
-            cif_field_name = f"{self.cif_category_name}.{attr_value.cif_name or attr_name}"
+            full_cif_name = f"{self.cif_category_name}.{attr_obj.cif_name}"
+            line = f"{full_cif_name} {attr_obj.value}"
 
             # Append units as comment (if any)
-            line = f"{cif_field_name} {value_str}"
-            if attr_value.units:
-                line += f"  # units: {attr_value.units}"
+            if hasattr(attr_obj, "units") and attr_obj.units:
+                line += f"  # units: {attr_obj.units}"
 
             lines.append(line)
 

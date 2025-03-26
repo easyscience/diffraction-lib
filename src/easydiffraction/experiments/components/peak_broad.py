@@ -45,7 +45,6 @@ class PeakBroadConstWavelengthMixin:
             cif_name="mix_eta"
         )
 
-
 class PeakBroadTimeOfFlightMixin:
     """
     <<mixin>> Adds time-of-flight peak broadening parameters.
