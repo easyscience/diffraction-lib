@@ -25,13 +25,13 @@ class BaseCollection:
                 if component is None:
                     continue
 
-                # Handle iterable components (e.g., AtomSites)
+                # Handle iterable_components (e.g., AtomSites)
                 if hasattr(component, '__iter__') and not isinstance(component, (str, bytes, dict)):
                     for subcomponent in component:
                         if hasattr(subcomponent, '__dict__'):
                             params += self._extract_params(item_id, subcomponent)
                 else:
-                    # Handle normal components (like cell, space_group, etc.)
+                    # Handle standard_components (e.g., Cell, SpaceGroup)
                     if hasattr(component, '__dict__'):
                         params += self._extract_params(item_id, component)
 

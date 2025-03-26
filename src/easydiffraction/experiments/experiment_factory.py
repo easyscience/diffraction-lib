@@ -1,35 +1,35 @@
 from easydiffraction.experiments.experiment_base import BaseExperiment
-from easydiffraction.experiments.mixins.powder import PowderExperimentMixin
+from easydiffraction.experiments.experiment_mixins.powder_experiment import PowderExperimentMixin
 
 # Component imports
-from easydiffraction.experiments.components.instr_setup import (
+from easydiffraction.experiments.standard_components.instrument_setup import (
     InstrSetupBase,
     InstrSetupConstWavelengthMixin,
     InstrSetupTimeOfFlightMixin,
 )
-from easydiffraction.experiments.components.instr_calib import (
+from easydiffraction.experiments.standard_components.instrument_calibration import (
     InstrCalibBase,
     InstrCalibConstWavelengthMixin,
     InstrCalibTimeOfFlightMixin,
 )
-from easydiffraction.experiments.components.peak_profile import (
+from easydiffraction.experiments.standard_components.peak_profile import (
     PeakProfileBase,
     PeakProfileConstWavelengthMixin,
     PeakProfileTimeOfFlightMixin,
 )
-from easydiffraction.experiments.components.peak_broad import (
+from easydiffraction.experiments.standard_components.peak_broadening import (
     PeakBroadBase,
     PeakBroadConstWavelengthMixin,
     PeakBroadTimeOfFlightMixin,
 )
-from easydiffraction.experiments.components.peak_asymm import (
+from easydiffraction.experiments.standard_components.peak_asymmetry import (
     PeakAsymmBase,
     PeakAsymmConstWavelengthMixin,
     PeakAsymmTimeOfFlightMixin,
 )
-from easydiffraction.experiments.linked_phases import LinkedPhases
-from easydiffraction.experiments.background import BackgroundFactory
-from easydiffraction.experiments.datastore import DatastoreFactory
+from easydiffraction.experiments.iterable_components.linked_phases import LinkedPhases
+from easydiffraction.experiments.iterable_components.background import BackgroundFactory
+from easydiffraction.experiments.iterable_components.datastore import DatastoreFactory
 
 
 class ExperimentFactory:
@@ -37,7 +37,7 @@ class ExperimentFactory:
 
     @staticmethod
     def create_experiment(id, diffr_mode, expt_mode, radiation_probe):
-        # Collect mixins based on the experiment type
+        # Collect experiment_mixins based on the experiment type
         experiment_mixins = []
 
         if diffr_mode == "powder":

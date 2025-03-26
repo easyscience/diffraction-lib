@@ -1,4 +1,4 @@
-from easydiffraction.parameter import Descriptor
+from easydiffraction.core.parameter import Descriptor
 
 
 class SpaceGroup:

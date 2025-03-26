@@ -1,8 +1,8 @@
-from easydiffraction.parameter import Descriptor
-from easydiffraction.experiments.components.base import ComponentBase
+from easydiffraction.core.parameter import Descriptor
+from easydiffraction.experiments.standard_components.standard_component_base import StandardComponentBase
 
 
-class ExperimentType(ComponentBase):
+class ExperimentType(StandardComponentBase):
     cif_category_name = "_expt_type"
 
     def __init__(self, diffr_mode, expt_mode, radiation_probe, *args, **kwargs):

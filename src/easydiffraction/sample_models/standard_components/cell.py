@@ -1,4 +1,4 @@
-from easydiffraction.parameter import Parameter
+from easydiffraction.core.parameter import Parameter
 
 class Cell:
     """

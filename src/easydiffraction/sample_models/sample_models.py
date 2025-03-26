@@ -1,8 +1,7 @@
-from .space_group import SpaceGroup
-from .cell import Cell
-from .atom_sites import AtomSites, AtomSite
-from easydiffraction.base_collection import BaseCollection
-from easydiffraction.utils.structure_plotter import StructurePlotter
+from easydiffraction.sample_models.standard_components.space_group import SpaceGroup
+from easydiffraction.sample_models.standard_components.cell import Cell
+from easydiffraction.sample_models.iterable_components.atom_sites import AtomSites
+from easydiffraction.core.collection_base import BaseCollection
 from easydiffraction.utils.utils import paragraph
 
 

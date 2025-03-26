@@ -1,11 +1,11 @@
-from easydiffraction.parameter import Parameter
-from easydiffraction.experiments.components.base import ComponentBase
+from easydiffraction.core.parameter import Parameter
+from easydiffraction.experiments.standard_components.standard_component_base import StandardComponentBase
 
 
-class PeakBroadBase(ComponentBase):
+class PeakBroadBase(StandardComponentBase):
     """
     Base class for peak broadening component.
-    Dynamically combined with mixins depending on expt_mode.
+    Dynamically combined with experiment_mixins depending on expt_mode.
     """
     cif_category_name = "_peak_broad"
 

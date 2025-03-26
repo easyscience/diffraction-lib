@@ -1,11 +1,11 @@
-from easydiffraction.parameter import Parameter
-from easydiffraction.experiments.components.base import ComponentBase
+from easydiffraction.core.parameter import Parameter
+from easydiffraction.experiments.standard_components.standard_component_base import StandardComponentBase
 
 
-class InstrCalibBase(ComponentBase):
+class InstrCalibBase(StandardComponentBase):
     """
     Base class for instrument calibration.
-    Dynamically combined with mixins depending on expt_mode.
+    Dynamically combined with experiment_mixins depending on expt_mode.
     """
     cif_category_name = "_instr_calib"
 

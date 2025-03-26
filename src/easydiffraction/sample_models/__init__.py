@@ -1,7 +1,7 @@
 from .sample_models import SampleModel, SampleModels
-from .space_group import SpaceGroup
-from .cell import Cell
-from .atom_sites import AtomSites
+from easydiffraction.sample_models.standard_components.space_group import SpaceGroup
+from easydiffraction.sample_models.standard_components.cell import Cell
+from easydiffraction.sample_models.iterable_components.atom_sites import AtomSites
 
 __all__ = [
     "SampleModel", "SampleModels",

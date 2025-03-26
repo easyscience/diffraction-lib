@@ -1,6 +1,6 @@
 from typing import List, Union, Iterator
 
-from easydiffraction.parameter import Parameter, Descriptor
+from easydiffraction.core.parameter import Parameter, Descriptor
 
 class LinkedPhase:
     cif_category_name = "_pd_phase_block"

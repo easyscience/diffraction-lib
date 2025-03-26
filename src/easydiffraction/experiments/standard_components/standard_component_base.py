@@ -1,7 +1,7 @@
-from easydiffraction.parameter import Parameter, Descriptor
+from easydiffraction.core.parameter import Parameter, Descriptor
 
 
-class ComponentBase:
+class StandardComponentBase:
     """
     Base class for experiment and sample model components.
     Provides common functionality for CIF export and parameter handling.

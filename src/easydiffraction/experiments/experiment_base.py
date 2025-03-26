@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from easydiffraction.experiments.components.expt_type import ExperimentType
+from easydiffraction.experiments.standard_components.experiment_type import ExperimentType
 from easydiffraction.utils.utils import paragraph
 
 
