@@ -14,6 +14,20 @@ class Cell:
         self.angle_beta = Parameter(90.0, cif_name="angle_beta", units="degree")
         self.angle_gamma = Parameter(90.0, cif_name="angle_gamma", units="degree")
 
+
+    def from_cif(self, cif_data):
+        print("Parsing unit cell parameters from CIF...")
+
+    def as_dict(self):
+        return {
+            "length_a": self.length_a.value,
+            "length_b": self.length_b.value,
+            "length_c": self.length_c.value,
+            "angle_alpha": self.angle_alpha.value,
+            "angle_beta": self.angle_beta.value,
+            "angle_gamma": self.angle_gamma.value
+        }
+
     def as_cif(self):
         tags_and_values = [
             (f"{self.cif_category_name}.{self.length_a.cif_name}", self.length_a.value),

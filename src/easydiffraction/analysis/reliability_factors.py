@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def calculate_r_factor(y_obs, y_calc):
     y_obs = np.asarray(y_obs)
     y_calc = np.asarray(y_calc)
