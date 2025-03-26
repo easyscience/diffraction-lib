@@ -1,10 +1,10 @@
 from .calculator_base import CalculatorBase
-from easydiffraction.utils.utils import error
+from easydiffraction.utils.utils import warning
 
 try:
     from pycrysfml import cfml_py_utilities
 except ImportError:
-    print(error('Warning: pycrysfml module not found. This calculator will not work.'))
+    print(warning('"pycrysfml" module not found. This calculator will not work.'))
     cfml_py_utilities = None
 
 

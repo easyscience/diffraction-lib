@@ -1,10 +1,10 @@
 from .calculator_base import CalculatorBase
-from easydiffraction.utils.utils import error
+from easydiffraction.utils.utils import warning
 
 try:
     from diffpy.pdffit2 import pdffit
 except ImportError:
-    print(error('Warning: pdffit module not found. This calculator will not work.'))
+    print(warning('"pdffit" module not found. This calculator will not work.'))
     pdffit = None
 
 class PdffitCalculator(CalculatorBase):

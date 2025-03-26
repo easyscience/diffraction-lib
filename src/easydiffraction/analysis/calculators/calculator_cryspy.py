@@ -1,12 +1,12 @@
 from .calculator_base import CalculatorBase  # Assuming you have a base interface
-from easydiffraction.utils.utils import error
+from easydiffraction.utils.utils import warning
 
 try:
     import cryspy
     from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
     from cryspy.H_functions_global.function_1_cryspy_objects import str_to_globaln
 except ImportError:
-    print(error('Warning: cryspy module not found. This calculator will not work.'))
+    print(warning("'cryspy' module not found. This calculator will not work."))
     cryspy = None
 
 
