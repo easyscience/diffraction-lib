@@ -125,8 +125,7 @@ class Analysis:
         strategies = [
             {"Strategy": "single", "Description": "Refine each experiment separately"},
             {"Strategy": "combined", "Description": "Perform joint refinement of all experiments"},
-            {"Strategy": "sequential*", "Description": "Refine experiments one after another"},
-            {"Strategy": "decoupled*", "Description": "Refine all experiments independently"},
+            {"Strategy": "sequential*", "Description": "Refine experiments one after another"}
         ]
         print(paragraph("Available refinement strategies"))
         print(tabulate(strategies, headers="keys", tablefmt="fancy_outline", showindex=False))
