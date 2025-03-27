@@ -146,10 +146,6 @@ class SampleModels(BaseCollection):
         """
         return self._models[model_id]
 
-    # ==========================
-    # Private helper methods
-    # ==========================
-
     def _add_prebuilt_sample_model(self, model):
         """
         Add a pre-built SampleModel instance.
