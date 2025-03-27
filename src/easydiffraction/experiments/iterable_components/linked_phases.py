@@ -22,6 +22,8 @@ class LinkedPhase:
         )
 
 class LinkedPhases:
+    cif_category_name = "_pd_phase_block"
+
     def __init__(self):
         self.phases: List[LinkedPhase] = []
 
@@ -34,6 +36,7 @@ class LinkedPhases:
         self.phases.append(phase)
 
     def as_cif_loop(self) -> str:
+        # TODO: this header should be generated automatically
         lines = [
             "loop_",
             "_pd_phase_block.id",

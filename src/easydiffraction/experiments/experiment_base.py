@@ -48,17 +48,12 @@ class BaseExperiment(ABC):
             lines.append(self.peak_asymm.as_cif())
 
         # Phase scale factors
-        if hasattr(self, "linked_phases") and self.linked_phases:
+        if hasattr(self, "linked_phases"):
             lines.append("")
-            lines.append("loop_")
-            category = self.linked_phases.phases[0].cif_category_name
-            attributes = ('id', 'scale')
-            for attribute in attributes:
-                lines.append(f"{category}.{attribute}")
-            for phase in self.linked_phases.phases:
-                lines.append(f"{phase.id} {phase.scale}")
+            lines.append(self.linked_phases.as_cif_loop())
 
         # Background points
+        # TODO: This functionality should be moved to background.py
         if hasattr(self, "background") and hasattr(self.background, "points") and self.background.points:
             lines.append("")
             lines.append("loop_")
@@ -72,6 +67,9 @@ class BaseExperiment(ABC):
                 lines.append(f"{x} {y}")
 
         # Measured data
+        # TODO: This functionality should be moved to datastore.py
+        # TODO: We need meas_data component which will use datastore to extract data
+        # TODO: Datastore should be moved out of iterable_components/
         if hasattr(self, "datastore") and hasattr(self.datastore, "pattern"):
             lines.append("")
             lines.append("loop_")
