@@ -44,8 +44,6 @@ class SampleModel:
 
         print(paragraph(f"Sample model 🧩 '{self.model_id}' structure view"))
         print("Not implemented yet.")
-        #plotter = StructurePlotter(grid_size=grid_size)
-        #plotter.draw_from_cif(self.as_cif())
 
     def show_params(self):
         """Display structural parameters (space group, unit cell, atomic sites)."""
