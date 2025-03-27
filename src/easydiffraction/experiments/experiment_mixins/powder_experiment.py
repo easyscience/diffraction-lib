@@ -1,5 +1,3 @@
-import numpy as np
-
 from easydiffraction.utils.utils import paragraph
 from easydiffraction.utils.chart_plotter import ChartPlotter
 
@@ -10,9 +8,6 @@ class PowderExperimentMixin:
         if pattern.meas is None or pattern.x is None:
             print(f"No measured data available for experiment {self.id}")
             return
-
-        #print(f"pattern.x shape: {np.shape(pattern.x)}")
-        #print(f"pattern.meas shape: {np.shape(pattern.meas)}")
 
         plotter = ChartPlotter()
         plotter.plot(

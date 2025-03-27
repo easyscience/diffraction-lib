@@ -1,5 +1,5 @@
 from easydiffraction.core.parameter import Parameter, Descriptor
-from easydiffraction.experiments.standard_components.standard_component_base import StandardComponentBase
+from easydiffraction.core.component_base import StandardComponentBase
 
 
 class PeakProfileBase(StandardComponentBase):
