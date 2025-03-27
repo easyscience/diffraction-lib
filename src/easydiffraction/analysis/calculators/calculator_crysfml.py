@@ -1,5 +1,5 @@
 from .calculator_base import CalculatorBase
-from easydiffraction.utils.utils import warning
+from easydiffraction.utils.formatting import warning
 
 try:
     from pycrysfml import cfml_py_utilities

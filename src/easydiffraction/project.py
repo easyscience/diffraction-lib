@@ -2,7 +2,7 @@ import os
 import datetime
 from textwrap import wrap
 
-from easydiffraction.utils.utils import paragraph
+from easydiffraction.utils.formatting import paragraph
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.analysis.analysis import Analysis

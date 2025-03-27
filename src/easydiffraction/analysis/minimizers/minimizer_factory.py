@@ -1,6 +1,6 @@
 import tabulate
 
-from easydiffraction.utils.utils import paragraph
+from easydiffraction.utils.formatting import paragraph
 
 from .minimizer_lmfit import LmfitMinimizer
 from .minimizer_bumps import BumpsMinimizer

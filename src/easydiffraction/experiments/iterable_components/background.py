@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.interpolate import interp1d
 
-from easydiffraction.utils.utils import paragraph, warning
+from easydiffraction.utils.formatting import paragraph, warning
 
 
 class Background:

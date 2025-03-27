@@ -4,7 +4,7 @@ import numpy as np
 from easydiffraction.experiments.experiment_factory import ExperimentFactory
 from easydiffraction.experiments.experiment_base import BaseExperiment
 from easydiffraction.core.collection_base import BaseCollection
-from easydiffraction.utils.utils import paragraph
+from easydiffraction.utils.formatting import paragraph
 
 
 # ==========================================================================

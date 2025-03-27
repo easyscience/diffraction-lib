@@ -1,5 +1,5 @@
 from .calculator_base import CalculatorBase  # Assuming you have a base interface
-from easydiffraction.utils.utils import warning
+from easydiffraction.utils.formatting import warning
 
 try:
     import cryspy

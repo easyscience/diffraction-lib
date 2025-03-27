@@ -2,7 +2,7 @@ from easydiffraction.sample_models.standard_components.space_group import SpaceG
 from easydiffraction.sample_models.standard_components.cell import Cell
 from easydiffraction.sample_models.iterable_components.atom_sites import AtomSites
 from easydiffraction.core.collection_base import BaseCollection
-from easydiffraction.utils.utils import paragraph
+from easydiffraction.utils.formatting import paragraph
 
 
 class SampleModel:

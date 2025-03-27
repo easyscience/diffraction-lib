@@ -1,4 +1,4 @@
-from easydiffraction.utils.utils import paragraph
+from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.chart_plotter import ChartPlotter
 
 class PowderExperimentMixin:

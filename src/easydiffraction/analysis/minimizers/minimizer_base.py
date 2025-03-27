@@ -7,7 +7,7 @@ from ..reliability_factors import (
     calculate_rb_factor
 )
 from .fitting_progress_tracker import FittingProgressTracker
-from easydiffraction.utils.utils import paragraph
+from easydiffraction.utils.formatting import paragraph
 
 class FitResults:
     def __init__(self, success=False, parameters=None, chi_square=None,

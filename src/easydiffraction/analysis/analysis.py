@@ -1,7 +1,7 @@
 import pandas as pd
 from tabulate import tabulate
 
-from easydiffraction.utils.utils import paragraph, info, error
+from easydiffraction.utils.formatting import paragraph, info, error
 from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
 from easydiffraction.experiments import Experiments
 

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from easydiffraction.experiments.standard_components.experiment_type import ExperimentType
-from easydiffraction.utils.utils import paragraph
+from easydiffraction.utils.formatting import paragraph
 
 
 class BaseExperiment(ABC):

@@ -1,18 +1,34 @@
 # Project management
-from easydiffraction.project import Project, ProjectInfo
+from easydiffraction.project import (
+    Project,
+    ProjectInfo
+)
 
 # Sample model management
-from easydiffraction.sample_models.sample_models import SampleModel, SampleModels
+from easydiffraction.sample_models.sample_models import (
+    SampleModel,
+    SampleModels
+)
 
 # Experiment creation and collection management
-from easydiffraction.experiments.experiments import Experiment, Experiments
+from easydiffraction.experiments.experiments import (
+    Experiment,
+    Experiments
+)
 
-# Analysis and summary
+# Analysis
 from easydiffraction.analysis.analysis import Analysis
+
+# Summary
 from easydiffraction.summary import Summary
 
 # Utils
-from easydiffraction.utils.utils import section, chapter, paragraph
+from easydiffraction.utils.formatting import chapter
+from easydiffraction.utils.formatting import (
+    chapter,
+    section,
+    paragraph
+)
 
 # Expose the public API
 __all__ = [
