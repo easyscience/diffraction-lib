@@ -10,7 +10,7 @@ class DiffractionMinimizer:
 
     def __init__(self, selection: str = 'lmfit (leastsq)'):
         self.selection = selection
-        self.engine = selection.split(' ')[0]  # Extracts 'lmfit' or 'bumps'
+        self.engine = selection.split(' ')[0]  # Extracts 'lmfit' or 'dfols'
         self.minimizer = MinimizerFactory.create_minimizer(selection)
         self.results = None
 

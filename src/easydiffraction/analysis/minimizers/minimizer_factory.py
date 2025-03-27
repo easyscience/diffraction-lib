@@ -3,7 +3,6 @@ import tabulate
 from easydiffraction.utils.formatting import paragraph
 
 from .minimizer_lmfit import LmfitMinimizer
-from .minimizer_bumps import BumpsMinimizer
 from .minimizer_dfols import DfolsMinimizer
 
 class MinimizerFactory:
