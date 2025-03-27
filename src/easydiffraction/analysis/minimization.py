@@ -58,12 +58,16 @@ class DiffractionMinimizer:
         # Sync parameters back to objects
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
 
+        weights = np.array([getattr(experiment, 'weight', 1.0) for experiment in experiments._items.values()], dtype=np.float64)
+        weights /= np.sum(weights)  # Normalize weights so they sum to 1
+
         residuals = []
-        for expt_id, experiment in experiments._items.items():
+        for (expt_id, experiment), weight in zip(experiments._items.items(), weights):
             y_calc = calculator.calculate_pattern(sample_models, experiment)
             y_meas = experiment.datastore.pattern.meas
             y_meas_su = experiment.datastore.pattern.meas_su
             diff = (y_meas - y_calc) / y_meas_su
+            diff *= weight
             residuals.extend(diff)
 
         residuals = np.array(residuals)
