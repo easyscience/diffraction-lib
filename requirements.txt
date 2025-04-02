@@ -9,3 +9,4 @@ tabulate
 asciichartpy
 colorama
 pytest
+pytest-xdist

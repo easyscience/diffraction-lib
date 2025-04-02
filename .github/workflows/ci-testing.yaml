@@ -53,4 +53,4 @@ jobs:
 
       - name: Run Python functional tests
         shell: bash
-        run: PYTHONPATH=$(pwd)/src python -m pytest tests/functional_tests/ --color=yes
+        run: PYTHONPATH=$(pwd)/src python -m pytest tests/functional_tests/ --color=yes -n auto

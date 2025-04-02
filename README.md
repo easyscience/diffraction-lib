@@ -14,6 +14,7 @@ Development playground for the new EasyDiffraction API.
   ```
 - Install dependencies:
   ```bash
+  pip install --upgrade pip
   pip install -r requirements.txt
   ```
 - Install pycrysfml (pyenv python 3.12, macOS 14, Apple Silicon):
@@ -26,8 +27,9 @@ Development playground for the new EasyDiffraction API.
 
 ## Testing
 
+- Functional tests:
   ```bash
-  PYTHONPATH=$(pwd)/src python -m pytest tests/ --color=yes
+  PYTHONPATH=$(pwd)/src python -m pytest tests/functional_tests/ --color=yes -n auto
   ```
 
 ## Running examples
