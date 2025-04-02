@@ -34,7 +34,8 @@ class CryspyCalculator(CalculatorBase):
         cryspy_obj.add_items(cryspy_sample_model_obj.items)
 
         # Add single experiment to cryspy_obj
-        cryspy_experiment_cif = self._convert_experiment_to_cif(experiment, linked_phase=sample_model)
+        cryspy_experiment_cif = self._convert_experiment_to_cif(experiment,
+                                                                linked_phase=sample_model)
         cryspy_experiment_obj = str_to_globaln(cryspy_experiment_cif)
         cryspy_obj.add_items(cryspy_experiment_obj.items)
 
@@ -54,15 +55,23 @@ class CryspyCalculator(CalculatorBase):
             flag_calc_analytical_derivatives=False
         )
 
+        # Get cryspy block name based on experiment type
+        if experiment.type.beam_mode.value == "constant wavelength":
+            cryspy_block_name = f"pd_{experiment.id}"
+        elif experiment.type.beam_mode.value == "time-of-flight":
+            cryspy_block_name = f"tof_{experiment.id}"
+        else:
+            print(f"[CryspyCalculator] Error: Unknown beam mode {experiment.type.beam_mode.value}")
+            return []
+
         # Extract calculated pattern from cryspy_in_out_dict
-        cryspy_block_name = f"pd_{experiment.id}"
         try:
             signal_plus = cryspy_in_out_dict[cryspy_block_name]['signal_plus']
             signal_minus = cryspy_in_out_dict[cryspy_block_name]['signal_minus']
             y_calc_total = signal_plus + signal_minus
         except KeyError:
             print(f"[CryspyCalculator] Error: No calculated data for {cryspy_block_name}")
-            y_calc_total = []
+            return []
 
         return y_calc_total
 
@@ -85,16 +94,45 @@ class CryspyCalculator(CalculatorBase):
 
         # Instrument category
         if instrument:
-            cif_lines.append(f"_setup_wavelength {instrument.setup_wavelength.value}")
-            cif_lines.append(f"_setup_offset_2theta {instrument.calib_twotheta_offset.value}")
+            instrument_mapping = {
+                # Constant wavelength
+                "setup_wavelength": "_setup_wavelength",
+                "calib_twotheta_offset": "_setup_offset_2theta",
+                # Time-of-flight
+                "setup_twotheta_bank": "_tof_parameters_2theta_bank",
+                "calib_d_to_tof_offset": "_tof_parameters_Zero",
+                "calib_d_to_tof_linear": "_tof_parameters_Dtt1",
+                "calib_d_to_tof_quad": "_tof_parameters_dtt2",
+            }
+            for local_attr_name, engine_key_name in instrument_mapping.items():
+                if hasattr(instrument, local_attr_name):
+                    attr_value = getattr(instrument, local_attr_name).value
+                    cif_lines.append(f"{engine_key_name} {attr_value}")
 
         # Peak category
         if peak:
-            cif_lines.append(f"_pd_instr_resolution_U {peak.broad_gauss_u.value}")
-            cif_lines.append(f"_pd_instr_resolution_V {peak.broad_gauss_v.value}")
-            cif_lines.append(f"_pd_instr_resolution_W {peak.broad_gauss_w.value}")
-            cif_lines.append(f"_pd_instr_resolution_X {peak.broad_lorentz_x.value}")
-            cif_lines.append(f"_pd_instr_resolution_Y {peak.broad_lorentz_y.value}")
+            peak_mapping = {
+                # Constant wavelength
+                "broad_gauss_u": "_pd_instr_resolution_U",
+                "broad_gauss_v": "_pd_instr_resolution_V",
+                "broad_gauss_w": "_pd_instr_resolution_W",
+                "broad_lorentz_x": "_pd_instr_resolution_X",
+                "broad_lorentz_y": "_pd_instr_resolution_Y",
+                # Time-of-flight
+                "broad_gauss_sigma_0": "_tof_profile_sigma0",
+                "broad_gauss_sigma_1": "_tof_profile_sigma1",
+                "broad_gauss_sigma_2": "_tof_profile_sigma2",
+                "broad_mix_beta_0": "_tof_profile_beta0",
+                "broad_mix_beta_1": "_tof_profile_beta1",
+                "asym_alpha_0": "_tof_profile_alpha0",
+                "asym_alpha_1": "_tof_profile_alpha1",
+            }
+            if expt_type.beam_mode.value == "time-of-flight":
+                cif_lines.append(f"_tof_profile_peak_shape Gauss")
+            for local_attr_name, engine_key_name in peak_mapping.items():
+                if hasattr(peak, local_attr_name):
+                    attr_value = getattr(peak, local_attr_name).value
+                    cif_lines.append(f"{engine_key_name} {attr_value}")
 
         # Linked phases category
         # Force single linked phase to be used, as we handle multiple phases
@@ -104,28 +142,45 @@ class CryspyCalculator(CalculatorBase):
         cif_lines.append("_phase_scale")
         cif_lines.append(f"{linked_phase.model_id} 1.0")
 
+        # Experiment range category
         # Extract measurement range dynamically
         x_data = experiment.datastore.pattern.x
         two_theta_min = float(x_data.min())
         two_theta_max = float(x_data.max())
-
-        cif_lines.append(f"_range_2theta_min {two_theta_min}")
-        cif_lines.append(f"_range_2theta_max {two_theta_max}\n")
+        if expt_type.beam_mode.value == "constant wavelength":
+            cif_lines.append(f"_range_2theta_min {two_theta_min}")
+            cif_lines.append(f"_range_2theta_max {two_theta_max}")
+        elif expt_type.beam_mode.value == "time-of-flight":
+            cif_lines.append(f"_range_time_min {two_theta_min}")
+            cif_lines.append(f"_range_time_max {two_theta_max}")
 
         # Background category
         # Force background to be zero, as we handle it independently of the
         # calculation engines
-        cif_lines.append("loop_")
-        cif_lines.append("_pd_background_2theta")
-        cif_lines.append("_pd_background_intensity")
-        cif_lines.append(f"{two_theta_min} 0.0")
-        cif_lines.append(f"{two_theta_max} 0.0")
+        if expt_type.beam_mode.value == "constant wavelength":
+            cif_lines.append("loop_")
+            cif_lines.append("_pd_background_2theta")
+            cif_lines.append("_pd_background_intensity")
+            cif_lines.append(f"{two_theta_min} 0.0")
+            cif_lines.append(f"{two_theta_max} 0.0")
+        elif expt_type.beam_mode.value == "time-of-flight":
+            cif_lines.append("loop_")
+            cif_lines.append("_tof_backgroundpoint_time")
+            cif_lines.append("_tof_backgroundpoint_intensity")
+            cif_lines.append(f"{two_theta_min} 0.0")
+            cif_lines.append(f"{two_theta_max} 0.0")
 
         # Measured data category
-        cif_lines.append("loop_")
-        cif_lines.append("_pd_meas_2theta")
-        cif_lines.append("_pd_meas_intensity")
-        cif_lines.append("_pd_meas_intensity_sigma")
+        if expt_type.beam_mode.value == "constant wavelength":
+            cif_lines.append("loop_")
+            cif_lines.append("_pd_meas_2theta")
+            cif_lines.append("_pd_meas_intensity")
+            cif_lines.append("_pd_meas_intensity_sigma")
+        elif expt_type.beam_mode.value == "time-of-flight":
+            cif_lines.append("loop_")
+            cif_lines.append("_tof_meas_time")
+            cif_lines.append("_tof_meas_intensity")
+            cif_lines.append("_tof_meas_intensity_sigma")
 
         y_data = experiment.datastore.pattern.meas
         sy_data = experiment.datastore.pattern.meas_su
