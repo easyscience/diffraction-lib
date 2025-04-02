@@ -14,7 +14,7 @@ class DiffractionMinimizer:
         self.minimizer = MinimizerFactory.create_minimizer(selection)
         self.results = None
 
-    def fit(self, sample_models, experiments, calculator):
+    def fit(self, sample_models, experiments, calculator, weights=None):
         """
         Run the fitting process.
         """
@@ -27,7 +27,7 @@ class DiffractionMinimizer:
         for parameter in parameters:
             parameter.start_value = parameter.value
 
-        objective_function = lambda engine_params: self._residual_function(engine_params, parameters, sample_models, experiments, calculator)
+        objective_function = lambda engine_params: self._residual_function(engine_params, parameters, sample_models, experiments, calculator, weights)
 
         # Perform fitting
         self.results = self.minimizer.fit(parameters, objective_function)
@@ -50,15 +50,14 @@ class DiffractionMinimizer:
     def _collect_free_parameters(self, sample_models, experiments):
         return sample_models.get_free_params() + experiments.get_free_params()
 
-    def _residual_function(self, engine_params, parameters, sample_models, experiments, calculator):
+    def _residual_function(self, engine_params, parameters, sample_models, experiments, calculator, weights=None):
         """
         Residual function computes the difference between measured and calculated patterns.
         It updates the parameter values according to the optimizer-provided engine_params.
         """
         # Sync parameters back to objects
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
-
-        weights = np.array([getattr(experiment, 'weight', 1.0) for experiment in experiments._items.values()], dtype=np.float64)
+        weights = np.ones(len(experiments)) if weights is None else np.array([getattr(weights, experiment_name, 1.0) for experiment_name in experiments._items.keys()], dtype=np.float64)
         weights /= np.sum(weights)  # Normalize weights so they sum to 1
 
         residuals = []

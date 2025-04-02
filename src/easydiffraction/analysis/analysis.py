@@ -117,6 +117,8 @@ class Analysis:
         if strategy not in ['single', 'joint']:
             raise ValueError("Fit mode must be either 'single' or 'joint'")
         self._fit_mode = strategy
+        if strategy == 'joint':
+            self.joint_fit = {}
         print(paragraph("Current ffit mode changed to"))
         print(self._fit_mode)
 
@@ -215,7 +217,7 @@ class Analysis:
 
         if self.fit_mode == 'joint':
             print(paragraph(f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"))
-            self.fitter.fit(sample_models, experiments, calculator)
+            self.fitter.fit(sample_models, experiments, calculator, weights=self.joint_fit)
         elif self.fit_mode == 'single':
             for expt_id in list(experiments._items.keys()):
                 print(paragraph(f"Using experiment 🔬 '{expt_id}' for '{self.fit_mode}' fitting"))

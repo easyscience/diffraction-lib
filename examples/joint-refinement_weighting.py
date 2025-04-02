@@ -1,4 +1,3 @@
-
 """
 Joint Refinement Example (Advanced API)
 
@@ -30,14 +29,15 @@ model.atom_sites.add("O3", "O", 0.0811, 0.0272, 0.8086, b_iso=1.2822)
 
 # Experiment 1: Neutron powder diffraction
 expt1 = Experiment(id="npd", radiation_probe="neutron", data_path="examples/data/pbso4_powder_neutron_cw.dat")
-expt1.instr_setup.wavelength = 1.91
-expt1.instr_calib.twotheta_offset = -0.1406
-expt1.peak_broad.gauss_u = 0.139
-expt1.peak_broad.gauss_v = -0.412
-expt1.peak_broad.gauss_w = 0.386
-expt1.peak_broad.lorentz_x = 0
-expt1.peak_broad.lorentz_y = 0.088
+expt1.instrument.setup_wavelength = 1.91
+expt1.instrument.calib_twotheta_offset = -0.1406
+expt1.peak.broad_gauss_u = 0.139
+expt1.peak.broad_gauss_v = -0.412
+expt1.peak.broad_gauss_w = 0.386
+expt1.peak.broad_lorentz_x = 0
+expt1.peak.broad_lorentz_y = 0.088
 expt1.linked_phases.add("pbso4", scale=1.0)
+expt1.background_type = "line-segment"
 for x, y in [
     (11.0, 206.1624),
     (15.0, 194.75),
@@ -52,23 +52,22 @@ for x, y in [
 
 # Experiment 2: X-ray powder diffraction
 expt2 = Experiment(id="xrd", radiation_probe="xray", data_path="examples/data/pbso4_powder_xray.dat")
-expt2.instr_setup.wavelength = 1.540567
-expt2.instr_calib.twotheta_offset = -0.05181
-expt2.peak_broad.gauss_u = 0.304138
-expt2.peak_broad.gauss_v = -0.112622
-expt2.peak_broad.gauss_w = 0.021272
-expt2.peak_broad.lorentz_x = 0
-expt2.peak_broad.lorentz_y = 0.057691
+expt2.instrument.setup_wavelength = 1.540567
+expt2.instrument.calib_twotheta_offset = -0.05181
+expt2.peak.broad_gauss_u = 0.304138
+expt2.peak.broad_gauss_v = -0.112622
+expt2.peak.broad_gauss_w = 0.021272
+expt2.peak.broad_lorentz_x = 0
+expt2.peak.broad_lorentz_y = 0.057691
 expt2.linked_phases.add("pbso4", scale=0.005)
+expt2.background_type = "chebyshev polynomial"
 for x, y in [
-    (11.0, 141.8516),
-    (13.0, 102.8838),
-    (16.0, 78.0551),
-    (20.0, 124.0121),
-    (30.0, 123.7123),
-    (50.0, 120.8266),
-    (90.0, 113.7473),
-    (110.0, 132.4643),
+    (0, 119.195),
+    (1, 6.221),
+    (2, -45.725),
+    (3, 8.119),
+    (4, 54.552),
+    (5, -20.661),
 ]:
     expt2.background.add(x, y)
 
@@ -78,14 +77,14 @@ project.sample_models.add(model)
 project.experiments.add(expt1)
 project.experiments.add(expt2)
 
-# Weight the experiments
-expt1.weight = 0.4
-expt2.weight = 0.6
-
 # Set calculator, minimizer and refinement strategy
 project.analysis.current_calculator = "cryspy"
 project.analysis.current_minimizer = "lmfit (leastsq)"
-project.analysis.refinement_strategy = 'combined'
+project.analysis.fit_mode = 'joint'
+# project.analysis.joint_fit.add("expt1", weight=0.4)  # Default weight could be 0.5
+# project.analysis.joint_fit.add("expt2", weight=0.6)  # Default weight could be 0.5
+project.analysis.joint_fit.setdefault("xrd",0.4)  # Default weight could be 0.5
+project.analysis.joint_fit.setdefault("npd",0.6)  # Default weight could be 0.5
 
 # Define free parameters
 model.cell.length_a.free = True
@@ -96,7 +95,4 @@ expt2.linked_phases["pbso4"].scale.free = True
 
 # Run refinement
 project.analysis.fit()
-
-project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66, show_residual=True)
-project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28, show_residual=True)
 
