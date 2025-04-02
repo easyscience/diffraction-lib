@@ -1,50 +1,50 @@
+from easydiffraction.core.component import StandardComponent
 from easydiffraction.core.parameter import Parameter
 
-class Cell:
+class Cell(StandardComponent):
     """
     Represents the unit cell parameters of a sample model.
     """
-    cif_category_name = "_cell"
+    @property
+    def cif_category_name(self):
+        return "_cell"
 
-    def __init__(self):
-        self.length_a = Parameter(1.0, cif_name="length_a", units="Å")
-        self.length_b = Parameter(1.0, cif_name="length_b", units="Å")
-        self.length_c = Parameter(1.0, cif_name="length_c", units="Å")
-        self.angle_alpha = Parameter(90.0, cif_name="angle_alpha", units="degree")
-        self.angle_beta = Parameter(90.0, cif_name="angle_beta", units="degree")
-        self.angle_gamma = Parameter(90.0, cif_name="angle_gamma", units="degree")
+    def __init__(self,
+                 length_a=10.0,
+                 length_b=10.0,
+                 length_c=10.0,
+                 angle_alpha=90.0,
+                 angle_beta=90.0,
+                 angle_gamma=90.0):
+        super().__init__()
 
-
-    def from_cif(self, cif_data):
-        print("Parsing unit cell parameters from CIF...")
-
-    def as_dict(self):
-        return {
-            "length_a": self.length_a.value,
-            "length_b": self.length_b.value,
-            "length_c": self.length_c.value,
-            "angle_alpha": self.angle_alpha.value,
-            "angle_beta": self.angle_beta.value,
-            "angle_gamma": self.angle_gamma.value
-        }
-
-    def as_cif(self):
-        tags_and_values = [
-            (f"{self.cif_category_name}.{self.length_a.cif_name}", self.length_a.value),
-            (f"{self.cif_category_name}.{self.length_b.cif_name}", self.length_b.value),
-            (f"{self.cif_category_name}.{self.length_c.cif_name}", self.length_c.value),
-            (f"{self.cif_category_name}.{self.angle_alpha.cif_name}", self.angle_alpha.value),
-            (f"{self.cif_category_name}.{self.angle_beta.cif_name}", self.angle_beta.value),
-            (f"{self.cif_category_name}.{self.angle_gamma.cif_name}", self.angle_gamma.value)
-        ]
-
-        # Format numbers with consistent precision and alignment
-        max_tag_length = max(len(tag) for tag, _ in tags_and_values)
-        formatted_lines = []
-
-        for tag, val in tags_and_values:
-            # Format number with fixed width, right-aligned to decimal point
-            formatted_val = f"{val:>10.4f}".rstrip('0').rstrip('.')
-            formatted_lines.append(f"{tag.ljust(max_tag_length)} {formatted_val}")
-
-        return "\n".join(formatted_lines)
+        self.length_a = Parameter(
+            value=length_a,
+            cif_name="length_a",
+            units="Å"
+        )
+        self.length_b = Parameter(
+            value=length_b,
+            cif_name="length_b",
+            units="Å"
+        )
+        self.length_c = Parameter(
+            value=length_c,
+            cif_name="length_c",
+            units="Å"
+        )
+        self.angle_alpha = Parameter(
+            value=angle_alpha,
+            cif_name="angle_alpha",
+            units="deg"
+        )
+        self.angle_beta = Parameter(
+            value=angle_beta,
+            cif_name="angle_beta",
+            units="deg"
+        )
+        self.angle_gamma = Parameter(
+            value=angle_gamma,
+            cif_name="angle_gamma",
+            units="deg"
+        )

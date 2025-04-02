@@ -42,19 +42,19 @@ class Datastore:
     Stores pattern data (measured and calculated) for an experiment.
     """
 
-    def __init__(self, diffr_mode: str, experiment):
-        self.diffr_mode = diffr_mode
+    def __init__(self, sample_form: str, experiment):
+        self.sample_form = sample_form
 
-        if diffr_mode == "powder":
+        if sample_form == "powder":
             self.pattern = PowderPattern(experiment)
-        elif diffr_mode == "single_crystal":
+        elif sample_form == "single_crystal":
             self.pattern = Pattern(experiment)
         else:
-            raise ValueError(f"Unknown diffraction mode '{diffr_mode}'")
+            raise ValueError(f"Unknown sample form '{sample_form}'")
 
     def load_measured_data(self, file_path):
         """Load measured data from an ASCII file."""
-        print(f"Loading measured data for {self.diffr_mode} diffraction from {file_path}")
+        print(f"Loading measured data for {self.sample_form} diffraction from {file_path}")
 
         try:
             data = np.loadtxt(file_path)
@@ -77,14 +77,14 @@ class Datastore:
 
     def show_measured_data(self):
         """Display measured data in console."""
-        print(f"\nMeasured data ({self.diffr_mode}):")
+        print(f"\nMeasured data ({self.sample_form}):")
         print(f"x: {self.pattern.x}")
         print(f"meas: {self.pattern.meas}")
         print(f"meas_su: {self.pattern.meas_su}")
 
     def show_calculated_data(self):
         """Display calculated data in console."""
-        print(f"\nCalculated data ({self.diffr_mode}):")
+        print(f"\nCalculated data ({self.sample_form}):")
         print(f"calc: {self.pattern.calc}")
 
 
@@ -94,8 +94,8 @@ class DatastoreFactory:
     """
 
     @staticmethod
-    def create_datastore(diffr_mode: str, experiment):
+    def create(sample_form: str, experiment):
         """
-        Create a datastore object depending on the diffraction mode.
+        Create a datastore object depending on the sample form.
         """
-        return Datastore(diffr_mode, experiment)
+        return Datastore(sample_form, experiment)

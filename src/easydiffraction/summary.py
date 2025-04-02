@@ -30,9 +30,9 @@ class Summary:
         - Project metadata
         - Sample models and parameters
         - Experiment configurations and results
-        - Analysis and refinement results
+        - Analysis and fitting results
         """
-        ##############################
+        # ------------------------------------------
         print(section("Project info"))
 
         print(paragraph("Title"))
@@ -41,14 +41,14 @@ class Summary:
         print(paragraph("Description"))
         print('\n'.join(wrap(self.project.info.description, width=60)))
 
-        #######################################
+        # ------------------------------------------
         print(section("Crystallographic data"))
         for model in self.project.sample_models._models.values():
             print(paragraph("Phase datablock"))
             print(f'🧩 {model.model_id}')
 
             print(paragraph("Space group"))
-            print(model.space_group.name)
+            print(model.space_group.name.value)
 
             print(paragraph("Cell parameters"))
             cell_data = [[k.replace('length_', '').replace('angle_', ''), f"{v:.4f}"] for k, v in model.cell.as_dict().items()]
@@ -62,47 +62,47 @@ class Summary:
                 fract_z = site.fract_z.value
                 b_iso = site.b_iso.value
                 atom_table.append([
-                    site.label, site.type_symbol,
+                    site.label.value, site.type_symbol.value,
                     f"{fract_x:.4f}", f"{fract_y:.4f}", f"{fract_z:.4f}",
-                    site.occupancy,
+                    site.occupancy.value,
                     f"{b_iso:.4f}"
                 ])
             headers = ["Label", "Type", "fract_x", "fract_y", "fract_z", "Occupancy", "B_iso"]
             print(tabulate(atom_table, headers=headers, tablefmt="fancy_outline"))
 
-        #############################
+        # ------------------------------------------
         print(section("Experiments"))
         for expt in self.project.experiments._experiments.values():
             print(paragraph("Experiment datablock"))
             print(f'🔬 {expt.id}')
 
             print(paragraph("Experiment type"))
-            print(f'{expt.expt_type.diffr_mode}, {expt.expt_type.radiation_probe}, {expt.expt_type.expt_mode}')
+            print(f'{expt.type.sample_form.value}, {expt.type.radiation_probe.value}, {expt.type.beam_mode.value}')
 
             print(paragraph("Wavelength"))
-            print(expt.instr_setup.wavelength.value)
+            print(expt.instrument.setup_wavelength.value)
 
             print(paragraph("2θ offset"))
-            print(expt.instr_calib.twotheta_offset.value)
+            print(expt.instrument.calib_twotheta_offset.value)
 
             print(paragraph("Profile type"))
-            print(expt.peak_profile.profile_type)
+            print(expt.peak_profile_type)
 
             print(paragraph("Peak broadening (Gaussian)"))
             print(tabulate([
-                ["U", expt.peak_broad.gauss_u.value],
-                ["V", expt.peak_broad.gauss_v.value],
-                ["W", expt.peak_broad.gauss_w.value]
+                ["U", expt.peak.broad_gauss_u.value],
+                ["V", expt.peak.broad_gauss_v.value],
+                ["W", expt.peak.broad_gauss_w.value]
             ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
 
             print(paragraph("Peak broadening (Lorentzian)"))
             print(tabulate([
-                ["X", expt.peak_broad.lorentz_x.value],
-                ["Y", expt.peak_broad.lorentz_y.value]
+                ["X", expt.peak.broad_lorentz_x.value],
+                ["Y", expt.peak.broad_lorentz_y.value]
             ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
 
-        ############################
-        print(section("Refinement"))
+        # ------------------------------------------
+        print(section("Fitting"))
 
         print(paragraph("Calculation engine"))
         print(self.project.analysis.current_calculator)
@@ -123,38 +123,5 @@ class Summary:
     def as_cif(self) -> str:
         """
         Export the final refined data and analysis results as CIF format.
-        
-        Includes project info, sample models, experiment data, and refined parameters.
         """
-        cif_data = (
-            self.project.info.as_cif() +
-            self.project.sample_models.as_cif() +
-            self.project.experiments.as_cif() +
-            self.project.analysis.as_cif()
-        )
-        return cif_data
-
-    def as_html(self) -> str:
-        """
-        Export the final report as an HTML document (stub).
-        """
-        html = f"""
-        <html>
-        <head><title>{self.project.info.title} - Report</title></head>
-        <body>
-            <h1>{self.project.info.title}</h1>
-            <h2>Description</h2>
-            <p>{self.project.info.description}</p>
-
-            <h2>Sample Models</h2>
-            <pre>{self.project.sample_models.show_params()}</pre>
-
-            <h2>Experiments</h2>
-            <pre>{self.project.experiments.show_params()}</pre>
-
-            <h2>Analysis Results</h2>
-            <pre>{self.project.analysis.show_fit_results()}</pre>
-        </body>
-        </html>
-        """
-        return html
+        return "To be added..."

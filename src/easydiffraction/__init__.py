@@ -11,10 +11,8 @@ from easydiffraction.sample_models.sample_models import (
 )
 
 # Experiment creation and collection management
-from easydiffraction.experiments.experiments import (
-    Experiment,
-    Experiments
-)
+from easydiffraction.experiments.experiment import Experiment
+from easydiffraction.experiments.experiments import Experiments
 
 # Analysis
 from easydiffraction.analysis.analysis import Analysis

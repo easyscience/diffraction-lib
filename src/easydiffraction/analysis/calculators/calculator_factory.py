@@ -1,6 +1,6 @@
 import tabulate
 
-from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.formatting import paragraph, error
 from .calculator_crysfml import CrysfmlCalculator
 from .calculator_cryspy import CryspyCalculator
 from .calculator_pdffit import PdffitCalculator
@@ -23,7 +23,7 @@ class CalculatorFactory:
     }
 
     @classmethod
-    def _available_calculators(cls):
+    def _supported_calculators(cls):
         return {
             name: cfg
             for name, cfg in cls._potential_calculators.items()
@@ -31,19 +31,19 @@ class CalculatorFactory:
         }
 
     @classmethod
-    def list_available_calculators(cls):
-        return list(cls._available_calculators().keys())
+    def list_supported_calculators(cls):
+        return list(cls._supported_calculators().keys())
 
     @classmethod
-    def show_available_calculators(cls):
+    def show_supported_calculators(cls):
         header = ["Calculator", "Description"]
         table_data = []
 
-        for name, config in cls._available_calculators().items():
+        for name, config in cls._supported_calculators().items():
             description = config.get('description', 'No description provided.')
             table_data.append([name, description])
 
-        print(paragraph("Available calculators"))
+        print(paragraph("Supported calculators"))
         print(tabulate.tabulate(
             table_data,
             headers=header,
@@ -54,16 +54,18 @@ class CalculatorFactory:
         ))
 
     @classmethod
-    def create_calculator(cls, selection):
-        config = cls._available_calculators().get(selection)
+    def create_calculator(cls, calculator_name):
+        config = cls._supported_calculators().get(calculator_name)
         if not config:
-            raise ValueError(f"Unknown calculator type '{selection}'. Available: {cls.list_available_calculators()}")
+            print(error(f"Unknown calculator '{calculator_name}'"))
+            print(f'Supported calculators: {cls.list_supported_calculators()}')
+            return None
 
         return config['class']()
 
     @classmethod
     def register_calculator(cls, calculator_type, calculator_cls, description='No description provided.'):
-        cls._available_calculators[calculator_type] = {
+        cls._supported_calculators[calculator_type] = {
             'class': calculator_cls,
             'description': description
         }

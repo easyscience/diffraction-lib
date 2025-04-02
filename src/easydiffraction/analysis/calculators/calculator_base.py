@@ -42,9 +42,8 @@ class CalculatorBase(ABC):
             sample_model_y_calc_scaled = sample_model_scale * sample_model_y_calc
             y_calc_scaled += sample_model_y_calc_scaled
 
-        # Calculate background using the PointBackground method
-        # TODO: Implement PolynomialBackground
-        y_bkg = experiment.background.interpolate(x_data)
+        # Calculate background contribution
+        y_bkg = experiment.background.calculate(x_data)
         experiment.datastore.pattern.bkg = y_bkg
 
         # Calculate total pattern

@@ -33,12 +33,12 @@ def paragraph(title: str) -> str:
 
 def error(title: str) -> str:
     """Formats an error message with red text."""
-    return f"\n❌ {Fore.RED}Error:{Style.RESET_ALL}\n{title}"
+    return f"\n❌ {Fore.RED}Error{Style.RESET_ALL}\n{title}"
 
 def warning(title: str) -> str:
     """Formats a warning message with yellow text."""
-    return f"\n⚠️ {Fore.YELLOW}Warning:{Style.RESET_ALL}\n{title}"
+    return f"\n⚠️ {Fore.YELLOW}Warning{Style.RESET_ALL}\n{title}"
 
 def info(title: str) -> str:
     """Formats an info message with cyan text."""
-    return f"\nℹ️ {Fore.CYAN}Info:{Style.RESET_ALL}\n{title}"
+    return f"\nℹ️ {Fore.CYAN}Info{Style.RESET_ALL}\n{title}"

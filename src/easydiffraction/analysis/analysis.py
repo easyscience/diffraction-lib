@@ -3,7 +3,7 @@ from tabulate import tabulate
 
 from easydiffraction.utils.formatting import paragraph, info, error
 from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
-from easydiffraction.experiments import Experiments
+from easydiffraction.experiments.experiments import Experiments
 
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
@@ -17,7 +17,7 @@ class Analysis:
         self.project = project
         self.calculator = Analysis._calculator  # Default calculator shared by project
         self._calculator_key = 'cryspy'  # Added to track the current calculator
-        self._refinement_strategy = 'single'
+        self._fit_mode = 'single'
         self.fitter = DiffractionMinimizer('lmfit (leastsq)')
 
     def show_refinable_params(self):
@@ -73,8 +73,8 @@ class Analysis:
         print(self.current_calculator)
 
     @staticmethod
-    def show_available_calculators():
-        CalculatorFactory.show_available_calculators()
+    def show_supported_calculators():
+        CalculatorFactory.show_supported_calculators()
 
     @property
     def current_calculator(self):
@@ -82,10 +82,10 @@ class Analysis:
 
     @current_calculator.setter
     def current_calculator(self, calculator_name):
-        if calculator_name not in CalculatorFactory.list_available_calculators():
-            print(error(f"Unknown calculator '{calculator_name}'. Available calculators: {CalculatorFactory.list_available_calculators()}"))
+        calculator = CalculatorFactory.create_calculator(calculator_name)
+        if calculator is None:
             return
-        self.calculator = CalculatorFactory.create_calculator(calculator_name)
+        self.calculator = calculator
         self._calculator_key = calculator_name
         print(paragraph("Current calculator changed to"))
         print(self.current_calculator)
@@ -109,30 +109,33 @@ class Analysis:
         print(self.current_minimizer)
 
     @property
-    def refinement_strategy(self):
-        return self._refinement_strategy
+    def fit_mode(self):
+        return self._fit_mode
 
-    @refinement_strategy.setter
-    def refinement_strategy(self, strategy):
-        if strategy not in ['single', 'combined']:
-            raise ValueError("Refinement strategy must be either 'single' or 'combined'")
-        self._refinement_strategy = strategy
-        print(paragraph("Current refinement strategy changed to"))
-        print(self._refinement_strategy)
+    @fit_mode.setter
+    def fit_mode(self, strategy):
+        if strategy not in ['single', 'joint']:
+            raise ValueError("Fit mode must be either 'single' or 'joint'")
+        self._fit_mode = strategy
+        print(paragraph("Current ffit mode changed to"))
+        print(self._fit_mode)
 
-    def show_available_refinement_strategies(self):
+    def show_available_fit_modes(self):
         strategies = [
-            {"Strategy": "single", "Description": "Refine each experiment separately"},
-            {"Strategy": "combined", "Description": "Perform joint refinement of all experiments"},
-            {"Strategy": "sequential*", "Description": "Refine experiments one after another"}
+            {
+                "Strategy": "single",
+                "Description": "Independent fitting of each experiment; no shared parameters"},
+            {
+                "Strategy": "joint",
+                "Description": "Simultaneous fitting of all experiments; some parameters are shared"
+            },
         ]
-        print(paragraph("Available refinement strategies"))
+        print(paragraph("Available fit modes"))
         print(tabulate(strategies, headers="keys", tablefmt="fancy_outline", showindex=False))
-        print("* Strategies marked with an asterisk are not implemented yet.")
 
-    def show_current_refinement_strategy(self):
-        print(paragraph("Current refinement strategy"))
-        print(self.refinement_strategy)
+    def show_current_fit_mode(self):
+        print(paragraph("Current ffit mode"))
+        print(self.fit_mode)
 
     def calculate_pattern(self, expt_id):
         # Pattern is calculated for the given experiment
@@ -142,12 +145,9 @@ class Analysis:
         return calculated_pattern
 
     def show_calc_chart(self, expt_id, x_min=None, x_max=None):
+        self.calculate_pattern(expt_id)
+
         experiment = self.project.experiments[expt_id]
-
-        if experiment.datastore.pattern.calc is None:
-            print(info(f"No calculated pattern found for 🔬 '{expt_id}'. Calculating."))
-            self.calculate_pattern(expt_id)
-
         pattern = experiment.datastore.pattern
 
         plotter = ChartPlotter()
@@ -211,21 +211,41 @@ class Analysis:
             return
 
         # Run the fitting process
-        print(paragraph(f"Fitting using refinement strategy '{self.refinement_strategy}'"))
         experiment_ids = list(experiments._items.keys())
 
-        if self.refinement_strategy == 'combined':
-            print(paragraph(f"Using all experiments 🔬 {experiment_ids} for joint refinement."))
+        if self.fit_mode == 'joint':
+            print(paragraph(f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"))
             self.fitter.fit(sample_models, experiments, calculator)
-        elif self.refinement_strategy == 'single':
+        elif self.fit_mode == 'single':
             for expt_id in list(experiments._items.keys()):
-                print(paragraph(f"Using experiment 🔬 '{expt_id}' for decoupled refinement."))
+                print(paragraph(f"Using experiment 🔬 '{expt_id}' for '{self.fit_mode}' fitting"))
                 experiment = experiments[expt_id]
                 dummy_experiments = Experiments()
                 dummy_experiments.add(experiment)
                 self.fitter.fit(sample_models, dummy_experiments, calculator)
         else:
-            raise NotImplementedError(f"Refinement strategy {self.refinement_strategy} not implemented yet.")
+            raise NotImplementedError(f"Fit mode {self.fit_mode} not implemented yet.")
 
         # After fitting, get the results
         self.fit_results = self.fitter.results
+
+    def as_cif(self):
+        lines = []
+        lines.append(f"_analysis.calculator_engine  {self.current_calculator}")
+        lines.append(f"_analysis.fitting_engine  {self.current_minimizer}")
+        lines.append(f"_analysis.fit_mode  {self.fit_mode}")
+
+        return "\n".join(lines)
+
+    def show_as_cif(self):
+        cif_text = self.as_cif()
+        lines = cif_text.splitlines()
+        max_width = max(len(line) for line in lines)
+        padded_lines = [f"│ {line.ljust(max_width)} │" for line in lines]
+        top = f"╒{'═' * (max_width + 2)}╕"
+        bottom = f"╘{'═' * (max_width + 2)}╛"
+
+        print(paragraph(f"Analysis 🧮 info as cif"))
+        print(top)
+        print("\n".join(padded_lines))
+        print(bottom)

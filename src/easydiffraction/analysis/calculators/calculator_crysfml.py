@@ -37,11 +37,9 @@ class CrysfmlCalculator(CalculatorBase):
         return y
 
     def _adjust_pattern_length(self, pattern, target_length):
+        # TODO: Check the origin of this discrepancy coming from PyCrysFML
         if len(pattern) > target_length:
             return pattern[:target_length]
-        #elif len(pattern) < target_length:
-        #    padding = target_length - len(pattern)
-        #    return np.pad(pattern, (0, padding), 'constant')
         return pattern
 
     def _crysfml_dict(self, sample_model, experiment):
@@ -82,11 +80,9 @@ class CrysfmlCalculator(CalculatorBase):
         return sample_model_dict
 
     def _convert_experiment_to_dict(self, experiment):
-        expt_type = getattr(experiment, "expt_type", None)
-        instr_setup = getattr(experiment, "instr_setup", None)
-        instr_calib = getattr(experiment, "instr_calib", None)
-        peak_broad = getattr(experiment, "peak_broad", None)
-        peak_asymm = getattr(experiment, "peak_asymm", None)
+        expt_type = getattr(experiment, "type", None)
+        instrument = getattr(experiment, "instrument", None)
+        peak = getattr(experiment, "peak", None)
 
         x_data = experiment.datastore.pattern.x
         two_theta_min = float(x_data.min())
@@ -95,15 +91,15 @@ class CrysfmlCalculator(CalculatorBase):
         exp_dict = {
             "NPD": {
                 "_diffrn_radiation_probe": expt_type.radiation_probe.value if expt_type else "neutron",
-                "_diffrn_radiation_wavelength": instr_setup.wavelength.value if instr_setup else 1.0,
-                "_pd_instr_resolution_u": peak_broad.gauss_u.value if peak_broad else 0.0,
-                "_pd_instr_resolution_v": peak_broad.gauss_v.value if peak_broad else 0.0,
-                "_pd_instr_resolution_w": peak_broad.gauss_w.value if peak_broad else 0.0,
-                "_pd_instr_resolution_x": peak_broad.lorentz_x.value if peak_broad else 0.0,
-                "_pd_instr_resolution_y": peak_broad.lorentz_y.value if peak_broad else 0.0,
-                "_pd_instr_reflex_s_l": peak_asymm.s_l.value if peak_asymm else 0.0,
-                "_pd_instr_reflex_d_l": peak_asymm.d_l.value if peak_asymm else 0.0,
-                "_pd_meas_2theta_offset": instr_calib.twotheta_offset.value if instr_calib else 0.0,
+                "_diffrn_radiation_wavelength": instrument.setup_wavelength.value if instrument else 1.0,
+                "_pd_instr_resolution_u": peak.broad_gauss_u.value if peak else 0.0,
+                "_pd_instr_resolution_v": peak.broad_gauss_v.value if peak else 0.0,
+                "_pd_instr_resolution_w": peak.broad_gauss_w.value if peak else 0.0,
+                "_pd_instr_resolution_x": peak.broad_lorentz_x.value if peak else 0.0,
+                "_pd_instr_resolution_y": peak.broad_lorentz_y.value if peak else 0.0,
+                #"_pd_instr_reflex_s_l": peak_asymm.s_l.value if peak_asymm else 0.0,
+                #"_pd_instr_reflex_d_l": peak_asymm.d_l.value if peak_asymm else 0.0,
+                "_pd_meas_2theta_offset": instrument.calib_twotheta_offset.value if instrument else 0.0,
                 "_pd_meas_2theta_range_min": two_theta_min,
                 "_pd_meas_2theta_range_max": two_theta_max,
                 "_pd_meas_2theta_range_inc": (two_theta_max - two_theta_min) / len(x_data)

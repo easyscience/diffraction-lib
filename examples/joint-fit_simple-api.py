@@ -32,7 +32,7 @@ and X-ray diffraction data, both measured using constant wavelength instruments.
 The objective is to accurately refine the crystal structure of PbSO4."""
 
 # Save the initial project specifying the directory path
-project.save_as("examples/pbso4_joint")
+project.save_as("examples/projects/pbso4_joint")
 
 # Show project metadata
 project.info.show_as_cif()
@@ -104,17 +104,14 @@ project.save()
 
 print(ed.chapter('Step 3: Add Experiments (Instrument models and measured data)'))
 
-print(ed.section('Add experiments'))
-
-# Add two experiments
 project.experiments.add(id="npd",
-                        diffr_mode="powder",
-                        expt_mode="constant_wavelength",
+                        sample_form="powder",
+                        beam_mode="constant wavelength",
                         radiation_probe="neutron",
                         data_path="examples/data/pbso4_powder_neutron_cw.dat")
 project.experiments.add(id="xrd",
-                        diffr_mode="powder",
-                        expt_mode="constant_wavelength",
+                        sample_form="powder",
+                        beam_mode="constant wavelength",
                         radiation_probe="xray",
                         data_path="examples/data/pbso4_powder_xray.dat")
 
@@ -126,25 +123,31 @@ project.experiments['npd'].show_meas_chart(x_min=62, x_max=66)
 project.experiments['xrd'].show_meas_chart(x_min=26, x_max=28)
 
 # Modify experimental parameters
-project.experiments['npd'].instr_setup.wavelength = 1.91
-project.experiments["npd"].instr_calib.twotheta_offset = -0.1406
-project.experiments["npd"].peak_broad.gauss_u = 0.139
-project.experiments["npd"].peak_broad.gauss_v = -0.412
-project.experiments["npd"].peak_broad.gauss_w = 0.386
-project.experiments["npd"].peak_broad.lorentz_x = 0
-project.experiments["npd"].peak_broad.lorentz_y = 0.088
+project.experiments['npd'].instrument.setup_wavelength = 1.91
+project.experiments["npd"].instrument.calib_twotheta_offset = -0.1406
 
-project.experiments['xrd'].instr_setup.wavelength = 1.540567
-project.experiments["xrd"].instr_calib.twotheta_offset = -0.05181
-project.experiments["xrd"].peak_broad.gauss_u = 0.304138
-project.experiments["xrd"].peak_broad.gauss_v = -0.112622
-project.experiments["xrd"].peak_broad.gauss_w = 0.021272
-project.experiments["xrd"].peak_broad.lorentz_x = 0
-project.experiments["xrd"].peak_broad.lorentz_y = 0.057691
+project.experiments["npd"].show_supported_peak_profile_types()
+project.experiments["npd"].peak_profile_type = "ikeda-carpenter"
+project.experiments["npd"].show_current_peak_profile_type()
+project.experiments["npd"].peak_profile_type = "split pseudo-voigt"
+project.experiments["npd"].peak_profile_type = "pseudo-voigt"
+project.experiments["npd"].peak.broad_gauss_u = 0.139
+project.experiments["npd"].peak.broad_gauss_v = -0.412
+project.experiments["npd"].peak.broad_gauss_w = 0.386
+project.experiments["npd"].peak.broad_lorentz_x = 0
+project.experiments["npd"].peak.broad_lorentz_y = 0.088
+
+project.experiments['xrd'].instrument.setup_wavelength = 1.540567
+project.experiments["xrd"].instrument.calib_twotheta_offset = -0.05181
+project.experiments["xrd"].peak.broad_gauss_u = 0.304138
+project.experiments["xrd"].peak.broad_gauss_v = -0.112622
+project.experiments["xrd"].peak.broad_gauss_w = 0.021272
+project.experiments["xrd"].peak.broad_lorentz_x = 0
+project.experiments["xrd"].peak.broad_lorentz_y = 0.057691
 
 # Link sample model to experiments
 project.experiments['npd'].linked_phases.add(id='pbso4', scale=1.0)
-project.experiments['xrd'].linked_phases.add(id='pbso4', scale=0.005)
+project.experiments['xrd'].linked_phases.add(id='pbso4', scale=0.002)
 
 # Show experiments as CIF
 project.experiments["npd"].show_as_cif()
@@ -161,7 +164,7 @@ project.save()
 print(ed.chapter('Step 4: Analysis'))
 
 print(ed.section('Set calculator'))
-project.analysis.show_available_calculators()
+project.analysis.show_supported_calculators()
 project.analysis.show_current_calculator()
 project.analysis.current_calculator = 'crysfml'
 
@@ -175,6 +178,9 @@ project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28)
 
 # The following background points represent the baseline noise in the diffraction data.
 print(ed.section('Add background'))
+project.experiments["npd"].background_type = "point"
+project.experiments["npd"].show_supported_background_types()
+project.experiments["npd"].show_current_background_type()
 project.experiments["npd"].background.add(x=11.0, y=206.1624)
 project.experiments["npd"].background.add(x=15.0, y=194.75)
 project.experiments["npd"].background.add(x=20.0, y=194.505)
@@ -185,14 +191,13 @@ project.experiments["npd"].background.add(x=120.0, y=244.4525)
 project.experiments["npd"].background.add(x=153.0, y=226.0595)
 project.experiments["npd"].background.show()
 
-project.experiments["xrd"].background.add(x=11.0, y=141.8516)
-project.experiments["xrd"].background.add(x=13.0, y=102.8838)
-project.experiments["xrd"].background.add(x=16.0, y=78.0551)
-project.experiments["xrd"].background.add(x=20.0, y=124.0121)
-project.experiments["xrd"].background.add(x=30.0, y=123.7123)
-project.experiments["xrd"].background.add(x=50.0, y=120.8266)
-project.experiments["xrd"].background.add(x=90.0, y=113.7473)
-project.experiments["xrd"].background.add(x=110.0, y=132.4643)
+project.experiments["xrd"].background_type = "chebyshev polynomial"
+project.experiments["xrd"].background.add(order=0, coef=119.195)
+project.experiments["xrd"].background.add(order=1, coef=6.221)
+project.experiments["xrd"].background.add(order=2, coef=-45.725)
+project.experiments["xrd"].background.add(order=3, coef=8.119)
+project.experiments["xrd"].background.add(order=4, coef=54.552)
+project.experiments["xrd"].background.add(order=5, coef=-20.661)
 project.experiments["xrd"].background.show()
 
 print(ed.section('Show experiments as CIF. Now the background points are included'))
@@ -221,10 +226,10 @@ project.experiments["xrd"].linked_phases['pbso4'].scale.free = True
 
 project.analysis.show_free_params()
 
-print(ed.section('Set refinement strategy'))
-project.analysis.show_available_refinement_strategies()
-project.analysis.show_current_refinement_strategy()
-#project.analysis.refinement_strategy = 'single'
+print(ed.section('Set fit mode'))
+project.analysis.show_available_fit_modes()
+project.analysis.show_current_fit_mode()
+#project.analysis.fit_mode = 'single'
 
 print(ed.section('Set fitting engine'))
 project.analysis.show_available_minimizers()
@@ -250,7 +255,7 @@ project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66, show
 project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28, show_residual=True)
 
 print(ed.section('Change calculator'))
-project.analysis.show_available_calculators()
+project.analysis.show_supported_calculators()
 project.analysis.current_calculator = 'cryspy'
 
 print(ed.section('Start 3rd fitting'))
@@ -260,13 +265,13 @@ print(ed.section('Show data charts after 3rd fitting'))
 project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66, show_residual=True)
 project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28, show_residual=True)
 
-print(ed.section('Change refinement strategy'))
-project.analysis.show_available_refinement_strategies()
-project.analysis.show_current_refinement_strategy()
-project.analysis.refinement_strategy = 'combined'
+print(ed.section('Change fit mode'))
+project.analysis.show_available_fit_modes()
+project.analysis.show_current_fit_mode()
+project.analysis.fit_mode = 'joint'
 
 print(ed.section('Change calculator'))
-project.analysis.show_available_calculators()
+project.analysis.show_supported_calculators()
 project.analysis.show_current_calculator()
 project.analysis.current_calculator = 'crysfml'
 
@@ -276,6 +281,9 @@ project.analysis.fit()
 print(ed.section('Show data charts after 4th fitting'))
 project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66, show_residual=True)
 project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28, show_residual=True)
+
+# Show analysis as CIF
+project.analysis.show_as_cif()
 
 # Save the project state after analysis
 project.save()

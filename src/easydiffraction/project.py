@@ -2,7 +2,7 @@ import os
 import datetime
 from textwrap import wrap
 
-from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.formatting import paragraph, error
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.analysis.analysis import Analysis
@@ -108,6 +108,7 @@ class ProjectInfo:
         print("\n".join(padded_lines))
         print(bottom)
 
+
 class Project:
     """
     Central API for managing a diffraction data analysis project.
@@ -139,9 +140,11 @@ class Project:
         Load a project from a given directory.
         Loads project info, sample models, experiments, etc.
         """
-        print(f"Loading project from {dir_path} (stub implementation)")
+        print(paragraph(f"Loading project 📦 from {dir_path}"))
+        print(dir_path)
         self.info.path = dir_path
         # TODO: load project components from files inside dir_path
+        print('Loading project is not implemented yet.')
         self._saved = True
 
     def save_as(self, dir_path: str):
@@ -156,35 +159,51 @@ class Project:
         Save the project into the existing project directory.
         """
         if not self.info.path:
-            raise ValueError("Project path not specified. Use save_as() to define the path first.")
+            print(error("Project path not specified. Use save_as() to define the path first."))
+            return
+
         print(paragraph(f"Saving project 📦 '{self.id}' to"))
         print(os.path.abspath(self.info.path))
-        # TODO: serialize project components to files
+
+        os.makedirs(self.info.path, exist_ok=True)
+
+        # Save project info
+        with open(os.path.join(self.info.path, "project.cif"), "w") as f:
+            f.write(self.info.as_cif())
+            print("✅ project.cif")
+
+        # Save sample models
+        sm_dir = os.path.join(self.info.path, "sample_models")
+        os.makedirs(sm_dir, exist_ok=True)
+        for model in self.sample_models:
+            file_name = f"{model.model_id}.cif"
+            file_path = os.path.join(sm_dir, file_name)
+            with open(file_path, "w") as f:
+                f.write(model.as_cif())
+                print(f"✅ sample_models/{file_name}")
+
+        # Save experiments
+        expt_dir = os.path.join(self.info.path, "experiments")
+        os.makedirs(expt_dir, exist_ok=True)
+        for experiment in self.experiments:
+            file_name = f"{experiment.id}.cif"
+            file_path = os.path.join(expt_dir, file_name)
+            with open(file_path, "w") as f:
+                f.write(experiment.as_cif())
+                print(f"✅ sample_models/{file_name}")
+
+        # Save analysis
+        with open(os.path.join(self.info.path, "analysis.cif"), "w") as f:
+            f.write(self.analysis.as_cif())
+            print("✅ analysis.cif")
+
+        # Save summary
+        with open(os.path.join(self.info.path, "summary.cif"), "w") as f:
+            f.write(self.summary.as_cif())
+            print("✅ summary.cif")
+
         self.info.update_last_modified()
         self._saved = True
-
-    def reset(self):
-        """
-        Reset the project to its initial state.
-        """
-        print("Resetting project...")
-        self.__init__()
-
-    def as_cif(self) -> str:
-        """
-        Export the complete project (metadata + models + experiments + analysis + summary) as CIF.
-        """
-        return (
-            self.info.as_cif() +
-            "\n# Sample Models\n" +
-            self.sample_models.as_cif() +
-            "\n# Experiments\n" +
-            self.experiments.as_cif() +
-            "\n# Analysis\n" +
-            self.analysis.as_cif() +
-            "\n# Summary\n" +
-            self.summary.as_cif()
-        )
 
     # ------------------------------------------
     #  Sample Models API Convenience Methods

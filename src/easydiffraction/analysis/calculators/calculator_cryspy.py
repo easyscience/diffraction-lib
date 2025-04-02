@@ -70,68 +70,69 @@ class CryspyCalculator(CalculatorBase):
         return sample_model.as_cif()
 
     def _convert_experiment_to_cif(self, experiment, linked_phase):
-        expt_type = getattr(experiment, "expt_type", None)
-        instr_setup = getattr(experiment, "instr_setup", None)
-        instr_calib = getattr(experiment, "instr_calib", None)
-        peak_broad = getattr(experiment, "peak_broad", None)
-        peak_asymm = getattr(experiment, "peak_asymm", None)
+        expt_type = getattr(experiment, "type", None)
+        instrument = getattr(experiment, "instrument", None)
+        peak = getattr(experiment, "peak", None)
 
-        cif_lines = []
-        cif_lines.append(f"data_{experiment.id}\n")
+        cif_lines = [f"data_{experiment.id}"]
+
+        # Experiment type category
+        if expt_type is not None:
+            radiation_probe = expt_type.radiation_probe.value
+            radiation_probe = radiation_probe.replace("neutron", "neutrons")
+            radiation_probe = radiation_probe.replace("xray", "X-rays")
+            cif_lines.append(f"_setup_radiation {radiation_probe}")
+
+        # Instrument category
+        if instrument:
+            cif_lines.append(f"_setup_wavelength {instrument.setup_wavelength.value}")
+            cif_lines.append(f"_setup_offset_2theta {instrument.calib_twotheta_offset.value}")
+
+        # Peak category
+        if peak:
+            cif_lines.append(f"_pd_instr_resolution_U {peak.broad_gauss_u.value}")
+            cif_lines.append(f"_pd_instr_resolution_V {peak.broad_gauss_v.value}")
+            cif_lines.append(f"_pd_instr_resolution_W {peak.broad_gauss_w.value}")
+            cif_lines.append(f"_pd_instr_resolution_X {peak.broad_lorentz_x.value}")
+            cif_lines.append(f"_pd_instr_resolution_Y {peak.broad_lorentz_y.value}")
+
+        # Linked phases category
+        # Force single linked phase to be used, as we handle multiple phases
+        # with their scales independently of the calculation engines
+        cif_lines.append("loop_")
+        cif_lines.append("_phase_label")
+        cif_lines.append("_phase_scale")
+        cif_lines.append(f"{linked_phase.model_id} 1.0")
 
         # Extract measurement range dynamically
         x_data = experiment.datastore.pattern.x
         two_theta_min = float(x_data.min())
         two_theta_max = float(x_data.max())
-        cif_lines.append(f"_range_2theta_min   {two_theta_min}")
-        cif_lines.append(f"_range_2theta_max   {two_theta_max}\n")
 
-        if expt_type:
-            radiation_probe = expt_type.radiation_probe.value
-            radiation_probe = radiation_probe.replace("neutron", "neutrons")
-            radiation_probe = radiation_probe.replace("xray", "X-rays")
-            cif_lines.append(f"_setup_radiation   {radiation_probe}")
+        cif_lines.append(f"_range_2theta_min {two_theta_min}")
+        cif_lines.append(f"_range_2theta_max {two_theta_max}\n")
 
-        if instr_setup:
-            wavelength = instr_setup.wavelength.value
-            cif_lines.append(f"_setup_wavelength   {wavelength}")
-
-        if instr_calib:
-            twotheta_offset = instr_calib.twotheta_offset.value
-            cif_lines.append(f"_setup_offset_2theta   {twotheta_offset}")
-
-        if peak_broad:
-            cif_lines.append(f"_pd_instr_resolution_U   {peak_broad.gauss_u.value}")
-            cif_lines.append(f"_pd_instr_resolution_V   {peak_broad.gauss_v.value}")
-            cif_lines.append(f"_pd_instr_resolution_W   {peak_broad.gauss_w.value}")
-            cif_lines.append(f"_pd_instr_resolution_X   {peak_broad.lorentz_x.value}")
-            cif_lines.append(f"_pd_instr_resolution_Y   {peak_broad.lorentz_y.value}")
-
-        # Force single linked phase to be used, as we handle multiple phases
-        # with their scales independently of the calculation engines
-        cif_lines.append("\nloop_")
-        cif_lines.append("  _phase_label")
-        cif_lines.append("  _phase_scale")
-        cif_lines.append(f"  {linked_phase.model_id}   1.0")
-
+        # Background category
         # Force background to be zero, as we handle it independently of the
         # calculation engines
-        cif_lines.append("\nloop_")
-        cif_lines.append("  _pd_background_2theta")
-        cif_lines.append("  _pd_background_intensity")
-        cif_lines.append(f"  {two_theta_min}   0.0")
-        cif_lines.append(f"  {two_theta_max}   0.0")
+        cif_lines.append("loop_")
+        cif_lines.append("_pd_background_2theta")
+        cif_lines.append("_pd_background_intensity")
+        cif_lines.append(f"{two_theta_min} 0.0")
+        cif_lines.append(f"{two_theta_max} 0.0")
 
-        cif_lines.append("\nloop_")
-        cif_lines.append("  _pd_meas_2theta")
-        cif_lines.append("  _pd_meas_intensity")
-        cif_lines.append("  _pd_meas_intensity_sigma")
+        # Measured data category
+        cif_lines.append("loop_")
+        cif_lines.append("_pd_meas_2theta")
+        cif_lines.append("_pd_meas_intensity")
+        cif_lines.append("_pd_meas_intensity_sigma")
 
         y_data = experiment.datastore.pattern.meas
         sy_data = experiment.datastore.pattern.meas_su
-
         for x_val, y_val, sy_val in zip(x_data, y_data, sy_data):
             cif_lines.append(f"  {x_val:.5f}   {y_val:.5f}   {sy_val:.5f}")
 
+        # Combine all lines into a single string
         cryspy_experiment_cif = "\n".join(cif_lines)
+
         return cryspy_experiment_cif

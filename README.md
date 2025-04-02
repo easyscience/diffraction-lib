@@ -25,6 +25,7 @@ Development playground for the new EasyDiffraction API.
   ```
 
 ## Testing
+
   ```bash
   PYTHONPATH=$(pwd)/src python -m pytest tests/ --color=yes
   ```
@@ -33,9 +34,9 @@ Development playground for the new EasyDiffraction API.
 
 - Simplified API:
   ```bash
-  PYTHONPATH=$(pwd)/src python examples/joint-refinement_simple-api.py
+  PYTHONPATH=$(pwd)/src python examples/joint-fit_simple-api.py
   ```
 - Advanced API:
   ```bash
-  PYTHONPATH=$(pwd)/src python examples/joint-refinement_advanced-api.py
+  PYTHONPATH=$(pwd)/src python examples/joint-fit_advanced-api.py
   ```

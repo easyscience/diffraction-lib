@@ -2,7 +2,7 @@ import pandas as pd
 from tabulate import tabulate
 
 
-class BaseCollection:
+class Collection:
     """
     Base class for collections like SampleModels and Experiments.
     Provides common methods for gathering and displaying parameters.
@@ -11,11 +11,20 @@ class BaseCollection:
     def __init__(self):
         self._items = {}
 
+    def __getitem__(self, key):
+        return self._items[key]
+
+    def __iter__(self):
+        return iter(self._items.values())
+
     def get_all_parameters(self):
         """
         Collects all parameters from each item and its components, including nested collections.
         Returns a list of dictionaries with full CIF names and attributes.
         """
+        # TODO: Fails to handle properly iterable_components
+        # TODO: Need to refactor this method to use the new parameter,
+        #  component and collection based system
         params = []
 
         for item_id, item in self._items.items():
