@@ -202,3 +202,111 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 3.19, decimal=1)
+
+
+def test_single_fit_neutron_pd_tof_ncaf() -> None:
+    # Create and configure sample model
+    model = SampleModel("ncaf")
+    model.space_group.name = "I 21 3"
+    model.space_group.setting = 1
+    model.cell.length_a = 10.250256
+    model.cell.length_b = 10.250256
+    model.cell.length_c = 10.250256
+    model.atom_sites.add("Ca", "Ca", 0.4661, 0.0, 0.25, b_iso=0.9)
+    model.atom_sites.add("Al", "Al", 0.25171, 0.25171, 0.25171, b_iso=0.66)
+    model.atom_sites.add("Na", "Na", 0.08481, 0.08481, 0.08481, b_iso=1.9)
+    model.atom_sites.add("F1", "F", 0.1375, 0.3053, 0.1195, b_iso=0.9)
+    model.atom_sites.add("F2", "F", 0.3626, 0.3634, 0.1867, b_iso=1.28)
+    model.atom_sites.add("F3", "F", 0.4612, 0.4612, 0.4612, b_iso=0.79)
+    model.show_as_cif()
+
+    # Create and configure experiment
+    expt = Experiment("npd", beam_mode="time-of-flight", data_path="examples/data/wish.xye")
+    expt.instrument.setup_twotheta_bank = 152.827
+    expt.instrument.calib_d_to_tof_offset = 0.0
+    expt.instrument.calib_d_to_tof_linear = 20770
+    expt.instrument.calib_d_to_tof_quad = -1.08308
+    expt.peak_profile_type = "pseudo-voigt * ikeda-carpenter"
+    expt.peak.broad_gauss_sigma_0 = 0.0
+    expt.peak.broad_gauss_sigma_1 = 0.0
+    expt.peak.broad_gauss_sigma_2 = 5.0
+    expt.peak.broad_mix_beta_0 = 0.01
+    expt.peak.broad_mix_beta_1 = 0.01
+    expt.peak.asym_alpha_0 = 0.0
+    expt.peak.asym_alpha_1 = 0.1
+    expt.linked_phases.add("ncaf", scale=0.5)
+    for x, y in [
+        (9162, 465),
+        (11136, 593),
+        (13313, 497),
+        (14906, 546),
+        (16454, 533),
+        (17352, 496),
+        (18743, 428),
+        (20179, 452),
+        (21368, 397),
+        (22176, 468),
+        (22827, 477),
+        (24644, 380),
+        (26439, 381),
+        (28257, 378),
+        (31196, 343),
+        (34034, 328),
+        (37265, 310),
+        (41214, 323),
+        (44827, 283),
+        (49830, 273),
+        (52905, 257),
+        (58204, 260),
+        (62916, 261),
+        (70186, 262),
+        (74204, 262),
+        (82103, 268),
+        (91958, 268),
+        (102712, 262)
+    ]:
+        expt.background.add(x, y)
+    expt.show_as_cif()
+
+    # Create project and add sample model and experiments
+    project = Project()
+    project.sample_models.add(model)
+    project.experiments.add(expt)
+
+    # Set calculator, minimizer and refinement strategy
+    project.analysis.current_calculator = "cryspy"
+    project.analysis.current_minimizer = "lmfit (leastsq)"
+
+    # Compare measured and calculated patterns
+    project.analysis.show_meas_vs_calc_chart('npd', 37000, 40000)
+
+    # ------------ 1st fitting ------------
+
+    # Define free parameters
+    #model.cell.length_a.free = True
+    expt.linked_phases["ncaf"].scale.free = True
+    expt.instrument.calib_d_to_tof_offset.free = True
+    project.analysis.show_free_params()
+
+    # Start fitting
+    project.analysis.fit()
+    project.analysis.show_meas_vs_calc_chart('npd', 37000, 40000)
+
+    # Compare fit quality
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 78.40, decimal=1)
+
+    # ------------ 2nd fitting ------------
+
+    # Define more free parameters
+    expt.peak.broad_gauss_sigma_2.free = True
+    expt.peak.broad_mix_beta_0.free = True
+    expt.peak.broad_mix_beta_1.free = True
+    expt.peak.asym_alpha_1.free = True
+    project.analysis.show_free_params()
+
+    # Start fitting
+    project.analysis.fit()
+    project.analysis.show_meas_vs_calc_chart('npd', 37000, 40000, show_residual=True)
+
+    # Compare fit quality
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 15.59, decimal=1)
