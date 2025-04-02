@@ -31,6 +31,12 @@ class Point(IterableComponentRow):
 
         self._locked = True  # Lock further attribute additions
 
+    # TODO: Temporary workaround for getting str type for id.value
+    # TODO: Switch to str type for id?
+    @property
+    def id(self):
+        return Descriptor(f"{self.x.value}", cif_name="blablabla")
+
 
 class PolynomialTerm(IterableComponentRow):
     def __init__(self, order, coef):
@@ -48,6 +54,12 @@ class PolynomialTerm(IterableComponentRow):
         )
 
         self._locked = True  # Lock further attribute additions
+
+    # TODO: Temporary workaround for getting str type for id.value
+    # TODO: Switch to str type for id?
+    @property
+    def id(self):
+        return Descriptor(f"{self.order.value}", cif_name="blablabla")
 
 
 class BackgroundBase(IterableComponent):

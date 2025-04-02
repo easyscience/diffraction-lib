@@ -52,6 +52,11 @@ class AtomSite(IterableComponentRow):
             cif_name="B_iso_or_equiv"
         )
 
+    # TODO: Switch to str type for id?
+    @property
+    def id(self):
+        return self.label
+
 
 class AtomSites(IterableComponent):
     """
