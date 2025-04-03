@@ -60,7 +60,9 @@ class DiffractionMinimizer:
 
         residuals = []
         for expt_id, experiment in experiments._items.items():
-            y_calc = calculator.calculate_pattern(sample_models, experiment)
+            y_calc = calculator.calculate_pattern(sample_models,
+                                                  experiment,
+                                                  called_by_minimizer=True)
             y_meas = experiment.datastore.pattern.meas
             y_meas_su = experiment.datastore.pattern.meas_su
             diff = (y_meas - y_calc) / y_meas_su

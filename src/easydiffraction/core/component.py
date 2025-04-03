@@ -88,6 +88,9 @@ class StandardComponent(ComponentBase):
             key = f"{self.cif_category_name}.{attr_obj.cif_name}"
             value = attr_obj.value
 
+            if value is None:
+                continue
+
             if isinstance(value, str) and " " in value:
                 value = f'"{value}"'
 
