@@ -59,8 +59,8 @@ class DiffractionMinimizer:
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
         
         # Prepare weights for joint fitting
-        N_experiments = len(experiments._items.keys())
-        weights = np.ones(N_experiments) if weights is None else np.array([getattr(weights, experiment_name, 1.0) for experiment_name in experiments._items.keys()], dtype=np.float64)
+        N_experiments = len(experiments.ids)
+        weights = np.ones(N_experiments) if weights is None else np.array([getattr(weights, id, 1.0) for id in experiments.ids], dtype=np.float64)
         weights *= N_experiments / np.sum(weights)  # Normalize weights so they sum to N, where N is the number of experiments
 
         residuals = []

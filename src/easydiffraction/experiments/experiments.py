@@ -90,6 +90,10 @@ class Experiments(Collection):
         print(paragraph("Defined experiments" + " 🔬"))
         print(list(self._experiments.keys()))
 
+    @property
+    def ids(self):
+        return list(self._experiments.keys())
+
     def show_params(self):
         for exp in self._experiments.values():
             print(exp)

@@ -118,8 +118,8 @@ class Analysis:
             raise ValueError("Fit mode must be either 'single' or 'joint'")
         self._fit_mode = strategy
         if strategy == 'joint':
-            self.joint_fit = {}
-        print(paragraph("Current ffit mode changed to"))
+            self.joint_fit = { id: 0.5 for id in self.project.experiments.ids }  # Pre-populate with all experiments 
+        print(paragraph("Current fit mode changed to"))
         print(self._fit_mode)
 
     def show_available_fit_modes(self):
