@@ -57,8 +57,11 @@ class DiffractionMinimizer:
         """
         # Sync parameters back to objects
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
-        weights = np.ones(len(experiments)) if weights is None else np.array([getattr(weights, experiment_name, 1.0) for experiment_name in experiments._items.keys()], dtype=np.float64)
-        weights /= np.sum(weights)  # Normalize weights so they sum to 1
+        
+        # Prepare weights for joint fitting
+        N_experiments = len(experiments._items.keys())
+        weights = np.ones(N_experiments) if weights is None else np.array([getattr(weights, experiment_name, 1.0) for experiment_name in experiments._items.keys()], dtype=np.float64)
+        weights *= N_experiments / np.sum(weights)  # Normalize weights so they sum to N, where N is the number of experiments
 
         residuals = []
         for (expt_id, experiment), weight in zip(experiments._items.items(), weights):
@@ -66,7 +69,7 @@ class DiffractionMinimizer:
             y_meas = experiment.datastore.pattern.meas
             y_meas_su = experiment.datastore.pattern.meas_su
             diff = (y_meas - y_calc) / y_meas_su
-            diff *= weight
+            diff *= np.sqrt(weight)  # Residuls are squared before going into reduced chi-squared
             residuals.extend(diff)
 
         residuals = np.array(residuals)
