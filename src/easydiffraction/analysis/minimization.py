@@ -60,11 +60,11 @@ class DiffractionMinimizer:
         
         # Prepare weights for joint fitting
         N_experiments = len(experiments.ids)
-        weights = np.ones(N_experiments) if weights is None else np.array([getattr(weights, id, 1.0) for id in experiments.ids], dtype=np.float64)
-        weights /= np.sum(weights)  # Normalize weights so they sum to 1
-
+        _weights = np.ones(N_experiments) if weights is None else np.array([weights.get(id, 1.0) for id in experiments.ids], dtype=np.float64)
+        _weights /= np.sum(_weights)  # Normalize weights so they sum to 1
         residuals = []
-        for (expt_id, experiment), weight in zip(experiments._items.items(), weights):
+
+        for (expt_id, experiment), weight in zip(experiments._items.items(), _weights):
             y_calc = calculator.calculate_pattern(sample_models, experiment)
             y_meas = experiment.datastore.pattern.meas
             y_meas_su = experiment.datastore.pattern.meas_su
