@@ -92,6 +92,9 @@ class CryspyCalculator(CalculatorBase):
         cryspy_model_id = f'crystal_{sample_model.model_id}'
         cryspy_model_dict = cryspy_dict[cryspy_model_id]
 
+        # Apply symmetry constraints
+        sample_model.apply_symmetry_constraints()
+
         # Cell
         cryspy_cell = cryspy_model_dict['unit_cell_parameters']
         cryspy_cell[0] = sample_model.cell.length_a.value
@@ -113,30 +116,52 @@ class CryspyCalculator(CalculatorBase):
         for idx, atom_site in enumerate(sample_model.atom_sites):
             cryspy_occ[idx] = atom_site.occupancy.value
 
-        # Atomic ADPs - Biso
+        # Atomic ADPs - Biso only for now
         cryspy_biso = cryspy_model_dict['atom_b_iso']
         for idx, atom_site in enumerate(sample_model.atom_sites):
             cryspy_biso[idx] = atom_site.b_iso.value
 
         # ---------- Update experiment parameters ----------
 
-        cryspy_expt_id = f'pd_{experiment.id}'  # TODO: use expt_id as in the SampleModel? Or change there for id instead of model_id?
-        cryspy_expt_dict = cryspy_dict[cryspy_expt_id]
+        if experiment.type.beam_mode.value == 'constant wavelength':
+            cryspy_expt_id = f'pd_{experiment.id}'  # TODO: use expt_id as in the SampleModel? Or change there for id instead of model_id?
+            cryspy_expt_dict = cryspy_dict[cryspy_expt_id]
 
-        # Instrument
-        cryspy_expt_dict['offset_ttheta'][0] = np.deg2rad(experiment.instrument.calib_twotheta_offset.value)
-        cryspy_expt_dict['wavelength'][0] = experiment.instrument.setup_wavelength.value
+            # Instrument
+            cryspy_expt_dict['offset_ttheta'][0] = np.deg2rad(experiment.instrument.calib_twotheta_offset.value)
+            cryspy_expt_dict['wavelength'][0] = experiment.instrument.setup_wavelength.value
 
-        # Peak
-        cryspy_resolution = cryspy_expt_dict['resolution_parameters']
-        cryspy_resolution[0] = experiment.peak.broad_gauss_u.value
-        cryspy_resolution[1] = experiment.peak.broad_gauss_v.value
-        cryspy_resolution[2] = experiment.peak.broad_gauss_w.value
-        cryspy_resolution[3] = experiment.peak.broad_lorentz_x.value
-        cryspy_resolution[4] = experiment.peak.broad_lorentz_y.value
+            # Peak
+            cryspy_resolution = cryspy_expt_dict['resolution_parameters']
+            cryspy_resolution[0] = experiment.peak.broad_gauss_u.value
+            cryspy_resolution[1] = experiment.peak.broad_gauss_v.value
+            cryspy_resolution[2] = experiment.peak.broad_gauss_w.value
+            cryspy_resolution[3] = experiment.peak.broad_lorentz_x.value
+            cryspy_resolution[4] = experiment.peak.broad_lorentz_y.value
 
-        # Linked phase
-        ###cryspy_dict[cryspy_expt_id]['phase_scale'][0] = experiment.linked_phases[sample_model.model_id].scale.value
+        elif experiment.type.beam_mode.value == 'time-of-flight':
+            cryspy_expt_id = f'tof_{experiment.id}'  # TODO: use expt_id as in the SampleModel? Or change there for id instead of model_id?
+            cryspy_expt_dict = cryspy_dict[cryspy_expt_id]
+
+            # Instrument
+            cryspy_expt_dict['zero'][0] = experiment.instrument.calib_d_to_tof_offset.value
+            cryspy_expt_dict['dtt1'][0] = experiment.instrument.calib_d_to_tof_linear.value
+            cryspy_expt_dict['dtt2'][0] = experiment.instrument.calib_d_to_tof_quad.value
+            cryspy_expt_dict['ttheta_bank'] = np.deg2rad(experiment.instrument.setup_twotheta_bank.value)
+
+            # Peak
+            cryspy_sigma = cryspy_expt_dict['profile_sigmas']
+            cryspy_sigma[0] = experiment.peak.broad_gauss_sigma_0.value
+            cryspy_sigma[1] = experiment.peak.broad_gauss_sigma_1.value
+            cryspy_sigma[2] = experiment.peak.broad_gauss_sigma_2.value
+
+            cryspy_beta = cryspy_expt_dict['profile_betas']
+            cryspy_beta[0] = experiment.peak.broad_mix_beta_0.value
+            cryspy_beta[1] = experiment.peak.broad_mix_beta_1.value
+
+            cryspy_alpha = cryspy_expt_dict['profile_alphas']
+            cryspy_alpha[0] = experiment.peak.asym_alpha_0.value
+            cryspy_alpha[1] = experiment.peak.asym_alpha_1.value
 
         return cryspy_dict
 
