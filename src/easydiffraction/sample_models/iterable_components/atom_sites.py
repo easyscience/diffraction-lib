@@ -11,6 +11,7 @@ class AtomSite(IterableComponentRow):
     def __init__(self,
                  label: str,
                  type_symbol: str,
+                 wyckoff_letter: str,
                  fract_x: float,
                  fract_y: float,
                  fract_z: float,
@@ -30,6 +31,10 @@ class AtomSite(IterableComponentRow):
         self.adp_type = Descriptor(
             value=adp_type,
             cif_name="ADP_type"
+        )
+        self.wyckoff_letter = Descriptor(
+            value=wyckoff_letter,
+            cif_name="Wyckoff_letter"
         )
         self.fract_x = Parameter(
             value=fract_x,
@@ -70,6 +75,7 @@ class AtomSites(IterableComponent):
     def add(self,
             label: str,
             type_symbol: str,
+            wyckoff_letter: str,
             fract_x: float,
             fract_y: float,
             fract_z: float,
@@ -81,6 +87,7 @@ class AtomSites(IterableComponent):
         """
         site = AtomSite(label,
                         type_symbol,
+                        wyckoff_letter,
                         fract_x,
                         fract_y,
                         fract_z,
