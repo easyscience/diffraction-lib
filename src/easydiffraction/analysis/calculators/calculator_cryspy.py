@@ -33,22 +33,16 @@ class CryspyCalculator(CalculatorBase):
 
     def _calculate_single_model_pattern(self,
                                         sample_model,
-                                        experiment,
-                                        called_by_minimizer=False):
+                                        experiment):
         # TODO: We need to avoid re-creating the cryspy object every time.
         # Instead, we should update the cryspy_dict with the new sample model
         # and experiment. Expected to speed up the calculation 10 times!
 
         #_cryspy_expt_id = experiment.id
         #_is_cryspy_dict = bool(self._cryspy_dict)
-        #_called_by_minimizer = called_by_minimizer
 
-        if called_by_minimizer:
-            if self._cryspy_dicts and experiment.id in self._cryspy_dicts:
-                cryspy_dict = self._recreate_cryspy_dict(sample_model, experiment)
-            else:
-                cryspy_obj = self._recreate_cryspy_obj(sample_model, experiment)
-                cryspy_dict = cryspy_obj.get_dictionary()
+        if self._cryspy_dicts and experiment.id in self._cryspy_dicts:
+            cryspy_dict = self._recreate_cryspy_dict(sample_model, experiment)
         else:
             cryspy_obj = self._recreate_cryspy_obj(sample_model, experiment)
             cryspy_dict = cryspy_obj.get_dictionary()

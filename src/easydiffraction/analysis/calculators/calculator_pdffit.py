@@ -25,7 +25,6 @@ class PdffitCalculator(CalculatorBase):
 
     def _calculate_single_model_pattern(self,
                                         sample_model,
-                                        experiment,
-                                        called_by_minimizer=False):
+                                        experiment):
         print("[PdfFit] Not implemented yet.")
         return []

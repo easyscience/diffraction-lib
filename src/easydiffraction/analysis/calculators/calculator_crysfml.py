@@ -25,8 +25,7 @@ class CrysfmlCalculator(CalculatorBase):
 
     def _calculate_single_model_pattern(self,
                                         sample_model,
-                                        experiment,
-                                        called_by_minimizer=False):
+                                        experiment):
         """
         Calculates the diffraction pattern using Crysfml for the given sample model and experiment.
         """
