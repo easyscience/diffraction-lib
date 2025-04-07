@@ -36,12 +36,9 @@ class SampleModel:
                       'angle_alpha': self.cell.angle_alpha.value,
                       'angle_beta': self.cell.angle_beta.value,
                       'angle_gamma': self.cell.angle_gamma.value}
-        hm_ref = self.space_group.name.value
-        coord_code = self.space_group.setting.value
-        sg = ecr.get_space_group_by_hm_ref(hm_ref=hm_ref,
-                                           coord_code=coord_code)
+        space_group_name = self.space_group.name.value
         ecr.apply_cell_symmetry_constraints(cell=dummy_cell,
-                                            space_group_entry=sg)
+                                            name_hm=space_group_name)
         self.cell.length_a.value = dummy_cell['lattice_a']
         self.cell.length_b.value = dummy_cell['lattice_b']
         self.cell.length_c.value = dummy_cell['lattice_c']
@@ -50,10 +47,8 @@ class SampleModel:
         self.cell.angle_gamma.value = dummy_cell['angle_gamma']
 
     def _apply_atomic_coordinates_symmetry_constraints(self):
-        hm_ref = self.space_group.name.value
-        coord_code = self.space_group.setting.value
-        sg = ecr.get_space_group_by_hm_ref(hm_ref=hm_ref,
-                                           coord_code=coord_code)
+        space_group_name = self.space_group.name.value
+        space_group_coord_code = self.space_group.setting.value
         for atom in self.atom_sites:
             dummy_atom = {"fract_x": atom.fract_x.value,
                           "fract_y": atom.fract_y.value,
@@ -63,7 +58,8 @@ class SampleModel:
                 #raise ValueError("Wyckoff letter is not defined for atom.")
                 continue
             ecr.apply_atom_site_symmetry_constraints(atom_site=dummy_atom,
-                                                     space_group_entry=sg,
+                                                     name_hm=space_group_name,
+                                                     coord_code=space_group_coord_code,
                                                      wyckoff_letter=wl)
             atom.fract_x.value = dummy_atom['fract_x']
             atom.fract_y.value = dummy_atom['fract_y']

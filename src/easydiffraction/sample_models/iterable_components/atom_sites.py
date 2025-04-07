@@ -11,10 +11,10 @@ class AtomSite(IterableComponentRow):
     def __init__(self,
                  label: str,
                  type_symbol: str,
-                 wyckoff_letter: str,
                  fract_x: float,
                  fract_y: float,
                  fract_z: float,
+                 wyckoff_letter: str = None,
                  occupancy: float = 1.0,
                  b_iso: float = 0.0,
                  adp_type: str = "Biso"):  # TODO: add support for Uiso, Uani and Bani
@@ -75,10 +75,10 @@ class AtomSites(IterableComponent):
     def add(self,
             label: str,
             type_symbol: str,
-            wyckoff_letter: str,
             fract_x: float,
             fract_y: float,
             fract_z: float,
+            wyckoff_letter: str = None,
             occupancy: float = 1.0,
             b_iso: float = 0.0,
             adp_type: str = "Biso"):
@@ -87,10 +87,10 @@ class AtomSites(IterableComponent):
         """
         site = AtomSite(label,
                         type_symbol,
-                        wyckoff_letter,
                         fract_x,
                         fract_y,
                         fract_z,
+                        wyckoff_letter,
                         occupancy,
                         b_iso,
                         adp_type)

@@ -1,70 +1,29 @@
 from sympy import symbols, sympify, simplify
-from tabulate import tabulate
-from .space_group_database import space_group_database
-from .space_group_lookup_tables import (
-    lookup_by_hm_ref_index,
-    lookup_by_hm_alt_index,
-    lookup_by_hall_symbol_index,
+
+from cryspy.A_functions_base.function_2_space_group import (
+    get_crystal_system_by_it_number,
+    get_it_number_by_name_hm_short,
+    get_it_number_by_name_hm_full,
+    get_it_number_it_coordinate_system_codes_by_name_hm_extended,
+    get_symop_pcentr_multiplicity_letter_site_symmetry_coords_xyz_2
 )
 
 
-def normalize_hm_symbol(symbol: str) -> str:
-    stripped = symbol.replace(" ", "")
-    lowered = stripped.lower()
-    return lowered
-
-
-def get_space_group_by_hm_ref(hm_ref: str,
-                              coord_code: str = None):
-    key = (hm_ref, coord_code)
-    sg_key = lookup_by_hm_ref_index.get(key)
-
-    if sg_key is None:
-        fallback_key = (hm_ref, None)
-        sg_key = lookup_by_hm_ref_index.get(fallback_key)
-
-    if sg_key is None:
-        return None
-
-    sg_entry = space_group_database.get(sg_key)
-    return sg_entry
-
-
-def get_space_group_by_hm_alt(hm_alt: str):
-    norm_input = normalize_hm_symbol(hm_alt)
-
-    for stored_symbol, sg_key in lookup_by_hm_alt_index.items():
-        stored_normalized = normalize_hm_symbol(stored_symbol)
-
-        if stored_normalized == norm_input:
-            sg_entry = space_group_database.get(sg_key)
-            return sg_entry
-
-    return None
-
-
-def get_space_group_by_hall_symbol(hall_symbol: str):
-    sg_key = lookup_by_hall_symbol_index.get(hall_symbol)
-
-    if sg_key is None:
-        return None
-
-    sg_entry = space_group_database.get(sg_key)
-    return sg_entry
-
-
-def get_space_group_by_it_number(it_number: int,
-                                 coord_code: str = None):
-    sg_key = (it_number, coord_code)
-    sg_entry = space_group_database.get(sg_key)
-    return sg_entry
-
-
 def apply_cell_symmetry_constraints(cell: dict,
-                                    space_group_entry: dict) -> dict:
-    cs = space_group_entry.get("crystal_system", "unknown").lower()
+                                    name_hm: str) -> dict:
+    it_number = get_it_number_by_name_hm_short(name_hm)
+    if it_number is None:
+        error_msg = f"Failed to get IT_number for name_H-M '{name_hm}'"
+        print(error_msg)
+        return cell
 
-    if cs == "cubic":
+    crystal_system = get_crystal_system_by_it_number(it_number)
+    if crystal_system is None:
+        error_msg = f"Failed to get crystal system for IT_number '{it_number}'"
+        print(error_msg)
+        return cell
+
+    if crystal_system == "cubic":
         a = cell["lattice_a"]
         cell["lattice_b"] = a
         cell["lattice_c"] = a
@@ -72,52 +31,63 @@ def apply_cell_symmetry_constraints(cell: dict,
         cell["angle_beta"] = 90
         cell["angle_gamma"] = 90
 
-    elif cs == "tetragonal":
+    elif crystal_system == "tetragonal":
         a = cell["lattice_a"]
         cell["lattice_b"] = a
         cell["angle_alpha"] = 90
         cell["angle_beta"] = 90
         cell["angle_gamma"] = 90
 
-    elif cs == "orthorhombic":
+    elif crystal_system == "orthorhombic":
         cell["angle_alpha"] = 90
         cell["angle_beta"] = 90
         cell["angle_gamma"] = 90
 
-    elif cs in {"hexagonal", "trigonal"}:
+    elif crystal_system in {"hexagonal", "trigonal"}:
         a = cell["lattice_a"]
         cell["lattice_b"] = a
         cell["angle_alpha"] = 90
         cell["angle_beta"] = 90
         cell["angle_gamma"] = 120
 
-    elif cs == "monoclinic":
+    elif crystal_system == "monoclinic":
         cell["angle_alpha"] = 90
         cell["angle_gamma"] = 90
 
-    elif cs == "triclinic":
+    elif crystal_system == "triclinic":
         pass  # No constraints to apply
 
     else:
-        error_msg = f"Unknown or unsupported crystal system: {cs}"
-        raise ValueError(error_msg)
+        error_msg = f"Unknown or unsupported crystal system: {crystal_system}"
+        print(error_msg)
 
     return cell
 
 
 def apply_atom_site_symmetry_constraints(atom_site: dict,
-                                         space_group_entry: dict,
+                                         name_hm: str,
+                                         coord_code,
                                          wyckoff_letter: str) -> dict:
-    x, y, z = symbols("x y z")
+    it_number = get_it_number_by_name_hm_short(name_hm)
+    if it_number is None:
+        error_msg = f"Failed to get IT_number for name_H-M '{name_hm}'"
+        print(error_msg)
+        return atom_site
 
-    wyckoff_data = space_group_entry.get("Wyckoff_positions", {})
-    wyckoff = wyckoff_data.get(wyckoff_letter)
+    it_coordinate_system_code = coord_code
+    if it_coordinate_system_code is None:
+        error_msg = "IT_coordinate_system_code is not set"
+        print(error_msg)
+        return atom_site
 
-    if wyckoff is None:
-        error_msg = f"Wyckoff letter '{wyckoff_letter}' not found."
-        raise ValueError(error_msg)
+    result = get_symop_pcentr_multiplicity_letter_site_symmetry_coords_xyz_2(it_number, it_coordinate_system_code)
+    letter_list = result[3]
+    coords_xyz_list = result[5]
 
-    first_position = wyckoff["coords_xyz"][0]
+    idx = letter_list.index(wyckoff_letter)
+    coords_xyz = coords_xyz_list[idx]
+
+    first_position = coords_xyz[0]
     components = first_position.strip("()").split(",")
     parsed_exprs = [sympify(comp.strip()) for comp in components]
 
@@ -132,7 +102,9 @@ def apply_atom_site_symmetry_constraints(atom_site: dict,
     }
 
     axes = ("x", "y", "z")
+    x, y, z = symbols("x y z")
     symbols_xyz = (x, y, z)
+
 
     for i, axis in enumerate(axes):
         symbol = symbols_xyz[i]
@@ -144,25 +116,3 @@ def apply_atom_site_symmetry_constraints(atom_site: dict,
             atom_site[f"fract_{axis}"] = float(simplified)
 
     return atom_site
-
-
-def show_wyckoff_positions_table(space_group_entry: dict):
-    wyckoff_data = space_group_entry.get("Wyckoff_positions", {})
-    headers = ["Letter", "Multiplicity", "Site Symmetry", "Fractional Coordinates"]
-
-    rows = []
-
-    for letter, data in sorted(wyckoff_data.items()):
-        multiplicity = data["multiplicity"]
-        symmetry = data["site_symmetry"]
-        coords = ", ".join(data["coords_xyz"])
-
-        row = [letter, multiplicity, symmetry, coords]
-        rows.append(row)
-
-    table = tabulate(rows,
-                     headers=headers,
-                     tablefmt="fancy_outline",
-                     numalign="left",
-                     showindex=False)
-    print(table)
