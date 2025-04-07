@@ -4,6 +4,7 @@ bumps
 dfo-ls
 cryspy
 gemmi
+sympy
 pandas
 tabulate
 asciichartpy
