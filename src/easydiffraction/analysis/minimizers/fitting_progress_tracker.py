@@ -46,7 +46,7 @@ class FittingProgressTracker:
 
         Parameters:
             residuals (np.ndarray): Array of residuals between measured and calculated data.
-            parameters (list): List of free parameters being refined.
+            parameters (list): List of free parameters being fitted.
 
         Returns:
             np.ndarray: Residuals unchanged, for optimizer consumption.

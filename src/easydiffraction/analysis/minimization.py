@@ -21,7 +21,7 @@ class DiffractionMinimizer:
         parameters = self._collect_free_parameters(sample_models, experiments)
 
         if not parameters:
-            print("⚠️ No parameters selected for refinement. Aborting fit.")
+            print("⚠️ No parameters selected for fitting.")
             return None
 
         for parameter in parameters:

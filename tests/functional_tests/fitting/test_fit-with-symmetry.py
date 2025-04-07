@@ -49,7 +49,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     project.sample_models.add(model)
     project.experiments.add(expt)
 
-    # Set calculator, minimizer and refinement strategy
+    # Set calculator, minimizer and fit mode
     project.analysis.current_calculator = "cryspy"
     project.analysis.current_minimizer = "lmfit (leastsq)"
 

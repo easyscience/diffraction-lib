@@ -26,7 +26,7 @@ class Analysis:
 
     def show_free_params(self):
         """
-        Displays only the parameters that are free to refine.
+        Displays only the parameters that are free to be fitted.
         """
         free_params = self.project.sample_models.get_free_params() + \
                       self.project.experiments.get_free_params()

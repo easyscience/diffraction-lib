@@ -55,13 +55,13 @@ class FitResults:
         print(f"📈 Refined parameters:")
 
         table_data = []
-        headers = ["cif block", "cif parameter", "start", "refined", "error", "units", "change [%]"]
+        headers = ["cif block", "cif parameter", "start", "fitted", "error", "units", "change [%]"]
 
         for param in self.parameters:
             block_name = getattr(param, 'block_name', 'N/A')
             cif_name = getattr(param, 'cif_name', 'N/A')
             start = f"{getattr(param, 'start_value', 'N/A'):.5f}" if param.start_value is not None else "N/A"
-            refined = f"{param.value:.5f}" if param.value is not None else "N/A"
+            fitted = f"{param.value:.5f}" if param.value is not None else "N/A"
             error = f"{param.error:.5f}" if param.error is not None else "N/A"
             units = getattr(param, 'units', 'N/A')
 
@@ -72,7 +72,7 @@ class FitResults:
             else:
                 relative_change = "N/A"
 
-            table_data.append([block_name, cif_name, start, refined, error, units, relative_change])
+            table_data.append([block_name, cif_name, start, fitted, error, units, relative_change])
 
         print(tabulate.tabulate(table_data,
                                 headers=headers,

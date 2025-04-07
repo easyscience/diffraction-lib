@@ -72,7 +72,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.experiments.add(expt1)
     project.experiments.add(expt2)
 
-    # Set calculator, minimizer and refinement strategy
+    # Set calculator, minimizer and fit mode
     project.analysis.current_calculator = "cryspy"
     project.analysis.current_minimizer = "lmfit (leastsq)"
     project.analysis.fit_mode = 'joint'

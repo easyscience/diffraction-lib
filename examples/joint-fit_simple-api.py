@@ -4,7 +4,7 @@ Joint Refinement Example (Simplified API)
 This example demonstrates the use of the EasyDiffraction API using a simplified,
 user-friendly approach that mimics the GUI workflow. It is intended for users
 with minimal programming experience who want to learn how to perform joint
-refinement of crystal structures using diffraction data. The script covers
+fit of crystal structures using diffraction data. The script covers
 creating a project, adding sample models and experiments, performing analysis,
 and refining parameters.
 
@@ -23,13 +23,13 @@ import easydiffraction as ed
 print(ed.chapter('Step 1: Create a Project'))
 
 # Create a new project
-project = ed.Project(project_id="joint_refinement")
+project = ed.Project(project_id="joint_fit")
 
 # Define project info
-project.info.title = "Joint refinement of PbSO4 from neutron and X-ray diffraction"
-project.info.description = """This project demonstrates joint refinement of neutron 
+project.info.title = "Joint fit of PbSO4 from neutron and X-ray diffraction"
+project.info.description = """This project demonstrates joint fit of neutron 
 and X-ray diffraction data, both measured using constant wavelength instruments. 
-The objective is to accurately refine the crystal structure of PbSO4."""
+The objective is to accurately fit the crystal structure of PbSO4."""
 
 # Save the initial project specifying the directory path
 project.save_as("examples/projects/pbso4_joint")
@@ -211,12 +211,12 @@ project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28)
 print(ed.section('Show all refinable parameters'))
 project.analysis.show_refinable_params()
 
-# Refinable parameters are those that can be adjusted during refinement,
+# Refinable parameters are those that can be adjusted during fitting,
 # while free parameters are currently set to be adjusted.
 print(ed.section('Show only free parameters'))
 project.analysis.show_free_params()
 
-print(ed.section('Select specific parameters for refinement'))
+print(ed.section('Select specific parameters for fitting'))
 project.sample_models["pbso4"].cell.length_a.free = True
 project.sample_models["pbso4"].cell.length_b.free = True
 project.sample_models["pbso4"].cell.length_c.free = True

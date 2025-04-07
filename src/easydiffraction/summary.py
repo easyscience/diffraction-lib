@@ -9,7 +9,7 @@ class Summary:
     Generates reports and exports results from the project.
     
     This class collects and presents all relevant information
-    about the refined model, experiments, and analysis results.
+    about the fitted model, experiments, and analysis results.
     """
 
     def __init__(self, project):
@@ -122,6 +122,6 @@ class Summary:
 
     def as_cif(self) -> str:
         """
-        Export the final refined data and analysis results as CIF format.
+        Export the final fitted data and analysis results as CIF format.
         """
         return "To be added..."

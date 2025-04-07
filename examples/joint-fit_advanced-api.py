@@ -77,7 +77,7 @@ project.sample_models.add(model)
 project.experiments.add(expt1)
 project.experiments.add(expt2)
 
-# Set calculator, minimizer and refinement strategy
+# Set calculator, minimizer and fit mode
 project.analysis.current_calculator = "crysfml"
 project.analysis.current_minimizer = "lmfit (leastsq)"
 project.analysis.fit_mode = 'joint'
@@ -89,6 +89,6 @@ model.cell.length_c.free = True
 expt1.linked_phases["pbso4"].scale.free = True
 expt2.linked_phases["pbso4"].scale.free = True
 
-# Run refinement
+# Run fitting
 project.analysis.fit()
 
