@@ -123,7 +123,8 @@ class Collection:
                         if getattr(attr, 'is_parameter', False) and attr.free:
                             # Set the block_name for the parameter to generate its unique id
                             attr.block_name = item_id
-                            attr.id = attr._generate_unique_id()
+                            # TODO: Refactor this method. Check if we need generate unique id here
+                            #attr.uid = attr._generate_unique_id()
                             free_params.append(attr)
 
         return free_params

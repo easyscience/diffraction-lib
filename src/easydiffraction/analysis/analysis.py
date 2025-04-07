@@ -62,7 +62,8 @@ class Analysis:
         df = df[valid_cols]
 
         try:
-            print(tabulate(df, headers="keys", tablefmt="fancy_outline", showindex=False))
+            #print(tabulate(df, headers="keys", tablefmt="fancy_outline", showindex=False))
+            print(tabulate(df, headers="keys", tablefmt="fancy_outline"))
         except ImportError:
             print(df.to_string(index=False))
 

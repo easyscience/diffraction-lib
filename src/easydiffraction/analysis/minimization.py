@@ -67,9 +67,11 @@ class DiffractionMinimizer:
         # will be half as large as expected.
         _weights *= N_experiments / np.sum(_weights)   
         residuals = []
-
+        
         for (expt_id, experiment), weight in zip(experiments._items.items(), _weights):
-            y_calc = calculator.calculate_pattern(sample_models, experiment)
+            y_calc = calculator.calculate_pattern(sample_models,
+                                                  experiment,
+                                                  called_by_minimizer=True)  # True False
             y_meas = experiment.datastore.pattern.meas
             y_meas_su = experiment.datastore.pattern.meas_su
             diff = (y_meas - y_calc) / y_meas_su

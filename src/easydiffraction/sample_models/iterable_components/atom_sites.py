@@ -14,6 +14,7 @@ class AtomSite(IterableComponentRow):
                  fract_x: float,
                  fract_y: float,
                  fract_z: float,
+                 wyckoff_letter: str = None,
                  occupancy: float = 1.0,
                  b_iso: float = 0.0,
                  adp_type: str = "Biso"):  # TODO: add support for Uiso, Uani and Bani
@@ -30,6 +31,10 @@ class AtomSite(IterableComponentRow):
         self.adp_type = Descriptor(
             value=adp_type,
             cif_name="ADP_type"
+        )
+        self.wyckoff_letter = Descriptor(
+            value=wyckoff_letter,
+            cif_name="Wyckoff_letter"
         )
         self.fract_x = Parameter(
             value=fract_x,
@@ -52,6 +57,11 @@ class AtomSite(IterableComponentRow):
             cif_name="B_iso_or_equiv"
         )
 
+    # TODO: Switch to str type for id?
+    @property
+    def id(self):
+        return self.label
+
 
 class AtomSites(IterableComponent):
     """
@@ -68,6 +78,7 @@ class AtomSites(IterableComponent):
             fract_x: float,
             fract_y: float,
             fract_z: float,
+            wyckoff_letter: str = None,
             occupancy: float = 1.0,
             b_iso: float = 0.0,
             adp_type: str = "Biso"):
@@ -79,6 +90,7 @@ class AtomSites(IterableComponent):
                         fract_x,
                         fract_y,
                         fract_z,
+                        wyckoff_letter,
                         occupancy,
                         b_iso,
                         adp_type)

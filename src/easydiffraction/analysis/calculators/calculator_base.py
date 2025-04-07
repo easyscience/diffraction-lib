@@ -22,7 +22,10 @@ class CalculatorBase(ABC):
         # Single sample model, single experiment
         pass
 
-    def calculate_pattern(self, sample_models, experiment):
+    def calculate_pattern(self,
+                          sample_models,
+                          experiment,
+                          called_by_minimizer=False):
         # Multiple sample models, single experiment
 
         x_data = experiment.datastore.pattern.x
@@ -37,7 +40,9 @@ class CalculatorBase(ABC):
             sample_model_scale = linked_phase.scale.value
             sample_model = sample_models[sample_model_id]
 
-            sample_model_y_calc = self._calculate_single_model_pattern(sample_model, experiment)
+            sample_model_y_calc = self._calculate_single_model_pattern(sample_model,
+                                                                       experiment,
+                                                                       called_by_minimizer=called_by_minimizer)
 
             sample_model_y_calc_scaled = sample_model_scale * sample_model_y_calc
             y_calc_scaled += sample_model_y_calc_scaled
@@ -53,7 +58,10 @@ class CalculatorBase(ABC):
         return y_calc_total
 
     @abstractmethod
-    def _calculate_single_model_pattern(self, sample_model, experiment):
+    def _calculate_single_model_pattern(self,
+                                        sample_model,
+                                        experiment,
+                                        called_by_minimizer):
         pass
 
     def _get_valid_linked_phases(self, sample_models, experiment):

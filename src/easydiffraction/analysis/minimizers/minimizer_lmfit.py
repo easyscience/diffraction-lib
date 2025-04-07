@@ -9,14 +9,18 @@ class LmfitMinimizer(MinimizerBase):
     Minimizer using the lmfit package.
     """
 
-    def __init__(self, name='lmfit', method=DEFAULT_METHOD, max_iterations=DEFAULT_MAX_ITERATIONS):
-        super().__init__(name=name, method=method, max_iterations=max_iterations)
+    def __init__(self, name='lmfit',
+                 method=DEFAULT_METHOD,
+                 max_iterations=DEFAULT_MAX_ITERATIONS):
+        super().__init__(name=name,
+                         method=method,
+                         max_iterations=max_iterations)
 
     def _prepare_solver_args(self, parameters):
         engine_parameters = lmfit.Parameters()
         for param in parameters:
             engine_parameters.add(
-                name=param.id,
+                name=param.uid,
                 value=param.value,
                 vary=param.free,
                 min=param.min,
@@ -41,7 +45,7 @@ class LmfitMinimizer(MinimizerBase):
             param_values = raw_result  # fallback if params attribute is not present
 
         for param in parameters:
-            param_result = param_values.get(param.id)
+            param_result = param_values.get(param.uid)
             if param_result is not None:
                 param.value = param_result.value
                 param.error = getattr(param_result, 'stderr', None)

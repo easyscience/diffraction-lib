@@ -88,6 +88,9 @@ class StandardComponent(ComponentBase):
             key = f"{self.cif_category_name}.{attr_obj.cif_name}"
             value = attr_obj.value
 
+            if value is None:
+                continue
+
             if isinstance(value, str) and " " in value:
                 value = f'"{value}"'
 
@@ -98,6 +101,15 @@ class StandardComponent(ComponentBase):
 
 
 class IterableComponentRow(ABC):
+    # TODO: Implement this in all derived classes
+    #@property
+    #@abstractmethod
+    #def id(self):
+    #    """
+    #    Must be implemented in subclasses to return the ID of the row.
+    #    ID is used to access the row in the iterable component.
+    #    """
+    #    pass
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._ordered_attrs = []

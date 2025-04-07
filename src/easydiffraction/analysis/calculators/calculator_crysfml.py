@@ -23,7 +23,10 @@ class CrysfmlCalculator(CalculatorBase):
         # Call Crysfml to calculate structure factors
         raise NotImplementedError("HKL calculation is not implemented for CryspyCalculator.")
 
-    def _calculate_single_model_pattern(self, sample_model, experiment):
+    def _calculate_single_model_pattern(self,
+                                        sample_model,
+                                        experiment,
+                                        called_by_minimizer=False):
         """
         Calculates the diffraction pattern using Crysfml for the given sample model and experiment.
         """

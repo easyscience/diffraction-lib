@@ -1,3 +1,5 @@
+import random
+import string
 from easydiffraction.utils.formatting import warning
 
 
@@ -22,9 +24,28 @@ class Descriptor:
         self.units = units
         self.is_parameter = False  # Differentiates from Parameter class
         self.block_name = block_name
-        self.id = self._generate_unique_id()
+        self.uid = self._generate_unique_id()
 
     def _generate_unique_id(self):
+        # TODO: Instead of generating a random string, we can use the
+        #  name of the parameter and the block name to create a unique id.
+        #  E.g.:
+        #  - "block-id__category-name__parameter-name": "lbco__cell__length_a"
+        #  - "block-id__category-name__row-id__parameter-name": "lbco__atom_site__ba__fract_x"
+        length = 12
+        letters = random.choices(string.ascii_lowercase, k=length)
+        uid = ''.join(letters)
+        return uid
+        # self.uid is needed to make a list of free parameters for the
+        # minimization engine, and then to be able to update the sample
+        # models and experiments with the new values.
+        # TODO: It is used in collection.py to generate a unique id for
+        #  the parameter. Check if it is needed here. When called from
+        #  __init__, block_name is not set yet?
+        # TODO: Check if it works for the iterable components, such as
+        #  atoms_sites, background, etc.
+        # TODO: Check if we need to replace "-" with "_"
+        # TODO: Check if we need make it lowercase
         raw_name = self.cif_name
         sanitized = (
             raw_name.replace("[", "_")
@@ -33,7 +54,7 @@ class Descriptor:
                     .replace("'", "")
         )
         if self.block_name:
-            return f"{self.block_name}_{sanitized}"
+            sanitized = f"{self.block_name}_{sanitized}"
         return sanitized
 
     @property
