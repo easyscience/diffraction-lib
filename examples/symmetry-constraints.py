@@ -18,7 +18,7 @@ from easydiffraction import (
 )
 
 # Create and configure sample model
-model = SampleModel("hs020")
+model = SampleModel("hs")
 model.space_group.name = "R -3 m"
 model.space_group.setting = "h"
 model.cell.length_a = 6.9
@@ -33,7 +33,7 @@ model.apply_symmetry_constraints()
 model.show_as_cif()
 
 # Create and configure experiment
-expt = Experiment("hrpt", data_path="examples/data/hrpt_HSO20_V6x15_1p89_HI_T_300K.xye")
+expt = Experiment("hrpt", data_path="examples/data/hrpt_hs.xye")
 expt.instrument.setup_wavelength = 1.89
 expt.instrument.calib_twotheta_offset = 0.0
 expt.peak.broad_gauss_u = 0.1
@@ -41,7 +41,7 @@ expt.peak.broad_gauss_v = -0.2
 expt.peak.broad_gauss_w = 0.2
 expt.peak.broad_lorentz_x = 0.0
 expt.peak.broad_lorentz_y = 0
-expt.linked_phases.add("hs020", scale=0.5)
+expt.linked_phases.add("hs", scale=0.5)
 expt.background.add(x=4.4196, y=500)
 expt.background.add(x=6.6207, y=500)
 expt.background.add(x=10.4918, y=500)
@@ -70,7 +70,7 @@ project.analysis.show_meas_vs_calc_chart('hrpt', 48, 51)
 # Define free parameters
 model.cell.length_a.free = True
 model.cell.length_c.free = True
-expt.linked_phases["hs020"].scale.free = True
+expt.linked_phases["hs"].scale.free = True
 expt.instrument.calib_twotheta_offset.free = True
 project.analysis.show_free_params()
 

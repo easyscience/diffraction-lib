@@ -23,7 +23,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Create and configure experiments
 
     # Experiment 1: Neutron powder diffraction
-    expt1 = Experiment(id="npd", radiation_probe="neutron", data_path="examples/data/pbso4_powder_neutron_cw.dat")
+    expt1 = Experiment(id="npd", radiation_probe="neutron", data_path="examples/data/d1a_pbso4.dat")
     expt1.instrument.setup_wavelength = 1.91
     expt1.instrument.calib_twotheta_offset = -0.1406
     expt1.peak.broad_gauss_u = 0.139
@@ -45,7 +45,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         expt1.background.add(x, y)
 
     # Experiment 2: X-ray powder diffraction
-    expt2 = Experiment(id="xrd", radiation_probe="xray", data_path="examples/data/pbso4_powder_xray.dat")
+    expt2 = Experiment(id="xrd", radiation_probe="xray", data_path="examples/data/lab_pbso4.dat")
     expt2.instrument.setup_wavelength = 1.540567
     expt2.instrument.calib_twotheta_offset = -0.05181
     expt2.peak.broad_gauss_u = 0.304138
@@ -84,10 +84,12 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt1.linked_phases["pbso4"].scale.free = True
     expt2.linked_phases["pbso4"].scale.free = True
 
-    # Run refinement
+    # Start fitting
     project.analysis.fit()
+    project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66, show_residual=True)
+    project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28, show_residual=True)
 
-    # Assert results
+    # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 21.1, decimal=1)
 
 
