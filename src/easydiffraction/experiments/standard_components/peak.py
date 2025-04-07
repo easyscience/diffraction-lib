@@ -151,25 +151,12 @@ class IkedaCarpenterAsymmetryMixin:
             description="Ikeda-Carpenter asymmetry parameter α₁"
         )
 
+
 # --- Base peak class ---
 class PeakBase(StandardComponent):
     @property
     def cif_category_name(self):
         return "_peak"
-
-    def __init__(self):
-        super().__init__()
-
-    def __setattr__(self, name, value):
-        if hasattr(self, "_locked") and self._locked:
-            if not hasattr(self, name):
-                raise AttributeError(f"Cannot add new attribute '{name}' to locked instance of '{self.__class__.__name__}'")
-
-        current = getattr(self, name, None)
-        if isinstance(current, (Descriptor, Parameter)):
-            current.value = value
-        else:
-            super().__setattr__(name, value)
 
 
 # --- Derived peak classes ---

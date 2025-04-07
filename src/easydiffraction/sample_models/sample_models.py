@@ -3,6 +3,8 @@ from easydiffraction.sample_models.standard_components.cell import Cell
 from easydiffraction.sample_models.iterable_components.atom_sites import AtomSites
 from easydiffraction.core.collection import Collection
 from easydiffraction.utils.formatting import paragraph
+from easydiffraction.crystallography import crystallography
+from easydiffraction.crystallography import crystallography as ecr
 
 
 class SampleModel:
@@ -21,6 +23,50 @@ class SampleModel:
             self.load_from_cif_file(cif_path)
         elif cif_str:
             self.load_from_cif_string(cif_str)
+
+    def apply_symmetry_constraints(self):
+        self._apply_cell_symmetry_constraints()
+        self._apply_atomic_coordinates_symmetry_constraints()
+        self._apply_atomic_displacement_symmetry_constraints()
+
+    def _apply_cell_symmetry_constraints(self):
+        dummy_cell = {'lattice_a': self.cell.length_a.value,
+                      'lattice_b': self.cell.length_b.value,
+                      'lattice_c': self.cell.length_c.value,
+                      'angle_alpha': self.cell.angle_alpha.value,
+                      'angle_beta': self.cell.angle_beta.value,
+                      'angle_gamma': self.cell.angle_gamma.value}
+        space_group_name = self.space_group.name.value
+        ecr.apply_cell_symmetry_constraints(cell=dummy_cell,
+                                            name_hm=space_group_name)
+        self.cell.length_a.value = dummy_cell['lattice_a']
+        self.cell.length_b.value = dummy_cell['lattice_b']
+        self.cell.length_c.value = dummy_cell['lattice_c']
+        self.cell.angle_alpha.value = dummy_cell['angle_alpha']
+        self.cell.angle_beta.value = dummy_cell['angle_beta']
+        self.cell.angle_gamma.value = dummy_cell['angle_gamma']
+
+    def _apply_atomic_coordinates_symmetry_constraints(self):
+        space_group_name = self.space_group.name.value
+        space_group_coord_code = self.space_group.setting.value
+        for atom in self.atom_sites:
+            dummy_atom = {"fract_x": atom.fract_x.value,
+                          "fract_y": atom.fract_y.value,
+                          "fract_z": atom.fract_z.value}
+            wl = atom.wyckoff_letter.value
+            if not wl:
+                #raise ValueError("Wyckoff letter is not defined for atom.")
+                continue
+            ecr.apply_atom_site_symmetry_constraints(atom_site=dummy_atom,
+                                                     name_hm=space_group_name,
+                                                     coord_code=space_group_coord_code,
+                                                     wyckoff_letter=wl)
+            atom.fract_x.value = dummy_atom['fract_x']
+            atom.fract_y.value = dummy_atom['fract_y']
+            atom.fract_z.value = dummy_atom['fract_z']
+
+    def _apply_atomic_displacement_symmetry_constraints(self):
+        pass
 
     def load_from_cif_file(self, cif_path: str):
         """Load model data from a CIF file."""
@@ -85,6 +131,8 @@ class SampleModel:
         print(top)
         print("\n".join(padded_lines))
         print(bottom)
+
+
 
 class SampleModels(Collection):
     """

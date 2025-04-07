@@ -23,10 +23,9 @@ class PdffitCalculator(CalculatorBase):
         print("[PdfFit] Calculating HKLs (not applicable)...")
         return []
 
-    def calculate_pattern(self, sample_models, experiments):
-        print("[PdfFit] Not implemented yet.")
-        return []
-
-    def _calculate_single_model_pattern(self, sample_model, experiment):
+    def _calculate_single_model_pattern(self,
+                                        sample_model,
+                                        experiment,
+                                        called_by_minimizer=False):
         print("[PdfFit] Not implemented yet.")
         return []
