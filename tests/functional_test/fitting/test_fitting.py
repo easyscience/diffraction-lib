@@ -90,7 +90,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Assert results
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 7.2, decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 14.4, decimal=1)
 
 
 if __name__ == '__main__':

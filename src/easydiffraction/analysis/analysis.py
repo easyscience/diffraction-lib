@@ -217,7 +217,6 @@ class Analysis:
 
         if self.fit_mode == 'joint':
             print(paragraph(f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"))
-            print(self.joint_fit)
             self.fitter.fit(sample_models, experiments, calculator, weights=self.joint_fit)
         elif self.fit_mode == 'single':
             for expt_id in list(experiments._items.keys()):
