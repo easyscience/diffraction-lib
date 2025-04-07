@@ -88,7 +88,7 @@ class Experiments(Collection):
 
     def show_ids(self):
         print(paragraph("Defined experiments" + " 🔬"))
-        print(list(self._experiments.keys()))
+        print(self.ids)
 
     @property
     def ids(self):
