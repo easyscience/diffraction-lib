@@ -128,10 +128,8 @@ project.analysis.show_free_params()
 
 # Start fitting
 project.analysis.fit()
-project.analysis.show_meas_vs_calc_chart('hrpt', 48, 51)
-
 project.analysis.show_refinable_params()
-project.analysis.show_free_params()
+project.analysis.show_meas_vs_calc_chart('hrpt', 48, 51, show_residual=True)
 
 # Compare fit quality
 assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 2.11, decimal=1)

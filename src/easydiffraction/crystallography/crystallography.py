@@ -3,8 +3,6 @@ from sympy import symbols, sympify, simplify
 from cryspy.A_functions_base.function_2_space_group import (
     get_crystal_system_by_it_number,
     get_it_number_by_name_hm_short,
-    get_it_number_by_name_hm_full,
-    get_it_number_it_coordinate_system_codes_by_name_hm_extended,
     get_symop_pcentr_multiplicity_letter_site_symmetry_coords_xyz_2
 )
 
@@ -104,7 +102,6 @@ def apply_atom_site_symmetry_constraints(atom_site: dict,
     axes = ("x", "y", "z")
     x, y, z = symbols("x y z")
     symbols_xyz = (x, y, z)
-
 
     for i, axis in enumerate(axes):
         symbol = symbols_xyz[i]

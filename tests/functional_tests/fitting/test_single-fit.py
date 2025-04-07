@@ -96,10 +96,6 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     project.analysis.show_meas_vs_calc_chart('hrpt', 65, 68, show_residual=True)
     project.analysis.show_meas_vs_calc_chart('hrpt', 38, 41, show_residual=True)
 
-    # Show parameters
-    project.analysis.show_refinable_params()
-    project.analysis.show_free_params()
-
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 1.3, decimal=1)
 
@@ -203,10 +199,6 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     # Start fitting
     project.analysis.fit()
     project.analysis.show_meas_vs_calc_chart('sepd', 23200, 23700, show_residual=True)
-
-    # Show parameters
-    project.analysis.show_refinable_params()
-    project.analysis.show_free_params()
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 3.19, decimal=1)
@@ -315,10 +307,6 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     # Start fitting
     project.analysis.fit()
     project.analysis.show_meas_vs_calc_chart('wish', 37000, 40000, show_residual=True)
-
-    # Show parameters
-    project.analysis.show_refinable_params()
-    project.analysis.show_free_params()
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 15.59, decimal=1)
