@@ -1,7 +1,7 @@
 from easydiffraction.core.objects import (Parameter,
-                                        StandardComponent)
+                                          Component)
 
-class Cell(StandardComponent):
+class Cell(Component):
     """
     Represents the unit cell parameters of a sample model.
     """

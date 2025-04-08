@@ -1,8 +1,8 @@
-from easydiffraction.core.objects import (Parameter, StandardComponent)
+from easydiffraction.core.objects import (Parameter, Component)
 from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 
 
-class InstrumentBase(StandardComponent):
+class InstrumentBase(Component):
     @property
     def cif_category_key(self):
         return "_instr"

@@ -8,13 +8,13 @@ from scipy.interpolate import interp1d
 from easydiffraction.utils.formatting import (paragraph,
                                               warning)
 from easydiffraction.core.objects import (Parameter,
-                                            Descriptor,
-                                          StandardComponent,
+                                          Descriptor,
+                                          Component,
                                           Collection)
 from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
 
 
-class Point(StandardComponent):
+class Point(Component):
     @property
     def cif_category_key(self):
         return "_pd_background"
@@ -42,7 +42,7 @@ class Point(StandardComponent):
         return Descriptor(f"{self.x.value}", cif_param_name="blablabla")
 
 
-class PolynomialTerm(StandardComponent):
+class PolynomialTerm(Component):
     @property
     def cif_category_key(self):
         return "_pd_background"

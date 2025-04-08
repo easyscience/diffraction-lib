@@ -1,8 +1,8 @@
 from easydiffraction.core.objects import (Descriptor,
-StandardComponent)
+                                          Component)
 
 
-class ExperimentType(StandardComponent):
+class ExperimentType(Component):
     @property
     def cif_category_key(self):
         return "_expt_type"

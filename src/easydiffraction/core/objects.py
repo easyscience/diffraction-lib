@@ -120,21 +120,11 @@ class Parameter(Descriptor):
         self.max = max_value
 
 
-class ComponentBase(ABC):
+class Component(ABC):
     """
-    Base class for all components in the EasyDiffraction framework.
-    Provides common functionality for CIF export and parameter handling.
+    Base class for single components, like Cell, Peak, etc.
     """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._locked = False  # If adding new attributes is locked
 
-
-class StandardComponent(ComponentBase):
-    """
-    Base class for experiment and sample model components of the standard type.
-    Provides common functionality for CIF export and parameter handling.
-    """
     @property
     @abstractmethod
     def cif_category_key(self):
@@ -145,6 +135,7 @@ class StandardComponent(ComponentBase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._locked = False  # If adding new attributes is locked
         self._ordered_attrs = []
 
     def __getattr__(self, name):
@@ -238,8 +229,8 @@ class StandardComponent(ComponentBase):
 
 class Collection:
     """
-    Base class for collections like SampleModels and Experiments.
-    Provides common methods for gathering parameters.
+    Base class for collections like AtomSites, LinkedPhases, SampleModels,
+    Experiments, etc.
     """
 
     def __init__(self):
@@ -255,7 +246,7 @@ class Collection:
         params = []
         for datablock in self._items.values():
             for component in datablock.components():
-                if isinstance(component, StandardComponent):
+                if isinstance(component, Component):
                     standard_component = component
                     for param in standard_component.parameters():
                         param.cif_datablock_id = datablock.name
@@ -306,12 +297,11 @@ class Collection:
         return "\n".join(lines)
 
 
-
-
 class Datablock(ABC):
     """
     Base class for Sample Model and Experiment data blocks.
     """
+    # TODO: Consider unifying with class Component?
 
     def components(self):
         """
@@ -321,7 +311,7 @@ class Datablock(ABC):
         attr_objs = []
         for attr_name in dir(self):
             attr_obj = getattr(self, attr_name)
-            if isinstance(attr_obj, (StandardComponent,
+            if isinstance(attr_obj, (Component,
                                      Collection)):
                 attr_objs.append(attr_obj)
         return attr_objs

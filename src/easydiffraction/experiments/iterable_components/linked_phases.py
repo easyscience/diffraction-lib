@@ -1,10 +1,10 @@
 from easydiffraction.core.objects import (Parameter,
-                                            Descriptor,
-                                          StandardComponent,
+                                          Descriptor,
+                                          Component,
                                           Collection)
 
 
-class LinkedPhase(StandardComponent):
+class LinkedPhase(Component):
     @property
     def cif_category_key(self):
         return "_pd_phase_block"

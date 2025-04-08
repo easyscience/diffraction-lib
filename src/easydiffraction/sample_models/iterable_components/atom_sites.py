@@ -1,10 +1,10 @@
 from easydiffraction.core.objects import (Parameter,
-                                            Descriptor,
-                                          StandardComponent,
+                                          Descriptor,
+                                          Component,
                                           Collection)
 
 
-class AtomSite(StandardComponent):
+class AtomSite(Component):
     """
     Represents a single atom site within the crystal structure.
     """

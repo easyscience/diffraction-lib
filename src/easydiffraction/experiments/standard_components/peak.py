@@ -1,5 +1,5 @@
 from easydiffraction.core.objects import (Descriptor,
-                                            Parameter, StandardComponent)
+                                          Parameter, Component)
 from easydiffraction.core.constants import (DEFAULT_BEAM_MODE,
                                             DEFAULT_PEAK_PROFILE_TYPE)
 
@@ -152,7 +152,7 @@ class IkedaCarpenterAsymmetryMixin:
 
 
 # --- Base peak class ---
-class PeakBase(StandardComponent):
+class PeakBase(Component):
     @property
     def cif_category_key(self):
         return "_peak"
