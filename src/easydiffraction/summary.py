@@ -77,7 +77,7 @@ class Summary:
         print(section("Experiments"))
         for expt in self.project.experiments._experiments.values():
             print(paragraph("Experiment datablock"))
-            print(f'🔬 {expt.id}')
+            print(f'🔬 {expt.name}')
 
             print(paragraph("Experiment type"))
             print(f'{expt.type.sample_form.value}, {expt.type.radiation_probe.value}, {expt.type.beam_mode.value}')

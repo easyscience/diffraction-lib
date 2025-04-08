@@ -117,6 +117,10 @@ class BaseExperiment(Datablock):
         print(bottom)
 
     @abstractmethod
+    def _load_ascii_data_to_experiment(self, data_path):
+        pass
+
+    @abstractmethod
     def show_meas_chart(self, x_min=None, x_max=None):
         """
         Abstract method to display data chart. Should be implemented in specific experiment mixins.

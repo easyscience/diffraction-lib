@@ -20,7 +20,7 @@ class Experiments(Collection):
     def add(
         self,
         experiment=None,
-        id=None,
+        name=None,
         sample_form=None,
         beam_mode=None,
         radiation_probe=None,
@@ -37,9 +37,9 @@ class Experiments(Collection):
             self._add_from_cif_path(cif_path)
         elif cif_str:
             self._add_from_cif_string(cif_str)
-        elif all([id, sample_form, beam_mode, radiation_probe, data_path]):
+        elif all([name, sample_form, beam_mode, radiation_probe, data_path]):
             self._add_from_data_path(
-                id=id,
+                name=name,
                 sample_form=sample_form,
                 beam_mode=beam_mode,
                 radiation_probe=radiation_probe,
@@ -62,7 +62,7 @@ class Experiments(Collection):
         raise NotImplementedError("CIF loading not implemented.")
 
     def _add_from_data_path(self,
-                            id,
+                            name,
                             sample_form,
                             beam_mode,
                             radiation_probe,
@@ -74,7 +74,7 @@ class Experiments(Collection):
         print(paragraph("Loading measured data from ASCII file"))
         print(os.path.abspath(data_path))
         experiment = ExperimentFactory.create(
-            id=id,
+            name=name,
             sample_form=sample_form,
             beam_mode=beam_mode,
             radiation_probe=radiation_probe

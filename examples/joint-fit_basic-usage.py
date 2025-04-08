@@ -12,6 +12,8 @@ Only a single import is required (`import easydiffraction as ed`) and all operat
 are performed through high-level project components such as `project.sample_models`,
 `project.experiments`, and `project.analysis`.
 """
+import os
+import tempfile
 
 import easydiffraction as ed
 
@@ -32,7 +34,8 @@ and X-ray diffraction data, both measured using constant wavelength instruments.
 The objective is to accurately fit the crystal structure of PbSO4."""
 
 # Save the initial project specifying the directory path
-project.save_as("examples/projects/pbso4_joint")
+#project.save_as("examples/projects/pbso4_joint")
+project.save_as(os.path.join(tempfile.gettempdir(), "pbso4_joint"))
 
 # Show project metadata
 project.info.show_as_cif()
@@ -45,7 +48,7 @@ project.info.show_as_cif()
 print(ed.chapter('Step 2: Add Sample Model'))
 
 # Add a sample model with default parameters
-project.sample_models.add("pbso4")
+project.sample_models.add(name="pbso4")
 
 # Show model IDs to be used for accessing the model via project.sample_models["model_id"]
 project.sample_models.show_ids()
@@ -104,16 +107,16 @@ project.save()
 
 print(ed.chapter('Step 3: Add Experiments (Instrument models and measured data)'))
 
-project.experiments.add("npd",
+project.experiments.add(name="npd",
                         sample_form="powder",
                         beam_mode="constant wavelength",
                         radiation_probe="neutron",
-                        data_path="examples/data/pbso4_powder_neutron_cw.dat")
-project.experiments.add("xrd",
+                        data_path="examples/data/d1a_pbso4.dat")
+project.experiments.add(name="xrd",
                         sample_form="powder",
                         beam_mode="constant wavelength",
                         radiation_probe="xray",
-                        data_path="examples/data/pbso4_powder_xray.dat")
+                        data_path="examples/data/lab_pbso4.dat")
 
 print(ed.section('Show defined experiments'))
 project.experiments.show_ids()
@@ -208,7 +211,7 @@ print(ed.section('Show data chart including a background'))
 project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28)
 
-print(ed.section('Show all refinable parameters'))
+print(ed.section('Show all fittable parameters'))
 project.analysis.show_fittable_params()
 
 # Refinable parameters are those that can be adjusted during fitting,

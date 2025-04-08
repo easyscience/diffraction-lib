@@ -95,7 +95,7 @@ class ProjectInfo:
             formatted_description = "_project.description      ''"
 
         return (
-            f"_project.id               {self.id}\n"
+            f"_project.id               {self.name}\n"
             f"{title_str}\n"
             f"{formatted_description}\n"
             f"_project.created          '{self._created.strftime('%d %b %Y %H:%M:%S')}'\n"
@@ -110,7 +110,7 @@ class ProjectInfo:
         top = f"╒{'═' * (max_width + 2)}╕"
         bottom = f"╘{'═' * (max_width + 2)}╛"
 
-        print(paragraph(f"Project 📦 '{self.id}' info as cif"))
+        print(paragraph(f"Project 📦 '{self.name}' info as cif"))
         print(top)
         print("\n".join(padded_lines))
         print(bottom)
@@ -169,7 +169,7 @@ class Project:
             print(error("Project path not specified. Use save_as() to define the path first."))
             return
 
-        print(paragraph(f"Saving project 📦 '{self.id}' to"))
+        print(paragraph(f"Saving project 📦 '{self.name}' to"))
         print(os.path.abspath(self.info.path))
 
         os.makedirs(self.info.path, exist_ok=True)

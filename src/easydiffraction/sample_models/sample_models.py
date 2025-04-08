@@ -135,7 +135,6 @@ class SampleModel(Datablock):
         print(bottom)
 
 
-
 class SampleModels(Collection):
     """
     Collection manager for multiple SampleModel instances.
@@ -145,7 +144,7 @@ class SampleModels(Collection):
         super().__init__()  # Initialize Collection
         self._models = self._items  # Alias for legacy support
 
-    def add(self, model=None, model_name=None, cif_path=None, cif_str=None):
+    def add(self, model=None, name=None, cif_path=None, cif_str=None):
         """
         Add a new sample model to the collection.
         Dispatches based on input type: pre-built model or parameters for new creation.
@@ -153,7 +152,7 @@ class SampleModels(Collection):
         if model:
             self._add_prebuilt_sample_model(model)
         else:
-            self._create_and_add_sample_model(model_name, cif_path, cif_str)
+            self._create_and_add_sample_model(name, cif_path, cif_str)
 
     def remove(self, name):
         """
