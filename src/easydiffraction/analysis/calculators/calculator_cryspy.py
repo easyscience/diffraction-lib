@@ -35,14 +35,11 @@ class CryspyCalculator(CalculatorBase):
                                         sample_model,
                                         experiment,
                                         called_by_minimizer=False):
-        # TODO: We need to avoid re-creating the cryspy object every time.
-        # Instead, we should update the cryspy_dict with the new sample model
-        # and experiment. Expected to speed up the calculation 10 times!
-
-        #_cryspy_expt_id = experiment.name
-        #_is_cryspy_dict = bool(self._cryspy_dict)
-        #_called_by_minimizer = called_by_minimizer
-
+        # We only recreate the cryspy_obj if this method is
+        # - NOT called by the minimizer, or
+        # - the cryspy_dict is NOT yet created.
+        # In other cases, we are modifying the existing cryspy_dict
+        # This allows significantly speeding up the calculation
         if called_by_minimizer:
             if self._cryspy_dicts and experiment.name in self._cryspy_dicts:
                 cryspy_dict = self._recreate_cryspy_dict(sample_model, experiment)
@@ -57,7 +54,7 @@ class CryspyCalculator(CalculatorBase):
 
         # Calculate pattern using cryspy
         cryspy_in_out_dict = {}
-        calc_result = rhochi_calc_chi_sq_by_dictionary(
+        rhochi_calc_chi_sq_by_dictionary(
             cryspy_dict,
             dict_in_out=cryspy_in_out_dict,
             flag_use_precalculated_data=False,
@@ -65,10 +62,13 @@ class CryspyCalculator(CalculatorBase):
         )
 
         # Get cryspy block name based on experiment type
-        if experiment.type.beam_mode.value == "constant wavelength":
-            cryspy_block_name = f"pd_{experiment.name}"
-        elif experiment.type.beam_mode.value == "time-of-flight":
-            cryspy_block_name = f"tof_{experiment.name}"
+        prefixes = {
+            "constant wavelength": "pd",
+            "time-of-flight": "tof"
+        }
+        beam_mode = experiment.type.beam_mode.value
+        if beam_mode in prefixes.keys():
+            cryspy_block_name = f"{prefixes[beam_mode]}_{experiment.name}"
         else:
             print(f"[CryspyCalculator] Error: Unknown beam mode {experiment.type.beam_mode.value}")
             return []
