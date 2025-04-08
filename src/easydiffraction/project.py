@@ -1,5 +1,6 @@
 import os
 import datetime
+import tempfile
 from textwrap import wrap
 
 from easydiffraction.utils.formatting import (
@@ -154,10 +155,13 @@ class Project:
         print('Loading project is not implemented yet.')
         self._saved = True
 
-    def save_as(self, dir_path: str):
+    def save_as(self, dir_path: str, temporary: bool = False):
         """
         Save the project into a new directory.
         """
+        if temporary:
+            tmp = tempfile.gettempdir()
+            dir_path = os.path.join(tmp, dir_path)
         self.info.path = dir_path
         self.save()
 

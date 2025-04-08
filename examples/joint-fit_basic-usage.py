@@ -12,8 +12,6 @@ Only a single import is required (`import easydiffraction as ed`) and all operat
 are performed through high-level project components such as `project.sample_models`,
 `project.experiments`, and `project.analysis`.
 """
-import os
-import tempfile
 
 import easydiffraction as ed
 
@@ -35,7 +33,7 @@ The objective is to accurately fit the crystal structure of PbSO4."""
 
 # Save the initial project specifying the directory path
 #project.save_as("examples/projects/pbso4_joint")
-project.save_as(os.path.join(tempfile.gettempdir(), "pbso4_joint"))
+project.save_as("pbso4_joint", temporary=True)
 
 # Show project metadata
 project.info.show_as_cif()

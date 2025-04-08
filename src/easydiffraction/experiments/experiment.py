@@ -197,7 +197,7 @@ class PowderExperiment(BaseExperiment):
     def peak_profile_type(self, new_type: str):
         if new_type not in PeakFactory._supported[self.type.beam_mode.value]:
             supported_types = list(PeakFactory._supported[self.type.beam_mode.value].keys())
-            print(warning(f"Unknown peak profile '{new_type}'"))
+            print(warning(f"Unsupported peak profile '{new_type}'"))
             print(f'Supported peak profiles: {supported_types}')
             print(f"For more information, use 'show_supported_peak_profile_types()'")
             return
