@@ -5,10 +5,6 @@ from easydiffraction.core.objects import (
 
 
 class ExperimentType(Component):
-    @property
-    def cif_category_key(self):
-        return "_expt_type"
-
     def __init__(self,
                  sample_form: str,
                  beam_mode: str,
@@ -32,3 +28,15 @@ class ExperimentType(Component):
         )
 
         self._locked = True  # Lock further attribute additions
+
+    @property
+    def cif_category_key(self):
+        return "expt_type"
+
+    @property
+    def category_key(self):
+        return "expt_type"
+
+    @property
+    def _entry_id(self):
+        return None

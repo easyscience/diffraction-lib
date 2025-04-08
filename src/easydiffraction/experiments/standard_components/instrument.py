@@ -7,8 +7,16 @@ from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 
 class InstrumentBase(Component):
     @property
+    def category_key(self):
+        return "instr"
+
+    @property
     def cif_category_key(self):
-        return "_instr"
+        return "instr"
+
+    @property
+    def _entry_id(self):
+        return None
 
 
 class ConstantWavelengthInstrument(InstrumentBase):

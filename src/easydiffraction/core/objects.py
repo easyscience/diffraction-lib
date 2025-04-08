@@ -131,15 +131,31 @@ class Component(ABC):
 
     @property
     @abstractmethod
+    def _entry_id(self):
+        pass
+
+    @property
+    @abstractmethod
     def cif_category_key(self):
         """
         Must be implemented in subclasses to return the CIF category name.
         """
         pass
 
+    @property
+    @abstractmethod
+    def category_key(self):
+        """
+        Must be implemented in subclasses to return the ED category name.
+        Can differ from cif_category_key.
+        """
+        pass
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._locked = False  # If adding new attributes is locked
+        # TODO: Currently, it is not used. Planned to be used for displaying
+        #  the parameters in the specific order.
         self._ordered_attrs = []
 
     def __getattr__(self, name):
@@ -217,7 +233,7 @@ class Component(ABC):
             if not isinstance(attr_obj, (Descriptor, Parameter)):
                 continue
 
-            key = f"{self.cif_category_key}.{attr_obj.cif_param_name}"
+            key = f"_{self.cif_category_key}.{attr_obj.cif_param_name}"
             value = attr_obj.value
 
             if value is None:
@@ -263,7 +279,7 @@ class Collection:
                         for param in standard_component.parameters():
                             param.cif_datablock_id = datablock.name
                             param.cif_category_key = standard_component.cif_category_key
-                            param.cif_entry_id = standard_component.id.value
+                            param.cif_entry_id = standard_component._entry_id
                             params.append(param)
 
         return params
@@ -290,7 +306,7 @@ class Collection:
             for idx, item in enumerate(self._items.values()):
                 params = item.as_dict()
                 category_key = item.cif_category_key
-                keys = [f'{category_key}.{param_key}' for param_key in params.keys()]
+                keys = [f'_{category_key}.{param_key}' for param_key in params.keys()]
                 values = [f"{value}" for value in params.values()]
                 if idx == 0:
                     header = "\n".join(keys)

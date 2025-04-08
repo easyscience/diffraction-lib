@@ -19,10 +19,6 @@ from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
 
 
 class Point(Component):
-    @property
-    def cif_category_key(self):
-        return "_pd_background"
-
     def __init__(self, x: float, y: float):
         super().__init__()
 
@@ -39,18 +35,20 @@ class Point(Component):
 
         self._locked = True  # Lock further attribute additions
 
-    # TODO: Temporary workaround for getting str type for id.value
-    # TODO: Switch to str type for id?
     @property
-    def id(self):
-        return Descriptor(f"{self.x.value}", cif_param_name="blablabla")
+    def cif_category_key(self):
+        return "pd_background"
+
+    @property
+    def category_key(self):
+        return "background"
+
+    @property
+    def _entry_id(self):
+        return f"{self.x.value}"
 
 
 class PolynomialTerm(Component):
-    @property
-    def cif_category_key(self):
-        return "_pd_background"
-
     def __init__(self, order, coef):
         super().__init__()
 
@@ -67,11 +65,17 @@ class PolynomialTerm(Component):
 
         self._locked = True  # Lock further attribute additions
 
-    # TODO: Temporary workaround for getting str type for id.value
-    # TODO: Switch to str type for id?
     @property
-    def id(self):
-        return Descriptor(f"{self.order.value}", cif_param_name="blablabla")
+    def cif_category_key(self):
+        return "pd_background"
+
+    @property
+    def category_key(self):
+        return "background"
+
+    @property
+    def _entry_id(self):
+        return f"{self.order.value}"
 
 
 class BackgroundBase(Collection):
@@ -101,7 +105,7 @@ class LineSegmentBackground(BackgroundBase):
     def add(self, x, y):
         """Add a background point."""
         point = Point(x=x, y=y)
-        self._items[point.id.value] = point
+        self._items[point._entry_id] = point
 
     def calculate(self, x_data):
         """Interpolate background points over x_data."""
@@ -149,7 +153,7 @@ class ChebyshevPolynomialBackground(BackgroundBase):
     def add(self, order, coef):
         """Add a polynomial term as (order, coefficient)."""
         term = PolynomialTerm(order=order, coef=coef)
-        self._items[term.id.value] = term
+        self._items[term._entry_id] = term
 
     def calculate(self, x_data):
         """Evaluate polynomial background over x_data."""

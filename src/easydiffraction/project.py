@@ -18,7 +18,7 @@ class ProjectInfo:
     """
 
     def __init__(self):
-        self._id = "untitled_project"  # Short unique project identifier
+        self._name = "untitled_project"  # Short unique project identifier
         self._title = "Untitled Project"
         self._description = ""
         self._path = os.getcwd()
@@ -26,9 +26,13 @@ class ProjectInfo:
         self._last_modified = datetime.datetime.now()
 
     @property
-    def id(self):
+    def name(self):
         """Return the project ID."""
-        return self._id
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     @property
     def title(self):
@@ -118,9 +122,9 @@ class Project:
     Provides access to sample models, experiments, analysis, and summary.
     """
 
-    def __init__(self, project_id="untitled_project", title="Untitled Project", description=""):
+    def __init__(self, name="untitled_project", title="Untitled Project", description=""):
         self.info = ProjectInfo()
-        self.info._id = project_id
+        self.info.name = name
         self.info.title = title
         self.info.description = description
         self.sample_models = SampleModels()
@@ -130,9 +134,9 @@ class Project:
         self._saved = False
 
     @property
-    def id(self):
+    def name(self):
         """Convenience property to access the project's ID directly."""
-        return self.info.id
+        return self.info.name
 
     # ------------------------------------------
     #  Project File I/O

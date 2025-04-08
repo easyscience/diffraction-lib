@@ -7,10 +7,6 @@ from easydiffraction.core.objects import (
 
 
 class LinkedPhase(Component):
-    @property
-    def cif_category_key(self):
-        return "_pd_phase_block"
-
     def __init__(self, id: str, scale: float):
         super().__init__()
 
@@ -25,7 +21,18 @@ class LinkedPhase(Component):
 
         self._locked = True  # Lock further attribute additions
 
-        # TODO: Add _id as in AtomSite
+    @property
+    def cif_category_key(self):
+        return "pd_phase_block"
+
+    @property
+    def category_key(self):
+        return "linked_phase"
+
+    @property
+    def _entry_id(self):
+        return self.id.value
+
 
 class LinkedPhases(Collection):
     """

@@ -10,9 +10,6 @@ class AtomSite(Component):
     """
     Represents a single atom site within the crystal structure.
     """
-    @property
-    def cif_category_key(self):
-        return "_atom_site"
 
     def __init__(self,
                  label: str,
@@ -63,10 +60,17 @@ class AtomSite(Component):
             cif_param_name="B_iso_or_equiv"
         )
 
-    # TODO: Switch to str type for id?
     @property
-    def id(self):
-        return self.label
+    def cif_category_key(self):
+        return "atom_site"
+
+    @property
+    def category_key(self):
+        return "atom_site"
+
+    @property
+    def _entry_id(self):
+        return self.label.value
 
 
 class AtomSites(Collection):
@@ -99,4 +103,4 @@ class AtomSites(Collection):
                         occupancy,
                         b_iso,
                         adp_type)
-        self._items[site.id.value] = site
+        self._items[site._entry_id] = site

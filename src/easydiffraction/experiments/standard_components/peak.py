@@ -158,7 +158,15 @@ class IkedaCarpenterAsymmetryMixin:
 class PeakBase(Component):
     @property
     def cif_category_key(self):
-        return "_peak"
+        return "peak"
+
+    @property
+    def category_key(self):
+        return "peak"
+
+    @property
+    def _entry_id(self):
+        return None
 
 
 # --- Derived peak classes ---

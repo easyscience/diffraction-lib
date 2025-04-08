@@ -5,9 +5,6 @@ class Cell(Component):
     """
     Represents the unit cell parameters of a sample model.
     """
-    @property
-    def cif_category_key(self):
-        return "_cell"
 
     def __init__(self,
                  length_a=10.0,
@@ -48,3 +45,15 @@ class Cell(Component):
             cif_param_name="angle_gamma",
             units="deg"
         )
+
+    @property
+    def cif_category_key(self):
+        return "cell"
+
+    @property
+    def category_key(self):
+        return "cell"
+
+    @property
+    def _entry_id(self):
+        return None
