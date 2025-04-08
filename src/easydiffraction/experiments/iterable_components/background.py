@@ -24,11 +24,13 @@ class Point(Component):
 
         self.x = Descriptor(
             value=x,
+            name='x',
             cif_name='line_segment_X',
             description="X-coordinates used to create many straight-line segments representing the background in a calculated diffractogram."
         )
         self.y = Parameter(
-            value=y,
+            value=y,  # TODO: rename to intensity
+            name='y',  # TODO: rename to intensity
             cif_name='line_segment_intensity',
             description="Intensity used to create many straight-line segments representing the background in a calculated diffractogram"
         )
@@ -54,11 +56,13 @@ class PolynomialTerm(Component):
 
         self.order = Descriptor(
             value=order,
+            name='chebyshev_order',
             cif_name='Chebyshev_order',
             description="The value of an order used in a Chebyshev polynomial equation representing the background in a calculated diffractogram"
         )
         self.coef = Parameter(
             value=coef,
+            name='chebyshev_coef',
             cif_name='Chebyshev_coef',
             description="The value of a coefficient used in a Chebyshev polynomial equation representing the background in a calculated diffractogram"
         )

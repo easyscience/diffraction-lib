@@ -12,10 +12,12 @@ class LinkedPhase(Component):
 
         self.id = Descriptor(
             value=id,
+            name="id",
             cif_name="id"
         )
         self.scale = Parameter(
             value=scale,
+            name="scale",
             cif_name="scale"
         )
 

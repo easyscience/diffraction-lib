@@ -17,29 +17,36 @@ class Descriptor:
     """
 
     def __init__(self,
-                 value,
-                 #name,
-                 cif_name,
-                 pretty_name=None,
-                 parent_datablock_id=None,
-                 #category_key=None,
-                 cif_category_key=None,
-                 collection_entry_id=None,
-                 units=None,
-                 description=None,
-                 editable=True):
+                 value,  # Value of the parameter
+                 name,  # ED parameter name (to access it in the code)
+                 cif_name,  # CIF parameter name (to show it in the CIF)
+                 pretty_name=None,  # Pretty name (to show it in the table)
+                 datablock_id=None, # Parent datablock name
+                 category_key=None,  # ED parent category name
+                 cif_category_key=None,  # CIF parent category name
+                 collection_entry_id=None, # Parent collection entry id
+                 units=None,  # Units of the parameter
+                 description=None,  # Description of the parameter
+                 editable=True  # If false, the parameter can never be edited. It is calculated automatically
+                 ):
+
         self._value = value
-        self._description = description
-        self._editable = editable
-        self._pretty_name = pretty_name,
+        self.name = name
         self.cif_name = cif_name
+        self.pretty_name = pretty_name,
+        self.datablock_id = datablock_id
+        self.category_key = category_key,
         self.cif_category_key = cif_category_key
-        self.parent_datablock_id = parent_datablock_id
         self.collection_entry_id = collection_entry_id
         self.units = units
+        self._description = description
+        self._editable = editable
+
         self.uid = self._generate_unique_id()
 
     def _generate_unique_id(self):
+        # Derived class Parameter will use this unique id for the
+        # minimization process to identify the parameter.
         # TODO: Instead of generating a random string, we can use the
         #  name of the parameter and the block name to create a unique id.
         #  E.g.:
@@ -49,26 +56,6 @@ class Descriptor:
         letters = random.choices(string.ascii_lowercase, k=length)
         uid = ''.join(letters)
         return uid
-        # self.uid is needed to make a list of free parameters for the
-        # minimization engine, and then to be able to update the sample
-        # models and experiments with the new values.
-        # TODO: It is used in collection.py to generate a unique id for
-        #  the parameter. Check if it is needed here. When called from
-        #  __init__, parent_datablock_id is not set yet?
-        # TODO: Check if it works for the iterable components, such as
-        #  atoms_sites, background, etc.
-        # TODO: Check if we need to replace "-" with "_"
-        # TODO: Check if we need make it lowercase
-        raw_name = self.cif_name
-        sanitized = (
-            raw_name.replace("[", "_")
-                    .replace("]", "")
-                    .replace(".", "_")
-                    .replace("'", "")
-        )
-        if self.parent_datablock_id:
-            sanitized = f"{self.parent_datablock_id}_{sanitized}"
-        return sanitized
 
     @property
     def value(self):
@@ -96,9 +83,11 @@ class Parameter(Descriptor):
 
     def __init__(self,
                  value,
+                 name,
                  cif_name,
                  pretty_name=None,
-                 parent_datablock_id=None,
+                 datablock_id=None,
+                 category_key=None,
                  cif_category_key=None,
                  collection_entry_id=None,
                  units=None,
@@ -111,19 +100,21 @@ class Parameter(Descriptor):
                  max_value=None,
                  ):
         super().__init__(value,
+                         name,
                          cif_name,
                          pretty_name,
-                         parent_datablock_id,
+                         datablock_id,
+                         category_key,
                          cif_category_key,
                          collection_entry_id,
                          units,
                          description,
                          editable)
-        self.uncertainty = uncertainty
-        self.free = free
-        self.constrained = constrained
-        self.min = min_value
-        self.max = max_value
+        self.uncertainty = uncertainty  # Standard uncertainty or estimated standard deviation
+        self.free = free  # If the parameter is free to be fitted during the optimization
+        self.constrained = constrained  # If symmetry constrains the parameter during the optimization
+        self.min = min_value  # Minimum physical value of the parameter
+        self.max = max_value  # Maximum physical value of the parameter
 
 
 class Component(ABC):
@@ -167,7 +158,7 @@ class Component(ABC):
         attr = self.__dict__.get(name, None)
         if isinstance(attr, (Descriptor, Parameter)):
             return attr.value
-        raise AttributeError(f"{name} not found")
+        raise AttributeError(f"{name} not found in {self}")
 
     def __setattr__(self, name, value):
         """
@@ -271,16 +262,16 @@ class Collection:
                 if isinstance(component, Component):
                     standard_component = component
                     for param in standard_component.parameters():
-                        param.parent_datablock_id = datablock.name
-                        param.cif_category_key = standard_component.cif_category_key
+                        param.datablock_id = datablock.name
+                        param.category_key = standard_component.category_key
                         param.collection_entry_id = ""
                         params.append(param)
                 elif isinstance(component, Collection):
                     iterable_component = component
                     for standard_component in iterable_component:
                         for param in standard_component.parameters():
-                            param.parent_datablock_id = datablock.name
-                            param.cif_category_key = standard_component.cif_category_key
+                            param.datablock_id = datablock.name
+                            param.category_key = standard_component.category_key
                             param.collection_entry_id = standard_component._entry_id
                             params.append(param)
 

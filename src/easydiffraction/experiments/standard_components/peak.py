@@ -12,30 +12,35 @@ class ConstantWavelengthBroadeningMixin:
     def _add_constant_wavelength_broadening(self):
         self.broad_gauss_u: Parameter = Parameter(
             value=0.01,
+            name="broad_gauss_u",
             cif_name="broad_gauss_u",
             units="deg²",
             description="Gaussian broadening coefficient (dependent on sample size and instrument resolution)"
         )
         self.broad_gauss_v: Parameter = Parameter(
             value=-0.01,
+            name="broad_gauss_v",
             cif_name="broad_gauss_v",
             units="deg²",
             description="Gaussian broadening coefficient (instrumental broadening contribution)"
         )
         self.broad_gauss_w: Parameter = Parameter(
             value=0.02,
+            name="broad_gauss_w",
             cif_name="broad_gauss_w",
             units="deg²",
             description="Gaussian broadening coefficient (instrumental broadening contribution)"
         )
         self.broad_lorentz_x: Parameter = Parameter(
             value=0.0,
+            name="broad_lorentz_x",
             cif_name="broad_lorentz_x",
             units="deg",
             description="Lorentzian broadening coefficient (dependent on sample strain effects)"
         )
         self.broad_lorentz_y: Parameter = Parameter(
             value=0.0,
+            name="broad_lorentz_y",
             cif_name="broad_lorentz_y",
             units="deg",
             description="Lorentzian broadening coefficient (dependent on microstructural defects and strain)"
@@ -46,48 +51,56 @@ class TimeOfFlightBroadeningMixin:
     def _add_time_of_flight_broadening(self):
         self.broad_gauss_sigma_0: Parameter = Parameter(
             value=0.0,
+            name="gauss_sigma_0",
             cif_name="gauss_sigma_0",
             units="µs²",
             description="Gaussian broadening coefficient (instrumental resolution)"
         )
         self.broad_gauss_sigma_1: Parameter = Parameter(
             value=0.0,
+            name="gauss_sigma_1",
             cif_name="gauss_sigma_1",
             units="µs/Å",
             description="Gaussian broadening coefficient (dependent on d-spacing)"
         )
         self.broad_gauss_sigma_2: Parameter = Parameter(
             value=0.0,
+            name="gauss_sigma_2",
             cif_name="gauss_sigma_2",
             units="µs²/Å²",
             description="Gaussian broadening coefficient (instrument-dependent term)"
         )
         self.broad_lorentz_gamma_0: Parameter = Parameter(
             value=0.0,
+            name="lorentz_gamma_0",
             cif_name="lorentz_gamma_0",
             units="µs",
             description="Lorentzian broadening coefficient (dependent on microstrain effects)"
         )
         self.broad_lorentz_gamma_1: Parameter = Parameter(
             value=0.0,
+            name="lorentz_gamma_1",
             cif_name="lorentz_gamma_1",
             units="µs/Å",
             description="Lorentzian broadening coefficient (dependent on d-spacing)"
         )
         self.broad_lorentz_gamma_2: Parameter = Parameter(
             value=0.0,
+            name="lorentz_gamma_2",
             cif_name="lorentz_gamma_2",
             units="µs²/Å²",
             description="Lorentzian broadening coefficient (instrumental-dependent term)"
         )
         self.broad_mix_beta_0: Parameter = Parameter(
             value=0.0,
+            name="mix_beta_0",
             cif_name="mix_beta_0",
             units="deg",
             description="Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles"
         )
         self.broad_mix_beta_1: Parameter = Parameter(
             value=0.0,
+            name="mix_beta_1",
             cif_name="mix_beta_1",
             units="deg",
             description="Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles"
@@ -98,24 +111,28 @@ class EmpiricalAsymmetryMixin:
     def _add_empirical_asymmetry(self):
         self.asym_empir_1: Parameter = Parameter(
             value=0.1,
+            name="asym_empir_1",
             cif_name="asym_empir_1",
             units="",
             description="Empirical asymmetry coefficient p1"
         )
         self.asym_empir_2: Parameter = Parameter(
             value=0.2,
+            name="asym_empir_2",
             cif_name="asym_empir_2",
             units="",
             description="Empirical asymmetry coefficient p2"
         )
         self.asym_empir_3: Parameter = Parameter(
             value=0.3,
+            name="asym_empir_3",
             cif_name="asym_empir_3",
             units="",
             description="Empirical asymmetry coefficient p3"
         )
         self.asym_empir_4: Parameter = Parameter(
             value=0.4,
+            name="asym_empir_4",
             cif_name="asym_empir_4",
             units="",
             description="Empirical asymmetry coefficient p4"
@@ -126,12 +143,14 @@ class FcjAsymmetryMixin:
     def _add_fcj_asymmetry(self):
         self.asym_fcj_1: Parameter = Parameter(
             value=0.01,
+            name="asym_fcj_1",
             cif_name="asym_fcj_1",
             units="",
             description="FCJ asymmetry coefficient 1"
         )
         self.asym_fcj_2: Parameter = Parameter(
             value=0.02,
+            name="asym_fcj_2",
             cif_name="asym_fcj_2",
             units="",
             description="FCJ asymmetry coefficient 2"
@@ -142,12 +161,14 @@ class IkedaCarpenterAsymmetryMixin:
     def _add_ikeda_carpenter_asymmetry(self):
         self.asym_alpha_0: Parameter = Parameter(
             value=0.01,
+            name="asym_alpha_0",
             cif_name="asym_alpha_0",
             units="",
             description="Ikeda-Carpenter asymmetry parameter α₀"
         )
         self.asym_alpha_1: Parameter = Parameter(
             value=0.02,
+            name="asym_alpha_1",
             cif_name="asym_alpha_1",
             units="",
             description="Ikeda-Carpenter asymmetry parameter α₁"

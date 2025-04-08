@@ -69,10 +69,10 @@ class FitResults:
 
         rows = []
         for param in self.parameters:
-            parent_datablock_id = getattr(param, 'parent_datablock_id', 'N/A')
-            cif_category_key = getattr(param, 'cif_category_key', 'N/A')
+            datablock_id = getattr(param, 'datablock_id', 'N/A')  # TODO: Check if 'N/A' is needed
+            category_key = getattr(param, 'category_key', 'N/A')
             collection_entry_id = getattr(param, 'collection_entry_id', 'N/A')
-            cif_name = getattr(param, 'cif_name', 'N/A')
+            name = getattr(param, 'name', 'N/A')
             start = f"{getattr(param, 'start_value', 'N/A'):.4f}" if param.start_value is not None else "N/A"
             fitted = f"{param.value:.4f}" if param.value is not None else "N/A"
             uncertainty = f"{param.uncertainty:.4f}" if param.uncertainty is not None else "N/A"
@@ -85,10 +85,10 @@ class FitResults:
             else:
                 relative_change = "N/A"
 
-            rows.append([parent_datablock_id,
-                         cif_category_key,
+            rows.append([datablock_id,
+                         category_key,
                          collection_entry_id,
-                         cif_name,
+                         name,
                          start,
                          fitted,
                          uncertainty,
@@ -110,7 +110,8 @@ class MinimizerBase(ABC):
     Provides shared logic and structure for concrete minimizers.
     """
     def __init__(self, name=None, method=None, max_iterations=None):
-        # 'method' is used only by minimizers supporting multiple methods (e.g., lmfit). For minimizers like dfols, pass None.
+        # 'method' is used only by minimizers supporting multiple methods
+        # (e.g., lmfit). For minimizers like dfols, pass None.
         self.name = name
         self.method = method
         self.max_iterations = max_iterations
