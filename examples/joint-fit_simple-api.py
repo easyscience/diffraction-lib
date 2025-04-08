@@ -23,7 +23,7 @@ import easydiffraction as ed
 print(ed.chapter('Step 1: Create a Project'))
 
 # Create a new project
-project = ed.Project(project_id="joint_fit")
+project = ed.Project("joint_fit")
 
 # Define project info
 project.info.title = "Joint fit of PbSO4 from neutron and X-ray diffraction"
@@ -45,7 +45,7 @@ project.info.show_as_cif()
 print(ed.chapter('Step 2: Add Sample Model'))
 
 # Add a sample model with default parameters
-project.sample_models.add(model_id="pbso4")
+project.sample_models.add("pbso4")
 
 # Show model IDs to be used for accessing the model via project.sample_models["model_id"]
 project.sample_models.show_ids()
@@ -104,12 +104,12 @@ project.save()
 
 print(ed.chapter('Step 3: Add Experiments (Instrument models and measured data)'))
 
-project.experiments.add(id="npd",
+project.experiments.add("npd",
                         sample_form="powder",
                         beam_mode="constant wavelength",
                         radiation_probe="neutron",
                         data_path="examples/data/pbso4_powder_neutron_cw.dat")
-project.experiments.add(id="xrd",
+project.experiments.add("xrd",
                         sample_form="powder",
                         beam_mode="constant wavelength",
                         radiation_probe="xray",
