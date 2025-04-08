@@ -8,14 +8,6 @@ class Descriptor:
     Base class for descriptors (non-refinable attributes).
     """
 
-    # !!!!!
-    # datablock_id
-    # category_key
-    # entry_id
-    # param_key
-    # !!!!!
-    #
-
     def __init__(self,
                  value,
                  cif_param_name,

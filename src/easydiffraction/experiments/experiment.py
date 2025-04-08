@@ -13,15 +13,13 @@ from easydiffraction.experiments.iterable_components.datastore import DatastoreF
 
 from easydiffraction.utils.formatting import paragraph, warning
 from easydiffraction.utils.chart_plotter import ChartPlotter
-
+from easydiffraction.core.datablock import Datablock
 from easydiffraction.core.constants import (DEFAULT_SAMPLE_FORM,
                                             DEFAULT_BEAM_MODE,
                                             DEFAULT_RADIATION_PROBE,
                                             DEFAULT_PEAK_PROFILE_TYPE,
                                             DEFAULT_BACKGROUND_TYPE)
 
-from easydiffraction.core.component import StandardComponent, IterableComponent
-from easydiffraction.core.datablock import Datablock
 
 class BaseExperiment(Datablock):
     """Base class for all experiments with only core attributes."""
@@ -67,7 +65,7 @@ class BaseExperiment(Datablock):
             lines.append(self.linked_crystal.as_cif())
 
         # Background points
-        if hasattr(self, "background") and len(self.background):
+        if hasattr(self, "background") and self.background:
             lines.append("")
             lines.append(self.background.as_cif())
 

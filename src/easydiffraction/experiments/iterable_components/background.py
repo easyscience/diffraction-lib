@@ -9,8 +9,8 @@ from easydiffraction.utils.formatting import (paragraph,
                                               warning)
 from easydiffraction.core.parameter import (Parameter,
                                             Descriptor)
-from easydiffraction.core.component import (StandardComponent,
-                                            IterableComponent)
+from easydiffraction.core.component import StandardComponent
+from easydiffraction.core.collection import Collection
 from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
 
 
@@ -70,10 +70,10 @@ class PolynomialTerm(StandardComponent):
         return Descriptor(f"{self.order.value}", cif_param_name="blablabla")
 
 
-class BackgroundBase(IterableComponent):
+class BackgroundBase(Collection):
     @property
-    def cif_category_key(self):
-        return "_pd_background"
+    def _type(self):
+        return "category"  # datablock or category
 
     @abstractmethod
     def add(self, *args):
@@ -97,16 +97,16 @@ class LineSegmentBackground(BackgroundBase):
     def add(self, x, y):
         """Add a background point."""
         point = Point(x=x, y=y)
-        self._rows.append(point)
+        self._items[point.id.value] = point
 
     def calculate(self, x_data):
         """Interpolate background points over x_data."""
-        if not self._rows:
+        if not self._items:
             print(warning('No background points found. Setting background to zero.'))
             return np.zeros_like(x_data)
 
-        background_x = np.array([point.x.value for point in self._rows])
-        background_y = np.array([point.y.value for point in self._rows])
+        background_x = np.array([point.x.value for point in self._items.values()])
+        background_y = np.array([point.y.value for point in self._items.values()])
         interp_func = interp1d(
             background_x, background_y,
             kind='linear',
@@ -120,7 +120,7 @@ class LineSegmentBackground(BackgroundBase):
         header = ["X", "Intensity"]
         table_data = []
 
-        for point in self._rows:
+        for point in self._items.values():
             x = point.x.value
             y = point.y.value
             table_data.append([x, y])
@@ -145,16 +145,16 @@ class ChebyshevPolynomialBackground(BackgroundBase):
     def add(self, order, coef):
         """Add a polynomial term as (order, coefficient)."""
         term = PolynomialTerm(order=order, coef=coef)
-        self._rows.append(term)
+        self._items[term.id.value] = term
 
     def calculate(self, x_data):
         """Evaluate polynomial background over x_data."""
-        if not self._rows:
+        if not self._items:
             print(warning('No background points found. Setting background to zero.'))
             return np.zeros_like(x_data)
 
         u = (x_data - x_data.min()) / (x_data.max() - x_data.min()) * 2 - 1  # scale to [-1, 1]
-        coefs = [term.coef.value for term in self._rows]
+        coefs = [term.coef.value for term in self._items.values()]
         y_data = chebval(u, coefs)
         return y_data
 
@@ -162,7 +162,7 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         header = ["Order", "Coefficient"]
         table_data = []
 
-        for term in self._rows:
+        for term in self._items.values():
             order = term.order.value
             coef = term.coef.value
             table_data.append([order, coef])

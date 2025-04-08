@@ -1,11 +1,10 @@
-from easydiffraction.core.component import (StandardComponent,
-                                            IterableComponent)
+from easydiffraction.core.component import StandardComponent
 
 
 class Collection:
     """
     Base class for collections like SampleModels and Experiments.
-    Provides common methods for gathering and displaying parameters.
+    Provides common methods for gathering parameters.
     """
 
     def __init__(self):
@@ -28,7 +27,7 @@ class Collection:
                         param.cif_category_key = standard_component.cif_category_key
                         param.cif_entry_id = ""
                         params.append(param)
-                elif isinstance(component, IterableComponent):
+                elif isinstance(component, Collection):
                     iterable_component = component
                     for standard_component in iterable_component:
                         for param in standard_component.parameters():
@@ -54,3 +53,19 @@ class Collection:
             if param.free:
                 params.append(param)
         return params
+
+    def as_cif(self):
+        lines = []
+        if self._type == "category":
+            for idx, item in enumerate(self._items.values()):
+                params = item.as_dict()
+                category_key = item.cif_category_key
+                keys = [f'{category_key}.{param_key}' for param_key in params.keys()]
+                values = [f"{value}" for value in params.values()]
+                if idx == 0:
+                    header = "\n".join(keys)
+                    lines.append(f"loop_")
+                    lines.append(header)
+                line = ' '.join(values)
+                lines.append(line)
+        return "\n".join(lines)

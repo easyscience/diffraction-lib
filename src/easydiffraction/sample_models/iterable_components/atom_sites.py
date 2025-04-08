@@ -1,7 +1,7 @@
 from easydiffraction.core.parameter import (Parameter,
                                             Descriptor)
-from easydiffraction.core.component import (StandardComponent,
-                                            IterableComponent)
+from easydiffraction.core.component import StandardComponent
+from easydiffraction.core.collection import Collection
 
 
 class AtomSite(StandardComponent):
@@ -67,14 +67,13 @@ class AtomSite(StandardComponent):
         return self.label
 
 
-class AtomSites(IterableComponent):
+class AtomSites(Collection):
     """
     Collection of AtomSite instances.
-    Provides methods to add, show, and access atom sites.
     """
     @property
-    def cif_category_key(self):
-        return "_atom_site"
+    def _type(self):
+        return "category"  # datablock or category
 
     def add(self,
             label: str,
@@ -98,4 +97,4 @@ class AtomSites(IterableComponent):
                         occupancy,
                         b_iso,
                         adp_type)
-        self._rows.append(site)
+        self._items[site.id.value] = site

@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 
-from easydiffraction.core.component import (StandardComponent,
-                                            IterableComponent)
+from easydiffraction.core.component import StandardComponent
+from easydiffraction.core.collection import Collection
+
 
 class Datablock(ABC):
     """
@@ -17,6 +18,6 @@ class Datablock(ABC):
         for attr_name in dir(self):
             attr_obj = getattr(self, attr_name)
             if isinstance(attr_obj, (StandardComponent,
-                                     IterableComponent)):
+                                     Collection)):
                 attr_objs.append(attr_obj)
         return attr_objs

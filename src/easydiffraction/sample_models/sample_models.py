@@ -6,7 +6,6 @@ from easydiffraction.sample_models.iterable_components.atom_sites import AtomSit
 from easydiffraction.core.collection import Collection
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.crystallography import crystallography as ecr
-from easydiffraction.core.component import StandardComponent, IterableComponent
 from easydiffraction.core.datablock import Datablock
 
 

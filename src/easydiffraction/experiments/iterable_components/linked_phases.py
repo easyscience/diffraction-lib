@@ -1,7 +1,7 @@
 from easydiffraction.core.parameter import (Parameter,
                                             Descriptor)
-from easydiffraction.core.component import (StandardComponent,
-                                            IterableComponent)
+from easydiffraction.core.component import StandardComponent
+from easydiffraction.core.collection import Collection
 
 
 class LinkedPhase(StandardComponent):
@@ -23,12 +23,16 @@ class LinkedPhase(StandardComponent):
 
         self._locked = True  # Lock further attribute additions
 
+        # TODO: Add _id as in AtomSite
 
-class LinkedPhases(IterableComponent):
+class LinkedPhases(Collection):
+    """
+    Collection of LinkedPhase instances.
+    """
     @property
-    def cif_category_key(self):
-        return "_pd_phase_block"
+    def _type(self):
+        return "category"  # datablock or category
 
     def add(self, id: str, scale: float):
         phase = LinkedPhase(id, scale)
-        self._rows.append(phase)
+        self._items[phase.id.value] = phase
