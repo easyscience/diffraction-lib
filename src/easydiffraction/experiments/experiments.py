@@ -1,7 +1,7 @@
 import os.path
 
 from easydiffraction.utils.formatting import paragraph
-from easydiffraction.core.collection import Collection
+from easydiffraction.core.objects import Collection
 from easydiffraction.experiments.experiment import (
     BaseExperiment,
     ExperimentFactory

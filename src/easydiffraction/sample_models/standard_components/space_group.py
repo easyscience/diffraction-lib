@@ -1,5 +1,4 @@
-from easydiffraction.core.component import StandardComponent
-from easydiffraction.core.parameter import Descriptor
+from easydiffraction.core.objects import Descriptor, StandardComponent
 
 
 class SpaceGroup(StandardComponent):

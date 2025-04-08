@@ -1,5 +1,4 @@
-from easydiffraction.core.component import StandardComponent
-from easydiffraction.core.parameter import Parameter
+from easydiffraction.core.objects import (Parameter, StandardComponent)
 from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 
 

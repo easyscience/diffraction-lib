@@ -1,5 +1,5 @@
-from easydiffraction.core.component import StandardComponent
-from easydiffraction.core.parameter import Parameter
+from easydiffraction.core.objects import (Parameter,
+                                        StandardComponent)
 
 class Cell(StandardComponent):
     """

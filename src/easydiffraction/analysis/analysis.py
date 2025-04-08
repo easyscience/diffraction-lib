@@ -4,12 +4,11 @@ from tabulate import tabulate
 from easydiffraction.utils.formatting import paragraph, warning, info, error
 from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
 from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.core.parameter import Descriptor, Parameter
+from easydiffraction.core.objects import Descriptor, Parameter
 
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from .minimizers.minimizer_factory import MinimizerFactory
-from ..core.parameter import Descriptor
 
 
 class Analysis:

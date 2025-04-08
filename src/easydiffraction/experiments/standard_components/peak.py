@@ -1,6 +1,5 @@
-from easydiffraction.core.parameter import (Descriptor,
-                                            Parameter)
-from easydiffraction.core.component import StandardComponent
+from easydiffraction.core.objects import (Descriptor,
+                                            Parameter, StandardComponent)
 from easydiffraction.core.constants import (DEFAULT_BEAM_MODE,
                                             DEFAULT_PEAK_PROFILE_TYPE)
 

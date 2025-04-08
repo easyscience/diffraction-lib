@@ -1,7 +1,7 @@
-from easydiffraction.core.parameter import (Parameter,
-                                            Descriptor)
-from easydiffraction.core.component import StandardComponent
-from easydiffraction.core.collection import Collection
+from easydiffraction.core.objects import (Parameter,
+                                            Descriptor,
+                                          StandardComponent,
+                                          Collection)
 
 
 class LinkedPhase(StandardComponent):
