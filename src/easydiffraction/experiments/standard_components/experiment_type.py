@@ -1,5 +1,7 @@
-from easydiffraction.core.objects import (Descriptor,
-                                          Component)
+from easydiffraction.core.objects import (
+    Descriptor,
+    Component
+)
 
 
 class ExperimentType(Component):

@@ -1,4 +1,8 @@
-from sympy import symbols, sympify, simplify
+from sympy import (
+    symbols,
+    sympify,
+    simplify
+)
 
 from cryspy.A_functions_base.function_2_space_group import (
     get_crystal_system_by_it_number,

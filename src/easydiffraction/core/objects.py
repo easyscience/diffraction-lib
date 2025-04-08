@@ -1,10 +1,14 @@
 import random
 import string
-from abc import (ABC,
-                 abstractmethod)
+from abc import (
+    ABC,
+    abstractmethod
+)
 
-from easydiffraction.utils.formatting import (warning,
-                                              error)
+from easydiffraction.utils.formatting import (
+    warning,
+    error
+)
 
 
 class Descriptor:

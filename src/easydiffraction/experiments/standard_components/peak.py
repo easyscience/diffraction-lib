@@ -1,8 +1,11 @@
-from easydiffraction.core.objects import (Descriptor,
-                                          Parameter, Component)
-from easydiffraction.core.constants import (DEFAULT_BEAM_MODE,
-                                            DEFAULT_PEAK_PROFILE_TYPE)
-
+from easydiffraction.core.objects import (
+    Parameter,
+    Component
+)
+from easydiffraction.core.constants import (
+    DEFAULT_BEAM_MODE,
+    DEFAULT_PEAK_PROFILE_TYPE
+)
 
 # --- Mixins ---
 class ConstantWavelengthBroadeningMixin:

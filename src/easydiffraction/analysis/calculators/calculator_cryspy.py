@@ -1,6 +1,6 @@
 import copy
 import numpy as np
-from .calculator_base import CalculatorBase  # Assuming you have a base interface
+from .calculator_base import CalculatorBase
 from easydiffraction.utils.formatting import warning
 
 try:

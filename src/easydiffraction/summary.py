@@ -1,7 +1,10 @@
 from tabulate import tabulate
 from textwrap import wrap
 
-from easydiffraction.utils.formatting import paragraph, section
+from easydiffraction.utils.formatting import (
+    paragraph,
+    section
+)
 
 
 class Summary:

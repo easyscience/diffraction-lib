@@ -1,12 +1,12 @@
-from abc import ABC, abstractmethod
-
+from easydiffraction.crystallography import crystallography as ecr
+from easydiffraction.core.objects import (
+    Collection,
+    Datablock
+)
 from easydiffraction.sample_models.standard_components.space_group import SpaceGroup
 from easydiffraction.sample_models.standard_components.cell import Cell
 from easydiffraction.sample_models.iterable_components.atom_sites import AtomSites
-from easydiffraction.core.objects import (Collection,
-Datablock)
 from easydiffraction.utils.formatting import paragraph
-from easydiffraction.crystallography import crystallography as ecr
 
 
 class SampleModel(Datablock):

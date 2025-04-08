@@ -5,12 +5,16 @@ from abc import ABC, abstractmethod
 from numpy.polynomial.chebyshev import chebval
 from scipy.interpolate import interp1d
 
-from easydiffraction.utils.formatting import (paragraph,
-                                              warning)
-from easydiffraction.core.objects import (Parameter,
-                                          Descriptor,
-                                          Component,
-                                          Collection)
+from easydiffraction.utils.formatting import (
+    paragraph,
+    warning
+)
+from easydiffraction.core.objects import (
+    Parameter,
+    Descriptor,
+    Component,
+    Collection
+)
 from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
 
 

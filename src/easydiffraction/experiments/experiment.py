@@ -13,12 +13,16 @@ from easydiffraction.experiments.iterable_components.datastore import DatastoreF
 
 from easydiffraction.utils.formatting import paragraph, warning
 from easydiffraction.utils.chart_plotter import ChartPlotter
+
 from easydiffraction.core.objects import Datablock
-from easydiffraction.core.constants import (DEFAULT_SAMPLE_FORM,
-                                            DEFAULT_BEAM_MODE,
-                                            DEFAULT_RADIATION_PROBE,
-                                            DEFAULT_PEAK_PROFILE_TYPE,
-                                            DEFAULT_BACKGROUND_TYPE)
+
+from easydiffraction.core.constants import (
+    DEFAULT_SAMPLE_FORM,
+    DEFAULT_BEAM_MODE,
+    DEFAULT_RADIATION_PROBE,
+    DEFAULT_PEAK_PROFILE_TYPE,
+    DEFAULT_BACKGROUND_TYPE
+)
 
 
 class BaseExperiment(Datablock):

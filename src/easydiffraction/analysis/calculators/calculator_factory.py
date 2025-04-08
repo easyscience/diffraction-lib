@@ -1,6 +1,9 @@
 import tabulate
 
-from easydiffraction.utils.formatting import paragraph, error
+from easydiffraction.utils.formatting import (
+    paragraph,
+    error
+)
 from .calculator_crysfml import CrysfmlCalculator
 from .calculator_cryspy import CryspyCalculator
 from .calculator_pdffit import PdffitCalculator
