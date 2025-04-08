@@ -209,13 +209,24 @@ print(ed.section('Show data chart including a background'))
 project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28)
 
+# 1. All parameters include both
+#   * Descriptors, such as space group names (not subject to fitting), and
+#   * Fittable parameters, such as unit cell dimensions.
+# Fittable parameters are those that can be optimized during fitting.
+# Free parameters is a subset of fittable ones that are currently
+# set to be optimized.
+
+print(ed.section('Show all parameters'))
+project.analysis.show_all_params()
+
 print(ed.section('Show all fittable parameters'))
 project.analysis.show_fittable_params()
 
-# Refinable parameters are those that can be adjusted during fitting,
-# while free parameters are currently set to be adjusted.
 print(ed.section('Show only free parameters'))
 project.analysis.show_free_params()
+
+print(ed.section('Show how to access parameters in the code'))
+project.analysis.how_to_access_parameters(show_description=False)
 
 print(ed.section('Select specific parameters for fitting'))
 project.sample_models["pbso4"].cell.length_a.free = True

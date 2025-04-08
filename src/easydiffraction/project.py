@@ -2,6 +2,7 @@ import os
 import datetime
 import tempfile
 from textwrap import wrap
+from varname import varname
 
 from easydiffraction.utils.formatting import (
     paragraph,
@@ -133,6 +134,7 @@ class Project:
         self.analysis = Analysis(self)
         self.summary = Summary(self)
         self._saved = False
+        self._varname = varname()
 
     @property
     def name(self):

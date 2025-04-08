@@ -138,6 +138,53 @@ class Analysis:
         dataframe = self._get_params_as_dataframe(free_params)
         self._show_params(dataframe, column_headers=column_headers)
 
+    def how_to_access_parameters(self, show_description=False):
+        sample_models_params = self.project.sample_models.get_all_params()
+        experiments_params = self.project.experiments.get_all_params()
+        params = {'sample_models': sample_models_params,
+                  'experiments': experiments_params}
+
+        if not params:
+            print(warning(f"No parameters found."))
+            return
+
+        project_varname = self.project._varname
+
+        rows = []
+        for datablock_type, params in params.items():
+            for param in params:
+                if isinstance(param, (Descriptor, Parameter)):
+                    datablock_id = param.datablock_id
+                    category_key = param.category_key
+                    entry_id = param.collection_entry_id
+                    param_key = param.name
+                    description = param.description
+                    variable = f"{project_varname}.{datablock_type}['{datablock_id}'].{category_key}"
+                    if entry_id:
+                        variable += f"['{entry_id}']"
+                    variable += f".{param_key}"
+                    rows.append({'variable': variable,
+                                 'description': description})
+
+        dataframe = pd.DataFrame(rows)
+
+        column_headers = ['variable']
+        if show_description:
+            column_headers = ['variable', 'description']
+        dataframe = dataframe[column_headers]
+
+        indices = range(1, len(dataframe) + 1)  # Force starting from 1
+
+        print(paragraph("How to access parameters"))
+        print("You can access parameters using the following syntax. "
+              "Just copy and paste it from the table below:")
+
+        print(tabulate(dataframe,
+                       headers=column_headers,
+                       tablefmt="fancy_outline",
+                       showindex=indices))
+
+
     def show_current_calculator(self):
         print(paragraph("Current calculator"))
         print(self.current_calculator)

@@ -9,5 +9,6 @@ pandas
 tabulate
 asciichartpy
 colorama
+varname
 pytest
 pytest-xdist

@@ -305,6 +305,9 @@ def test_basic_usage_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     print(ed.section('Show only free parameters'))
     project.analysis.show_free_params()
 
+    print(ed.section('Show how to access parameters in the code'))
+    project.analysis.how_to_access_parameters(show_description=False)
+
     print(ed.section('Select specific parameters for fitting'))
     project.sample_models["pbso4"].cell.length_a.free = True
     project.sample_models["pbso4"].cell.length_b.free = True
