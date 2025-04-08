@@ -51,7 +51,7 @@ class Experiments(Collection):
     def _add_prebuilt_experiment(self, experiment):
         if not isinstance(experiment, BaseExperiment):
             raise TypeError("Expected an instance of BaseExperiment or its subclass.")
-        self._experiments[experiment.id] = experiment
+        self._experiments[experiment.name] = experiment
 
     def _add_from_cif_path(self, cif_path):
         print(f"Loading Experiment from CIF path...")
@@ -80,7 +80,7 @@ class Experiments(Collection):
             radiation_probe=radiation_probe
         )
         experiment._load_ascii_data_to_experiment(data_path)
-        self._experiments[experiment.id] = experiment
+        self._experiments[experiment.name] = experiment
 
     def remove(self, experiment_id):
         if experiment_id in self._experiments:

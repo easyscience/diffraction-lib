@@ -10,8 +10,8 @@ from easydiffraction import (
 def test_fit_neutron_pd_cwl_hs() -> None:
     # Create and configure sample model
     model = SampleModel("hs")
-    model.space_group.name = "R -3 m"
-    model.space_group.setting = "h"
+    model.space_group.name_h_m = "R -3 m"
+    model.space_group.it_coordinate_system_code = "h"
     model.cell.length_a = 6.9
     model.cell.length_c = 14.1
     model.atom_sites.add("Zn", "Zn", 0, 0, 0.5, wyckoff_letter="b", b_iso=0.5)
@@ -119,7 +119,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
 
     # Start fitting
     project.analysis.fit()
-    project.analysis.show_refinable_params()
+    project.analysis.show_fittable_params()
     project.analysis.show_meas_vs_calc_chart('hrpt', 48, 51, show_residual=True)
 
     # Compare fit quality

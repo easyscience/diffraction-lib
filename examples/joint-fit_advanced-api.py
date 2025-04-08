@@ -15,7 +15,7 @@ from easydiffraction import (
 # Create and configure sample model
 
 model = SampleModel("pbso4")
-model.space_group.name.value = "P n m a"
+model.space_group.name_h_m.value = "P n m a"
 model.cell.length_a.value = 8.5
 model.cell.length_b.value = 5.35
 model.cell.length_c.value = 6.9

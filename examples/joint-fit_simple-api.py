@@ -51,7 +51,7 @@ project.sample_models.add(model_id="pbso4")
 project.sample_models.show_ids()
 
 # Modify sample model parameters via project object
-project.sample_models["pbso4"].space_group.name.value = "P n m a"
+project.sample_models["pbso4"].space_group.name_h_m.value = "P n m a"
 
 project.sample_models["pbso4"].cell.length_a.value = 8.5
 project.sample_models["pbso4"].cell.length_b.value = 5.35
@@ -209,7 +209,7 @@ project.analysis.show_meas_vs_calc_chart(expt_id="npd", x_min=62, x_max=66)
 project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28)
 
 print(ed.section('Show all refinable parameters'))
-project.analysis.show_refinable_params()
+project.analysis.show_fittable_params()
 
 # Refinable parameters are those that can be adjusted during fitting,
 # while free parameters are currently set to be adjusted.

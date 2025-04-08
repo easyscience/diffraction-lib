@@ -9,23 +9,27 @@ from easydiffraction.utils.formatting import (paragraph,
                                               warning)
 from easydiffraction.core.parameter import (Parameter,
                                             Descriptor)
-from easydiffraction.core.component import (IterableComponent,
-                                            IterableComponentRow)
+from easydiffraction.core.component import (StandardComponent,
+                                            IterableComponent)
 from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
 
 
-class Point(IterableComponentRow):
+class Point(StandardComponent):
+    @property
+    def cif_category_key(self):
+        return "_pd_background"
+
     def __init__(self, x: float, y: float):
         super().__init__()
 
         self.x = Descriptor(
             value=x,
-            cif_name='line_segment_X',
+            cif_param_name='line_segment_X',
             description="X-coordinates used to create many straight-line segments representing the background in a calculated diffractogram."
         )
         self.y = Parameter(
             value=y,
-            cif_name='line_segment_intensity',
+            cif_param_name='line_segment_intensity',
             description="Intensity used to create many straight-line segments representing the background in a calculated diffractogram"
         )
 
@@ -35,21 +39,25 @@ class Point(IterableComponentRow):
     # TODO: Switch to str type for id?
     @property
     def id(self):
-        return Descriptor(f"{self.x.value}", cif_name="blablabla")
+        return Descriptor(f"{self.x.value}", cif_param_name="blablabla")
 
 
-class PolynomialTerm(IterableComponentRow):
+class PolynomialTerm(StandardComponent):
+    @property
+    def cif_category_key(self):
+        return "_pd_background"
+
     def __init__(self, order, coef):
         super().__init__()
 
         self.order = Descriptor(
             value=order,
-            cif_name='Chebyshev_order',
+            cif_param_name='Chebyshev_order',
             description="The value of an order used in a Chebyshev polynomial equation representing the background in a calculated diffractogram"
         )
         self.coef = Parameter(
             value=coef,
-            cif_name='Chebyshev_coef',
+            cif_param_name='Chebyshev_coef',
             description="The value of a coefficient used in a Chebyshev polynomial equation representing the background in a calculated diffractogram"
         )
 
@@ -59,12 +67,12 @@ class PolynomialTerm(IterableComponentRow):
     # TODO: Switch to str type for id?
     @property
     def id(self):
-        return Descriptor(f"{self.order.value}", cif_name="blablabla")
+        return Descriptor(f"{self.order.value}", cif_param_name="blablabla")
 
 
 class BackgroundBase(IterableComponent):
     @property
-    def cif_category_name(self):
+    def cif_category_key(self):
         return "_pd_background"
 
     @abstractmethod

@@ -7,18 +7,18 @@ class SpaceGroup(StandardComponent):
     Represents the space group of a sample model.
     """
     @property
-    def cif_category_name(self):
+    def cif_category_key(self):
         return "_space_group"
 
-    def __init__(self, name="P1", setting=None):
+    def __init__(self, name_h_m="P 1", it_coordinate_system_code=None):
         super().__init__()
 
-        self.name = Descriptor(
-            value=name,
-            cif_name="name_H-M_alt"
+        self.name_h_m = Descriptor(
+            value=name_h_m,
+            cif_param_name="name_H-M_alt"
         )
-        self.setting = Descriptor(
-            value=setting,
-            cif_name="IT_coordinate_system_code"
+        self.it_coordinate_system_code = Descriptor(
+            value=it_coordinate_system_code,
+            cif_param_name="IT_coordinate_system_code"
         )
 

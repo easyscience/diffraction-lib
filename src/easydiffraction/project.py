@@ -176,7 +176,7 @@ class Project:
         sm_dir = os.path.join(self.info.path, "sample_models")
         os.makedirs(sm_dir, exist_ok=True)
         for model in self.sample_models:
-            file_name = f"{model.model_id}.cif"
+            file_name = f"{model.name}.cif"
             file_path = os.path.join(sm_dir, file_name)
             with open(file_path, "w") as f:
                 f.write(model.as_cif())
@@ -186,7 +186,7 @@ class Project:
         expt_dir = os.path.join(self.info.path, "experiments")
         os.makedirs(expt_dir, exist_ok=True)
         for experiment in self.experiments:
-            file_name = f"{experiment.id}.cif"
+            file_name = f"{experiment.name}.cif"
             file_path = os.path.join(expt_dir, file_name)
             with open(file_path, "w") as f:
                 f.write(experiment.as_cif())

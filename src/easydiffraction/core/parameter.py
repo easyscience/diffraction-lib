@@ -8,11 +8,21 @@ class Descriptor:
     Base class for descriptors (non-refinable attributes).
     """
 
+    # !!!!!
+    # datablock_id
+    # category_key
+    # entry_id
+    # param_key
+    # !!!!!
+    #
+
     def __init__(self,
                  value,
-                 cif_name,
+                 cif_param_name,
                  pretty_name=None,
-                 block_name=None,
+                 cif_datablock_id=None,
+                 cif_category_key=None,
+                 cif_entry_id=None,
                  units=None,
                  description=None,
                  editable=True):
@@ -20,10 +30,11 @@ class Descriptor:
         self._description = description
         self._editable = editable
         self._pretty_name = pretty_name,
-        self.cif_name = cif_name
+        self.cif_param_name = cif_param_name
+        self.cif_category_key = cif_category_key
+        self.cif_datablock_id = cif_datablock_id
+        self.cif_entry_id = cif_entry_id
         self.units = units
-        self.is_parameter = False  # Differentiates from Parameter class
-        self.block_name = block_name
         self.uid = self._generate_unique_id()
 
     def _generate_unique_id(self):
@@ -41,20 +52,20 @@ class Descriptor:
         # models and experiments with the new values.
         # TODO: It is used in collection.py to generate a unique id for
         #  the parameter. Check if it is needed here. When called from
-        #  __init__, block_name is not set yet?
+        #  __init__, cif_datablock_id is not set yet?
         # TODO: Check if it works for the iterable components, such as
         #  atoms_sites, background, etc.
         # TODO: Check if we need to replace "-" with "_"
         # TODO: Check if we need make it lowercase
-        raw_name = self.cif_name
+        raw_name = self.cif_param_name
         sanitized = (
             raw_name.replace("[", "_")
                     .replace("]", "")
                     .replace(".", "_")
                     .replace("'", "")
         )
-        if self.block_name:
-            sanitized = f"{self.block_name}_{sanitized}"
+        if self.cif_datablock_id:
+            sanitized = f"{self.cif_datablock_id}_{sanitized}"
         return sanitized
 
     @property
@@ -66,7 +77,7 @@ class Descriptor:
         if self._editable:
             self._value = new_value
         else:
-            print(warning(f"The parameter '{self.cif_name}' it is calculated automatically and cannot be changed manually."))
+            print(warning(f"The parameter '{self.cif_param_name}' it is calculated automatically and cannot be changed manually."))
 
     @property
     def description(self):
@@ -83,23 +94,31 @@ class Parameter(Descriptor):
 
     def __init__(self,
                  value,
-                 cif_name,
+                 cif_param_name,
                  pretty_name=None,
-                 block_name=None,
+                 cif_datablock_id=None,
+                 cif_category_key=None,
+                 cif_entry_id=None,
+                 units=None,
                  description=None,
+                 editable=True,
                  uncertainty=0.0,
                  free=False,
-                 units=None,
+                 constrained=False,
                  min_value=None,
-                 max_value=None):
+                 max_value=None,
+                 ):
         super().__init__(value,
-                         cif_name,
+                         cif_param_name,
                          pretty_name,
-                         block_name,
+                         cif_datablock_id,
+                         cif_category_key,
+                         cif_entry_id,
                          units,
-                         description)
+                         description,
+                         editable)
         self.uncertainty = uncertainty
         self.free = free
-        self.is_parameter = True  # Flag to detect parameters
+        self.constrained = constrained
         self.min = min_value
         self.max = max_value

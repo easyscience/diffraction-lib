@@ -20,14 +20,16 @@ from easydiffraction.core.constants import (DEFAULT_SAMPLE_FORM,
                                             DEFAULT_PEAK_PROFILE_TYPE,
                                             DEFAULT_BACKGROUND_TYPE)
 
+from easydiffraction.core.component import StandardComponent, IterableComponent
+from easydiffraction.core.datablock import Datablock
 
-class BaseExperiment(ABC):
+class BaseExperiment(Datablock):
     """Base class for all experiments with only core attributes."""
 
     def __init__(self,
-                 id: str,
+                 name: str,
                  type: ExperimentType):
-        self.id = id
+        self.name = name
         self.type = type
         self.instrument = InstrumentFactory.create(beam_mode=self.type.beam_mode.value)
         self.datastore = DatastoreFactory.create(sample_form=self.type.sample_form.value,
@@ -37,7 +39,7 @@ class BaseExperiment(ABC):
         """
         Generate CIF content by collecting values from all components.
         """
-        lines = [f"data_{self.id}"]
+        lines = [f"data_{self.name}"]
 
         # Experiment type
         if hasattr(self, "type"):
@@ -107,7 +109,7 @@ class BaseExperiment(ABC):
         top = f"╒{'═' * (max_width + 2)}╕"
         bottom = f"╘{'═' * (max_width + 2)}╛"
 
-        print(paragraph(f"Experiment 🔬 '{self.id}' as cif"))
+        print(paragraph(f"Experiment 🔬 '{self.name}' as cif"))
         print(top)
         print("\n".join(padded_lines))
         print(bottom)
@@ -123,9 +125,9 @@ class PowderExperiment(BaseExperiment):
     """Powder experiment class with specific attributes."""
 
     def __init__(self,
-                 id: str,
+                 name: str,
                  type: ExperimentType):
-        super().__init__(id=id,
+        super().__init__(name=name,
                          type=type)
         self._peak_profile_type = DEFAULT_PEAK_PROFILE_TYPE
         self._background_type = DEFAULT_BACKGROUND_TYPE
@@ -162,13 +164,13 @@ class PowderExperiment(BaseExperiment):
         self.datastore.pattern.meas_su = sy
 
         print(paragraph("Data loaded successfully"))
-        print(f"Experiment 🔬 '{self.id}'. Number of data points: {len(x)}")
+        print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
 
     def show_meas_chart(self, x_min=None, x_max=None):
         pattern = self.datastore.pattern
 
         if pattern.meas is None or pattern.x is None:
-            print(f"No measured data available for experiment {self.id}")
+            print(f"No measured data available for experiment {self.name}")
             return
 
         plotter = ChartPlotter()
@@ -177,7 +179,7 @@ class PowderExperiment(BaseExperiment):
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=paragraph(f"Measured data for experiment 🔬 '{self.id}'"),
+            title=paragraph(f"Measured data for experiment 🔬 '{self.name}'"),
             labels=['meas']
         )
 
@@ -196,7 +198,7 @@ class PowderExperiment(BaseExperiment):
         self.peak = PeakFactory.create(beam_mode=self.type.beam_mode.value,
                                        profile_type=new_type)
         self._peak_profile_type = new_type
-        print(paragraph(f"Peak profile type for experiment '{self.id}' changed to"))
+        print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
         print(new_type)
 
     def show_supported_peak_profile_types(self):
@@ -235,7 +237,7 @@ class PowderExperiment(BaseExperiment):
             return
         self.background = BackgroundFactory.create(new_type)
         self._background_type = new_type
-        print(paragraph(f"Background type for experiment '{self.id}' changed to"))
+        print(paragraph(f"Background type for experiment '{self.name}' changed to"))
         print(new_type)
 
     def show_supported_background_types(self):
@@ -264,9 +266,9 @@ class SingleCrystalExperiment(BaseExperiment):
     """Powder experiment class with specific attributes."""
 
     def __init__(self,
-                 id: str,
+                 name: str,
                  type: ExperimentType):
-        super().__init__(id=id,
+        super().__init__(name=name,
                          type=type)
         self.linked_crystal = None
 
@@ -283,7 +285,7 @@ class ExperimentFactory:
 
     @classmethod
     def create(cls,
-               id: str,
+               name: str,
                sample_form: DEFAULT_SAMPLE_FORM,
                beam_mode: DEFAULT_BEAM_MODE,
                radiation_probe: DEFAULT_RADIATION_PROBE) -> BaseExperiment:
@@ -292,7 +294,7 @@ class ExperimentFactory:
                                    beam_mode=beam_mode,
                                    radiation_probe=radiation_probe)
         expt_class = cls._supported[sample_form]
-        instance = expt_class(id=id, type=expt_type)
+        instance = expt_class(name=name, type=expt_type)
         return instance
 
 
@@ -300,13 +302,13 @@ class ExperimentFactory:
 # TODO: Refactor based on the implementation of method add() in class Experiments
 # TODO: Think of where to keep default values for sample_form, beam_mode, radiation_probe, as they are also defined in the
 #  class ExperimentType
-def Experiment(id: str,
+def Experiment(name: str,
                sample_form: str = DEFAULT_SAMPLE_FORM,
                beam_mode: str = DEFAULT_BEAM_MODE,
                radiation_probe: str = DEFAULT_RADIATION_PROBE,
                data_path: str = None):
     experiment = ExperimentFactory.create(
-        id=id,
+        name=name,
         sample_form=sample_form,
         beam_mode=beam_mode,
         radiation_probe=radiation_probe

@@ -21,11 +21,15 @@ class StandardComponent(ComponentBase):
     """
     @property
     @abstractmethod
-    def cif_category_name(self):
+    def cif_category_key(self):
         """
         Must be implemented in subclasses to return the CIF category name.
         """
         pass
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._ordered_attrs = []
 
     def __getattr__(self, name):
         """
@@ -44,15 +48,32 @@ class StandardComponent(ComponentBase):
         """
         if hasattr(self, "_locked") and self._locked:
             if not hasattr(self, name):
-                #raise AttributeError(f"Cannot add new attribute '{name}' to locked class '{self.__class__.__name__}'")
                 print(error(f"Cannot add new parameter '{name}'"))
                 return
 
+        # Try to get the attribute from the instance's dictionary
         attr = self.__dict__.get(name, None)
-        if isinstance(attr, (Descriptor, Parameter)):
-            attr.value = value
-        else:
+
+        # If the attribute is not set, set it
+        if attr is None:
+            # If the attribute is a Parameter or Descriptor, add its
+            # name to the list of ordered attributes
+            if isinstance(value, (Descriptor, Parameter)):
+                self._ordered_attrs.append(name)
             super().__setattr__(name, value)
+        # If the attribute is set and is a Parameter or Descriptor,
+        # update its value
+        else:
+            if isinstance(attr, (Descriptor, Parameter)):
+                attr.value = value
+
+    def parameters(self):
+        attr_objs = []
+        for attr_name in dir(self):
+            attr_obj = getattr(self, attr_name)
+            if isinstance(attr_obj, (Descriptor, Parameter)):
+                attr_objs.append(attr_obj)
+        return attr_objs
 
     def as_dict(self):
         d = {}
@@ -65,15 +86,15 @@ class StandardComponent(ComponentBase):
             if not isinstance(attr_obj, (Descriptor, Parameter)):
                 continue
 
-            key = attr_obj.cif_name
+            key = attr_obj.cif_param_name
             value = attr_obj.value
             d[key] = value
 
         return d
 
     def as_cif(self):
-        if not self.cif_category_name:
-            raise ValueError("cif_category_name must be defined in the derived class.")
+        if not self.cif_category_key:
+            raise ValueError("cif_category_key must be defined in the derived class.")
 
         lines = []
 
@@ -85,7 +106,7 @@ class StandardComponent(ComponentBase):
             if not isinstance(attr_obj, (Descriptor, Parameter)):
                 continue
 
-            key = f"{self.cif_category_name}.{attr_obj.cif_name}"
+            key = f"{self.cif_category_key}.{attr_obj.cif_param_name}"
             value = attr_obj.value
 
             if value is None:
@@ -100,41 +121,20 @@ class StandardComponent(ComponentBase):
         return "\n".join(lines)
 
 
-class IterableComponentRow(ABC):
-    # TODO: Implement this in all derived classes
-    #@property
-    #@abstractmethod
-    #def id(self):
-    #    """
-    #    Must be implemented in subclasses to return the ID of the row.
-    #    ID is used to access the row in the iterable component.
-    #    """
-    #    pass
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._ordered_attrs = []
-
-    def __setattr__(self, key, value):
-        if isinstance(value, (Descriptor, Parameter)):
-            if not hasattr(self, "_ordered_attrs"):
-                super().__setattr__("_ordered_attrs", [])
-            self._ordered_attrs.append(key)
-        super().__setattr__(key, value)
-
-
 class IterableComponent(ComponentBase):
     """
     Base class for experiment and sample model components of the iterable type.
     Provides common functionality for CIF export and parameter handling.
     """
     @staticmethod
-    def _get_params(row: IterableComponentRow):
+    #def _get_params(row: IterableComponentRow):
+    def _get_params(row):
         attrs = [getattr(row, name) for name in row._ordered_attrs]
         return attrs
 
     @property
     @abstractmethod
-    def cif_category_name(self):
+    def cif_category_key(self):
         """
         Must be implemented in subclasses to return the CIF category name.
         """
@@ -166,8 +166,8 @@ class IterableComponent(ComponentBase):
         raise KeyError(f"No row item with id '{key}' found.")
 
     def as_cif(self) -> str:
-        if not self.cif_category_name:
-            raise ValueError("cif_category_name must be defined in the derived class.")
+        if not self.cif_category_key:
+            raise ValueError("cif_category_key must be defined in the derived class.")
 
         # Start with the loop line
         lines = ["loop_"]
@@ -176,7 +176,7 @@ class IterableComponent(ComponentBase):
         first_row = self._rows[0]
         params = IterableComponent._get_params(first_row)
         for param in params:
-            lines.append(f"{self.cif_category_name}.{param.cif_name}")
+            lines.append(f"{self.cif_category_key}.{param.cif_param_name}")
 
         # Add the data lines
         for item in self._rows:

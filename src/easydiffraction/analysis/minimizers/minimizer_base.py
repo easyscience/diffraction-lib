@@ -1,5 +1,7 @@
+import pandas as pd
 from abc import ABC, abstractmethod
-import tabulate
+from tabulate import tabulate
+
 from ..reliability_factors import (
     calculate_r_factor,
     calculate_r_factor_squared,
@@ -7,6 +9,7 @@ from ..reliability_factors import (
     calculate_rb_factor
 )
 from .fitting_progress_tracker import FittingProgressTracker
+
 from easydiffraction.utils.formatting import paragraph
 
 class FitResults:
@@ -54,15 +57,25 @@ class FitResults:
             print(f"📏 Bragg R-factor (BR): {br:.2f}%")
         print(f"📈 Refined parameters:")
 
-        table_data = []
-        headers = ["cif block", "cif parameter", "start", "fitted", "error", "units", "change [%]"]
+        headers = ["datablock",
+                   "category",
+                   "entry",
+                   "parameter",
+                   "start",
+                   "fitted",
+                   "uncertainty",
+                   "units",
+                   "change [%]"]
 
+        rows = []
         for param in self.parameters:
-            block_name = getattr(param, 'block_name', 'N/A')
-            cif_name = getattr(param, 'cif_name', 'N/A')
-            start = f"{getattr(param, 'start_value', 'N/A'):.5f}" if param.start_value is not None else "N/A"
-            fitted = f"{param.value:.5f}" if param.value is not None else "N/A"
-            error = f"{param.error:.5f}" if param.error is not None else "N/A"
+            cif_datablock_id = getattr(param, 'cif_datablock_id', 'N/A')
+            cif_category_key = getattr(param, 'cif_category_key', 'N/A')
+            cif_entry_id = getattr(param, 'cif_entry_id', 'N/A')
+            cif_param_name = getattr(param, 'cif_param_name', 'N/A')
+            start = f"{getattr(param, 'start_value', 'N/A'):.4f}" if param.start_value is not None else "N/A"
+            fitted = f"{param.value:.4f}" if param.value is not None else "N/A"
+            uncertainty = f"{param.uncertainty:.4f}" if param.uncertainty is not None else "N/A"
             units = getattr(param, 'units', 'N/A')
 
             if param.start_value and param.value:
@@ -72,14 +85,23 @@ class FitResults:
             else:
                 relative_change = "N/A"
 
-            table_data.append([block_name, cif_name, start, fitted, error, units, relative_change])
+            rows.append([cif_datablock_id,
+                         cif_category_key,
+                         cif_entry_id,
+                         cif_param_name,
+                         start,
+                         fitted,
+                         uncertainty,
+                         units,
+                         relative_change])
 
-        print(tabulate.tabulate(table_data,
-                                headers=headers,
-                                tablefmt="fancy_outline",
-                                numalign="center",
-                                stralign="center",
-                                showindex=False))
+        dataframe = pd.DataFrame(rows)
+        indices = range(1, len(dataframe) + 1)  # Force starting from 1
+
+        print(tabulate(dataframe,
+                       headers=headers,
+                       tablefmt="fancy_outline",
+                       showindex=indices))
 
 
 class MinimizerBase(ABC):

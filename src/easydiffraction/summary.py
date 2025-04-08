@@ -45,10 +45,10 @@ class Summary:
         print(section("Crystallographic data"))
         for model in self.project.sample_models._models.values():
             print(paragraph("Phase datablock"))
-            print(f'🧩 {model.model_id}')
+            print(f'🧩 {model.name}')
 
             print(paragraph("Space group"))
-            print(model.space_group.name.value)
+            print(model.space_group.name_h_m.value)
 
             print(paragraph("Cell parameters"))
             cell_data = [[k.replace('length_', '').replace('angle_', ''), f"{v:.4f}"] for k, v in model.cell.as_dict().items()]

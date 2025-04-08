@@ -1,13 +1,15 @@
 import pandas as pd
 from tabulate import tabulate
 
-from easydiffraction.utils.formatting import paragraph, info, error
+from easydiffraction.utils.formatting import paragraph, warning, info, error
 from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
 from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.core.parameter import Descriptor, Parameter
 
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from .minimizers.minimizer_factory import MinimizerFactory
+from ..core.parameter import Descriptor
 
 
 class Analysis:
@@ -20,54 +22,122 @@ class Analysis:
         self._fit_mode = 'single'
         self.fitter = DiffractionMinimizer('lmfit (leastsq)')
 
-    def show_refinable_params(self):
-        self.project.sample_models.show_all_parameters_table()
-        self.project.experiments.show_all_parameters_table()
+    def _get_params_as_dataframe(self, params):
+        """
+        Convert a list of parameters to a DataFrame.
+        """
+        rows = []
+        for param in params:
+            common_attrs = {}
+            if isinstance(param, (Descriptor, Parameter)):
+                common_attrs = {
+                    'datablock': param.cif_datablock_id,
+                    'category': param.cif_category_key,
+                    'entry': param.cif_entry_id,
+                    'parameter': param.cif_param_name,
+                    'value': param.value,
+                    'units': param.units,
+                    'fittable': False
+                }
+            param_attrs = {}
+            if isinstance(param, Parameter):
+                param_attrs = {
+                    'fittable': True,
+                    'free': param.free,
+                    'min': param.min,
+                    'max': param.max,
+                    'uncertainty': f"{param.uncertainty:.4f}" if param.uncertainty else "",
+                    'value': f"{param.value:.4f}",
+                    'units': param.units,
+                }
+            row = common_attrs | param_attrs
+            rows.append(row)
+
+        dataframe = pd.DataFrame(rows)
+
+        return dataframe
+
+    def _show_params(self, dataframe, column_headers):
+        """:
+        Display parameters in a tabular format.
+        """
+        dataframe = dataframe[column_headers]
+        indices = range(1, len(dataframe) + 1)  # Force starting from 1
+
+        print(tabulate(dataframe,
+                       headers=column_headers,
+                       tablefmt="fancy_outline",
+                       showindex=indices))
+
+    def show_all_params(self):
+        sample_models_params = self.project.sample_models.get_all_params()
+        experiments_params = self.project.experiments.get_all_params()
+
+        if not sample_models_params and not experiments_params:
+            print(warning(f"No parameters found."))
+            return
+
+        column_headers = ['datablock',
+                          'category',
+                          'entry',
+                          'parameter',
+                          'fittable']
+
+        print(paragraph("All parameters for all sample models (🧩 data blocks)"))
+        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
+        self._show_params(sample_models_dataframe, column_headers=column_headers)
+
+        print(paragraph("All parameters for all experiments (🔬 data blocks)"))
+        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
+        self._show_params(experiments_dataframe, column_headers=column_headers)
+
+    def show_fittable_params(self):
+        sample_models_params = self.project.sample_models.get_fittable_params()
+        experiments_params = self.project.experiments.get_fittable_params()
+
+        if not sample_models_params and not experiments_params:
+            print(warning(f"No fittable parameters found."))
+            return
+
+        column_headers = ['datablock',
+                          'category',
+                          'entry',
+                          'parameter',
+                          'value',
+                          'uncertainty',
+                          'units',
+                          'free']
+
+        print(paragraph("Fittable parameters for all sample models (🧩 data blocks)"))
+        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
+        self._show_params(sample_models_dataframe, column_headers=column_headers)
+
+        print(paragraph("Fittable parameters for all experiments (🔬 data blocks)"))
+        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
+        self._show_params(experiments_dataframe, column_headers=column_headers)
 
     def show_free_params(self):
-        """
-        Displays only the parameters that are free to be fitted.
-        """
-        free_params = self.project.sample_models.get_free_params() + \
-                      self.project.experiments.get_free_params()
-
-        print(paragraph("Free Parameters"))
+        sample_models_params = self.project.sample_models.get_free_params()
+        experiments_params = self.project.experiments.get_free_params()
+        free_params = sample_models_params + experiments_params
 
         if not free_params:
-            print("No free parameters found.")
+            print(warning(f"No free parameters found."))
             return
 
-        # Convert a list of parameters to custom dictionaries
-        params = [
-            {
-                'cif block': param.block_name,
-                'cif parameter': param.cif_name,
-                'value': param.value,
-                'error': '' if getattr(param, 'uncertainty', 0.0) == 0.0 else param.uncertainty,
-                'units': param.units,
-            }
-            for param in free_params
-        ]
+        column_headers = ['datablock',
+                          'category',
+                          'entry',
+                          'parameter',
+                          'value',
+                          'uncertainty',
+                          'min',
+                          'max',
+                          'units']
 
-        df = pd.DataFrame(params)
-
-        # Ensure columns exist
-        expected_cols = ["cif block", "cif parameter", "value", "error", "units"]
-        valid_cols = [col for col in expected_cols if col in df.columns]
-
-        if not valid_cols:
-            print("No valid columns found in free parameters DataFrame.")
-            return
-
-        df = df[valid_cols]
-
-        try:
-            #print(tabulate(df, headers="keys", tablefmt="fancy_outline", showindex=False))
-            print(tabulate(df, headers="keys", tablefmt="fancy_outline"))
-        except ImportError:
-            print(df.to_string(index=False))
-
-        return free_params
+        print(paragraph("Free parameters for both sample models (🧩 data blocks) and experiments (🔬 data blocks)"))
+        dataframe = self._get_params_as_dataframe(free_params)
+        self._show_params(dataframe, column_headers=column_headers)
 
     def show_current_calculator(self):
         print(paragraph("Current calculator"))

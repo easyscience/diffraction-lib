@@ -18,19 +18,25 @@ class DiffractionMinimizer:
         """
         Run the fitting process.
         """
-        parameters = self._collect_free_parameters(sample_models, experiments)
+        params = sample_models.get_free_params() + experiments.get_free_params()
 
-        if not parameters:
+        if not params:
             print("⚠️ No parameters selected for fitting.")
             return None
 
-        for parameter in parameters:
-            parameter.start_value = parameter.value
+        for param in params:
+            param.start_value = param.value
 
-        objective_function = lambda engine_params: self._residual_function(engine_params, parameters, sample_models, experiments, calculator)
+        objective_function = lambda engine_params: self._residual_function(
+            engine_params,
+            params,
+            sample_models,
+            experiments,
+            calculator
+        )
 
         # Perform fitting
-        self.results = self.minimizer.fit(parameters, objective_function)
+        self.results = self.minimizer.fit(params, objective_function)
 
         # Post-fit processing
         self._process_fit_results(sample_models, experiments, calculator)

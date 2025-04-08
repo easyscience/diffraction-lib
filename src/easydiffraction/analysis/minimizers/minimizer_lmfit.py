@@ -48,7 +48,7 @@ class LmfitMinimizer(MinimizerBase):
             param_result = param_values.get(param.uid)
             if param_result is not None:
                 param.value = param_result.value
-                param.error = getattr(param_result, 'stderr', None)
+                param.uncertainty = getattr(param_result, 'stderr', None)
 
     def _check_success(self, raw_result):
         """

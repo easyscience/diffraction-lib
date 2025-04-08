@@ -10,7 +10,7 @@ from easydiffraction import (
 def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Create and configure sample model
     model = SampleModel("pbso4")
-    model.space_group.name.value = "P n m a"
+    model.space_group.name_h_m.value = "P n m a"
     model.cell.length_a.value = 8.47
     model.cell.length_b.value = 5.39
     model.cell.length_c.value = 6.95
@@ -23,7 +23,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Create and configure experiments
 
     # Experiment 1: Neutron powder diffraction
-    expt1 = Experiment(id="npd", radiation_probe="neutron", data_path="examples/data/d1a_pbso4.dat")
+    expt1 = Experiment("npd", radiation_probe="neutron", data_path="examples/data/d1a_pbso4.dat")
     expt1.instrument.setup_wavelength = 1.91
     expt1.instrument.calib_twotheta_offset = -0.1406
     expt1.peak.broad_gauss_u = 0.139
@@ -45,7 +45,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         expt1.background.add(x, y)
 
     # Experiment 2: X-ray powder diffraction
-    expt2 = Experiment(id="xrd", radiation_probe="xray", data_path="examples/data/lab_pbso4.dat")
+    expt2 = Experiment("xrd", radiation_probe="xray", data_path="examples/data/lab_pbso4.dat")
     expt2.instrument.setup_wavelength = 1.540567
     expt2.instrument.calib_twotheta_offset = -0.05181
     expt2.peak.broad_gauss_u = 0.304138

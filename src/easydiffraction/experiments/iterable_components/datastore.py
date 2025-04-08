@@ -73,7 +73,7 @@ class Datastore:
         self.pattern.meas = y
         self.pattern.meas_su = sy
 
-        print(f"Loaded {len(x)} points for experiment '{self.pattern.experiment.id}'.")
+        print(f"Loaded {len(x)} points for experiment '{self.pattern.experiment.name}'.")
 
     def show_measured_data(self):
         """Display measured data in console."""

@@ -10,10 +10,8 @@ from easydiffraction import (
 def test_single_fit_neutron_pd_cwl_lbco() -> None:
     # Create and configure sample model
     model = SampleModel("lbco")
-    model.space_group.name = "P m -3 m"
+    model.space_group.name_h_m = "P m -3 m"
     model.cell.length_a = 3.88
-    model.cell.length_b = 3.88
-    model.cell.length_c = 3.88
     model.atom_sites.add("La", "La", 0, 0, 0, occupancy=0.5, b_iso=0.1)
     model.atom_sites.add("Ba", "Ba", 0, 0, 0, occupancy=0.5, b_iso=0.1)
     model.atom_sites.add("Co", "Co", 0.5, 0.5, 0.5, b_iso=0.1)
@@ -103,8 +101,8 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
 def test_single_fit_neutron_pd_tof_si() -> None:
     # Create and configure sample model
     model = SampleModel("si")
-    model.space_group.name = "F d -3 m"
-    model.space_group.setting = 2
+    model.space_group.name_h_m = "F d -3 m"
+    model.space_group.it_coordinate_system_code = 2
     model.cell.length_a = 5.431
     model.cell.length_b = 5.431
     model.cell.length_c = 5.431
@@ -207,8 +205,8 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 def test_single_fit_neutron_pd_tof_ncaf() -> None:
     # Create and configure sample model
     model = SampleModel("ncaf")
-    model.space_group.name = "I 21 3"
-    model.space_group.setting = 1
+    model.space_group.name_h_m = "I 21 3"
+    model.space_group.it_coordinate_system_code = 1
     model.cell.length_a = 10.250256
     model.cell.length_b = 10.250256
     model.cell.length_c = 10.250256
@@ -313,6 +311,6 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
 
 
 if __name__ == '__main__':
-    #test_single_fit_neutron_pd_cwl_lbco()
+    test_single_fit_neutron_pd_cwl_lbco()
     #test_single_fit_neutron_pd_tof_si()
-    test_single_fit_neutron_pd_tof_ncaf()
+    #test_single_fit_neutron_pd_tof_ncaf()
