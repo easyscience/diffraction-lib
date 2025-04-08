@@ -25,39 +25,39 @@ class AtomSite(Component):
 
         self.label = Descriptor(
             value=label,
-            cif_param_name="label"
+            cif_name="label"
         )
         self.type_symbol = Descriptor(
             value=type_symbol,
-            cif_param_name="type_symbol"
+            cif_name="type_symbol"
         )
         self.adp_type = Descriptor(
             value=adp_type,
-            cif_param_name="ADP_type"
+            cif_name="ADP_type"
         )
         self.wyckoff_letter = Descriptor(
             value=wyckoff_letter,
-            cif_param_name="Wyckoff_letter"
+            cif_name="Wyckoff_letter"
         )
         self.fract_x = Parameter(
             value=fract_x,
-            cif_param_name="fract_x"
+            cif_name="fract_x"
         )
         self.fract_y = Parameter(
             value=fract_y,
-            cif_param_name="fract_y"
+            cif_name="fract_y"
         )
         self.fract_z = Parameter(
             value=fract_z,
-            cif_param_name="fract_z"
+            cif_name="fract_z"
         )
         self.occupancy = Parameter(
             value=occupancy,
-            cif_param_name="occupancy"
+            cif_name="occupancy"
         )
         self.b_iso = Parameter(
             value=b_iso,
-            cif_param_name="B_iso_or_equiv"
+            cif_name="B_iso_or_equiv"
         )
 
     @property

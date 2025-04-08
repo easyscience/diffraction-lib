@@ -14,11 +14,11 @@ class SpaceGroup(Component):
 
         self.name_h_m = Descriptor(
             value=name_h_m,
-            cif_param_name="name_H-M_alt"
+            cif_name="name_H-M_alt"
         )
         self.it_coordinate_system_code = Descriptor(
             value=it_coordinate_system_code,
-            cif_param_name="IT_coordinate_system_code"
+            cif_name="IT_coordinate_system_code"
         )
 
     @property

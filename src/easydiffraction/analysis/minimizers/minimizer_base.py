@@ -69,10 +69,10 @@ class FitResults:
 
         rows = []
         for param in self.parameters:
-            cif_datablock_id = getattr(param, 'cif_datablock_id', 'N/A')
+            parent_datablock_id = getattr(param, 'parent_datablock_id', 'N/A')
             cif_category_key = getattr(param, 'cif_category_key', 'N/A')
-            cif_entry_id = getattr(param, 'cif_entry_id', 'N/A')
-            cif_param_name = getattr(param, 'cif_param_name', 'N/A')
+            collection_entry_id = getattr(param, 'collection_entry_id', 'N/A')
+            cif_name = getattr(param, 'cif_name', 'N/A')
             start = f"{getattr(param, 'start_value', 'N/A'):.4f}" if param.start_value is not None else "N/A"
             fitted = f"{param.value:.4f}" if param.value is not None else "N/A"
             uncertainty = f"{param.uncertainty:.4f}" if param.uncertainty is not None else "N/A"
@@ -85,10 +85,10 @@ class FitResults:
             else:
                 relative_change = "N/A"
 
-            rows.append([cif_datablock_id,
+            rows.append([parent_datablock_id,
                          cif_category_key,
-                         cif_entry_id,
-                         cif_param_name,
+                         collection_entry_id,
+                         cif_name,
                          start,
                          fitted,
                          uncertainty,

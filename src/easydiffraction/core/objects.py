@@ -18,11 +18,13 @@ class Descriptor:
 
     def __init__(self,
                  value,
-                 cif_param_name,
+                 #name,
+                 cif_name,
                  pretty_name=None,
-                 cif_datablock_id=None,
+                 parent_datablock_id=None,
+                 #category_key=None,
                  cif_category_key=None,
-                 cif_entry_id=None,
+                 collection_entry_id=None,
                  units=None,
                  description=None,
                  editable=True):
@@ -30,10 +32,10 @@ class Descriptor:
         self._description = description
         self._editable = editable
         self._pretty_name = pretty_name,
-        self.cif_param_name = cif_param_name
+        self.cif_name = cif_name
         self.cif_category_key = cif_category_key
-        self.cif_datablock_id = cif_datablock_id
-        self.cif_entry_id = cif_entry_id
+        self.parent_datablock_id = parent_datablock_id
+        self.collection_entry_id = collection_entry_id
         self.units = units
         self.uid = self._generate_unique_id()
 
@@ -52,20 +54,20 @@ class Descriptor:
         # models and experiments with the new values.
         # TODO: It is used in collection.py to generate a unique id for
         #  the parameter. Check if it is needed here. When called from
-        #  __init__, cif_datablock_id is not set yet?
+        #  __init__, parent_datablock_id is not set yet?
         # TODO: Check if it works for the iterable components, such as
         #  atoms_sites, background, etc.
         # TODO: Check if we need to replace "-" with "_"
         # TODO: Check if we need make it lowercase
-        raw_name = self.cif_param_name
+        raw_name = self.cif_name
         sanitized = (
             raw_name.replace("[", "_")
                     .replace("]", "")
                     .replace(".", "_")
                     .replace("'", "")
         )
-        if self.cif_datablock_id:
-            sanitized = f"{self.cif_datablock_id}_{sanitized}"
+        if self.parent_datablock_id:
+            sanitized = f"{self.parent_datablock_id}_{sanitized}"
         return sanitized
 
     @property
@@ -77,7 +79,7 @@ class Descriptor:
         if self._editable:
             self._value = new_value
         else:
-            print(warning(f"The parameter '{self.cif_param_name}' it is calculated automatically and cannot be changed manually."))
+            print(warning(f"The parameter '{self.cif_name}' it is calculated automatically and cannot be changed manually."))
 
     @property
     def description(self):
@@ -94,11 +96,11 @@ class Parameter(Descriptor):
 
     def __init__(self,
                  value,
-                 cif_param_name,
+                 cif_name,
                  pretty_name=None,
-                 cif_datablock_id=None,
+                 parent_datablock_id=None,
                  cif_category_key=None,
-                 cif_entry_id=None,
+                 collection_entry_id=None,
                  units=None,
                  description=None,
                  editable=True,
@@ -109,11 +111,11 @@ class Parameter(Descriptor):
                  max_value=None,
                  ):
         super().__init__(value,
-                         cif_param_name,
+                         cif_name,
                          pretty_name,
-                         cif_datablock_id,
+                         parent_datablock_id,
                          cif_category_key,
-                         cif_entry_id,
+                         collection_entry_id,
                          units,
                          description,
                          editable)
@@ -213,7 +215,7 @@ class Component(ABC):
             if not isinstance(attr_obj, (Descriptor, Parameter)):
                 continue
 
-            key = attr_obj.cif_param_name
+            key = attr_obj.cif_name
             value = attr_obj.value
             d[key] = value
 
@@ -233,7 +235,7 @@ class Component(ABC):
             if not isinstance(attr_obj, (Descriptor, Parameter)):
                 continue
 
-            key = f"_{self.cif_category_key}.{attr_obj.cif_param_name}"
+            key = f"_{self.cif_category_key}.{attr_obj.cif_name}"
             value = attr_obj.value
 
             if value is None:
@@ -269,17 +271,17 @@ class Collection:
                 if isinstance(component, Component):
                     standard_component = component
                     for param in standard_component.parameters():
-                        param.cif_datablock_id = datablock.name
+                        param.parent_datablock_id = datablock.name
                         param.cif_category_key = standard_component.cif_category_key
-                        param.cif_entry_id = ""
+                        param.collection_entry_id = ""
                         params.append(param)
                 elif isinstance(component, Collection):
                     iterable_component = component
                     for standard_component in iterable_component:
                         for param in standard_component.parameters():
-                            param.cif_datablock_id = datablock.name
+                            param.parent_datablock_id = datablock.name
                             param.cif_category_key = standard_component.cif_category_key
-                            param.cif_entry_id = standard_component._entry_id
+                            param.collection_entry_id = standard_component._entry_id
                             params.append(param)
 
         return params

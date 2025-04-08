@@ -30,10 +30,10 @@ class Analysis:
             common_attrs = {}
             if isinstance(param, (Descriptor, Parameter)):
                 common_attrs = {
-                    'datablock': param.cif_datablock_id,
+                    'datablock': param.parent_datablock_id,
                     'category': param.cif_category_key,
-                    'entry': param.cif_entry_id,
-                    'parameter': param.cif_param_name,
+                    'entry': param.collection_entry_id,
+                    'parameter': param.cif_name,
                     'value': param.value,
                     'units': param.units,
                     'fittable': False

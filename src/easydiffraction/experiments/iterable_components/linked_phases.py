@@ -12,11 +12,11 @@ class LinkedPhase(Component):
 
         self.id = Descriptor(
             value=id,
-            cif_param_name="id"
+            cif_name="id"
         )
         self.scale = Parameter(
             value=scale,
-            cif_param_name="scale"
+            cif_name="scale"
         )
 
         self._locked = True  # Lock further attribute additions
