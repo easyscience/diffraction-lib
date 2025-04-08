@@ -8,6 +8,7 @@ from easydiffraction.experiments.experiments import Experiments
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from .minimizers.minimizer_factory import MinimizerFactory
+from .joint_fit_experiments import JointFitExperiments
 
 
 class Analysis:
@@ -119,9 +120,11 @@ class Analysis:
             raise ValueError("Fit mode must be either 'single' or 'joint'")
         self._fit_mode = strategy
         if strategy == 'joint':
-            if not hasattr(self, 'joint_fit'):
-                print("resetting joint_fit")
-                self.joint_fit = { id: 0.5 for id in self.project.experiments.ids }  # Pre-populate with all experiments 
+            if not hasattr(self, 'joint_fit_experiments'):
+                # Pre-populate all experiments with weight 0.5
+                self.joint_fit_experiments = JointFitExperiments()
+                for id in self.project.experiments.ids:
+                    self.joint_fit_experiments.add(id, weight=0.5)
         print(paragraph("Current fit mode changed to"))
         print(self._fit_mode)
 
@@ -220,7 +223,7 @@ class Analysis:
 
         if self.fit_mode == 'joint':
             print(paragraph(f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"))
-            self.fitter.fit(sample_models, experiments, calculator, weights=self.joint_fit)
+            self.fitter.fit(sample_models, experiments, calculator, weights=self.joint_fit_experiments)
         elif self.fit_mode == 'single':
             for expt_id in list(experiments._items.keys()):
                 print(paragraph(f"Using experiment 🔬 '{expt_id}' for '{self.fit_mode}' fitting"))

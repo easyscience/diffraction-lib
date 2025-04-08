@@ -86,8 +86,9 @@ project.analysis.current_minimizer = "lmfit (leastsq)"
 project.analysis.fit_mode = 'joint'
 # project.analysis.joint_fit.add("expt1", weight=0.4)  # Default weight could be 0.5
 # project.analysis.joint_fit.add("expt2", weight=0.6)  # Default weight could be 0.5
-project.analysis.joint_fit["npd1"] = 0.5  # Default weight could be 0.5
-project.analysis.joint_fit["npd2"] = 0.5  # Default weight could be 0.5
+print(project.analysis.joint_fit_experiments["npd1"])
+project.analysis.joint_fit_experiments["npd1"] = 0.5  # Default weight could be 0.5
+project.analysis.joint_fit_experiments["npd2"] = 0.5  # Default weight could be 0.5
 
 # Define free parameters
 model.cell.length_a.free = True

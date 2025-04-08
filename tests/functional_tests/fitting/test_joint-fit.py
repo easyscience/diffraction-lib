@@ -77,8 +77,8 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.current_calculator = "cryspy"
     project.analysis.current_minimizer = "lmfit (leastsq)"
     project.analysis.fit_mode = 'joint'
-    project.analysis.joint_fit['xrd'] = 0.3
-    project.analysis.joint_fit['npd'] = 0.7
+    project.analysis.joint_fit_experiments['xrd'] = 0.3
+    project.analysis.joint_fit_experiments['npd'] = 0.7
 
     # Define free parameters
     model.cell.length_a.free = True
@@ -97,8 +97,8 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     assert_almost_equal(chi_squared, 14.4, decimal=1)
 
     # Results should be different if weights are changed
-    project.analysis.joint_fit['xrd'] = 0.9
-    project.analysis.joint_fit['npd'] = 0.1
+    project.analysis.joint_fit_experiments['xrd'] = 0.9
+    project.analysis.joint_fit_experiments['npd'] = 0.1
 
     project.analysis.fit()
     assert not isclose(chi_squared, 14.4)
