@@ -57,7 +57,7 @@ class DiffractionMinimizer:
         """
         # Sync parameters back to objects
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
-        
+
         # Prepare weights for joint fitting
         N_experiments = len(experiments.ids)
         _weights = np.ones(N_experiments) if weights is None else np.array([weights.get(id, 1.0) for id in experiments.ids], dtype=np.float64)

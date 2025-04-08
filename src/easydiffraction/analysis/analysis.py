@@ -120,6 +120,7 @@ class Analysis:
         self._fit_mode = strategy
         if strategy == 'joint':
             if not hasattr(self, 'joint_fit'):
+                print("resetting joint_fit")
                 self.joint_fit = { id: 0.5 for id in self.project.experiments.ids }  # Pre-populate with all experiments 
         print(paragraph("Current fit mode changed to"))
         print(self._fit_mode)
