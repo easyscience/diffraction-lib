@@ -88,7 +88,11 @@ class Experiments(Collection):
 
     def show_names(self):
         print(paragraph("Defined experiments" + " 🔬"))
-        print(list(self._experiments.keys()))
+        print(self.ids)
+
+    @property
+    def ids(self):
+        return list(self._experiments.keys())
 
     def show_params(self):
         for exp in self._experiments.values():

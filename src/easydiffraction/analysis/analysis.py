@@ -22,6 +22,7 @@ from easydiffraction.core.singletons import (
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from .minimizers.minimizer_factory import MinimizerFactory
+from .joint_fit_experiments import JointFitExperiments
 
 
 class Analysis:
@@ -249,7 +250,13 @@ class Analysis:
         if strategy not in ['single', 'joint']:
             raise ValueError("Fit mode must be either 'single' or 'joint'")
         self._fit_mode = strategy
-        print(paragraph("Current ffit mode changed to"))
+        if strategy == 'joint':
+            if not hasattr(self, 'joint_fit_experiments'):
+                # Pre-populate all experiments with weight 0.5
+                self.joint_fit_experiments = JointFitExperiments()
+                for id in self.project.experiments.ids:
+                    self.joint_fit_experiments.add(id, weight=0.5)
+        print(paragraph("Current fit mode changed to"))
         print(self._fit_mode)
 
     def show_available_fit_modes(self):
@@ -392,13 +399,13 @@ class Analysis:
             return
 
         # Run the fitting process
-        experiment_names = list(experiments._items.keys())
+        experiment_ids = experiments.ids
 
         if self.fit_mode == 'joint':
-            print(paragraph(f"Using all experiments 🔬 {experiment_names} for '{self.fit_mode}' fitting"))
-            self.fitter.fit(sample_models, experiments, calculator)
+            print(paragraph(f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"))
+            self.fitter.fit(sample_models, experiments, calculator, weights=self.joint_fit_experiments)
         elif self.fit_mode == 'single':
-            for expt_name in list(experiments._items.keys()):
+            for expt_name in experiments.ids:
                 print(paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"))
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name

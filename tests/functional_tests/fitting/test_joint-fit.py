@@ -1,6 +1,5 @@
-import os
-import tempfile
 from numpy.testing import assert_almost_equal
+from numpy import isclose
 
 import easydiffraction as ed
 from easydiffraction import (
@@ -26,7 +25,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Create and configure experiments
 
     # Experiment 1: Neutron powder diffraction
-    expt1 = Experiment('npd', radiation_probe='neutron', data_path='examples/data/d1a_pbso4.dat')
+    expt1 = Experiment(name='npd', radiation_probe='neutron', data_path='examples/data/d1a_pbso4.dat')
     expt1.instrument.setup_wavelength = 1.91
     expt1.instrument.calib_twotheta_offset = -0.1406
     expt1.peak.broad_gauss_u = 0.139
@@ -48,7 +47,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         expt1.background.add(x, y)
 
     # Experiment 2: X-ray powder diffraction
-    expt2 = Experiment('xrd', radiation_probe='xray', data_path='examples/data/lab_pbso4.dat')
+    expt2 = Experiment(name='xrd', radiation_probe='xray', data_path='examples/data/lab_pbso4.dat')
     expt2.instrument.setup_wavelength = 1.540567
     expt2.instrument.calib_twotheta_offset = -0.05181
     expt2.peak.broad_gauss_u = 0.304138
@@ -78,7 +77,6 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Set calculator, minimizer and fit mode
     project.analysis.current_calculator = 'cryspy'
     project.analysis.current_minimizer = 'lmfit (leastsq)'
-    project.analysis.fit_mode = 'joint'
 
     # Define free parameters
     model.cell.length_a.free = True
@@ -87,20 +85,36 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt1.linked_phases['pbso4'].scale.free = True
     expt2.linked_phases['pbso4'].scale.free = True
 
-    # Start fitting
+    # 1st fitting
+    project.analysis.fit_mode = 'single'  # Default
     project.analysis.fit()
-    project.analysis.show_meas_vs_calc_chart(expt_name='npd', x_min=62, x_max=66, show_residual=True)
-    project.analysis.show_meas_vs_calc_chart(expt_name='xrd', x_min=26, x_max=28, show_residual=True)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 26.05, decimal=1)
 
-    # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 21.1, decimal=1)
+    # 2nd fitting
+    project.analysis.fit_mode = 'joint'
+    project.analysis.fit()
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 21.09, decimal=1)
+
+    # 3rd fitting
+    project.analysis.joint_fit_experiments['xrd'].weight = 0.5  # Default
+    project.analysis.joint_fit_experiments['npd'].weight = 0.5  # Default
+    project.analysis.fit_mode = 'joint'
+    project.analysis.fit()
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 21.09, decimal=1)
+
+    # 4th fitting
+    project.analysis.joint_fit_experiments['xrd'].weight = 0.3
+    project.analysis.joint_fit_experiments['npd'].weight = 0.7
+    project.analysis.fit_mode = 'joint'
+    project.analysis.fit()
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 14.39, decimal=1)
 
 def test_basic_usage_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     ###############################################################################
     # In this section, users will learn how to create a project and define
     # its metadata.
     ###############################################################################
-
+    
     print(ed.chapter('Step 1: Create a Project'))
 
     # Create a new project
