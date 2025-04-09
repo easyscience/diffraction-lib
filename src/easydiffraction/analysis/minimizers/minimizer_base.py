@@ -65,7 +65,7 @@ class FitResults:
                    "fitted",
                    "uncertainty",
                    "units",
-                   "change [%]"]
+                   "change"]
 
         rows = []
         for param in self.parameters:
@@ -81,7 +81,7 @@ class FitResults:
             if param.start_value and param.value:
                 change = ((param.value - param.start_value) / param.start_value) * 100
                 arrow = "↑" if change > 0 else "↓"
-                relative_change = f"{abs(change):.2f}% {arrow}"
+                relative_change = f"{abs(change):.2f} % {arrow}"
             else:
                 relative_change = "N/A"
 
@@ -109,7 +109,10 @@ class MinimizerBase(ABC):
     Abstract base class for minimizer implementations.
     Provides shared logic and structure for concrete minimizers.
     """
-    def __init__(self, name=None, method=None, max_iterations=None):
+    def __init__(self,
+                 name=None,
+                 method=None,
+                 max_iterations=None):
         # 'method' is used only by minimizers supporting multiple methods
         # (e.g., lmfit). For minimizers like dfols, pass None.
         self.name = name
@@ -140,15 +143,22 @@ class MinimizerBase(ABC):
         pass
 
     @abstractmethod
-    def _run_solver(self, objective_function, engine_parameters):
+    def _run_solver(self,
+                    objective_function,
+                    engine_parameters):
         pass
 
     @abstractmethod
-    def _sync_result_to_parameters(self, raw_result, parameters):
+    def _sync_result_to_parameters(self,
+                                   raw_result,
+                                   parameters):
         pass
 
-    def _finalize_fit(self, parameters, raw_result):
-        self._sync_result_to_parameters(parameters, raw_result)
+    def _finalize_fit(self,
+                      parameters,
+                      raw_result):
+        self._sync_result_to_parameters(parameters,
+                                        raw_result)
         success = self._check_success(raw_result)
         self.result = FitResults(
             success=success,
@@ -176,19 +186,38 @@ class MinimizerBase(ABC):
         self._start_tracking(minimizer_name)
 
         solver_args = self._prepare_solver_args(parameters)
-        raw_result = self._run_solver(objective_function, **solver_args)
+        raw_result = self._run_solver(objective_function,
+                                      **solver_args)
 
         self._stop_tracking()
 
-        result = self._finalize_fit(parameters, raw_result)
+        result = self._finalize_fit(parameters,
+                                    raw_result)
 
         return result
 
-    def _objective_function(self, engine_params, parameters, sample_models, experiments, calculator):
-        return self._compute_residuals(engine_params, parameters, sample_models, experiments, calculator)
+    def _objective_function(self,
+                            engine_params,
+                            parameters,
+                            sample_models,
+                            experiments,
+                            calculator):
+        return self._compute_residuals(engine_params,
+                                       parameters,
+                                       sample_models,
+                                       experiments,
+                                       calculator)
 
-    def _create_objective_function(self, parameters, sample_models, experiments, calculator):
+    def _create_objective_function(self,
+                                   parameters,
+                                   sample_models,
+                                   experiments,
+                                   calculator):
         return lambda engine_params: self._objective_function(
-            engine_params, parameters, sample_models, experiments, calculator
+            engine_params,
+            parameters,
+            sample_models,
+            experiments,
+            calculator
         )
 
