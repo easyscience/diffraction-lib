@@ -1,7 +1,7 @@
 import numpy as np
 from abc import ABC, abstractmethod
 
-from easydiffraction.analysis.constraints import Constraints
+from easydiffraction.core.singletons import ConstraintsHandler
 
 
 class CalculatorBase(ABC):
@@ -37,7 +37,7 @@ class CalculatorBase(ABC):
 
         # Apply user constraints to all sample models
         # TODO: How to apply user constraints to all experiments (background, etc.)?
-        constraints = Constraints.get()
+        constraints = ConstraintsHandler.get()
         constraints.apply(parameters=sample_models.get_all_params())
 
         # Calculate contributions from valid linked sample models

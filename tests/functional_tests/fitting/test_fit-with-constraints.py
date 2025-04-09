@@ -142,6 +142,9 @@ def single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Start fitting
     project.analysis.fit()
 
+    # Show all parameters
+    project.analysis.show_all_params()
+
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 1.24, decimal=1)
 

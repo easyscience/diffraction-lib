@@ -1,11 +1,23 @@
 import pandas as pd
 from tabulate import tabulate
 
-from easydiffraction.utils.formatting import paragraph, warning
-from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
+from easydiffraction.utils.formatting import (
+    paragraph,
+    warning
+)
+from easydiffraction.utils.chart_plotter import (
+    ChartPlotter,
+    DEFAULT_HEIGHT
+)
 from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.core.objects import Descriptor, Parameter
-from easydiffraction.analysis.constraints import Constraints
+from easydiffraction.core.objects import (
+    Descriptor,
+    Parameter
+)
+from easydiffraction.core.singletons import (
+    ConstraintsHandler,
+    UidMapHandler
+)
 
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
@@ -17,7 +29,7 @@ class Analysis:
 
     def __init__(self, project):
         self.project = project
-        self.constraints = Constraints.get()
+        self.constraints = ConstraintsHandler.get()
         self.calculator = Analysis._calculator  # Default calculator shared by project
         self._calculator_key = 'cryspy'  # Added to track the current calculator
         self._fit_mode = 'single'
@@ -287,6 +299,18 @@ class Analysis:
                        tablefmt="fancy_outline",
                        showindex=False))
 
+    def _update_uid_map(self):
+        """
+        Update the UID map for accessing parameters by UID.
+        This is needed for adding or removing constraints.
+        """
+        sample_models_params = self.project.sample_models.get_all_params()
+        experiments_params = self.project.experiments.get_all_params()
+        params = sample_models_params + experiments_params
+
+        uid_map_handler = UidMapHandler.get()
+        uid_map_handler.set_uid_map(params=params)
+
     def apply_constraints(self):
         constraints_list = self.constraints._constraints
 
@@ -296,9 +320,10 @@ class Analysis:
 
         sample_models_params = self.project.sample_models.get_fittable_params()
         experiments_params = self.project.experiments.get_fittable_params()
-        params = sample_models_params + experiments_params
+        fittable_params = sample_models_params + experiments_params
 
-        self.constraints.apply(parameters=params)
+        self._update_uid_map()
+        self.constraints.apply(parameters=fittable_params)
 
     def show_calc_chart(self, expt_name, x_min=None, x_max=None):
         self.calculate_pattern(expt_name)

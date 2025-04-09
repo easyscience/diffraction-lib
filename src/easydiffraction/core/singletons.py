@@ -2,7 +2,7 @@ import re
 from asteval import Interpreter
 
 
-class Constraints:
+class BaseSingleton:
     _instance = None  # shared singleton instance
 
     @classmethod
@@ -11,6 +11,19 @@ class Constraints:
             cls._instance = cls()
         return cls._instance
 
+
+class UidMapHandler(BaseSingleton):
+    def __init__(self):
+        self._uid_map = {}
+
+    def set_uid_map(self, params: list):
+        self._uid_map = {param.uid: param for param in params}
+
+    def get_uid_map(self):
+        return self._uid_map
+
+
+class ConstraintsHandler(BaseSingleton):
     def __init__(self):
         self._constraints = []
         self._alias_to_param = {}  # maps alias to parameter object
@@ -52,8 +65,10 @@ class Constraints:
         if not self._constraints:
             return
 
-        uid_map = self.build_uid_map(parameters)
-        ae = Interpreter()
+        asteval_interpreter = Interpreter()
+
+        uid_map_handler = UidMapHandler.get()
+        uid_map = uid_map_handler.get_uid_map()
 
         for constraint in self._constraints:
             try:
@@ -68,10 +83,10 @@ class Constraints:
                 dependent_uid = lhs_match.group(1)
 
                 # Prepare 'params' dictionary for evaluation
-                ae.symtable['params'] = uid_map
+                asteval_interpreter.symtable['params'] = uid_map
 
                 # Evaluate
-                ae(expr)
+                asteval_interpreter(expr)
 
                 # Set .constrained = True
                 uid_map[dependent_uid].constrained = True
@@ -88,11 +103,6 @@ class Constraints:
 
             except Exception as e:
                 print(f"Error applying constraint '{constraint['original_expr']}': {e}")
-
-    # TODO: Move to a utility module
-    @staticmethod
-    def build_uid_map(parameters: list):
-        return {param.uid: param for param in parameters}
 
     # TODO: Implement changing atrr '.constrained' back to False
     #  when removing constraints
