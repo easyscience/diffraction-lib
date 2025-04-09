@@ -49,7 +49,7 @@ print(ed.chapter('Step 2: Add Sample Model'))
 project.sample_models.add(name="pbso4")
 
 # Show model IDs to be used for accessing the model via project.sample_models["model_id"]
-project.sample_models.show_ids()
+project.sample_models.show_names()
 
 # Modify sample model parameters via project object
 project.sample_models["pbso4"].space_group.name_h_m.value = "P n m a"
@@ -117,7 +117,7 @@ project.experiments.add(name="xrd",
                         data_path="examples/data/lab_pbso4.dat")
 
 print(ed.section('Show defined experiments'))
-project.experiments.show_ids()
+project.experiments.show_names()
 
 # Show measured data
 project.experiments['npd'].show_meas_chart(x_min=62, x_max=66)

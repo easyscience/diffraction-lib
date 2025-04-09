@@ -167,7 +167,7 @@ class SampleModels(Collection):
         """
         return list(self._models.keys())
 
-    def show_ids(self):
+    def show_names(self):
         """
         List all model IDs in the collection.
         """

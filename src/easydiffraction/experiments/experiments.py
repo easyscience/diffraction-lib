@@ -86,7 +86,7 @@ class Experiments(Collection):
         if experiment_id in self._experiments:
             del self._experiments[experiment_id]
 
-    def show_ids(self):
+    def show_names(self):
         print(paragraph("Defined experiments" + " 🔬"))
         print(list(self._experiments.keys()))
 
