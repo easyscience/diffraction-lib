@@ -1,4 +1,5 @@
 from numpy.testing import assert_almost_equal
+from numpy import isclose
 
 from easydiffraction import (
     Project,
@@ -76,6 +77,8 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.current_calculator = "cryspy"
     project.analysis.current_minimizer = "lmfit (leastsq)"
     project.analysis.fit_mode = 'joint'
+    project.analysis.joint_fit_experiments['xrd'] = 0.3
+    project.analysis.joint_fit_experiments['npd'] = 0.7
 
     # Define free parameters
     model.cell.length_a.free = True
@@ -90,8 +93,15 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.show_meas_vs_calc_chart(expt_id="xrd", x_min=26, x_max=28, show_residual=True)
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 21.1, decimal=1)
+    chi_squared = project.analysis.fit_results.reduced_chi_square
+    assert_almost_equal(chi_squared, 14.4, decimal=1)
 
+    # Results should be different if weights are changed
+    project.analysis.joint_fit_experiments['xrd'] = 0.9
+    project.analysis.joint_fit_experiments['npd'] = 0.1
 
+    project.analysis.fit()
+    assert not isclose(chi_squared, 14.4)
+    
 if __name__ == '__main__':
     test_joint_fit_neutron_xray_pd_cwl_pbso4()

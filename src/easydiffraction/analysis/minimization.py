@@ -14,7 +14,7 @@ class DiffractionMinimizer:
         self.minimizer = MinimizerFactory.create_minimizer(selection)
         self.results = None
 
-    def fit(self, sample_models, experiments, calculator):
+    def fit(self, sample_models, experiments, calculator, weights=None):
         """
         Run the fitting process.
         """
@@ -27,7 +27,7 @@ class DiffractionMinimizer:
         for parameter in parameters:
             parameter.start_value = parameter.value
 
-        objective_function = lambda engine_params: self._residual_function(engine_params, parameters, sample_models, experiments, calculator)
+        objective_function = lambda engine_params: self._residual_function(engine_params, parameters, sample_models, experiments, calculator, weights)
 
         # Perform fitting
         self.results = self.minimizer.fit(parameters, objective_function)
@@ -50,7 +50,7 @@ class DiffractionMinimizer:
     def _collect_free_parameters(self, sample_models, experiments):
         return sample_models.get_free_params() + experiments.get_free_params()
 
-    def _residual_function(self, engine_params, parameters, sample_models, experiments, calculator):
+    def _residual_function(self, engine_params, parameters, sample_models, experiments, calculator, weights=None):
         """
         Residual function computes the difference between measured and calculated patterns.
         It updates the parameter values according to the optimizer-provided engine_params.
@@ -58,14 +58,24 @@ class DiffractionMinimizer:
         # Sync parameters back to objects
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
 
+        # Prepare weights for joint fitting
+        N_experiments = len(experiments.ids)
+        _weights = np.ones(N_experiments) if weights is None else np.array([weights._items.get(id, 1.0) for id in experiments.ids], dtype=np.float64)
+        # Normalize weights so they sum to N_experiments
+        # We should obtain the same reduced chi_squared when a single dataset is split into
+        # two parts and fit together. If weights sum to one, then reduced chi_squared
+        # will be half as large as expected.
+        _weights *= N_experiments / np.sum(_weights)   
         residuals = []
-        for expt_id, experiment in experiments._items.items():
+        
+        for (expt_id, experiment), weight in zip(experiments._items.items(), _weights):
             y_calc = calculator.calculate_pattern(sample_models,
                                                   experiment,
                                                   called_by_minimizer=True)  # True False
             y_meas = experiment.datastore.pattern.meas
             y_meas_su = experiment.datastore.pattern.meas_su
             diff = (y_meas - y_calc) / y_meas_su
+            diff *= np.sqrt(weight)  # Residuls are squared before going into reduced chi-squared
             residuals.extend(diff)
 
         residuals = np.array(residuals)
