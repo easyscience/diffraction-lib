@@ -44,9 +44,9 @@ Development playground for the new EasyDiffraction API.
 
 - Simplified API:
   ```bash
-  PYTHONPATH=$(pwd)/src python examples/joint-fit_simple-api.py
+  PYTHONPATH=$(pwd)/src python examples/joint-fit_basic-usage.py
   ```
 - Advanced API:
   ```bash
-  PYTHONPATH=$(pwd)/src python examples/joint-fit_advanced-api.py
+  PYTHONPATH=$(pwd)/src python examples/joint-fit_advanced-usage.py
   ```
