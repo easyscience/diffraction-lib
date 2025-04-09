@@ -21,7 +21,6 @@ from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.summary import Summary
 
 # Utils
-from easydiffraction.utils.formatting import chapter
 from easydiffraction.utils.formatting import (
     chapter,
     section,

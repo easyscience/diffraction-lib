@@ -3,9 +3,9 @@ from easydiffraction.core.objects import (
     Collection,
     Datablock
 )
-from easydiffraction.sample_models.standard_components.space_group import SpaceGroup
-from easydiffraction.sample_models.standard_components.cell import Cell
-from easydiffraction.sample_models.iterable_components.atom_sites import AtomSites
+from easydiffraction.sample_models.components.space_group import SpaceGroup
+from easydiffraction.sample_models.components.cell import Cell
+from easydiffraction.sample_models.collections.atom_sites import AtomSites
 from easydiffraction.utils.formatting import paragraph
 
 

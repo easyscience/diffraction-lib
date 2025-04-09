@@ -3,13 +3,13 @@ import tabulate
 
 from abc import ABC, abstractmethod
 
-from easydiffraction.experiments.standard_components.experiment_type import ExperimentType
-from easydiffraction.experiments.standard_components.instrument import InstrumentFactory
-from easydiffraction.experiments.standard_components.peak import PeakFactory
+from easydiffraction.experiments.components.experiment_type import ExperimentType
+from easydiffraction.experiments.components.instrument import InstrumentFactory
+from easydiffraction.experiments.components.peak import PeakFactory
 
-from easydiffraction.experiments.iterable_components.linked_phases import LinkedPhases
-from easydiffraction.experiments.iterable_components.background import BackgroundFactory
-from easydiffraction.experiments.iterable_components.datastore import DatastoreFactory
+from easydiffraction.experiments.collections.linked_phases import LinkedPhases
+from easydiffraction.experiments.collections.background import BackgroundFactory
+from easydiffraction.experiments.collections.datastore import DatastoreFactory
 
 from easydiffraction.utils.formatting import paragraph, warning
 from easydiffraction.utils.chart_plotter import ChartPlotter
@@ -76,7 +76,7 @@ class BaseExperiment(Datablock):
         # Measured data
         # TODO: This functionality should be moved to datastore.py
         # TODO: We need meas_data component which will use datastore to extract data
-        # TODO: Datastore should be moved out of iterable_components/
+        # TODO: Datastore should be moved out of collections/
         if hasattr(self, "datastore") and hasattr(self.datastore, "pattern"):
             lines.append("")
             lines.append("loop_")
