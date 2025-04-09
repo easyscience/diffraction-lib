@@ -1,6 +1,7 @@
 from easydiffraction.core.objects import (
     Descriptor,
-    Collection, Component
+    Component,
+    Collection
 )
 
 

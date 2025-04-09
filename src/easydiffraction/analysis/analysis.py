@@ -15,10 +15,13 @@ from easydiffraction.core.objects import (
     Parameter
 )
 from easydiffraction.core.singletons import (
+    ConstraintsHandler_OLD,
     ConstraintsHandler,
     UidMapHandler
 )
 
+from .collections.aliases import ConstraintAliases
+from .collections.constraints import ConstraintExpressions
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from .minimizers.minimizer_factory import MinimizerFactory
@@ -30,7 +33,10 @@ class Analysis:
 
     def __init__(self, project):
         self.project = project
-        self.constraints = ConstraintsHandler.get()
+        self.aliases = ConstraintAliases()
+        self.constraints = ConstraintExpressions()
+        self.constraints_handler_OLD = ConstraintsHandler_OLD.get()
+        self.constraints_handler = ConstraintsHandler.get()
         self.calculator = Analysis._calculator  # Default calculator shared by project
         self._calculator_key = 'cryspy'  # Added to track the current calculator
         self._fit_mode = 'single'
@@ -284,7 +290,30 @@ class Analysis:
         return calculated_pattern
 
     def show_constraints(self):
-        constraints_list = self.constraints._constraints
+        constraints_dict = self.constraints._items
+
+        if not self.constraints._items:
+            print(warning(f"No constraints defined."))
+            return
+
+        rows = []
+        for id, constraint in constraints_dict.items():
+            row = {
+                'id': id,
+                'expression': constraint.expression.value
+            }
+            rows.append(row)
+
+        dataframe = pd.DataFrame(rows)
+
+        print(paragraph(f"User defined constraints"))
+        print(tabulate(dataframe,
+                       headers=dataframe.columns,
+                       tablefmt="fancy_outline",
+                       showindex=False))
+
+    def show_constraints_OLD(self):
+        constraints_list = self.constraints_handler_OLD._constraints
 
         if not constraints_list:
             print(warning(f"No constraints defined."))
@@ -319,7 +348,21 @@ class Analysis:
         uid_map_handler.set_uid_map(params=params)
 
     def apply_constraints(self):
-        constraints_list = self.constraints._constraints
+        if not self.constraints._items:
+            print(warning(f"No constraints defined."))
+            return
+
+        sample_models_params = self.project.sample_models.get_fittable_params()
+        experiments_params = self.project.experiments.get_fittable_params()
+        fittable_params = sample_models_params + experiments_params
+
+        self._update_uid_map()
+        self.constraints_handler.set_aliases(self.aliases)
+        self.constraints_handler.set_expressions(self.constraints)
+        self.constraints_handler.apply(parameters=fittable_params)
+
+    def apply_constraints_OLD(self):
+        constraints_list = self.constraints_handler_OLD._constraints
 
         if not constraints_list:
             print(warning(f"No constraints defined."))
@@ -330,7 +373,7 @@ class Analysis:
         fittable_params = sample_models_params + experiments_params
 
         self._update_uid_map()
-        self.constraints.apply(parameters=fittable_params)
+        self.constraints_handler_OLD.apply(parameters=fittable_params)
 
     def show_calc_chart(self, expt_name, x_min=None, x_max=None):
         self.calculate_pattern(expt_name)

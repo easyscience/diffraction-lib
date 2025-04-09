@@ -7,7 +7,7 @@ from easydiffraction import (
 )
 
 
-def single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
+def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Create and configure sample model
     model = SampleModel('lbco')
 
@@ -106,28 +106,22 @@ def single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
 
     # User-defined constraints
 
+    # Set aliases for parameters
+    project.analysis.aliases.add(alias='biso_La',
+                                 param=atom_sites['La'].b_iso)
+    project.analysis.aliases.add(alias='biso_Ba',
+                                 param=atom_sites['Ba'].b_iso)
+
+    project.analysis.aliases.add('occ_La', atom_sites['La'].occupancy)
+    project.analysis.aliases.add('occ_Ba', atom_sites['Ba'].occupancy)
+
     project.analysis.show_constraints()
 
-    # Add constraints
-    project.analysis.constraints.add(
-        biso_La=atom_sites['La'].b_iso,
-        biso_Ba=atom_sites['Ba'].b_iso,
-        expression='biso_Ba = biso_La'
-    )
-    project.analysis.constraints.add(
-        occ_La=atom_sites['La'].occupancy,
-        occ_Ba=atom_sites['Ba'].occupancy,
-        expression='occ_Ba = 1 - occ_La'
-    )
-    project.analysis.constraints.add(
-        x_Co=atom_sites['Co'].fract_x,
-        x_O=atom_sites['O'].fract_y,
-        expression='x_O = 1 - x_Co'
-    )
-    project.analysis.show_constraints()
+    # Set constraints
+    project.analysis.constraints.add(id="1",
+                                     expression='biso_Ba = biso_La')
+    project.analysis.constraints.add("2", 'occ_Ba = 1 - occ_La')
 
-    # Remove a constraint
-    project.analysis.constraints.remove(number=3)
     project.analysis.show_constraints()
 
     # Show free parameters before applying constraints
@@ -157,4 +151,4 @@ def single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     assert_almost_equal(atom_sites['Ba'].occupancy.value, 0.4726, decimal=2)
 
 if __name__ == '__main__':
-    single_fit_neutron_pd_cwl_lbco_with_constraints()
+    test_single_fit_neutron_pd_cwl_lbco_with_constraints()

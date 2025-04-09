@@ -1,7 +1,7 @@
 import numpy as np
 from abc import ABC, abstractmethod
 
-from easydiffraction.core.singletons import ConstraintsHandler
+from easydiffraction.core.singletons import ConstraintsHandler_OLD, ConstraintsHandler
 
 
 class CalculatorBase(ABC):

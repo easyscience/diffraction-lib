@@ -25,6 +25,57 @@ class UidMapHandler(BaseSingleton):
 
 class ConstraintsHandler(BaseSingleton):
     def __init__(self):
+        self._alias_map = {}       # alias -> Parameter
+        self._expressions = {}     # id -> expression
+        self._parsed_constraints = []
+
+    def set_aliases(self, constraint_aliases):
+        self._alias_map = constraint_aliases._items
+
+    def set_expressions(self, constraint_expressions):
+        self._expressions = constraint_expressions._items
+        self._parse_constraints()
+
+    def _parse_constraints(self):
+        self._parsed_constraints = []
+        for expr_id, expression in self._expressions.items():
+            parsed_expr = expression.expression.value
+            for alias, param in self._alias_map.items():
+                parsed_expr = re.sub(rf'\b{alias}\b', f'params["{param.param.uid}"].value', parsed_expr)
+
+            lhs_match = re.match(r'params\["(.+?)"\]\.value\s*=', parsed_expr)
+            if not lhs_match:
+                print(f"Could not identify dependent parameter in expression: {expression}")
+                continue
+
+            dependent_uid = lhs_match.group(1)
+            rhs_expr = parsed_expr.split('=', 1)[1].strip()
+            self._parsed_constraints.append((dependent_uid, rhs_expr))
+
+
+    def apply(self, parameters: list):
+        if not parameters or not self._parsed_constraints:
+            return
+
+        uid_map_handler = UidMapHandler.get()
+        uid_map = uid_map_handler.get_uid_map()
+
+        asteval_interpreter = Interpreter()
+        asteval_interpreter.symtable['params'] = uid_map
+
+        for dependent_uid, rhs_expr in self._parsed_constraints:
+            try:
+                result = asteval_interpreter(rhs_expr)
+                if dependent_uid in uid_map:
+                    uid_map[dependent_uid].value = float(result)
+                    uid_map[dependent_uid].constrained = True
+                    pass
+            except Exception as e:
+                print(f"Error applying expression to '{dependent_uid}': {e}")
+
+
+class ConstraintsHandler_OLD(BaseSingleton):
+    def __init__(self):
         self._constraints = []
         self._alias_to_param = {}  # maps alias to parameter object
         self._uid_to_param = {}    # maps uid to parameter object
