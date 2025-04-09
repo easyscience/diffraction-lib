@@ -5,6 +5,7 @@ from easydiffraction.utils.formatting import paragraph, warning
 from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.core.objects import Descriptor, Parameter
+from easydiffraction.analysis.constraints import Constraints
 
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
@@ -16,6 +17,7 @@ class Analysis:
 
     def __init__(self, project):
         self.project = project
+        self.constraints = Constraints.get()
         self.calculator = Analysis._calculator  # Default calculator shared by project
         self._calculator_key = 'cryspy'  # Added to track the current calculator
         self._fit_mode = 'single'
@@ -80,6 +82,7 @@ class Analysis:
                           'category',
                           'entry',
                           'parameter',
+                          'value',
                           'fittable']
 
         print(paragraph("All parameters for all sample models (🧩 data blocks)"))
@@ -261,6 +264,42 @@ class Analysis:
         calculated_pattern = self.calculator.calculate_pattern(sample_models, experiment)
         return calculated_pattern
 
+    def show_constraints(self):
+        constraints_list = self.constraints._constraints
+
+        if not constraints_list:
+            print(warning(f"No constraints defined."))
+            return
+
+        rows = []
+        for idx, constraint in enumerate(constraints_list, 1):
+            row = {
+                'no.': idx,
+                'expression': constraint['original_expr']
+            }
+            rows.append(row)
+
+        dataframe = pd.DataFrame(rows)
+
+        print(paragraph(f"User defined constraints"))
+        print(tabulate(dataframe,
+                       headers=dataframe.columns,
+                       tablefmt="fancy_outline",
+                       showindex=False))
+
+    def apply_constraints(self):
+        constraints_list = self.constraints._constraints
+
+        if not constraints_list:
+            print(warning(f"No constraints defined."))
+            return
+
+        sample_models_params = self.project.sample_models.get_fittable_params()
+        experiments_params = self.project.experiments.get_fittable_params()
+        params = sample_models_params + experiments_params
+
+        self.constraints.apply(parameters=params)
+
     def show_calc_chart(self, expt_name, x_min=None, x_max=None):
         self.calculate_pattern(expt_name)
 
@@ -328,16 +367,16 @@ class Analysis:
             return
 
         # Run the fitting process
-        experiment_ids = list(experiments._items.keys())
+        experiment_names = list(experiments._items.keys())
 
         if self.fit_mode == 'joint':
-            print(paragraph(f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"))
+            print(paragraph(f"Using all experiments 🔬 {experiment_names} for '{self.fit_mode}' fitting"))
             self.fitter.fit(sample_models, experiments, calculator)
         elif self.fit_mode == 'single':
             for expt_name in list(experiments._items.keys()):
                 print(paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"))
                 experiment = experiments[expt_name]
-                dummy_experiments = Experiments()
+                dummy_experiments = Experiments()  # TODO: Find a better name
                 dummy_experiments.add(experiment)
                 self.fitter.fit(sample_models, dummy_experiments, calculator)
         else:

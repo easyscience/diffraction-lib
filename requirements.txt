@@ -10,5 +10,6 @@ tabulate
 asciichartpy
 colorama
 varname
+asteval
 pytest
 pytest-xdist

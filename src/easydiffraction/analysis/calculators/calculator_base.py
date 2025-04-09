@@ -1,6 +1,9 @@
 import numpy as np
 from abc import ABC, abstractmethod
 
+from easydiffraction.analysis.constraints import Constraints
+
+
 class CalculatorBase(ABC):
     """
     Base API for diffraction calculation engines.
@@ -31,6 +34,11 @@ class CalculatorBase(ABC):
         y_calc_zeros = np.zeros_like(x_data)
 
         valid_linked_phases = self._get_valid_linked_phases(sample_models, experiment)
+
+        # Apply user constraints to all sample models
+        # TODO: How to apply user constraints to all experiments (background, etc.)?
+        constraints = Constraints.get()
+        constraints.apply(parameters=sample_models.get_all_params())
 
         # Calculate contributions from valid linked sample models
         y_calc_scaled = y_calc_zeros
