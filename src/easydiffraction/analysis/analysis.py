@@ -254,17 +254,17 @@ class Analysis:
         print(paragraph("Current ffit mode"))
         print(self.fit_mode)
 
-    def calculate_pattern(self, expt_id):
+    def calculate_pattern(self, expt_name):
         # Pattern is calculated for the given experiment
-        experiment = self.project.experiments[expt_id]
+        experiment = self.project.experiments[expt_name]
         sample_models = self.project.sample_models
         calculated_pattern = self.calculator.calculate_pattern(sample_models, experiment)
         return calculated_pattern
 
-    def show_calc_chart(self, expt_id, x_min=None, x_max=None):
-        self.calculate_pattern(expt_id)
+    def show_calc_chart(self, expt_name, x_min=None, x_max=None):
+        self.calculate_pattern(expt_name)
 
-        experiment = self.project.experiments[expt_id]
+        experiment = self.project.experiments[expt_name]
         pattern = experiment.datastore.pattern
 
         plotter = ChartPlotter()
@@ -273,24 +273,24 @@ class Analysis:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=paragraph(f"Calculated data for experiment 🔬 '{expt_id}'"),
+            title=paragraph(f"Calculated data for experiment 🔬 '{expt_name}'"),
             labels=['calc']
         )
 
     def show_meas_vs_calc_chart(self,
-                                expt_id,
+                                expt_name,
                                 x_min=None,
                                 x_max=None,
                                 show_residual=False,
                                 chart_height=DEFAULT_HEIGHT):
-        experiment = self.project.experiments[expt_id]
+        experiment = self.project.experiments[expt_name]
 
-        self.calculate_pattern(expt_id)
+        self.calculate_pattern(expt_name)
 
         pattern = experiment.datastore.pattern
 
         if pattern.meas is None or pattern.calc is None or pattern.x is None:
-            print(f"No data available for {expt_id}. Cannot display chart.")
+            print(f"No data available for {expt_name}. Cannot display chart.")
             return
 
         series = [pattern.meas, pattern.calc]
@@ -307,7 +307,7 @@ class Analysis:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=paragraph(f"Measured vs Calculated data for experiment 🔬 '{expt_id}'"),
+            title=paragraph(f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"),
             labels=labels
         )
 
@@ -334,9 +334,9 @@ class Analysis:
             print(paragraph(f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"))
             self.fitter.fit(sample_models, experiments, calculator)
         elif self.fit_mode == 'single':
-            for expt_id in list(experiments._items.keys()):
-                print(paragraph(f"Using experiment 🔬 '{expt_id}' for '{self.fit_mode}' fitting"))
-                experiment = experiments[expt_id]
+            for expt_name in list(experiments._items.keys()):
+                print(paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"))
+                experiment = experiments[expt_name]
                 dummy_experiments = Experiments()
                 dummy_experiments.add(experiment)
                 self.fitter.fit(sample_models, dummy_experiments, calculator)

@@ -55,7 +55,7 @@ class FitResults:
             print(f"📏 Weighted R-factor (wR): {wr:.2f}%")
         if br is not None:
             print(f"📏 Bragg R-factor (BR): {br:.2f}%")
-        print(f"📈 Refined parameters:")
+        print(f"📈 Fitted parameters:")
 
         headers = ["datablock",
                    "category",

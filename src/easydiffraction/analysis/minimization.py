@@ -65,7 +65,7 @@ class DiffractionMinimizer:
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
 
         residuals = []
-        for expt_id, experiment in experiments._items.items():
+        for expt_name, experiment in experiments._items.items():
             y_calc = calculator.calculate_pattern(sample_models,
                                                   experiment,
                                                   called_by_minimizer=True)  # True False

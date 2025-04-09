@@ -8,7 +8,7 @@ from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 class InstrumentBase(Component):
     @property
     def category_key(self):
-        return "instr"
+        return "instrument"
 
     @property
     def cif_category_key(self):

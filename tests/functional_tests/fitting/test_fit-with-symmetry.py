@@ -9,22 +9,22 @@ from easydiffraction import (
 
 def test_fit_neutron_pd_cwl_hs() -> None:
     # Create and configure sample model
-    model = SampleModel("hs")
-    model.space_group.name_h_m = "R -3 m"
-    model.space_group.it_coordinate_system_code = "h"
+    model = SampleModel('hs')
+    model.space_group.name_h_m = 'R -3 m'
+    model.space_group.it_coordinate_system_code = 'h'
     model.cell.length_a = 6.9
     model.cell.length_c = 14.1
-    model.atom_sites.add("Zn", "Zn", 0, 0, 0.5, wyckoff_letter="b", b_iso=0.5)
-    model.atom_sites.add("Cu", "Cu", 0.5, 0, 0, wyckoff_letter="e", b_iso=0.5)
-    model.atom_sites.add("O", "O", 0.21, -0.21, 0.06, wyckoff_letter="h", b_iso=0.5)
-    model.atom_sites.add("Cl", "Cl", 0, 0, 0.197, wyckoff_letter="c", b_iso=0.5)
-    model.atom_sites.add("H", "2H", 0.13, -0.13, 0.08, wyckoff_letter="h", b_iso=0.5)
+    model.atom_sites.add('Zn', 'Zn', 0, 0, 0.5, wyckoff_letter='b', b_iso=0.5)
+    model.atom_sites.add('Cu', 'Cu', 0.5, 0, 0, wyckoff_letter='e', b_iso=0.5)
+    model.atom_sites.add('O', 'O', 0.21, -0.21, 0.06, wyckoff_letter='h', b_iso=0.5)
+    model.atom_sites.add('Cl', 'Cl', 0, 0, 0.197, wyckoff_letter='c', b_iso=0.5)
+    model.atom_sites.add('H', '2H', 0.13, -0.13, 0.08, wyckoff_letter='h', b_iso=0.5)
     model.show_as_cif()
     model.apply_symmetry_constraints()
     model.show_as_cif()
 
     # Create and configure experiment
-    expt = Experiment("hrpt", data_path="examples/data/hrpt_hs.xye")
+    expt = Experiment('hrpt', data_path='examples/data/hrpt_hs.xye')
     expt.instrument.setup_wavelength = 1.89
     expt.instrument.calib_twotheta_offset = 0.0
     expt.peak.broad_gauss_u = 0.1
@@ -32,7 +32,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     expt.peak.broad_gauss_w = 0.2
     expt.peak.broad_lorentz_x = 0.0
     expt.peak.broad_lorentz_y = 0
-    expt.linked_phases.add("hs", scale=0.5)
+    expt.linked_phases.add('hs', scale=0.5)
     expt.background.add(x=4.4196, y=500)
     expt.background.add(x=6.6207, y=500)
     expt.background.add(x=10.4918, y=500)
@@ -50,8 +50,8 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     project.experiments.add(expt)
 
     # Set calculator, minimizer and fit mode
-    project.analysis.current_calculator = "cryspy"
-    project.analysis.current_minimizer = "lmfit (leastsq)"
+    project.analysis.current_calculator = 'cryspy'
+    project.analysis.current_minimizer = 'lmfit (leastsq)'
 
     # Compare measured and calculated patterns
     project.analysis.show_meas_vs_calc_chart('hrpt', 48, 51)
@@ -61,7 +61,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     # Define free parameters
     model.cell.length_a.free = True
     model.cell.length_c.free = True
-    expt.linked_phases["hs"].scale.free = True
+    expt.linked_phases['hs'].scale.free = True
     expt.instrument.calib_twotheta_offset.free = True
     project.analysis.show_free_params()
 

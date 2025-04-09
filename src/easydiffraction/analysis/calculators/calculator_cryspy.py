@@ -124,8 +124,8 @@ class CryspyCalculator(CalculatorBase):
         # ---------- Update experiment parameters ----------
 
         if experiment.type.beam_mode.value == 'constant wavelength':
-            cryspy_expt_id = f'pd_{experiment.name}'  # TODO: use expt_id as in the SampleModel? Or change there for id instead of model_id?
-            cryspy_expt_dict = cryspy_dict[cryspy_expt_id]
+            cryspy_expt_name = f'pd_{experiment.name}'  # TODO: use expt_name as in the SampleModel? Or change there for id instead of model_id?
+            cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
 
             # Instrument
             cryspy_expt_dict['offset_ttheta'][0] = np.deg2rad(experiment.instrument.calib_twotheta_offset.value)
@@ -140,8 +140,8 @@ class CryspyCalculator(CalculatorBase):
             cryspy_resolution[4] = experiment.peak.broad_lorentz_y.value
 
         elif experiment.type.beam_mode.value == 'time-of-flight':
-            cryspy_expt_id = f'tof_{experiment.name}'  # TODO: use expt_id as in the SampleModel? Or change there for id instead of model_id?
-            cryspy_expt_dict = cryspy_dict[cryspy_expt_id]
+            cryspy_expt_name = f'tof_{experiment.name}'  # TODO: use expt_name as in the SampleModel? Or change there for id instead of model_id?
+            cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
 
             # Instrument
             cryspy_expt_dict['zero'][0] = experiment.instrument.calib_d_to_tof_offset.value
