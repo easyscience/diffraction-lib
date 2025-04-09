@@ -22,7 +22,7 @@ from easydiffraction.core.singletons import (
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from .minimizers.minimizer_factory import MinimizerFactory
-from .joint_fit_experiments import JointFitExperiments
+from easydiffraction.analysis.collections.joint_fit_experiments import JointFitExperiments
 
 
 class Analysis:
