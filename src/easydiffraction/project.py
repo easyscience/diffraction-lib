@@ -203,7 +203,7 @@ class Project:
             file_path = os.path.join(expt_dir, file_name)
             with open(file_path, "w") as f:
                 f.write(experiment.as_cif())
-                print(f"✅ sample_models/{file_name}")
+                print(f"✅ experiments/{file_name}")
 
         # Save analysis
         with open(os.path.join(self.info.path, "analysis.cif"), "w") as f:

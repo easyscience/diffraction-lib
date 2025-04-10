@@ -64,11 +64,11 @@ class Summary:
                 fract_y = site.fract_y.value
                 fract_z = site.fract_z.value
                 b_iso = site.b_iso.value
+                occ = site.occupancy.value
                 atom_table.append([
                     site.label.value, site.type_symbol.value,
-                    f"{fract_x:.4f}", f"{fract_y:.4f}", f"{fract_z:.4f}",
-                    site.occupancy.value,
-                    f"{b_iso:.4f}"
+                    f"{fract_x:.5f}", f"{fract_y:.5f}", f"{fract_z:.5f}",
+                    f"{occ:.5f}", f"{b_iso:.5f}"
                 ])
             headers = ["Label", "Type", "fract_x", "fract_y", "fract_z", "Occupancy", "B_iso"]
             print(tabulate(atom_table, headers=headers, tablefmt="fancy_outline"))
