@@ -63,9 +63,9 @@ project.sample_models['lbco'].space_group.name_h_m = 'P m -3 m'
 project.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
 
 # Unit cell parameters
-project.sample_models['lbco'].cell.length_a = 3.8909
-project.sample_models['lbco'].cell.length_b = 3.8909  # Symmetry constraints are temporarily disabled
-project.sample_models['lbco'].cell.length_c = 3.8909  # Symmetry constraints are temporarily disabled
+project.sample_models['lbco'].cell.length_a = 3.88
+#project.sample_models['lbco'].cell.length_b = 3.8909  # Symmetry constraints are temporarily disabled
+#project.sample_models['lbco'].cell.length_c = 3.8909  # Symmetry constraints are temporarily disabled
 
 # Atom sites
 project.sample_models['lbco'].atom_sites.add(label='La',
