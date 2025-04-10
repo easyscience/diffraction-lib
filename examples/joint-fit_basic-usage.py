@@ -1,5 +1,5 @@
 '''
-Joint Refinement Example (Basic Usage)
+Joint Fit Example (Basic Usage)
 
 This example demonstrates the use of the EasyDiffraction API with a simplified,
 user-friendly approach that mimics the GUI workflow. It is intended for users
