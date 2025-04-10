@@ -92,10 +92,6 @@ class CryspyCalculator(CalculatorBase):
         cryspy_model_id = f'crystal_{sample_model.name}'
         cryspy_model_dict = cryspy_dict[cryspy_model_id]
 
-        # TODO: Move to the calculator_base.py
-        # Apply symmetry constraints
-        sample_model.apply_symmetry_constraints()
-
         # Cell
         cryspy_cell = cryspy_model_dict['unit_cell_parameters']
         cryspy_cell[0] = sample_model.cell.length_a.value

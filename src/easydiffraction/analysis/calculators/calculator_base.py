@@ -47,6 +47,9 @@ class CalculatorBase(ABC):
             sample_model_scale = linked_phase.scale.value
             sample_model = sample_models[sample_model_id]
 
+            # Apply symmetry constraints
+            sample_model.apply_symmetry_constraints()
+
             sample_model_y_calc = self._calculate_single_model_pattern(
                 sample_model,
                 experiment,
