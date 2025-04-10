@@ -1,5 +1,7 @@
+import pandas as pd
 from abc import ABC, abstractmethod
-import tabulate
+from tabulate import tabulate
+
 from ..reliability_factors import (
     calculate_r_factor,
     calculate_r_factor_squared,
@@ -7,6 +9,7 @@ from ..reliability_factors import (
     calculate_rb_factor
 )
 from .fitting_progress_tracker import FittingProgressTracker
+
 from easydiffraction.utils.formatting import paragraph
 
 class FitResults:
@@ -52,34 +55,53 @@ class FitResults:
             print(f"📏 Weighted R-factor (wR): {wr:.2f}%")
         if br is not None:
             print(f"📏 Bragg R-factor (BR): {br:.2f}%")
-        print(f"📈 Refined parameters:")
+        print(f"📈 Fitted parameters:")
 
-        table_data = []
-        headers = ["cif block", "cif parameter", "start", "refined", "error", "units", "change [%]"]
+        headers = ["datablock",
+                   "category",
+                   "entry",
+                   "parameter",
+                   "start",
+                   "fitted",
+                   "uncertainty",
+                   "units",
+                   "change"]
 
+        rows = []
         for param in self.parameters:
-            block_name = getattr(param, 'block_name', 'N/A')
-            cif_name = getattr(param, 'cif_name', 'N/A')
-            start = f"{getattr(param, 'start_value', 'N/A'):.5f}" if param.start_value is not None else "N/A"
-            refined = f"{param.value:.5f}" if param.value is not None else "N/A"
-            error = f"{param.error:.5f}" if param.error is not None else "N/A"
+            datablock_id = getattr(param, 'datablock_id', 'N/A')  # TODO: Check if 'N/A' is needed
+            category_key = getattr(param, 'category_key', 'N/A')
+            collection_entry_id = getattr(param, 'collection_entry_id', 'N/A')
+            name = getattr(param, 'name', 'N/A')
+            start = f"{getattr(param, 'start_value', 'N/A'):.4f}" if param.start_value is not None else "N/A"
+            fitted = f"{param.value:.4f}" if param.value is not None else "N/A"
+            uncertainty = f"{param.uncertainty:.4f}" if param.uncertainty is not None else "N/A"
             units = getattr(param, 'units', 'N/A')
 
             if param.start_value and param.value:
                 change = ((param.value - param.start_value) / param.start_value) * 100
                 arrow = "↑" if change > 0 else "↓"
-                relative_change = f"{abs(change):.2f}% {arrow}"
+                relative_change = f"{abs(change):.2f} % {arrow}"
             else:
                 relative_change = "N/A"
 
-            table_data.append([block_name, cif_name, start, refined, error, units, relative_change])
+            rows.append([datablock_id,
+                         category_key,
+                         collection_entry_id,
+                         name,
+                         start,
+                         fitted,
+                         uncertainty,
+                         units,
+                         relative_change])
 
-        print(tabulate.tabulate(table_data,
-                                headers=headers,
-                                tablefmt="fancy_outline",
-                                numalign="center",
-                                stralign="center",
-                                showindex=False))
+        dataframe = pd.DataFrame(rows)
+        indices = range(1, len(dataframe) + 1)  # Force starting from 1
+
+        print(tabulate(dataframe,
+                       headers=headers,
+                       tablefmt="fancy_outline",
+                       showindex=indices))
 
 
 class MinimizerBase(ABC):
@@ -87,8 +109,12 @@ class MinimizerBase(ABC):
     Abstract base class for minimizer implementations.
     Provides shared logic and structure for concrete minimizers.
     """
-    def __init__(self, name=None, method=None, max_iterations=None):
-        # 'method' is used only by minimizers supporting multiple methods (e.g., lmfit). For minimizers like dfols, pass None.
+    def __init__(self,
+                 name=None,
+                 method=None,
+                 max_iterations=None):
+        # 'method' is used only by minimizers supporting multiple methods
+        # (e.g., lmfit). For minimizers like dfols, pass None.
         self.name = name
         self.method = method
         self.max_iterations = max_iterations
@@ -117,15 +143,22 @@ class MinimizerBase(ABC):
         pass
 
     @abstractmethod
-    def _run_solver(self, objective_function, engine_parameters):
+    def _run_solver(self,
+                    objective_function,
+                    engine_parameters):
         pass
 
     @abstractmethod
-    def _sync_result_to_parameters(self, raw_result, parameters):
+    def _sync_result_to_parameters(self,
+                                   raw_result,
+                                   parameters):
         pass
 
-    def _finalize_fit(self, parameters, raw_result):
-        self._sync_result_to_parameters(parameters, raw_result)
+    def _finalize_fit(self,
+                      parameters,
+                      raw_result):
+        self._sync_result_to_parameters(parameters,
+                                        raw_result)
         success = self._check_success(raw_result)
         self.result = FitResults(
             success=success,
@@ -153,19 +186,38 @@ class MinimizerBase(ABC):
         self._start_tracking(minimizer_name)
 
         solver_args = self._prepare_solver_args(parameters)
-        raw_result = self._run_solver(objective_function, **solver_args)
+        raw_result = self._run_solver(objective_function,
+                                      **solver_args)
 
         self._stop_tracking()
 
-        result = self._finalize_fit(parameters, raw_result)
+        result = self._finalize_fit(parameters,
+                                    raw_result)
 
         return result
 
-    def _objective_function(self, engine_params, parameters, sample_models, experiments, calculator):
-        return self._compute_residuals(engine_params, parameters, sample_models, experiments, calculator)
+    def _objective_function(self,
+                            engine_params,
+                            parameters,
+                            sample_models,
+                            experiments,
+                            calculator):
+        return self._compute_residuals(engine_params,
+                                       parameters,
+                                       sample_models,
+                                       experiments,
+                                       calculator)
 
-    def _create_objective_function(self, parameters, sample_models, experiments, calculator):
+    def _create_objective_function(self,
+                                   parameters,
+                                   sample_models,
+                                   experiments,
+                                   calculator):
         return lambda engine_params: self._objective_function(
-            engine_params, parameters, sample_models, experiments, calculator
+            engine_params,
+            parameters,
+            sample_models,
+            experiments,
+            calculator
         )
 

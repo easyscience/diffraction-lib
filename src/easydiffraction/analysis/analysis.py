@@ -1,14 +1,30 @@
 import pandas as pd
 from tabulate import tabulate
 
-from easydiffraction.utils.formatting import paragraph, info, error
-from easydiffraction.utils.chart_plotter import ChartPlotter, DEFAULT_HEIGHT
+from easydiffraction.utils.formatting import (
+    paragraph,
+    warning
+)
+from easydiffraction.utils.chart_plotter import (
+    ChartPlotter,
+    DEFAULT_HEIGHT
+)
 from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.core.objects import (
+    Descriptor,
+    Parameter
+)
+from easydiffraction.core.singletons import (
+    ConstraintsHandler,
+    UidMapHandler
+)
 
+from .collections.aliases import ConstraintAliases
+from .collections.constraints import ConstraintExpressions
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from .minimizers.minimizer_factory import MinimizerFactory
-from .joint_fit_experiments import JointFitExperiments
+from easydiffraction.analysis.collections.joint_fit_experiments import JointFitExperiments
 
 
 class Analysis:
@@ -16,59 +32,178 @@ class Analysis:
 
     def __init__(self, project):
         self.project = project
+        self.aliases = ConstraintAliases()
+        self.constraints = ConstraintExpressions()
+        self.constraints_handler = ConstraintsHandler.get()
         self.calculator = Analysis._calculator  # Default calculator shared by project
         self._calculator_key = 'cryspy'  # Added to track the current calculator
         self._fit_mode = 'single'
         self.fitter = DiffractionMinimizer('lmfit (leastsq)')
 
-    def show_refinable_params(self):
-        self.project.sample_models.show_all_parameters_table()
-        self.project.experiments.show_all_parameters_table()
+    def _get_params_as_dataframe(self, params):
+        """
+        Convert a list of parameters to a DataFrame.
+        """
+        rows = []
+        for param in params:
+            common_attrs = {}
+            if isinstance(param, (Descriptor, Parameter)):
+                common_attrs = {
+                    'datablock': param.datablock_id,
+                    'category': param.category_key,
+                    'entry': param.collection_entry_id,
+                    'parameter': param.name,
+                    'value': param.value,
+                    'units': param.units,
+                    'fittable': False
+                }
+            param_attrs = {}
+            if isinstance(param, Parameter):
+                param_attrs = {
+                    'fittable': True,
+                    'free': param.free,
+                    'min': param.min,
+                    'max': param.max,
+                    'uncertainty': f"{param.uncertainty:.4f}" if param.uncertainty else "",
+                    'value': f"{param.value:.4f}",
+                    'units': param.units,
+                }
+            row = common_attrs | param_attrs
+            rows.append(row)
+
+        dataframe = pd.DataFrame(rows)
+
+        return dataframe
+
+    def _show_params(self, dataframe, column_headers):
+        """:
+        Display parameters in a tabular format.
+        """
+        dataframe = dataframe[column_headers]
+        indices = range(1, len(dataframe) + 1)  # Force starting from 1
+
+        print(tabulate(dataframe,
+                       headers=column_headers,
+                       tablefmt="fancy_outline",
+                       showindex=indices))
+
+    def show_all_params(self):
+        sample_models_params = self.project.sample_models.get_all_params()
+        experiments_params = self.project.experiments.get_all_params()
+
+        if not sample_models_params and not experiments_params:
+            print(warning(f"No parameters found."))
+            return
+
+        column_headers = ['datablock',
+                          'category',
+                          'entry',
+                          'parameter',
+                          'value',
+                          'fittable']
+
+        print(paragraph("All parameters for all sample models (🧩 data blocks)"))
+        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
+        self._show_params(sample_models_dataframe, column_headers=column_headers)
+
+        print(paragraph("All parameters for all experiments (🔬 data blocks)"))
+        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
+        self._show_params(experiments_dataframe, column_headers=column_headers)
+
+    def show_fittable_params(self):
+        sample_models_params = self.project.sample_models.get_fittable_params()
+        experiments_params = self.project.experiments.get_fittable_params()
+
+        if not sample_models_params and not experiments_params:
+            print(warning(f"No fittable parameters found."))
+            return
+
+        column_headers = ['datablock',
+                          'category',
+                          'entry',
+                          'parameter',
+                          'value',
+                          'uncertainty',
+                          'units',
+                          'free']
+
+        print(paragraph("Fittable parameters for all sample models (🧩 data blocks)"))
+        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
+        self._show_params(sample_models_dataframe, column_headers=column_headers)
+
+        print(paragraph("Fittable parameters for all experiments (🔬 data blocks)"))
+        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
+        self._show_params(experiments_dataframe, column_headers=column_headers)
 
     def show_free_params(self):
-        """
-        Displays only the parameters that are free to refine.
-        """
-        free_params = self.project.sample_models.get_free_params() + \
-                      self.project.experiments.get_free_params()
-
-        print(paragraph("Free Parameters"))
+        sample_models_params = self.project.sample_models.get_free_params()
+        experiments_params = self.project.experiments.get_free_params()
+        free_params = sample_models_params + experiments_params
 
         if not free_params:
-            print("No free parameters found.")
+            print(warning(f"No free parameters found."))
             return
 
-        # Convert a list of parameters to custom dictionaries
-        params = [
-            {
-                'cif block': param.block_name,
-                'cif parameter': param.cif_name,
-                'value': param.value,
-                'error': '' if getattr(param, 'uncertainty', 0.0) == 0.0 else param.uncertainty,
-                'units': param.units,
-            }
-            for param in free_params
-        ]
+        column_headers = ['datablock',
+                          'category',
+                          'entry',
+                          'parameter',
+                          'value',
+                          'uncertainty',
+                          'min',
+                          'max',
+                          'units']
 
-        df = pd.DataFrame(params)
+        print(paragraph("Free parameters for both sample models (🧩 data blocks) and experiments (🔬 data blocks)"))
+        dataframe = self._get_params_as_dataframe(free_params)
+        self._show_params(dataframe, column_headers=column_headers)
 
-        # Ensure columns exist
-        expected_cols = ["cif block", "cif parameter", "value", "error", "units"]
-        valid_cols = [col for col in expected_cols if col in df.columns]
+    def how_to_access_parameters(self, show_description=False):
+        sample_models_params = self.project.sample_models.get_all_params()
+        experiments_params = self.project.experiments.get_all_params()
+        params = {'sample_models': sample_models_params,
+                  'experiments': experiments_params}
 
-        if not valid_cols:
-            print("No valid columns found in free parameters DataFrame.")
+        if not params:
+            print(warning(f"No parameters found."))
             return
 
-        df = df[valid_cols]
+        project_varname = self.project._varname
 
-        try:
-            #print(tabulate(df, headers="keys", tablefmt="fancy_outline", showindex=False))
-            print(tabulate(df, headers="keys", tablefmt="fancy_outline"))
-        except ImportError:
-            print(df.to_string(index=False))
+        rows = []
+        for datablock_type, params in params.items():
+            for param in params:
+                if isinstance(param, (Descriptor, Parameter)):
+                    datablock_id = param.datablock_id
+                    category_key = param.category_key
+                    entry_id = param.collection_entry_id
+                    param_key = param.name
+                    description = param.description
+                    variable = f"{project_varname}.{datablock_type}['{datablock_id}'].{category_key}"
+                    if entry_id:
+                        variable += f"['{entry_id}']"
+                    variable += f".{param_key}"
+                    rows.append({'variable': variable,
+                                 'description': description})
 
-        return free_params
+        dataframe = pd.DataFrame(rows)
+
+        column_headers = ['variable']
+        if show_description:
+            column_headers = ['variable', 'description']
+        dataframe = dataframe[column_headers]
+
+        indices = range(1, len(dataframe) + 1)  # Force starting from 1
+
+        print(paragraph("How to access parameters"))
+        print("You can access parameters using the following syntax. "
+              "Just copy and paste it from the table below:")
+
+        print(tabulate(dataframe,
+                       headers=column_headers,
+                       tablefmt="fancy_outline",
+                       showindex=indices))
+
 
     def show_current_calculator(self):
         print(paragraph("Current calculator"))
@@ -145,17 +280,67 @@ class Analysis:
         print(paragraph("Current ffit mode"))
         print(self.fit_mode)
 
-    def calculate_pattern(self, expt_id):
+    def calculate_pattern(self, expt_name):
         # Pattern is calculated for the given experiment
-        experiment = self.project.experiments[expt_id]
+        experiment = self.project.experiments[expt_name]
         sample_models = self.project.sample_models
         calculated_pattern = self.calculator.calculate_pattern(sample_models, experiment)
         return calculated_pattern
 
-    def show_calc_chart(self, expt_id, x_min=None, x_max=None):
-        self.calculate_pattern(expt_id)
+    def show_constraints(self):
+        constraints_dict = self.constraints._items
 
-        experiment = self.project.experiments[expt_id]
+        if not self.constraints._items:
+            print(warning(f"No constraints defined."))
+            return
+
+        rows = []
+        for id, constraint in constraints_dict.items():
+            row = {
+                'id': id,
+                'lhs_alias': constraint.lhs_alias.value,
+                'rhs_expr': constraint.rhs_expr.value,
+                'full expression': f'{constraint.lhs_alias.value} = {constraint.rhs_expr.value}'
+            }
+            rows.append(row)
+
+        dataframe = pd.DataFrame(rows)
+
+        print(paragraph(f"User defined constraints"))
+        print(tabulate(dataframe,
+                       headers=dataframe.columns,
+                       tablefmt="fancy_outline",
+                       showindex=False))
+
+    def _update_uid_map(self):
+        """
+        Update the UID map for accessing parameters by UID.
+        This is needed for adding or removing constraints.
+        """
+        sample_models_params = self.project.sample_models.get_all_params()
+        experiments_params = self.project.experiments.get_all_params()
+        params = sample_models_params + experiments_params
+
+        UidMapHandler.get().set_uid_map(params)
+
+    def apply_constraints(self):
+        if not self.constraints._items:
+            print(warning(f"No constraints defined."))
+            return
+
+        sample_models_params = self.project.sample_models.get_fittable_params()
+        experiments_params = self.project.experiments.get_fittable_params()
+        fittable_params = sample_models_params + experiments_params
+
+        self._update_uid_map()
+        self.constraints_handler.set_aliases(self.aliases)
+        self.constraints_handler.set_expressions(self.constraints)
+        self.constraints_handler.apply(parameters=fittable_params)
+
+    def show_calc_chart(self, expt_name, x_min=None, x_max=None):
+        self.calculate_pattern(expt_name)
+
+        experiment = self.project.experiments[expt_name]
         pattern = experiment.datastore.pattern
 
         plotter = ChartPlotter()
@@ -164,24 +349,24 @@ class Analysis:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=paragraph(f"Calculated data for experiment 🔬 '{expt_id}'"),
+            title=paragraph(f"Calculated data for experiment 🔬 '{expt_name}'"),
             labels=['calc']
         )
 
     def show_meas_vs_calc_chart(self,
-                                expt_id,
+                                expt_name,
                                 x_min=None,
                                 x_max=None,
                                 show_residual=False,
                                 chart_height=DEFAULT_HEIGHT):
-        experiment = self.project.experiments[expt_id]
+        experiment = self.project.experiments[expt_name]
 
-        self.calculate_pattern(expt_id)
+        self.calculate_pattern(expt_name)
 
         pattern = experiment.datastore.pattern
 
         if pattern.meas is None or pattern.calc is None or pattern.x is None:
-            print(f"No data available for {expt_id}. Cannot display chart.")
+            print(f"No data available for {expt_name}. Cannot display chart.")
             return
 
         series = [pattern.meas, pattern.calc]
@@ -198,7 +383,7 @@ class Analysis:
             x_values=pattern.x,
             x_min=x_min,
             x_max=x_max,
-            title=paragraph(f"Measured vs Calculated data for experiment 🔬 '{expt_id}'"),
+            title=paragraph(f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"),
             labels=labels
         )
 
@@ -225,10 +410,10 @@ class Analysis:
             print(paragraph(f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"))
             self.fitter.fit(sample_models, experiments, calculator, weights=self.joint_fit_experiments)
         elif self.fit_mode == 'single':
-            for expt_id in list(experiments._items.keys()):
-                print(paragraph(f"Using experiment 🔬 '{expt_id}' for '{self.fit_mode}' fitting"))
-                experiment = experiments[expt_id]
-                dummy_experiments = Experiments()
+            for expt_name in experiments.ids:
+                print(paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"))
+                experiment = experiments[expt_name]
+                dummy_experiments = Experiments()  # TODO: Find a better name
                 dummy_experiments.add(experiment)
                 self.fitter.fit(sample_models, dummy_experiments, calculator)
         else:

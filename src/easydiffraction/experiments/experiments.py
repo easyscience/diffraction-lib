@@ -1,11 +1,11 @@
 import os.path
 
-from easydiffraction.utils.formatting import paragraph
-from easydiffraction.core.collection import Collection
+from easydiffraction.core.objects import Collection
 from easydiffraction.experiments.experiment import (
     BaseExperiment,
     ExperimentFactory
 )
+from easydiffraction.utils.formatting import paragraph
 
 
 class Experiments(Collection):
@@ -20,7 +20,7 @@ class Experiments(Collection):
     def add(
         self,
         experiment=None,
-        id=None,
+        name=None,
         sample_form=None,
         beam_mode=None,
         radiation_probe=None,
@@ -37,9 +37,9 @@ class Experiments(Collection):
             self._add_from_cif_path(cif_path)
         elif cif_str:
             self._add_from_cif_string(cif_str)
-        elif all([id, sample_form, beam_mode, radiation_probe, data_path]):
+        elif all([name, sample_form, beam_mode, radiation_probe, data_path]):
             self._add_from_data_path(
-                id=id,
+                name=name,
                 sample_form=sample_form,
                 beam_mode=beam_mode,
                 radiation_probe=radiation_probe,
@@ -51,7 +51,7 @@ class Experiments(Collection):
     def _add_prebuilt_experiment(self, experiment):
         if not isinstance(experiment, BaseExperiment):
             raise TypeError("Expected an instance of BaseExperiment or its subclass.")
-        self._experiments[experiment.id] = experiment
+        self._experiments[experiment.name] = experiment
 
     def _add_from_cif_path(self, cif_path):
         print(f"Loading Experiment from CIF path...")
@@ -62,7 +62,7 @@ class Experiments(Collection):
         raise NotImplementedError("CIF loading not implemented.")
 
     def _add_from_data_path(self,
-                            id,
+                            name,
                             sample_form,
                             beam_mode,
                             radiation_probe,
@@ -74,19 +74,19 @@ class Experiments(Collection):
         print(paragraph("Loading measured data from ASCII file"))
         print(os.path.abspath(data_path))
         experiment = ExperimentFactory.create(
-            id=id,
+            name=name,
             sample_form=sample_form,
             beam_mode=beam_mode,
             radiation_probe=radiation_probe
         )
         experiment._load_ascii_data_to_experiment(data_path)
-        self._experiments[experiment.id] = experiment
+        self._experiments[experiment.name] = experiment
 
     def remove(self, experiment_id):
         if experiment_id in self._experiments:
             del self._experiments[experiment_id]
 
-    def show_ids(self):
+    def show_names(self):
         print(paragraph("Defined experiments" + " 🔬"))
         print(self.ids)
 

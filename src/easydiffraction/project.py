@@ -1,8 +1,13 @@
 import os
 import datetime
+import tempfile
 from textwrap import wrap
+from varname import varname
 
-from easydiffraction.utils.formatting import paragraph, error
+from easydiffraction.utils.formatting import (
+    paragraph,
+    error
+)
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.analysis.analysis import Analysis
@@ -15,7 +20,7 @@ class ProjectInfo:
     """
 
     def __init__(self):
-        self._id = "untitled_project"  # Short unique project identifier
+        self._name = "untitled_project"  # Short unique project identifier
         self._title = "Untitled Project"
         self._description = ""
         self._path = os.getcwd()
@@ -23,9 +28,13 @@ class ProjectInfo:
         self._last_modified = datetime.datetime.now()
 
     @property
-    def id(self):
+    def name(self):
         """Return the project ID."""
-        return self._id
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     @property
     def title(self):
@@ -88,7 +97,7 @@ class ProjectInfo:
             formatted_description = "_project.description      ''"
 
         return (
-            f"_project.id               {self.id}\n"
+            f"_project.id               {self.name}\n"
             f"{title_str}\n"
             f"{formatted_description}\n"
             f"_project.created          '{self._created.strftime('%d %b %Y %H:%M:%S')}'\n"
@@ -103,7 +112,7 @@ class ProjectInfo:
         top = f"╒{'═' * (max_width + 2)}╕"
         bottom = f"╘{'═' * (max_width + 2)}╛"
 
-        print(paragraph(f"Project 📦 '{self.id}' info as cif"))
+        print(paragraph(f"Project 📦 '{self.name}' info as cif"))
         print(top)
         print("\n".join(padded_lines))
         print(bottom)
@@ -115,9 +124,9 @@ class Project:
     Provides access to sample models, experiments, analysis, and summary.
     """
 
-    def __init__(self, project_id="untitled_project", title="Untitled Project", description=""):
+    def __init__(self, name="untitled_project", title="Untitled Project", description=""):
         self.info = ProjectInfo()
-        self.info._id = project_id
+        self.info.name = name
         self.info.title = title
         self.info.description = description
         self.sample_models = SampleModels()
@@ -125,11 +134,12 @@ class Project:
         self.analysis = Analysis(self)
         self.summary = Summary(self)
         self._saved = False
+        self._varname = varname()
 
     @property
-    def id(self):
+    def name(self):
         """Convenience property to access the project's ID directly."""
-        return self.info.id
+        return self.info.name
 
     # ------------------------------------------
     #  Project File I/O
@@ -147,10 +157,13 @@ class Project:
         print('Loading project is not implemented yet.')
         self._saved = True
 
-    def save_as(self, dir_path: str):
+    def save_as(self, dir_path: str, temporary: bool = False):
         """
         Save the project into a new directory.
         """
+        if temporary:
+            tmp = tempfile.gettempdir()
+            dir_path = os.path.join(tmp, dir_path)
         self.info.path = dir_path
         self.save()
 
@@ -162,7 +175,7 @@ class Project:
             print(error("Project path not specified. Use save_as() to define the path first."))
             return
 
-        print(paragraph(f"Saving project 📦 '{self.id}' to"))
+        print(paragraph(f"Saving project 📦 '{self.name}' to"))
         print(os.path.abspath(self.info.path))
 
         os.makedirs(self.info.path, exist_ok=True)
@@ -176,7 +189,7 @@ class Project:
         sm_dir = os.path.join(self.info.path, "sample_models")
         os.makedirs(sm_dir, exist_ok=True)
         for model in self.sample_models:
-            file_name = f"{model.model_id}.cif"
+            file_name = f"{model.name}.cif"
             file_path = os.path.join(sm_dir, file_name)
             with open(file_path, "w") as f:
                 f.write(model.as_cif())
@@ -186,11 +199,11 @@ class Project:
         expt_dir = os.path.join(self.info.path, "experiments")
         os.makedirs(expt_dir, exist_ok=True)
         for experiment in self.experiments:
-            file_name = f"{experiment.id}.cif"
+            file_name = f"{experiment.name}.cif"
             file_path = os.path.join(expt_dir, file_name)
             with open(file_path, "w") as f:
                 f.write(experiment.as_cif())
-                print(f"✅ sample_models/{file_name}")
+                print(f"✅ experiments/{file_name}")
 
         # Save analysis
         with open(os.path.join(self.info.path, "analysis.cif"), "w") as f:

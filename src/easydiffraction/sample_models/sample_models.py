@@ -1,20 +1,22 @@
-from easydiffraction.sample_models.standard_components.space_group import SpaceGroup
-from easydiffraction.sample_models.standard_components.cell import Cell
-from easydiffraction.sample_models.iterable_components.atom_sites import AtomSites
-from easydiffraction.core.collection import Collection
-from easydiffraction.utils.formatting import paragraph
-from easydiffraction.crystallography import crystallography
 from easydiffraction.crystallography import crystallography as ecr
+from easydiffraction.core.objects import (
+    Collection,
+    Datablock
+)
+from easydiffraction.sample_models.components.space_group import SpaceGroup
+from easydiffraction.sample_models.components.cell import Cell
+from easydiffraction.sample_models.collections.atom_sites import AtomSites
+from easydiffraction.utils.formatting import paragraph
 
 
-class SampleModel:
+class SampleModel(Datablock):
     """
     Represents an individual structural/magnetic model of a sample.
     Wraps crystallographic information including space group, cell, and atomic sites.
     """
 
-    def __init__(self, model_id=None, cif_path=None, cif_str=None):
-        self.model_id = model_id or "sample_model"
+    def __init__(self, name, cif_path=None, cif_str=None):
+        self.name = name
         self.space_group = SpaceGroup()
         self.cell = Cell()
         self.atom_sites = AtomSites()
@@ -36,7 +38,7 @@ class SampleModel:
                       'angle_alpha': self.cell.angle_alpha.value,
                       'angle_beta': self.cell.angle_beta.value,
                       'angle_gamma': self.cell.angle_gamma.value}
-        space_group_name = self.space_group.name.value
+        space_group_name = self.space_group.name_h_m.value
         ecr.apply_cell_symmetry_constraints(cell=dummy_cell,
                                             name_hm=space_group_name)
         self.cell.length_a.value = dummy_cell['lattice_a']
@@ -47,8 +49,8 @@ class SampleModel:
         self.cell.angle_gamma.value = dummy_cell['angle_gamma']
 
     def _apply_atomic_coordinates_symmetry_constraints(self):
-        space_group_name = self.space_group.name.value
-        space_group_coord_code = self.space_group.setting.value
+        space_group_name = self.space_group.name_h_m.value
+        space_group_coord_code = self.space_group.it_coordinate_system_code.value
         for atom in self.atom_sites:
             dummy_atom = {"fract_x": atom.fract_x.value,
                           "fract_y": atom.fract_y.value,
@@ -88,13 +90,13 @@ class SampleModel:
             grid_size (int): Size of the ASCII grid (default is 20).
         """
 
-        print(paragraph(f"Sample model 🧩 '{self.model_id}' structure view"))
+        print(paragraph(f"Sample model 🧩 '{self.name}' structure view"))
         print("Not implemented yet.")
 
     def show_params(self):
         """Display structural parameters (space group, unit cell, atomic sites)."""
-        print(f"\nSampleModel ID: {self.model_id}")
-        print(f"Space group: {self.space_group.name}")
+        print(f"\nSampleModel ID: {self.name}")
+        print(f"Space group: {self.space_group.name_h_m}")
         print(f"Cell parameters: {self.cell.as_dict()}")
         print("Atom sites:")
         self.atom_sites.show()
@@ -106,7 +108,7 @@ class SampleModel:
             str: CIF string representation of the sample model.
         """
         # Data block header
-        cif_lines = [f"data_{self.model_id}"]
+        cif_lines = [f"data_{self.name}"]
 
         # Space Group
         cif_lines += ["", self.space_group.as_cif()]
@@ -127,11 +129,10 @@ class SampleModel:
         top = f"╒{'═' * (max_width + 2)}╕"
         bottom = f"╘{'═' * (max_width + 2)}╛"
 
-        print(paragraph(f"Sample model 🧩 '{self.model_id}' as cif"))
+        print(paragraph(f"Sample model 🧩 '{self.name}' as cif"))
         print(top)
         print("\n".join(padded_lines))
         print(bottom)
-
 
 
 class SampleModels(Collection):
@@ -143,7 +144,7 @@ class SampleModels(Collection):
         super().__init__()  # Initialize Collection
         self._models = self._items  # Alias for legacy support
 
-    def add(self, model=None, model_id=None, cif_path=None, cif_str=None):
+    def add(self, model=None, name=None, cif_path=None, cif_str=None):
         """
         Add a new sample model to the collection.
         Dispatches based on input type: pre-built model or parameters for new creation.
@@ -151,14 +152,14 @@ class SampleModels(Collection):
         if model:
             self._add_prebuilt_sample_model(model)
         else:
-            self._create_and_add_sample_model(model_id, cif_path, cif_str)
+            self._create_and_add_sample_model(name, cif_path, cif_str)
 
-    def remove(self, model_id):
+    def remove(self, name):
         """
         Remove a sample model by its ID.
         """
-        if model_id in self._models:
-            del self._models[model_id]
+        if name in self._models:
+            del self._models[name]
 
     def get_ids(self):
         """
@@ -166,7 +167,7 @@ class SampleModels(Collection):
         """
         return list(self._models.keys())
 
-    def show_ids(self):
+    def show_names(self):
         """
         List all model IDs in the collection.
         """
@@ -193,9 +194,9 @@ class SampleModels(Collection):
         from easydiffraction.sample_models.sample_models import SampleModel  # avoid circular import
         if not isinstance(model, SampleModel):
             raise TypeError("Expected an instance of SampleModel")
-        self._models[model.model_id] = model
+        self._models[model.name] = model
 
-    def _create_and_add_sample_model(self, model_id=None, cif_path=None, cif_str=None):
+    def _create_and_add_sample_model(self, name=None, cif_path=None, cif_str=None):
         """
         Create a SampleModel instance and add it to the collection.
         """
@@ -205,9 +206,9 @@ class SampleModels(Collection):
             model = SampleModel(cif_path=cif_path)
         elif cif_str:
             model = SampleModel(cif_str=cif_str)
-        elif model_id:
-            model = SampleModel(model_id=model_id)
+        elif name:
+            model = SampleModel(name=name)
         else:
-            raise ValueError("You must provide a model_id, cif_path, or cif_str.")
+            raise ValueError("You must provide a name, cif_path, or cif_str.")
 
-        self._models[model.model_id] = model
+        self._models[model.name] = model

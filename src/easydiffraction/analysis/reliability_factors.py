@@ -44,7 +44,7 @@ def get_reliability_inputs(sample_models, experiments, calculator):
     y_obs_all = []
     y_calc_all = []
     y_err_all = []
-    for expt_id, experiment in experiments._items.items():
+    for expt_name, experiment in experiments._items.items():
         y_calc = calculator.calculate_pattern(sample_models, experiment)
         y_meas = experiment.datastore.pattern.meas
         y_meas_su = experiment.datastore.pattern.meas_su

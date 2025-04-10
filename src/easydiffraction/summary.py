@@ -1,7 +1,10 @@
 from tabulate import tabulate
 from textwrap import wrap
 
-from easydiffraction.utils.formatting import paragraph, section
+from easydiffraction.utils.formatting import (
+    paragraph,
+    section
+)
 
 
 class Summary:
@@ -9,7 +12,7 @@ class Summary:
     Generates reports and exports results from the project.
     
     This class collects and presents all relevant information
-    about the refined model, experiments, and analysis results.
+    about the fitted model, experiments, and analysis results.
     """
 
     def __init__(self, project):
@@ -45,10 +48,10 @@ class Summary:
         print(section("Crystallographic data"))
         for model in self.project.sample_models._models.values():
             print(paragraph("Phase datablock"))
-            print(f'🧩 {model.model_id}')
+            print(f'🧩 {model.name}')
 
             print(paragraph("Space group"))
-            print(model.space_group.name.value)
+            print(model.space_group.name_h_m.value)
 
             print(paragraph("Cell parameters"))
             cell_data = [[k.replace('length_', '').replace('angle_', ''), f"{v:.4f}"] for k, v in model.cell.as_dict().items()]
@@ -61,11 +64,11 @@ class Summary:
                 fract_y = site.fract_y.value
                 fract_z = site.fract_z.value
                 b_iso = site.b_iso.value
+                occ = site.occupancy.value
                 atom_table.append([
                     site.label.value, site.type_symbol.value,
-                    f"{fract_x:.4f}", f"{fract_y:.4f}", f"{fract_z:.4f}",
-                    site.occupancy.value,
-                    f"{b_iso:.4f}"
+                    f"{fract_x:.5f}", f"{fract_y:.5f}", f"{fract_z:.5f}",
+                    f"{occ:.5f}", f"{b_iso:.5f}"
                 ])
             headers = ["Label", "Type", "fract_x", "fract_y", "fract_z", "Occupancy", "B_iso"]
             print(tabulate(atom_table, headers=headers, tablefmt="fancy_outline"))
@@ -74,7 +77,7 @@ class Summary:
         print(section("Experiments"))
         for expt in self.project.experiments._experiments.values():
             print(paragraph("Experiment datablock"))
-            print(f'🔬 {expt.id}')
+            print(f'🔬 {expt.name}')
 
             print(paragraph("Experiment type"))
             print(f'{expt.type.sample_form.value}, {expt.type.radiation_probe.value}, {expt.type.beam_mode.value}')
@@ -122,6 +125,6 @@ class Summary:
 
     def as_cif(self) -> str:
         """
-        Export the final refined data and analysis results as CIF format.
+        Export the final fitted data and analysis results as CIF format.
         """
         return "To be added..."

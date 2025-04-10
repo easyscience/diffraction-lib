@@ -5,67 +5,87 @@ from abc import ABC, abstractmethod
 from numpy.polynomial.chebyshev import chebval
 from scipy.interpolate import interp1d
 
-from easydiffraction.utils.formatting import (paragraph,
-                                              warning)
-from easydiffraction.core.parameter import (Parameter,
-                                            Descriptor)
-from easydiffraction.core.component import (IterableComponent,
-                                            IterableComponentRow)
+from easydiffraction.utils.formatting import (
+    paragraph,
+    warning
+)
+from easydiffraction.core.objects import (
+    Parameter,
+    Descriptor,
+    Component,
+    Collection
+)
 from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
 
 
-class Point(IterableComponentRow):
+class Point(Component):
     def __init__(self, x: float, y: float):
         super().__init__()
 
         self.x = Descriptor(
             value=x,
+            name='x',
             cif_name='line_segment_X',
             description="X-coordinates used to create many straight-line segments representing the background in a calculated diffractogram."
         )
         self.y = Parameter(
-            value=y,
+            value=y,  # TODO: rename to intensity
+            name='y',  # TODO: rename to intensity
             cif_name='line_segment_intensity',
             description="Intensity used to create many straight-line segments representing the background in a calculated diffractogram"
         )
 
         self._locked = True  # Lock further attribute additions
 
-    # TODO: Temporary workaround for getting str type for id.value
-    # TODO: Switch to str type for id?
     @property
-    def id(self):
-        return Descriptor(f"{self.x.value}", cif_name="blablabla")
+    def cif_category_key(self):
+        return "pd_background"
+
+    @property
+    def category_key(self):
+        return "background"
+
+    @property
+    def _entry_id(self):
+        return f"{self.x.value}"
 
 
-class PolynomialTerm(IterableComponentRow):
+class PolynomialTerm(Component):
     def __init__(self, order, coef):
         super().__init__()
 
         self.order = Descriptor(
             value=order,
+            name='chebyshev_order',
             cif_name='Chebyshev_order',
             description="The value of an order used in a Chebyshev polynomial equation representing the background in a calculated diffractogram"
         )
         self.coef = Parameter(
             value=coef,
+            name='chebyshev_coef',
             cif_name='Chebyshev_coef',
             description="The value of a coefficient used in a Chebyshev polynomial equation representing the background in a calculated diffractogram"
         )
 
         self._locked = True  # Lock further attribute additions
 
-    # TODO: Temporary workaround for getting str type for id.value
-    # TODO: Switch to str type for id?
     @property
-    def id(self):
-        return Descriptor(f"{self.order.value}", cif_name="blablabla")
+    def cif_category_key(self):
+        return "pd_background"
+
+    @property
+    def category_key(self):
+        return "background"
+
+    @property
+    def _entry_id(self):
+        return f"{self.order.value}"
 
 
-class BackgroundBase(IterableComponent):
+class BackgroundBase(Collection):
     @property
-    def cif_category_name(self):
-        return "_pd_background"
+    def _type(self):
+        return "category"  # datablock or category
 
     @abstractmethod
     def add(self, *args):
@@ -89,16 +109,16 @@ class LineSegmentBackground(BackgroundBase):
     def add(self, x, y):
         """Add a background point."""
         point = Point(x=x, y=y)
-        self._rows.append(point)
+        self._items[point._entry_id] = point
 
     def calculate(self, x_data):
         """Interpolate background points over x_data."""
-        if not self._rows:
+        if not self._items:
             print(warning('No background points found. Setting background to zero.'))
             return np.zeros_like(x_data)
 
-        background_x = np.array([point.x.value for point in self._rows])
-        background_y = np.array([point.y.value for point in self._rows])
+        background_x = np.array([point.x.value for point in self._items.values()])
+        background_y = np.array([point.y.value for point in self._items.values()])
         interp_func = interp1d(
             background_x, background_y,
             kind='linear',
@@ -112,7 +132,7 @@ class LineSegmentBackground(BackgroundBase):
         header = ["X", "Intensity"]
         table_data = []
 
-        for point in self._rows:
+        for point in self._items.values():
             x = point.x.value
             y = point.y.value
             table_data.append([x, y])
@@ -137,16 +157,16 @@ class ChebyshevPolynomialBackground(BackgroundBase):
     def add(self, order, coef):
         """Add a polynomial term as (order, coefficient)."""
         term = PolynomialTerm(order=order, coef=coef)
-        self._rows.append(term)
+        self._items[term._entry_id] = term
 
     def calculate(self, x_data):
         """Evaluate polynomial background over x_data."""
-        if not self._rows:
+        if not self._items:
             print(warning('No background points found. Setting background to zero.'))
             return np.zeros_like(x_data)
 
         u = (x_data - x_data.min()) / (x_data.max() - x_data.min()) * 2 - 1  # scale to [-1, 1]
-        coefs = [term.coef.value for term in self._rows]
+        coefs = [term.coef.value for term in self._items.values()]
         y_data = chebval(u, coefs)
         return y_data
 
@@ -154,7 +174,7 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         header = ["Order", "Coefficient"]
         table_data = []
 
-        for term in self._rows:
+        for term in self._items.values():
             order = term.order.value
             coef = term.coef.value
             table_data.append([order, coef])

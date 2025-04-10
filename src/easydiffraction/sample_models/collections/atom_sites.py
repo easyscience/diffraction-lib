@@ -1,13 +1,16 @@
-from easydiffraction.core.parameter import (Parameter,
-                                            Descriptor)
-from easydiffraction.core.component import (IterableComponent,
-                                            IterableComponentRow)
+from easydiffraction.core.objects import (
+    Descriptor,
+    Parameter,
+    Component,
+    Collection
+)
 
 
-class AtomSite(IterableComponentRow):
+class AtomSite(Component):
     """
     Represents a single atom site within the crystal structure.
     """
+
     def __init__(self,
                  label: str,
                  type_symbol: str,
@@ -22,55 +25,70 @@ class AtomSite(IterableComponentRow):
 
         self.label = Descriptor(
             value=label,
-            cif_name="label"
+            name="label",
+            cif_name="label",
         )
         self.type_symbol = Descriptor(
             value=type_symbol,
-            cif_name="type_symbol"
+            name="type_symbol",
+            cif_name="type_symbol",
         )
         self.adp_type = Descriptor(
             value=adp_type,
-            cif_name="ADP_type"
+            name="adp_type",
+            cif_name="ADP_type",
         )
         self.wyckoff_letter = Descriptor(
             value=wyckoff_letter,
+            name="wyckoff_letter",
             cif_name="Wyckoff_letter"
         )
         self.fract_x = Parameter(
             value=fract_x,
-            cif_name="fract_x"
+            name="fract_x",
+            cif_name="fract_x",
         )
         self.fract_y = Parameter(
             value=fract_y,
-            cif_name="fract_y"
+            name="fract_y",
+            cif_name="fract_y",
         )
         self.fract_z = Parameter(
             value=fract_z,
-            cif_name="fract_z"
+            name="fract_z",
+            cif_name="fract_z",
         )
         self.occupancy = Parameter(
             value=occupancy,
-            cif_name="occupancy"
+            name="occupancy",
+            cif_name="occupancy",
         )
         self.b_iso = Parameter(
             value=b_iso,
-            cif_name="B_iso_or_equiv"
+            name="b_iso",
+            cif_name="B_iso_or_equiv",
         )
 
-    # TODO: Switch to str type for id?
     @property
-    def id(self):
-        return self.label
+    def cif_category_key(self):
+        return "atom_site"
+
+    @property
+    def category_key(self):
+        return "atom_site"
+
+    @property
+    def _entry_id(self):
+        return self.label.value
 
 
-class AtomSites(IterableComponent):
+class AtomSites(Collection):
     """
     Collection of AtomSite instances.
-    Provides methods to add, show, and access atom sites.
     """
     @property
-    def cif_category_name(self):
-        return "_atom_site"
+    def _type(self):
+        return "category"  # datablock or category
 
     def add(self,
             label: str,
@@ -94,4 +112,4 @@ class AtomSites(IterableComponent):
                         occupancy,
                         b_iso,
                         adp_type)
-        self._rows.append(site)
+        self._items[site._entry_id] = site

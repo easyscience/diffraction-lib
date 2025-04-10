@@ -9,7 +9,8 @@ class LmfitMinimizer(MinimizerBase):
     Minimizer using the lmfit package.
     """
 
-    def __init__(self, name='lmfit',
+    def __init__(self,
+                 name='lmfit',
                  method=DEFAULT_METHOD,
                  max_iterations=DEFAULT_MAX_ITERATIONS):
         super().__init__(name=name,
@@ -28,7 +29,9 @@ class LmfitMinimizer(MinimizerBase):
             )
         return {'engine_parameters': engine_parameters}
 
-    def _run_solver(self, objective_function, **kwargs):
+    def _run_solver(self,
+                    objective_function,
+                    **kwargs):
         engine_parameters = kwargs.get('engine_parameters')
 
         return lmfit.minimize(objective_function,
@@ -38,7 +41,9 @@ class LmfitMinimizer(MinimizerBase):
                               nan_policy='propagate',
                               max_nfev=self.max_iterations)
 
-    def _sync_result_to_parameters(self, parameters, raw_result):
+    def _sync_result_to_parameters(self,
+                                   parameters,
+                                   raw_result):
         if hasattr(raw_result, 'params'):
             param_values = raw_result.params
         else:
@@ -48,7 +53,7 @@ class LmfitMinimizer(MinimizerBase):
             param_result = param_values.get(param.uid)
             if param_result is not None:
                 param.value = param_result.value
-                param.error = getattr(param_result, 'stderr', None)
+                param.uncertainty = getattr(param_result, 'stderr', None)
 
     def _check_success(self, raw_result):
         """

@@ -1,6 +1,6 @@
 import copy
 import numpy as np
-from .calculator_base import CalculatorBase  # Assuming you have a base interface
+from .calculator_base import CalculatorBase
 from easydiffraction.utils.formatting import warning
 
 try:
@@ -35,16 +35,13 @@ class CryspyCalculator(CalculatorBase):
                                         sample_model,
                                         experiment,
                                         called_by_minimizer=False):
-        # TODO: We need to avoid re-creating the cryspy object every time.
-        # Instead, we should update the cryspy_dict with the new sample model
-        # and experiment. Expected to speed up the calculation 10 times!
-
-        #_cryspy_expt_id = experiment.id
-        #_is_cryspy_dict = bool(self._cryspy_dict)
-        #_called_by_minimizer = called_by_minimizer
-
+        # We only recreate the cryspy_obj if this method is
+        # - NOT called by the minimizer, or
+        # - the cryspy_dict is NOT yet created.
+        # In other cases, we are modifying the existing cryspy_dict
+        # This allows significantly speeding up the calculation
         if called_by_minimizer:
-            if self._cryspy_dicts and experiment.id in self._cryspy_dicts:
+            if self._cryspy_dicts and experiment.name in self._cryspy_dicts:
                 cryspy_dict = self._recreate_cryspy_dict(sample_model, experiment)
             else:
                 cryspy_obj = self._recreate_cryspy_obj(sample_model, experiment)
@@ -53,11 +50,11 @@ class CryspyCalculator(CalculatorBase):
             cryspy_obj = self._recreate_cryspy_obj(sample_model, experiment)
             cryspy_dict = cryspy_obj.get_dictionary()
 
-        self._cryspy_dicts[experiment.id] = copy.deepcopy(cryspy_dict)
+        self._cryspy_dicts[experiment.name] = copy.deepcopy(cryspy_dict)
 
         # Calculate pattern using cryspy
         cryspy_in_out_dict = {}
-        calc_result = rhochi_calc_chi_sq_by_dictionary(
+        rhochi_calc_chi_sq_by_dictionary(
             cryspy_dict,
             dict_in_out=cryspy_in_out_dict,
             flag_use_precalculated_data=False,
@@ -65,10 +62,13 @@ class CryspyCalculator(CalculatorBase):
         )
 
         # Get cryspy block name based on experiment type
-        if experiment.type.beam_mode.value == "constant wavelength":
-            cryspy_block_name = f"pd_{experiment.id}"
-        elif experiment.type.beam_mode.value == "time-of-flight":
-            cryspy_block_name = f"tof_{experiment.id}"
+        prefixes = {
+            "constant wavelength": "pd",
+            "time-of-flight": "tof"
+        }
+        beam_mode = experiment.type.beam_mode.value
+        if beam_mode in prefixes.keys():
+            cryspy_block_name = f"{prefixes[beam_mode]}_{experiment.name}"
         else:
             print(f"[CryspyCalculator] Error: Unknown beam mode {experiment.type.beam_mode.value}")
             return []
@@ -85,15 +85,12 @@ class CryspyCalculator(CalculatorBase):
         return y_calc_total
 
     def _recreate_cryspy_dict(self, sample_model, experiment):
-        cryspy_dict = copy.deepcopy(self._cryspy_dicts[experiment.id])
+        cryspy_dict = copy.deepcopy(self._cryspy_dicts[experiment.name])
 
         # ---------- Update sample model parameters ----------
 
-        cryspy_model_id = f'crystal_{sample_model.model_id}'
+        cryspy_model_id = f'crystal_{sample_model.name}'
         cryspy_model_dict = cryspy_dict[cryspy_model_id]
-
-        # Apply symmetry constraints
-        sample_model.apply_symmetry_constraints()
 
         # Cell
         cryspy_cell = cryspy_model_dict['unit_cell_parameters']
@@ -124,8 +121,8 @@ class CryspyCalculator(CalculatorBase):
         # ---------- Update experiment parameters ----------
 
         if experiment.type.beam_mode.value == 'constant wavelength':
-            cryspy_expt_id = f'pd_{experiment.id}'  # TODO: use expt_id as in the SampleModel? Or change there for id instead of model_id?
-            cryspy_expt_dict = cryspy_dict[cryspy_expt_id]
+            cryspy_expt_name = f'pd_{experiment.name}'  # TODO: use expt_name as in the SampleModel? Or change there for id instead of model_id?
+            cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
 
             # Instrument
             cryspy_expt_dict['offset_ttheta'][0] = np.deg2rad(experiment.instrument.calib_twotheta_offset.value)
@@ -140,8 +137,8 @@ class CryspyCalculator(CalculatorBase):
             cryspy_resolution[4] = experiment.peak.broad_lorentz_y.value
 
         elif experiment.type.beam_mode.value == 'time-of-flight':
-            cryspy_expt_id = f'tof_{experiment.id}'  # TODO: use expt_id as in the SampleModel? Or change there for id instead of model_id?
-            cryspy_expt_dict = cryspy_dict[cryspy_expt_id]
+            cryspy_expt_name = f'tof_{experiment.name}'  # TODO: use expt_name as in the SampleModel? Or change there for id instead of model_id?
+            cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
 
             # Instrument
             cryspy_expt_dict['zero'][0] = experiment.instrument.calib_d_to_tof_offset.value
@@ -190,7 +187,7 @@ class CryspyCalculator(CalculatorBase):
         instrument = getattr(experiment, "instrument", None)
         peak = getattr(experiment, "peak", None)
 
-        cif_lines = [f"data_{experiment.id}"]
+        cif_lines = [f"data_{experiment.name}"]
 
         # STANDARD CATEGORIES
 
@@ -268,7 +265,7 @@ class CryspyCalculator(CalculatorBase):
         cif_lines.append("loop_")
         cif_lines.append("_phase_label")
         cif_lines.append("_phase_scale")
-        cif_lines.append(f"{linked_phase.model_id} 1.0")
+        cif_lines.append(f"{linked_phase.name} 1.0")
 
         # Background category
         # Force background to be zero, as we handle it independently of the

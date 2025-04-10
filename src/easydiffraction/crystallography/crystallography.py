@@ -1,4 +1,8 @@
-from sympy import symbols, sympify, simplify
+from sympy import (
+    symbols,
+    sympify,
+    simplify
+)
 
 from cryspy.A_functions_base.function_2_space_group import (
     get_crystal_system_by_it_number,
@@ -66,6 +70,7 @@ def apply_atom_site_symmetry_constraints(atom_site: dict,
                                          name_hm: str,
                                          coord_code,
                                          wyckoff_letter: str) -> dict:
+
     it_number = get_it_number_by_name_hm_short(name_hm)
     if it_number is None:
         error_msg = f"Failed to get IT_number for name_H-M '{name_hm}'"
@@ -78,7 +83,14 @@ def apply_atom_site_symmetry_constraints(atom_site: dict,
         print(error_msg)
         return atom_site
 
+    # 1 - OK
+    # TODO: This is very slow!!!
+
     result = get_symop_pcentr_multiplicity_letter_site_symmetry_coords_xyz_2(it_number, it_coordinate_system_code)
+
+    #return atom_site
+    # 2 - NOT OK
+
     letter_list = result[3]
     coords_xyz_list = result[5]
 
