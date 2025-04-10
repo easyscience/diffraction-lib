@@ -1,7 +1,7 @@
 import numpy as np
 from abc import ABC, abstractmethod
 
-from easydiffraction.core.singletons import ConstraintsHandler_OLD, ConstraintsHandler
+from easydiffraction.core.singletons import ConstraintsHandler
 
 
 class CalculatorBase(ABC):
@@ -47,9 +47,11 @@ class CalculatorBase(ABC):
             sample_model_scale = linked_phase.scale.value
             sample_model = sample_models[sample_model_id]
 
-            sample_model_y_calc = self._calculate_single_model_pattern(sample_model,
-                                                                       experiment,
-                                                                       called_by_minimizer=called_by_minimizer)
+            sample_model_y_calc = self._calculate_single_model_pattern(
+                sample_model,
+                experiment,
+                called_by_minimizer=called_by_minimizer
+            )
 
             sample_model_y_calc_scaled = sample_model_scale * sample_model_y_calc
             y_calc_scaled += sample_model_y_calc_scaled
