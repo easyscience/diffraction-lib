@@ -19,8 +19,8 @@ from easydiffraction.core.singletons import (
     UidMapHandler
 )
 
-from .collections.aliases import ConstraintAliases
-from .collections.constraints import ConstraintExpressions
+from .collections.aliases import Aliases
+from .collections.constraints import Constraints
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from .minimizers.minimizer_factory import MinimizerFactory
@@ -32,8 +32,8 @@ class Analysis:
 
     def __init__(self, project):
         self.project = project
-        self.aliases = ConstraintAliases()
-        self.constraints = ConstraintExpressions()
+        self.aliases = Aliases()
+        self.constraints = Constraints()
         self.constraints_handler = ConstraintsHandler.get()
         self.calculator = Analysis._calculator  # Default calculator shared by project
         self._calculator_key = 'cryspy'  # Added to track the current calculator
@@ -328,13 +328,14 @@ class Analysis:
             print(warning(f"No constraints defined."))
             return
 
+        self._update_uid_map()
+        self.constraints_handler.set_aliases(self.aliases)
+        self.constraints_handler.set_constraints(self.constraints)
+
         sample_models_params = self.project.sample_models.get_fittable_params()
         experiments_params = self.project.experiments.get_fittable_params()
         fittable_params = sample_models_params + experiments_params
 
-        self._update_uid_map()
-        self.constraints_handler.set_aliases(self.aliases)
-        self.constraints_handler.set_expressions(self.constraints)
         self.constraints_handler.apply(parameters=fittable_params)
 
     def show_calc_chart(self, expt_name, x_min=None, x_max=None):

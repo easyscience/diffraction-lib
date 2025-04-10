@@ -5,7 +5,7 @@ from easydiffraction.core.objects import (
 )
 
 
-class ConstraintExpression(Component):
+class Constraint(Component):
     def __init__(self,
                  id: str,
                  lhs_alias: str,
@@ -30,18 +30,18 @@ class ConstraintExpression(Component):
 
     @property
     def cif_category_key(self):
-        return "constraint_expression"
+        return "constraint"
 
     @property
     def category_key(self):
-        return "constraint_expression"
+        return "constraint"
 
     @property
     def _entry_id(self):
         return self.id.value
 
 
-class ConstraintExpressions(Collection):
+class Constraints(Collection):
     @property
     def _type(self):
         return "category"  # datablock or category
@@ -50,5 +50,5 @@ class ConstraintExpressions(Collection):
             id: str,
             lhs_alias: str,
             rhs_expr: str):
-        expression_obj = ConstraintExpression(id, lhs_alias, rhs_expr)
+        expression_obj = Constraint(id, lhs_alias, rhs_expr)
         self._items[expression_obj.id.value] = expression_obj
