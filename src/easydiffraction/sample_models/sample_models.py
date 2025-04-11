@@ -57,7 +57,7 @@ class SampleModel(Datablock):
     @space_group.setter
     def space_group(self, new_space_group: SpaceGroup):
         self._space_group = new_space_group
-        self._space_group.datablock_id = self.name
+        #self._space_group.datablock_id = self.name
 
     # ----
     # Cell
@@ -72,7 +72,7 @@ class SampleModel(Datablock):
         if not isinstance(new_cell, Cell):
             raise TypeError("Cell must be an instance of Cell.")
         self._cell = new_cell
-        self._cell.datablock_id = self.name
+        #self._cell.datablock_id = self.name
 
     # ----------
     # Atom sites
@@ -85,7 +85,7 @@ class SampleModel(Datablock):
     @atom_sites.setter
     def atom_sites(self, new_atom_sites: AtomSites):
         self._atom_sites = new_atom_sites
-        self._atom_sites.datablock_id = self.name
+        #self._atom_sites.datablock_id = self.name
 
     # --------------------
     # Symmetry constraints
@@ -93,7 +93,7 @@ class SampleModel(Datablock):
 
     def apply_symmetry_constraints(self):
         self._apply_cell_symmetry_constraints()
-        self._apply_atomic_coordinates_symmetry_constraints()
+        #self._apply_atomic_coordinates_symmetry_constraints()
         self._apply_atomic_displacement_symmetry_constraints()
 
     def _apply_cell_symmetry_constraints(self):

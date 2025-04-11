@@ -22,7 +22,7 @@ class Descriptor:
                  name,  # ED parameter name (to access it in the code)
                  cif_name,  # CIF parameter name (to show it in the CIF)
                  pretty_name=None,  # Pretty name (to show it in the table)
-                 datablock_id='None-from-Descriptor-init', # Parent datablock name
+                 datablock_id=None, # Parent datablock name
                  category_key=None,  # ED parent category name
                  cif_category_key=None,  # CIF parent category name
                  collection_entry_id=None, # Parent collection entry id
@@ -34,16 +34,18 @@ class Descriptor:
         self._value = value
         self.name = name
         self.cif_name = cif_name
-        self.pretty_name = pretty_name,
-        self.datablock_id = datablock_id
+        self.pretty_name = pretty_name
+        self._datablock_id = datablock_id
         self.category_key = category_key
         self.cif_category_key = cif_category_key
-        self.collection_entry_id = collection_entry_id
+        self._collection_entry_id = collection_entry_id
         self.units = units
         self._description = description
         self._editable = editable
 
-        self._uid = self._generate_random_unique_id()
+        self._human_uid = self._generate_human_readable_unique_id()
+
+        UidMapHandler.get().add_to_uid_map(self)
 
     def _generate_random_unique_id(self):
         # Derived class Parameter will use this unique id for the
@@ -63,14 +65,11 @@ class Descriptor:
         #  - "block-id.category-name.entry-id.parameter-name": "lbco.atom_site.Ba.fract_x"
         # This need to be called after the parameter is created and all its
         # attributes are set.
-        uid = f"{self.datablock_id}.{self.category_key}"
+        uid = f"{self.datablock_id}.{self.cif_category_key}"
         if self.collection_entry_id:
             uid += f".{self.collection_entry_id}"
-        uid += f".{self.name}"
+        uid += f".{self.cif_name}"
         return uid
-
-    def _set_human_readable_unique_id(self):
-        self._uid = self._generate_human_readable_unique_id()
 
     @property
     def datablock_id(self):
@@ -79,10 +78,37 @@ class Descriptor:
     @datablock_id.setter
     def datablock_id(self, new_id):
         self._datablock_id = new_id
+        # Update the unique id, when datablock_id attribute is of
+        # the parameter is changed
+        self.uid = self._generate_human_readable_unique_id()
+
+    @property
+    def collection_entry_id(self):
+        return self._collection_entry_id
+
+    @collection_entry_id.setter
+    def collection_entry_id(self, new_id):
+        self._collection_entry_id = new_id
+        # Update the unique id, when datablock_id attribute is of
+        # the parameter is changed
+        self.uid = self._generate_human_readable_unique_id()
 
     @property
     def uid(self):
-        return self._uid
+        return self._human_uid
+
+    @uid.setter
+    def uid(self, new_uid):
+        # This should be used only for testing purposes.
+        # The uid is generated automatically and should not be changed.
+        # Update the unique id in the global uid map
+        old_uid = self._human_uid
+        self._human_uid = new_uid
+        UidMapHandler.get().replace_uid(old_uid, new_uid)
+
+    @property
+    def minimizer_uid(self):
+        return self.uid.replace(".", "__")
 
     @property
     def value(self):
@@ -113,7 +139,7 @@ class Parameter(Descriptor):
                  name,
                  cif_name,
                  pretty_name=None,
-                 datablock_id='None-from-Parameter-init', # Parent datablock name
+                 datablock_id=None, # Parent datablock name
                  category_key=None,
                  cif_category_key=None,
                  collection_entry_id=None,
@@ -142,8 +168,6 @@ class Parameter(Descriptor):
         self.min = min_value  # Minimum physical value of the parameter
         self.max = max_value  # Maximum physical value of the parameter
 
-        UidMapHandler.get().add_to_uid_map(self)
-
 
 class Component(ABC):
     """
@@ -170,8 +194,8 @@ class Component(ABC):
     def __init__(self):
         self._locked = False  # If adding new attributes is locked
 
-        self._datablock_id = 'None-from-Component-init'  # Parent datablock name to be set by the parent
-        self._entry_id = 'None-from-Component-init'
+        self._datablock_id = None  # Parent datablock name to be set by the parent
+        self._entry_id = None
 
         # TODO: Currently, it is not used. Planned to be used for displaying
         #  the parameters in the specific order.
@@ -200,17 +224,24 @@ class Component(ABC):
         # Try to get the attribute from the instance's dictionary
         attr = self.__dict__.get(name, None)
 
-        # If the attribute is not set, set it
+        print('qewdfwedfew', attr)
+
+        # If the attribute is not set, and it is a Parameter or Descriptor,
+        # set its category_key and cif_category_key to the current category_key
+        # and cif_category_key and add it to the component.
+        # Also add its name to the list of ordered attributes
         if attr is None:
-            # If the attribute is a Parameter or Descriptor, add its
-            # name to the list of ordered attributes
             if isinstance(value, (Descriptor, Parameter)):
+                print('value.name', value.name)
+                value.category_key = self.category_key
+                value.cif_category_key = self.cif_category_key
                 self._ordered_attrs.append(name)
             super().__setattr__(name, value)
-        # If the attribute is set and is a Parameter or Descriptor,
+        # If the attribute is already set and is a Parameter or Descriptor,
         # update its value. Else, allow normal reassignment
         else:
             if isinstance(attr, (Descriptor, Parameter)):
+                print('attr.name', attr.name)
                 attr.value = value
             else:
                 super().__setattr__(name, value)
@@ -222,8 +253,8 @@ class Component(ABC):
     @datablock_id.setter
     def datablock_id(self, new_id):
         self._datablock_id = new_id
-        # For each parameter in the component, set the datablock_id
-        for param in self.parameters():
+        # For each parameter in this component, also update its datablock_id
+        for param in self.get_all_params():
             param.datablock_id = new_id
 
     @property
@@ -234,11 +265,10 @@ class Component(ABC):
     def entry_id(self, new_id):
         self._entry_id = new_id
         # For each parameter in the component, set the entry_id
-        for param in self.parameters():
+        for param in self.get_all_params():
             param.collection_entry_id = new_id
 
-    # TODO: In class Collection it is named 'get_all_params'. Unify?
-    def parameters(self):
+    def get_all_params(self):
         attr_objs = []
         for attr_name in dir(self):
             attr_obj = getattr(self, attr_name)
@@ -299,7 +329,7 @@ class Collection(ABC):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._datablock_id = 'None from Collection init'  # Parent datablock name to be set by the parent
+        self._datablock_id = None  # Parent datablock name to be set by the parent
         self._items = {}
 
     def __getitem__(self, key):
@@ -335,33 +365,27 @@ class Collection(ABC):
         child_obj.entry_id = child_obj.entry_id  # Forcing the entry_id to be reset to update its child parameters
         self._items[child_obj._entry_id] = child_obj
 
-    # TODO: In class Component it is named 'parameters'. Unify?
     def get_all_params(self):
         params = []
         for item in self._items.values():
             if isinstance(item, Datablock):
                 datablock = item
-                for component in datablock.components():
-                    if isinstance(component, Component):
-                        standard_component = component
-                        for param in standard_component.parameters():
-                            param.category_key = standard_component.category_key  # TODO: Check how to get rid of this
+                for datablock_item in datablock.items():
+                    if isinstance(datablock_item, Component):
+                        component = datablock_item
+                        for param in component.get_all_params():
                             params.append(param)
-                    elif isinstance(component, Collection):
-                        iterable_component = component
-                        for standard_component in iterable_component:
-                            for param in standard_component.parameters():
-                                param.category_key = standard_component.category_key  # TODO: Check how to get rid of this
+                    elif isinstance(datablock_item, Collection):
+                        collection = datablock_item
+                        for component in collection:
+                            for param in component.get_all_params():
                                 params.append(param)
             elif isinstance(item, Component):
-                standard_component = item
-                for param in standard_component.parameters():
-                    param.category_key = standard_component.category_key  # TODO: Check how to get rid of this
+                component = item
+                for param in component.get_all_params():
                     params.append(param)
             else:
                 raise TypeError(f"Expected a Component or Datablock, got {type(item)}")
-
-
         return params
 
     def get_fittable_params(self):
@@ -406,11 +430,21 @@ class Datablock(ABC):
     def __init__(self):
         self._name = None
 
-    # TODO: Consider another name for this method.
-    #  It returns both components and collections.
-    def components(self):
+    def __setattr__(self, name, value):
+        # Try to get the attribute from the instance's dictionary
+        attr = self.__dict__.get(name, None)
+
+        # If the attribute is not set, and it is a Component,
+        # set its datablock_id to the current datablock name
+        # and add it to the datablock
+        if attr is None:
+            if isinstance(value, (Component, Collection)):
+                value.datablock_id = self._name
+            super().__setattr__(name, value)
+
+    def items(self):
         """
-        Returns a list of both standard and iterable components in the
+        Returns a list of both components and collections in the
         data block.
         """
         attr_objs = []
@@ -430,6 +464,7 @@ class Datablock(ABC):
     @name.setter
     def name(self, new_name):
         self._name = new_name
-        # For each component in the datablock, set the datablock_id
-        for component in self.components():
-            component.datablock_id = new_name
+        # For each component/collection in this datablock,
+        # also update its datablock_id
+        for item in self.items():
+            item.datablock_id = new_name

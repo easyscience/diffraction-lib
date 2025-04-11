@@ -29,13 +29,20 @@ class UidMapHandler(BaseSingleton):
         """Returns the current UID-to-Parameter map."""
         return self._uid_map
 
-    def set_uid_map_OLD(self, parameters: list):
-        """Populates the UID map from a list of Parameter objects."""
-        self._uid_map = {param.uid: param for param in parameters}
-
     def add_to_uid_map(self, parameter):
         """Adds a single Parameter object to the UID map."""
         self._uid_map[parameter.uid] = parameter
+
+    def replace_uid(self, old_uid, new_uid):
+        """Replaces an existing UID key in the UID map with a new UID.
+
+        Moves the associated parameter from old_uid to new_uid.
+        Raises a KeyError if the old_uid doesn't exist.
+        """
+        if old_uid in self._uid_map:
+            self._uid_map[new_uid] = self._uid_map.pop(old_uid)
+        else:
+            raise KeyError(f"UID '{old_uid}' not found in the UID map.")
 
     # TODO: Implement removing from the UID map
 

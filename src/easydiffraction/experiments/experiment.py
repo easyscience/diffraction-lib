@@ -71,7 +71,7 @@ class BaseExperiment(Datablock):
     @type.setter
     def type(self, new_type):
         self._type = new_type
-        self._type.datablock_id = self.name
+        #self._type.datablock_id = self.name
 
     # ----------
     # Instrument
@@ -84,7 +84,7 @@ class BaseExperiment(Datablock):
     @instrument.setter
     def instrument(self, new_instrument):
         self._instrument = new_instrument
-        self._instrument.datablock_id = self.name
+        #self._instrument.datablock_id = self.name
 
     # ----------------
     # Misc. Need to be sorted
@@ -259,7 +259,7 @@ class PowderExperiment(BaseExperiment):
     @background.setter
     def background(self, new_background):
         self._background = new_background
-        self._background.datablock_id = self.name
+        #self._background.datablock_id = self.name
 
     @property
     def background_type(self):
@@ -312,7 +312,7 @@ class PowderExperiment(BaseExperiment):
     @peak.setter
     def peak(self, new_peak):
         self._peak = new_peak
-        self._peak.datablock_id = self.name
+        #self._peak.datablock_id = self.name
 
     @property
     def peak_profile_type(self):
@@ -366,7 +366,7 @@ class PowderExperiment(BaseExperiment):
     @linked_phases.setter
     def linked_phases(self, new_phases):
         self._linked_phases = new_phases
-        self._linked_phases.datablock_id = self.name
+        #self._linked_phases.datablock_id = self.name
 
 
 class SingleCrystalExperiment(BaseExperiment):

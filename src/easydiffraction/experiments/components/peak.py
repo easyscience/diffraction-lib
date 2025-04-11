@@ -197,7 +197,7 @@ class ConstantWavelengthPseudoVoigt(PeakBase,
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        self._locked = True
+        ##self._locked = True
 
 
 class ConstantWavelengthSplitPseudoVoigt(PeakBase,
@@ -212,7 +212,7 @@ class ConstantWavelengthSplitPseudoVoigt(PeakBase,
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        self._locked = True
+        ##self._locked = True
 
 
 class ConstantWavelengthThompsonCoxHastings(PeakBase,
@@ -227,7 +227,7 @@ class ConstantWavelengthThompsonCoxHastings(PeakBase,
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        self._locked = True
+        ##self._locked = True
 
 
 class TimeOfFlightPseudoVoigt(PeakBase,
@@ -240,22 +240,7 @@ class TimeOfFlightPseudoVoigt(PeakBase,
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        self._locked = True
-
-
-class TimeOfFlightIkedaCarpenter(PeakBase,
-                                 TimeOfFlightBroadeningMixin,
-                                 IkedaCarpenterAsymmetryMixin):
-    _description = "Ikeda-Carpenter profile"
-    def __init__(self):
-        super().__init__()
-
-        self._add_time_of_flight_broadening()
-        self._add_ikeda_carpenter_asymmetry()
-
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked = True
+        ##self._locked = True
 
 
 class TimeOfFlightPseudoVoigtIkedaCarpenter(PeakBase,
@@ -270,7 +255,7 @@ class TimeOfFlightPseudoVoigtIkedaCarpenter(PeakBase,
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        self._locked = True
+        ##self._locked = True
 
 
 class TimeOfFlightPseudoVoigtBackToBackExponential(PeakBase,
@@ -285,7 +270,7 @@ class TimeOfFlightPseudoVoigtBackToBackExponential(PeakBase,
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        self._locked = True
+        ##self._locked = True
 
 
 # --- Peak factory ---
@@ -298,7 +283,6 @@ class PeakFactory:
         },
         "time-of-flight": {
             "pseudo-voigt": TimeOfFlightPseudoVoigt,
-            "ikeda-carpenter": TimeOfFlightIkedaCarpenter,
             "pseudo-voigt * ikeda-carpenter": TimeOfFlightPseudoVoigtIkedaCarpenter,
             "pseudo-voigt * back-to-back": TimeOfFlightPseudoVoigtBackToBackExponential
         }

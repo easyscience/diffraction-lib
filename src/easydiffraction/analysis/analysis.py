@@ -181,13 +181,13 @@ class Analysis:
                         variable += f"['{entry_id}']"
                     variable += f".{param_key}"
                     uid = param._generate_human_readable_unique_id()
-                    rows.append({'variable': variable,
-                                 'uid': uid,
-                                 'description': description})
+                    rows.append({'Code variable': variable,
+                                 'Unique ID for CIF': uid,
+                                 'Description': description})
 
         dataframe = pd.DataFrame(rows)
 
-        column_headers = ['variable', 'uid']
+        column_headers = ['Code variable', 'Unique ID for CIF']
         if show_description:
             column_headers.append('description')
         dataframe = dataframe[column_headers]
