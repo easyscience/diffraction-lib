@@ -6,7 +6,17 @@ from easydiffraction.core.objects import (
 
 
 class Alias(Component):
-    def __init__(self, label: str, param_uid: str):
+    @property
+    def category_key(self):
+        return "alias"
+
+    @property
+    def cif_category_key(self):
+        return "alias"
+
+    def __init__(self,
+                 label: str,
+                 param_uid: str):
         super().__init__()
 
         self.label = Descriptor(
@@ -20,17 +30,13 @@ class Alias(Component):
             cif_name="param_uid"
         )
 
-    @property
-    def cif_category_key(self):
-        return "alias"
+        # Select which of the input parameters is used for the
+        # as ID for the whole object
+        self._entry_id = label
 
-    @property
-    def category_key(self):
-        return "alias"
-
-    @property
-    def _entry_id(self):
-        return self.alias.value
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 class Aliases(Collection):
@@ -38,6 +44,6 @@ class Aliases(Collection):
     def _type(self):
         return "category"  # datablock or category
 
-    def add(self, label: str, param_uid: str):
-        alias_obj = Alias(label, param_uid)
-        self._items[alias_obj.label.value] = alias_obj
+    @property
+    def _child_class(self):
+        return Alias

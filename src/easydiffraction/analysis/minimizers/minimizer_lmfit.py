@@ -21,6 +21,7 @@ class LmfitMinimizer(MinimizerBase):
         engine_parameters = lmfit.Parameters()
         for param in parameters:
             engine_parameters.add(
+                #name=param._generate_human_readable_unique_id(),
                 name=param.uid,
                 value=param.value,
                 vary=param.free,

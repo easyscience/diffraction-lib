@@ -11,12 +11,18 @@ from easydiffraction.utils.formatting import paragraph
 
 class SampleModel(Datablock):
     """
-    Represents an individual structural/magnetic model of a sample.
-    Wraps crystallographic information including space group, cell, and atomic sites.
+    Represents an individual structural model of a sample.
+    Wraps crystallographic information including space group, cell, and
+    atomic sites.
     """
 
-    def __init__(self, name, cif_path=None, cif_str=None):
-        self.name = name
+    # TODO: Move cif_path and cif_str out of __init__ and into separate methods
+    def __init__(self,
+                 name: str,
+                 cif_path: str = None,
+                 cif_str: str = None):
+        super().__init__()
+        self._name = name
         self.space_group = SpaceGroup()
         self.cell = Cell()
         self.atom_sites = AtomSites()
@@ -25,6 +31,65 @@ class SampleModel(Datablock):
             self.load_from_cif_file(cif_path)
         elif cif_str:
             self.load_from_cif_string(cif_str)
+
+    # ----------------------
+    # Name (ID) of the model
+    # ----------------------
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, new_name: str):
+        if not isinstance(new_name, str):
+            raise TypeError("Name must be a string.")
+        self._name = new_name
+
+    # -----------
+    # Space group
+    # -----------
+
+    @property
+    def space_group(self):
+        return self._space_group
+
+    @space_group.setter
+    def space_group(self, new_space_group: SpaceGroup):
+        self._space_group = new_space_group
+        self._space_group.datablock_id = self.name
+
+    # ----
+    # Cell
+    # ----
+
+    @property
+    def cell(self):
+        return self._cell
+
+    @cell.setter
+    def cell(self, new_cell: Cell):
+        if not isinstance(new_cell, Cell):
+            raise TypeError("Cell must be an instance of Cell.")
+        self._cell = new_cell
+        self._cell.datablock_id = self.name
+
+    # ----------
+    # Atom sites
+    # ----------
+
+    @property
+    def atom_sites(self):
+        return self._atom_sites
+
+    @atom_sites.setter
+    def atom_sites(self, new_atom_sites: AtomSites):
+        self._atom_sites = new_atom_sites
+        self._atom_sites.datablock_id = self.name
+
+    # --------------------
+    # Symmetry constraints
+    # --------------------
 
     def apply_symmetry_constraints(self):
         self._apply_cell_symmetry_constraints()
@@ -70,6 +135,10 @@ class SampleModel(Datablock):
     def _apply_atomic_displacement_symmetry_constraints(self):
         pass
 
+    # -----------------
+    # Creation from CIF
+    # -----------------
+
     def load_from_cif_file(self, cif_path: str):
         """Load model data from a CIF file."""
         # TODO: Implement CIF parsing here
@@ -80,6 +149,10 @@ class SampleModel(Datablock):
         """Load model data from a CIF string."""
         # TODO: Implement CIF parsing from a string
         print("Loading SampleModel from CIF string.")
+
+    # ------------
+    # Show methods
+    # ------------
 
     def show_structure(self, plane='xy', grid_size=20):
         """

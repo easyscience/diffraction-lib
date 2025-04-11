@@ -18,8 +18,19 @@ from easydiffraction.core.objects import (
 from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
 
 
+# TODO: rename to LineSegment
 class Point(Component):
-    def __init__(self, x: float, y: float):
+    @property
+    def category_key(self):
+        return "background"
+
+    @property
+    def cif_category_key(self):
+        return "pd_background"
+
+    def __init__(self,
+                 x: float,
+                 y: float):
         super().__init__()
 
         self.x = Descriptor(
@@ -35,23 +46,29 @@ class Point(Component):
             description="Intensity used to create many straight-line segments representing the background in a calculated diffractogram"
         )
 
-        self._locked = True  # Lock further attribute additions
+        # Select which of the input parameters is used for the
+        # as ID for the whole object
+        self._entry_id = str(x)
 
-    @property
-    def cif_category_key(self):
-        return "pd_background"
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
+
+class PolynomialTerm(Component):
+    # TODO: make consistency in where to place the following properties:
+    #  before or after the __init__ method
     @property
     def category_key(self):
         return "background"
 
     @property
-    def _entry_id(self):
-        return f"{self.x.value}"
+    def cif_category_key(self):
+        return "pd_background"
 
-
-class PolynomialTerm(Component):
-    def __init__(self, order, coef):
+    def __init__(self,
+                 order,
+                 coef):
         super().__init__()
 
         self.order = Descriptor(
@@ -67,29 +84,19 @@ class PolynomialTerm(Component):
             description="The value of a coefficient used in a Chebyshev polynomial equation representing the background in a calculated diffractogram"
         )
 
-        self._locked = True  # Lock further attribute additions
+        # Select which of the input parameters is used for the
+        # as ID for the whole object
+        self._entry_id = str(order)
 
-    @property
-    def cif_category_key(self):
-        return "pd_background"
-
-    @property
-    def category_key(self):
-        return "background"
-
-    @property
-    def _entry_id(self):
-        return f"{self.order.value}"
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 class BackgroundBase(Collection):
     @property
     def _type(self):
         return "category"  # datablock or category
-
-    @abstractmethod
-    def add(self, *args):
-        pass
 
     @abstractmethod
     def calculate(self, x_data):
@@ -103,13 +110,9 @@ class BackgroundBase(Collection):
 class LineSegmentBackground(BackgroundBase):
     _description = 'Linear interpolation between points'
 
-    def __init__(self):
-        super().__init__()
-
-    def add(self, x, y):
-        """Add a background point."""
-        point = Point(x=x, y=y)
-        self._items[point._entry_id] = point
+    @property
+    def _child_class(self):
+        return Point
 
     def calculate(self, x_data):
         """Interpolate background points over x_data."""
@@ -151,13 +154,9 @@ class LineSegmentBackground(BackgroundBase):
 class ChebyshevPolynomialBackground(BackgroundBase):
     _description = 'Chebyshev polynomial background'
 
-    def __init__(self):
-        super().__init__()
-
-    def add(self, order, coef):
-        """Add a polynomial term as (order, coefficient)."""
-        term = PolynomialTerm(order=order, coef=coef)
-        self._items[term._entry_id] = term
+    @property
+    def _child_class(self):
+        return Point
 
     def calculate(self, x_data):
         """Evaluate polynomial background over x_data."""

@@ -29,9 +29,15 @@ class UidMapHandler(BaseSingleton):
         """Returns the current UID-to-Parameter map."""
         return self._uid_map
 
-    def set_uid_map(self, parameters: list):
+    def set_uid_map_OLD(self, parameters: list):
         """Populates the UID map from a list of Parameter objects."""
         self._uid_map = {param.uid: param for param in parameters}
+
+    def add_to_uid_map(self, parameter):
+        """Adds a single Parameter object to the UID map."""
+        self._uid_map[parameter.uid] = parameter
+
+    # TODO: Implement removing from the UID map
 
 
 # TODO: Implement changing atrr '.constrained' back to False

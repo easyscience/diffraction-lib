@@ -6,6 +6,14 @@ from easydiffraction.core.objects import (
 
 
 class Constraint(Component):
+    @property
+    def category_key(self):
+        return "constraint"
+
+    @property
+    def cif_category_key(self):
+        return "constraint"
+
     def __init__(self,
                  id: str,
                  lhs_alias: str,
@@ -28,17 +36,13 @@ class Constraint(Component):
             cif_name="rhs_expr"
         )
 
-    @property
-    def cif_category_key(self):
-        return "constraint"
+        # Select which of the input parameters is used for the
+        # as ID for the whole object
+        self._entry_id = id
 
-    @property
-    def category_key(self):
-        return "constraint"
-
-    @property
-    def _entry_id(self):
-        return self.id.value
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 class Constraints(Collection):
@@ -46,9 +50,6 @@ class Constraints(Collection):
     def _type(self):
         return "category"  # datablock or category
 
-    def add(self,
-            id: str,
-            lhs_alias: str,
-            rhs_expr: str):
-        expression_obj = Constraint(id, lhs_alias, rhs_expr)
-        self._items[expression_obj.id.value] = expression_obj
+    @property
+    def _child_class(self):
+        return Constraint

@@ -178,16 +178,12 @@ class IkedaCarpenterAsymmetryMixin:
 # --- Base peak class ---
 class PeakBase(Component):
     @property
-    def cif_category_key(self):
-        return "peak"
-
-    @property
     def category_key(self):
         return "peak"
 
     @property
-    def _entry_id(self):
-        return None
+    def cif_category_key(self):
+        return "peak"
 
 
 # --- Derived peak classes ---
@@ -196,8 +192,12 @@ class ConstantWavelengthPseudoVoigt(PeakBase,
     _description = "Pseudo-Voigt profile"
     def __init__(self):
         super().__init__()
+
         self._add_constant_wavelength_broadening()
-        self._locked = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 class ConstantWavelengthSplitPseudoVoigt(PeakBase,
@@ -206,9 +206,13 @@ class ConstantWavelengthSplitPseudoVoigt(PeakBase,
     _description = "Split pseudo-Voigt profile"
     def __init__(self):
         super().__init__()
+
         self._add_constant_wavelength_broadening()
         self._add_empirical_asymmetry()
-        self._locked = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 class ConstantWavelengthThompsonCoxHastings(PeakBase,
@@ -217,9 +221,13 @@ class ConstantWavelengthThompsonCoxHastings(PeakBase,
     _description = "Thompson-Cox-Hastings profile"
     def __init__(self):
         super().__init__()
+
         self._add_constant_wavelength_broadening()
         self._add_fcj_asymmetry()
-        self._locked = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 class TimeOfFlightPseudoVoigt(PeakBase,
@@ -227,8 +235,12 @@ class TimeOfFlightPseudoVoigt(PeakBase,
     _description = "Pseudo-Voigt profile"
     def __init__(self):
         super().__init__()
+
         self._add_time_of_flight_broadening()
-        self._locked = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 class TimeOfFlightIkedaCarpenter(PeakBase,
@@ -237,9 +249,13 @@ class TimeOfFlightIkedaCarpenter(PeakBase,
     _description = "Ikeda-Carpenter profile"
     def __init__(self):
         super().__init__()
+
         self._add_time_of_flight_broadening()
         self._add_ikeda_carpenter_asymmetry()
-        self._locked = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 class TimeOfFlightPseudoVoigtIkedaCarpenter(PeakBase,
@@ -248,9 +264,13 @@ class TimeOfFlightPseudoVoigtIkedaCarpenter(PeakBase,
     _description = "Pseudo-Voigt * Ikeda-Carpenter profile"
     def __init__(self):
         super().__init__()
+
         self._add_time_of_flight_broadening()
         self._add_ikeda_carpenter_asymmetry()
-        self._locked = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 class TimeOfFlightPseudoVoigtBackToBackExponential(PeakBase,
@@ -259,9 +279,13 @@ class TimeOfFlightPseudoVoigtBackToBackExponential(PeakBase,
     _description = "Pseudo-Voigt * Back-to-Back Exponential profile"
     def __init__(self):
         super().__init__()
+
         self._add_time_of_flight_broadening()
         self._add_ikeda_carpenter_asymmetry()
-        self._locked = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 # --- Peak factory ---

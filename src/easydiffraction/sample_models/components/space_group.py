@@ -8,8 +8,17 @@ class SpaceGroup(Component):
     """
     Represents the space group of a sample model.
     """
+    @property
+    def category_key(self):
+        return "space_group"
 
-    def __init__(self, name_h_m="P 1", it_coordinate_system_code=None):
+    @property
+    def cif_category_key(self):
+        return "space_group"
+
+    def __init__(self,
+                 name_h_m="P 1",
+                 it_coordinate_system_code=None):
         super().__init__()
 
         self.name_h_m = Descriptor(
@@ -23,14 +32,6 @@ class SpaceGroup(Component):
             cif_name="IT_coordinate_system_code"
         )
 
-    @property
-    def cif_category_key(self):
-        return "space_group"
-
-    @property
-    def category_key(self):
-        return "space_group"
-
-    @property
-    def _entry_id(self):
-        return None
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True

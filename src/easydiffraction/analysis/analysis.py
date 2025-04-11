@@ -14,10 +14,7 @@ from easydiffraction.core.objects import (
     Descriptor,
     Parameter
 )
-from easydiffraction.core.singletons import (
-    ConstraintsHandler,
-    UidMapHandler
-)
+from easydiffraction.core.singletons import ConstraintsHandler
 
 from .collections.aliases import Aliases
 from .collections.constraints import Constraints
@@ -183,14 +180,16 @@ class Analysis:
                     if entry_id:
                         variable += f"['{entry_id}']"
                     variable += f".{param_key}"
+                    uid = param._generate_human_readable_unique_id()
                     rows.append({'variable': variable,
+                                 'uid': uid,
                                  'description': description})
 
         dataframe = pd.DataFrame(rows)
 
-        column_headers = ['variable']
+        column_headers = ['variable', 'uid']
         if show_description:
-            column_headers = ['variable', 'description']
+            column_headers.append('description')
         dataframe = dataframe[column_headers]
 
         indices = range(1, len(dataframe) + 1)  # Force starting from 1
@@ -312,23 +311,11 @@ class Analysis:
                        tablefmt="fancy_outline",
                        showindex=False))
 
-    def _update_uid_map(self):
-        """
-        Update the UID map for accessing parameters by UID.
-        This is needed for adding or removing constraints.
-        """
-        sample_models_params = self.project.sample_models.get_all_params()
-        experiments_params = self.project.experiments.get_all_params()
-        params = sample_models_params + experiments_params
-
-        UidMapHandler.get().set_uid_map(params)
-
     def apply_constraints(self):
         if not self.constraints._items:
             print(warning(f"No constraints defined."))
             return
 
-        self._update_uid_map()
         self.constraints_handler.set_aliases(self.aliases)
         self.constraints_handler.set_constraints(self.constraints)
 

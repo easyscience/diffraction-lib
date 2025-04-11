@@ -14,10 +14,6 @@ class InstrumentBase(Component):
     def cif_category_key(self):
         return "instr"
 
-    @property
-    def _entry_id(self):
-        return None
-
 
 class ConstantWavelengthInstrument(InstrumentBase):
     def __init__(self,
@@ -40,7 +36,9 @@ class ConstantWavelengthInstrument(InstrumentBase):
             description="Instrument misalignment offset"
         )
 
-        self._locked = True  # Lock further attribute additions
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 class TimeOfFlightInstrument(InstrumentBase):
@@ -88,7 +86,9 @@ class TimeOfFlightInstrument(InstrumentBase):
             description="TOF reciprocal velocity correction"
         )
 
-        self._locked = True  # Lock further attribute additions
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 class InstrumentFactory:
