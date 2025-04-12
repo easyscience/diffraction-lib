@@ -4,7 +4,10 @@ import tabulate
 from abc import ABC, abstractmethod
 
 from easydiffraction.experiments.components.experiment_type import ExperimentType
-from easydiffraction.experiments.components.instrument import InstrumentFactory
+from easydiffraction.experiments.components.instrument import (
+    InstrumentBase,
+    InstrumentFactory
+)
 from easydiffraction.experiments.components.peak import PeakFactory
 
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
@@ -46,9 +49,9 @@ class BaseExperiment(Datablock):
             sample_form=self.type.sample_form.value,
             experiment=self)
 
-    # ----------------------
-    # Name (ID) of the model
-    # ----------------------
+    # ---------------------------
+    # Name (ID) of the experiment
+    # ---------------------------
 
     @property
     def name(self):
@@ -70,8 +73,9 @@ class BaseExperiment(Datablock):
 
     @type.setter
     def type(self, new_type):
+        if not isinstance(new_type, ExperimentType):
+            raise TypeError("Type must be an instance of ExperimentType.")
         self._type = new_type
-        #self._type.datablock_id = self.name
 
     # ----------
     # Instrument
@@ -83,8 +87,9 @@ class BaseExperiment(Datablock):
 
     @instrument.setter
     def instrument(self, new_instrument):
+        if not isinstance(new_instrument, InstrumentBase):
+            raise TypeError("Instrument must be an instance of InstrumentBase.")
         self._instrument = new_instrument
-        #self._instrument.datablock_id = self.name
 
     # ----------------
     # Misc. Need to be sorted
@@ -266,6 +271,7 @@ class PowderExperiment(BaseExperiment):
         return self._background_type
 
     @background_type.setter
+    # TODO: check new_type type
     def background_type(self, new_type):
         if new_type not in BackgroundFactory._supported:
             supported_types = list(BackgroundFactory._supported.keys())
@@ -310,9 +316,9 @@ class PowderExperiment(BaseExperiment):
         return self._peak
 
     @peak.setter
+    # TODO: check new_peak type
     def peak(self, new_peak):
         self._peak = new_peak
-        #self._peak.datablock_id = self.name
 
     @property
     def peak_profile_type(self):
@@ -365,8 +371,9 @@ class PowderExperiment(BaseExperiment):
 
     @linked_phases.setter
     def linked_phases(self, new_phases):
+        if not isinstance(new_phases, LinkedPhases):
+            raise TypeError("Linked phases must be an instance of LinkedPhases.")
         self._linked_phases = new_phases
-        #self._linked_phases.datablock_id = self.name
 
 
 class SingleCrystalExperiment(BaseExperiment):

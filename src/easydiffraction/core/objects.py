@@ -99,8 +99,6 @@ class Descriptor:
 
     @uid.setter
     def uid(self, new_uid):
-        # This should be used only for testing purposes.
-        # The uid is generated automatically and should not be changed.
         # Update the unique id in the global uid map
         old_uid = self._human_uid
         self._human_uid = new_uid
