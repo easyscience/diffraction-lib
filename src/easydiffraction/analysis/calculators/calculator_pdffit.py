@@ -15,7 +15,7 @@ try:
     redirect_stdout(open(os.path.devnull, 'w'))
 except ImportError:
     print(warning('"pdffit" module not found. This calculator will not work.'))
-    pdffit = None
+    pdf_calc = None
 
 class PdffitCalculator(CalculatorBase):
     """
