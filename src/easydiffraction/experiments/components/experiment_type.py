@@ -8,7 +8,8 @@ class ExperimentType(Component):
     def __init__(self,
                  sample_form: str,
                  beam_mode: str,
-                 radiation_probe: str):
+                 radiation_probe: str,
+                 diffraction_type: str = None):
         super().__init__()
 
         self.sample_form: Descriptor = Descriptor(
@@ -28,6 +29,12 @@ class ExperimentType(Component):
             name="radiation_probe",
             cif_name="radiation_probe",
             description="Specifies whether the measurement uses neutrons or X-rays"
+        )
+        self.diffraction_type: Descriptor = Descriptor(
+            value=diffraction_type,
+            name="diffraction_type",
+            cif_name="diffraction_type",
+            description="Specifies the type of diffraction experiment performed: standard (for Bragg) or total (for PDF)"
         )
 
         self._locked = True  # Lock further attribute additions

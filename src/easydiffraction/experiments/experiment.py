@@ -21,7 +21,8 @@ from easydiffraction.core.constants import (
     DEFAULT_BEAM_MODE,
     DEFAULT_RADIATION_PROBE,
     DEFAULT_PEAK_PROFILE_TYPE,
-    DEFAULT_BACKGROUND_TYPE
+    DEFAULT_BACKGROUND_TYPE,
+    DEFAULT_DIFFRACTION_TYPE
 )
 
 
@@ -33,7 +34,8 @@ class BaseExperiment(Datablock):
                  type: ExperimentType):
         self.name = name
         self.type = type
-        self.instrument = InstrumentFactory.create(beam_mode=self.type.beam_mode.value)
+        self.instrument = InstrumentFactory.create(beam_mode=self.type.beam_mode.value,
+                                                   diffraction_type=self.type.diffraction_type.value)
         self.datastore = DatastoreFactory.create(sample_form=self.type.sample_form.value,
                                                  experiment=self)
 
@@ -281,25 +283,137 @@ class SingleCrystalExperiment(BaseExperiment):
     def show_meas_chart(self):
         print('Showing measured data chart is not implemented yet.')
 
+class PDFExperiment(BaseExperiment):
+    """PDF experiment class with specific attributes."""
+
+    def __init__(self,
+                 name: str,
+                 type: ExperimentType):
+        super().__init__(name=name,
+                         type=type)
+
+        self._background_type = DEFAULT_BACKGROUND_TYPE
+        self.linked_phases = LinkedPhases()
+        self.background = BackgroundFactory.create()
+
+    def _load_ascii_data_to_experiment(self, data_path):
+        """
+        Loads x, y, sy values from an ASCII data file into the experiment.
+
+        The file must be structured as:
+            x  y  sy
+        """
+        try:
+            from diffpy.utils.parsers.loaddata import loadData
+        except ImportError:
+            raise ImportError("diffpy module not found.")
+        try:
+            data = loadData(data_path)
+        except Exception as e:
+            raise IOError(f"Failed to read data from {data_path}: {e}")
+
+        if data.shape[1] < 2:
+            raise ValueError("Data file must have at least two columns: x and y.")
+
+        if data.shape[1] < 3:
+            print("Warning: No uncertainty (sy) column provided. Defaulting to sqrt(y).")
+
+        # Extract x, y, and sy data
+        x = data[:, 0]
+        y = data[:, 1]
+        sy = data[:, 3] if data.shape[1] > 2 else np.sqrt(y)
+
+        # Attach the data to the experiment's datastore
+        self.datastore.pattern.x = x
+        self.datastore.pattern.meas = y
+        self.datastore.pattern.meas_su = sy
+
+        print(paragraph("Data loaded successfully"))
+        print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
+
+    def show_meas_chart(self, x_min=None, x_max=None):
+        pattern = self.datastore.pattern
+
+        if pattern.meas is None or pattern.x is None:
+            print(f"No measured data available for experiment {self.name}")
+            return
+
+        plotter = ChartPlotter()
+        plotter.plot(
+            y_values_list=[pattern.meas],
+            x_values=pattern.x,
+            x_min=x_min,
+            x_max=x_max,
+            title=paragraph(f"Measured data for experiment 🔬 '{self.name}'"),
+            labels=['meas']
+        )
+
+    @property
+    def background_type(self):
+        return self._background_type
+
+    @background_type.setter
+    def background_type(self, new_type):
+        if new_type not in BackgroundFactory._supported:
+            supported_types = list(BackgroundFactory._supported.keys())
+            print(warning(f"Unknown background type '{new_type}'"))
+            print(f'Supported background types: {supported_types}')
+            print(f"For more information, use 'show_supported_background_types()'")
+            return
+        self.background = BackgroundFactory.create(new_type)
+        self._background_type = new_type
+        print(paragraph(f"Background type for experiment '{self.name}' changed to"))
+        print(new_type)
+
+    def show_supported_background_types(self):
+        header = ["Background type", "Description"]
+        table_data = []
+
+        for name, config in BackgroundFactory._supported.items():
+            description = getattr(config, '_description', 'No description provided.')
+            table_data.append([name, description])
+
+        print(paragraph("Supported background types"))
+        print(tabulate.tabulate(
+            table_data,
+            headers=header,
+            tablefmt="fancy_outline",
+            numalign="left",
+            stralign="left",
+            showindex=False
+        ))
+
+    def show_current_background_type(self):
+        print(paragraph("Current background type"))
+        print(self.background_type)
 
 class ExperimentFactory:
     """Creates Experiment instances with only relevant attributes."""
-    _supported = {
-        "powder": PowderExperiment,
-        "single crystal": SingleCrystalExperiment
-    }
 
+    _supported = {
+    "powder": {
+        "conventional": PowderExperiment,
+        "total": PDFExperiment,
+    },
+    "single crystal": {
+        "conventional": SingleCrystalExperiment,
+        "total": PDFExperiment,}
+    }
     @classmethod
     def create(cls,
                name: str,
                sample_form: DEFAULT_SAMPLE_FORM,
                beam_mode: DEFAULT_BEAM_MODE,
-               radiation_probe: DEFAULT_RADIATION_PROBE) -> BaseExperiment:
+               radiation_probe: DEFAULT_RADIATION_PROBE,
+               diffraction_type: DEFAULT_DIFFRACTION_TYPE,
+               ) -> BaseExperiment:
         # TODO: Add checks for expt_type and expt_class
         expt_type = ExperimentType(sample_form=sample_form,
                                    beam_mode=beam_mode,
-                                   radiation_probe=radiation_probe)
-        expt_class = cls._supported[sample_form]
+                                   radiation_probe=radiation_probe,
+                                   diffraction_type=diffraction_type)
+
+        expt_class = cls._supported[sample_form][diffraction_type]
         instance = expt_class(name=name, type=expt_type)
         return instance
 
@@ -312,12 +426,14 @@ def Experiment(name: str,
                sample_form: str = DEFAULT_SAMPLE_FORM,
                beam_mode: str = DEFAULT_BEAM_MODE,
                radiation_probe: str = DEFAULT_RADIATION_PROBE,
+               diffraction_type: str = DEFAULT_DIFFRACTION_TYPE,
                data_path: str = None):
     experiment = ExperimentFactory.create(
         name=name,
         sample_form=sample_form,
         beam_mode=beam_mode,
-        radiation_probe=radiation_probe
+        radiation_probe=radiation_probe,
+        diffraction_type=diffraction_type
     )
     experiment._load_ascii_data_to_experiment(data_path)
     return experiment

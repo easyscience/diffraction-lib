@@ -2,8 +2,8 @@ from easydiffraction.core.objects import (
     Parameter,
     Component
 )
-from easydiffraction.core.constants import DEFAULT_BEAM_MODE
-
+from easydiffraction.core.constants import (DEFAULT_BEAM_MODE,
+                                            DEFAULT_DIFFRACTION_TYPE)
 
 class InstrumentBase(Component):
     @property
@@ -40,7 +40,7 @@ class ConstantWavelengthInstrument(InstrumentBase):
             description="Instrument misalignment offset"
         )
 
-        self._locked = True  # Lock further attribute additions
+        #self._locked = True  # Lock further attribute additions
 
 
 class TimeOfFlightInstrument(InstrumentBase):
@@ -88,25 +88,96 @@ class TimeOfFlightInstrument(InstrumentBase):
             description="TOF reciprocal velocity correction"
         )
 
+        #self._locked = True  # Lock further attribute additions
+
+class PDFInstrumentMixin():
+    def _add_instrument_parameters(self):
+        self.qmax: Parameter = Parameter(
+            value=0.0,
+            name="qmax",
+            cif_name="pdf_qmax",
+            units="",
+            description="Q-value cutoff for PDF calculation"
+        )
+        self.qdamp = Parameter(
+            value=0.0,
+            name="qdamp",
+            cif_name="pdf_qdamp",
+            units="",
+            description="Instrumental Q-resolution factor"
+        )
+        self.delta1: Parameter = Parameter(
+            value=0.0,
+            name="delta1",
+            cif_name="pdf_delta1",
+            units="",
+            description="1/R peak sharpening factor"
+        )
+        self.delta2: Parameter = Parameter(
+            value=0.0,
+            name="delta2",
+            cif_name="pdf_delta2",
+            units="",
+            description="(1/R^2) sharpening factor"
+        )
+        self.qbroad: Parameter = Parameter(
+            value=0.0,
+            name="qbroad",
+            cif_name="pdf_qbroad",
+            units="",
+            description="Quadratic peak broadening factor"
+        )
+        self.spdiameter: Parameter = Parameter(
+            value=0.0,
+            name="spdiameter",
+            cif_name="pdf_spdiameter",
+            units="",
+            description="Diameter value for the spherical particle PDF correction"
+        )
+
+class PDFCWInstrument(ConstantWavelengthInstrument, PDFInstrumentMixin):
+    _description = "Pair-Distribution Function (PDF) instrument with constant wavelength"
+    def __init__(self):
+        super().__init__()
+        self._add_instrument_parameters()
         self._locked = True  # Lock further attribute additions
 
+class PDFTOFInstrument(TimeOfFlightInstrument, PDFInstrumentMixin):
+    _description = "Pair-Distribution Function (PDF) instrument with time-of-flight"
+    def __init__(self):
+        super().__init__()
+        self._add_instrument_parameters()
+        self._locked = True  # Lock further attribute additions
 
 class InstrumentFactory:
     _supported = {
-        "constant wavelength": ConstantWavelengthInstrument,
-        "time-of-flight": TimeOfFlightInstrument
+        "constant wavelength": {
+            "conventional": ConstantWavelengthInstrument,
+            "total" : PDFCWInstrument,
+        },
+        "time-of-flight": {
+            "conventional": TimeOfFlightInstrument,
+            "total" : PDFTOFInstrument,
+        }
     }
 
     @classmethod
-    def create(cls, beam_mode=DEFAULT_BEAM_MODE):
+    def create(cls,
+               beam_mode=DEFAULT_BEAM_MODE,
+               diffraction_type=DEFAULT_DIFFRACTION_TYPE):
         if beam_mode not in cls._supported:
             supported = list(cls._supported.keys())
-
             raise ValueError(
                 f"Unsupported beam mode: '{beam_mode}'.\n "
                 f"Supported beam modes are: {supported}"
             )
+        if diffraction_type not in cls._supported[beam_mode]:
+            supported = list(cls._supported[beam_mode].keys())
+            raise ValueError(
+                f"Unsupported diffraction type: '{diffraction_type}'.\n "
+                f"Supported diffraction types for {beam_mode} are: {supported}"
+            )
 
-        instrument_class = cls._supported[beam_mode]
+        instrument_class = cls._supported[beam_mode][diffraction_type]
         instance = instrument_class()
         return instance
