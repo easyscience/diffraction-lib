@@ -7,6 +7,10 @@ class SampleModels(Collection):
     Collection manager for multiple SampleModel instances.
     """
 
+    @property
+    def _child_class(self):
+        return SampleModel
+
     def __init__(self):
         super().__init__()  # Initialize Collection
         self._models = self._items  # Alias for legacy support

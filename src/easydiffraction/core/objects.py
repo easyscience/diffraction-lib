@@ -47,6 +47,9 @@ class Descriptor:
 
         UidMapHandler.get().add_to_uid_map(self)
 
+    def __str__(self):
+        return f"{self.__class__.__name__}: {self.uid} = {self.value} {self.units or ''}".strip()
+
     def _generate_random_unique_id(self):
         # Derived class Parameter will use this unique id for the
         # minimization process to identify the parameter. It will also be
@@ -169,16 +172,8 @@ class Parameter(Descriptor):
 
 class Component(ABC):
     """
-    Base class for single components, like Cell, Peak, etc.
+    Base class for standard components, like Cell, Peak, etc.
     """
-
-    @property
-    @abstractmethod
-    def cif_category_key(self):
-        """
-        Must be implemented in subclasses to return the CIF category name.
-        """
-        pass
 
     @property
     @abstractmethod
@@ -189,11 +184,19 @@ class Component(ABC):
         """
         pass
 
+    @property
+    @abstractmethod
+    def cif_category_key(self):
+        """
+        Must be implemented in subclasses to return the CIF category name.
+        """
+        pass
+
     def __init__(self):
         self._locked = False  # If adding new attributes is locked
 
         self._datablock_id = None  # Parent datablock name to be set by the parent
-        self._entry_id = None
+        self._entry_id = None  # Parent collection entry id to be set by the parent
 
         # TODO: Currently, it is not used. Planned to be used for displaying
         #  the parameters in the specific order.
@@ -315,14 +318,18 @@ class Component(ABC):
 
         return "\n".join(lines)
 
+
 class Collection(ABC):
     """
     Base class for collections like AtomSites, LinkedPhases, SampleModels,
     Experiments, etc.
     """
+    @property
+    @abstractmethod
+    def _child_class(self):
+        return None
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
         self._datablock_id = None  # Parent datablock name to be set by the parent
         self._items = {}
 
@@ -341,11 +348,6 @@ class Collection(ABC):
         self._datablock_id = new_id
         for param in self.get_all_params():
             param.datablock_id = new_id
-
-    @property
-    #@abstractmethod
-    def _child_class(self):
-        return None
 
     def add(self, *args, **kwargs):
         """

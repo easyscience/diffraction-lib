@@ -13,6 +13,10 @@ class Experiments(Collection):
     Collection manager for multiple Experiment instances.
     """
 
+    @property
+    def _child_class(self):
+        return BaseExperiment
+
     def __init__(self):
         super().__init__()
         self._experiments = self._items  # Alias for legacy support
