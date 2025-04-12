@@ -112,8 +112,8 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     project.analysis.aliases.add(label='biso_Ba',
                                  param_uid=atom_sites['Ba'].b_iso.uid)
 
-    project.analysis.aliases.add('occ_La', atom_sites['La'].occupancy)
-    project.analysis.aliases.add('occ_Ba', atom_sites['Ba'].occupancy)
+    project.analysis.aliases.add('occ_La', atom_sites['La'].occupancy.uid)
+    project.analysis.aliases.add('occ_Ba', atom_sites['Ba'].occupancy.uid)
 
     project.analysis.show_constraints()
 

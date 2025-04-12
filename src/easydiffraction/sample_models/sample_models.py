@@ -93,7 +93,7 @@ class SampleModel(Datablock):
 
     def apply_symmetry_constraints(self):
         self._apply_cell_symmetry_constraints()
-        #self._apply_atomic_coordinates_symmetry_constraints()
+        self._apply_atomic_coordinates_symmetry_constraints()
         self._apply_atomic_displacement_symmetry_constraints()
 
     def _apply_cell_symmetry_constraints(self):

@@ -224,15 +224,12 @@ class Component(ABC):
         # Try to get the attribute from the instance's dictionary
         attr = self.__dict__.get(name, None)
 
-        print('qewdfwedfew', attr)
-
         # If the attribute is not set, and it is a Parameter or Descriptor,
         # set its category_key and cif_category_key to the current category_key
         # and cif_category_key and add it to the component.
         # Also add its name to the list of ordered attributes
         if attr is None:
             if isinstance(value, (Descriptor, Parameter)):
-                print('value.name', value.name)
                 value.category_key = self.category_key
                 value.cif_category_key = self.cif_category_key
                 self._ordered_attrs.append(name)
@@ -241,7 +238,6 @@ class Component(ABC):
         # update its value. Else, allow normal reassignment
         else:
             if isinstance(attr, (Descriptor, Parameter)):
-                print('attr.name', attr.name)
                 attr.value = value
             else:
                 super().__setattr__(name, value)
@@ -431,16 +427,13 @@ class Datablock(ABC):
         self._name = None
 
     def __setattr__(self, name, value):
-        # Try to get the attribute from the instance's dictionary
-        attr = self.__dict__.get(name, None)
-
-        # If the attribute is not set, and it is a Component,
-        # set its datablock_id to the current datablock name
-        # and add it to the datablock
-        if attr is None:
-            if isinstance(value, (Component, Collection)):
-                value.datablock_id = self._name
-            super().__setattr__(name, value)
+        # TODO: compare with class Component
+        # If the value is a Component or Collection:
+        # - set its datablock_id to the current datablock name
+        # - add it to the datablock
+        if isinstance(value, (Component, Collection)):
+            value.datablock_id = self._name
+        super().__setattr__(name, value)
 
     def items(self):
         """

@@ -156,7 +156,7 @@ class ChebyshevPolynomialBackground(BackgroundBase):
 
     @property
     def _child_class(self):
-        return Point
+        return PolynomialTerm
 
     def calculate(self, x_data):
         """Evaluate polynomial background over x_data."""

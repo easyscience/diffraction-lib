@@ -114,10 +114,12 @@ class ConstraintsHandler(BaseSingleton):
         uid_map = UidMapHandler.get().get_uid_map()
 
         # Prepare a flat dict of {alias: value} for use in expressions
-        param_values = {
-            alias: uid_map[alias_obj.param_uid.value].value
-            for alias, alias_obj in self._alias_to_param.items()
-        }
+        param_values = {}
+        for alias, alias_obj in self._alias_to_param.items():
+            uid = alias_obj.param_uid.value
+            param = uid_map[uid]
+            value = param.value
+            param_values[alias] = value
 
         # Create an asteval interpreter for safe expression evaluation
         ae = Interpreter()

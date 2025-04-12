@@ -197,7 +197,7 @@ class ConstantWavelengthPseudoVoigt(PeakBase,
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        ##self._locked = True
+        self._locked = True
 
 
 class ConstantWavelengthSplitPseudoVoigt(PeakBase,
@@ -212,7 +212,7 @@ class ConstantWavelengthSplitPseudoVoigt(PeakBase,
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        ##self._locked = True
+        self._locked = True
 
 
 class ConstantWavelengthThompsonCoxHastings(PeakBase,
@@ -227,7 +227,7 @@ class ConstantWavelengthThompsonCoxHastings(PeakBase,
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        ##self._locked = True
+        self._locked = True
 
 
 class TimeOfFlightPseudoVoigt(PeakBase,
@@ -240,7 +240,7 @@ class TimeOfFlightPseudoVoigt(PeakBase,
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        ##self._locked = True
+        self._locked = True
 
 
 class TimeOfFlightPseudoVoigtIkedaCarpenter(PeakBase,
@@ -255,7 +255,7 @@ class TimeOfFlightPseudoVoigtIkedaCarpenter(PeakBase,
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        ##self._locked = True
+        self._locked = True
 
 
 class TimeOfFlightPseudoVoigtBackToBackExponential(PeakBase,
@@ -270,7 +270,7 @@ class TimeOfFlightPseudoVoigtBackToBackExponential(PeakBase,
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        ##self._locked = True
+        self._locked = True
 
 
 # --- Peak factory ---
