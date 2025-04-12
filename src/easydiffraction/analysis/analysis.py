@@ -411,10 +411,20 @@ class Analysis:
         self.fit_results = self.fitter.results
 
     def as_cif(self):
+        current_minimizer = self.current_minimizer
+        if " " in current_minimizer:
+            current_minimizer = f'"{current_minimizer}"'
+
         lines = []
         lines.append(f"_analysis.calculator_engine  {self.current_calculator}")
-        lines.append(f"_analysis.fitting_engine  {self.current_minimizer}")
+        lines.append(f"_analysis.fitting_engine  {current_minimizer}")
         lines.append(f"_analysis.fit_mode  {self.fit_mode}")
+
+        lines.append("")
+        lines.append(self.aliases.as_cif())
+
+        lines.append("")
+        lines.append(self.constraints.as_cif())
 
         return "\n".join(lines)
 

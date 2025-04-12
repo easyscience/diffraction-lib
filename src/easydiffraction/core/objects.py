@@ -404,8 +404,16 @@ class Collection(ABC):
             for idx, item in enumerate(self._items.values()):
                 params = item.as_dict()
                 category_key = item.cif_category_key
+                # Keys
                 keys = [f'_{category_key}.{param_key}' for param_key in params.keys()]
-                values = [f"{value}" for value in params.values()]
+                # Values. If the value is a string and contains spaces, add quotes
+                values = []
+                for value in params.values():
+                    value = f'{value}'
+                    if " " in value:
+                        value = f'"{value}"'
+                    values.append(value)
+                # Header is added only for the first item
                 if idx == 0:
                     lines.append(f"loop_")
                     header = "\n".join(keys)
