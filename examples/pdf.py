@@ -37,7 +37,7 @@ project.experiments.add(name="ni_pdf",
                         beam_mode="constant wavelength",
                         radiation_probe="xray",
                         diffraction_type="total",
-                        data_path=r"C:\Users\piotr\projects\easy\diffraction-lib\examples\data\Ni-xray.gr")
+                        data_path=r"examples\data\Ni-xray.gr")
 
 x_min = project.experiments["ni_pdf"].datastore.pattern.x[0]
 x_max = project.experiments["ni_pdf"].datastore.pattern.x[-1]

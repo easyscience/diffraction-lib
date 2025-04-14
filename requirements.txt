@@ -13,3 +13,4 @@ varname
 asteval
 pytest
 pytest-xdist
+bokeh
