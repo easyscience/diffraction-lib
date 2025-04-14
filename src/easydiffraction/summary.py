@@ -35,8 +35,10 @@ class Summary:
         - Experiment configurations and results
         - Analysis and fitting results
         """
+
         # ------------------------------------------
         print(section("Project info"))
+        # ------------------------------------------
 
         print(paragraph("Title"))
         print(self.project.info.title)
@@ -46,6 +48,8 @@ class Summary:
 
         # ------------------------------------------
         print(section("Crystallographic data"))
+        # ------------------------------------------
+
         for model in self.project.sample_models._models.values():
             print(paragraph("Phase datablock"))
             print(f'🧩 {model.name}')
@@ -75,6 +79,8 @@ class Summary:
 
         # ------------------------------------------
         print(section("Experiments"))
+        # ------------------------------------------
+
         for expt in self.project.experiments._experiments.values():
             print(paragraph("Experiment datablock"))
             print(f'🔬 {expt.name}')
@@ -106,6 +112,7 @@ class Summary:
 
         # ------------------------------------------
         print(section("Fitting"))
+        # ------------------------------------------
 
         print(paragraph("Calculation engine"))
         print(self.project.analysis.current_calculator)

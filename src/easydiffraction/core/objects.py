@@ -66,9 +66,15 @@ class Descriptor:
         #  E.g.:
         #  - "block-id.category-name.parameter-name": "lbco.cell.length_a"
         #  - "block-id.category-name.entry-id.parameter-name": "lbco.atom_site.Ba.fract_x"
+        # For the analysis, we can use the same format, but without the
+        # datablock id. E.g.:
+        #  - "category-name.entry-id.parameter-name": "alias.occ_Ba.label"
         # This need to be called after the parameter is created and all its
         # attributes are set.
-        uid = f"{self.datablock_id}.{self.cif_category_key}"
+        if self.datablock_id:
+            uid = f"{self.datablock_id}.{self.cif_category_key}"
+        else:
+            uid = f"{self.cif_category_key}"
         if self.collection_entry_id:
             uid += f".{self.collection_entry_id}"
         uid += f".{self.cif_name}"
@@ -120,7 +126,8 @@ class Descriptor:
         if self._editable:
             self._value = new_value
         else:
-            print(warning(f"The parameter '{self.cif_name}' it is calculated automatically and cannot be changed manually."))
+            print(warning(f"The parameter '{self.cif_name}' it is calculated "
+                          f"automatically and cannot be changed manually."))
 
     @property
     def description(self):

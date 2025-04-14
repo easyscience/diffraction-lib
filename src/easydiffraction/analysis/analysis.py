@@ -9,19 +9,19 @@ from easydiffraction.utils.chart_plotter import (
     ChartPlotter,
     DEFAULT_HEIGHT
 )
-from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.core.objects import (
     Descriptor,
     Parameter
 )
 from easydiffraction.core.singletons import ConstraintsHandler
+from easydiffraction.experiments.experiments import Experiments
 
 from .collections.aliases import Aliases
 from .collections.constraints import Constraints
+from .collections.joint_fit_experiments import JointFitExperiments
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from .minimizers.minimizer_factory import MinimizerFactory
-from easydiffraction.analysis.collections.joint_fit_experiments import JointFitExperiments
 
 
 class Analysis:

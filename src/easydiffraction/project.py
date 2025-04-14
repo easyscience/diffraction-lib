@@ -16,11 +16,12 @@ from easydiffraction.summary import Summary
 
 class ProjectInfo:
     """
-    Stores metadata about the project, such as ID, title, description, and file paths.
+    Stores metadata about the project, such as name, title, description,
+    and file paths.
     """
 
     def __init__(self):
-        self._name = "untitled_project"  # Short unique project identifier
+        self._name = "untitled_project"
         self._title = "Untitled Project"
         self._description = ""
         self._path = os.getcwd()
@@ -29,7 +30,7 @@ class ProjectInfo:
 
     @property
     def name(self):
-        """Return the project ID."""
+        """Return the project name."""
         return self._name
 
     @name.setter
@@ -78,7 +79,9 @@ class ProjectInfo:
         self._last_modified = datetime.datetime.now()
 
     def as_cif(self) -> str:
-        """Export project metadata to CIF."""
+        """
+        Export project metadata to CIF.
+        """
         wrapped_title = wrap(self.title, width=60)
         wrapped_description = wrap(self.description, width=60)
 
@@ -124,7 +127,10 @@ class Project:
     Provides access to sample models, experiments, analysis, and summary.
     """
 
-    def __init__(self, name="untitled_project", title="Untitled Project", description=""):
+    def __init__(self,
+                 name="untitled_project",
+                 title="Untitled Project",
+                 description=""):
         self.info = ProjectInfo()
         self.info.name = name
         self.info.title = title
@@ -138,7 +144,7 @@ class Project:
 
     @property
     def name(self):
-        """Convenience property to access the project's ID directly."""
+        """Convenience property to access the project's name directly."""
         return self.info.name
 
     # ------------------------------------------
