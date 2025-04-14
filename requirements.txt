@@ -14,3 +14,4 @@ asteval
 pytest
 pytest-xdist
 bokeh
+diffpy.utils

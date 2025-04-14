@@ -33,6 +33,17 @@ Development playground for the new EasyDiffraction API.
   python -c "from pycrysfml import cfml_py_utilities"
   ```
 
+- Install pdffit2:
+  **Please note that python 3.13 is not yet supported!**
+  ```bash
+  # Install from the local pypi server
+  pip install diffpy.pdffit2==0.0.2 --extra-index-url https://easyscience.github.io/pypi
+
+  # Try to import the module
+  python -c "import diffpy.pdffit2"
+  ```
+
+
 ## Testing
 
 - Functional tests:
