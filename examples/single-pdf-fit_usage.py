@@ -84,6 +84,7 @@ fig.line(x_data, Gfit, legend_label='G(r) Fit', color='orangered', line_width=2)
 fig.line(x_data, Gdiff_show, legend_label='G(r) Diff', color='grey', line_width=2)
 show(fig)
 
+exit()
 
 print(ed.section('Show all parameters'))
 project.analysis.show_all_params()

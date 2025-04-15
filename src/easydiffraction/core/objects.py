@@ -187,6 +187,15 @@ class Component(ABC):
             if isinstance(attr, (Descriptor, Parameter)):
                 attr.value = value
 
+    def add_attribute(self, name, value):
+        """
+        Add a new attribute to the object, avoiding the _locked check.
+        This method is used to add attributes dynamically.
+        """
+        if isinstance(value, (Descriptor, Parameter)):
+            self._ordered_attrs.append(name)
+
+        super().__setattr__(name, value)
     def parameters(self):
         attr_objs = []
         for attr_name in dir(self):

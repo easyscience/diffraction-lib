@@ -40,7 +40,7 @@ class ConstantWavelengthInstrument(InstrumentBase):
             description="Instrument misalignment offset"
         )
 
-        #self._locked = True  # Lock further attribute additions
+        self._locked = True  # Lock further attribute additions
 
 
 class TimeOfFlightInstrument(InstrumentBase):
@@ -88,52 +88,60 @@ class TimeOfFlightInstrument(InstrumentBase):
             description="TOF reciprocal velocity correction"
         )
 
-        #self._locked = True  # Lock further attribute additions
+        self._locked = True  # Lock further attribute additions
 
 class PDFInstrumentMixin():
     def _add_instrument_parameters(self):
-        self.qmax: Parameter = Parameter(
+        qmax = Parameter(
             value=0.0,
             name="qmax",
             cif_name="pdf_qmax",
             units="",
             description="Q-value cutoff for PDF calculation"
         )
-        self.qdamp = Parameter(
+        self.add_attribute("qmax", qmax)
+
+        qdamp = Parameter(
             value=0.0,
             name="qdamp",
             cif_name="pdf_qdamp",
             units="",
             description="Instrumental Q-resolution factor"
         )
-        self.delta1: Parameter = Parameter(
+        self.add_attribute("qdamp", qdamp)
+        delta1 = Parameter(
             value=0.0,
             name="delta1",
             cif_name="pdf_delta1",
             units="",
             description="1/R peak sharpening factor"
         )
-        self.delta2: Parameter = Parameter(
+        self.add_attribute("delta1", delta1)
+        delta2 = Parameter(
             value=0.0,
             name="delta2",
             cif_name="pdf_delta2",
             units="",
             description="(1/R^2) sharpening factor"
         )
-        self.qbroad: Parameter = Parameter(
+        self.add_attribute("delta2", delta2)
+
+        qbroad = Parameter(
             value=0.0,
             name="qbroad",
             cif_name="pdf_qbroad",
             units="",
             description="Quadratic peak broadening factor"
         )
-        self.spdiameter: Parameter = Parameter(
+        self.add_attribute("qbroad", qbroad)
+        spdiameter = Parameter(
             value=0.0,
             name="spdiameter",
             cif_name="pdf_spdiameter",
             units="",
             description="Diameter value for the spherical particle PDF correction"
         )
+        self.add_attribute("spdiameter", spdiameter)
 
 class PDFCWInstrument(ConstantWavelengthInstrument, PDFInstrumentMixin):
     _description = "Pair-Distribution Function (PDF) instrument with constant wavelength"
