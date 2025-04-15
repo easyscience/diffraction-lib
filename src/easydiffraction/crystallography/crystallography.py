@@ -9,7 +9,7 @@ from cryspy.A_functions_base.function_2_space_group import (
     get_it_number_by_name_hm_short,
     get_symop_pcentr_multiplicity_letter_site_symmetry_coords_xyz_2
 )
-from easydiffraction.crystallography.space_group_lookup_table import space_group_lookup_table
+from easydiffraction.crystallography.space_group_lookup_table import SPACE_GROUP_LOOKUP_DICT
 
 
 def apply_cell_symmetry_constraints(cell: dict,
@@ -96,7 +96,7 @@ def apply_atom_site_symmetry_constraints(atom_site: dict,
     #return atom_site
     # 2 - NOT OK
 
-    space_group_entry = space_group_lookup_table[(it_number, it_coordinate_system_code)]
+    space_group_entry = SPACE_GROUP_LOOKUP_DICT[(it_number, it_coordinate_system_code)]
     wyckoff_positions = space_group_entry["Wyckoff_positions"][wyckoff_letter]
     coords_xyz = wyckoff_positions["coords_xyz"]
     
