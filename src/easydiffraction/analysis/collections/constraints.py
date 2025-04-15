@@ -15,16 +15,10 @@ class Constraint(Component):
         return "constraint"
 
     def __init__(self,
-                 id: str,
                  lhs_alias: str,
                  rhs_expr: str):
         super().__init__()
 
-        self.id = Descriptor(
-            value=id,
-            name="id",
-            cif_name="id"
-        )
         self.lhs_alias = Descriptor(
             value=lhs_alias,
             name="lhs_alias",
@@ -38,7 +32,7 @@ class Constraint(Component):
 
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_id = id
+        self._entry_id = lhs_alias
 
         # Lock further attribute additions to prevent
         # accidental modifications by users

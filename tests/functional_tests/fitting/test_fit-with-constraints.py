@@ -118,10 +118,9 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     project.analysis.show_constraints()
 
     # Set constraints
-    project.analysis.constraints.add(id='1',
-                                     lhs_alias='biso_Ba',
+    project.analysis.constraints.add(lhs_alias='biso_Ba',
                                      rhs_expr='biso_La')
-    project.analysis.constraints.add('2', 'occ_Ba', '1 - occ_La')
+    project.analysis.constraints.add('occ_Ba', '1 - occ_La')
 
     project.analysis.show_constraints()
 

@@ -60,7 +60,7 @@ class ConstraintsHandler(BaseSingleton):
         # Maps alias names (like 'biso_La') → ConstraintAlias(param=Parameter)
         self._alias_to_param = {}
 
-        # Stores raw user-defined constraints indexed by ID
+        # Stores raw user-defined constraints indexed by lhs_alias
         # Each value should contain: lhs_alias, rhs_expr
         self._constraints = {}
 
@@ -91,7 +91,7 @@ class ConstraintsHandler(BaseSingleton):
         """
         self._parsed_constraints = []
 
-        for expr_id, expr_obj in self._constraints.items():
+        for expr_obj in self._constraints.values():
             lhs_alias = expr_obj.lhs_alias.value
             rhs_expr = expr_obj.rhs_expr.value
 

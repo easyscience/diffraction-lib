@@ -294,9 +294,8 @@ class Analysis:
             return
 
         rows = []
-        for id, constraint in constraints_dict.items():
+        for constraint in constraints_dict.values():
             row = {
-                'id': id,
                 'lhs_alias': constraint.lhs_alias.value,
                 'rhs_expr': constraint.rhs_expr.value,
                 'full expression': f'{constraint.lhs_alias.value} = {constraint.rhs_expr.value}'
@@ -304,12 +303,13 @@ class Analysis:
             rows.append(row)
 
         dataframe = pd.DataFrame(rows)
+        indices = range(1, len(dataframe) + 1)  # Force starting from 1
 
         print(paragraph(f"User defined constraints"))
         print(tabulate(dataframe,
                        headers=dataframe.columns,
                        tablefmt="fancy_outline",
-                       showindex=False))
+                       showindex=indices))
 
     def apply_constraints(self):
         if not self.constraints._items:

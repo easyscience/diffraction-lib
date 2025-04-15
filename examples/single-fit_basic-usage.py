@@ -285,7 +285,6 @@ project.analysis.aliases.add(
 
 # Set constraints
 project.analysis.constraints.add(
-    id=1,
     lhs_alias='biso_Ba',
     rhs_expr='biso_La'
 )
@@ -319,7 +318,6 @@ project.analysis.aliases.add(
 # Set more constraints
 project.analysis.show_constraints()
 project.analysis.constraints.add(
-    id=2,
     lhs_alias='occ_Ba',
     rhs_expr='1 - occ_La'
 )
