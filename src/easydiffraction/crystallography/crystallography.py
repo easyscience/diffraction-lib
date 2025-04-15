@@ -84,18 +84,6 @@ def apply_atom_site_symmetry_constraints(atom_site: dict,
         print(error_msg)
         return atom_site
 
-    # 1 - OK
-    # TODO: This is very slow!!!
-
-    #result = get_symop_pcentr_multiplicity_letter_site_symmetry_coords_xyz_2(it_number, it_coordinate_system_code)
-    # letter_list = result[3]
-    # coords_xyz_list = result[5]
-
-    # idx = letter_list.index(wyckoff_letter)
-    # coords_xyz = coords_xyz_list[idx]
-    #return atom_site
-    # 2 - NOT OK
-
     space_group_entry = SPACE_GROUP_LOOKUP_DICT[(it_number, it_coordinate_system_code)]
     wyckoff_positions = space_group_entry["Wyckoff_positions"][wyckoff_letter]
     coords_xyz = wyckoff_positions["coords_xyz"]
