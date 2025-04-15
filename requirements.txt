@@ -15,3 +15,4 @@ pytest
 pytest-xdist
 bokeh
 diffpy.utils
+diffpy.pdffit2
