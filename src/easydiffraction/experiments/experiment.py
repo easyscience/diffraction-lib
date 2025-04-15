@@ -3,6 +3,7 @@ import tabulate
 
 from abc import ABC, abstractmethod
 
+from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.experiments.components.experiment_type import ExperimentType
 from easydiffraction.experiments.components.instrument import (
     InstrumentBase,
@@ -58,9 +59,8 @@ class BaseExperiment(Datablock):
         return self._name
 
     @name.setter
+    @enforce_type
     def name(self, new_name: str):
-        if not isinstance(new_name, str):
-            raise TypeError("Name must be a string.")
         self._name = new_name
 
     # ---------------
@@ -72,10 +72,9 @@ class BaseExperiment(Datablock):
         return self._type
 
     @type.setter
-    def type(self, new_type):
-        if not isinstance(new_type, ExperimentType):
-            raise TypeError("Type must be an instance of ExperimentType.")
-        self._type = new_type
+    @enforce_type
+    def type(self, new_experiment_type: ExperimentType):
+        self._type = new_experiment_type
 
     # ----------
     # Instrument
@@ -86,9 +85,8 @@ class BaseExperiment(Datablock):
         return self._instrument
 
     @instrument.setter
-    def instrument(self, new_instrument):
-        if not isinstance(new_instrument, InstrumentBase):
-            raise TypeError("Instrument must be an instance of InstrumentBase.")
+    @enforce_type
+    def instrument(self, new_instrument: InstrumentBase):
         self._instrument = new_instrument
 
     # ----------------
@@ -370,10 +368,9 @@ class PowderExperiment(BaseExperiment):
         return self._linked_phases
 
     @linked_phases.setter
-    def linked_phases(self, new_phases):
-        if not isinstance(new_phases, LinkedPhases):
-            raise TypeError("Linked phases must be an instance of LinkedPhases.")
-        self._linked_phases = new_phases
+    @enforce_type
+    def linked_phases(self, new_linked_phases: LinkedPhases):
+        self._linked_phases = new_linked_phases
 
 
 class SingleCrystalExperiment(BaseExperiment):

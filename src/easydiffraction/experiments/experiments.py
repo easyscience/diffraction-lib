@@ -1,5 +1,6 @@
 import os.path
 
+from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.core.objects import Collection
 from easydiffraction.experiments.experiment import (
     BaseExperiment,
@@ -52,9 +53,8 @@ class Experiments(Collection):
         else:
             raise ValueError("Provide either experiment, type parameters, cif_path, cif_str, or data_path")
 
-    def _add_prebuilt_experiment(self, experiment):
-        if not isinstance(experiment, BaseExperiment):
-            raise TypeError("Expected an instance of BaseExperiment or its subclass.")
+    @enforce_type
+    def _add_prebuilt_experiment(self, experiment: BaseExperiment):
         self._experiments[experiment.name] = experiment
 
     def _add_from_cif_path(self, cif_path):

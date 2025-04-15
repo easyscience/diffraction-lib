@@ -1,3 +1,4 @@
+from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.core.objects import Collection
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.sample_models.sample_model import SampleModel
@@ -58,13 +59,12 @@ class SampleModels(Collection):
         """
         return "\n".join([model.as_cif() for model in self._models.values()])
 
-    def _add_prebuilt_sample_model(self, model):
+    @enforce_type
+    def _add_prebuilt_sample_model(self, sample_model: SampleModel):
         """
         Add a pre-built SampleModel instance.
         """
-        if not isinstance(model, SampleModel):
-            raise TypeError("Expected an instance of SampleModel")
-        self._models[model.name] = model
+        self._models[sample_model.name] = sample_model
 
     def _create_and_add_sample_model(self, name=None, cif_path=None, cif_str=None):
         """

@@ -1,3 +1,4 @@
+from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.core.objects import Datablock
 from easydiffraction.crystallography import crystallography as ecr
@@ -38,9 +39,8 @@ class SampleModel(Datablock):
         return self._name
 
     @name.setter
+    @enforce_type
     def name(self, new_name: str):
-        if not isinstance(new_name, str):
-            raise TypeError("Name must be a string.")
         self._name = new_name
 
     # -----------
@@ -52,9 +52,8 @@ class SampleModel(Datablock):
         return self._space_group
 
     @space_group.setter
+    @enforce_type
     def space_group(self, new_space_group: SpaceGroup):
-        if not isinstance(new_space_group, SpaceGroup):
-            raise TypeError("Space group must be an instance of SpaceGroup.")
         self._space_group = new_space_group
 
     # ----
@@ -66,9 +65,8 @@ class SampleModel(Datablock):
         return self._cell
 
     @cell.setter
+    @enforce_type
     def cell(self, new_cell: Cell):
-        if not isinstance(new_cell, Cell):
-            raise TypeError("Cell must be an instance of Cell.")
         self._cell = new_cell
 
     # ----------
@@ -80,9 +78,8 @@ class SampleModel(Datablock):
         return self._atom_sites
 
     @atom_sites.setter
+    @enforce_type
     def atom_sites(self, new_atom_sites: AtomSites):
-        if not isinstance(new_atom_sites, AtomSites):
-            raise TypeError("Atom sites must be an instance of AtomSites.")
         self._atom_sites = new_atom_sites
 
     # --------------------
