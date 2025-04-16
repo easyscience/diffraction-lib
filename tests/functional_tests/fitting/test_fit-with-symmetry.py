@@ -8,7 +8,7 @@ from easydiffraction import (
 
 
 def test_fit_neutron_pd_cwl_hs() -> None:
-    # Create and configure sample model
+   # Create and configure sample model
     model = SampleModel('hs')
     model.space_group.name_h_m = 'R -3 m'
     model.space_group.it_coordinate_system_code = 'h'
