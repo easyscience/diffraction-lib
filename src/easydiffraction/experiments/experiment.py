@@ -291,12 +291,19 @@ class PDFExperiment(BaseExperiment):
             raise ValueError("Data file must have at least two columns: x and y.")
 
         if data.shape[1] < 3:
-            print("Warning: No uncertainty (sy) column provided. Defaulting to sqrt(y).")
+            print("Warning: No uncertainty (sy) column provided. Defaulting to 0.05.")
 
         # Extract x, y, and sy data
         x = data[:, 0]
+        # We should also add sx = data[:, 2] to capture the e.s.d. of x. It
+        # might be useful in future.
         y = data[:, 1]
-        sy = data[:, 3] if data.shape[1] > 2 else np.sqrt(y)
+        # Using sqrt isn’t appropriate here, as the y-scale isn’t raw counts
+        # and includes both positive and negative values. For now, set the
+        # e.s.d. to a fixed value of 0.05 if it’s not included in the measured
+        # data file. We should improve this later.
+        #sy = data[:, 3] if data.shape[1] > 2 else np.sqrt(y)
+        sy = data[:, 2] if data.shape[1] > 2 else np.full_like(y, fill_value=0.05)
 
         # Attach the data to the experiment's datastore
         self.datastore.pattern.x = x
