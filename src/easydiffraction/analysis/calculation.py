@@ -1,3 +1,5 @@
+from typing import Any, Optional, List
+import numpy as np
 from .calculators.calculator_factory import CalculatorFactory
 
 
@@ -6,28 +8,28 @@ class DiffractionCalculator:
     Invokes calculation engines for pattern generation.
     """
 
-    def __init__(self, engine='cryspy'):
+    def __init__(self, engine: str = 'cryspy') -> None:
         """
         Initialize the DiffractionCalculator with a specified backend engine.
 
         Args:
-            calculator_type (str): Type of the calculation engine to use.
-                                   Supported types: 'crysfml', 'cryspy', 'pdffit'.
-                                   Default is 'crysfml'.
+            engine: Type of the calculation engine to use.
+                    Supported types: 'crysfml', 'cryspy', 'pdffit'.
+                    Default is 'cryspy'.
         """
         self.calculator_factory = CalculatorFactory()
         self._calculator = self.calculator_factory.create_calculator(engine)
 
-    def set_calculator(self, engine):
+    def set_calculator(self, engine: str) -> None:
         """
         Switch to a different calculator engine at runtime.
 
         Args:
-            engine (str): New calculation engine type to use.
+            engine: New calculation engine type to use.
         """
         self._calculator = self.calculator_factory.create_calculator(engine)
 
-    def calculate_structure_factors(self, sample_models, experiments):
+    def calculate_structure_factors(self, sample_models: Any, experiments: Any) -> Optional[List[Any]]:
         """
         Calculate HKL intensities (structure factors) for sample models and experiments.
 
@@ -40,7 +42,7 @@ class DiffractionCalculator:
         """
         return self._calculator.calculate_structure_factors(sample_models, experiments)
 
-    def calculate_pattern(self, sample_models, experiment):
+    def calculate_pattern(self, sample_models: Any, experiment: Any) -> np.ndarray:
         """
         Generate diffraction pattern based on sample models and experiment.
 

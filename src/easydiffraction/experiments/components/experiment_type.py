@@ -2,13 +2,14 @@ from easydiffraction.core.objects import (
     Descriptor,
     Component
 )
+from typing import Optional
 
 
 class ExperimentType(Component):
     def __init__(self,
                  sample_form: str,
                  beam_mode: str,
-                 radiation_probe: str):
+                 radiation_probe: str) -> None:
         super().__init__()
 
         self.sample_form: Descriptor = Descriptor(
@@ -30,16 +31,16 @@ class ExperimentType(Component):
             description="Specifies whether the measurement uses neutrons or X-rays"
         )
 
-        self._locked = True  # Lock further attribute additions
+        self._locked: bool = True  # Lock further attribute additions
 
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "expt_type"
 
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "expt_type"
 
     @property
-    def _entry_id(self):
+    def _entry_id(self) -> Optional[str]:
         return None

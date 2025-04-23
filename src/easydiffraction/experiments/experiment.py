@@ -2,6 +2,7 @@ import numpy as np
 import tabulate
 
 from abc import ABC, abstractmethod
+from typing import Optional, List, Dict, Type
 
 from easydiffraction.experiments.components.experiment_type import ExperimentType
 from easydiffraction.experiments.components.instrument import InstrumentFactory
@@ -30,18 +31,18 @@ class BaseExperiment(Datablock):
 
     def __init__(self,
                  name: str,
-                 type: ExperimentType):
-        self.name = name
-        self.type = type
+                 type: ExperimentType) -> None:
+        self.name: str = name
+        self.type: ExperimentType = type
         self.instrument = InstrumentFactory.create(beam_mode=self.type.beam_mode.value)
         self.datastore = DatastoreFactory.create(sample_form=self.type.sample_form.value,
                                                  experiment=self)
 
-    def as_cif(self, max_points=None):
+    def as_cif(self, max_points: Optional[int] = None) -> str:
         """
         Generate CIF content by collecting values from all components.
         """
-        lines = [f"data_{self.name}"]
+        lines: List[str] = [f"data_{self.name}"]
 
         # Experiment type
         if hasattr(self, "type"):
@@ -74,13 +75,10 @@ class BaseExperiment(Datablock):
             lines.append(self.background.as_cif())
 
         # Measured data
-        # TODO: This functionality should be moved to datastore.py
-        # TODO: We need meas_data component which will use datastore to extract data
-        # TODO: Datastore should be moved out of collections/
         if hasattr(self, "datastore") and hasattr(self.datastore, "pattern"):
             lines.append("")
             lines.append("loop_")
-            category = '_pd_meas'  # TODO: Add category to pattern component
+            category = '_pd_meas'
             attributes = ('2theta_scan', 'intensity_total', 'intensity_total_su')
             for attribute in attributes:
                 lines.append(f"{category}.{attribute}")
@@ -103,13 +101,13 @@ class BaseExperiment(Datablock):
 
         return "\n".join(lines)
 
-    def show_as_cif(self):
-        cif_text = self.as_cif(max_points=5)
-        lines = cif_text.splitlines()
-        max_width = max(len(line) for line in lines)
-        padded_lines = [f"│ {line.ljust(max_width)} │" for line in lines]
-        top = f"╒{'═' * (max_width + 2)}╕"
-        bottom = f"╘{'═' * (max_width + 2)}╛"
+    def show_as_cif(self) -> None:
+        cif_text: str = self.as_cif(max_points=5)
+        lines: List[str] = cif_text.splitlines()
+        max_width: int = max(len(line) for line in lines)
+        padded_lines: List[str] = [f"│ {line.ljust(max_width)} │" for line in lines]
+        top: str = f"╒{'═' * (max_width + 2)}╕"
+        bottom: str = f"╘{'═' * (max_width + 2)}╛"
 
         print(paragraph(f"Experiment 🔬 '{self.name}' as cif"))
         print(top)
@@ -117,31 +115,32 @@ class BaseExperiment(Datablock):
         print(bottom)
 
     @abstractmethod
-    def _load_ascii_data_to_experiment(self, data_path):
+    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         pass
 
     @abstractmethod
-    def show_meas_chart(self, x_min=None, x_max=None):
+    def show_meas_chart(self, x_min: Optional[float] = None, x_max: Optional[float] = None) -> None:
         """
         Abstract method to display data chart. Should be implemented in specific experiment mixins.
         """
         raise NotImplementedError("show_meas_chart() must be implemented in the subclass")
+
 
 class PowderExperiment(BaseExperiment):
     """Powder experiment class with specific attributes."""
 
     def __init__(self,
                  name: str,
-                 type: ExperimentType):
+                 type: ExperimentType) -> None:
         super().__init__(name=name,
                          type=type)
-        self._peak_profile_type = DEFAULT_PEAK_PROFILE_TYPE
-        self._background_type = DEFAULT_BACKGROUND_TYPE
+        self._peak_profile_type: str = DEFAULT_PEAK_PROFILE_TYPE
+        self._background_type: str = DEFAULT_BACKGROUND_TYPE
         self.peak = PeakFactory.create(beam_mode=self.type.beam_mode.value)
         self.linked_phases = LinkedPhases()
         self.background = BackgroundFactory.create()
 
-    def _load_ascii_data_to_experiment(self, data_path):
+    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """
         Loads x, y, sy values from an ASCII data file into the experiment.
 
@@ -160,9 +159,9 @@ class PowderExperiment(BaseExperiment):
             print("Warning: No uncertainty (sy) column provided. Defaulting to sqrt(y).")
 
         # Extract x, y, and sy data
-        x = data[:, 0]
-        y = data[:, 1]
-        sy = data[:, 2] if data.shape[1] > 2 else np.sqrt(y)
+        x: np.ndarray = data[:, 0]
+        y: np.ndarray = data[:, 1]
+        sy: np.ndarray = data[:, 2] if data.shape[1] > 2 else np.sqrt(y)
 
         # Attach the data to the experiment's datastore
         self.datastore.pattern.x = x
@@ -172,7 +171,7 @@ class PowderExperiment(BaseExperiment):
         print(paragraph("Data loaded successfully"))
         print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
 
-    def show_meas_chart(self, x_min=None, x_max=None):
+    def show_meas_chart(self, x_min: Optional[float] = None, x_max: Optional[float] = None) -> None:
         pattern = self.datastore.pattern
 
         if pattern.meas is None or pattern.x is None:
@@ -190,11 +189,11 @@ class PowderExperiment(BaseExperiment):
         )
 
     @property
-    def peak_profile_type(self):
+    def peak_profile_type(self) -> str:
         return self._peak_profile_type
 
     @peak_profile_type.setter
-    def peak_profile_type(self, new_type: str):
+    def peak_profile_type(self, new_type: str) -> None:
         if new_type not in PeakFactory._supported[self.type.beam_mode.value]:
             supported_types = list(PeakFactory._supported[self.type.beam_mode.value].keys())
             print(warning(f"Unsupported peak profile '{new_type}'"))
@@ -207,12 +206,12 @@ class PowderExperiment(BaseExperiment):
         print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
         print(new_type)
 
-    def show_supported_peak_profile_types(self):
-        header = ["Peak profile type", "Description"]
-        table_data = []
+    def show_supported_peak_profile_types(self) -> None:
+        header: List[str] = ["Peak profile type", "Description"]
+        table_data: List[List[str]] = []
 
         for name, config in PeakFactory._supported[self.type.beam_mode.value].items():
-            description = getattr(config, '_description', 'No description provided.')
+            description: str = getattr(config, '_description', 'No description provided.')
             table_data.append([name, description])
 
         print(paragraph("Supported peak profile types"))
@@ -225,16 +224,16 @@ class PowderExperiment(BaseExperiment):
             showindex=False
         ))
 
-    def show_current_peak_profile_type(self):
+    def show_current_peak_profile_type(self) -> None:
         print(paragraph("Current peak profile type"))
         print(self.peak_profile_type)
 
     @property
-    def background_type(self):
+    def background_type(self) -> str:
         return self._background_type
 
     @background_type.setter
-    def background_type(self, new_type):
+    def background_type(self, new_type: str) -> None:
         if new_type not in BackgroundFactory._supported:
             supported_types = list(BackgroundFactory._supported.keys())
             print(warning(f"Unknown background type '{new_type}'"))
@@ -246,12 +245,12 @@ class PowderExperiment(BaseExperiment):
         print(paragraph(f"Background type for experiment '{self.name}' changed to"))
         print(new_type)
 
-    def show_supported_background_types(self):
-        header = ["Background type", "Description"]
-        table_data = []
+    def show_supported_background_types(self) -> None:
+        header: List[str] = ["Background type", "Description"]
+        table_data: List[List[str]] = []
 
         for name, config in BackgroundFactory._supported.items():
-            description = getattr(config, '_description', 'No description provided.')
+            description: str = getattr(config, '_description', 'No description provided.')
             table_data.append([name, description])
 
         print(paragraph("Supported background types"))
@@ -264,27 +263,28 @@ class PowderExperiment(BaseExperiment):
             showindex=False
         ))
 
-    def show_current_background_type(self):
+    def show_current_background_type(self) -> None:
         print(paragraph("Current background type"))
         print(self.background_type)
 
+
 class SingleCrystalExperiment(BaseExperiment):
-    """Powder experiment class with specific attributes."""
+    """Single crystal experiment class with specific attributes."""
 
     def __init__(self,
                  name: str,
-                 type: ExperimentType):
+                 type: ExperimentType) -> None:
         super().__init__(name=name,
                          type=type)
         self.linked_crystal = None
 
-    def show_meas_chart(self):
+    def show_meas_chart(self) -> None:
         print('Showing measured data chart is not implemented yet.')
 
 
 class ExperimentFactory:
     """Creates Experiment instances with only relevant attributes."""
-    _supported = {
+    _supported: Dict[str, Type[BaseExperiment]] = {
         "powder": PowderExperiment,
         "single crystal": SingleCrystalExperiment
     }
@@ -292,32 +292,28 @@ class ExperimentFactory:
     @classmethod
     def create(cls,
                name: str,
-               sample_form: DEFAULT_SAMPLE_FORM,
-               beam_mode: DEFAULT_BEAM_MODE,
-               radiation_probe: DEFAULT_RADIATION_PROBE) -> BaseExperiment:
-        # TODO: Add checks for expt_type and expt_class
-        expt_type = ExperimentType(sample_form=sample_form,
-                                   beam_mode=beam_mode,
-                                   radiation_probe=radiation_probe)
-        expt_class = cls._supported[sample_form]
-        instance = expt_class(name=name, type=expt_type)
+               sample_form: str,
+               beam_mode: str,
+               radiation_probe: str) -> BaseExperiment:
+        expt_type: ExperimentType = ExperimentType(sample_form=sample_form,
+                                                   beam_mode=beam_mode,
+                                                   radiation_probe=radiation_probe)
+        expt_class: Type[BaseExperiment] = cls._supported[sample_form]
+        instance: BaseExperiment = expt_class(name=name, type=expt_type)
         return instance
 
 
-# User exposed API for convenience
-# TODO: Refactor based on the implementation of method add() in class Experiments
-# TODO: Think of where to keep default values for sample_form, beam_mode, radiation_probe, as they are also defined in the
-#  class ExperimentType
 def Experiment(name: str,
                sample_form: str = DEFAULT_SAMPLE_FORM,
                beam_mode: str = DEFAULT_BEAM_MODE,
                radiation_probe: str = DEFAULT_RADIATION_PROBE,
-               data_path: str = None):
-    experiment = ExperimentFactory.create(
+               data_path: Optional[str] = None) -> BaseExperiment:
+    experiment: BaseExperiment = ExperimentFactory.create(
         name=name,
         sample_form=sample_form,
         beam_mode=beam_mode,
         radiation_probe=radiation_probe
     )
-    experiment._load_ascii_data_to_experiment(data_path)
+    if data_path:
+        experiment._load_ascii_data_to_experiment(data_path)
     return experiment

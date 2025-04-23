@@ -1,5 +1,6 @@
 from tabulate import tabulate
 from textwrap import wrap
+from typing import Any, Dict, List
 
 from easydiffraction.utils.formatting import (
     paragraph,
@@ -15,19 +16,20 @@ class Summary:
     about the fitted model, experiments, and analysis results.
     """
 
-    def __init__(self, project):
+    def __init__(self, project: Any) -> None:
         """
         Initialize the summary with a reference to the project.
 
-        :param project: The Project instance this summary belongs to.
+        Args:
+            project: The Project instance this summary belongs to.
         """
-        self.project = project
+        self.project: Any = project
 
     # ------------------------------------------
     #  Report Generation
     # ------------------------------------------
 
-    def show_report(self):
+    def show_report(self) -> None:
         """
         Show a report of the entire analysis process, including:
         - Project metadata
@@ -54,23 +56,23 @@ class Summary:
             print(model.space_group.name_h_m.value)
 
             print(paragraph("Cell parameters"))
-            cell_data = [[k.replace('length_', '').replace('angle_', ''), f"{v:.4f}"] for k, v in model.cell.as_dict().items()]
+            cell_data: List[List[Any]] = [[k.replace('length_', '').replace('angle_', ''), f"{v:.4f}"] for k, v in model.cell.as_dict().items()]
             print(tabulate(cell_data, headers=["Parameter", "Value"], tablefmt="fancy_outline"))
 
             print(paragraph("Atom sites"))
-            atom_table = []
+            atom_table: List[List[str]] = []
             for site in model.atom_sites:
-                fract_x = site.fract_x.value
-                fract_y = site.fract_y.value
-                fract_z = site.fract_z.value
-                b_iso = site.b_iso.value
-                occ = site.occupancy.value
+                fract_x: float = site.fract_x.value
+                fract_y: float = site.fract_y.value
+                fract_z: float = site.fract_z.value
+                b_iso: float = site.b_iso.value
+                occ: float = site.occupancy.value
                 atom_table.append([
                     site.label.value, site.type_symbol.value,
                     f"{fract_x:.5f}", f"{fract_y:.5f}", f"{fract_z:.5f}",
                     f"{occ:.5f}", f"{b_iso:.5f}"
                 ])
-            headers = ["Label", "Type", "fract_x", "fract_y", "fract_z", "Occupancy", "B_iso"]
+            headers: List[str] = ["Label", "Type", "fract_x", "fract_y", "fract_z", "Occupancy", "B_iso"]
             print(tabulate(atom_table, headers=headers, tablefmt="fancy_outline"))
 
         # ------------------------------------------
