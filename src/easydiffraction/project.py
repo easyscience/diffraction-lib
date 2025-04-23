@@ -2,7 +2,9 @@ import os
 import datetime
 import tempfile
 from textwrap import wrap
+
 from varname import varname
+from tabulate import tabulate
 
 from easydiffraction.utils.formatting import (
     paragraph,
@@ -12,6 +14,7 @@ from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.summary import Summary
+from easydiffraction.plotting.plotting import Plotter
 
 
 class ProjectInfo:
@@ -131,6 +134,7 @@ class Project:
         self.info.description = description
         self.sample_models = SampleModels()
         self.experiments = Experiments()
+        self.plotter = Plotter()
         self.analysis = Analysis(self)
         self.summary = Summary(self)
         self._saved = False
@@ -229,3 +233,44 @@ class Project:
     def set_experiments(self, experiments: Experiments):
         """Attach a collection of experiments to the project."""
         self.experiments = experiments
+
+    # ------------------------------------------
+    # Plotting
+    # ------------------------------------------
+
+    def plot_meas(self,
+                  expt_name,
+                  x_min=None,
+                  x_max=None):
+        experiment = self.experiments[expt_name]
+        pattern = experiment.datastore.pattern
+        self.plotter.plot_meas(pattern,
+                               expt_name,
+                               x_min=x_min,
+                               x_max=x_max)
+
+    def plot_calc(self,
+                  expt_name,
+                  x_min=None,
+                  x_max=None):
+        self.analysis.calculate_pattern(expt_name) # Recalculate pattern
+        experiment = self.experiments[expt_name]
+        pattern = experiment.datastore.pattern
+        self.plotter.plot_calc(pattern,
+                               expt_name,
+                               x_min=x_min,
+                               x_max=x_max)
+
+    def plot_meas_vs_calc(self,
+                          expt_name,
+                          x_min=None,
+                          x_max=None,
+                          show_residual=False):
+        self.analysis.calculate_pattern(expt_name) # Recalculate pattern
+        experiment = self.experiments[expt_name]
+        pattern = experiment.datastore.pattern
+        self.plotter.plot_meas_vs_calc(pattern,
+                                       expt_name,
+                                       x_min=x_min,
+                                       x_max=x_max,
+                                       show_residual=show_residual)

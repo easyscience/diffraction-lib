@@ -5,10 +5,6 @@ from easydiffraction.utils.formatting import (
     paragraph,
     warning
 )
-from easydiffraction.utils.chart_plotter import (
-    ChartPlotter,
-    DEFAULT_HEIGHT
-)
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.core.objects import (
     Descriptor,
@@ -336,56 +332,6 @@ class Analysis:
         self.constraints_handler.set_aliases(self.aliases)
         self.constraints_handler.set_expressions(self.constraints)
         self.constraints_handler.apply(parameters=fittable_params)
-
-    def show_calc_chart(self, expt_name, x_min=None, x_max=None):
-        self.calculate_pattern(expt_name)
-
-        experiment = self.project.experiments[expt_name]
-        pattern = experiment.datastore.pattern
-
-        plotter = ChartPlotter()
-        plotter.plot(
-            y_values_list=[pattern.calc],
-            x_values=pattern.x,
-            x_min=x_min,
-            x_max=x_max,
-            title=paragraph(f"Calculated data for experiment 🔬 '{expt_name}'"),
-            labels=['calc']
-        )
-
-    def show_meas_vs_calc_chart(self,
-                                expt_name,
-                                x_min=None,
-                                x_max=None,
-                                show_residual=False,
-                                chart_height=DEFAULT_HEIGHT):
-        experiment = self.project.experiments[expt_name]
-
-        self.calculate_pattern(expt_name)
-
-        pattern = experiment.datastore.pattern
-
-        if pattern.meas is None or pattern.calc is None or pattern.x is None:
-            print(f"No data available for {expt_name}. Cannot display chart.")
-            return
-
-        series = [pattern.meas, pattern.calc]
-        labels = ['meas', 'calc']
-
-        if show_residual:
-            residual = pattern.meas - pattern.calc
-            series.append(residual)
-            labels.append('residual')
-
-        plotter = ChartPlotter(height=chart_height)
-        plotter.plot(
-            y_values_list=series,
-            x_values=pattern.x,
-            x_min=x_min,
-            x_max=x_max,
-            title=paragraph(f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"),
-            labels=labels
-        )
 
     def fit(self):
         sample_models = self.project.sample_models
