@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from tabulate import tabulate
 from typing import List, Optional, Union, Any
 
@@ -290,7 +291,7 @@ class Analysis:
         print(paragraph("Current fit mode"))
         print(self.fit_mode)
 
-    def calculate_pattern(self, expt_name: str) -> Optional[pd.DataFrame]:
+    def calculate_pattern(self, expt_name: str) -> Optional[np.ndarray]:
         """
         Calculate the diffraction pattern for a given experiment.
 
