@@ -172,7 +172,7 @@ class MinimizerBase(ABC):
     def _finalize_fit(self,
                       parameters: List[Any],
                       raw_result: Any) -> FitResults:
-        self._sync_result_to_parameters(raw_result, parameters)
+        self._sync_result_to_parameters(parameters, raw_result)
         success = self._check_success(raw_result)
         self.result = FitResults(
             success=success,
