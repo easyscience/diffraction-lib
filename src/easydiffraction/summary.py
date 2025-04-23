@@ -82,27 +82,31 @@ class Summary:
             print(paragraph("Experiment type"))
             print(f'{expt.type.sample_form.value}, {expt.type.radiation_probe.value}, {expt.type.beam_mode.value}')
 
-            print(paragraph("Wavelength"))
-            print(expt.instrument.setup_wavelength.value)
+            if hasattr(expt.instrument, 'setup_wavelength'):
+                print(paragraph("Wavelength"))
+                print(expt.instrument.setup_wavelength.value)
 
-            print(paragraph("2θ offset"))
-            print(expt.instrument.calib_twotheta_offset.value)
+            if hasattr(expt.instrument, 'calib_twotheta_offset'):
+                print(paragraph("2θ offset"))
+                print(expt.instrument.calib_twotheta_offset.value)
 
-            print(paragraph("Profile type"))
-            print(expt.peak_profile_type)
+            if hasattr(expt, 'peak_profile_type'):
+                print(paragraph("Profile type"))
+                print(expt.peak_profile_type)
 
-            print(paragraph("Peak broadening (Gaussian)"))
-            print(tabulate([
-                ["U", expt.peak.broad_gauss_u.value],
-                ["V", expt.peak.broad_gauss_v.value],
-                ["W", expt.peak.broad_gauss_w.value]
-            ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
+            if hasattr(expt, 'peak'):
+                print(paragraph("Peak broadening (Gaussian)"))
+                print(tabulate([
+                    ["U", expt.peak.broad_gauss_u.value],
+                    ["V", expt.peak.broad_gauss_v.value],
+                    ["W", expt.peak.broad_gauss_w.value]
+                ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
 
-            print(paragraph("Peak broadening (Lorentzian)"))
-            print(tabulate([
-                ["X", expt.peak.broad_lorentz_x.value],
-                ["Y", expt.peak.broad_lorentz_y.value]
-            ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
+                print(paragraph("Peak broadening (Lorentzian)"))
+                print(tabulate([
+                    ["X", expt.peak.broad_lorentz_x.value],
+                    ["Y", expt.peak.broad_lorentz_y.value]
+                ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
 
         # ------------------------------------------
         print(section("Fitting"))
