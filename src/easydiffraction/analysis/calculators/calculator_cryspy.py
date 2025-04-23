@@ -4,6 +4,10 @@ from typing import Any, Dict, List, Union
 from .calculator_base import CalculatorBase
 from easydiffraction.utils.formatting import warning
 
+from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.experiments.experiment import Experiment
+
 try:
     import cryspy
     from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
@@ -29,7 +33,7 @@ class CryspyCalculator(CalculatorBase):
         super().__init__()
         self._cryspy_dicts: Dict[str, Dict[str, Any]] = {}
 
-    def calculate_structure_factors(self, sample_models: Any, experiments: Any) -> None:
+    def calculate_structure_factors(self, sample_models: SampleModels, experiments: Experiments) -> None:
         """
         Raises a NotImplementedError as HKL calculation is not implemented.
 
@@ -41,8 +45,8 @@ class CryspyCalculator(CalculatorBase):
 
     def _calculate_single_model_pattern(
         self,
-        sample_model: Any,
-        experiment: Any,
+        sample_model: SampleModels,
+        experiment: Experiment,
         called_by_minimizer: bool = False
     ) -> Union[np.ndarray, List[float]]:
         """
@@ -102,7 +106,7 @@ class CryspyCalculator(CalculatorBase):
 
         return y_calc_total
 
-    def _recreate_cryspy_dict(self, sample_model: Any, experiment: Any) -> Dict[str, Any]:
+    def _recreate_cryspy_dict(self, sample_model: SampleModels, experiment: Experiment) -> Dict[str, Any]:
         """
         Recreates the Cryspy dictionary for the given sample model and experiment.
 
@@ -181,7 +185,7 @@ class CryspyCalculator(CalculatorBase):
 
         return cryspy_dict
 
-    def _recreate_cryspy_obj(self, sample_model: Any, experiment: Any) -> Any:
+    def _recreate_cryspy_obj(self, sample_model: SampleModels, experiment: Experiment) -> Any:
         """
         Recreates the Cryspy object for the given sample model and experiment.
 
@@ -204,7 +208,7 @@ class CryspyCalculator(CalculatorBase):
 
         return cryspy_obj
 
-    def _convert_sample_model_to_cryspy_cif(self, sample_model: Any) -> str:
+    def _convert_sample_model_to_cryspy_cif(self, sample_model: SampleModels) -> str:
         """
         Converts a sample model to a Cryspy CIF string.
 
@@ -216,7 +220,7 @@ class CryspyCalculator(CalculatorBase):
         """
         return sample_model.as_cif()
 
-    def _convert_experiment_to_cryspy_cif(self, experiment: Any, linked_phase: Any) -> str:
+    def _convert_experiment_to_cryspy_cif(self, experiment: Experiment, linked_phase: Any) -> str:
         """
         Converts an experiment to a Cryspy CIF string.
 

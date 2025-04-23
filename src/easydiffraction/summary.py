@@ -7,7 +7,6 @@ from easydiffraction.utils.formatting import (
     section
 )
 
-
 class Summary:
     """
     Generates reports and exports results from the project.

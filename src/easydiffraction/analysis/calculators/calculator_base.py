@@ -3,7 +3,8 @@ from abc import ABC, abstractmethod
 from typing import List, Any
 
 from easydiffraction.core.singletons import ConstraintsHandler
-
+from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.experiments.experiment import Experiment
 
 class CalculatorBase(ABC):
     """
@@ -21,15 +22,15 @@ class CalculatorBase(ABC):
         pass
 
     @abstractmethod
-    def calculate_structure_factors(self, sample_model: Any, experiment: Any) -> None:
+    def calculate_structure_factors(self, sample_model: SampleModels, experiment: Experiment) -> None:
         """
         Calculate structure factors for a single sample model and experiment.
         """
         pass
 
     def calculate_pattern(self,
-                          sample_models: Any,
-                          experiment: Any,
+                          sample_models: SampleModels,
+                          experiment: Experiment,
                           called_by_minimizer: bool = False) -> np.ndarray:
         """
         Calculate the diffraction pattern for multiple sample models and a single experiment.
@@ -82,8 +83,8 @@ class CalculatorBase(ABC):
 
     @abstractmethod
     def _calculate_single_model_pattern(self,
-                                        sample_model: Any,
-                                        experiment: Any,
+                                        sample_model: SampleModels,
+                                        experiment: Experiment,
                                         called_by_minimizer: bool) -> np.ndarray:
         """
         Calculate the diffraction pattern for a single sample model and experiment.
@@ -98,7 +99,7 @@ class CalculatorBase(ABC):
         """
         pass
 
-    def _get_valid_linked_phases(self, sample_models: Any, experiment: Any) -> List[Any]:
+    def _get_valid_linked_phases(self, sample_models: SampleModels, experiment: Experiment) -> List[Any]:
         """
         Get valid linked phases from the experiment.
 

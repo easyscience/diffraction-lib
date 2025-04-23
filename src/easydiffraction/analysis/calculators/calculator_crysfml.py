@@ -2,6 +2,9 @@ import numpy as np
 from typing import Any, Dict, List, Union
 from .calculator_base import CalculatorBase
 from easydiffraction.utils.formatting import warning
+from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.experiments.experiment import Experiment
 
 try:
     from pycrysfml import cfml_py_utilities
@@ -21,7 +24,7 @@ class CrysfmlCalculator(CalculatorBase):
     def name(self) -> str:
         return "crysfml"
 
-    def calculate_structure_factors(self, sample_models: Any, experiments: Any) -> None:
+    def calculate_structure_factors(self, sample_models: SampleModels, experiments: Experiments) -> None:
         """
         Call Crysfml to calculate structure factors.
 
@@ -33,8 +36,8 @@ class CrysfmlCalculator(CalculatorBase):
 
     def _calculate_single_model_pattern(
         self,
-        sample_model: Any,
-        experiment: Any,
+        sample_model: SampleModels,
+        experiment: Experiment,
         called_by_minimizer: bool = False
     ) -> Union[np.ndarray, List[float]]:
         """
@@ -73,7 +76,7 @@ class CrysfmlCalculator(CalculatorBase):
             return pattern[:target_length]
         return pattern
 
-    def _crysfml_dict(self, sample_model: Any, experiment: Any) -> Dict[str, Any]:
+    def _crysfml_dict(self, sample_model: SampleModels, experiment: Experiment) -> Dict[str, Any]:
         """
         Converts the sample model and experiment into a dictionary format for Crysfml.
 
@@ -91,7 +94,7 @@ class CrysfmlCalculator(CalculatorBase):
             "experiments": [experiment_dict]
         }
 
-    def _convert_sample_model_to_dict(self, sample_model: Any) -> Dict[str, Any]:
+    def _convert_sample_model_to_dict(self, sample_model: SampleModels) -> Dict[str, Any]:
         """
         Converts a sample model into a dictionary format.
 
@@ -129,7 +132,7 @@ class CrysfmlCalculator(CalculatorBase):
 
         return sample_model_dict
 
-    def _convert_experiment_to_dict(self, experiment: Any) -> Dict[str, Any]:
+    def _convert_experiment_to_dict(self, experiment: Experiment) -> Dict[str, Any]:
         """
         Converts an experiment into a dictionary format.
 

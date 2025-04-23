@@ -2,6 +2,10 @@ from typing import Any, List, Union
 from .calculator_base import CalculatorBase
 from easydiffraction.utils.formatting import warning
 
+from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.experiments.experiment import Experiment
+
 try:
     from diffpy.pdffit2 import pdffit
 except ImportError:
@@ -20,7 +24,7 @@ class PdffitCalculator(CalculatorBase):
     def name(self) -> str:
         return "PdfFit"
 
-    def calculate_structure_factors(self, sample_models: Any, experiments: Any) -> List[Any]:
+    def calculate_structure_factors(self, sample_models: SampleModels, experiments: Experiments) -> List[Any]:
         """
         PDF doesn't compute HKL but we keep the interface consistent.
 
@@ -36,8 +40,8 @@ class PdffitCalculator(CalculatorBase):
 
     def _calculate_single_model_pattern(
         self,
-        sample_model: Any,
-        experiment: Any,
+        sample_model: SampleModels,
+        experiment: Experiment,
         called_by_minimizer: bool = False
     ) -> Union[List[float], Any]:
         """

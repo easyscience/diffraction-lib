@@ -4,6 +4,10 @@ from .minimizers.minimizer_base import FitResults
 from ..analysis.reliability_factors import get_reliability_inputs
 import numpy as np
 
+from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.core.objects import Parameter
+
 
 class DiffractionMinimizer:
     """
@@ -17,10 +21,10 @@ class DiffractionMinimizer:
         self.results: Optional[FitResults] = None
 
     def fit(self,
-            sample_models: Any,
-            experiments: Any,
+            sample_models: SampleModels,
+            experiments: Experiments,
             calculator: Any,
-            weights: Optional[Any] = None) -> None:
+            weights: Optional[np.array] = None) -> None:
         """
         Run the fitting process.
 
@@ -31,7 +35,7 @@ class DiffractionMinimizer:
             weights: Optional weights for joint fitting.
 
         """
-        params: List[Any] = sample_models.get_free_params() + experiments.get_free_params()
+        params = sample_models.get_free_params() + experiments.get_free_params()
 
         if not params:
             print("⚠️ No parameters selected for fitting.")
@@ -56,8 +60,8 @@ class DiffractionMinimizer:
         self._process_fit_results(sample_models, experiments, calculator)
 
     def _process_fit_results(self,
-                             sample_models: Any,
-                             experiments: Any,
+                             sample_models: SampleModels,
+                             experiments: Experiments,
                              calculator: Any) -> None:
         """
         Collect reliability inputs and display results after fitting.
@@ -76,8 +80,8 @@ class DiffractionMinimizer:
             self.results.display_results(y_obs=y_obs, y_calc=y_calc, y_err=y_err, f_obs=f_obs, f_calc=f_calc)
 
     def _collect_free_parameters(self,
-                                 sample_models: Any,
-                                 experiments: Any) -> List[Any]:
+                                 sample_models: SampleModels,
+                                 experiments: Experiments) -> List[Parameter]:
         """
         Collect free parameters from sample models and experiments.
 
@@ -88,16 +92,16 @@ class DiffractionMinimizer:
         Returns:
             List of free parameters.
         """
-        free_params: List[Any] = sample_models.get_free_params() + experiments.get_free_params()
+        free_params: List[Parameter] = sample_models.get_free_params() + experiments.get_free_params()
         return free_params
 
     def _residual_function(self,
                            engine_params: Dict[str, Any],
-                           parameters: List[Any],
-                           sample_models: Any,
-                           experiments: Any,
+                           parameters: List[Parameter],
+                           sample_models: SampleModels,
+                           experiments: Experiments,
                            calculator: Any,
-                           weights: Optional[Any] = None) -> np.ndarray:
+                           weights: Optional[np.array] = None) -> np.ndarray:
         """
         Residual function computes the difference between measured and calculated patterns.
         It updates the parameter values according to the optimizer-provided engine_params.

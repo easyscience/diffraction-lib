@@ -1,7 +1,9 @@
 from typing import Any, Optional, List
 import numpy as np
 from .calculators.calculator_factory import CalculatorFactory
-
+from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.experiments.experiment import Experiment
 
 class DiffractionCalculator:
     """
@@ -29,7 +31,7 @@ class DiffractionCalculator:
         """
         self._calculator = self.calculator_factory.create_calculator(engine)
 
-    def calculate_structure_factors(self, sample_models: Any, experiments: Any) -> Optional[List[Any]]:
+    def calculate_structure_factors(self, sample_models: SampleModels, experiments: Experiments) -> Optional[List[Any]]:
         """
         Calculate HKL intensities (structure factors) for sample models and experiments.
 
@@ -42,7 +44,7 @@ class DiffractionCalculator:
         """
         return self._calculator.calculate_structure_factors(sample_models, experiments)
 
-    def calculate_pattern(self, sample_models: Any, experiment: Any) -> np.ndarray:
+    def calculate_pattern(self, sample_models: SampleModels, experiment: Experiment) -> np.ndarray:
         """
         Generate diffraction pattern based on sample models and experiment.
 
