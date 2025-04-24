@@ -1,3 +1,4 @@
+from typing import Optional
 from easydiffraction.core.objects import (
     Descriptor,
     Component
@@ -9,7 +10,7 @@ class SpaceGroup(Component):
     Represents the space group of a sample model.
     """
 
-    def __init__(self, name_h_m="P 1", it_coordinate_system_code=None):
+    def __init__(self, name_h_m: str = "P 1", it_coordinate_system_code: Optional[int] = None) -> None:
         super().__init__()
 
         self.name_h_m = Descriptor(
@@ -24,13 +25,13 @@ class SpaceGroup(Component):
         )
 
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "space_group"
 
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "space_group"
 
     @property
-    def _entry_id(self):
+    def _entry_id(self) -> Optional[str]:
         return None

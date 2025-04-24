@@ -1,3 +1,4 @@
+from typing import Optional
 from easydiffraction.core.objects import (Parameter,
                                           Component)
 
@@ -7,12 +8,12 @@ class Cell(Component):
     """
 
     def __init__(self,
-                 length_a=10.0,
-                 length_b=10.0,
-                 length_c=10.0,
-                 angle_alpha=90.0,
-                 angle_beta=90.0,
-                 angle_gamma=90.0):
+                 length_a: float = 10.0,
+                 length_b: float = 10.0,
+                 length_c: float = 10.0,
+                 angle_alpha: float = 90.0,
+                 angle_beta: float = 90.0,
+                 angle_gamma: float = 90.0) -> None:
         super().__init__()
 
         self.length_a = Parameter(
@@ -53,13 +54,13 @@ class Cell(Component):
         )
 
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "cell"
 
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "cell"
 
     @property
-    def _entry_id(self):
+    def _entry_id(self) -> Optional[str]:
         return None
