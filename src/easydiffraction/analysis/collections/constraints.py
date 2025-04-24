@@ -1,3 +1,5 @@
+from typing import Type
+
 from easydiffraction.core.objects import (
     Descriptor,
     Component,
@@ -7,24 +9,24 @@ from easydiffraction.core.objects import (
 
 class Constraint(Component):
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "constraint"
 
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "constraint"
 
     def __init__(self,
                  lhs_alias: str,
-                 rhs_expr: str):
+                 rhs_expr: str) -> None:
         super().__init__()
 
-        self.lhs_alias = Descriptor(
+        self.lhs_alias: Descriptor = Descriptor(
             value=lhs_alias,
             name="lhs_alias",
             cif_name="lhs_alias"
         )
-        self.rhs_expr = Descriptor(
+        self.rhs_expr: Descriptor = Descriptor(
             value=rhs_expr,
             name="rhs_expr",
             cif_name="rhs_expr"
@@ -41,9 +43,9 @@ class Constraint(Component):
 
 class Constraints(Collection):
     @property
-    def _type(self):
+    def _type(self) -> str:
         return "category"  # datablock or category
 
     @property
-    def _child_class(self):
+    def _child_class(self) -> Type[Constraint]:
         return Constraint

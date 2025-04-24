@@ -1,12 +1,15 @@
 import tabulate
+from typing import List, Type, Optional, Dict, Any
 
 from easydiffraction.utils.formatting import paragraph
 
 from .minimizer_lmfit import LmfitMinimizer
 from .minimizer_dfols import DfolsMinimizer
+from .minimizer_base import MinimizerBase
+
 
 class MinimizerFactory:
-    _available_minimizers = {
+    _available_minimizers: Dict[str, Dict[str, Any]] = {
         'lmfit': {
             'engine': 'lmfit',
             'method': 'leastsq',
@@ -34,16 +37,25 @@ class MinimizerFactory:
     }
 
     @classmethod
-    def list_available_minimizers(cls):
+    def list_available_minimizers(cls) -> List[str]:
+        """
+        List all available minimizers.
+
+        Returns:
+            A list of minimizer names.
+        """
         return list(cls._available_minimizers.keys())
 
     @classmethod
-    def show_available_minimizers(cls):
-        header = ["Minimizer", "Description"]
-        table_data = []
+    def show_available_minimizers(cls) -> None:
+        """
+        Display a table of available minimizers and their descriptions.
+        """
+        header: List[str] = ["Minimizer", "Description"]
+        table_data: List[List[str]] = []
 
         for name, config in cls._available_minimizers.items():
-            description = config.get('description', 'No description provided.')
+            description: str = config.get('description', 'No description provided.')
             table_data.append([name, description])
 
         print(paragraph("Available minimizers"))
@@ -57,22 +69,43 @@ class MinimizerFactory:
         ))
 
     @classmethod
-    def create_minimizer(cls, selection: str):
+    def create_minimizer(cls, selection: str) -> MinimizerBase:
+        """
+        Create a minimizer instance based on the selection.
+
+        Args:
+            selection: The name of the minimizer to create.
+
+        Returns:
+            An instance of the selected minimizer.
+
+        Raises:
+            ValueError: If the selection is not a valid minimizer.
+        """
         config = cls._available_minimizers.get(selection)
         if not config:
             raise ValueError(f"Unknown minimizer '{selection}'. Use one of {cls.list_available_minimizers()}")
 
-        minimizer_class = config.get('class')
-        method = config.get('method')
+        minimizer_class: Type[MinimizerBase] = config.get('class')
+        method: Optional[str] = config.get('method')
 
-        kwargs = {}
+        kwargs: Dict[str, Any] = {}
         if method is not None:
             kwargs['method'] = method
 
         return minimizer_class(**kwargs)
 
     @classmethod
-    def register_minimizer(cls, name, minimizer_cls, method=None, description='No description provided.'):
+    def register_minimizer(cls, name: str, minimizer_cls: Type[MinimizerBase], method: Optional[str] = None, description: str = 'No description provided.') -> None:
+        """
+        Register a new minimizer.
+
+        Args:
+            name: The name of the minimizer.
+            minimizer_cls: The class of the minimizer.
+            method: The method used by the minimizer (optional).
+            description: A description of the minimizer.
+        """
         cls._available_minimizers[name] = {
             'engine': name,
             'method': method,

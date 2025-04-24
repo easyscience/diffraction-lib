@@ -2,6 +2,7 @@ import numpy as np
 import tabulate
 
 from abc import ABC, abstractmethod
+from typing import Dict, List, Any, Type, Union
 from numpy.polynomial.chebyshev import chebval
 from scipy.interpolate import interp1d
 
@@ -21,11 +22,11 @@ from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
 # TODO: rename to LineSegment
 class Point(Component):
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "background"
 
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "pd_background"
 
     def __init__(self,
@@ -59,7 +60,7 @@ class PolynomialTerm(Component):
     # TODO: make consistency in where to place the following properties:
     #  before or after the __init__ method
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "background"
 
     @property
@@ -67,8 +68,8 @@ class PolynomialTerm(Component):
         return "pd_background"
 
     def __init__(self,
-                 order,
-                 coef):
+                 order: int,
+                 coef: float) -> None:
         super().__init__()
 
         self.order = Descriptor(
@@ -95,26 +96,26 @@ class PolynomialTerm(Component):
 
 class BackgroundBase(Collection):
     @property
-    def _type(self):
+    def _type(self) -> str:
         return "category"  # datablock or category
 
     @abstractmethod
-    def calculate(self, x_data):
+    def calculate(self, x_data: np.ndarray) -> np.ndarray:
         pass
 
     @abstractmethod
-    def show(self):
+    def show(self) -> None:
         pass
 
 
 class LineSegmentBackground(BackgroundBase):
-    _description = 'Linear interpolation between points'
+    _description: str = 'Linear interpolation between points'
 
     @property
-    def _child_class(self):
+    def _child_class(self) -> Type[Point]:
         return Point
 
-    def calculate(self, x_data):
+    def calculate(self, x_data: np.ndarray) -> np.ndarray:
         """Interpolate background points over x_data."""
         if not self._items:
             print(warning('No background points found. Setting background to zero.'))
@@ -131,9 +132,9 @@ class LineSegmentBackground(BackgroundBase):
         y_data = interp_func(x_data)
         return y_data
 
-    def show(self):
-        header = ["X", "Intensity"]
-        table_data = []
+    def show(self) -> None:
+        header: List[str] = ["X", "Intensity"]
+        table_data: List[List[float]] = []
 
         for point in self._items.values():
             x = point.x.value
@@ -152,13 +153,13 @@ class LineSegmentBackground(BackgroundBase):
 
 
 class ChebyshevPolynomialBackground(BackgroundBase):
-    _description = 'Chebyshev polynomial background'
+    _description: str = 'Chebyshev polynomial background'
 
     @property
-    def _child_class(self):
+    def _child_class(self) -> Type[PolynomialTerm]:
         return PolynomialTerm
 
-    def calculate(self, x_data):
+    def calculate(self, x_data: np.ndarray) -> np.ndarray:
         """Evaluate polynomial background over x_data."""
         if not self._items:
             print(warning('No background points found. Setting background to zero.'))
@@ -169,9 +170,9 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         y_data = chebval(u, coefs)
         return y_data
 
-    def show(self):
-        header = ["Order", "Coefficient"]
-        table_data = []
+    def show(self) -> None:
+        header: List[str] = ["Order", "Coefficient"]
+        table_data: List[List[Union[int, float]]] = []
 
         for term in self._items.values():
             order = term.order.value
@@ -190,14 +191,13 @@ class ChebyshevPolynomialBackground(BackgroundBase):
 
 
 class BackgroundFactory:
-    _supported = {
+    _supported: Dict[str, Type[BackgroundBase]] = {
         "line-segment": LineSegmentBackground,
         "chebyshev polynomial": ChebyshevPolynomialBackground
     }
 
     @classmethod
-    def create(cls,
-               background_type=DEFAULT_BACKGROUND_TYPE):
+    def create(cls, background_type: str = DEFAULT_BACKGROUND_TYPE) -> BackgroundBase:
         if background_type not in cls._supported:
             supported_types = list(cls._supported.keys())
 

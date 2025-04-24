@@ -1,11 +1,12 @@
 import numpy as np
-
+from typing import List, Optional
 from easydiffraction.analysis.reliability_factors import calculate_reduced_chi_square
 
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
 FIXED_WIDTH = 17
 
-def format_cell(cell, width=FIXED_WIDTH, align="center"):
+
+def format_cell(cell: str, width: int = FIXED_WIDTH, align: str = "center") -> str:
     cell_str = str(cell)
     if align == "center":
         return cell_str.center(width)
@@ -22,7 +23,16 @@ class FittingProgressTracker:
     Tracks and reports the reduced chi-square during the optimization process.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
+        self._iteration: int = 0
+        self._previous_chi2: Optional[float] = None
+        self._last_chi2: Optional[float] = None
+        self._last_iteration: Optional[int] = None
+        self._best_chi2: Optional[float] = None
+        self._best_iteration: Optional[int] = None
+        self._fitting_time: Optional[float] = None
+
+    def reset(self) -> None:
         self._iteration = 0
         self._previous_chi2 = None
         self._last_chi2 = None
@@ -31,16 +41,7 @@ class FittingProgressTracker:
         self._best_iteration = None
         self._fitting_time = None
 
-    def reset(self):
-        self._iteration = 0
-        self._previous_chi2 = None
-        self._last_chi2 = None
-        self._last_iteration = None
-        self._best_chi2 = None
-        self._best_iteration = None
-        self._fitting_time = None
-
-    def track(self, residuals, parameters):
+    def track(self, residuals: np.ndarray, parameters: List[float]) -> np.ndarray:
         """
         Track chi-square progress during the optimization process.
 
@@ -55,7 +56,7 @@ class FittingProgressTracker:
 
         reduced_chi2 = calculate_reduced_chi_square(residuals, len(parameters))
 
-        row = []
+        row: List[str] = []
 
         # First iteration, initialize tracking
         if self._previous_chi2 is None:
@@ -64,7 +65,7 @@ class FittingProgressTracker:
             self._best_iteration = self._iteration
 
             row = [
-                self._iteration,
+                str(self._iteration),
                 f"{reduced_chi2:.2f}",
                 "",
                 ""
@@ -75,7 +76,7 @@ class FittingProgressTracker:
             change_percent = (self._previous_chi2 - reduced_chi2) / self._previous_chi2 * 100
 
             row = [
-                self._iteration,
+                str(self._iteration),
                 f"{self._previous_chi2:.2f}",
                 f"{reduced_chi2:.2f}",
                 f"{change_percent:.1f}% ↓"
@@ -99,32 +100,32 @@ class FittingProgressTracker:
         return residuals
 
     @property
-    def best_chi2(self):
+    def best_chi2(self) -> Optional[float]:
         return self._best_chi2
 
     @property
-    def best_iteration(self):
+    def best_iteration(self) -> Optional[int]:
         return self._best_iteration
 
     @property
-    def iteration(self):
+    def iteration(self) -> int:
         return self._iteration
 
     @property
-    def fitting_time(self):
+    def fitting_time(self) -> Optional[float]:
         return self._fitting_time
 
-    def start_timer(self):
+    def start_timer(self) -> None:
         import time
         self._start_time = time.perf_counter()
 
-    def stop_timer(self):
+    def stop_timer(self) -> None:
         import time
         self._end_time = time.perf_counter()
         self._fitting_time = self._end_time - self._start_time
 
-    def start_tracking(self, minimizer_name):
-        headers = ["iteration", "start", "improved", "improvement [%]"]
+    def start_tracking(self, minimizer_name: str) -> None:
+        headers: List[str] = ["iteration", "start", "improved", "improvement [%]"]
 
         print(f"🚀 Starting fitting process with '{minimizer_name}'...")
         print("📈 Goodness-of-fit (reduced χ²) change:")
@@ -139,9 +140,9 @@ class FittingProgressTracker:
         # Separator
         print("╞" + "╪".join(["═" * FIXED_WIDTH for _ in headers]) + "╡")
 
-    def add_tracking_info(self, row):
+    def add_tracking_info(self, row: List[str]) -> None:
         # Alignments for each column: iteration, start, improved, change [%]
-        aligns = ["center", "center", "center", "center"]
+        aligns: List[str] = ["center", "center", "center", "center"]
 
         formatted_row = "│" + "│".join([
             format_cell(cell, align=aligns[i])
@@ -150,12 +151,12 @@ class FittingProgressTracker:
 
         print(formatted_row)
 
-    def finish_tracking(self):
+    def finish_tracking(self) -> None:
         # Print last iteration as last row
-        row = [
-            self._last_iteration,
+        row: List[str] = [
+            str(self._last_iteration),
             "",
-            f"{self._last_chi2:.2f}",
+            f"{self._last_chi2:.2f}" if self._last_chi2 is not None else "",
             ""
         ]
         self.add_tracking_info(row)

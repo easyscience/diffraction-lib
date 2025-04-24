@@ -1,4 +1,5 @@
 import os.path
+from typing import Optional, Union, Dict, List
 
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.core.objects import Collection
@@ -18,21 +19,21 @@ class Experiments(Collection):
     def _child_class(self):
         return BaseExperiment
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self._experiments = self._items  # Alias for legacy support
+        self._experiments: Dict[str, BaseExperiment] = self._items  # Alias for legacy support
 
     def add(
         self,
-        experiment=None,
-        name=None,
-        sample_form=None,
-        beam_mode=None,
-        radiation_probe=None,
-        cif_path=None,
-        cif_str=None,
-        data_path=None
-    ):
+        experiment: Optional[BaseExperiment] = None,
+        name: Optional[str] = None,
+        sample_form: Optional[str] = None,
+        beam_mode: Optional[str] = None,
+        radiation_probe: Optional[str] = None,
+        cif_path: Optional[str] = None,
+        cif_str: Optional[str] = None,
+        data_path: Optional[str] = None
+    ) -> None:
         """
         Add a new experiment to the collection.
         """
@@ -57,24 +58,25 @@ class Experiments(Collection):
     def _add_prebuilt_experiment(self, experiment: BaseExperiment):
         self._experiments[experiment.name] = experiment
 
-    def _add_from_cif_path(self, cif_path):
+    def _add_from_cif_path(self, cif_path: str) -> None:
         print(f"Loading Experiment from CIF path...")
         raise NotImplementedError("CIF loading not implemented.")
 
-    def _add_from_cif_string(self, cif_str):
+    def _add_from_cif_string(self, cif_str: str) -> None:
         print("Loading Experiment from CIF string...")
         raise NotImplementedError("CIF loading not implemented.")
 
-    def _add_from_data_path(self,
-                            name,
-                            sample_form,
-                            beam_mode,
-                            radiation_probe,
-                            data_path):
+    def _add_from_data_path(
+        self,
+        name: str,
+        sample_form: str,
+        beam_mode: str,
+        radiation_probe: str,
+        data_path: str
+    ) -> None:
         """
         Load an experiment from raw data ASCII file.
         """
-        # TODO: Move this to the Experiment class
         print(paragraph("Loading measured data from ASCII file"))
         print(os.path.abspath(data_path))
         experiment = ExperimentFactory.create(
@@ -86,21 +88,21 @@ class Experiments(Collection):
         experiment._load_ascii_data_to_experiment(data_path)
         self._experiments[experiment.name] = experiment
 
-    def remove(self, experiment_id):
+    def remove(self, experiment_id: str) -> None:
         if experiment_id in self._experiments:
             del self._experiments[experiment_id]
 
-    def show_names(self):
+    def show_names(self) -> None:
         print(paragraph("Defined experiments" + " 🔬"))
         print(self.ids)
 
     @property
-    def ids(self):
+    def ids(self) -> List[str]:
         return list(self._experiments.keys())
 
-    def show_params(self):
+    def show_params(self) -> None:
         for exp in self._experiments.values():
             print(exp)
 
-    def as_cif(self):
+    def as_cif(self) -> str:
         return "\n\n".join([exp.as_cif() for exp in self._experiments.values()])

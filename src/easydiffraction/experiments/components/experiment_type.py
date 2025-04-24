@@ -6,17 +6,17 @@ from easydiffraction.core.objects import (
 
 class ExperimentType(Component):
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "expt_type"
 
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "expt_type"
 
     def __init__(self,
                  sample_form: str,
                  beam_mode: str,
-                 radiation_probe: str):
+                 radiation_probe: str) -> None:
         super().__init__()
 
         self.sample_form: Descriptor = Descriptor(
@@ -40,4 +40,4 @@ class ExperimentType(Component):
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        self._locked = True
+        self._locked: bool = True
