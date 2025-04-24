@@ -47,7 +47,7 @@ project.experiments.add(name='pdf',
                         sample_form='powder',
                         beam_mode='constant wavelength',
                         radiation_probe='xray',
-                        diffraction_type='total',
+                        scattering_type='total',
                         data_path='examples/data/NaCl.gr')
 
 print(ed.section('Setup data plotter'))

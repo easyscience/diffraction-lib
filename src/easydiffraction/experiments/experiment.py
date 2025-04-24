@@ -20,7 +20,7 @@ from easydiffraction.core.constants import (
     DEFAULT_RADIATION_PROBE,
     DEFAULT_PEAK_PROFILE_TYPE,
     DEFAULT_BACKGROUND_TYPE,
-    DEFAULT_DIFFRACTION_TYPE
+    DEFAULT_SCATTERING_TYPE
 )
 
 
@@ -33,7 +33,7 @@ class BaseExperiment(Datablock):
         self.name = name
         self.type = type
         self.instrument = InstrumentFactory.create(beam_mode=self.type.beam_mode.value,
-                                                   diffraction_type=self.type.diffraction_type.value)
+                                                   scattering_type=self.type.scattering_type.value)
         self.datastore = DatastoreFactory.create(sample_form=self.type.sample_form.value,
                                                  experiment=self)
 
@@ -357,11 +357,11 @@ class ExperimentFactory:
 
     _supported = {
     "powder": {
-        "conventional": PowderExperiment,
+        "bragg": PowderExperiment,
         "total": PDFExperiment,
     },
     "single crystal": {
-        "conventional": SingleCrystalExperiment,
+        "bragg": SingleCrystalExperiment,
         "total": PDFExperiment,}
     }
     @classmethod
@@ -370,15 +370,15 @@ class ExperimentFactory:
                sample_form: DEFAULT_SAMPLE_FORM,
                beam_mode: DEFAULT_BEAM_MODE,
                radiation_probe: DEFAULT_RADIATION_PROBE,
-               diffraction_type: DEFAULT_DIFFRACTION_TYPE,
+               scattering_type: DEFAULT_SCATTERING_TYPE,
                ) -> BaseExperiment:
         # TODO: Add checks for expt_type and expt_class
         expt_type = ExperimentType(sample_form=sample_form,
                                    beam_mode=beam_mode,
                                    radiation_probe=radiation_probe,
-                                   diffraction_type=diffraction_type)
+                                   scattering_type=scattering_type)
 
-        expt_class = cls._supported[sample_form][diffraction_type]
+        expt_class = cls._supported[sample_form][scattering_type]
         instance = expt_class(name=name, type=expt_type)
         return instance
 
@@ -391,14 +391,14 @@ def Experiment(name: str,
                sample_form: str = DEFAULT_SAMPLE_FORM,
                beam_mode: str = DEFAULT_BEAM_MODE,
                radiation_probe: str = DEFAULT_RADIATION_PROBE,
-               diffraction_type: str = DEFAULT_DIFFRACTION_TYPE,
+               scattering_type: str = DEFAULT_SCATTERING_TYPE,
                data_path: str = None):
     experiment = ExperimentFactory.create(
         name=name,
         sample_form=sample_form,
         beam_mode=beam_mode,
         radiation_probe=radiation_probe,
-        diffraction_type=diffraction_type
+        scattering_type=scattering_type
     )
     experiment._load_ascii_data_to_experiment(data_path)
     return experiment

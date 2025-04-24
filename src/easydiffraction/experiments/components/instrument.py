@@ -3,7 +3,7 @@ from easydiffraction.core.objects import (
     Component
 )
 from easydiffraction.core.constants import (DEFAULT_BEAM_MODE,
-                                            DEFAULT_DIFFRACTION_TYPE)
+                                            DEFAULT_SCATTERING_TYPE)
 
 class InstrumentBase(Component):
     @property
@@ -160,11 +160,11 @@ class PDFTOFInstrument(TimeOfFlightInstrument, PDFInstrumentMixin):
 class InstrumentFactory:
     _supported = {
         "constant wavelength": {
-            "conventional": ConstantWavelengthInstrument,
+            "bragg": ConstantWavelengthInstrument,
             "total" : PDFCWInstrument,
         },
         "time-of-flight": {
-            "conventional": TimeOfFlightInstrument,
+            "bragg": TimeOfFlightInstrument,
             "total" : PDFTOFInstrument,
         }
     }
@@ -172,20 +172,20 @@ class InstrumentFactory:
     @classmethod
     def create(cls,
                beam_mode=DEFAULT_BEAM_MODE,
-               diffraction_type=DEFAULT_DIFFRACTION_TYPE):
+               scattering_type=DEFAULT_SCATTERING_TYPE):
         if beam_mode not in cls._supported:
             supported = list(cls._supported.keys())
             raise ValueError(
                 f"Unsupported beam mode: '{beam_mode}'.\n "
                 f"Supported beam modes are: {supported}"
             )
-        if diffraction_type not in cls._supported[beam_mode]:
+        if scattering_type not in cls._supported[beam_mode]:
             supported = list(cls._supported[beam_mode].keys())
             raise ValueError(
-                f"Unsupported diffraction type: '{diffraction_type}'.\n "
+                f"Unsupported diffraction type: '{scattering_type}'.\n "
                 f"Supported diffraction types for {beam_mode} are: {supported}"
             )
 
-        instrument_class = cls._supported[beam_mode][diffraction_type]
+        instrument_class = cls._supported[beam_mode][scattering_type]
         instance = instrument_class()
         return instance

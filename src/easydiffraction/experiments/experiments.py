@@ -24,7 +24,7 @@ class Experiments(Collection):
         sample_form=None,
         beam_mode=None,
         radiation_probe=None,
-        diffraction_type=None,
+        scattering_type=None,
         cif_path=None,
         cif_str=None,
         data_path=None
@@ -32,8 +32,8 @@ class Experiments(Collection):
         """
         Add a new experiment to the collection.
         """
-        if diffraction_type is None:
-            diffraction_type = "conventional"
+        if scattering_type is None:
+            scattering_type = "bragg"
         if experiment:
             self._add_prebuilt_experiment(experiment)
         elif cif_path:
@@ -46,7 +46,7 @@ class Experiments(Collection):
                 sample_form=sample_form,
                 beam_mode=beam_mode,
                 radiation_probe=radiation_probe,
-                diffraction_type=diffraction_type,
+                scattering_type=scattering_type,
                 data_path=data_path
             )
         else:
@@ -70,7 +70,7 @@ class Experiments(Collection):
                             sample_form,
                             beam_mode,
                             radiation_probe,
-                            diffraction_type,
+                            scattering_type,
                             data_path):
         """
         Load an experiment from raw data ASCII file.
@@ -83,7 +83,7 @@ class Experiments(Collection):
             sample_form=sample_form,
             beam_mode=beam_mode,
             radiation_probe=radiation_probe,
-            diffraction_type=diffraction_type
+            scattering_type=scattering_type
         )
         experiment._load_ascii_data_to_experiment(data_path)
         self._experiments[experiment.name] = experiment
