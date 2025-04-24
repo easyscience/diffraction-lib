@@ -1,5 +1,7 @@
+from typing import Dict, List, Tuple, Any, TypeVar, Type, Optional
 from asteval import Interpreter
 
+T = TypeVar('T', bound='BaseSingleton')
 
 class BaseSingleton:
     """Base class to implement Singleton pattern.
@@ -11,7 +13,7 @@ class BaseSingleton:
     _instance = None  # Class-level shared instance
 
     @classmethod
-    def get(cls):
+    def get(cls: Type[T]) -> T:
         """Returns the shared instance, creating it if needed."""
         if cls._instance is None:
             cls._instance = cls()
@@ -21,15 +23,15 @@ class BaseSingleton:
 class UidMapHandler(BaseSingleton):
     """Global handler to manage UID-to-Parameter object mapping."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Internal map: uid (str) → Parameter instance
-        self._uid_map = {}
+        self._uid_map: Dict[str, Any] = {}
 
-    def get_uid_map(self):
+    def get_uid_map(self) -> Dict[str, Any]:
         """Returns the current UID-to-Parameter map."""
         return self._uid_map
 
-    def set_uid_map(self, parameters: list):
+    def set_uid_map(self, parameters: List[Any]) -> None:
         """Populates the UID map from a list of Parameter objects."""
         self._uid_map = {param.uid: param for param in parameters}
 
@@ -43,18 +45,18 @@ class ConstraintsHandler(BaseSingleton):
     Constraints are defined as: lhs_alias = expression(rhs_aliases).
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Maps alias names (like 'biso_La') → ConstraintAlias(param=Parameter)
-        self._alias_to_param = {}
+        self._alias_to_param: Dict[str, Any] = {}
 
         # Stores raw user-defined expressions indexed by ID
         # Each value should contain: lhs_alias, rhs_expr
-        self._expressions = {}
+        self._expressions: Dict[str, Any] = {}
 
         # Internally parsed constraints as (lhs_alias, rhs_expr) tuples
-        self._parsed_constraints = []
+        self._parsed_constraints: List[Tuple[str, str]] = []
 
-    def set_aliases(self, constraint_aliases):
+    def set_aliases(self, constraint_aliases: Any) -> None:
         """
         Sets the alias map (name → parameter wrapper).
         Called when user registers parameter aliases like:
@@ -62,7 +64,7 @@ class ConstraintsHandler(BaseSingleton):
         """
         self._alias_to_param = constraint_aliases._items
 
-    def set_expressions(self, constraint_expressions):
+    def set_expressions(self, constraint_expressions: Any) -> None:
         """
         Sets the constraint expressions and triggers parsing into internal format.
         Called when user registers expressions like:
@@ -71,7 +73,7 @@ class ConstraintsHandler(BaseSingleton):
         self._expressions = constraint_expressions._items
         self._parse_constraints()
 
-    def _parse_constraints(self):
+    def _parse_constraints(self) -> None:
         """
         Converts raw expression input into a normalized internal list of
         (lhs_alias, rhs_expr) pairs, stripping whitespace and skipping invalid entries.
@@ -86,7 +88,7 @@ class ConstraintsHandler(BaseSingleton):
                 constraint = (lhs_alias.strip(), rhs_expr.strip())
                 self._parsed_constraints.append(constraint)
 
-    def apply(self, parameters: list):
+    def apply(self, parameters: List[Any]) -> None:
         """Evaluates constraints and applies them to dependent parameters.
 
         For each constraint:
@@ -101,7 +103,7 @@ class ConstraintsHandler(BaseSingleton):
         uid_map = UidMapHandler.get().get_uid_map()
 
         # Prepare a flat dict of {alias_name: value} for use in expressions
-        param_values = {
+        param_values: Dict[str, Any] = {
             alias: alias_obj.param.value
             for alias, alias_obj in self._alias_to_param.items()
         }

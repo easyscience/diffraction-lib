@@ -1,5 +1,7 @@
+import numpy as np
 import pandas as pd
 from abc import ABC, abstractmethod
+from typing import Any, Callable, Dict, List, Optional, Union
 from tabulate import tabulate
 
 from ..reliability_factors import (
@@ -12,19 +14,29 @@ from .fitting_progress_tracker import FittingProgressTracker
 
 from easydiffraction.utils.formatting import paragraph
 
+
 class FitResults:
-    def __init__(self, success=False, parameters=None, chi_square=None,
-                 reduced_chi_square=None, message='', iterations=0, engine_result=None, starting_parameters=None, fitting_time=None, **kwargs):
-        self.success = success
-        self.parameters = parameters if parameters is not None else []
-        self.chi_square = chi_square
-        self.reduced_chi_square = reduced_chi_square
-        self.message = message
-        self.iterations = iterations
-        self.engine_result = engine_result
-        self.result = None
-        self.starting_parameters = starting_parameters if starting_parameters is not None else []
-        self.fitting_time = fitting_time  # Store fitting time
+    def __init__(self,
+                 success: bool = False,
+                 parameters: Optional[List[Any]] = None,
+                 chi_square: Optional[float] = None,
+                 reduced_chi_square: Optional[float] = None,
+                 message: str = '',
+                 iterations: int = 0,
+                 engine_result: Optional[Any] = None,
+                 starting_parameters: Optional[List[Any]] = None,
+                 fitting_time: Optional[float] = None,
+                 **kwargs: Any) -> None:
+        self.success: bool = success
+        self.parameters: List[Any] = parameters if parameters is not None else []
+        self.chi_square: Optional[float] = chi_square
+        self.reduced_chi_square: Optional[float] = reduced_chi_square
+        self.message: str = message
+        self.iterations: int = iterations
+        self.engine_result: Optional[Any] = engine_result
+        self.result: Optional[Any] = None
+        self.starting_parameters: List[Any] = starting_parameters if starting_parameters is not None else []
+        self.fitting_time: Optional[float] = fitting_time
 
         if 'redchi' in kwargs and self.reduced_chi_square is None:
             self.reduced_chi_square = kwargs.get('redchi')
@@ -32,7 +44,12 @@ class FitResults:
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def display_results(self, y_obs=None, y_calc=None, y_err=None, f_obs=None, f_calc=None):
+    def display_results(self,
+                        y_obs: Optional[List[float]] = None,
+                        y_calc: Optional[List[float]] = None,
+                        y_err: Optional[List[float]] = None,
+                        f_obs: Optional[List[float]] = None,
+                        f_calc: Optional[List[float]] = None) -> None:
         status_icon = "✅" if self.success else "❌"
         rf = rf2 = wr = br = None
         if y_obs is not None and y_calc is not None:
@@ -69,7 +86,7 @@ class FitResults:
 
         rows = []
         for param in self.parameters:
-            datablock_id = getattr(param, 'datablock_id', 'N/A')  # TODO: Check if 'N/A' is needed
+            datablock_id = getattr(param, 'datablock_id', 'N/A')
             category_key = getattr(param, 'category_key', 'N/A')
             collection_entry_id = getattr(param, 'collection_entry_id', 'N/A')
             name = getattr(param, 'name', 'N/A')
@@ -96,7 +113,7 @@ class FitResults:
                          relative_change])
 
         dataframe = pd.DataFrame(rows)
-        indices = range(1, len(dataframe) + 1)  # Force starting from 1
+        indices = range(1, len(dataframe) + 1)
 
         print(tabulate(dataframe,
                        headers=headers,
@@ -110,33 +127,31 @@ class MinimizerBase(ABC):
     Provides shared logic and structure for concrete minimizers.
     """
     def __init__(self,
-                 name=None,
-                 method=None,
-                 max_iterations=None):
-        # 'method' is used only by minimizers supporting multiple methods
-        # (e.g., lmfit). For minimizers like dfols, pass None.
-        self.name = name
-        self.method = method
-        self.max_iterations = max_iterations
-        self.result = None
-        self._previous_chi2 = None
-        self._iteration = None
-        self._best_chi2 = None
-        self._best_iteration = None
-        self._fitting_time = None
-        self.tracker = FittingProgressTracker()
+                 name: Optional[str] = None,
+                 method: Optional[str] = None,
+                 max_iterations: Optional[int] = None) -> None:
+        self.name: Optional[str] = name
+        self.method: Optional[str] = method
+        self.max_iterations: Optional[int] = max_iterations
+        self.result: Optional[FitResults] = None
+        self._previous_chi2: Optional[float] = None
+        self._iteration: Optional[int] = None
+        self._best_chi2: Optional[float] = None
+        self._best_iteration: Optional[int] = None
+        self._fitting_time: Optional[float] = None
+        self.tracker: FittingProgressTracker = FittingProgressTracker()
 
-    def _start_tracking(self, minimizer_name):
+    def _start_tracking(self, minimizer_name: str) -> None:
         self.tracker.reset()
         self.tracker.start_tracking(minimizer_name)
         self.tracker.start_timer()
 
-    def _stop_tracking(self):
+    def _stop_tracking(self) -> None:
         self.tracker.stop_timer()
         self.tracker.finish_tracking()
 
     @abstractmethod
-    def _prepare_solver_args(self, parameters):
+    def _prepare_solver_args(self, parameters: List[Any]) -> Dict[str, Any]:
         """
         Prepare the solver arguments directly from the list of free parameters.
         """
@@ -144,64 +159,63 @@ class MinimizerBase(ABC):
 
     @abstractmethod
     def _run_solver(self,
-                    objective_function,
-                    engine_parameters):
+                    objective_function: Callable[..., Any],
+                    engine_parameters: Dict[str, Any]) -> Any:
         pass
 
     @abstractmethod
     def _sync_result_to_parameters(self,
-                                   raw_result,
-                                   parameters):
+                                   raw_result: Any,
+                                   parameters: List[Any]) -> None:
         pass
 
     def _finalize_fit(self,
-                      parameters,
-                      raw_result):
-        self._sync_result_to_parameters(parameters,
-                                        raw_result)
+                      parameters: List[Any],
+                      raw_result: Any) -> FitResults:
+        self._sync_result_to_parameters(parameters, raw_result)
         success = self._check_success(raw_result)
         self.result = FitResults(
             success=success,
             parameters=parameters,
             reduced_chi_square=self.tracker.best_chi2,
-            raw_result=raw_result,
+            engine_result=raw_result,
             starting_parameters=parameters,
             fitting_time=self.tracker.fitting_time
         )
         return self.result
 
     @abstractmethod
-    def _check_success(self, raw_result):
+    def _check_success(self, raw_result: Any) -> bool:
         """
         Determine whether the fit was successful.
         This must be implemented by concrete minimizers.
         """
         pass
 
-    def fit(self, parameters, objective_function):
-        minimizer_name = self.name
+    def fit(self,
+            parameters: List[Any],
+            objective_function: Callable[..., Any]) -> FitResults:
+        minimizer_name = self.name or "Unnamed Minimizer"
         if self.method is not None:
             minimizer_name += f" ({self.method})"
 
         self._start_tracking(minimizer_name)
 
         solver_args = self._prepare_solver_args(parameters)
-        raw_result = self._run_solver(objective_function,
-                                      **solver_args)
+        raw_result = self._run_solver(objective_function, **solver_args)
 
         self._stop_tracking()
 
-        result = self._finalize_fit(parameters,
-                                    raw_result)
+        result = self._finalize_fit(parameters, raw_result)
 
         return result
 
     def _objective_function(self,
-                            engine_params,
-                            parameters,
-                            sample_models,
-                            experiments,
-                            calculator):
+                            engine_params: Dict[str, Any],
+                            parameters: List[Any],
+                            sample_models: Any,
+                            experiments: Any,
+                            calculator: Any) -> np.ndarray:
         return self._compute_residuals(engine_params,
                                        parameters,
                                        sample_models,
@@ -209,10 +223,10 @@ class MinimizerBase(ABC):
                                        calculator)
 
     def _create_objective_function(self,
-                                   parameters,
-                                   sample_models,
-                                   experiments,
-                                   calculator):
+                                   parameters: List[Any],
+                                   sample_models: Any,
+                                   experiments: Any,
+                                   calculator: Any) -> Callable[[Dict[str, Any]], np.ndarray]:
         return lambda engine_params: self._objective_function(
             engine_params,
             parameters,

@@ -1,5 +1,6 @@
+from __future__ import annotations
+from typing import Optional
 import numpy as np
-
 
 class Pattern:
     """
@@ -7,23 +8,23 @@ class Pattern:
     Stores x, measured intensities, uncertainties, background, and calculated intensities.
     """
 
-    def __init__(self, experiment):
+    def __init__(self, experiment: Experiment) -> None:
         self.experiment = experiment
 
         # Data arrays
-        self.x = None
-        self.meas = None
-        self.meas_su = None
-        self.bkg = None
-        self._calc = None  # Cached calculated intensities
+        self.x: Optional[np.ndarray] = None
+        self.meas: Optional[np.ndarray] = None
+        self.meas_su: Optional[np.ndarray] = None
+        self.bkg: Optional[np.ndarray] = None
+        self._calc: Optional[np.ndarray] = None  # Cached calculated intensities
 
     @property
-    def calc(self):
+    def calc(self) -> Optional[np.ndarray]:
         """Access calculated intensities. Should be updated via external calculation."""
         return self._calc
 
     @calc.setter
-    def calc(self, values):
+    def calc(self, values: np.ndarray) -> None:
         """Set calculated intensities (from Analysis.calculate_pattern())."""
         self._calc = values
 
@@ -32,7 +33,7 @@ class PowderPattern(Pattern):
     """
     Specialized pattern for powder diffraction (can be extended in the future).
     """
-    def __init__(self, experiment):
+    def __init__(self, experiment: Experiment) -> None:
         super().__init__(experiment)
         # Additional powder-specific initialization if needed
 
@@ -42,22 +43,22 @@ class Datastore:
     Stores pattern data (measured and calculated) for an experiment.
     """
 
-    def __init__(self, sample_form: str, experiment):
-        self.sample_form = sample_form
+    def __init__(self, sample_form: str, experiment: Experiment) -> None:
+        self.sample_form: str = sample_form
 
         if sample_form == "powder":
-            self.pattern = PowderPattern(experiment)
+            self.pattern: Pattern = PowderPattern(experiment)
         elif sample_form == "single_crystal":
-            self.pattern = Pattern(experiment)
+            self.pattern: Pattern = Pattern(experiment)
         else:
             raise ValueError(f"Unknown sample form '{sample_form}'")
 
-    def load_measured_data(self, file_path):
+    def load_measured_data(self, file_path: str) -> None:
         """Load measured data from an ASCII file."""
         print(f"Loading measured data for {self.sample_form} diffraction from {file_path}")
 
         try:
-            data = np.loadtxt(file_path)
+            data: np.ndarray = np.loadtxt(file_path)
         except Exception as e:
             print(f"Failed to load data: {e}")
             return
@@ -65,9 +66,9 @@ class Datastore:
         if data.shape[1] < 2:
             raise ValueError("Data file must have at least two columns (x and y).")
 
-        x = data[:, 0]
-        y = data[:, 1]
-        sy = data[:, 2] if data.shape[1] > 2 else np.sqrt(np.abs(y))
+        x: np.ndarray = data[:, 0]
+        y: np.ndarray = data[:, 1]
+        sy: np.ndarray = data[:, 2] if data.shape[1] > 2 else np.sqrt(np.abs(y))
 
         self.pattern.x = x
         self.pattern.meas = y
@@ -75,14 +76,14 @@ class Datastore:
 
         print(f"Loaded {len(x)} points for experiment '{self.pattern.experiment.name}'.")
 
-    def show_measured_data(self):
+    def show_measured_data(self) -> None:
         """Display measured data in console."""
         print(f"\nMeasured data ({self.sample_form}):")
         print(f"x: {self.pattern.x}")
         print(f"meas: {self.pattern.meas}")
         print(f"meas_su: {self.pattern.meas_su}")
 
-    def show_calculated_data(self):
+    def show_calculated_data(self) -> None:
         """Display calculated data in console."""
         print(f"\nCalculated data ({self.sample_form}):")
         print(f"calc: {self.pattern.calc}")
@@ -94,8 +95,15 @@ class DatastoreFactory:
     """
 
     @staticmethod
-    def create(sample_form: str, experiment):
+    def create(sample_form: str, experiment: Experiment) -> Datastore:
         """
         Create a datastore object depending on the sample form.
+        
+        Args:
+            sample_form: The form of the sample ("powder" or "single_crystal").
+            experiment: The experiment object.
+            
+        Returns:
+            A new Datastore instance appropriate for the sample form.
         """
         return Datastore(sample_form, experiment)

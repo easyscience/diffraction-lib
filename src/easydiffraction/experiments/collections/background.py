@@ -2,6 +2,7 @@ import numpy as np
 import tabulate
 
 from abc import ABC, abstractmethod
+from typing import Dict, List, Any, Type, Union
 from numpy.polynomial.chebyshev import chebval
 from scipy.interpolate import interp1d
 
@@ -19,7 +20,7 @@ from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
 
 
 class Point(Component):
-    def __init__(self, x: float, y: float):
+    def __init__(self, x: float, y: float) -> None:
         super().__init__()
 
         self.x = Descriptor(
@@ -38,20 +39,20 @@ class Point(Component):
         self._locked = True  # Lock further attribute additions
 
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "pd_background"
 
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "background"
 
     @property
-    def _entry_id(self):
+    def _entry_id(self) -> str:
         return f"{self.x.value}"
 
 
 class PolynomialTerm(Component):
-    def __init__(self, order, coef):
+    def __init__(self, order: int, coef: float) -> None:
         super().__init__()
 
         self.order = Descriptor(
@@ -70,48 +71,48 @@ class PolynomialTerm(Component):
         self._locked = True  # Lock further attribute additions
 
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "pd_background"
 
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "background"
 
     @property
-    def _entry_id(self):
+    def _entry_id(self) -> str:
         return f"{self.order.value}"
 
 
 class BackgroundBase(Collection):
     @property
-    def _type(self):
+    def _type(self) -> str:
         return "category"  # datablock or category
 
     @abstractmethod
-    def add(self, *args):
+    def add(self, *args: Any) -> None:
         pass
 
     @abstractmethod
-    def calculate(self, x_data):
+    def calculate(self, x_data: np.ndarray) -> np.ndarray:
         pass
 
     @abstractmethod
-    def show(self):
+    def show(self) -> None:
         pass
 
 
 class LineSegmentBackground(BackgroundBase):
-    _description = 'Linear interpolation between points'
+    _description: str = 'Linear interpolation between points'
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-    def add(self, x, y):
+    def add(self, x: float, y: float) -> None:
         """Add a background point."""
         point = Point(x=x, y=y)
         self._items[point._entry_id] = point
 
-    def calculate(self, x_data):
+    def calculate(self, x_data: np.ndarray) -> np.ndarray:
         """Interpolate background points over x_data."""
         if not self._items:
             print(warning('No background points found. Setting background to zero.'))
@@ -128,9 +129,9 @@ class LineSegmentBackground(BackgroundBase):
         y_data = interp_func(x_data)
         return y_data
 
-    def show(self):
-        header = ["X", "Intensity"]
-        table_data = []
+    def show(self) -> None:
+        header: List[str] = ["X", "Intensity"]
+        table_data: List[List[float]] = []
 
         for point in self._items.values():
             x = point.x.value
@@ -149,17 +150,17 @@ class LineSegmentBackground(BackgroundBase):
 
 
 class ChebyshevPolynomialBackground(BackgroundBase):
-    _description = 'Chebyshev polynomial background'
+    _description: str = 'Chebyshev polynomial background'
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-    def add(self, order, coef):
+    def add(self, order: int, coef: float) -> None:
         """Add a polynomial term as (order, coefficient)."""
         term = PolynomialTerm(order=order, coef=coef)
         self._items[term._entry_id] = term
 
-    def calculate(self, x_data):
+    def calculate(self, x_data: np.ndarray) -> np.ndarray:
         """Evaluate polynomial background over x_data."""
         if not self._items:
             print(warning('No background points found. Setting background to zero.'))
@@ -170,9 +171,9 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         y_data = chebval(u, coefs)
         return y_data
 
-    def show(self):
-        header = ["Order", "Coefficient"]
-        table_data = []
+    def show(self) -> None:
+        header: List[str] = ["Order", "Coefficient"]
+        table_data: List[List[Union[int, float]]] = []
 
         for term in self._items.values():
             order = term.order.value
@@ -191,14 +192,13 @@ class ChebyshevPolynomialBackground(BackgroundBase):
 
 
 class BackgroundFactory:
-    _supported = {
+    _supported: Dict[str, Type[BackgroundBase]] = {
         "line-segment": LineSegmentBackground,
         "chebyshev polynomial": ChebyshevPolynomialBackground
     }
 
     @classmethod
-    def create(cls,
-               background_type=DEFAULT_BACKGROUND_TYPE):
+    def create(cls, background_type: str = DEFAULT_BACKGROUND_TYPE) -> BackgroundBase:
         if background_type not in cls._supported:
             supported_types = list(cls._supported.keys())
 

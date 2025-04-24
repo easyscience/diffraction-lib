@@ -7,7 +7,7 @@ from easydiffraction.core.objects import (
 
 
 class LinkedPhase(Component):
-    def __init__(self, id: str, scale: float):
+    def __init__(self, id: str, scale: float) -> None:
         super().__init__()
 
         self.id = Descriptor(
@@ -24,15 +24,15 @@ class LinkedPhase(Component):
         self._locked = True  # Lock further attribute additions
 
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "pd_phase_block"
 
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "linked_phase"
 
     @property
-    def _entry_id(self):
+    def _entry_id(self) -> str:
         return self.id.value
 
 
@@ -41,9 +41,9 @@ class LinkedPhases(Collection):
     Collection of LinkedPhase instances.
     """
     @property
-    def _type(self):
+    def _type(self) -> str:
         return "category"  # datablock or category
 
-    def add(self, id: str, scale: float):
+    def add(self, id: str, scale: float) -> None:
         phase = LinkedPhase(id, scale)
         self._items[phase.id.value] = phase
