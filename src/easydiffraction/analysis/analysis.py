@@ -1,7 +1,8 @@
+from __future__ import annotations
 import pandas as pd
 import numpy as np
 from tabulate import tabulate
-from typing import List, Optional, Union, Any
+from typing import List, Optional, Union
 
 from easydiffraction.utils.formatting import (
     paragraph,
@@ -32,7 +33,7 @@ from easydiffraction.analysis.collections.joint_fit_experiments import JointFitE
 class Analysis:
     _calculator = CalculatorFactory.create_calculator('cryspy')
 
-    def __init__(self, project: Any) -> None:
+    def __init__(self, project: Project) -> None:
         self.project = project
         self.aliases = ConstraintAliases()
         self.constraints = ConstraintExpressions()

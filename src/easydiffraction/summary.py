@@ -1,3 +1,4 @@
+from __future__ import annotations
 from tabulate import tabulate
 from textwrap import wrap
 from typing import Any, Dict, List
@@ -15,14 +16,14 @@ class Summary:
     about the fitted model, experiments, and analysis results.
     """
 
-    def __init__(self, project: Any) -> None:
+    def __init__(self, project: Project) -> None:
         """
         Initialize the summary with a reference to the project.
 
         Args:
             project: The Project instance this summary belongs to.
         """
-        self.project: Any = project
+        self.project: Project = project
 
     # ------------------------------------------
     #  Report Generation
