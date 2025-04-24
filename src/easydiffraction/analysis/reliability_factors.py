@@ -1,7 +1,8 @@
 import numpy as np
-from typing import Tuple, Any, Optional
+from typing import Tuple, Optional
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
 
 def calculate_r_factor(y_obs: np.ndarray, y_calc: np.ndarray) -> float:
     """
@@ -98,7 +99,7 @@ def calculate_reduced_chi_square(residuals: np.ndarray, num_parameters: int) -> 
         return np.nan
 
 
-def get_reliability_inputs(sample_models: SampleModels, experiments: Experiments, calculator: Any) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
+def get_reliability_inputs(sample_models: SampleModels, experiments: Experiments, calculator: CalculatorBase) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
     """
     Collect observed and calculated data points for reliability calculations.
     

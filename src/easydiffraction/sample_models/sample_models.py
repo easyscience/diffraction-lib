@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.core.objects import (
     Collection,

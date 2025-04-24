@@ -1,7 +1,7 @@
 from __future__ import annotations
 from tabulate import tabulate
 from textwrap import wrap
-from typing import Any, Dict, List
+from typing import List
 
 from easydiffraction.utils.formatting import (
     paragraph,
@@ -56,7 +56,7 @@ class Summary:
             print(model.space_group.name_h_m.value)
 
             print(paragraph("Cell parameters"))
-            cell_data: List[List[Any]] = [[k.replace('length_', '').replace('angle_', ''), f"{v:.4f}"] for k, v in model.cell.as_dict().items()]
+            cell_data = [[k.replace('length_', '').replace('angle_', ''), f"{v:.4f}"] for k, v in model.cell.as_dict().items()]
             print(tabulate(cell_data, headers=["Parameter", "Value"], tablefmt="fancy_outline"))
 
             print(paragraph("Atom sites"))

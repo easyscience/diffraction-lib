@@ -7,6 +7,7 @@ import numpy as np
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.core.objects import Parameter
+from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
 
 
 class DiffractionMinimizer:
@@ -62,7 +63,7 @@ class DiffractionMinimizer:
     def _process_fit_results(self,
                              sample_models: SampleModels,
                              experiments: Experiments,
-                             calculator: Any) -> None:
+                             calculator: CalculatorBase) -> None:
         """
         Collect reliability inputs and display results after fitting.
 
@@ -100,7 +101,7 @@ class DiffractionMinimizer:
                            parameters: List[Parameter],
                            sample_models: SampleModels,
                            experiments: Experiments,
-                           calculator: Any,
+                           calculator: CalculatorBase,
                            weights: Optional[np.array] = None) -> np.ndarray:
         """
         Residual function computes the difference between measured and calculated patterns.

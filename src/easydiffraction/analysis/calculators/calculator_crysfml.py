@@ -3,8 +3,9 @@ from typing import Any, Dict, List, Union
 from .calculator_base import CalculatorBase
 from easydiffraction.utils.formatting import warning
 from easydiffraction.sample_models.sample_models import SampleModels
-from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.sample_models.sample_models import SampleModel
 from easydiffraction.experiments.experiment import Experiment
+from easydiffraction.experiments.experiments import Experiments
 
 try:
     from pycrysfml import cfml_py_utilities
@@ -76,7 +77,7 @@ class CrysfmlCalculator(CalculatorBase):
             return pattern[:target_length]
         return pattern
 
-    def _crysfml_dict(self, sample_model: SampleModels, experiment: Experiment) -> Dict[str, Any]:
+    def _crysfml_dict(self, sample_model: SampleModels, experiment: Experiment) -> Dict[str, Union[Experiment, SampleModel]]:
         """
         Converts the sample model and experiment into a dictionary format for Crysfml.
 
@@ -94,7 +95,7 @@ class CrysfmlCalculator(CalculatorBase):
             "experiments": [experiment_dict]
         }
 
-    def _convert_sample_model_to_dict(self, sample_model: SampleModels) -> Dict[str, Any]:
+    def _convert_sample_model_to_dict(self, sample_model: SampleModels) -> Dict[str, SampleModel]:
         """
         Converts a sample model into a dictionary format.
 

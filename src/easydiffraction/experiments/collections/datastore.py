@@ -1,6 +1,6 @@
-from typing import Optional, Any
+from __future__ import annotations
+from typing import Optional
 import numpy as np
-
 
 class Pattern:
     """
@@ -8,8 +8,8 @@ class Pattern:
     Stores x, measured intensities, uncertainties, background, and calculated intensities.
     """
 
-    def __init__(self, experiment: Any) -> None:
-        self.experiment: Any = experiment
+    def __init__(self, experiment: Experiment) -> None:
+        self.experiment = experiment
 
         # Data arrays
         self.x: Optional[np.ndarray] = None
@@ -33,7 +33,7 @@ class PowderPattern(Pattern):
     """
     Specialized pattern for powder diffraction (can be extended in the future).
     """
-    def __init__(self, experiment: Any) -> None:
+    def __init__(self, experiment: Experiment) -> None:
         super().__init__(experiment)
         # Additional powder-specific initialization if needed
 
@@ -43,7 +43,7 @@ class Datastore:
     Stores pattern data (measured and calculated) for an experiment.
     """
 
-    def __init__(self, sample_form: str, experiment: Any) -> None:
+    def __init__(self, sample_form: str, experiment: Experiment) -> None:
         self.sample_form: str = sample_form
 
         if sample_form == "powder":
@@ -95,7 +95,7 @@ class DatastoreFactory:
     """
 
     @staticmethod
-    def create(sample_form: str, experiment: Any) -> Datastore:
+    def create(sample_form: str, experiment: Experiment) -> Datastore:
         """
         Create a datastore object depending on the sample form.
         
