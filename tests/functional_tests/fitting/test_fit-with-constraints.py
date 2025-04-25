@@ -66,7 +66,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     project.analysis.fit_mode = 'single'  # Default
 
     # Compare measured and calculated patterns
-    project.analysis.show_meas_vs_calc_chart('hrpt', 65, 68)
+    project.plot_meas_vs_calc('hrpt', 65, 68)
 
     # ------------ 1st fitting ------------
 

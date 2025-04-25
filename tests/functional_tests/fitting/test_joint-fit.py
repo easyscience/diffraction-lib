@@ -304,8 +304,8 @@ def test_basic_usage_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.experiments.show_names()
 
     # Show measured data
-    project.experiments['npd'].show_meas_chart(x_min=62, x_max=66)
-    project.experiments['xrd'].show_meas_chart(x_min=26, x_max=28)
+    project.plot_meas(expt_name='npd', x_min=62, x_max=66)
+    project.plot_meas(expt_name='xrd', x_min=26, x_max=28)
 
     # Modify experimental parameters for the neutron diffraction experiment
     project.experiments['npd'].instrument.setup_wavelength = 1.91
@@ -355,12 +355,12 @@ def test_basic_usage_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     #project.analysis.current_calculator = 'crysfml'
 
     print(ed.section('Show calculated data'))
-    project.analysis.show_calc_chart(expt_name='npd', x_min=62, x_max=66)
-    project.analysis.show_calc_chart(expt_name='xrd', x_min=26, x_max=28)
+    project.plot_calc(expt_name='npd', x_min=62, x_max=66)
+    project.plot_calc(expt_name='xrd', x_min=26, x_max=28)
 
     print(ed.section('Show calculated vs measured data'))
-    project.analysis.show_meas_vs_calc_chart(expt_name='npd', x_min=62, x_max=66)
-    project.analysis.show_meas_vs_calc_chart(expt_name='xrd', x_min=26, x_max=28)
+    project.plot_meas_vs_calc(expt_name='npd', x_min=62, x_max=66)
+    project.plot_meas_vs_calc(expt_name='xrd', x_min=26, x_max=28)
 
     # The following background represents the baseline noise in the diffraction data.
 
@@ -395,8 +395,8 @@ def test_basic_usage_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.experiments['xrd'].show_as_cif()
 
     print(ed.section('Show data chart including a background'))
-    project.analysis.show_meas_vs_calc_chart(expt_name='npd', x_min=62, x_max=66)
-    project.analysis.show_meas_vs_calc_chart(expt_name='xrd', x_min=26, x_max=28)
+    project.plot_meas_vs_calc(expt_name='npd', x_min=62, x_max=66)
+    project.plot_meas_vs_calc(expt_name='xrd', x_min=26, x_max=28)
 
     # 1. All parameters include both
     #    * Descriptors (not subject to fitting), such as space group names, etc.
@@ -445,8 +445,8 @@ def test_basic_usage_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 40.18, decimal=1)
 
     print(ed.section('Show data charts after fitting'))
-    project.analysis.show_meas_vs_calc_chart(expt_name='npd', x_min=62, x_max=66)
-    project.analysis.show_meas_vs_calc_chart(expt_name='xrd', x_min=26, x_max=28)
+    project.plot_meas_vs_calc(expt_name='npd', x_min=62, x_max=66)
+    project.plot_meas_vs_calc(expt_name='xrd', x_min=26, x_max=28)
 
     print(ed.section('Change minimizer'))
     project.analysis.show_available_minimizers()
@@ -459,8 +459,8 @@ def test_basic_usage_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 40.18, decimal=1)
 
     print(ed.section('Show data charts after 2nd fitting'))
-    project.analysis.show_meas_vs_calc_chart(expt_name='npd', x_min=62, x_max=66, show_residual=True)
-    project.analysis.show_meas_vs_calc_chart(expt_name='xrd', x_min=26, x_max=28, show_residual=True)
+    project.plot_meas_vs_calc(expt_name='npd', x_min=62, x_max=66, show_residual=True)
+    project.plot_meas_vs_calc(expt_name='xrd', x_min=26, x_max=28, show_residual=True)
 
     print(ed.section('Change calculator'))
     project.analysis.show_supported_calculators()
@@ -473,8 +473,8 @@ def test_basic_usage_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 40.18, decimal=1)
 
     print(ed.section('Show data charts after 3rd fitting'))
-    project.analysis.show_meas_vs_calc_chart(expt_name='npd', x_min=62, x_max=66, show_residual=True)
-    project.analysis.show_meas_vs_calc_chart(expt_name='xrd', x_min=26, x_max=28, show_residual=True)
+    project.plot_meas_vs_calc(expt_name='npd', x_min=62, x_max=66, show_residual=True)
+    project.plot_meas_vs_calc(expt_name='xrd', x_min=26, x_max=28, show_residual=True)
 
     print(ed.section('Change fit mode'))
     project.analysis.show_available_fit_modes()
@@ -493,8 +493,8 @@ def test_basic_usage_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 30.43, decimal=1)
 
     print(ed.section('Show data charts after 4th fitting'))
-    project.analysis.show_meas_vs_calc_chart(expt_name='npd', x_min=62, x_max=66, show_residual=True)
-    project.analysis.show_meas_vs_calc_chart(expt_name='xrd', x_min=26, x_max=28, show_residual=True)
+    project.plot_meas_vs_calc(expt_name='npd', x_min=62, x_max=66, show_residual=True)
+    project.plot_meas_vs_calc(expt_name='xrd', x_min=26, x_max=28, show_residual=True)
 
     # Show analysis as CIF
     project.analysis.show_as_cif()
