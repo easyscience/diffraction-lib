@@ -95,18 +95,20 @@ class Summary:
                 print(expt.peak_profile_type)
 
             if hasattr(expt, 'peak'):
-                print(paragraph("Peak broadening (Gaussian)"))
-                print(tabulate([
-                    ["U", expt.peak.broad_gauss_u.value],
-                    ["V", expt.peak.broad_gauss_v.value],
-                    ["W", expt.peak.broad_gauss_w.value]
-                ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
+                if hasattr(expt.peak, 'broad_gauss_u'):
+                    print(paragraph("Peak broadening (Gaussian)"))
+                    print(tabulate([
+                        ["U", expt.peak.broad_gauss_u.value],
+                        ["V", expt.peak.broad_gauss_v.value],
+                        ["W", expt.peak.broad_gauss_w.value]
+                    ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
 
-                print(paragraph("Peak broadening (Lorentzian)"))
-                print(tabulate([
-                    ["X", expt.peak.broad_lorentz_x.value],
-                    ["Y", expt.peak.broad_lorentz_y.value]
-                ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
+                if hasattr(expt.peak, 'broad_lorentz_x'):
+                    print(paragraph("Peak broadening (Lorentzian)"))
+                    print(tabulate([
+                        ["X", expt.peak.broad_lorentz_x.value],
+                        ["Y", expt.peak.broad_lorentz_y.value]
+                    ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
 
         # ------------------------------------------
         print(section("Fitting"))
