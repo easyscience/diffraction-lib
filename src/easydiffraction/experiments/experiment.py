@@ -32,10 +32,12 @@ class BaseExperiment(Datablock):
                  type: ExperimentType):
         self.name = name
         self.type = type
-        self.instrument = InstrumentFactory.create(beam_mode=self.type.beam_mode.value,
-                                                   scattering_type=self.type.scattering_type.value)
-        self.datastore = DatastoreFactory.create(sample_form=self.type.sample_form.value,
-                                                 experiment=self)
+        self.instrument = InstrumentFactory.create(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value)
+        self.datastore = DatastoreFactory.create(
+            sample_form=self.type.sample_form.value,
+            experiment=self)
 
     def as_cif(self, max_points=None):
         """
@@ -129,9 +131,13 @@ class PowderExperiment(BaseExperiment):
                  type: ExperimentType):
         super().__init__(name=name,
                          type=type)
-        self._peak_profile_type = DEFAULT_PEAK_PROFILE_TYPE
+
+        self._peak_profile_type = DEFAULT_PEAK_PROFILE_TYPE[self.type.scattering_type.value][self.type.beam_mode.value]
         self._background_type = DEFAULT_BACKGROUND_TYPE
-        self.peak = PeakFactory.create(beam_mode=self.type.beam_mode.value)
+        self.peak = PeakFactory.create(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            profile_type=self._peak_profile_type)
         self.linked_phases = LinkedPhases()
         self.background = BackgroundFactory.create()
 
@@ -172,14 +178,16 @@ class PowderExperiment(BaseExperiment):
 
     @peak_profile_type.setter
     def peak_profile_type(self, new_type: str):
-        if new_type not in PeakFactory._supported[self.type.beam_mode.value]:
-            supported_types = list(PeakFactory._supported[self.type.beam_mode.value].keys())
+        if new_type not in PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value]:
+            supported_types = list(PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].keys())
             print(warning(f"Unsupported peak profile '{new_type}'"))
             print(f'Supported peak profiles: {supported_types}')
             print(f"For more information, use 'show_supported_peak_profile_types()'")
             return
-        self.peak = PeakFactory.create(beam_mode=self.type.beam_mode.value,
-                                       profile_type=new_type)
+        self.peak = PeakFactory.create(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            profile_type=new_type)
         self._peak_profile_type = new_type
         print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
         print(new_type)
@@ -188,7 +196,7 @@ class PowderExperiment(BaseExperiment):
         header = ["Peak profile type", "Description"]
         table_data = []
 
-        for name, config in PeakFactory._supported[self.type.beam_mode.value].items():
+        for name, config in PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].items():
             description = getattr(config, '_description', 'No description provided.')
             table_data.append([name, description])
 
@@ -245,20 +253,10 @@ class PowderExperiment(BaseExperiment):
         print(paragraph("Current background type"))
         print(self.background_type)
 
-class SingleCrystalExperiment(BaseExperiment):
-    """Powder experiment class with specific attributes."""
-
-    def __init__(self,
-                 name: str,
-                 type: ExperimentType):
-        super().__init__(name=name,
-                         type=type)
-        self.linked_crystal = None
-
-    def show_meas_chart(self):
-        print('Showing measured data chart is not implemented yet.')
-
-class PDFExperiment(BaseExperiment):
+# TODO: Refactor this class to reuse PowderExperiment
+# TODO: This is not a specific experiment, but rather processed data from
+#  PowderExperiment. So, we should think of a better design.
+class PairDistributionFunctionExperiment(BaseExperiment):
     """PDF experiment class with specific attributes."""
 
     def __init__(self,
@@ -267,9 +265,13 @@ class PDFExperiment(BaseExperiment):
         super().__init__(name=name,
                          type=type)
 
+        self._peak_profile_type = DEFAULT_PEAK_PROFILE_TYPE[self.type.scattering_type.value][self.type.beam_mode.value]
         self._background_type = DEFAULT_BACKGROUND_TYPE
+        self.peak = PeakFactory.create(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            profile_type=self._peak_profile_type)
         self.linked_phases = LinkedPhases()
-        self.background = BackgroundFactory.create()
 
     def _load_ascii_data_to_experiment(self, data_path):
         """
@@ -314,6 +316,48 @@ class PDFExperiment(BaseExperiment):
         print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
 
     @property
+    def peak_profile_type(self):
+        return self._peak_profile_type
+
+    @peak_profile_type.setter
+    def peak_profile_type(self, new_type: str):
+        if new_type not in PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value]:
+            supported_types = list(PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].keys())
+            print(warning(f"Unsupported peak profile '{new_type}'"))
+            print(f'Supported peak profiles: {supported_types}')
+            print(f"For more information, use 'show_supported_peak_profile_types()'")
+            return
+        self.peak = PeakFactory.create(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            profile_type=new_type)
+        self._peak_profile_type = new_type
+        print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
+        print(new_type)
+
+    def show_supported_peak_profile_types(self):
+        header = ["Peak profile type", "Description"]
+        table_data = []
+
+        for name, config in PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].items():
+            description = getattr(config, '_description', 'No description provided.')
+            table_data.append([name, description])
+
+        print(paragraph("Supported peak profile types"))
+        print(tabulate.tabulate(
+            table_data,
+            headers=header,
+            tablefmt="fancy_outline",
+            numalign="left",
+            stralign="left",
+            showindex=False
+        ))
+
+    def show_current_peak_profile_type(self):
+        print(paragraph("Current peak profile type"))
+        print(self.peak_profile_type)
+
+    @property
     def background_type(self):
         return self._background_type
 
@@ -352,18 +396,34 @@ class PDFExperiment(BaseExperiment):
         print(paragraph("Current background type"))
         print(self.background_type)
 
+
+class SingleCrystalExperiment(BaseExperiment):
+    """Powder experiment class with specific attributes."""
+
+    def __init__(self,
+                 name: str,
+                 type: ExperimentType):
+        super().__init__(name=name,
+                         type=type)
+        self.linked_crystal = None
+
+    def show_meas_chart(self):
+        print('Showing measured data chart is not implemented yet.')
+
+
 class ExperimentFactory:
     """Creates Experiment instances with only relevant attributes."""
 
     _supported = {
-    "powder": {
-        "bragg": PowderExperiment,
-        "total": PDFExperiment,
-    },
-    "single crystal": {
-        "bragg": SingleCrystalExperiment,
-        "total": PDFExperiment,}
+        "bragg": {
+            "powder": PowderExperiment,
+            "single crystal": SingleCrystalExperiment,
+        },
+        "total": {
+            "powder": PairDistributionFunctionExperiment,
+        }
     }
+
     @classmethod
     def create(cls,
                name: str,
@@ -372,15 +432,17 @@ class ExperimentFactory:
                radiation_probe: DEFAULT_RADIATION_PROBE,
                scattering_type: DEFAULT_SCATTERING_TYPE,
                ) -> BaseExperiment:
+
         # TODO: Add checks for expt_type and expt_class
         expt_type = ExperimentType(sample_form=sample_form,
                                    beam_mode=beam_mode,
                                    radiation_probe=radiation_probe,
                                    scattering_type=scattering_type)
 
-        expt_class = cls._supported[sample_form][scattering_type]
-        instance = expt_class(name=name, type=expt_type)
-        return instance
+        expt_class = cls._supported[scattering_type][sample_form]
+        expt_obj = expt_class(name=name, type=expt_type)
+
+        return expt_obj
 
 
 # User exposed API for convenience

@@ -2,8 +2,10 @@ from easydiffraction.core.objects import (
     Parameter,
     Component
 )
-from easydiffraction.core.constants import (DEFAULT_BEAM_MODE,
-                                            DEFAULT_SCATTERING_TYPE)
+from easydiffraction.core.constants import (
+    DEFAULT_SCATTERING_TYPE,
+    DEFAULT_BEAM_MODE
+)
 
 class InstrumentBase(Component):
     @property
@@ -90,102 +92,58 @@ class TimeOfFlightInstrument(InstrumentBase):
 
         self._locked = True  # Lock further attribute additions
 
-class PDFInstrumentMixin():
-    def _add_instrument_parameters(self):
-        qmax = Parameter(
-            value=0.0,
-            name="qmax",
-            cif_name="pdf_qmax",
-            units="",
-            description="Q-value cutoff for PDF calculation"
-        )
-        self.add_attribute("qmax", qmax)
 
-        qdamp = Parameter(
-            value=0.0,
-            name="qdamp",
-            cif_name="pdf_qdamp",
-            units="",
-            description="Instrumental Q-resolution factor"
-        )
-        self.add_attribute("qdamp", qdamp)
-        delta1 = Parameter(
-            value=0.0,
-            name="delta1",
-            cif_name="pdf_delta1",
-            units="",
-            description="1/R peak sharpening factor"
-        )
-        self.add_attribute("delta1", delta1)
-        delta2 = Parameter(
-            value=0.0,
-            name="delta2",
-            cif_name="pdf_delta2",
-            units="",
-            description="(1/R^2) sharpening factor"
-        )
-        self.add_attribute("delta2", delta2)
-
-        qbroad = Parameter(
-            value=0.0,
-            name="qbroad",
-            cif_name="pdf_qbroad",
-            units="",
-            description="Quadratic peak broadening factor"
-        )
-        self.add_attribute("qbroad", qbroad)
-        spdiameter = Parameter(
-            value=0.0,
-            name="spdiameter",
-            cif_name="pdf_spdiameter",
-            units="",
-            description="Diameter value for the spherical particle PDF correction"
-        )
-        self.add_attribute("spdiameter", spdiameter)
-
-class PDFCWInstrument(ConstantWavelengthInstrument, PDFInstrumentMixin):
-    _description = "Pair-Distribution Function (PDF) instrument with constant wavelength"
-    def __init__(self):
+# TODO: This is a specific instrument, but rather processed data from
+#  ConstantWavelengthInstrument. So, we should think of a better design.
+#  'calib_twotheta_offset' is not a proper parameter name here, but
+#  need to check if zero offset is used for PDF.
+class PairDistributionFunctionConstantWavelengthInstrument(InstrumentBase):
+    def __init__(self,
+                 setup_wavelength=1.5406):
         super().__init__()
-        self._add_instrument_parameters()
+
+        self.setup_wavelength = Parameter(
+            value=setup_wavelength,
+            name="wavelength",
+            cif_name="wavelength",
+            units="Å",
+            description="Incident neutron or X-ray wavelength"
+        )
+
         self._locked = True  # Lock further attribute additions
 
-class PDFTOFInstrument(TimeOfFlightInstrument, PDFInstrumentMixin):
-    _description = "Pair-Distribution Function (PDF) instrument with time-of-flight"
-    def __init__(self):
-        super().__init__()
-        self._add_instrument_parameters()
-        self._locked = True  # Lock further attribute additions
 
 class InstrumentFactory:
     _supported = {
-        "constant wavelength": {
-            "bragg": ConstantWavelengthInstrument,
-            "total" : PDFCWInstrument,
+        "bragg": {
+            "constant wavelength": ConstantWavelengthInstrument,
+            "time-of-flight": TimeOfFlightInstrument,
         },
-        "time-of-flight": {
-            "bragg": TimeOfFlightInstrument,
-            "total" : PDFTOFInstrument,
+        "total": {
+            "constant wavelength": PairDistributionFunctionConstantWavelengthInstrument,
         }
     }
 
     @classmethod
     def create(cls,
-               beam_mode=DEFAULT_BEAM_MODE,
-               scattering_type=DEFAULT_SCATTERING_TYPE):
-        if beam_mode not in cls._supported:
-            supported = list(cls._supported.keys())
+               scattering_type=DEFAULT_SCATTERING_TYPE,
+               beam_mode=DEFAULT_BEAM_MODE):
+
+        supported_scattering_types = list(cls._supported.keys())
+        if scattering_type not in supported_scattering_types:
             raise ValueError(
-                f"Unsupported beam mode: '{beam_mode}'.\n "
-                f"Supported beam modes are: {supported}"
-            )
-        if scattering_type not in cls._supported[beam_mode]:
-            supported = list(cls._supported[beam_mode].keys())
-            raise ValueError(
-                f"Unsupported diffraction type: '{scattering_type}'.\n "
-                f"Supported diffraction types for {beam_mode} are: {supported}"
+                f"Unsupported scattering type: '{scattering_type}'.\n "
+                f"Supported scattering types: {supported_scattering_types}"
             )
 
-        instrument_class = cls._supported[beam_mode][scattering_type]
-        instance = instrument_class()
-        return instance
+        supported_beam_modes = list(cls._supported[scattering_type].keys())
+        if beam_mode not in supported_beam_modes:
+            raise ValueError(
+                f"Unsupported beam mode: '{beam_mode}' for scattering type: '{scattering_type}'.\n "
+                f"Supported beam modes: {supported_beam_modes}"
+            )
+
+        instrument_class = cls._supported[scattering_type][beam_mode]
+        instrument_obj = instrument_class()
+
+        return instrument_obj

@@ -80,16 +80,11 @@ class PdffitCalculator(CalculatorBase):
         # Set the radiation probe for PDFfit
         radiation_probe = experiment.type.radiation_probe.value[0].upper()
 
-        # Set instrument parameters
+        # Set some peak-related parameters
         calculator.setvar('pscale', experiment.linked_phases[sample_model.name].scale.value)
-        calculator.setvar('delta1', experiment.instrument.delta1.value)
-        calculator.setvar('delta2', experiment.instrument.delta2.value)
-        calculator.setvar('spdiameter', experiment.instrument.spdiameter.value)
-
-        # Extract other experiment-related parameters
-        qmax = experiment.instrument.qmax.value
-        qdamp = experiment.instrument.qdamp.value
-        qbroad = experiment.instrument.qbroad.value
+        calculator.setvar('delta1', experiment.peak.sharp_delta_1.value)
+        calculator.setvar('delta2', experiment.peak.sharp_delta_2.value)
+        calculator.setvar('spdiameter', experiment.peak.damp_particle_diameter.value)
 
         # Data
         pattern = experiment.datastore.pattern
@@ -98,13 +93,13 @@ class PdffitCalculator(CalculatorBase):
 
         # Assign the data to the PDFfit calculator
         calculator.read_data_lists(radiation_probe,
-                                   qmax,
-                                   qdamp,
+                                   50,  # Temporary value for qmax
+                                   experiment.peak.damp_q.value,
                                    x,
                                    y_noise)
 
         # qbroad must be set after read_data_string
-        calculator.setvar('qbroad', qbroad)
+        calculator.setvar('qbroad', experiment.peak.broad_q.value)
 
         # -----------------
         # Calculate pattern

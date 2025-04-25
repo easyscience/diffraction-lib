@@ -9,7 +9,7 @@ class ExperimentType(Component):
                  sample_form: str,
                  beam_mode: str,
                  radiation_probe: str,
-                 scattering_type: str = None):
+                 scattering_type: str):
         super().__init__()
 
         self.sample_form: Descriptor = Descriptor(
