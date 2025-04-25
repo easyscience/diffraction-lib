@@ -31,8 +31,6 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     expt.linked_phases.add('lbco', scale=5.0)
     expt.background.add(x=10, y=170)
     expt.background.add(x=165, y=170)
-    #expt.background.add(x=10, y=168.345)
-    #expt.background.add(x=165, y=175.688)
     expt.show_as_cif()
 
     # Create project and add sample model and experiments
@@ -377,15 +375,13 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     # Instrument parameters
     project.experiments['xray_pdf'].instrument.setup_wavelength = 0.21281
 
-    # project.experiments['xray_pdf'].instrument.qmin = 0.1  # Left Q-value cutoff for PDF calculation. Not implemented.
-    # project.experiments['xray_pdf'].instrument.qmax = 23   # Right Q-value cutoff for PDF calculation. (Was) Implemented, but will not be needed, when excluded regions are implemented.
-
-    # Currently instrumental parameters, but need to be moved to the peak profile class.
+    # Peak profile parameters
     project.experiments['xray_pdf'].show_supported_peak_profile_types()
     project.experiments['xray_pdf'].show_current_peak_profile_type()
-    project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'  # Default
+    project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'
     project.experiments['xray_pdf'].peak.damp_q = 0.03
     project.experiments['xray_pdf'].peak.broad_q = 0
+    project.experiments['xray_pdf'].peak.cutoff_q = 21
     project.experiments['xray_pdf'].peak.sharp_delta_1 = 0
     project.experiments['xray_pdf'].peak.sharp_delta_2 = 5
     project.experiments['xray_pdf'].peak.damp_particle_diameter = 0
@@ -446,7 +442,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     project.summary.show_report()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 1.85, decimal=2)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 1.52, decimal=2)
 
 
 if __name__ == '__main__':

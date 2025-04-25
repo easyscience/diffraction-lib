@@ -179,38 +179,45 @@ class IkedaCarpenterAsymmetryMixin:
 class PairDistributionFunctionBroadeningMixin:
     def _add_pair_distribution_function_broadening(self):
         self.damp_q = Parameter(
-            value=0.0,
+            value=0.05,
             name="damp_q",
             cif_name="damp_q",
-            units="",
+            units="Å⁻¹",
             description="Instrumental Q-resolution damping factor (affects high-r PDF peak amplitude)"
         )
         self.broad_q = Parameter(
             value=0.0,
             name="broad_q",
             cif_name="broad_q",
-            units="",
+            units="Å⁻²",
             description="Quadratic PDF peak broadening coefficient (thermal and model uncertainty contribution)"
+        )
+        self.cutoff_q = Parameter(
+            value=25.0,
+            name="cutoff_q",
+            cif_name="cutoff_q",
+            units="Å⁻¹",
+            description="Q-value cutoff applied to model PDF for Fourier transform (controls real-space resolution)"
         )
         self.sharp_delta_1 = Parameter(
             value=0.0,
             name="sharp_delta_1",
             cif_name="sharp_delta_1",
-            units="",
+            units="Å",
             description="PDF peak sharpening coefficient (1/r dependence)"
         )
         self.sharp_delta_2 = Parameter(
             value=0.0,
             name="sharp_delta_2",
             cif_name="sharp_delta_2",
-            units="",
+            units="Å²",
             description="PDF peak sharpening coefficient (1/r² dependence)"
         )
         self.damp_particle_diameter = Parameter(
             value=0.0,
             name="damp_particle_diameter",
             cif_name="damp_particle_diameter",
-            units="",
+            units="Å",
             description="Particle diameter for spherical envelope damping correction in PDF"
         )
 

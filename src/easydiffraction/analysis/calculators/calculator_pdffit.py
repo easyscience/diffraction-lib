@@ -61,11 +61,11 @@ class PdffitCalculator(CalculatorBase):
         calculator.add_structure(structure)
 
         # Set ADP parameters
+        # TODO: the following should be Uiso, so needs changing
+        #  once the model has Uiso implemented
         for i_atom, atom in enumerate(sample_model.atom_sites):
             if not hasattr(atom, 'adp_type'):
                 continue
-            # TODO: the following should be Uiso, so needs changing
-            # once the model has Uiso implemented
             if not atom.adp_type.value == 'Biso':
                 continue
             Biso = atom.b_iso.value
@@ -76,9 +76,6 @@ class PdffitCalculator(CalculatorBase):
         # -------------------------
         # Set experiment parameters
         # -------------------------
-
-        # Set the radiation probe for PDFfit
-        radiation_probe = experiment.type.radiation_probe.value[0].upper()
 
         # Set some peak-related parameters
         calculator.setvar('pscale', experiment.linked_phases[sample_model.name].scale.value)
@@ -92,11 +89,11 @@ class PdffitCalculator(CalculatorBase):
         y_noise = list(np.zeros_like(pattern.x))
 
         # Assign the data to the PDFfit calculator
-        calculator.read_data_lists(radiation_probe,
-                                   50,  # Temporary value for qmax
-                                   experiment.peak.damp_q.value,
-                                   x,
-                                   y_noise)
+        calculator.read_data_lists(stype=experiment.type.radiation_probe.value[0].upper(),
+                                   qmax=experiment.peak.cutoff_q.value,
+                                   qdamp=experiment.peak.damp_q.value,
+                                   r_data=x,
+                                   Gr_data=y_noise)
 
         # qbroad must be set after read_data_string
         calculator.setvar('qbroad', experiment.peak.broad_q.value)
@@ -105,10 +102,10 @@ class PdffitCalculator(CalculatorBase):
         # Calculate pattern
         # -----------------
 
-        # Calculate the PDF pattern?
+        # Calculate the PDF pattern
         calculator.calc()
 
-        # Get the calculated PDF pattern?
+        # Get the calculated PDF pattern
         pattern = calculator.getpdf_fit()
         pattern = np.array(pattern)
 

@@ -43,6 +43,7 @@ project.sample_models['nacl'].show_as_cif()
 print(ed.chapter('Step 3: Add Experiments (Instrument models and measured data)'))
 
 # Load measured data and create a new experiment
+# https://github.com/diffpy/add2019-diffpy-cmi/blob/master/05-Fit-NaCl-BVS-restraint.ipynb
 project.experiments.add(name='xray_pdf',
                         sample_form='powder',
                         beam_mode='constant wavelength',
@@ -53,9 +54,11 @@ project.experiments.add(name='xray_pdf',
 print(ed.section('Setup data plotter'))
 project.plotter.show_config()
 project.plotter.show_supported_engines()
-#project.plotter.engine = 'plotly'
-project.plotter.x_min = 3.5
-project.plotter.x_max = 4.5
+#project.plotter.x_min = 3.5
+#project.plotter.x_max = 4.5
+project.plotter.engine = 'plotly'
+project.plotter.x_min = 2.0
+project.plotter.x_max = 30.0
 
 print(ed.section('Show measured data'))
 project.plot_meas(expt_name='xray_pdf')
@@ -65,21 +68,19 @@ print(ed.section('Modify experimental parameters'))
 # Instrument parameters
 project.experiments['xray_pdf'].instrument.setup_wavelength = 0.21281
 
-#project.experiments['xray_pdf'].instrument.qmin = 0.1  # Left Q-value cutoff for PDF calculation. Not implemented.
-#project.experiments['xray_pdf'].instrument.qmax = 23   # Right Q-value cutoff for PDF calculation. (Was) Implemented, but will not be needed, when excluded regions are implemented.
-
-# Currently instrumental parameters, but need to be moved to the peak profile class.
+# Peak profile parameters
 project.experiments['xray_pdf'].show_supported_peak_profile_types()
 project.experiments['xray_pdf'].show_current_peak_profile_type()
-project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'  # Default
+project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'
 project.experiments['xray_pdf'].peak.damp_q = 0.03
 project.experiments['xray_pdf'].peak.broad_q = 0
+project.experiments['xray_pdf'].peak.cutoff_q = 21
 project.experiments['xray_pdf'].peak.sharp_delta_1 = 0
 project.experiments['xray_pdf'].peak.sharp_delta_2 = 5
 project.experiments['xray_pdf'].peak.damp_particle_diameter = 0
 
 # Link sample model (defined in the previous step) to the experiment
-project.experiments['xray_pdf'].linked_phases.add(id='nacl', scale=1.0)
+project.experiments['xray_pdf'].linked_phases.add(id='nacl', scale=0.5)
 
 # Show experiment as CIF
 project.experiments['xray_pdf'].show_as_cif()
@@ -95,7 +96,7 @@ print(ed.section('Show calculated data'))
 project.plot_calc(expt_name='xray_pdf')
 
 print(ed.section('Show calculated vs measured data'))
-project.plot_meas_vs_calc(expt_name='xray_pdf', show_residual=True)
+project.plot_meas_vs_calc(expt_name='xray_pdf')
 
 print(ed.section('Show all parameters'))
 project.analysis.show_all_params()
@@ -125,7 +126,7 @@ print(ed.section('Start fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after fitting'))
-project.plot_meas_vs_calc(expt_name='xray_pdf', show_residual=True)
+project.plot_meas_vs_calc(expt_name='xray_pdf')
 
 # Show analysis as CIF
 project.analysis.show_as_cif()
