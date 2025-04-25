@@ -3,8 +3,8 @@ from abc import ABC, abstractmethod
 
 DEFAULT_HEIGHT = 9
 DEFAULT_ENGINE = 'asciichartpy'
-DEFAULT_MIN = -np.Inf
-DEFAULT_MAX = np.Inf
+DEFAULT_MIN = -np.inf
+DEFAULT_MAX = np.inf
 
 SERIES_CONFIG = dict(
     calc=dict(
