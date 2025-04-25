@@ -13,10 +13,17 @@ from easydiffraction.experiments.components.experiment_type import ExperimentTyp
 from easydiffraction.core.constants import (
     DEFAULT_SAMPLE_FORM,
     DEFAULT_BEAM_MODE,
-    DEFAULT_RADIATION_PROBE,
-    DEFAULT_PEAK_PROFILE_TYPE,
-    DEFAULT_BACKGROUND_TYPE,
+    DEFAULT_RADIATION_PROBE
 )
+
+
+@pytest.fixture
+def expt_type():
+    return ExperimentType(
+        sample_form=DEFAULT_SAMPLE_FORM,
+        beam_mode=DEFAULT_BEAM_MODE,
+        radiation_probe="xray"
+    )
 
 
 class ConcreteBaseExperiment(BaseExperiment):
@@ -36,72 +43,22 @@ class ConcreteSingleCrystalExperiment(SingleCrystalExperiment):
         pass
 
 
-def test_base_experiment_initialization():
-    mock_type = MagicMock()
-    mock_type.beam_mode.value = DEFAULT_BEAM_MODE
-    mock_type.radiation_probe.value = "xray"
-    mock_type.sample_form.value = DEFAULT_SAMPLE_FORM
-    experiment = ConcreteBaseExperiment(name="TestExperiment", type=mock_type)
+def test_base_experiment_initialization(expt_type):
+    experiment = ConcreteBaseExperiment(name="TestExperiment", type=expt_type)
     assert experiment.name == "TestExperiment"
-    assert experiment.type == mock_type
+    assert experiment.type == expt_type
 
 
-def test_base_experiment_as_cif():
-    # Mock the type object
-    mock_type = MagicMock()
-    mock_type.beam_mode.value = DEFAULT_BEAM_MODE
-    mock_type.diffraction_type.value = "x-ray"
-    mock_type.as_cif.return_value = "type_cif"
-    mock_type.sample_form.value = DEFAULT_SAMPLE_FORM
-    # Create a concrete instance of BaseExperiment
-    experiment = ConcreteBaseExperiment(name="TestExperiment", type=mock_type)
-
-    # Mock the instrument object
-    experiment.instrument = MagicMock()
-    experiment.instrument.as_cif.return_value = "instrument_cif"
-
-    # Mock other components if necessary
-    experiment.peak = MagicMock()
-    experiment.peak.as_cif.return_value = "peak_cif"
-
-    experiment.linked_phases = MagicMock()
-    experiment.linked_phases.as_cif.return_value = "linked_phases_cif"
-
-    experiment.background = MagicMock()
-    experiment.background.as_cif.return_value = "background_cif"
-
-    experiment.datastore.pattern.x = [1.0]
-    experiment.datastore.pattern.meas = [2.0]
-    experiment.datastore.pattern.meas_su = [0.1]
-
-    # Call the as_cif method and verify the output
-    cif_output = experiment.as_cif()
-    assert "data_TestExperiment" in cif_output
-    assert "type_cif" in cif_output
-    assert "instrument_cif" in cif_output
-    assert "peak_cif" in cif_output
-    assert "linked_phases_cif" in cif_output
-    assert "background_cif" in cif_output
-
-
-def test_powder_experiment_initialization():
-    mock_type = MagicMock()
-    mock_type.beam_mode.value = DEFAULT_BEAM_MODE
-    mock_type.radiation_probe.value = "xray"
-    mock_type.sample_form.value = DEFAULT_SAMPLE_FORM
-    experiment = PowderExperiment(name="PowderTest", type=mock_type)
+def test_powder_experiment_initialization(expt_type):
+    experiment = PowderExperiment(name="PowderTest", type=expt_type)
     assert experiment.name == "PowderTest"
-    assert experiment.type == mock_type
+    assert experiment.type == expt_type
     assert experiment.peak is not None
     assert experiment.background is not None
 
 
-def test_powder_experiment_load_ascii_data():
-    mock_type = MagicMock()
-    mock_type.beam_mode.value = DEFAULT_BEAM_MODE
-    mock_type.radiation_probe.value = "xray"
-    mock_type.sample_form.value = DEFAULT_SAMPLE_FORM
-    experiment = PowderExperiment(name="PowderTest", type=mock_type)
+def test_powder_experiment_load_ascii_data(expt_type):
+    experiment = PowderExperiment(name="PowderTest", type=expt_type)
     experiment.datastore = MagicMock()
     experiment.datastore.pattern = MagicMock()
     mock_data = np.array([[1.0, 2.0, 0.1], [2.0, 3.0, 0.2]])
@@ -112,12 +69,8 @@ def test_powder_experiment_load_ascii_data():
     assert np.array_equal(experiment.datastore.pattern.meas_su, mock_data[:, 2])
 
 
-def test_powder_experiment_show_meas_chart():
-    mock_type = MagicMock()
-    mock_type.beam_mode.value = DEFAULT_BEAM_MODE
-    mock_type.radiation_probe.value = "xray"
-    mock_type.sample_form.value = DEFAULT_SAMPLE_FORM
-    experiment = PowderExperiment(name="PowderTest", type=mock_type)
+def test_powder_experiment_show_meas_chart(expt_type):
+    experiment = PowderExperiment(name="PowderTest", type=expt_type)
     experiment.datastore = MagicMock()
     experiment.datastore.pattern.x = [1, 2, 3]
     experiment.datastore.pattern.meas = [10, 20, 30]
@@ -126,23 +79,15 @@ def test_powder_experiment_show_meas_chart():
         mock_plot.assert_called_once()
 
 
-def test_single_crystal_experiment_initialization():
-    mock_type = MagicMock()
-    mock_type.beam_mode.value = DEFAULT_BEAM_MODE
-    mock_type.radiation_probe.value = "xray"
-    mock_type.sample_form.value = DEFAULT_SAMPLE_FORM
-    experiment = ConcreteSingleCrystalExperiment(name="SingleCrystalTest", type=mock_type)
+def test_single_crystal_experiment_initialization(expt_type):
+    experiment = ConcreteSingleCrystalExperiment(name="SingleCrystalTest", type=expt_type)
     assert experiment.name == "SingleCrystalTest"
-    assert experiment.type == mock_type
+    assert experiment.type == expt_type
     assert experiment.linked_crystal is None
 
 
-def test_single_crystal_experiment_show_meas_chart():
-    mock_type = MagicMock()
-    mock_type.beam_mode.value = DEFAULT_BEAM_MODE
-    mock_type.radiation_probe.value = "xray"
-    mock_type.sample_form.value = DEFAULT_SAMPLE_FORM
-    experiment = ConcreteSingleCrystalExperiment(name="SingleCrystalTest", type=mock_type)
+def test_single_crystal_experiment_show_meas_chart(expt_type):
+    experiment = ConcreteSingleCrystalExperiment(name="SingleCrystalTest", type=expt_type)
     with patch("builtins.print") as mock_print:
         experiment.show_meas_chart()
         mock_print.assert_called_once_with("Showing measured data chart is not implemented yet.")

@@ -20,12 +20,12 @@ def test_uid_map_handler():
     param2 = Parameter(value=2.0, name="param2", cif_name="param2_cif")
 
     handler = UidMapHandler.get()
-    handler.set_uid_map([param1, param2])
-
     uid_map = handler.get_uid_map()
-    assert len(uid_map) == 2
+
     assert uid_map[param1.uid] is param1
     assert uid_map[param2.uid] is param2
+    assert uid_map[param1.uid].uid == 'None.param1_cif'
+    assert uid_map[param2.uid].uid == 'None.param2_cif'
 
 
 def test_constraints_handler_set_aliases():
@@ -45,19 +45,19 @@ def test_constraints_handler_set_aliases():
     assert handler._alias_to_param["alias2"].param is param2
 
 
-def test_constraints_handler_set_expressions():
-    class MockExpression:
+def test_constraints_handler_set_constraints():
+    class MockConstraint:
         def __init__(self, lhs_alias, rhs_expr):
             self.lhs_alias = Descriptor(value=lhs_alias, name="lhs", cif_name="lhs_cif")
             self.rhs_expr = Descriptor(value=rhs_expr, name="rhs", cif_name="rhs_cif")
 
     expressions = {
-        "expr1": MockExpression("alias1", "alias2 + 1"),
-        "expr2": MockExpression("alias2", "alias1 * 2"),
+        "expr1": MockConstraint("alias1", "alias2 + 1"),
+        "expr2": MockConstraint("alias2", "alias1 * 2"),
     }
 
     handler = ConstraintsHandler.get()
-    handler.set_expressions(type("MockExpressions", (object,), {"_items": expressions}))
+    handler.set_constraints(type("MockConstraints", (object,), {"_items": expressions}))
 
     assert len(handler._parsed_constraints) == 2
     assert handler._parsed_constraints[0] == ("alias1", "alias2 + 1")
@@ -76,16 +76,12 @@ def test_constraints_handler_apply():
     # Set up aliases
     aliases = {"alias1": MockAlias(param1), "alias2": MockAlias(param2)}
 
-    # Initialize UidMapHandler with parameters
-    uid_handler = UidMapHandler.get()
-    uid_handler.set_uid_map([param1, param2])
-
     # Set up ConstraintsHandler
     handler = ConstraintsHandler.get()
     handler.set_aliases(type("MockAliases", (object,), {"_items": aliases}))
 
     # Define expressions
-    expressions = {
+    constraints = {
         "expr1": type(
             "MockExpression",
             (object,),
@@ -95,10 +91,10 @@ def test_constraints_handler_apply():
             },
         )
     }
-    handler.set_expressions(type("MockExpressions", (object,), {"_items": expressions}))
+    handler.set_constraints(type("MockConstraints", (object,), {"_items": constraints}))
 
     # Apply constraints
-    handler.apply([param1, param2])
+    handler.apply()
 
     # Assert the updated value and constrained status
     assert param1.value == 3.0  # alias2 (2.0) + 1

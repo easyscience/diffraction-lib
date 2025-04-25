@@ -101,7 +101,7 @@ class ConstraintsHandler(BaseSingleton):
                 constraint = (lhs_alias.strip(), rhs_expr.strip())
                 self._parsed_constraints.append(constraint)
 
-    def apply(self, parameters: List[Any]) -> None:
+    def apply(self) -> None:
         """Evaluates constraints and applies them to dependent parameters.
 
         For each constraint:
