@@ -28,19 +28,19 @@ project.sample_models['sfa'].atom_sites.add(label='Sr',
                                             fract_x=0,
                                             fract_y=0,
                                             fract_z=0,
-                                            b_iso=0.5)
+                                            b_iso=1.0)
 project.sample_models['sfa'].atom_sites.add(label='Fe',
                                             type_symbol='Fe',
                                             fract_x=0,
                                             fract_y=0.5,
                                             fract_z=0.25,
-                                            b_iso=0.5)
+                                            b_iso=1.0)
 project.sample_models['sfa'].atom_sites.add(label='As',
                                             type_symbol='As',
                                             fract_x=0,
                                             fract_y=0,
                                             fract_z=0.361,
-                                            b_iso=0.5)
+                                            b_iso=1.0)
 
 print(ed.section('Show sample model as CIF'))
 project.sample_models['sfa'].show_as_cif()
@@ -48,7 +48,7 @@ project.sample_models['sfa'].show_as_cif()
 print(ed.chapter('Step 3: Add Experiments (Instrument models and measured data)'))
 
 # Load measured data and create a new experiment
-# https://gitlab.thebillingegroup.com/tutorials/uppsalaschool2019/-/blob/master/diffpy_tutorial_3/data/SrFe2As2_246K.gr
+# https://gitlab.thebillingegroup.com/tutorials/uppsalaschool2019/-/blob/master/diffpy_tutorial_3/
 project.experiments.add(name='xray_pdf',
                         sample_form='powder',
                         beam_mode='constant wavelength',
@@ -60,8 +60,8 @@ print(ed.section('Setup data plotter'))
 project.plotter.show_config()
 project.plotter.show_supported_engines()
 #project.plotter.engine = 'asciichartpy'
-project.plotter.x_min = 8.0
-project.plotter.x_max = 9.5
+#project.plotter.x_min = 8.0
+#project.plotter.x_max = 9.5
 project.plotter.engine = 'plotly'
 #project.plotter.x_min = 2
 #project.plotter.x_max = 50
@@ -74,14 +74,13 @@ print(ed.section('Modify experimental parameters'))
 # Instrument parameters
 project.experiments['xray_pdf'].instrument.setup_wavelength = 0.1
 
-#project.experiments['xray_pdf'].instrument.qmin = 0.1  # Left Q-value cutoff for PDF calculation. Not implemented.
-#project.experiments['xray_pdf'].instrument.qmax = 23   # Right Q-value cutoff for PDF calculation. (Was) Implemented, but will not be needed, when excluded regions are implemented.
-
-# Currently instrumental parameters, but need to be moved to the peak profile class.
+# Peak profile parameters
+project.experiments['xray_pdf'].show_current_peak_profile_type()
 project.experiments['xray_pdf'].peak.damp_q = 0.0349
+project.experiments['xray_pdf'].peak.broad_q = 0.0176
+project.experiments['xray_pdf'].peak.cutoff_q = 25
 project.experiments['xray_pdf'].peak.sharp_delta_1 = 1.6
 project.experiments['xray_pdf'].peak.sharp_delta_2 = 0
-project.experiments['xray_pdf'].peak.broad_q = 0.0176
 project.experiments['xray_pdf'].peak.damp_particle_diameter = 0
 
 # Link sample model (defined in the previous step) to the experiment
@@ -101,7 +100,7 @@ print(ed.section('Show calculated data'))
 project.plot_calc(expt_name='xray_pdf')
 
 print(ed.section('Show calculated vs measured data'))
-project.plot_meas_vs_calc(expt_name='xray_pdf', show_residual=True)
+project.plot_meas_vs_calc(expt_name='xray_pdf')
 
 print(ed.section('Show all parameters'))
 project.analysis.show_all_params()
@@ -133,7 +132,7 @@ print(ed.section('Start fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after fitting'))
-project.plot_meas_vs_calc(expt_name='xray_pdf', show_residual=True)
+project.plot_meas_vs_calc(expt_name='xray_pdf')
 
 # Show analysis as CIF
 project.analysis.show_as_cif()
