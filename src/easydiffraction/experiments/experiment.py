@@ -302,10 +302,10 @@ class PairDistributionFunctionExperiment(BaseExperiment):
         y = data[:, 1]
         # Using sqrt isn’t appropriate here, as the y-scale isn’t raw counts
         # and includes both positive and negative values. For now, set the
-        # e.s.d. to a fixed value of 0.05 if it’s not included in the measured
+        # e.s.d. to a fixed value of 0.03 if it’s not included in the measured
         # data file. We should improve this later.
         #sy = data[:, 3] if data.shape[1] > 2 else np.sqrt(y)
-        sy = data[:, 2] if data.shape[1] > 2 else np.full_like(y, fill_value=0.05)
+        sy = data[:, 2] if data.shape[1] > 2 else np.full_like(y, fill_value=0.03)
 
         # Attach the data to the experiment's datastore
         self.datastore.pattern.x = x
