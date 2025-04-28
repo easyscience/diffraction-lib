@@ -57,21 +57,9 @@ class PdffitCalculator(CalculatorBase):
         # Create the PDFit structure
         structure = pdffit_cif_parser().parse(v1_cif_string)
 
-        # Set space group, cell parameters, and atom site coordinates
+        # Set all model parameters:
+        # space group, cell parameters, and atom sites (including ADPs)
         calculator.add_structure(structure)
-
-        # Set ADP parameters
-        # TODO: the following should be Uiso, so needs changing
-        #  once the model has Uiso implemented
-        for i_atom, atom in enumerate(sample_model.atom_sites):
-            if not hasattr(atom, 'adp_type'):
-                continue
-            if not atom.adp_type.value == 'Biso':
-                continue
-            Biso = atom.b_iso.value
-            for i in range(1, 4):
-                u_str = 'u{}{}({})'.format(i, i, i_atom + 1)
-                calculator.setvar(u_str, Biso)
 
         # -------------------------
         # Set experiment parameters
