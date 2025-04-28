@@ -46,6 +46,7 @@ class PdffitCalculator(CalculatorBase):
         # Set sample model parameters
         # ---------------------------
 
+        # TODO: move CIF v2 -> CIF v1 conversion to a separate module
         # Convert the sample model to CIF supported by PDFfit
         v2_cif_string = sample_model.as_cif()
         # convert to version 1 of CIF format
