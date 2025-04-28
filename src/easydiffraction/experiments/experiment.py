@@ -182,8 +182,10 @@ class PowderExperiment(BaseExperiment):
         super().__init__(name=name,
                          type=type)
 
-        self._peak_profile_type = DEFAULT_PEAK_PROFILE_TYPE[self.type.scattering_type.value][self.type.beam_mode.value]
-        self._background_type = DEFAULT_BACKGROUND_TYPE
+        self._background_type: str = DEFAULT_BACKGROUND_TYPE
+        self.background = BackgroundFactory.create(
+            background_type=self.background_type)
+        self._peak_profile_type: str = DEFAULT_PEAK_PROFILE_TYPE[self.type.scattering_type.value][self.type.beam_mode.value]
         self.peak = PeakFactory.create(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
