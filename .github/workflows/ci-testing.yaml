@@ -53,10 +53,8 @@ jobs:
 
       - name: Install libcblas for pdffit on Windows
         shell: bash
-        run: |
-          if runner.os == 'Windows' then
-            conda install -y -c conda-forge libblas
-          fi
+        if: runner.os == 'Windows'
+        run: conda install -y -c conda-forge libcblas
 
       - name: Run Python unit tests
         shell: bash
