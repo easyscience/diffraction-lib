@@ -1,8 +1,47 @@
 import pytest
-from easydiffraction.core.singletons import BaseSingleton, UidMapHandler, ConstraintsHandler
-from easydiffraction.core.objects import Descriptor, Parameter
+from unittest.mock import MagicMock
+from easydiffraction.core.objects import Parameter
+from easydiffraction.core.singletons import (
+    BaseSingleton,
+    UidMapHandler,
+    ConstraintsHandler
+)
 
-# filepath: src/easydiffraction/core/test_singletons.py
+
+@pytest.fixture
+def params():
+    param1 = Parameter(value=1.0,
+                       name='param1',
+                       cif_name='param1_cif')
+    param2 = Parameter(value=2.0,
+                       name='param2',
+                       cif_name='param2_cif')
+    return param1, param2
+
+
+@pytest.fixture
+def mock_aliases(params):
+    param1, param2 = params
+    mock = MagicMock()
+    mock._items = {
+        'alias1': MagicMock(label=MagicMock(value='alias1'),
+                            param_uid=MagicMock(value=param1.uid)),
+        'alias2': MagicMock(label=MagicMock(value='alias2'),
+                            param_uid=MagicMock(value=param2.uid)),
+    }
+    return mock
+
+
+@pytest.fixture
+def mock_constraints():
+    mock = MagicMock()
+    mock._items = {
+        'expr1': MagicMock(lhs_alias=MagicMock(value='alias1'),
+                           rhs_expr=MagicMock(value='alias2 + 1')),
+        'expr2': MagicMock(lhs_alias=MagicMock(value='alias2'),
+                           rhs_expr=MagicMock(value='alias1 * 2')),
+    }
+    return mock
 
 
 def test_base_singleton():
@@ -15,10 +54,8 @@ def test_base_singleton():
     assert instance1 is instance2  # Ensure only one instance is created
 
 
-def test_uid_map_handler():
-    param1 = Parameter(value=1.0, name="param1", cif_name="param1_cif")
-    param2 = Parameter(value=2.0, name="param2", cif_name="param2_cif")
-
+def test_uid_map_handler(params):
+    param1, param2 = params
     handler = UidMapHandler.get()
     uid_map = handler.get_uid_map()
 
@@ -28,74 +65,31 @@ def test_uid_map_handler():
     assert uid_map[param2.uid].uid == 'None.param2_cif'
 
 
-def test_constraints_handler_set_aliases():
-    class MockAlias:
-        def __init__(self, param):
-            self.param = param
-
-    param1 = Parameter(value=1.0, name="param1", cif_name="param1_cif")
-    param2 = Parameter(value=2.0, name="param2", cif_name="param2_cif")
-
-    aliases = {"alias1": MockAlias(param1), "alias2": MockAlias(param2)}
-
+def test_constraints_handler_set_aliases(mock_aliases, params):
+    param1, param2 = params
     handler = ConstraintsHandler.get()
-    handler.set_aliases(type("MockAliases", (object,), {"_items": aliases}))
+    handler.set_aliases(mock_aliases)
 
-    assert handler._alias_to_param["alias1"].param is param1
-    assert handler._alias_to_param["alias2"].param is param2
+    assert handler._alias_to_param['alias1'].param_uid.value is param1.uid
+    assert handler._alias_to_param['alias2'].param_uid.value is param2.uid
 
 
-def test_constraints_handler_set_constraints():
-    class MockConstraint:
-        def __init__(self, lhs_alias, rhs_expr):
-            self.lhs_alias = Descriptor(value=lhs_alias, name="lhs", cif_name="lhs_cif")
-            self.rhs_expr = Descriptor(value=rhs_expr, name="rhs", cif_name="rhs_cif")
-
-    expressions = {
-        "expr1": MockConstraint("alias1", "alias2 + 1"),
-        "expr2": MockConstraint("alias2", "alias1 * 2"),
-    }
-
+def test_constraints_handler_set_constraints(mock_constraints):
     handler = ConstraintsHandler.get()
-    handler.set_constraints(type("MockConstraints", (object,), {"_items": expressions}))
+    handler.set_constraints(mock_constraints)
 
     assert len(handler._parsed_constraints) == 2
-    assert handler._parsed_constraints[0] == ("alias1", "alias2 + 1")
-    assert handler._parsed_constraints[1] == ("alias2", "alias1 * 2")
+    assert handler._parsed_constraints[0] == ('alias1', 'alias2 + 1')
+    assert handler._parsed_constraints[1] == ('alias2', 'alias1 * 2')
 
 
-def test_constraints_handler_apply():
-    class MockAlias:
-        def __init__(self, param):
-            self.param = param
-
-    # Create parameters
-    param1 = Parameter(value=1.0, name="param1", cif_name="param1_cif")
-    param2 = Parameter(value=2.0, name="param2", cif_name="param2_cif")
-
-    # Set up aliases
-    aliases = {"alias1": MockAlias(param1), "alias2": MockAlias(param2)}
-
-    # Set up ConstraintsHandler
+def test_constraints_handler_apply(mock_aliases, mock_constraints, params):
+    param1, _ = params
     handler = ConstraintsHandler.get()
-    handler.set_aliases(type("MockAliases", (object,), {"_items": aliases}))
+    handler.set_aliases(mock_aliases)
+    handler.set_constraints(mock_constraints)
 
-    # Define expressions
-    constraints = {
-        "expr1": type(
-            "MockExpression",
-            (object,),
-            {
-                "lhs_alias": Descriptor(value="alias1", name="lhs", cif_name="lhs_cif"),
-                "rhs_expr": Descriptor(value="alias2 + 1", name="rhs", cif_name="rhs_cif"),
-            },
-        )
-    }
-    handler.set_constraints(type("MockConstraints", (object,), {"_items": constraints}))
-
-    # Apply constraints
     handler.apply()
 
-    # Assert the updated value and constrained status
-    assert param1.value == 3.0  # alias2 (2.0) + 1
+    assert param1.value == 3.0
     assert param1.constrained is True
