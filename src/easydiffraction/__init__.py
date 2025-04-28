@@ -4,13 +4,11 @@ from easydiffraction.project import (
     ProjectInfo
 )
 
-# Sample model management
-from easydiffraction.sample_models.sample_models import (
-    SampleModel,
-    SampleModels
-)
+# Sample model
+from easydiffraction.sample_models.sample_model import SampleModel
+from easydiffraction.sample_models.sample_models import SampleModels
 
-# Experiment creation and collection management
+# Experiments
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.experiments.experiments import Experiments
 

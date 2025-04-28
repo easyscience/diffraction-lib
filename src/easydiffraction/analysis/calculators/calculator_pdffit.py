@@ -8,6 +8,10 @@ import numpy as np
 from .calculator_base import CalculatorBase
 from easydiffraction.utils.formatting import warning
 
+from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.experiments.experiment import Experiment
+
 try:
     from diffpy.pdffit2 import PdfFit as pdffit
     from diffpy.pdffit2 import redirect_stdout
@@ -23,7 +27,7 @@ class PdffitCalculator(CalculatorBase):
     Wrapper for Pdffit library.
     """
 
-    engine_imported = pdffit is not None
+    engine_imported: bool = pdffit is not None
 
     @property
     def name(self):

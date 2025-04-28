@@ -7,10 +7,12 @@ from easydiffraction.core.constants import (
     DEFAULT_BEAM_MODE,
     DEFAULT_PEAK_PROFILE_TYPE
 )
+from typing import Dict, Type, Optional
+
 
 # --- Mixins ---
 class ConstantWavelengthBroadeningMixin:
-    def _add_constant_wavelength_broadening(self):
+    def _add_constant_wavelength_broadening(self) -> None:
         self.broad_gauss_u: Parameter = Parameter(
             value=0.01,
             name="broad_gauss_u",
@@ -49,7 +51,7 @@ class ConstantWavelengthBroadeningMixin:
 
 
 class TimeOfFlightBroadeningMixin:
-    def _add_time_of_flight_broadening(self):
+    def _add_time_of_flight_broadening(self) -> None:
         self.broad_gauss_sigma_0: Parameter = Parameter(
             value=0.0,
             name="gauss_sigma_0",
@@ -109,7 +111,7 @@ class TimeOfFlightBroadeningMixin:
 
 
 class EmpiricalAsymmetryMixin:
-    def _add_empirical_asymmetry(self):
+    def _add_empirical_asymmetry(self) -> None:
         self.asym_empir_1: Parameter = Parameter(
             value=0.1,
             name="asym_empir_1",
@@ -141,7 +143,7 @@ class EmpiricalAsymmetryMixin:
 
 
 class FcjAsymmetryMixin:
-    def _add_fcj_asymmetry(self):
+    def _add_fcj_asymmetry(self) -> None:
         self.asym_fcj_1: Parameter = Parameter(
             value=0.01,
             name="asym_fcj_1",
@@ -159,7 +161,7 @@ class FcjAsymmetryMixin:
 
 
 class IkedaCarpenterAsymmetryMixin:
-    def _add_ikeda_carpenter_asymmetry(self):
+    def _add_ikeda_carpenter_asymmetry(self) -> None:
         self.asym_alpha_0: Parameter = Parameter(
             value=0.01,
             name="asym_alpha_0",
@@ -225,91 +227,95 @@ class PairDistributionFunctionBroadeningMixin:
 # --- Base peak class ---
 class PeakBase(Component):
     @property
-    def cif_category_key(self):
+    def category_key(self) -> str:
         return "peak"
 
     @property
-    def category_key(self):
+    def cif_category_key(self) -> str:
         return "peak"
-
-    @property
-    def _entry_id(self):
-        return None
 
 
 # --- Derived peak classes ---
-class ConstantWavelengthPseudoVoigt(PeakBase,
-                                    ConstantWavelengthBroadeningMixin):
-    _description = "Pseudo-Voigt profile"
-    def __init__(self):
+class ConstantWavelengthPseudoVoigt(PeakBase, ConstantWavelengthBroadeningMixin):
+    _description: str = "Pseudo-Voigt profile"
+
+    def __init__(self) -> None:
         super().__init__()
+
         self._add_constant_wavelength_broadening()
-        self._locked = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True
 
 
-class ConstantWavelengthSplitPseudoVoigt(PeakBase,
-                                         ConstantWavelengthBroadeningMixin,
-                                         EmpiricalAsymmetryMixin):
-    _description = "Split pseudo-Voigt profile"
-    def __init__(self):
+class ConstantWavelengthSplitPseudoVoigt(PeakBase, ConstantWavelengthBroadeningMixin, EmpiricalAsymmetryMixin):
+    _description: str = "Split pseudo-Voigt profile"
+
+    def __init__(self) -> None:
         super().__init__()
+
         self._add_constant_wavelength_broadening()
         self._add_empirical_asymmetry()
-        self._locked = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True
 
 
-class ConstantWavelengthThompsonCoxHastings(PeakBase,
-                                            ConstantWavelengthBroadeningMixin,
-                                            FcjAsymmetryMixin):
-    _description = "Thompson-Cox-Hastings profile"
-    def __init__(self):
+class ConstantWavelengthThompsonCoxHastings(PeakBase, ConstantWavelengthBroadeningMixin, FcjAsymmetryMixin):
+    _description: str = "Thompson-Cox-Hastings profile"
+
+    def __init__(self) -> None:
         super().__init__()
+
         self._add_constant_wavelength_broadening()
         self._add_fcj_asymmetry()
-        self._locked = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True
 
 
-class TimeOfFlightPseudoVoigt(PeakBase,
-                              TimeOfFlightBroadeningMixin):
-    _description = "Pseudo-Voigt profile"
-    def __init__(self):
+class TimeOfFlightPseudoVoigt(PeakBase, TimeOfFlightBroadeningMixin):
+    _description: str = "Pseudo-Voigt profile"
+
+    def __init__(self) -> None:
         super().__init__()
+
         self._add_time_of_flight_broadening()
-        self._locked = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True
 
 
-class TimeOfFlightIkedaCarpenter(PeakBase,
-                                 TimeOfFlightBroadeningMixin,
-                                 IkedaCarpenterAsymmetryMixin):
-    _description = "Ikeda-Carpenter profile"
-    def __init__(self):
+class TimeOfFlightPseudoVoigtIkedaCarpenter(PeakBase, TimeOfFlightBroadeningMixin, IkedaCarpenterAsymmetryMixin):
+    _description: str = "Pseudo-Voigt * Ikeda-Carpenter profile"
+
+    def __init__(self) -> None:
         super().__init__()
-        self._add_time_of_flight_broadening()
-        self._add_ikeda_carpenter_asymmetry()
-        self._locked = True  # Lock further attribute additions
 
-
-class TimeOfFlightPseudoVoigtIkedaCarpenter(PeakBase,
-                                            TimeOfFlightBroadeningMixin,
-                                            IkedaCarpenterAsymmetryMixin):
-    _description = "Pseudo-Voigt * Ikeda-Carpenter profile"
-    def __init__(self):
-        super().__init__()
         self._add_time_of_flight_broadening()
         self._add_ikeda_carpenter_asymmetry()
-        self._locked = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True
 
 
-class TimeOfFlightPseudoVoigtBackToBackExponential(PeakBase,
-                                                   TimeOfFlightBroadeningMixin,
-                                                   IkedaCarpenterAsymmetryMixin):
-    _description = "Pseudo-Voigt * Back-to-Back Exponential profile"
-    def __init__(self):
+class TimeOfFlightPseudoVoigtBackToBackExponential(PeakBase, TimeOfFlightBroadeningMixin, IkedaCarpenterAsymmetryMixin):
+    _description: str = "Pseudo-Voigt * Back-to-Back Exponential profile"
+
+    def __init__(self) -> None:
         super().__init__()
+
         self._add_time_of_flight_broadening()
         self._add_ikeda_carpenter_asymmetry()
-        self._locked = True  # Lock further attribute additions
 
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True
 
 class PairDistributionFunctionGaussianDampedSinc(PeakBase,
                                                  PairDistributionFunctionBroadeningMixin):
@@ -331,7 +337,6 @@ class PeakFactory:
             },
             "time-of-flight": {
                 "pseudo-voigt": TimeOfFlightPseudoVoigt,
-                "ikeda-carpenter": TimeOfFlightIkedaCarpenter,
                 "pseudo-voigt * ikeda-carpenter": TimeOfFlightPseudoVoigtIkedaCarpenter,
                 "pseudo-voigt * back-to-back": TimeOfFlightPseudoVoigtBackToBackExponential
             }

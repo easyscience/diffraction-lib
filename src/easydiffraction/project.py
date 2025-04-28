@@ -19,85 +19,86 @@ from easydiffraction.plotting.plotting import Plotter
 
 class ProjectInfo:
     """
-    Stores metadata about the project, such as ID, title, description, and file paths.
+    Stores metadata about the project, such as name, title, description,
+    and file paths.
     """
 
-    def __init__(self):
-        self._name = "untitled_project"  # Short unique project identifier
-        self._title = "Untitled Project"
-        self._description = ""
-        self._path = os.getcwd()
-        self._created = datetime.datetime.now()
-        self._last_modified = datetime.datetime.now()
+    def __init__(self) -> None:
+        self._name: str = "untitled_project"
+        self._title: str = "Untitled Project"
+        self._description: str = ""
+        self._path: str = os.getcwd()
+        self._created: datetime.datetime = datetime.datetime.now()
+        self._last_modified: datetime.datetime = datetime.datetime.now()
 
     @property
-    def name(self):
-        """Return the project ID."""
+    def name(self) -> str:
+        """Return the project name."""
         return self._name
 
     @name.setter
-    def name(self, value):
+    def name(self, value: str) -> None:
         self._name = value
 
     @property
-    def title(self):
+    def title(self) -> str:
         """Return the project title."""
         return self._title
 
     @title.setter
-    def title(self, value):
+    def title(self, value: str) -> None:
         self._title = value
 
     @property
-    def description(self):
+    def description(self) -> str:
         """Return sanitized description with single spaces."""
         return ' '.join(self._description.split())
 
     @description.setter
-    def description(self, value):
+    def description(self, value: str) -> None:
         self._description = ' '.join(value.split())
 
     @property
-    def path(self):
+    def path(self) -> str:
         """Return the project path."""
         return self._path
 
     @path.setter
-    def path(self, value):
+    def path(self, value: str) -> None:
         self._path = value
 
     @property
-    def created(self):
+    def created(self) -> datetime.datetime:
         """Return the creation timestamp."""
         return self._created
 
     @property
-    def last_modified(self):
+    def last_modified(self) -> datetime.datetime:
         """Return the last modified timestamp."""
         return self._last_modified
 
-    def update_last_modified(self):
+    def update_last_modified(self) -> None:
         """Update the last modified timestamp."""
         self._last_modified = datetime.datetime.now()
 
     def as_cif(self) -> str:
         """Export project metadata to CIF."""
-        wrapped_title = wrap(self.title, width=60)
-        wrapped_description = wrap(self.description, width=60)
+        wrapped_title: List[str] = wrap(self.title, width=60)
+        wrapped_description: List[str] = wrap(self.description, width=60)
 
-        title_str = f"_project.title            '{wrapped_title[0]}'"
+        title_str: str = f"_project.title            '{wrapped_title[0]}'"
         for line in wrapped_title[1:]:
             title_str += f"\n{' ' * 27}'{line}'"
 
         if wrapped_description:
-            base_indent = "_project.description      "
-            indent_spaces = " " * len(base_indent)
-            formatted_description = f"{base_indent}'{wrapped_description[0]}"
+            base_indent: str = "_project.description      "
+            indent_spaces: str = " " * len(base_indent)
+            formatted_description: str = f"{base_indent}'{wrapped_description[0]}"
             for line in wrapped_description[1:]:
                 formatted_description += f"\n{indent_spaces}{line}"
             formatted_description += "'"
         else:
-            formatted_description = "_project.description      ''"
+            formatted_description: str = "_project.description      ''"
 
         return (
             f"_project.id               {self.name}\n"
@@ -107,13 +108,13 @@ class ProjectInfo:
             f"_project.last_modified    '{self._last_modified.strftime('%d %b %Y %H:%M:%S')}'\n"
         )
 
-    def show_as_cif(self):
-        cif_text = self.as_cif()
-        lines = cif_text.splitlines()
-        max_width = max(len(line) for line in lines)
-        padded_lines = [f"│ {line.ljust(max_width)} │" for line in lines]
-        top = f"╒{'═' * (max_width + 2)}╕"
-        bottom = f"╘{'═' * (max_width + 2)}╛"
+    def show_as_cif(self) -> None:
+        cif_text: str = self.as_cif()
+        lines: List[str] = cif_text.splitlines()
+        max_width: int = max(len(line) for line in lines)
+        padded_lines: List[str] = [f"│ {line.ljust(max_width)} │" for line in lines]
+        top: str = f"╒{'═' * (max_width + 2)}╕"
+        bottom: str = f"╘{'═' * (max_width + 2)}╛"
 
         print(paragraph(f"Project 📦 '{self.name}' info as cif"))
         print(top)
@@ -127,8 +128,11 @@ class Project:
     Provides access to sample models, experiments, analysis, and summary.
     """
 
-    def __init__(self, name="untitled_project", title="Untitled Project", description=""):
-        self.info = ProjectInfo()
+    def __init__(self,
+                 name: str = "untitled_project",
+                 title: str = "Untitled Project",
+                 description: str = "") -> None:
+        self.info: ProjectInfo = ProjectInfo()
         self.info.name = name
         self.info.title = title
         self.info.description = description
@@ -141,15 +145,15 @@ class Project:
         self._varname = varname()
 
     @property
-    def name(self):
-        """Convenience property to access the project's ID directly."""
+    def name(self) -> str:
+        """Convenience property to access the project's name directly."""
         return self.info.name
 
     # ------------------------------------------
     #  Project File I/O
     # ------------------------------------------
 
-    def load(self, dir_path: str):
+    def load(self, dir_path: str) -> None:
         """
         Load a project from a given directory.
         Loads project info, sample models, experiments, etc.
@@ -161,17 +165,17 @@ class Project:
         print('Loading project is not implemented yet.')
         self._saved = True
 
-    def save_as(self, dir_path: str, temporary: bool = False):
+    def save_as(self, dir_path: str, temporary: bool = False) -> None:
         """
         Save the project into a new directory.
         """
         if temporary:
-            tmp = tempfile.gettempdir()
+            tmp: str = tempfile.gettempdir()
             dir_path = os.path.join(tmp, dir_path)
         self.info.path = dir_path
         self.save()
 
-    def save(self):
+    def save(self) -> None:
         """
         Save the project into the existing project directory.
         """
@@ -190,21 +194,21 @@ class Project:
             print("✅ project.cif")
 
         # Save sample models
-        sm_dir = os.path.join(self.info.path, "sample_models")
+        sm_dir: str = os.path.join(self.info.path, "sample_models")
         os.makedirs(sm_dir, exist_ok=True)
         for model in self.sample_models:
-            file_name = f"{model.name}.cif"
-            file_path = os.path.join(sm_dir, file_name)
+            file_name: str = f"{model.name}.cif"
+            file_path: str = os.path.join(sm_dir, file_name)
             with open(file_path, "w") as f:
                 f.write(model.as_cif())
                 print(f"✅ sample_models/{file_name}")
 
         # Save experiments
-        expt_dir = os.path.join(self.info.path, "experiments")
+        expt_dir: str = os.path.join(self.info.path, "experiments")
         os.makedirs(expt_dir, exist_ok=True)
         for experiment in self.experiments:
-            file_name = f"{experiment.name}.cif"
-            file_path = os.path.join(expt_dir, file_name)
+            file_name: str = f"{experiment.name}.cif"
+            file_path: str = os.path.join(expt_dir, file_name)
             with open(file_path, "w") as f:
                 f.write(experiment.as_cif())
                 print(f"✅ experiments/{file_name}")
@@ -226,11 +230,11 @@ class Project:
     #  Sample Models API Convenience Methods
     # ------------------------------------------
 
-    def set_sample_models(self, sample_models: SampleModels):
+    def set_sample_models(self, sample_models: SampleModels) -> None:
         """Attach a collection of sample models to the project."""
         self.sample_models = sample_models
 
-    def set_experiments(self, experiments: Experiments):
+    def set_experiments(self, experiments: Experiments) -> None:
         """Attach a collection of experiments to the project."""
         self.experiments = experiments
 

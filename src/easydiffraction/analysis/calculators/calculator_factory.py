@@ -1,4 +1,5 @@
 import tabulate
+from typing import Dict, Type, List, Optional, Union, Any
 
 from easydiffraction.utils.formatting import (
     paragraph,
@@ -7,10 +8,11 @@ from easydiffraction.utils.formatting import (
 from .calculator_crysfml import CrysfmlCalculator
 from .calculator_cryspy import CryspyCalculator
 from .calculator_pdffit import PdffitCalculator
+from .calculator_base import CalculatorBase
 
 
 class CalculatorFactory:
-    _potential_calculators = {
+    _potential_calculators: Dict[str, Dict[str, Union[str, Type[CalculatorBase]]]] = {
         'crysfml': {
             'description': 'CrysFML library for crystallographic calculations',
             'class': CrysfmlCalculator
@@ -26,7 +28,7 @@ class CalculatorFactory:
     }
 
     @classmethod
-    def _supported_calculators(cls):
+    def _supported_calculators(cls) -> Dict[str, Dict[str, Union[str, Type[CalculatorBase]]]]:
         return {
             name: cfg
             for name, cfg in cls._potential_calculators.items()
@@ -34,16 +36,16 @@ class CalculatorFactory:
         }
 
     @classmethod
-    def list_supported_calculators(cls):
+    def list_supported_calculators(cls) -> List[str]:
         return list(cls._supported_calculators().keys())
 
     @classmethod
-    def show_supported_calculators(cls):
-        header = ["Calculator", "Description"]
-        table_data = []
+    def show_supported_calculators(cls) -> None:
+        header: List[str] = ["Calculator", "Description"]
+        table_data: List[List[str]] = []
 
         for name, config in cls._supported_calculators().items():
-            description = config.get('description', 'No description provided.')
+            description: str = config.get('description', 'No description provided.')
             table_data.append([name, description])
 
         print(paragraph("Supported calculators"))
@@ -57,7 +59,7 @@ class CalculatorFactory:
         ))
 
     @classmethod
-    def create_calculator(cls, calculator_name):
+    def create_calculator(cls, calculator_name: str) -> Optional[CalculatorBase]:
         config = cls._supported_calculators().get(calculator_name)
         if not config:
             print(error(f"Unknown calculator '{calculator_name}'"))
@@ -67,14 +69,14 @@ class CalculatorFactory:
         return config['class']()
 
     @classmethod
-    def register_calculator(cls, calculator_type, calculator_cls, description='No description provided.'):
-        cls._supported_calculators[calculator_type] = {
+    def register_calculator(cls, calculator_type: str, calculator_cls: Type[CalculatorBase], description: str = 'No description provided.') -> None:
+        cls._potential_calculators[calculator_type] = {
             'class': calculator_cls,
             'description': description
         }
 
     @classmethod
-    def register_minimizer(cls, name, minimizer_cls, method=None, description='No description provided.'):
+    def register_minimizer(cls, name: str, minimizer_cls: Type[Any], method: Optional[str] = None, description: str = 'No description provided.') -> None:
         cls._available_minimizers[name] = {
             'engine': name,
             'method': method,

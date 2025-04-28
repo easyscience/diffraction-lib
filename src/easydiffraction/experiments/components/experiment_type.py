@@ -5,6 +5,14 @@ from easydiffraction.core.objects import (
 
 
 class ExperimentType(Component):
+    @property
+    def cif_category_key(self) -> str:
+        return "expt_type"
+
+    @property
+    def category_key(self) -> str:
+        return "expt_type"
+
     def __init__(self,
                  sample_form: str,
                  beam_mode: str,
@@ -14,7 +22,7 @@ class ExperimentType(Component):
 
         self.sample_form: Descriptor = Descriptor(
             value=sample_form,
-            name="samle_form",
+            name="sample_form",
             cif_name="sample_form",
             description="Specifies whether the diffraction data corresponds to powder diffraction or single crystal diffraction"
         )
@@ -38,16 +46,6 @@ class ExperimentType(Component):
                         "total scattering (for pair distribution function analysis - PDF)"
         )
 
-        self._locked = True  # Lock further attribute additions
-
-    @property
-    def cif_category_key(self):
-        return "expt_type"
-
-    @property
-    def category_key(self):
-        return "expt_type"
-
-    @property
-    def _entry_id(self):
-        return None
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True
