@@ -64,8 +64,6 @@ project.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
 
 # Unit cell parameters
 project.sample_models['lbco'].cell.length_a = 3.88
-#project.sample_models['lbco'].cell.length_b = 3.8909  # Symmetry constraints are temporarily disabled
-#project.sample_models['lbco'].cell.length_c = 3.8909  # Symmetry constraints are temporarily disabled
 
 # Atom sites
 project.sample_models['lbco'].atom_sites.add(label='La',
@@ -277,17 +275,16 @@ project.analysis.show_meas_vs_calc_chart(expt_name='hrpt', x_min=65, x_max=68, s
 
 # Set aliases for parameters
 project.analysis.aliases.add(
-    alias='biso_La',
-    param=project.sample_models['lbco'].atom_sites['La'].b_iso
+    label='biso_La',
+    param_uid=project.sample_models['lbco'].atom_sites['La'].b_iso.uid
 )
 project.analysis.aliases.add(
-    alias='biso_Ba',
-    param=project.sample_models['lbco'].atom_sites['Ba'].b_iso
+    label='biso_Ba',
+    param_uid=project.sample_models['lbco'].atom_sites['Ba'].b_iso.uid
 )
 
 # Set constraints
 project.analysis.constraints.add(
-    id="1",
     lhs_alias='biso_Ba',
     rhs_expr='biso_La'
 )
@@ -310,18 +307,17 @@ project.analysis.show_meas_vs_calc_chart(expt_name='hrpt', x_min=65, x_max=68, s
 
 # Set more aliases for parameters
 project.analysis.aliases.add(
-    alias='occ_La',
-    param=project.sample_models['lbco'].atom_sites['La'].occupancy
+    label='occ_La',
+    param_uid=project.sample_models['lbco'].atom_sites['La'].occupancy.uid
 )
 project.analysis.aliases.add(
-    alias='occ_Ba',
-    param=project.sample_models['lbco'].atom_sites['Ba'].occupancy
+    label='occ_Ba',
+    param_uid=project.sample_models['lbco'].atom_sites['Ba'].occupancy.uid
 )
 
 # Set more constraints
 project.analysis.show_constraints()
 project.analysis.constraints.add(
-    id="2",
     lhs_alias='occ_Ba',
     rhs_expr='1 - occ_La'
 )

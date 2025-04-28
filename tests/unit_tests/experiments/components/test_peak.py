@@ -10,7 +10,6 @@ from easydiffraction.experiments.components.peak import (
     ConstantWavelengthSplitPseudoVoigt,
     ConstantWavelengthThompsonCoxHastings,
     TimeOfFlightPseudoVoigt,
-    TimeOfFlightIkedaCarpenter,
     TimeOfFlightPseudoVoigtIkedaCarpenter,
     TimeOfFlightPseudoVoigtBackToBackExponential,
     PeakFactory,
@@ -119,13 +118,6 @@ def test_time_of_flight_pseudo_voigt_initialization():
     assert peak.broad_gauss_sigma_0.value == 0.0
 
 
-def test_time_of_flight_ikeda_carpenter_initialization():
-    peak = TimeOfFlightIkedaCarpenter()
-    assert isinstance(peak.broad_gauss_sigma_0, Parameter)
-    assert isinstance(peak.asym_alpha_0, Parameter)
-    assert peak.asym_alpha_0.value == 0.01
-
-
 def test_time_of_flight_pseudo_voigt_ikeda_carpenter_initialization():
     peak = TimeOfFlightPseudoVoigtIkedaCarpenter()
     assert isinstance(peak.broad_gauss_sigma_0, Parameter)
@@ -142,11 +134,6 @@ def test_time_of_flight_pseudo_voigt_back_to_back_exponential_initialization():
 def test_peak_factory_create_constant_wavelength_pseudo_voigt():
     peak = PeakFactory.create(beam_mode="constant wavelength", profile_type="pseudo-voigt")
     assert isinstance(peak, ConstantWavelengthPseudoVoigt)
-
-
-def test_peak_factory_create_time_of_flight_ikeda_carpenter():
-    peak = PeakFactory.create(beam_mode="time-of-flight", profile_type="ikeda-carpenter")
-    assert isinstance(peak, TimeOfFlightIkedaCarpenter)
 
 
 def test_peak_factory_create_invalid_beam_mode():

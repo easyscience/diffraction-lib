@@ -1,11 +1,21 @@
 from typing import Optional
-from easydiffraction.core.objects import (Parameter,
-                                          Component)
+
+from easydiffraction.core.objects import (
+    Parameter,
+    Component
+)
 
 class Cell(Component):
     """
     Represents the unit cell parameters of a sample model.
     """
+    @property
+    def category_key(self) -> str:
+        return "cell"
+
+    @property
+    def cif_category_key(self) -> str:
+        return "cell"
 
     def __init__(self,
                  length_a: float = 10.0,
@@ -53,14 +63,6 @@ class Cell(Component):
             units="deg"
         )
 
-    @property
-    def cif_category_key(self) -> str:
-        return "cell"
-
-    @property
-    def category_key(self) -> str:
-        return "cell"
-
-    @property
-    def _entry_id(self) -> Optional[str]:
-        return None
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True

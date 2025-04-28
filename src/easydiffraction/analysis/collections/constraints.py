@@ -1,3 +1,5 @@
+from typing import Type
+
 from easydiffraction.core.objects import (
     Descriptor,
     Component,
@@ -5,18 +7,20 @@ from easydiffraction.core.objects import (
 )
 
 
-class ConstraintExpression(Component):
+class Constraint(Component):
+    @property
+    def category_key(self) -> str:
+        return "constraint"
+
+    @property
+    def cif_category_key(self) -> str:
+        return "constraint"
+
     def __init__(self,
-                 id: str,
                  lhs_alias: str,
                  rhs_expr: str) -> None:
         super().__init__()
 
-        self.id: Descriptor = Descriptor(
-            value=id,
-            name="id",
-            cif_name="id"
-        )
         self.lhs_alias: Descriptor = Descriptor(
             value=lhs_alias,
             name="lhs_alias",
@@ -28,27 +32,20 @@ class ConstraintExpression(Component):
             cif_name="rhs_expr"
         )
 
-    @property
-    def cif_category_key(self) -> str:
-        return "constraint_expression"
+        # Select which of the input parameters is used for the
+        # as ID for the whole object
+        self._entry_id = lhs_alias
 
-    @property
-    def category_key(self) -> str:
-        return "constraint_expression"
-
-    @property
-    def _entry_id(self) -> str:
-        return self.id.value
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
-class ConstraintExpressions(Collection):
+class Constraints(Collection):
     @property
     def _type(self) -> str:
         return "category"  # datablock or category
 
-    def add(self,
-            id: str,
-            lhs_alias: str,
-            rhs_expr: str) -> None:
-        expression_obj = ConstraintExpression(id, lhs_alias, rhs_expr)
-        self._items[expression_obj.id.value] = expression_obj
+    @property
+    def _child_class(self) -> Type[Constraint]:
+        return Constraint

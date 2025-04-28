@@ -44,36 +44,25 @@ def test_parameter_initialization():
 def test_component_abstract_methods():
     class TestComponent(Component):
         @property
-        def _entry_id(self):
-            return "test_id"
-
+        def category_key(self):
+            return "test_category"
         @property
         def cif_category_key(self):
             return "test_cif_category"
 
-        @property
-        def category_key(self):
-            return "test_category"
-
     comp = TestComponent()
-    assert comp._entry_id == "test_id"
-    assert comp.cif_category_key == "test_cif_category"
     assert comp.category_key == "test_category"
+    assert comp.cif_category_key == "test_cif_category"
 
 
 def test_component_attribute_handling():
     class TestComponent(Component):
         @property
-        def _entry_id(self):
-            return "test_id"
-
+        def category_key(self):
+            return "test_category"
         @property
         def cif_category_key(self):
             return "test_cif_category"
-
-        @property
-        def category_key(self):
-            return "test_category"
 
     comp = TestComponent()
     desc = Descriptor(value=10, name="test", cif_name="test_cif")
@@ -82,7 +71,13 @@ def test_component_attribute_handling():
 
 
 def test_collection_add_and_retrieve():
-    collection = Collection()
+    class TestCollection(Collection):
+        @property
+        def _child_class(self):
+            return str
+
+    collection = TestCollection()
+
     collection._items["item1"] = "value1"
     collection._items["item2"] = "value2"
 
@@ -91,7 +86,13 @@ def test_collection_add_and_retrieve():
 
 
 def test_collection_iteration():
-    collection = Collection()
+    class TestCollection(Collection):
+        @property
+        def _child_class(self):
+            return str
+
+    collection = TestCollection()
+
     collection._items["item1"] = "value1"
     collection._items["item2"] = "value2"
 
@@ -102,24 +103,20 @@ def test_collection_iteration():
 def test_datablock_components():
     class TestComponent(Component):
         @property
-        def _entry_id(self):
-            return "test_id"
-
+        def category_key(self):
+            return "test_category"
         @property
         def cif_category_key(self):
             return "test_cif_category"
 
-        @property
-        def category_key(self):
-            return "test_category"
-
     class TestDatablock(Datablock):
         def __init__(self):
+            super().__init__()
             self.component1 = TestComponent()
             self.component2 = TestComponent()
 
     datablock = TestDatablock()
-    components = datablock.components()
-    assert len(components) == 2
-    assert isinstance(components[0], TestComponent)
-    assert isinstance(components[1], TestComponent)
+    items = datablock.items()
+    assert len(items) == 2
+    assert isinstance(items[0], TestComponent)
+    assert isinstance(items[1], TestComponent)

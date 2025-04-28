@@ -12,22 +12,19 @@ from easydiffraction.utils.chart_plotter import (
     ChartPlotter,
     DEFAULT_HEIGHT
 )
-from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.core.objects import (
     Descriptor,
     Parameter
 )
-from easydiffraction.core.singletons import (
-    ConstraintsHandler,
-    UidMapHandler
-)
+from easydiffraction.core.singletons import ConstraintsHandler
+from easydiffraction.experiments.experiments import Experiments
 
-from .collections.aliases import ConstraintAliases
-from .collections.constraints import ConstraintExpressions
+from .collections.aliases import Aliases
+from .collections.constraints import Constraints
+from .collections.joint_fit_experiments import JointFitExperiments
 from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from .minimizers.minimizer_factory import MinimizerFactory
-from easydiffraction.analysis.collections.joint_fit_experiments import JointFitExperiments
 
 
 class Analysis:
@@ -35,8 +32,8 @@ class Analysis:
 
     def __init__(self, project: Project) -> None:
         self.project = project
-        self.aliases = ConstraintAliases()
-        self.constraints = ConstraintExpressions()
+        self.aliases = Aliases()
+        self.constraints = Constraints()
         self.constraints_handler = ConstraintsHandler.get()
         self.calculator = Analysis._calculator  # Default calculator shared by project
         self._calculator_key: str = 'cryspy'  # Added to track the current calculator
@@ -196,14 +193,16 @@ class Analysis:
                     if entry_id:
                         variable += f"['{entry_id}']"
                     variable += f".{param_key}"
-                    rows.append({'variable': variable,
-                                 'description': description})
+                    uid = param._generate_human_readable_unique_id()
+                    rows.append({'Code variable': variable,
+                                 'Unique ID for CIF': uid,
+                                 'Description': description})
 
         dataframe = pd.DataFrame(rows)
 
-        column_headers = ['variable']
+        column_headers = ['Code variable', 'Unique ID for CIF']
         if show_description:
-            column_headers = ['variable', 'description']
+            column_headers.append('description')
         dataframe = dataframe[column_headers]
 
         indices = range(1, len(dataframe) + 1)  # Force starting from 1
@@ -315,9 +314,8 @@ class Analysis:
             return
 
         rows = []
-        for id, constraint in constraints_dict.items():
+        for constraint in constraints_dict.values():
             row = {
-                'id': id,
                 'lhs_alias': constraint.lhs_alias.value,
                 'rhs_expr': constraint.rhs_expr.value,
                 'full expression': f'{constraint.lhs_alias.value} = {constraint.rhs_expr.value}'
@@ -325,37 +323,22 @@ class Analysis:
             rows.append(row)
 
         dataframe = pd.DataFrame(rows)
+        indices = range(1, len(dataframe) + 1)  # Force starting from 1
 
         print(paragraph(f"User defined constraints"))
         print(tabulate(dataframe,
                        headers=dataframe.columns,
                        tablefmt="fancy_outline",
-                       showindex=False))
+                       showindex=indices))
 
-    def _update_uid_map(self) -> None:
-        """
-        Update the UID map for accessing parameters by UID.
-        This is needed for adding or removing constraints.
-        """
-        sample_models_params = self.project.sample_models.get_all_params()
-        experiments_params = self.project.experiments.get_all_params()
-        params = sample_models_params + experiments_params
-
-        UidMapHandler.get().set_uid_map(params)
-
-    def apply_constraints(self) -> None:
+    def apply_constraints(self):
         if not self.constraints._items:
             print(warning(f"No constraints defined."))
             return
 
-        sample_models_params = self.project.sample_models.get_fittable_params()
-        experiments_params = self.project.experiments.get_fittable_params()
-        fittable_params = sample_models_params + experiments_params
-
-        self._update_uid_map()
         self.constraints_handler.set_aliases(self.aliases)
-        self.constraints_handler.set_expressions(self.constraints)
-        self.constraints_handler.apply(parameters=fittable_params)
+        self.constraints_handler.set_constraints(self.constraints)
+        self.constraints_handler.apply()
 
     def show_calc_chart(self, expt_name: str, x_min: Optional[float] = None, x_max: Optional[float] = None) -> None:
         self.calculate_pattern(expt_name)
@@ -442,11 +425,21 @@ class Analysis:
         # After fitting, get the results
         self.fit_results = self.fitter.results
 
-    def as_cif(self) -> str:
+    def as_cif(self):
+        current_minimizer = self.current_minimizer
+        if " " in current_minimizer:
+            current_minimizer = f'"{current_minimizer}"'
+
         lines = []
         lines.append(f"_analysis.calculator_engine  {self.current_calculator}")
-        lines.append(f"_analysis.fitting_engine  {self.current_minimizer}")
+        lines.append(f"_analysis.fitting_engine  {current_minimizer}")
         lines.append(f"_analysis.fit_mode  {self.fit_mode}")
+
+        lines.append("")
+        lines.append(self.aliases.as_cif())
+
+        lines.append("")
+        lines.append(self.constraints.as_cif())
 
         return "\n".join(lines)
 

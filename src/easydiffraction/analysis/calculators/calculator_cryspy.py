@@ -202,7 +202,11 @@ class CryspyCalculator(CalculatorBase):
         cryspy_sample_model_obj = str_to_globaln(cryspy_sample_model_cif)
         cryspy_obj.add_items(cryspy_sample_model_obj.items)
 
-        cryspy_experiment_cif = self._convert_experiment_to_cryspy_cif(experiment, linked_phase=sample_model)
+        # Add single experiment to cryspy_obj
+        cryspy_experiment_cif = self._convert_experiment_to_cryspy_cif(
+            experiment,
+            linked_phase=sample_model)
+
         cryspy_experiment_obj = str_to_globaln(cryspy_experiment_cif)
         cryspy_obj.add_items(cryspy_experiment_obj.items)
 

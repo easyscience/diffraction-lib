@@ -53,7 +53,7 @@ def test_calculate_pattern(mock_constraints_handler, mock_sample_models, mock_ex
 
     # Assertions
     assert np.allclose(result, np.array([3.6, 7.2, 10.8]))
-    mock_constraints_handler.return_value.apply.assert_called_once_with(parameters={"param1": 1, "param2": 2})
+    mock_constraints_handler.return_value.apply.assert_called_once_with()
     assert mock_experiment.datastore.pattern.bkg is not None
     assert mock_experiment.datastore.pattern.calc is not None
 

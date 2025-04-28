@@ -5,9 +5,9 @@ from easydiffraction.sample_models.sample_models import SampleModel, SampleModel
 
 @pytest.fixture
 def mock_sample_model():
-    with patch("easydiffraction.sample_models.sample_models.SpaceGroup") as MockSpaceGroup, \
-         patch("easydiffraction.sample_models.sample_models.Cell") as MockCell, \
-         patch("easydiffraction.sample_models.sample_models.AtomSites") as MockAtomSites:
+    with patch("easydiffraction.sample_models.components.space_group.SpaceGroup") as MockSpaceGroup, \
+         patch("easydiffraction.sample_models.components.cell.Cell") as MockCell, \
+         patch("easydiffraction.sample_models.collections.atom_sites.AtomSites") as MockAtomSites:
         space_group = MockSpaceGroup.return_value
         cell = MockCell.return_value
         atom_sites = MockAtomSites.return_value

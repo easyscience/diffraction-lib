@@ -107,21 +107,20 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # User-defined constraints
 
     # Set aliases for parameters
-    project.analysis.aliases.add(alias='biso_La',
-                                 param=atom_sites['La'].b_iso)
-    project.analysis.aliases.add(alias='biso_Ba',
-                                 param=atom_sites['Ba'].b_iso)
+    project.analysis.aliases.add(label='biso_La',
+                                 param_uid=atom_sites['La'].b_iso.uid)
+    project.analysis.aliases.add(label='biso_Ba',
+                                 param_uid=atom_sites['Ba'].b_iso.uid)
 
-    project.analysis.aliases.add('occ_La', atom_sites['La'].occupancy)
-    project.analysis.aliases.add('occ_Ba', atom_sites['Ba'].occupancy)
+    project.analysis.aliases.add('occ_La', atom_sites['La'].occupancy.uid)
+    project.analysis.aliases.add('occ_Ba', atom_sites['Ba'].occupancy.uid)
 
     project.analysis.show_constraints()
 
     # Set constraints
-    project.analysis.constraints.add(id='1',
-                                     lhs_alias='biso_Ba',
+    project.analysis.constraints.add(lhs_alias='biso_Ba',
                                      rhs_expr='biso_La')
-    project.analysis.constraints.add('2', 'occ_Ba', '1 - occ_La')
+    project.analysis.constraints.add('occ_Ba', '1 - occ_La')
 
     project.analysis.show_constraints()
 

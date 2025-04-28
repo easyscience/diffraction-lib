@@ -50,7 +50,7 @@ class CalculatorBase(ABC):
 
         # Apply user constraints to all sample models
         constraints = ConstraintsHandler.get()
-        constraints.apply(parameters=sample_models.get_all_params())
+        constraints.apply()
 
         # Calculate contributions from valid linked sample models
         y_calc_scaled = y_calc_zeros

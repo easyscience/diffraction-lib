@@ -1,3 +1,5 @@
+from typing import Type
+
 from easydiffraction.core.objects import (
     Parameter,
     Descriptor,
@@ -7,7 +9,17 @@ from easydiffraction.core.objects import (
 
 
 class LinkedPhase(Component):
-    def __init__(self, id: str, scale: float) -> None:
+    @property
+    def category_key(self) -> str:
+        return "linked_phase"
+
+    @property
+    def cif_category_key(self) -> str:
+        return "pd_phase_block"
+
+    def __init__(self,
+                 id: str,
+                 scale: float):
         super().__init__()
 
         self.id = Descriptor(
@@ -21,19 +33,13 @@ class LinkedPhase(Component):
             cif_name="scale"
         )
 
-        self._locked = True  # Lock further attribute additions
+        # Select which of the input parameters is used for the
+        # as ID for the whole object
+        self._entry_id = id
 
-    @property
-    def cif_category_key(self) -> str:
-        return "pd_phase_block"
-
-    @property
-    def category_key(self) -> str:
-        return "linked_phase"
-
-    @property
-    def _entry_id(self) -> str:
-        return self.id.value
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 class LinkedPhases(Collection):
@@ -44,6 +50,6 @@ class LinkedPhases(Collection):
     def _type(self) -> str:
         return "category"  # datablock or category
 
-    def add(self, id: str, scale: float) -> None:
-        phase = LinkedPhase(id, scale)
-        self._items[phase.id.value] = phase
+    @property
+    def _child_class(self) -> Type[LinkedPhase]:
+        return LinkedPhase

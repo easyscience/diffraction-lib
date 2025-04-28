@@ -1,3 +1,5 @@
+from typing import Type
+
 from easydiffraction.core.objects import (
     Descriptor,
     Component,
@@ -6,7 +8,17 @@ from easydiffraction.core.objects import (
 
 
 class JointFitExperiment(Component):
-    def __init__(self, id: str, weight: float) -> None:
+    @property
+    def category_key(self) -> str:
+        return "joint_fit_experiment"
+
+    @property
+    def cif_category_key(self) -> str:
+        return "joint_fit_experiment"
+
+    def __init__(self,
+                 id: str,
+                 weight: float) -> None:
         super().__init__()
 
         self.id: Descriptor = Descriptor(
@@ -20,17 +32,13 @@ class JointFitExperiment(Component):
             cif_name="weight"
         )
 
-    @property
-    def cif_category_key(self) -> str:
-        return "joint_fit_experiment"
+        # Select which of the input parameters is used for the
+        # as ID for the whole object
+        self._entry_id = id
 
-    @property
-    def category_key(self) -> str:
-        return "joint_fit_experiment"
-
-    @property
-    def _entry_id(self) -> str:
-        return self.id.value
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked = True
 
 
 class JointFitExperiments(Collection):
@@ -42,6 +50,6 @@ class JointFitExperiments(Collection):
     def _type(self) -> str:
         return "category"  # datablock or category
 
-    def add(self, id: str, weight: float) -> None:
-        expt = JointFitExperiment(id, weight)
-        self._items[expt.id.value] = expt
+    @property
+    def _child_class(self) -> Type[JointFitExperiment]:
+        return JointFitExperiment

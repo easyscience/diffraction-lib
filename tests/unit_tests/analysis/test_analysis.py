@@ -127,7 +127,7 @@ def test_as_cif(mock_print, analysis):
     cif_text = analysis.as_cif()
 
     # Assertions
-    assert "_analysis.calculator_engine  cryspy" in cif_text
-    assert "_analysis.fitting_engine  lmfit (leastsq)" in cif_text
-    assert "_analysis.fit_mode  single" in cif_text
+    assert '_analysis.calculator_engine  cryspy' in cif_text
+    assert '_analysis.fitting_engine  "lmfit (leastsq)"' in cif_text
+    assert '_analysis.fit_mode  single' in cif_text
 

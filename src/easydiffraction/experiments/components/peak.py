@@ -180,16 +180,12 @@ class IkedaCarpenterAsymmetryMixin:
 # --- Base peak class ---
 class PeakBase(Component):
     @property
-    def cif_category_key(self) -> str:
-        return "peak"
-
-    @property
     def category_key(self) -> str:
         return "peak"
 
     @property
-    def _entry_id(self) -> Optional[str]:
-        return None
+    def cif_category_key(self) -> str:
+        return "peak"
 
 
 # --- Derived peak classes ---
@@ -198,8 +194,12 @@ class ConstantWavelengthPseudoVoigt(PeakBase, ConstantWavelengthBroadeningMixin)
 
     def __init__(self) -> None:
         super().__init__()
+
         self._add_constant_wavelength_broadening()
-        self._locked: bool = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True
 
 
 class ConstantWavelengthSplitPseudoVoigt(PeakBase, ConstantWavelengthBroadeningMixin, EmpiricalAsymmetryMixin):
@@ -207,9 +207,13 @@ class ConstantWavelengthSplitPseudoVoigt(PeakBase, ConstantWavelengthBroadeningM
 
     def __init__(self) -> None:
         super().__init__()
+
         self._add_constant_wavelength_broadening()
         self._add_empirical_asymmetry()
-        self._locked: bool = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True
 
 
 class ConstantWavelengthThompsonCoxHastings(PeakBase, ConstantWavelengthBroadeningMixin, FcjAsymmetryMixin):
@@ -217,9 +221,13 @@ class ConstantWavelengthThompsonCoxHastings(PeakBase, ConstantWavelengthBroadeni
 
     def __init__(self) -> None:
         super().__init__()
+
         self._add_constant_wavelength_broadening()
         self._add_fcj_asymmetry()
-        self._locked: bool = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True
 
 
 class TimeOfFlightPseudoVoigt(PeakBase, TimeOfFlightBroadeningMixin):
@@ -227,18 +235,12 @@ class TimeOfFlightPseudoVoigt(PeakBase, TimeOfFlightBroadeningMixin):
 
     def __init__(self) -> None:
         super().__init__()
+
         self._add_time_of_flight_broadening()
-        self._locked: bool = True  # Lock further attribute additions
 
-
-class TimeOfFlightIkedaCarpenter(PeakBase, TimeOfFlightBroadeningMixin, IkedaCarpenterAsymmetryMixin):
-    _description: str = "Ikeda-Carpenter profile"
-
-    def __init__(self) -> None:
-        super().__init__()
-        self._add_time_of_flight_broadening()
-        self._add_ikeda_carpenter_asymmetry()
-        self._locked: bool = True  # Lock further attribute additions
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True
 
 
 class TimeOfFlightPseudoVoigtIkedaCarpenter(PeakBase, TimeOfFlightBroadeningMixin, IkedaCarpenterAsymmetryMixin):
@@ -246,9 +248,13 @@ class TimeOfFlightPseudoVoigtIkedaCarpenter(PeakBase, TimeOfFlightBroadeningMixi
 
     def __init__(self) -> None:
         super().__init__()
+
         self._add_time_of_flight_broadening()
         self._add_ikeda_carpenter_asymmetry()
-        self._locked: bool = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True
 
 
 class TimeOfFlightPseudoVoigtBackToBackExponential(PeakBase, TimeOfFlightBroadeningMixin, IkedaCarpenterAsymmetryMixin):
@@ -256,9 +262,13 @@ class TimeOfFlightPseudoVoigtBackToBackExponential(PeakBase, TimeOfFlightBroaden
 
     def __init__(self) -> None:
         super().__init__()
+
         self._add_time_of_flight_broadening()
         self._add_ikeda_carpenter_asymmetry()
-        self._locked: bool = True  # Lock further attribute additions
+
+        # Lock further attribute additions to prevent
+        # accidental modifications by users
+        self._locked: bool = True
 
 
 # --- Peak factory ---
@@ -271,7 +281,6 @@ class PeakFactory:
         },
         "time-of-flight": {
             "pseudo-voigt": TimeOfFlightPseudoVoigt,
-            "ikeda-carpenter": TimeOfFlightIkedaCarpenter,
             "pseudo-voigt * ikeda-carpenter": TimeOfFlightPseudoVoigtIkedaCarpenter,
             "pseudo-voigt * back-to-back": TimeOfFlightPseudoVoigtBackToBackExponential
         }
