@@ -21,6 +21,7 @@ project.sample_models.add(name='nacl')
 print(ed.section('Modify sample model parameters'))
 
 project.sample_models['nacl'].space_group.name_h_m = 'F m -3 m'
+project.sample_models['nacl'].space_group.it_coordinate_system_code = '1'
 
 project.sample_models['nacl'].cell.length_a = 5.62
 
@@ -29,13 +30,15 @@ project.sample_models['nacl'].atom_sites.add(label='Na',
                                              fract_x=0,
                                              fract_y=0,
                                              fract_z=0,
-                                             b_iso=0.01 * 8 * 3.14159**2)
+                                             wyckoff_letter='a',
+                                             b_iso=1.0)
 project.sample_models['nacl'].atom_sites.add(label='Cl',
                                              type_symbol='Cl',
                                              fract_x=0.5,
                                              fract_y=0.5,
                                              fract_z=0.5,
-                                             b_iso=0.01 * 8 * 3.14159**2)
+                                             wyckoff_letter='b',
+                                             b_iso=1.0)
 
 print(ed.section('Show sample model as CIF'))
 project.sample_models['nacl'].show_as_cif()

@@ -331,6 +331,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     print(ed.section('Modify sample model parameters'))
 
     project.sample_models['nacl'].space_group.name_h_m = 'F m -3 m'
+    project.sample_models['nacl'].space_group.it_coordinate_system_code = '1'
 
     project.sample_models['nacl'].cell.length_a = 5.62
 
@@ -339,13 +340,15 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
                                                  fract_x=0,
                                                  fract_y=0,
                                                  fract_z=0,
-                                                 b_iso=0.01 * 8 * 3.14159 ** 2)
+                                                 wyckoff_letter='a',
+                                                 b_iso=1.0)
     project.sample_models['nacl'].atom_sites.add(label='Cl',
                                                  type_symbol='Cl',
                                                  fract_x=0.5,
                                                  fract_y=0.5,
                                                  fract_z=0.5,
-                                                 b_iso=0.01 * 8 * 3.14159 ** 2)
+                                                 wyckoff_letter='b',
+                                                 b_iso=1.0)
 
     print(ed.section('Show sample model as CIF'))
     project.sample_models['nacl'].show_as_cif()
@@ -442,7 +445,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     project.summary.show_report()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 1.52, decimal=2)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 1.48, decimal=2)
 
 
 if __name__ == '__main__':
