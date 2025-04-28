@@ -338,12 +338,7 @@ class Analysis:
 
         self.constraints_handler.set_aliases(self.aliases)
         self.constraints_handler.set_constraints(self.constraints)
-
-        sample_models_params = self.project.sample_models.get_fittable_params()
-        experiments_params = self.project.experiments.get_fittable_params()
-        fittable_params = sample_models_params + experiments_params
-
-        self.constraints_handler.apply(parameters=fittable_params)
+        self.constraints_handler.apply()
 
     def show_calc_chart(self, expt_name: str, x_min: Optional[float] = None, x_max: Optional[float] = None) -> None:
         self.calculate_pattern(expt_name)
