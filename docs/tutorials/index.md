@@ -2,7 +2,7 @@
 icon: material/school
 ---
 
-# :material-school: Hands-on tutorials
+# :material-school: Tutorials
 
 This section provides a collection of **Jupyter Notebook examples** that
 demonstrate how to use EasyDiffraction for various tasks. These tutorials
