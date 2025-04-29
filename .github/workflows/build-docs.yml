@@ -98,7 +98,7 @@ jobs:
 
       # Copy Jupyter notebooks from the project to the docs folder
       # The notebooks are used to generate the documentation
-      - name: Convert .py from ${{ env.NOTEBOOKS_DIR }}/ to Jupyter notebooks and add to docs/${{env.NOTEBOOKS_DIR }}/
+      - name: Convert ${{ env.NOTEBOOKS_DIR }}/*.py to docs/${{env.NOTEBOOKS_DIR }}/*.ipynb
         run: |
           jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --to ipynb
           mv ${{ env.NOTEBOOKS_DIR }}/*.ipynb docs/${{ env.NOTEBOOKS_DIR }}/
@@ -128,7 +128,7 @@ jobs:
 
       # Set up the Pages action to configure the static files to be deployed
       # NOTE: The repository must have GitHub Pages enabled and configured to build using GitHub Actions
-      # This can be done via https://github.com/easyscience/EasyDiffractionLib/settings/pages
+      # This can be done via https://github.com/easyscience/diffraction-lib/settings/pages
       # Select: Build and deploy - Source - GitHub Actions
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
@@ -184,10 +184,10 @@ jobs:
       # Deploy the static files created in the previous job to GitHub Pages
       # To allow the deployment of the static files to GitHub Pages, no
       # restrictions on the branch name need to be set for desired branches on
-      # https://github.com/easyscience/EasyDiffractionLib/settings/environments
+      # https://github.com/easyscience/diffraction-lib/settings/environments
       # Currently, only develop and master branches are allowed to deploy to GitHub Pages
-      # Deployed pages are available at https://easyscience.github.io/EasyDiffractionLib
-      - name: Deploy to easyscience.github.io/EasyDiffractionLib (all branches)
+      # Deployed pages are available at https://easyscience.github.io/diffraction-lib
+      - name: Deploy to easyscience.github.io/diffraction-lib (all branches)
         uses: actions/deploy-pages@v4
 
       # Download built site as artifact from a previous job for gh_pages (master branch)
@@ -201,10 +201,10 @@ jobs:
       # Push the site files created in the previous job to the gh_pages branch
       # To be able to push to the gh_pages branch, the personal GitHub API access
       # token GH_API_PERSONAL_ACCSESS_TOKEN must be set for this repository via
-      # https://github.com/easyscience/EasyDiffractionLib/settings/secrets/actions
+      # https://github.com/easyscience/diffraction-lib/settings/secrets/actions
       # This branch is used to deploy the site to the custom domain.
       # Deploying is done with a webhook:
-      # https://github.com/easyscience/EasyDiffractionLib/settings/hooks
+      # https://github.com/easyscience/diffraction-lib/settings/hooks
       # This is done for the gh_pages branch when the site is tested with a step above
       - name:
           Deploy to gh_pages branch to trigger deployment to custom domain (master branch)
