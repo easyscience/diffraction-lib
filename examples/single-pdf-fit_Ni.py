@@ -5,7 +5,7 @@ project = ed.Project()
 project.plotter.engine = 'plotly'
 
 project.sample_models.add(name='ni')
-project.sample_models['ni'].space_group.name_h_m.value = 'F m -3 m'
+project.sample_models['ni'].space_group.name_h_m = 'F m -3 m'
 project.sample_models['ni'].space_group.it_coordinate_system_code = '1'
 project.sample_models['ni'].cell.length_a = 3.52387
 project.sample_models['ni'].atom_sites.add(label='Ni',
@@ -24,12 +24,12 @@ project.experiments.add(name='pdf',
                         scattering_type='total',
                         data_path = 'examples/data/ni-q27r100-neutron_from-2.gr')
 project.experiments['pdf'].linked_phases.add(id='ni', scale=1.)
-project.experiments['pdf'].peak.damp_q.value = 0
-project.experiments['pdf'].peak.broad_q.value = 0.03
-project.experiments['pdf'].peak.cutoff_q.value = 27.0
-project.experiments['pdf'].peak.sharp_delta_1.value = 0.0
-project.experiments['pdf'].peak.sharp_delta_2.value = 2.0
-project.experiments['pdf'].peak.damp_particle_diameter.value = 0
+project.experiments['pdf'].peak.damp_q = 0
+project.experiments['pdf'].peak.broad_q = 0.03
+project.experiments['pdf'].peak.cutoff_q = 27.0
+project.experiments['pdf'].peak.sharp_delta_1 = 0.0
+project.experiments['pdf'].peak.sharp_delta_2 = 2.0
+project.experiments['pdf'].peak.damp_particle_diameter = 0
 
 project.sample_models['ni'].cell.length_a.free = True
 project.sample_models['ni'].atom_sites['Ni'].b_iso.free = True
