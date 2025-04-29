@@ -7,7 +7,9 @@ import urllib.request
 from pathlib import Path
 
 
-def download_from_repository(url: str, save_path: str = ".", overwrite: bool = False):
+def download_from_repository(url: str,
+                             save_path: str = ".",
+                             overwrite: bool = False) -> str:
     """
     Downloads a file from a remote repository and saves it locally.
 
@@ -62,7 +64,7 @@ def is_notebook() -> bool:
         return False  # Probably standard Python interpreter
 
 
-def ensure_dir(directory: str):
+def ensure_dir(directory: str) -> str:
     """
     Ensures that a directory exists. Creates it if it doesn't exist.
 
