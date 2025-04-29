@@ -23,3 +23,12 @@ asteval
 
 pytest
 pytest-xdist
+
+mkdocs
+mkdocs-material 
+mkdocs-autorefs<1.3.0
+mkdocs-jupyter 
+mkdocs-plugin-inline-svg 
+mkdocs-markdownextradata-plugin 
+mkdocstrings-python 
+pyyaml

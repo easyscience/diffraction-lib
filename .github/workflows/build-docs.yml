@@ -65,7 +65,7 @@ jobs:
       # Install EasyDiffraction Library to run Jupyter notebooks
       # Install with the 'charts' and 'docs' extras
       - name: Install EasyDiffraction Library and its dependencies
-        run: pip install mkdocs mkdocs-material 'mkdocs-autorefs<1.3.0' mkdocs-jupyter mkdocs-plugin-inline-svg mkdocs-markdownextradata-plugin mkdocstrings-python pyyaml
+        run: pip install -r requirements.txt
 
       # Clone assets extra from:
       # - easyscience/assets-docs
