@@ -7,7 +7,7 @@ site_name: EasyDiffraction Library
 site_url: https://docs.easydiffraction.org/lib
 
 # Repository
-repo_url: https://github.com/easyscience/EasyDiffractionLib
+repo_url: https://github.com/easyscience/diffraction-lib
 edit_uri: edit/develop/docs/
 
 # Copyright
@@ -19,14 +19,13 @@ extra:
     - icon: easydiffraction  # File: overrides/.icons/easydiffraction.svg
       link: https://easydiffraction.org
     - icon: fontawesome/brands/github  # Name as in Font Awesome
-      link: https://github.com/easyscience/EasyDiffractionLib
+      link: https://github.com/easyscience/diffraction-lib
 
 # Jupyter notebooks
-plugins:
-  - mkdocs-jupyter:
-      execute_ignore:
-        - '*emcee*.ipynb' # Ignore notebooks with 'emcee' in the name from execution
-        - '*.ipynb' # Ignore notebooks with 'emcee' in the name from execution
+#plugins:
+#  - mkdocs-jupyter:
+#      execute_ignore:
+#        - '*emcee*.ipynb' # Ignore notebooks with 'emcee' in the name from execution
 
 ##################
 # Add new settings
@@ -54,22 +53,18 @@ nav:
         - Experiment: usage/workflow-steps/experiment.md
         - Analysis: usage/workflow-steps/analysis.md
         - Summary: usage/workflow-steps/summary.md
-  - Hands-on Tutorials:
-      - Hands-on Tutorials: tutorials/index.md
+  - Tutorials:
+      - Tutorials: tutorials/index.md
       - Basics:
-          - Define Model: tutorials/Define-model.ipynb
-          - Define Experiment: tutorials/Define-experiment.ipynb
-      - Simulation:
-          - pd-xray NaCl: tutorials/Simulation_pd-xray_NaCl.ipynb
-      - Fitting:
-          - pd-neut-cwl LBCO-HRPT: tutorials/Fitting_pd-neut-cwl_LBCO-HRPT.ipynb
-          - pd-neut-tof Si-SEPD: tutorials/Fitting_pd-neut-tof_Si-SEPD.ipynb
-          - pd-neut-tof NCAF-WISH: tutorials/Fitting_pd-neut-tof_NCAF-WISH.ipynb
-      - Advanced fitting:
-          - MCMC pd-neut-tof NCAF-WISH: tutorials/Fitting-emcee_pd-neut-cwl_LBCO-HRPT.ipynb
-      - Extra:
-          - Change Minimizer: tutorials/Change-minimizer.ipynb
+          - tutorials/single-fit_basic-usage.ipynb
   - API Reference:
       - API Reference: api/index.md
+      - api/core.md
+      - api/crystallography.md
+      - api/utils.md
+      - api/plotting.md
+      - api/sample_models.md
+      - api/experiments.md
+      - api/analysis.md
   - Contributing:
       - Contributing: contributing/index.md
