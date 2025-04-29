@@ -448,7 +448,51 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 1.48, decimal=2)
 
 
+def test_single_fit_pdf_neutron_pd_cw_ni():
+    project = ed.Project()
+
+    project.sample_models.add(name='ni')
+    project.sample_models['ni'].space_group.name_h_m.value = 'F m -3 m'
+    project.sample_models['ni'].space_group.it_coordinate_system_code = '1'
+    project.sample_models['ni'].cell.length_a = 3.52387
+    project.sample_models['ni'].atom_sites.add(label='Ni',
+                                               type_symbol='Ni',
+                                               fract_x=0.,
+                                               fract_y=0.,
+                                               fract_z=0.,
+                                               wyckoff_letter='a',
+                                               b_iso=0.5)
+
+    # Taken from https://github.com/diffpy/cmi_exchange/blob/main/cmi_scripts/fitNiPDF/ni-q27r100-neutron.gr
+    project.experiments.add(name='pdf',
+                            sample_form='powder',
+                            beam_mode='constant wavelength',
+                            radiation_probe='neutron',
+                            scattering_type='total',
+                            data_path='examples/data/ni-q27r100-neutron_from-2.gr')
+    project.experiments['pdf'].linked_phases.add(id='ni', scale=1.)
+    project.experiments['pdf'].peak.damp_q.value = 0
+    project.experiments['pdf'].peak.broad_q.value = 0.03
+    project.experiments['pdf'].peak.cutoff_q.value = 27.0
+    project.experiments['pdf'].peak.sharp_delta_1.value = 0.0
+    project.experiments['pdf'].peak.sharp_delta_2.value = 2.0
+    project.experiments['pdf'].peak.damp_particle_diameter.value = 0
+
+    project.sample_models['ni'].cell.length_a.free = True
+    project.sample_models['ni'].atom_sites['Ni'].b_iso.free = True
+    project.experiments['pdf'].linked_phases['ni'].scale.free = True
+    project.experiments['pdf'].peak.broad_q.free = True
+    project.experiments['pdf'].peak.sharp_delta_2.free = True
+
+    project.analysis.current_calculator = 'pdffit'
+    project.analysis.fit()
+
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 207.1, decimal=1)
+
+
 if __name__ == '__main__':
     test_single_fit_neutron_pd_cwl_lbco()
     #test_single_fit_neutron_pd_tof_si()
     #test_single_fit_neutron_pd_tof_ncaf()
+    #test_single_fit_pdf_xray_pd_cw_nacl()
+    #test_single_fit_pdf_neutron_pd_cw_ni()
