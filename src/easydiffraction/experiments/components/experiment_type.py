@@ -6,17 +6,18 @@ from easydiffraction.core.objects import (
 
 class ExperimentType(Component):
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "expt_type"
 
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "expt_type"
 
     def __init__(self,
                  sample_form: str,
                  beam_mode: str,
-                 radiation_probe: str):
+                 radiation_probe: str,
+                 scattering_type: str):
         super().__init__()
 
         self.sample_form: Descriptor = Descriptor(
@@ -37,7 +38,14 @@ class ExperimentType(Component):
             cif_name="radiation_probe",
             description="Specifies whether the measurement uses neutrons or X-rays"
         )
+        self.scattering_type: Descriptor = Descriptor(
+            value=scattering_type,
+            name="scattering_type",
+            cif_name="scattering_type",
+            description="Specifies whether the experiment uses Bragg scattering (for conventional structure refinement) or "
+                        "total scattering (for pair distribution function analysis - PDF)"
+        )
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        self._locked = True
+        self._locked: bool = True

@@ -1,14 +1,14 @@
+from __future__ import annotations
 import pandas as pd
+import numpy as np
 from tabulate import tabulate
+from typing import List, Optional, Union
 
 from easydiffraction.utils.formatting import (
     paragraph,
     warning
 )
-from easydiffraction.utils.chart_plotter import (
-    ChartPlotter,
-    DEFAULT_HEIGHT
-)
+from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.core.objects import (
     Descriptor,
     Parameter
@@ -27,19 +27,25 @@ from .minimizers.minimizer_factory import MinimizerFactory
 class Analysis:
     _calculator = CalculatorFactory.create_calculator('cryspy')
 
-    def __init__(self, project):
+    def __init__(self, project: Project) -> None:
         self.project = project
         self.aliases = Aliases()
         self.constraints = Constraints()
         self.constraints_handler = ConstraintsHandler.get()
         self.calculator = Analysis._calculator  # Default calculator shared by project
-        self._calculator_key = 'cryspy'  # Added to track the current calculator
-        self._fit_mode = 'single'
+        self._calculator_key: str = 'cryspy'  # Added to track the current calculator
+        self._fit_mode: str = 'single'
         self.fitter = DiffractionMinimizer('lmfit (leastsq)')
 
-    def _get_params_as_dataframe(self, params):
+    def _get_params_as_dataframe(self, params: List[Union[Descriptor, Parameter]]) -> pd.DataFrame:
         """
         Convert a list of parameters to a DataFrame.
+
+        Args:
+            params: List of Descriptor or Parameter objects.
+
+        Returns:
+            A pandas DataFrame containing parameter information.
         """
         rows = []
         for param in params:
@@ -72,9 +78,13 @@ class Analysis:
 
         return dataframe
 
-    def _show_params(self, dataframe, column_headers):
-        """:
+    def _show_params(self, dataframe: pd.DataFrame, column_headers: List[str]) -> None:
+        """
         Display parameters in a tabular format.
+
+        Args:
+            dataframe: The pandas DataFrame containing parameter information.
+            column_headers: List of column headers to display.
         """
         dataframe = dataframe[column_headers]
         indices = range(1, len(dataframe) + 1)  # Force starting from 1
@@ -84,7 +94,7 @@ class Analysis:
                        tablefmt="fancy_outline",
                        showindex=indices))
 
-    def show_all_params(self):
+    def show_all_params(self) -> None:
         sample_models_params = self.project.sample_models.get_all_params()
         experiments_params = self.project.experiments.get_all_params()
 
@@ -107,7 +117,7 @@ class Analysis:
         experiments_dataframe = self._get_params_as_dataframe(experiments_params)
         self._show_params(experiments_dataframe, column_headers=column_headers)
 
-    def show_fittable_params(self):
+    def show_fittable_params(self) -> None:
         sample_models_params = self.project.sample_models.get_fittable_params()
         experiments_params = self.project.experiments.get_fittable_params()
 
@@ -132,7 +142,7 @@ class Analysis:
         experiments_dataframe = self._get_params_as_dataframe(experiments_params)
         self._show_params(experiments_dataframe, column_headers=column_headers)
 
-    def show_free_params(self):
+    def show_free_params(self) -> None:
         sample_models_params = self.project.sample_models.get_free_params()
         experiments_params = self.project.experiments.get_free_params()
         free_params = sample_models_params + experiments_params
@@ -155,7 +165,7 @@ class Analysis:
         dataframe = self._get_params_as_dataframe(free_params)
         self._show_params(dataframe, column_headers=column_headers)
 
-    def how_to_access_parameters(self, show_description=False):
+    def how_to_access_parameters(self, show_description: bool = False) -> None:
         sample_models_params = self.project.sample_models.get_all_params()
         experiments_params = self.project.experiments.get_all_params()
         params = {'sample_models': sample_models_params,
@@ -203,21 +213,20 @@ class Analysis:
                        tablefmt="fancy_outline",
                        showindex=indices))
 
-
-    def show_current_calculator(self):
+    def show_current_calculator(self) -> None:
         print(paragraph("Current calculator"))
         print(self.current_calculator)
 
     @staticmethod
-    def show_supported_calculators():
+    def show_supported_calculators() -> None:
         CalculatorFactory.show_supported_calculators()
 
     @property
-    def current_calculator(self):
+    def current_calculator(self) -> str:
         return self._calculator_key
 
     @current_calculator.setter
-    def current_calculator(self, calculator_name):
+    def current_calculator(self, calculator_name: str) -> None:
         calculator = CalculatorFactory.create_calculator(calculator_name)
         if calculator is None:
             return
@@ -226,30 +235,30 @@ class Analysis:
         print(paragraph("Current calculator changed to"))
         print(self.current_calculator)
 
-    def show_current_minimizer(self):
+    def show_current_minimizer(self) -> None:
         print(paragraph("Current minimizer"))
         print(self.current_minimizer)
 
     @staticmethod
-    def show_available_minimizers():
+    def show_available_minimizers() -> None:
         MinimizerFactory.show_available_minimizers()
 
     @property
-    def current_minimizer(self):
+    def current_minimizer(self) -> Optional[str]:
         return self.fitter.selection if self.fitter else None
 
     @current_minimizer.setter
-    def current_minimizer(self, selection):
+    def current_minimizer(self, selection: str) -> None:
         self.fitter = DiffractionMinimizer(selection)
         print(paragraph(f"Current minimizer changed to"))
         print(self.current_minimizer)
 
     @property
-    def fit_mode(self):
+    def fit_mode(self) -> str:
         return self._fit_mode
 
     @fit_mode.setter
-    def fit_mode(self, strategy):
+    def fit_mode(self, strategy: str) -> None:
         if strategy not in ['single', 'joint']:
             raise ValueError("Fit mode must be either 'single' or 'joint'")
         self._fit_mode = strategy
@@ -262,7 +271,7 @@ class Analysis:
         print(paragraph("Current fit mode changed to"))
         print(self._fit_mode)
 
-    def show_available_fit_modes(self):
+    def show_available_fit_modes(self) -> None:
         strategies = [
             {
                 "Strategy": "single",
@@ -275,18 +284,26 @@ class Analysis:
         print(paragraph("Available fit modes"))
         print(tabulate(strategies, headers="keys", tablefmt="fancy_outline", showindex=False))
 
-    def show_current_fit_mode(self):
-        print(paragraph("Current ffit mode"))
+    def show_current_fit_mode(self) -> None:
+        print(paragraph("Current fit mode"))
         print(self.fit_mode)
 
-    def calculate_pattern(self, expt_name):
-        # Pattern is calculated for the given experiment
+    def calculate_pattern(self, expt_name: str) -> Optional[np.ndarray]:
+        """
+        Calculate the diffraction pattern for a given experiment.
+
+        Args:
+            expt_name: The name of the experiment.
+
+        Returns:
+            The calculated pattern as a pandas DataFrame.
+        """
         experiment = self.project.experiments[expt_name]
         sample_models = self.project.sample_models
         calculated_pattern = self.calculator.calculate_pattern(sample_models, experiment)
         return calculated_pattern
 
-    def show_constraints(self):
+    def show_constraints(self) -> None:
         constraints_dict = self.constraints._items
 
         if not self.constraints._items:
@@ -294,9 +311,8 @@ class Analysis:
             return
 
         rows = []
-        for id, constraint in constraints_dict.items():
+        for constraint in constraints_dict.values():
             row = {
-                'id': id,
                 'lhs_alias': constraint.lhs_alias.value,
                 'rhs_expr': constraint.rhs_expr.value,
                 'full expression': f'{constraint.lhs_alias.value} = {constraint.rhs_expr.value}'
@@ -304,12 +320,13 @@ class Analysis:
             rows.append(row)
 
         dataframe = pd.DataFrame(rows)
+        indices = range(1, len(dataframe) + 1)  # Force starting from 1
 
         print(paragraph(f"User defined constraints"))
         print(tabulate(dataframe,
                        headers=dataframe.columns,
                        tablefmt="fancy_outline",
-                       showindex=False))
+                       showindex=indices))
 
     def apply_constraints(self):
         if not self.constraints._items:
@@ -318,62 +335,7 @@ class Analysis:
 
         self.constraints_handler.set_aliases(self.aliases)
         self.constraints_handler.set_constraints(self.constraints)
-
-        sample_models_params = self.project.sample_models.get_fittable_params()
-        experiments_params = self.project.experiments.get_fittable_params()
-        fittable_params = sample_models_params + experiments_params
-
-        self.constraints_handler.apply(parameters=fittable_params)
-
-    def show_calc_chart(self, expt_name, x_min=None, x_max=None):
-        self.calculate_pattern(expt_name)
-
-        experiment = self.project.experiments[expt_name]
-        pattern = experiment.datastore.pattern
-
-        plotter = ChartPlotter()
-        plotter.plot(
-            y_values_list=[pattern.calc],
-            x_values=pattern.x,
-            x_min=x_min,
-            x_max=x_max,
-            title=paragraph(f"Calculated data for experiment 🔬 '{expt_name}'"),
-            labels=['calc']
-        )
-
-    def show_meas_vs_calc_chart(self,
-                                expt_name,
-                                x_min=None,
-                                x_max=None,
-                                show_residual=False,
-                                chart_height=DEFAULT_HEIGHT):
-        experiment = self.project.experiments[expt_name]
-
-        self.calculate_pattern(expt_name)
-
-        pattern = experiment.datastore.pattern
-
-        if pattern.meas is None or pattern.calc is None or pattern.x is None:
-            print(f"No data available for {expt_name}. Cannot display chart.")
-            return
-
-        series = [pattern.meas, pattern.calc]
-        labels = ['meas', 'calc']
-
-        if show_residual:
-            residual = pattern.meas - pattern.calc
-            series.append(residual)
-            labels.append('residual')
-
-        plotter = ChartPlotter(height=chart_height)
-        plotter.plot(
-            y_values_list=series,
-            x_values=pattern.x,
-            x_min=x_min,
-            x_max=x_max,
-            title=paragraph(f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"),
-            labels=labels
-        )
+        self.constraints_handler.apply()
 
     def fit(self):
         sample_models = self.project.sample_models
@@ -428,7 +390,7 @@ class Analysis:
 
         return "\n".join(lines)
 
-    def show_as_cif(self):
+    def show_as_cif(self) -> None:
         cif_text = self.as_cif()
         lines = cif_text.splitlines()
         max_width = max(len(line) for line in lines)

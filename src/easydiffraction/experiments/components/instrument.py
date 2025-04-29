@@ -2,33 +2,35 @@ from easydiffraction.core.objects import (
     Parameter,
     Component
 )
-from easydiffraction.core.constants import DEFAULT_BEAM_MODE
-
+from easydiffraction.core.constants import (
+    DEFAULT_SCATTERING_TYPE,
+    DEFAULT_BEAM_MODE
+)
 
 class InstrumentBase(Component):
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "instrument"
 
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "instr"
 
 
 class ConstantWavelengthInstrument(InstrumentBase):
     def __init__(self,
-                 setup_wavelength=1.5406,
-                 calib_twotheta_offset=0):
+                 setup_wavelength: float = 1.5406,
+                 calib_twotheta_offset: float = 0.0) -> None:
         super().__init__()
 
-        self.setup_wavelength = Parameter(
+        self.setup_wavelength: Parameter = Parameter(
             value=setup_wavelength,
             name="wavelength",
             cif_name="wavelength",
             units="Å",
             description="Incident neutron or X-ray wavelength"
         )
-        self.calib_twotheta_offset = Parameter(
+        self.calib_twotheta_offset: Parameter = Parameter(
             value=calib_twotheta_offset,
             name="twotheta_offset",
             cif_name="2theta_offset",
@@ -38,47 +40,47 @@ class ConstantWavelengthInstrument(InstrumentBase):
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        self._locked = True
+        self._locked: bool = True
 
 
 class TimeOfFlightInstrument(InstrumentBase):
     def __init__(self,
-                 setup_twotheta_bank=150.0,
-                 calib_d_to_tof_offset=0.0,
-                 calib_d_to_tof_linear=10000.0,
-                 calib_d_to_tof_quad=-1.0,
-                 calib_d_to_tof_recip=0.0):
+                 setup_twotheta_bank: float = 150.0,
+                 calib_d_to_tof_offset: float = 0.0,
+                 calib_d_to_tof_linear: float = 10000.0,
+                 calib_d_to_tof_quad: float = -1.0,
+                 calib_d_to_tof_recip: float = 0.0) -> None:
         super().__init__()
 
-        self.setup_twotheta_bank = Parameter(
+        self.setup_twotheta_bank: Parameter = Parameter(
             value=setup_twotheta_bank,
             name="twotheta_bank",
             cif_name="2theta_bank",
             units="deg",
             description="Detector bank position"
         )
-        self.calib_d_to_tof_offset = Parameter(
+        self.calib_d_to_tof_offset: Parameter = Parameter(
             value=calib_d_to_tof_offset,
             name="d_to_tof_offset",
             cif_name="d_to_tof_offset",
             units="µs",
             description="TOF offset"
         )
-        self.calib_d_to_tof_linear = Parameter(
+        self.calib_d_to_tof_linear: Parameter = Parameter(
             value=calib_d_to_tof_linear,
             name="d_to_tof_linear",
             cif_name="d_to_tof_linear",
             units="µs/Å",
             description="TOF linear conversion"
         )
-        self.calib_d_to_tof_quad = Parameter(
+        self.calib_d_to_tof_quad: Parameter = Parameter(
             value=calib_d_to_tof_quad,
             name="d_to_tof_quad",
             cif_name="d_to_tof_quad",
             units="µs/Å²",
             description="TOF quadratic correction"
         )
-        self.calib_d_to_tof_recip = Parameter(
+        self.calib_d_to_tof_recip: Parameter = Parameter(
             value=calib_d_to_tof_recip,
             name="d_to_tof_recip",
             cif_name="d_to_tof_recip",
@@ -88,25 +90,60 @@ class TimeOfFlightInstrument(InstrumentBase):
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
-        self._locked = True
+        self._locked: bool = True
+
+
+# TODO: This is a specific instrument, but rather processed data from
+#  ConstantWavelengthInstrument. So, we should think of a better design.
+#  'calib_twotheta_offset' is not a proper parameter name here, but
+#  need to check if zero offset is used for PDF.
+class PairDistributionFunctionConstantWavelengthInstrument(InstrumentBase):
+    def __init__(self,
+                 setup_wavelength=1.5406):
+        super().__init__()
+
+        self.setup_wavelength = Parameter(
+            value=setup_wavelength,
+            name="wavelength",
+            cif_name="wavelength",
+            units="Å",
+            description="Incident neutron or X-ray wavelength"
+        )
+
+        self._locked = True  # Lock further attribute additions
 
 
 class InstrumentFactory:
     _supported = {
-        "constant wavelength": ConstantWavelengthInstrument,
-        "time-of-flight": TimeOfFlightInstrument
+        "bragg": {
+            "constant wavelength": ConstantWavelengthInstrument,
+            "time-of-flight": TimeOfFlightInstrument,
+        },
+        "total": {
+            "constant wavelength": PairDistributionFunctionConstantWavelengthInstrument,
+        }
     }
 
     @classmethod
-    def create(cls, beam_mode=DEFAULT_BEAM_MODE):
-        if beam_mode not in cls._supported:
-            supported = list(cls._supported.keys())
+    def create(cls,
+               scattering_type=DEFAULT_SCATTERING_TYPE,
+               beam_mode=DEFAULT_BEAM_MODE):
 
+        supported_scattering_types = list(cls._supported.keys())
+        if scattering_type not in supported_scattering_types:
             raise ValueError(
-                f"Unsupported beam mode: '{beam_mode}'.\n "
-                f"Supported beam modes are: {supported}"
+                f"Unsupported scattering type: '{scattering_type}'.\n "
+                f"Supported scattering types: {supported_scattering_types}"
             )
 
-        instrument_class = cls._supported[beam_mode]
-        instance = instrument_class()
-        return instance
+        supported_beam_modes = list(cls._supported[scattering_type].keys())
+        if beam_mode not in supported_beam_modes:
+            raise ValueError(
+                f"Unsupported beam mode: '{beam_mode}' for scattering type: '{scattering_type}'.\n "
+                f"Supported beam modes: {supported_beam_modes}"
+            )
+
+        instrument_class = cls._supported[scattering_type][beam_mode]
+        instrument_obj = instrument_class()
+
+        return instrument_obj

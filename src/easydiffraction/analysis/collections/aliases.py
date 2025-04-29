@@ -1,3 +1,5 @@
+from typing import Type
+
 from easydiffraction.core.objects import (
     Descriptor,
     Component,
@@ -7,24 +9,24 @@ from easydiffraction.core.objects import (
 
 class Alias(Component):
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "alias"
 
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "alias"
 
     def __init__(self,
                  label: str,
-                 param_uid: str):
+                 param_uid: str) -> None:
         super().__init__()
 
-        self.label = Descriptor(
+        self.label: Descriptor = Descriptor(
             value=label,
             name="label",
             cif_name="label"
         )
-        self.param_uid = Descriptor(
+        self.param_uid: Descriptor = Descriptor(
             value=param_uid,
             name="param_uid",
             cif_name="param_uid"
@@ -41,9 +43,10 @@ class Alias(Component):
 
 class Aliases(Collection):
     @property
-    def _type(self):
+    def _type(self) -> str:
         return "category"  # datablock or category
 
     @property
-    def _child_class(self):
+    def _child_class(self) -> Type[Alias]:
         return Alias
+

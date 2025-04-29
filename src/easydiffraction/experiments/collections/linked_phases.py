@@ -1,3 +1,5 @@
+from typing import Type
+
 from easydiffraction.core.objects import (
     Parameter,
     Descriptor,
@@ -8,11 +10,11 @@ from easydiffraction.core.objects import (
 
 class LinkedPhase(Component):
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "linked_phase"
 
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "pd_phase_block"
 
     def __init__(self,
@@ -45,9 +47,9 @@ class LinkedPhases(Collection):
     Collection of LinkedPhase instances.
     """
     @property
-    def _type(self):
+    def _type(self) -> str:
         return "category"  # datablock or category
 
     @property
-    def _child_class(self):
+    def _child_class(self) -> Type[LinkedPhase]:
         return LinkedPhase

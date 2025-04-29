@@ -1,3 +1,5 @@
+from typing import Type
+
 from easydiffraction.core.objects import (
     Descriptor,
     Component,
@@ -7,24 +9,24 @@ from easydiffraction.core.objects import (
 
 class JointFitExperiment(Component):
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return "joint_fit_experiment"
 
     @property
-    def cif_category_key(self):
+    def cif_category_key(self) -> str:
         return "joint_fit_experiment"
 
     def __init__(self,
                  id: str,
-                 weight: float):
+                 weight: float) -> None:
         super().__init__()
 
-        self.id = Descriptor(
+        self.id: Descriptor = Descriptor(
             value=id,
             name="id",
             cif_name="id"
         )
-        self.weight = Descriptor(
+        self.weight: Descriptor = Descriptor(
             value=weight,
             name="weight",
             cif_name="weight"
@@ -45,9 +47,9 @@ class JointFitExperiments(Collection):
     in a `joint` fit.
     """
     @property
-    def _type(self):
+    def _type(self) -> str:
         return "category"  # datablock or category
 
     @property
-    def _child_class(self):
+    def _child_class(self) -> Type[JointFitExperiment]:
         return JointFitExperiment

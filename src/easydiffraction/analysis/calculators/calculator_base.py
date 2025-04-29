@@ -1,8 +1,10 @@
 import numpy as np
 from abc import ABC, abstractmethod
+from typing import List, Any
 
 from easydiffraction.core.singletons import ConstraintsHandler
-
+from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.experiments.experiment import Experiment
 
 class CalculatorBase(ABC):
     """
@@ -11,34 +13,44 @@ class CalculatorBase(ABC):
 
     @property
     @abstractmethod
-    def name(self):
+    def name(self) -> str:
         pass
 
     @property
     @abstractmethod
-    def engine_imported(self):
+    def engine_imported(self) -> bool:
         pass
 
     @abstractmethod
-    def calculate_structure_factors(self, sample_model, experiment):
-        # Single sample model, single experiment
+    def calculate_structure_factors(self, sample_model: SampleModels, experiment: Experiment) -> None:
+        """
+        Calculate structure factors for a single sample model and experiment.
+        """
         pass
 
     def calculate_pattern(self,
-                          sample_models,
-                          experiment,
-                          called_by_minimizer=False):
-        # Multiple sample models, single experiment
+                          sample_models: SampleModels,
+                          experiment: Experiment,
+                          called_by_minimizer: bool = False) -> np.ndarray:
+        """
+        Calculate the diffraction pattern for multiple sample models and a single experiment.
 
+        Args:
+            sample_models: Collection of sample models.
+            experiment: The experiment object.
+            called_by_minimizer: Whether the calculation is called by a minimizer.
+
+        Returns:
+            The calculated diffraction pattern as a NumPy array.
+        """
         x_data = experiment.datastore.pattern.x
         y_calc_zeros = np.zeros_like(x_data)
 
         valid_linked_phases = self._get_valid_linked_phases(sample_models, experiment)
 
         # Apply user constraints to all sample models
-        # TODO: How to apply user constraints to all experiments (background, etc.)?
         constraints = ConstraintsHandler.get()
-        constraints.apply(parameters=sample_models.get_all_params())
+        constraints.apply()
 
         # Calculate contributions from valid linked sample models
         y_calc_scaled = y_calc_zeros
@@ -60,7 +72,9 @@ class CalculatorBase(ABC):
             y_calc_scaled += sample_model_y_calc_scaled
 
         # Calculate background contribution
-        y_bkg = experiment.background.calculate(x_data)
+        y_bkg = np.zeros_like(x_data)
+        if hasattr(experiment, 'background'):
+            y_bkg = experiment.background.calculate(x_data)
         experiment.datastore.pattern.bkg = y_bkg
 
         # Calculate total pattern
@@ -71,12 +85,33 @@ class CalculatorBase(ABC):
 
     @abstractmethod
     def _calculate_single_model_pattern(self,
-                                        sample_model,
-                                        experiment,
-                                        called_by_minimizer):
+                                        sample_model: SampleModels,
+                                        experiment: Experiment,
+                                        called_by_minimizer: bool) -> np.ndarray:
+        """
+        Calculate the diffraction pattern for a single sample model and experiment.
+
+        Args:
+            sample_model: The sample model object.
+            experiment: The experiment object.
+            called_by_minimizer: Whether the calculation is called by a minimizer.
+
+        Returns:
+            The calculated diffraction pattern as a NumPy array.
+        """
         pass
 
-    def _get_valid_linked_phases(self, sample_models, experiment):
+    def _get_valid_linked_phases(self, sample_models: SampleModels, experiment: Experiment) -> List[Any]:
+        """
+        Get valid linked phases from the experiment.
+
+        Args:
+            sample_models: Collection of sample models.
+            experiment: The experiment object.
+
+        Returns:
+            A list of valid linked phases.
+        """
         if not experiment.linked_phases:
             print('Warning: No linked phases found. Returning empty pattern.')
             return []

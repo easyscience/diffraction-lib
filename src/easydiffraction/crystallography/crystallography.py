@@ -1,7 +1,10 @@
+from typing import Dict, List, Optional, Any
 from sympy import (
     symbols,
     sympify,
-    simplify
+    simplify,
+    Symbol,
+    Expr
 )
 
 from cryspy.A_functions_base.function_2_space_group import (
@@ -9,10 +12,21 @@ from cryspy.A_functions_base.function_2_space_group import (
     get_it_number_by_name_hm_short,
     get_symop_pcentr_multiplicity_letter_site_symmetry_coords_xyz_2
 )
+from easydiffraction.crystallography.space_group_lookup_table import SPACE_GROUP_LOOKUP_DICT
 
 
-def apply_cell_symmetry_constraints(cell: dict,
-                                    name_hm: str) -> dict:
+def apply_cell_symmetry_constraints(cell: Dict[str, float],
+                                    name_hm: str) -> Dict[str, float]:
+    """
+    Apply symmetry constraints to unit cell parameters based on space group.
+    
+    Args:
+        cell: Dictionary containing lattice parameters.
+        name_hm: Hermann-Mauguin symbol of the space group.
+        
+    Returns:
+        The cell dictionary with applied symmetry constraints.
+    """
     it_number = get_it_number_by_name_hm_short(name_hm)
     if it_number is None:
         error_msg = f"Failed to get IT_number for name_H-M '{name_hm}'"
@@ -66,11 +80,22 @@ def apply_cell_symmetry_constraints(cell: dict,
     return cell
 
 
-def apply_atom_site_symmetry_constraints(atom_site: dict,
+def apply_atom_site_symmetry_constraints(atom_site: Dict[str, Any],
                                          name_hm: str,
-                                         coord_code,
-                                         wyckoff_letter: str) -> dict:
-
+                                         coord_code: int,
+                                         wyckoff_letter: str) -> Dict[str, Any]:
+    """
+    Apply symmetry constraints to atomic coordinates based on site symmetry.
+    
+    Args:
+        atom_site: Dictionary containing atom position data.
+        name_hm: Hermann-Mauguin symbol of the space group.
+        coord_code: Coordinate system code.
+        wyckoff_letter: Wyckoff position letter.
+        
+    Returns:
+        The atom_site dictionary with applied symmetry constraints.
+    """
     it_number = get_it_number_by_name_hm_short(name_hm)
     if it_number is None:
         error_msg = f"Failed to get IT_number for name_H-M '{name_hm}'"
@@ -83,37 +108,27 @@ def apply_atom_site_symmetry_constraints(atom_site: dict,
         print(error_msg)
         return atom_site
 
-    # 1 - OK
-    # TODO: This is very slow!!!
-
-    result = get_symop_pcentr_multiplicity_letter_site_symmetry_coords_xyz_2(it_number, it_coordinate_system_code)
-
-    #return atom_site
-    # 2 - NOT OK
-
-    letter_list = result[3]
-    coords_xyz_list = result[5]
-
-    idx = letter_list.index(wyckoff_letter)
-    coords_xyz = coords_xyz_list[idx]
-
+    space_group_entry = SPACE_GROUP_LOOKUP_DICT[(it_number, it_coordinate_system_code)]
+    wyckoff_positions = space_group_entry["Wyckoff_positions"][wyckoff_letter]
+    coords_xyz = wyckoff_positions["coords_xyz"]
+    
     first_position = coords_xyz[0]
     components = first_position.strip("()").split(",")
-    parsed_exprs = [sympify(comp.strip()) for comp in components]
+    parsed_exprs: List[Expr] = [sympify(comp.strip()) for comp in components]
 
-    x_val = sympify(atom_site["fract_x"])
-    y_val = sympify(atom_site["fract_y"])
-    z_val = sympify(atom_site["fract_z"])
+    x_val: Expr = sympify(atom_site["fract_x"])
+    y_val: Expr = sympify(atom_site["fract_y"])
+    z_val: Expr = sympify(atom_site["fract_z"])
 
-    substitutions = {
+    substitutions: Dict[str, Expr] = {
         "x": x_val,
         "y": y_val,
         "z": z_val
     }
 
-    axes = ("x", "y", "z")
+    axes: tuple[str, ...] = ("x", "y", "z")
     x, y, z = symbols("x y z")
-    symbols_xyz = (x, y, z)
+    symbols_xyz: tuple[Symbol, ...] = (x, y, z)
 
     for i, axis in enumerate(axes):
         symbol = symbols_xyz[i]

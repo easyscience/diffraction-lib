@@ -1,5 +1,7 @@
+from typing import Dict, List, Tuple, Any, TypeVar, Type, Optional
 from asteval import Interpreter
 
+T = TypeVar('T', bound='BaseSingleton')
 
 class BaseSingleton:
     """Base class to implement Singleton pattern.
@@ -11,7 +13,7 @@ class BaseSingleton:
     _instance = None  # Class-level shared instance
 
     @classmethod
-    def get(cls):
+    def get(cls: Type[T]) -> T:
         """Returns the shared instance, creating it if needed."""
         if cls._instance is None:
             cls._instance = cls()
@@ -21,11 +23,11 @@ class BaseSingleton:
 class UidMapHandler(BaseSingleton):
     """Global handler to manage UID-to-Parameter object mapping."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Internal map: uid (str) → Parameter instance
-        self._uid_map = {}
+        self._uid_map: Dict[str, Any] = {}
 
-    def get_uid_map(self):
+    def get_uid_map(self) -> Dict[str, Any]:
         """Returns the current UID-to-Parameter map."""
         return self._uid_map
 
@@ -56,16 +58,16 @@ class ConstraintsHandler(BaseSingleton):
     Constraints are defined as: lhs_alias = expression(rhs_aliases).
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Maps alias names (like 'biso_La') → ConstraintAlias(param=Parameter)
-        self._alias_to_param = {}
+        self._alias_to_param: Dict[str, Any] = {}
 
-        # Stores raw user-defined constraints indexed by ID
+        # Stores raw user-defined constraints indexed by lhs_alias
         # Each value should contain: lhs_alias, rhs_expr
         self._constraints = {}
 
         # Internally parsed constraints as (lhs_alias, rhs_expr) tuples
-        self._parsed_constraints = []
+        self._parsed_constraints: List[Tuple[str, str]] = []
 
     def set_aliases(self, aliases):
         """
@@ -84,14 +86,14 @@ class ConstraintsHandler(BaseSingleton):
         self._constraints = constraints._items
         self._parse_constraints()
 
-    def _parse_constraints(self):
+    def _parse_constraints(self) -> None:
         """
         Converts raw expression input into a normalized internal list of
         (lhs_alias, rhs_expr) pairs, stripping whitespace and skipping invalid entries.
         """
         self._parsed_constraints = []
 
-        for expr_id, expr_obj in self._constraints.items():
+        for expr_obj in self._constraints.values():
             lhs_alias = expr_obj.lhs_alias.value
             rhs_expr = expr_obj.rhs_expr.value
 
@@ -99,7 +101,7 @@ class ConstraintsHandler(BaseSingleton):
                 constraint = (lhs_alias.strip(), rhs_expr.strip())
                 self._parsed_constraints.append(constraint)
 
-    def apply(self, parameters: list):
+    def apply(self) -> None:
         """Evaluates constraints and applies them to dependent parameters.
 
         For each constraint:

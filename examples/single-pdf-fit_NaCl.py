@@ -1,0 +1,138 @@
+import easydiffraction as ed
+
+print(ed.chapter('Step 1: Create a Project'))
+
+# Create a new project
+project = ed.Project(name='PDF_refinement')
+
+# Define project info
+project.info.title = 'PDF refinement of Ni from total neutron diffraction'
+project.info.description = '''This project demonstrates simple refinement of 
+neutron diffraction data, measured using constant wavelength instruments.
+The objective is to fit the pair-distribution function of NaCl.'''
+
+# Show project metadata
+project.info.show_as_cif()
+
+print(ed.chapter('Step 2: Add Sample Model'))
+
+project.sample_models.add(name='nacl')
+
+print(ed.section('Modify sample model parameters'))
+
+project.sample_models['nacl'].space_group.name_h_m = 'F m -3 m'
+project.sample_models['nacl'].space_group.it_coordinate_system_code = '1'
+
+project.sample_models['nacl'].cell.length_a = 5.62
+
+project.sample_models['nacl'].atom_sites.add(label='Na',
+                                             type_symbol='Na',
+                                             fract_x=0,
+                                             fract_y=0,
+                                             fract_z=0,
+                                             wyckoff_letter='a',
+                                             b_iso=1.0)
+project.sample_models['nacl'].atom_sites.add(label='Cl',
+                                             type_symbol='Cl',
+                                             fract_x=0.5,
+                                             fract_y=0.5,
+                                             fract_z=0.5,
+                                             wyckoff_letter='b',
+                                             b_iso=1.0)
+
+print(ed.section('Show sample model as CIF'))
+project.sample_models['nacl'].show_as_cif()
+
+print(ed.chapter('Step 3: Add Experiments (Instrument models and measured data)'))
+
+# Load measured data and create a new experiment
+# https://github.com/diffpy/add2019-diffpy-cmi/blob/master/05-Fit-NaCl-BVS-restraint.ipynb
+project.experiments.add(name='xray_pdf',
+                        sample_form='powder',
+                        beam_mode='constant wavelength',
+                        radiation_probe='xray',
+                        scattering_type='total',
+                        data_path='examples/data/NaCl.gr')
+
+print(ed.section('Setup data plotter'))
+project.plotter.show_config()
+project.plotter.show_supported_engines()
+#project.plotter.x_min = 3.5
+#project.plotter.x_max = 4.5
+project.plotter.engine = 'plotly'
+project.plotter.x_min = 2.0
+project.plotter.x_max = 30.0
+
+print(ed.section('Show measured data'))
+project.plot_meas(expt_name='xray_pdf')
+
+print(ed.section('Modify experimental parameters'))
+
+# Instrument parameters
+project.experiments['xray_pdf'].instrument.setup_wavelength = 0.21281
+
+# Peak profile parameters
+project.experiments['xray_pdf'].show_supported_peak_profile_types()
+project.experiments['xray_pdf'].show_current_peak_profile_type()
+project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'
+project.experiments['xray_pdf'].peak.damp_q = 0.03
+project.experiments['xray_pdf'].peak.broad_q = 0
+project.experiments['xray_pdf'].peak.cutoff_q = 21
+project.experiments['xray_pdf'].peak.sharp_delta_1 = 0
+project.experiments['xray_pdf'].peak.sharp_delta_2 = 5
+project.experiments['xray_pdf'].peak.damp_particle_diameter = 0
+
+# Link sample model (defined in the previous step) to the experiment
+project.experiments['xray_pdf'].linked_phases.add(id='nacl', scale=0.5)
+
+# Show experiment as CIF
+project.experiments['xray_pdf'].show_as_cif()
+
+print(ed.chapter('Step 4: Analysis'))
+
+print(ed.section('Set calculator'))
+project.analysis.show_supported_calculators()  # Need to hide the ones not suitable for PDF
+project.analysis.show_current_calculator()
+project.analysis.current_calculator = 'pdffit'
+
+print(ed.section('Show calculated data'))
+project.plot_calc(expt_name='xray_pdf')
+
+print(ed.section('Show calculated vs measured data'))
+project.plot_meas_vs_calc(expt_name='xray_pdf')
+
+print(ed.section('Show all parameters'))
+project.analysis.show_all_params()
+
+print(ed.section('Show all fittable parameters'))
+project.analysis.show_fittable_params()
+
+print(ed.section('Show only free parameters'))
+project.analysis.show_free_params()
+
+print(ed.section('Show how to access parameters in the code'))
+project.analysis.how_to_access_parameters(show_description=False)
+
+print(ed.section('Select specific parameters for fitting'))
+# Sample model parameters
+project.sample_models['nacl'].cell.length_a.free = True
+project.sample_models['nacl'].atom_sites['Na'].b_iso.free = True
+project.sample_models['nacl'].atom_sites['Cl'].b_iso.free = True
+# Experimental parameters
+project.experiments['xray_pdf'].linked_phases['nacl'].scale.free = True
+project.experiments['xray_pdf'].peak.damp_q.free = True
+project.experiments['xray_pdf'].peak.sharp_delta_2.free = True
+# Show free parameters after selection
+project.analysis.show_free_params()
+
+print(ed.section('Start fitting'))
+project.analysis.fit()
+
+print(ed.section('Show data charts after fitting'))
+project.plot_meas_vs_calc(expt_name='xray_pdf')
+
+# Show analysis as CIF
+project.analysis.show_as_cif()
+
+print(ed.chapter('Step 5: Summary'))
+project.summary.show_report()

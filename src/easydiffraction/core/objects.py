@@ -4,6 +4,7 @@ from abc import (
     ABC,
     abstractmethod
 )
+from typing import Any, Dict, List, Optional, Union, Iterator, TypeVar
 
 from easydiffraction.core.singletons import UidMapHandler
 from easydiffraction.utils.formatting import (
@@ -11,6 +12,7 @@ from easydiffraction.utils.formatting import (
     error
 )
 
+T = TypeVar('T')
 
 class Descriptor:
     """
@@ -18,30 +20,30 @@ class Descriptor:
     """
 
     def __init__(self,
-                 value,  # Value of the parameter
-                 name,  # ED parameter name (to access it in the code)
-                 cif_name,  # CIF parameter name (to show it in the CIF)
-                 pretty_name=None,  # Pretty name (to show it in the table)
-                 datablock_id=None, # Parent datablock name
-                 category_key=None,  # ED parent category name
-                 cif_category_key=None,  # CIF parent category name
-                 collection_entry_id=None, # Parent collection entry id
-                 units=None,  # Units of the parameter
-                 description=None,  # Description of the parameter
-                 editable=True  # If false, the parameter can never be edited. It is calculated automatically
-                 ):
+                 value: Any,  # Value of the parameter
+                 name: str,  # ED parameter name (to access it in the code)
+                 cif_name: str,  # CIF parameter name (to show it in the CIF)
+                 pretty_name: Optional[str] = None,  # Pretty name (to show it in the table)
+                 datablock_id: Optional[str] = None, # Parent datablock name
+                 category_key: Optional[str] = None,  # ED parent category name
+                 cif_category_key: Optional[str] = None,  # CIF parent category name
+                 collection_entry_id: Optional[str] = None, # Parent collection entry id
+                 units: Optional[str] = None,  # Units of the parameter
+                 description: Optional[str] = None,  # Description of the parameter
+                 editable: bool = True  # If false, the parameter can never be edited. It is calculated automatically
+                 ) -> None:
 
         self._value = value
-        self.name = name
-        self.cif_name = cif_name
-        self.pretty_name = pretty_name
-        self._datablock_id = datablock_id
-        self.category_key = category_key
-        self.cif_category_key = cif_category_key
-        self._collection_entry_id = collection_entry_id
-        self.units = units
-        self._description = description
-        self._editable = editable
+        self.name: str = name
+        self.cif_name: str = cif_name
+        self.pretty_name: Optional[str] = pretty_name
+        self._datablock_id: Optional[str] = datablock_id
+        self.category_key: Optional[str] = category_key
+        self.cif_category_key: Optional[str] = cif_category_key
+        self._collection_entry_id: Optional[str] = collection_entry_id
+        self.units: Optional[str] = units
+        self._description: Optional[str] = description
+        self._editable: bool = editable
 
         self._human_uid = self._generate_human_readable_unique_id()
 
@@ -50,7 +52,7 @@ class Descriptor:
     def __str__(self):
         return f"{self.__class__.__name__}: {self.uid} = {self.value} {self.units or ''}".strip()
 
-    def _generate_random_unique_id(self):
+    def _generate_random_unique_id(self) -> str:
         # Derived class Parameter will use this unique id for the
         # minimization process to identify the parameter. It will also be
         # used to create the alias for the parameter in the constraint
@@ -118,11 +120,11 @@ class Descriptor:
         return self.uid.replace(".", "__")
 
     @property
-    def value(self):
+    def value(self) -> Any:
         return self._value
 
     @value.setter
-    def value(self, new_value):
+    def value(self, new_value: Any) -> None:
         if self._editable:
             self._value = new_value
         else:
@@ -130,12 +132,13 @@ class Descriptor:
                           f"automatically and cannot be changed manually."))
 
     @property
-    def description(self):
+    def description(self) -> Optional[str]:
         return self._description
 
     @property
-    def editable(self):
+    def editable(self) -> bool:
         return self._editable
+
 
 class Parameter(Descriptor):
     """
@@ -143,22 +146,23 @@ class Parameter(Descriptor):
     """
 
     def __init__(self,
-                 value,
-                 name,
-                 cif_name,
-                 pretty_name=None,
-                 datablock_id=None, # Parent datablock name
-                 category_key=None,
-                 cif_category_key=None,
-                 collection_entry_id=None,
-                 units=None,
-                 description=None,
-                 editable=True,
-                 uncertainty=0.0,
-                 free=False,
-                 constrained=False,
-                 min_value=None,
-                 max_value=None):
+                 value: Any,
+                 name: str,
+                 cif_name: str,
+                 pretty_name: Optional[str] = None,
+                 datablock_id: Optional[str] = None, # Parent datablock name
+                 category_key: Optional[str] = None,
+                 cif_category_key: Optional[str] = None,
+                 collection_entry_id: Optional[str] = None,
+                 units: Optional[str] = None,
+                 description: Optional[str] = None,
+                 editable: bool = True,
+                 uncertainty: float = 0.0,
+                 free: bool = False,
+                 constrained: bool = False,
+                 min_value: Optional[float] = None,
+                 max_value: Optional[float] = None,
+                 ) -> None:
         super().__init__(value,
                          name,
                          cif_name,
@@ -170,11 +174,12 @@ class Parameter(Descriptor):
                          units,
                          description,
                          editable)
-        self.uncertainty = uncertainty  # Standard uncertainty or estimated standard deviation
-        self.free = free  # If the parameter is free to be fitted during the optimization
-        self.constrained = constrained  # If symmetry constrains the parameter during the optimization
-        self.min = min_value  # Minimum physical value of the parameter
-        self.max = max_value  # Maximum physical value of the parameter
+        self.uncertainty: float = uncertainty  # Standard uncertainty or estimated standard deviation
+        self.free: bool = free  # If the parameter is free to be fitted during the optimization
+        self.constrained: bool = constrained  # If symmetry constrains the parameter during the optimization
+        self.min: Optional[float] = min_value  # Minimum physical value of the parameter
+        self.max: Optional[float] = max_value  # Maximum physical value of the parameter
+        self.start_value: Optional[Any] = None  # Starting value for optimization
 
 
 class Component(ABC):
@@ -207,9 +212,9 @@ class Component(ABC):
 
         # TODO: Currently, it is not used. Planned to be used for displaying
         #  the parameters in the specific order.
-        self._ordered_attrs = []
+        self._ordered_attrs: List[str] = []
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         """
         If the attribute is a Parameter or Descriptor, return its value by default
         """
@@ -218,7 +223,7 @@ class Component(ABC):
             return attr.value
         raise AttributeError(f"{name} not found in {self}")
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value: Any) -> None:
         """
         If an object is locked for adding new attributes, raise an error.
         If the attribute 'name' does not exist, add it.
@@ -280,7 +285,7 @@ class Component(ABC):
                 attr_objs.append(attr_obj)
         return attr_objs
 
-    def as_dict(self):
+    def as_dict(self) -> Dict[str, Any]:
         d = {}
 
         for attr_name in dir(self):
@@ -297,7 +302,7 @@ class Component(ABC):
 
         return d
 
-    def as_cif(self):
+    def as_cif(self) -> str:
         if not self.cif_category_key:
             raise ValueError("cif_category_key must be defined in the derived class.")
 
@@ -340,10 +345,10 @@ class Collection(ABC):
         self._datablock_id = None  # Parent datablock name to be set by the parent
         self._items = {}
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> Union[Component, 'Collection']:
         return self._items[key]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Union[Component, 'Collection']]:
         return iter(self._items.values())
 
     @property
@@ -391,7 +396,7 @@ class Collection(ABC):
                 raise TypeError(f"Expected a Component or Datablock, got {type(item)}")
         return params
 
-    def get_fittable_params(self):
+    def get_fittable_params(self) -> List[Parameter]:
         all_params = self.get_all_params()
         params = []
         for param in all_params:
@@ -399,7 +404,7 @@ class Collection(ABC):
                 params.append(param)
         return params
 
-    def get_free_params(self):
+    def get_free_params(self) -> List[Parameter]:
         fittable_params = self.get_fittable_params()
         params = []
         for param in fittable_params:
@@ -407,7 +412,7 @@ class Collection(ABC):
                 params.append(param)
         return params
 
-    def as_cif(self):
+    def as_cif(self) -> str:
         lines = []
         if self._type == "category":
             for idx, item in enumerate(self._items.values()):
