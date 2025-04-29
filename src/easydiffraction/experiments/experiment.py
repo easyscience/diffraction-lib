@@ -41,8 +41,7 @@ class BaseExperiment(Datablock):
     def __init__(self,
                  name: str,
                  type: ExperimentType):
-        super().__init__()
-        self._name = name
+        self.name = name
         self.type = type
         self.instrument = InstrumentFactory.create(
             scattering_type=self.type.scattering_type.value,
@@ -390,9 +389,6 @@ class PairDistributionFunctionExperiment(BaseExperiment):
         self._peak_profile_type = new_type
         print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
         print(new_type)
-        # Recreate the peak object with the new type
-        self.peak = PeakFactory.create(beam_mode=self.type.beam_mode.value,
-                                       profile_type=new_type)
 
     def show_supported_peak_profile_types(self):
         header = ["Peak profile type", "Description"]
@@ -416,13 +412,9 @@ class PairDistributionFunctionExperiment(BaseExperiment):
         print(paragraph("Current peak profile type"))
         print(self.peak_profile_type)
 
-    # -------------
-    # Linked phases
-    # -------------
-
     @property
-    def linked_phases(self):
-        return self._linked_phases
+    def background_type(self):
+        return self._background_type
 
     @background_type.setter
     # TODO: check new_type type
@@ -439,6 +431,9 @@ class PairDistributionFunctionExperiment(BaseExperiment):
         # Recreate the background object with the new type
         self.background = BackgroundFactory.create(new_type)
 
+    def show_supported_background_types(self):
+        header = ["Background type", "Description"]
+        table_data = []
 
         for name, config in BackgroundFactory._supported.items():
             description = getattr(config, '_description', 'No description provided.')
