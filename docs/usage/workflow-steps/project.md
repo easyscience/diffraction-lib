@@ -10,7 +10,59 @@ ensuring structured organization and easy access to relevant information. Each
 project can contain multiple **experimental datasets**, with each dataset
 containing contribution from multiple **physical models**.
 
-## Project structure
+EasyDiffraction allows you to:
+
+- **Manually create** a new project.
+- **Load an existing project** from **CIF files**.
+
+Below, you will find instructions on how to set project in EasyDiffraction. 
+It is assumed that you have already imported the `easydiffraction` package, as 
+described in the [Getting started](../getting-started.md) section.
+
+## Creating a Project Manually
+
+You can manually create a new project and specify its **title** and 
+**description**.
+
+```python
+# Create a new project
+project = ed.Project(name='lbco_hrpt')
+
+# Define project info
+project.info.title = 'La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI'
+project.info.description = '''This project demonstrates a standard refinement 
+of La0.5Ba0.5CoO3, which crystallizes in a perovskite-type structure, using 
+neutron powder diffraction data collected in constant wavelength mode at the 
+HRPT diffractometer (PSI).'''
+```
+
+## Saving a Project
+
+Saving the initial project requires specifying the directory path:
+
+```python
+project.save_as(dir_path='lbco_hrpt', temporary=True)
+```
+
+If working in the interactive mode, you can also save the project after every
+step. This is useful for keeping track of changes and ensuring that your work
+is not lost. If you already saved the project with `sava_as`, you can just call 
+the `save`:
+
+```python
+project.save()
+```
+
+## Loading a Project from a CIF File
+
+If you have an existing project, you can load it directly from a CIF file. This
+is useful for reusing previously defined projects or sharing them with others.
+
+```python
+project.load_from_file('data/lbco_hrpt.cif')
+```
+
+## Project Structure
 
 The example below illustrates a typical **project structure** for a
 **constant-wavelength powder neutron diffraction** experiment:
@@ -30,6 +82,7 @@ analyzing, and refining diffraction experiments.
 ├── 📁 experiments    - Folder with instrumental parameters and measured data.
 │   ├── 📄 <span class="orange"><b>hrpt.cif</b></span>   - Measured data from HRPT@PSI & instrumental parameters.
 │   └── ...
+├── 📄 <span class="orange"><b>analysis.cif</b></span>   - Settings for data analysis.
 └── 📁 summary
     └── 📄 report.cif - Summary report after structure refinement.
 </pre>
@@ -93,13 +146,14 @@ loop_
 <span class="green"><b>_atom_site</b>.fract_x</span>
 <span class="green"><b>_atom_site</b>.fract_y</span>
 <span class="green"><b>_atom_site</b>.fract_z</span>
+<span class="green"><b>_atom_site</b>.Wyckoff_letter</span>
 <span class="green"><b>_atom_site</b>.occupancy</span>
 <span class="green"><b>_atom_site</b>.adp_type</span>
 <span class="green"><b>_atom_site</b>.B_iso_or_equiv</span>
-La La   0   0   0     0.5  Biso 0.4958
-Ba Ba   0   0   0     0.5  Biso 0.4943
-Co Co   0.5 0.5 0.5   1    Biso 0.2567
-O  O    0   0.5 0.5   1    Biso 1.4041
+La La   0   0   0     a   0.5  Biso 0.4958
+Ba Ba   0   0   0     a   0.5  Biso 0.4943
+Co Co   0.5 0.5 0.5   b   1    Biso 0.2567
+O  O    0   0.5 0.5   c   1    Biso 1.4041
 </pre>
 </div>
 
@@ -116,21 +170,19 @@ This file contains **instrumental parameters** and
 <pre>
 data_<span class="red"><b>hrpt</b></span>
 
-<span class="blue"><b>_diffrn_radiation</b>.probe</span>                 neutron
-<span class="blue"><b>_diffrn_radiation_wavelength</b>.wavelength</span> 1.494
+<span class="blue"><b>_expt_type</b>.beam_mode</span>        "constant wavelength"
+<span class="blue"><b>_expt_type</b>.radiation_probe</span>  neutron
+<span class="blue"><b>_expt_type</b>.sample_form</span>      powder
+<span class="blue"><b>_expt_type</b>.scattering_type</span>  bragg
 
-<span class="blue"><b>_pd_calib</b>.2theta_offset</span> 0.6225(4)
+<span class="blue"><b>_instr</b>.wavelength</span>    1.494
+<span class="blue"><b>_instr</b>.2theta_offset</span> 0.6225(4)
 
-<span class="blue"><b>_pd_instr</b>.resolution_u</span>  0.0834
-<span class="blue"><b>_pd_instr</b>.resolution_v</span> -0.1168
-<span class="blue"><b>_pd_instr</b>.resolution_w</span>  0.123
-<span class="blue"><b>_pd_instr</b>.resolution_x</span>  0
-<span class="blue"><b>_pd_instr</b>.resolution_y</span>  0.0797
-
-<span class="blue"><b>_pd_instr</b>.reflex_asymmetry_p1</span> 0
-<span class="blue"><b>_pd_instr</b>.reflex_asymmetry_p2</span> 0
-<span class="blue"><b>_pd_instr</b>.reflex_asymmetry_p3</span> 0
-<span class="blue"><b>_pd_instr</b>.reflex_asymmetry_p4</span> 0
+<span class="blue"><b>_peak</b>.broad_gauss_u</span>    0.0834
+<span class="blue"><b>_peak</b>.broad_gauss_v</span>   -0.1168
+<span class="blue"><b>_peak</b>.broad_gauss_w</span>    0.123
+<span class="blue"><b>_peak</b>.broad_lorentz_x</span>  0
+<span class="blue"><b>_peak</b>.broad_lorentz_y</span>  0.0797
 
 loop_
 <span class="green"><b>_pd_phase_block</b>.id</span>
@@ -173,6 +225,40 @@ loop_
 </div>
 
 <!-- prettier-ignore-end -->
+
+
+### <span class="orange">analysis.cif</span>
+
+This file contains settings used for data analysis, including the choice of
+calculation and fitting engines, as well as user defined constraints.
+
+<!-- prettier-ignore-start -->
+
+<div class="cif">
+<pre>
+<span class="blue"><b>_analysis</b>.calculator_engine</span>  cryspy
+<span class="blue"><b>_analysis</b>.fitting_engine</span>     "lmfit (leastsq)"
+<span class="blue"><b>_analysis</b>.fit_mode</span>           single
+
+loop_
+<span class="green"><b>_alias</b>.label</span>
+<span class="green"><b>_alias</b>.param_uid</span>
+biso_La  lbco.atom_site.La.B_iso_or_equiv
+biso_Ba  lbco.atom_site.Ba.B_iso_or_equiv
+occ_La   lbco.atom_site.La.occupancy
+occ_Ba   lbco.atom_site.Ba.occupancy
+
+loop_
+<span class="green"><b>_constraint</b>.lhs_alias</span>
+<span class="green"><b>_constraint</b>.rhs_expr</span>
+biso_Ba  biso_La
+occ_Ba   "1 - occ_La"
+</pre>
+</div>
+
+<!-- prettier-ignore-end -->
+
+
 
 Now that the Project has been defined, you can proceed to the next step:
 [Model](model.md).
