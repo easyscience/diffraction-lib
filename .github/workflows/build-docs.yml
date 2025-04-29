@@ -106,7 +106,9 @@ jobs:
       # The following step is needed to avoid the following message during the build:
       # "Matplotlib is building the font cache; this may take a moment"
       - name: Pre-build site step
-        run: PYTHONPATH=$(pwd)/src python -c "import easydiffraction"
+        run: |
+          export PYTHONPATH=$(pwd)/src:$PYTHONPATH
+          python -c "import easydiffraction"
 
       # Create the mkdocs.yml configuration file
       # The file is created by merging two files:
@@ -121,6 +123,7 @@ jobs:
       - name: Build site with MkDocs
         run: |
           export JUPYTER_PLATFORM_DIRS=1
+          export PYTHONPATH=$(pwd)/src:$PYTHONPATH
           mkdocs build
 
       # Set up the Pages action to configure the static files to be deployed
