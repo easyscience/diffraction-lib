@@ -109,7 +109,8 @@ class BaseExperiment(Datablock):
         cif_lines += ["", self.type.as_cif()]
 
         # Instrument setup and calibration
-        cif_lines += ["", self.instrument.as_cif()]
+        if hasattr(self, "instrument"):
+            cif_lines += ["", self.instrument.as_cif()]
 
         # Peak profile, broadening and asymmetry
         if hasattr(self, "peak"):
