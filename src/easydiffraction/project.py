@@ -248,8 +248,10 @@ class Project:
                   x_max=None):
         experiment = self.experiments[expt_name]
         pattern = experiment.datastore.pattern
+        expt_type = experiment.type
         self.plotter.plot_meas(pattern,
                                expt_name,
+                               expt_type,
                                x_min=x_min,
                                x_max=x_max)
 
@@ -260,8 +262,10 @@ class Project:
         self.analysis.calculate_pattern(expt_name) # Recalculate pattern
         experiment = self.experiments[expt_name]
         pattern = experiment.datastore.pattern
+        expt_type = experiment.type
         self.plotter.plot_calc(pattern,
                                expt_name,
+                               expt_type,
                                x_min=x_min,
                                x_max=x_max)
 
@@ -273,8 +277,10 @@ class Project:
         self.analysis.calculate_pattern(expt_name) # Recalculate pattern
         experiment = self.experiments[expt_name]
         pattern = experiment.datastore.pattern
+        expt_type = experiment.type
         self.plotter.plot_meas_vs_calc(pattern,
                                        expt_name,
+                                       expt_type,
                                        x_min=x_min,
                                        x_max=x_max,
                                        show_residual=show_residual)

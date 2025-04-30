@@ -28,6 +28,7 @@ class AsciiPlotter(PlotterBase):
              x,
              y_series,
              labels,
+             axes_labels,
              title,
              height=None):
 
