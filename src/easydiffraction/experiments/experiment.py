@@ -361,8 +361,9 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
         if data.shape[1] < 2:
             raise ValueError("Data file must have at least two columns: x and y.")
 
+        default_sy = 0.03
         if data.shape[1] < 3:
-            print("Warning: No uncertainty (sy) column provided. Defaulting to 0.05.")
+            print(f"Warning: No uncertainty (sy) column provided. Defaulting to {default_sy}.")
 
         # Extract x, y, and sy data
         x = data[:, 0]
@@ -374,7 +375,7 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
         # e.s.d. to a fixed value of 0.03 if it’s not included in the measured
         # data file. We should improve this later.
         #sy = data[:, 3] if data.shape[1] > 2 else np.sqrt(y)
-        sy = data[:, 2] if data.shape[1] > 2 else np.full_like(y, fill_value=0.03)
+        sy = data[:, 2] if data.shape[1] > 2 else np.full_like(y, fill_value=default_sy)
 
         # Attach the data to the experiment's datastore
         self.datastore.pattern.x = x
