@@ -1,4 +1,4 @@
-'''
+"""
 Joint Fit Example (Basic Usage)
 
 This example demonstrates the use of the EasyDiffraction API with a simplified,
@@ -11,7 +11,7 @@ and refining parameters.
 Only a single import is required (`import easydiffraction as ed`) and all
 operations are performed through high-level project components such as
 `project.sample_models`, `project.experiments`, and `project.analysis`.
-'''
+"""
 
 import easydiffraction as ed
 
@@ -123,8 +123,8 @@ print(ed.section('Show defined experiments'))
 project.experiments.show_names()
 
 # Show measured data
-project.plot_meas_vs_calc(expt_name='npd', x_min=62, x_max=66)
-project.plot_meas_vs_calc(expt_name='xrd', x_min=26, x_max=28)
+project.plot_meas(expt_name='npd', x_min=62, x_max=66)
+project.plot_meas(expt_name='xrd', x_min=26, x_max=28)
 
 # Modify experimental parameters for the neutron diffraction experiment
 project.experiments['npd'].instrument.setup_wavelength = 1.91

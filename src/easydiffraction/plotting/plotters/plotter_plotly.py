@@ -36,6 +36,7 @@ class PlotlyPlotter(PlotterBase):
              x,
              y_series,
              labels,
+             axes_labels,
              title,
              height=None):
 
@@ -62,13 +63,13 @@ class PlotlyPlotter(PlotterBase):
                 y=1.0
             ),
             xaxis=dict(
-                title_text='2θ (degree)',
+                title_text=axes_labels[0],
                 showline=True,
                 mirror=True,
                 zeroline=False
             ),
             yaxis=dict(
-                title_text='Intensity (arb. units)',
+                title_text=axes_labels[1],
                 showline=True,
                 mirror=True,
                 zeroline=False,

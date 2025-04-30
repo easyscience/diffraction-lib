@@ -10,6 +10,17 @@ DEFAULT_PEAK_PROFILE_TYPE = {
         "time-of-flight": "pseudo-voigt"
     },
     "total": {
-        "constant wavelength": "gaussian-damped-sinc"
+        "constant wavelength": "gaussian-damped-sinc",
+        "time-of-flight": "gaussian-damped-sinc"
     }
+}
+DEFAULT_AXES_LABELS = {
+    'bragg': {
+        'constant wavelength' : ['2θ (degree)', 'Intensity (arb. units)'],
+        'time-of-flight': ['TOF (µs)', 'Intensity (arb. units)'],
+    },
+    'total': {
+        'constant wavelength' : ['r (Å)', 'G(r) (Å)'],
+        'time-of-flight': ['r (Å)', 'G(r) (Å)'],
+    },
 }

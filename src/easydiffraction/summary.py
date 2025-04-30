@@ -16,14 +16,14 @@ class Summary:
     about the fitted model, experiments, and analysis results.
     """
 
-    def __init__(self, project: Project) -> None:
+    def __init__(self, project) -> None:
         """
         Initialize the summary with a reference to the project.
 
         Args:
             project: The Project instance this summary belongs to.
         """
-        self.project: Project = project
+        self.project = project
 
     # ------------------------------------------
     #  Report Generation
@@ -90,13 +90,13 @@ class Summary:
             print(paragraph("Experiment type"))
             print(f'{expt.type.sample_form.value}, {expt.type.radiation_probe.value}, {expt.type.beam_mode.value}')
 
-            if hasattr(expt.instrument, 'setup_wavelength'):
-                print(paragraph("Wavelength"))
-                print(expt.instrument.setup_wavelength.value)
-
-            if hasattr(expt.instrument, 'calib_twotheta_offset'):
-                print(paragraph("2θ offset"))
-                print(expt.instrument.calib_twotheta_offset.value)
+            if hasattr(expt, 'instrument'):
+                if hasattr(expt.instrument, 'setup_wavelength'):
+                    print(paragraph("Wavelength"))
+                    print(expt.instrument.setup_wavelength.value)
+                if hasattr(expt.instrument, 'calib_twotheta_offset'):
+                    print(paragraph("2θ offset"))
+                    print(expt.instrument.calib_twotheta_offset.value)
 
             if hasattr(expt, 'peak_profile_type'):
                 print(paragraph("Profile type"))

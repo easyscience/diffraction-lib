@@ -1,5 +1,6 @@
 import tabulate
 
+from easydiffraction.core.constants import DEFAULT_AXES_LABELS
 from easydiffraction.utils.formatting import (
     paragraph,
     error
@@ -128,6 +129,7 @@ class Plotter():
     def plot_meas(self,
                   pattern,
                   expt_name,
+                  expt_type,
                   x_min=None,
                   x_max=None):
         if pattern.x is None:
@@ -149,10 +151,13 @@ class Plotter():
         y_series = [y_meas]
         y_labels = ['meas']
 
+        axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value][expt_type.beam_mode.value]
+
         self._plotter.plot(
             x=x,
             y_series=y_series,
             labels=y_labels,
+            axes_labels=axes_labels,
             title=f"Measured data for experiment 🔬 '{expt_name}'",
             height=self.height
         )
@@ -160,6 +165,7 @@ class Plotter():
     def plot_calc(self,
                   pattern,
                   expt_name,
+                  expt_type,
                   x_min=None,
                   x_max=None):
         if pattern.x is None:
@@ -181,10 +187,13 @@ class Plotter():
         y_series = [y_calc]
         y_labels = ['calc']
 
+        axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value][expt_type.beam_mode.value]
+
         self._plotter.plot(
             x=x,
             y_series=y_series,
             labels=y_labels,
+            axes_labels=axes_labels,
             title=f"Calculated data for experiment 🔬 '{expt_name}'",
             height=self.height
         )
@@ -192,6 +201,7 @@ class Plotter():
     def plot_meas_vs_calc(self,
                           pattern,
                           expt_name,
+                          expt_type,
                           x_min=None,
                           x_max=None,
                           show_residual=False):
@@ -221,6 +231,8 @@ class Plotter():
         y_series = [y_meas, y_calc]
         y_labels = ['meas', 'calc']
 
+        axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value][expt_type.beam_mode.value]
+
         if show_residual:
             y_resid = y_meas - y_calc
             y_series.append(y_resid)
@@ -230,6 +242,7 @@ class Plotter():
             x=x,
             y_series=y_series,
             labels=y_labels,
+            axes_labels=axes_labels,
             title=f"Measured vs Calculated data for experiment 🔬 '{expt_name}'",
             height=self.height
         )

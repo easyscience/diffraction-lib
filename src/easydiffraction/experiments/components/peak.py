@@ -348,6 +348,9 @@ class PeakFactory:
         "total": {
             "constant wavelength": {
                 "gaussian-damped-sinc": PairDistributionFunctionGaussianDampedSinc
+            },
+            "time-of-flight": {
+                "gaussian-damped-sinc": PairDistributionFunctionGaussianDampedSinc
             }
         }
     }

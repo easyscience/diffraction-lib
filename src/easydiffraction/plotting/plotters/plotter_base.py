@@ -29,6 +29,7 @@ class PlotterBase(ABC):
              x,
              y_series,
              labels,
+             axes_labels,
              title,
              height):
         pass

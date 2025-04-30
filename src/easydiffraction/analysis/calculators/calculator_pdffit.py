@@ -8,10 +8,6 @@ import numpy as np
 from .calculator_base import CalculatorBase
 from easydiffraction.utils.formatting import warning
 
-from easydiffraction.sample_models.sample_models import SampleModels
-from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.experiments.experiment import Experiment
-
 try:
     from diffpy.pdffit2 import PdfFit as pdffit
     from diffpy.pdffit2 import redirect_stdout
@@ -52,15 +48,15 @@ class PdffitCalculator(CalculatorBase):
 
         # TODO: move CIF v2 -> CIF v1 conversion to a separate module
         # Convert the sample model to CIF supported by PDFfit
-        v2_cif_string = sample_model.as_cif()
+        cif_string_v2 = sample_model.as_cif()
         # convert to version 1 of CIF format
         # this means: replace all dots with underscores for
         # cases where the dot is surrounded by letters on both sides.
         pattern = r"(?<=[a-zA-Z])\.(?=[a-zA-Z])"
-        v1_cif_string =  re.sub(pattern, "_", v2_cif_string)
+        cif_string_v1 =  re.sub(pattern, "_", cif_string_v2)
 
         # Create the PDFit structure
-        structure = pdffit_cif_parser().parse(v1_cif_string)
+        structure = pdffit_cif_parser().parse(cif_string_v1)
 
         # Set all model parameters:
         # space group, cell parameters, and atom sites (including ADPs)
@@ -88,7 +84,7 @@ class PdffitCalculator(CalculatorBase):
                                    r_data=x,
                                    Gr_data=y_noise)
 
-        # qbroad must be set after read_data_string
+        # qbroad must be set after read_data_lists
         calculator.setvar('qbroad', experiment.peak.broad_q.value)
 
         # -----------------

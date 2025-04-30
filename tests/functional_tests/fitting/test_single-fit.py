@@ -375,9 +375,6 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
 
     print(ed.section('Modify experimental parameters'))
 
-    # Instrument parameters
-    project.experiments['xray_pdf'].instrument.setup_wavelength = 0.21281
-
     # Peak profile parameters
     project.experiments['xray_pdf'].show_supported_peak_profile_types()
     project.experiments['xray_pdf'].show_current_peak_profile_type()
@@ -448,7 +445,104 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 1.48, decimal=2)
 
 
+def test_single_fit_pdf_neutron_pd_cw_ni():
+    project = ed.Project()
+
+    # Set sample model
+    project.sample_models.add(name='ni')
+    project.sample_models['ni'].space_group.name_h_m.value = 'F m -3 m'
+    project.sample_models['ni'].space_group.it_coordinate_system_code = '1'
+    project.sample_models['ni'].cell.length_a = 3.52387
+    project.sample_models['ni'].atom_sites.add(label='Ni',
+                                               type_symbol='Ni',
+                                               fract_x=0.,
+                                               fract_y=0.,
+                                               fract_z=0.,
+                                               wyckoff_letter='a',
+                                               b_iso=0.5)
+
+    # Set experiment
+    # Data from https://github.com/diffpy/cmi_exchange/blob/main/cmi_scripts/fitNiPDF/ni-q27r100-neutron.gr
+    project.experiments.add(name='pdf',
+                            sample_form='powder',
+                            beam_mode='constant wavelength',
+                            radiation_probe='neutron',
+                            scattering_type='total',
+                            data_path='examples/data/ni-q27r100-neutron_from-2.gr')
+    project.experiments['pdf'].linked_phases.add(id='ni', scale=1.)
+    project.experiments['pdf'].peak.damp_q = 0
+    project.experiments['pdf'].peak.broad_q = 0.03
+    project.experiments['pdf'].peak.cutoff_q = 27.0
+    project.experiments['pdf'].peak.sharp_delta_1 = 0.0
+    project.experiments['pdf'].peak.sharp_delta_2 = 2.0
+    project.experiments['pdf'].peak.damp_particle_diameter = 0
+
+    project.sample_models['ni'].cell.length_a.free = True
+    project.sample_models['ni'].atom_sites['Ni'].b_iso.free = True
+    project.experiments['pdf'].linked_phases['ni'].scale.free = True
+    project.experiments['pdf'].peak.broad_q.free = True
+    project.experiments['pdf'].peak.sharp_delta_2.free = True
+
+    project.analysis.current_calculator = 'pdffit'
+    project.analysis.fit()
+
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 207.1, decimal=1)
+
+
+def test_single_fit_pdf_neutron_pd_tof_si():
+    project = ed.Project()
+
+    # Set sample model
+    project.sample_models.add(name='si')
+    sample_model = project.sample_models['si']
+    sample_model.space_group.name_h_m.value = 'F d -3 m'
+    sample_model.space_group.it_coordinate_system_code = '1'
+    sample_model.cell.length_a = 5.43146
+    sample_model.atom_sites.add(label='Si',
+                                type_symbol='Si',
+                                fract_x=0,
+                                fract_y=0,
+                                fract_z=0,
+                                wyckoff_letter='a',
+                                b_iso=0.5)
+
+    # Set experiment
+    project.experiments.add(name='nomad',
+                            sample_form='powder',
+                            beam_mode='time-of-flight',
+                            radiation_probe='neutron',
+                            scattering_type='total',
+                            data_path='examples/data/NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr')
+    experiment = project.experiments['nomad']
+    experiment.linked_phases.add(id='si', scale=1.)
+    experiment.peak.damp_q = 0.02
+    experiment.peak.broad_q = 0.03
+    experiment.peak.cutoff_q = 35.0
+    experiment.peak.sharp_delta_1 = 0.0
+    experiment.peak.sharp_delta_2 = 4.0
+    experiment.peak.damp_particle_diameter = 0
+
+    # Select fitting parameters
+    project.sample_models['si'].cell.length_a.free = True
+    project.sample_models['si'].atom_sites['Si'].b_iso.free = True
+    experiment.linked_phases['si'].scale.free = True
+    experiment.peak.damp_q.free = True
+    experiment.peak.broad_q.free = True
+    experiment.peak.sharp_delta_1.free = True
+    experiment.peak.sharp_delta_2.free = True
+
+    # Fit
+    project.analysis.current_calculator = 'pdffit'
+    project.analysis.fit()
+
+    # Compare fit quality
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 170.54, decimal=1)
+
+
 if __name__ == '__main__':
     test_single_fit_neutron_pd_cwl_lbco()
     #test_single_fit_neutron_pd_tof_si()
     #test_single_fit_neutron_pd_tof_ncaf()
+    #test_single_fit_pdf_xray_pd_cw_nacl()
+    #test_single_fit_pdf_neutron_pd_cw_ni()
+    #test_single_fit_pdf_neutron_pd_tof_si()
