@@ -100,6 +100,7 @@ jobs:
       # The notebooks are used to generate the documentation
       - name: Convert ${{ env.NOTEBOOKS_DIR }}/*.py to docs/${{env.NOTEBOOKS_DIR }}/*.ipynb
         run: |
+          cp -R ${{ env.NOTEBOOKS_DIR }}/data docs/${{ env.NOTEBOOKS_DIR }}/
           jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --to ipynb
           mv ${{ env.NOTEBOOKS_DIR }}/*.ipynb docs/${{ env.NOTEBOOKS_DIR }}/
 
