@@ -27,7 +27,7 @@ from .minimizers.minimizer_factory import MinimizerFactory
 class Analysis:
     _calculator = CalculatorFactory.create_calculator('cryspy')
 
-    def __init__(self, project: Project) -> None:
+    def __init__(self, project) -> None:
         self.project = project
         self.aliases = Aliases()
         self.constraints = Constraints()
