@@ -1,14 +1,12 @@
-from __future__ import annotations
 import pandas as pd
 import numpy as np
-from tabulate import tabulate
 from typing import List, Optional, Union
 
+from easydiffraction.utils.utils import render_table
 from easydiffraction.utils.formatting import (
     paragraph,
     warning
 )
-from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.core.objects import (
     Descriptor,
     Parameter
@@ -75,24 +73,7 @@ class Analysis:
             rows.append(row)
 
         dataframe = pd.DataFrame(rows)
-
         return dataframe
-
-    def _show_params(self, dataframe: pd.DataFrame, column_headers: List[str]) -> None:
-        """
-        Display parameters in a tabular format.
-
-        Args:
-            dataframe: The pandas DataFrame containing parameter information.
-            column_headers: List of column headers to display.
-        """
-        dataframe = dataframe[column_headers]
-        indices = range(1, len(dataframe) + 1)  # Force starting from 1
-
-        print(tabulate(dataframe,
-                       headers=column_headers,
-                       tablefmt="fancy_outline",
-                       showindex=indices))
 
     def show_all_params(self) -> None:
         sample_models_params = self.project.sample_models.get_all_params()
@@ -102,20 +83,36 @@ class Analysis:
             print(warning(f"No parameters found."))
             return
 
-        column_headers = ['datablock',
-                          'category',
-                          'entry',
-                          'parameter',
-                          'value',
-                          'fittable']
+        columns_headers = ['datablock',
+                           'category',
+                           'entry',
+                           'parameter',
+                           'value',
+                           'fittable']
+        columns_alignment = ["left",
+                             "left",
+                             "left",
+                             "left",
+                             "left",
+                             "left"]
+
+        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
+        sample_models_dataframe = sample_models_dataframe[columns_headers]
 
         print(paragraph("All parameters for all sample models (🧩 data blocks)"))
-        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
-        self._show_params(sample_models_dataframe, column_headers=column_headers)
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=sample_models_dataframe,
+                     show_index=True)
+
+        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
+        experiments_dataframe = experiments_dataframe[columns_headers]
 
         print(paragraph("All parameters for all experiments (🔬 data blocks)"))
-        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
-        self._show_params(experiments_dataframe, column_headers=column_headers)
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=experiments_dataframe,
+                     show_index=True)
 
     def show_fittable_params(self) -> None:
         sample_models_params = self.project.sample_models.get_fittable_params()
@@ -125,22 +122,40 @@ class Analysis:
             print(warning(f"No fittable parameters found."))
             return
 
-        column_headers = ['datablock',
-                          'category',
-                          'entry',
-                          'parameter',
-                          'value',
-                          'uncertainty',
-                          'units',
-                          'free']
+        columns_headers = ['datablock',
+                           'category',
+                           'entry',
+                           'parameter',
+                           'value',
+                           'uncertainty',
+                           'units',
+                           'free']
+        columns_alignment = ["left",
+                             "left",
+                             "left",
+                             "left",
+                             "left",
+                             "left",
+                             "left",
+                             "left"]
+
+        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
+        sample_models_dataframe = sample_models_dataframe[columns_headers]
 
         print(paragraph("Fittable parameters for all sample models (🧩 data blocks)"))
-        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
-        self._show_params(sample_models_dataframe, column_headers=column_headers)
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=sample_models_dataframe,
+                     show_index=True)
+
+        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
+        experiments_dataframe = experiments_dataframe[columns_headers]
 
         print(paragraph("Fittable parameters for all experiments (🔬 data blocks)"))
-        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
-        self._show_params(experiments_dataframe, column_headers=column_headers)
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=experiments_dataframe,
+                     show_index=True)
 
     def show_free_params(self) -> None:
         sample_models_params = self.project.sample_models.get_free_params()
@@ -151,21 +166,35 @@ class Analysis:
             print(warning(f"No free parameters found."))
             return
 
-        column_headers = ['datablock',
-                          'category',
-                          'entry',
-                          'parameter',
-                          'value',
-                          'uncertainty',
-                          'min',
-                          'max',
-                          'units']
+        columns_headers = ['datablock',
+                           'category',
+                           'entry',
+                           'parameter',
+                           'value',
+                           'uncertainty',
+                           'min',
+                           'max',
+                           'units']
+        columns_alignment = ["left",
+                             "left",
+                             "left",
+                             "left",
+                             "left",
+                             "left",
+                             "left",
+                             "left",
+                             "left"]
+
+        dataframe = self._get_params_as_dataframe(free_params)
+        dataframe = dataframe[columns_headers]
 
         print(paragraph("Free parameters for both sample models (🧩 data blocks) and experiments (🔬 data blocks)"))
-        dataframe = self._get_params_as_dataframe(free_params)
-        self._show_params(dataframe, column_headers=column_headers)
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=dataframe,
+                     show_index=True)
 
-    def how_to_access_parameters(self, show_description: bool = False) -> None:
+    def how_to_access_parameters(self) -> None:
         sample_models_params = self.project.sample_models.get_all_params()
         experiments_params = self.project.experiments.get_all_params()
         params = {'sample_models': sample_models_params,
@@ -175,9 +204,10 @@ class Analysis:
             print(warning(f"No parameters found."))
             return
 
+        columns_headers = ['Code variable', 'Unique ID for CIF']
+        columns_alignment = ["left", "left"]
+        columns_data = []
         project_varname = self.project._varname
-
-        rows = []
         for datablock_type, params in params.items():
             for param in params:
                 if isinstance(param, (Descriptor, Parameter)):
@@ -185,33 +215,18 @@ class Analysis:
                     category_key = param.category_key
                     entry_id = param.collection_entry_id
                     param_key = param.name
-                    description = param.description
                     variable = f"{project_varname}.{datablock_type}['{datablock_id}'].{category_key}"
                     if entry_id:
                         variable += f"['{entry_id}']"
                     variable += f".{param_key}"
                     uid = param._generate_human_readable_unique_id()
-                    rows.append({'Code variable': variable,
-                                 'Unique ID for CIF': uid,
-                                 'Description': description})
-
-        dataframe = pd.DataFrame(rows)
-
-        column_headers = ['Code variable', 'Unique ID for CIF']
-        if show_description:
-            column_headers.append('description')
-        dataframe = dataframe[column_headers]
-
-        indices = range(1, len(dataframe) + 1)  # Force starting from 1
+                    columns_data.append([variable, uid])
 
         print(paragraph("How to access parameters"))
-        print("You can access parameters using the following syntax. "
-              "Just copy and paste it from the table below:")
-
-        print(tabulate(dataframe,
-                       headers=column_headers,
-                       tablefmt="fancy_outline",
-                       showindex=indices))
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=columns_data,
+                     show_index=True)
 
     def show_current_calculator(self) -> None:
         print(paragraph("Current calculator"))
@@ -281,8 +296,19 @@ class Analysis:
                 "Description": "Simultaneous fitting of all experiments; some parameters are shared"
             },
         ]
+
+        columns_headers = ["Strategy", "Description"]
+        columns_alignment = ["left", "left"]
+        columns_data = []
+        for item in strategies:
+            strategy = item["Strategy"]
+            description = item["Description"]
+            columns_data.append([strategy, description])
+
         print(paragraph("Available fit modes"))
-        print(tabulate(strategies, headers="keys", tablefmt="fancy_outline", showindex=False))
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=columns_data)
 
     def show_current_fit_mode(self) -> None:
         print(paragraph("Current fit mode"))
@@ -319,14 +345,14 @@ class Analysis:
             }
             rows.append(row)
 
-        dataframe = pd.DataFrame(rows)
-        indices = range(1, len(dataframe) + 1)  # Force starting from 1
+        headers = ['lhs_alias', 'rhs_expr', 'full expression']
+        alignments = ['left', 'left', 'left']
+        rows = [[row[header] for header in headers] for row in rows]
 
         print(paragraph(f"User defined constraints"))
-        print(tabulate(dataframe,
-                       headers=dataframe.columns,
-                       tablefmt="fancy_outline",
-                       showindex=indices))
+        render_table(columns_headers=headers,
+                     columns_alignment=alignments,
+                     columns_data=rows)
 
     def apply_constraints(self):
         if not self.constraints._items:

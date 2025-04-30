@@ -1,10 +1,9 @@
-import tabulate
-
 from easydiffraction.core.constants import DEFAULT_AXES_LABELS
 from easydiffraction.utils.formatting import (
     paragraph,
     error
 )
+from easydiffraction.utils.utils import render_table
 from easydiffraction.plotting.plotters.plotter_base import (
     DEFAULT_HEIGHT,
     DEFAULT_ENGINE,
@@ -90,41 +89,34 @@ class Plotter():
         """
         Displays the current configuration settings.
         """
-        table_data = [
+        columns_headers = ["Parameter", "Value"]
+        columns_alignment = ["left", "left"]
+        columns_data = [
             ["Plotting engine", self.engine],
             ["x-axis limits", f'[{self.x_min}, {self.x_max}]'],
             ["Chart height", self.height]
         ]
 
         print(paragraph("Current plotter configuration"))
-        print(tabulate.tabulate(
-            table_data,
-            tablefmt="fancy_outline",
-            numalign="left",
-            stralign="left",
-            showindex=False
-        ))
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=columns_data)
 
     def show_supported_engines(self):
         """
         Displays the supported plotting engines.
         """
-        header = ["Engine", "Description"]
-        table_data = []
-
+        columns_headers = ["Engine", "Description"]
+        columns_alignment = ["left", "left"]
+        columns_data = []
         for name, config in PlotterFactory._SUPPORTED_ENGINES_DICT.items():
             description = config.get('description', 'No description provided.')
-            table_data.append([name, description])
+            columns_data.append([name, description])
 
         print(paragraph("Supported plotter engines"))
-        print(tabulate.tabulate(
-            table_data,
-            headers=header,
-            tablefmt="fancy_outline",
-            numalign="left",
-            stralign="left",
-            showindex=False
-        ))
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=columns_data)
 
     def plot_meas(self,
                   pattern,

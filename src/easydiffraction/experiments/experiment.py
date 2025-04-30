@@ -1,9 +1,10 @@
 import numpy as np
 import tabulate
-from typing import List, Type, Optional, Dict, Any
+from typing import List, Optional
 
 from abc import abstractmethod
 
+from easydiffraction.utils.utils import render_table
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.experiments.components.experiment_type import ExperimentType
 from easydiffraction.experiments.components.instrument import (
@@ -217,22 +218,17 @@ class BasePowderExperiment(BaseExperiment):
         print(new_type)
 
     def show_supported_peak_profile_types(self):
-        header = ["Peak profile type", "Description"]
-        table_data = []
-
+        columns_headers = ["Peak profile type", "Description"]
+        columns_alignment = ["left", "left"]
+        columns_data = []
         for name, config in PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].items():
             description = getattr(config, '_description', 'No description provided.')
-            table_data.append([name, description])
+            columns_data.append([name, description])
 
         print(paragraph("Supported peak profile types"))
-        print(tabulate.tabulate(
-            table_data,
-            headers=header,
-            tablefmt="fancy_outline",
-            numalign="left",
-            stralign="left",
-            showindex=False
-        ))
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=columns_data)
 
     def show_current_peak_profile_type(self):
         print(paragraph("Current peak profile type"))
@@ -309,22 +305,17 @@ class PowderExperiment(InstrumentMixin,
         print(new_type)
 
     def show_supported_background_types(self):
-        header = ["Background type", "Description"]
-        table_data = []
-
+        columns_headers = ["Background type", "Description"]
+        columns_alignment = ["left", "left"]
+        columns_data = []
         for name, config in BackgroundFactory._supported.items():
             description = getattr(config, '_description', 'No description provided.')
-            table_data.append([name, description])
+            columns_data.append([name, description])
 
         print(paragraph("Supported background types"))
-        print(tabulate.tabulate(
-            table_data,
-            headers=header,
-            tablefmt="fancy_outline",
-            numalign="left",
-            stralign="left",
-            showindex=False
-        ))
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=columns_data)
 
     def show_current_background_type(self):
         print(paragraph("Current background type"))
