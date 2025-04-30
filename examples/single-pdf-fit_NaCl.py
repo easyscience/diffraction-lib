@@ -68,9 +68,6 @@ project.plot_meas(expt_name='xray_pdf')
 
 print(ed.section('Modify experimental parameters'))
 
-# Instrument parameters
-project.experiments['xray_pdf'].instrument.setup_wavelength = 0.21281
-
 # Peak profile parameters
 project.experiments['xray_pdf'].show_supported_peak_profile_types()
 project.experiments['xray_pdf'].show_current_peak_profile_type()

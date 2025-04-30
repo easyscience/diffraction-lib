@@ -10,6 +10,7 @@ DEFAULT_PEAK_PROFILE_TYPE = {
         "time-of-flight": "pseudo-voigt"
     },
     "total": {
-        "constant wavelength": "gaussian-damped-sinc"
+        "constant wavelength": "gaussian-damped-sinc",
+        "time-of-flight": "gaussian-damped-sinc"
     }
 }

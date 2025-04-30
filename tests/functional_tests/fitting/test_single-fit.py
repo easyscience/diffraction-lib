@@ -509,7 +509,7 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     # Set experiment
     project.experiments.add(name='nomad',
                             sample_form='powder',
-                            beam_mode='constant wavelength',  # this is time-of-flight!
+                            beam_mode='time-of-flight',
                             radiation_probe='neutron',
                             scattering_type='total',
                             data_path='examples/data/NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr')
