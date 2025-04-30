@@ -1,4 +1,4 @@
-'''
+"""
 Single Fit Example (Basic Usage)
 
 This example demonstrates the use of the EasyDiffraction API with a simplified,
@@ -11,7 +11,7 @@ and refining parameters.
 Only a single import is required (`import easydiffraction as ed`) and all
 operations are performed through high-level project components such as
 `project.sample_models`, `project.experiments`, and `project.analysis`.
-'''
+"""
 
 import easydiffraction as ed
 

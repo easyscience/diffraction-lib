@@ -45,6 +45,10 @@ Development playground for the new EasyDiffraction API.
 
 ## Testing
 
+- Unit tests:
+  ```bash
+  PYTHONPATH=$(pwd)/src python -m pytest tests/unit_tests/ --color=yes -n auto
+  ```
 - Functional tests:
   ```bash
   PYTHONPATH=$(pwd)/src python -m pytest tests/functional_tests/ --color=yes -n auto
