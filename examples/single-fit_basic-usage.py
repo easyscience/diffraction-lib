@@ -127,7 +127,7 @@ print(ed.section('Show defined experiments'))
 project.experiments.show_names()
 
 print(ed.section('Show measured data'))
-project.plot_meas_vs_calc(expt_name='hrpt', x_min=65, x_max=68)
+project.plot_meas(expt_name='hrpt', x_min=65, x_max=68)
 
 print(ed.section('Modify experimental parameters'))
 
