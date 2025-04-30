@@ -5,6 +5,7 @@ from easydiffraction import (
     SampleModel,
     Experiment
 )
+import easydiffraction as ed
 
 
 def test_single_fit_neutron_pd_cwl_lbco() -> None:
@@ -30,8 +31,6 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     expt.linked_phases.add('lbco', scale=5.0)
     expt.background.add(x=10, y=170)
     expt.background.add(x=165, y=170)
-    #expt.background.add(x=10, y=168.345)
-    #expt.background.add(x=165, y=175.688)
     expt.show_as_cif()
 
     # Create project and add sample model and experiments
@@ -45,7 +44,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     project.analysis.current_minimizer = 'lmfit (leastsq)'
 
     # Compare measured and calculated patterns
-    project.analysis.show_meas_vs_calc_chart('hrpt', 65, 68)
+    project.plot_meas_vs_calc('hrpt', 65, 68)
 
     # ------------ 1st fitting ------------
 
@@ -59,7 +58,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
 
     # Start fitting
     project.analysis.fit()
-    project.analysis.show_meas_vs_calc_chart('hrpt', 65, 68)
+    project.plot_meas_vs_calc('hrpt', 65, 68)
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 5.79, decimal=1)
@@ -75,7 +74,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
 
     # Start fitting
     project.analysis.fit()
-    project.analysis.show_meas_vs_calc_chart('hrpt', 65, 68)
+    project.plot_meas_vs_calc('hrpt', 65, 68)
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 4.41, decimal=1)
@@ -91,8 +90,8 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
 
     # Start fitting
     project.analysis.fit()
-    project.analysis.show_meas_vs_calc_chart('hrpt', 65, 68, show_residual=True)
-    project.analysis.show_meas_vs_calc_chart('hrpt', 38, 41, show_residual=True)
+    project.plot_meas_vs_calc('hrpt', 65, 68, show_residual=True)
+    project.plot_meas_vs_calc('hrpt', 38, 41, show_residual=True)
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 1.3, decimal=1)
@@ -138,7 +137,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     project.analysis.current_minimizer = 'lmfit (leastsq)'
 
     # Compare measured and calculated patterns
-    project.analysis.show_meas_vs_calc_chart('sepd', 23200, 23700)
+    project.plot_meas_vs_calc('sepd', 23200, 23700)
 
     # ------------ 1st fitting ------------
 
@@ -150,7 +149,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
     # Start fitting
     project.analysis.fit()
-    project.analysis.show_meas_vs_calc_chart('sepd', 23200, 23700)
+    project.plot_meas_vs_calc('sepd', 23200, 23700)
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 66.72, decimal=1)
@@ -164,7 +163,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
     # Start fitting
     project.analysis.fit()
-    project.analysis.show_meas_vs_calc_chart('sepd', 23200, 23700, show_residual=True)
+    project.plot_meas_vs_calc('sepd', 23200, 23700, show_residual=True)
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 3.38, decimal=1)
@@ -183,7 +182,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
     # Start fitting
     project.analysis.fit()
-    project.analysis.show_meas_vs_calc_chart('sepd', 23200, 23700, show_residual=True)
+    project.plot_meas_vs_calc('sepd', 23200, 23700, show_residual=True)
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 3.21, decimal=1)
@@ -196,7 +195,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
     # Start fitting
     project.analysis.fit()
-    project.analysis.show_meas_vs_calc_chart('sepd', 23200, 23700, show_residual=True)
+    project.plot_meas_vs_calc('sepd', 23200, 23700, show_residual=True)
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 3.19, decimal=1)
@@ -276,7 +275,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     project.analysis.current_minimizer = 'lmfit (leastsq)'
 
     # Compare measured and calculated patterns
-    project.analysis.show_meas_vs_calc_chart('wish', 37000, 40000)
+    project.plot_meas_vs_calc('wish', 37000, 40000)
 
     # ------------ 1st fitting ------------
 
@@ -288,7 +287,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
 
     # Start fitting
     project.analysis.fit()
-    project.analysis.show_meas_vs_calc_chart('wish', 37000, 40000)
+    project.plot_meas_vs_calc('wish', 37000, 40000)
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 78.40, decimal=1)
@@ -304,13 +303,246 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
 
     # Start fitting
     project.analysis.fit()
-    project.analysis.show_meas_vs_calc_chart('wish', 37000, 40000, show_residual=True)
+    project.plot_meas_vs_calc('wish', 37000, 40000, show_residual=True)
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 15.59, decimal=1)
+
+
+def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
+    print(ed.chapter('Step 1: Create a Project'))
+
+    # Create a new project
+    project = ed.Project(name='PDF_refinement')
+
+    # Define project info
+    project.info.title = 'PDF refinement of Ni from total neutron diffraction'
+    project.info.description = '''This project demonstrates simple refinement of 
+    neutron diffraction data, measured using constant wavelength instruments.
+    The objective is to fit the pair-distribution function of NaCl.'''
+
+    # Show project metadata
+    project.info.show_as_cif()
+
+    print(ed.chapter('Step 2: Add Sample Model'))
+
+    project.sample_models.add(name='nacl')
+
+    print(ed.section('Modify sample model parameters'))
+
+    project.sample_models['nacl'].space_group.name_h_m = 'F m -3 m'
+    project.sample_models['nacl'].space_group.it_coordinate_system_code = '1'
+
+    project.sample_models['nacl'].cell.length_a = 5.62
+
+    project.sample_models['nacl'].atom_sites.add(label='Na',
+                                                 type_symbol='Na',
+                                                 fract_x=0,
+                                                 fract_y=0,
+                                                 fract_z=0,
+                                                 wyckoff_letter='a',
+                                                 b_iso=1.0)
+    project.sample_models['nacl'].atom_sites.add(label='Cl',
+                                                 type_symbol='Cl',
+                                                 fract_x=0.5,
+                                                 fract_y=0.5,
+                                                 fract_z=0.5,
+                                                 wyckoff_letter='b',
+                                                 b_iso=1.0)
+
+    print(ed.section('Show sample model as CIF'))
+    project.sample_models['nacl'].show_as_cif()
+
+    print(ed.chapter('Step 3: Add Experiments (Instrument models and measured data)'))
+
+    # Load measured data and create a new experiment
+    project.experiments.add(name='xray_pdf',
+                            sample_form='powder',
+                            beam_mode='constant wavelength',
+                            radiation_probe='xray',
+                            scattering_type='total',
+                            data_path='examples/data/NaCl.gr')
+
+    print(ed.section('Setup data plotter'))
+    project.plotter.show_config()
+    project.plotter.show_supported_engines()
+    # project.plotter.engine = 'plotly'
+    project.plotter.x_min = 3.5
+    project.plotter.x_max = 4.5
+
+    print(ed.section('Show measured data'))
+    project.plot_meas(expt_name='xray_pdf')
+
+    print(ed.section('Modify experimental parameters'))
+
+    # Peak profile parameters
+    project.experiments['xray_pdf'].show_supported_peak_profile_types()
+    project.experiments['xray_pdf'].show_current_peak_profile_type()
+    project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'
+    project.experiments['xray_pdf'].peak.damp_q = 0.03
+    project.experiments['xray_pdf'].peak.broad_q = 0
+    project.experiments['xray_pdf'].peak.cutoff_q = 21
+    project.experiments['xray_pdf'].peak.sharp_delta_1 = 0
+    project.experiments['xray_pdf'].peak.sharp_delta_2 = 5
+    project.experiments['xray_pdf'].peak.damp_particle_diameter = 0
+
+    # Link sample model (defined in the previous step) to the experiment
+    project.experiments['xray_pdf'].linked_phases.add(id='nacl', scale=1.0)
+
+    # Show experiment as CIF
+    project.experiments['xray_pdf'].show_as_cif()
+
+    print(ed.chapter('Step 4: Analysis'))
+
+    print(ed.section('Set calculator'))
+    project.analysis.show_supported_calculators()  # Need to hide the ones not suitable for PDF
+    project.analysis.show_current_calculator()
+    project.analysis.current_calculator = 'pdffit'
+
+    print(ed.section('Show calculated data'))
+    project.plot_calc(expt_name='xray_pdf')
+
+    print(ed.section('Show calculated vs measured data'))
+    project.plot_meas_vs_calc(expt_name='xray_pdf', show_residual=True)
+
+    print(ed.section('Show all parameters'))
+    project.analysis.show_all_params()
+
+    print(ed.section('Show all fittable parameters'))
+    project.analysis.show_fittable_params()
+
+    print(ed.section('Show only free parameters'))
+    project.analysis.show_free_params()
+
+    print(ed.section('Show how to access parameters in the code'))
+    project.analysis.how_to_access_parameters(show_description=False)
+
+    print(ed.section('Select specific parameters for fitting'))
+    # Sample model parameters
+    project.sample_models['nacl'].cell.length_a.free = True
+    project.sample_models['nacl'].atom_sites['Na'].b_iso.free = True
+    project.sample_models['nacl'].atom_sites['Cl'].b_iso.free = True
+    # Experimental parameters
+    project.experiments['xray_pdf'].linked_phases['nacl'].scale.free = True
+    project.experiments['xray_pdf'].peak.damp_q.free = True
+    project.experiments['xray_pdf'].peak.sharp_delta_2.free = True
+    # Show free parameters after selection
+    project.analysis.show_free_params()
+
+    print(ed.section('Start fitting'))
+    project.analysis.fit()
+
+    print(ed.section('Show data charts after fitting'))
+    project.plot_meas_vs_calc(expt_name='xray_pdf', show_residual=True)
+
+    # Show analysis as CIF
+    project.analysis.show_as_cif()
+
+    print(ed.chapter('Step 5: Summary'))
+    project.summary.show_report()
+
+    # Compare fit quality
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 1.48, decimal=2)
+
+
+def test_single_fit_pdf_neutron_pd_cw_ni():
+    project = ed.Project()
+
+    # Set sample model
+    project.sample_models.add(name='ni')
+    project.sample_models['ni'].space_group.name_h_m.value = 'F m -3 m'
+    project.sample_models['ni'].space_group.it_coordinate_system_code = '1'
+    project.sample_models['ni'].cell.length_a = 3.52387
+    project.sample_models['ni'].atom_sites.add(label='Ni',
+                                               type_symbol='Ni',
+                                               fract_x=0.,
+                                               fract_y=0.,
+                                               fract_z=0.,
+                                               wyckoff_letter='a',
+                                               b_iso=0.5)
+
+    # Set experiment
+    # Data from https://github.com/diffpy/cmi_exchange/blob/main/cmi_scripts/fitNiPDF/ni-q27r100-neutron.gr
+    project.experiments.add(name='pdf',
+                            sample_form='powder',
+                            beam_mode='constant wavelength',
+                            radiation_probe='neutron',
+                            scattering_type='total',
+                            data_path='examples/data/ni-q27r100-neutron_from-2.gr')
+    project.experiments['pdf'].linked_phases.add(id='ni', scale=1.)
+    project.experiments['pdf'].peak.damp_q = 0
+    project.experiments['pdf'].peak.broad_q = 0.03
+    project.experiments['pdf'].peak.cutoff_q = 27.0
+    project.experiments['pdf'].peak.sharp_delta_1 = 0.0
+    project.experiments['pdf'].peak.sharp_delta_2 = 2.0
+    project.experiments['pdf'].peak.damp_particle_diameter = 0
+
+    project.sample_models['ni'].cell.length_a.free = True
+    project.sample_models['ni'].atom_sites['Ni'].b_iso.free = True
+    project.experiments['pdf'].linked_phases['ni'].scale.free = True
+    project.experiments['pdf'].peak.broad_q.free = True
+    project.experiments['pdf'].peak.sharp_delta_2.free = True
+
+    project.analysis.current_calculator = 'pdffit'
+    project.analysis.fit()
+
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 207.1, decimal=1)
+
+
+def test_single_fit_pdf_neutron_pd_tof_si():
+    project = ed.Project()
+
+    # Set sample model
+    project.sample_models.add(name='si')
+    sample_model = project.sample_models['si']
+    sample_model.space_group.name_h_m.value = 'F d -3 m'
+    sample_model.space_group.it_coordinate_system_code = '1'
+    sample_model.cell.length_a = 5.43146
+    sample_model.atom_sites.add(label='Si',
+                                type_symbol='Si',
+                                fract_x=0,
+                                fract_y=0,
+                                fract_z=0,
+                                wyckoff_letter='a',
+                                b_iso=0.5)
+
+    # Set experiment
+    project.experiments.add(name='nomad',
+                            sample_form='powder',
+                            beam_mode='time-of-flight',
+                            radiation_probe='neutron',
+                            scattering_type='total',
+                            data_path='examples/data/NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr')
+    experiment = project.experiments['nomad']
+    experiment.linked_phases.add(id='si', scale=1.)
+    experiment.peak.damp_q = 0.02
+    experiment.peak.broad_q = 0.03
+    experiment.peak.cutoff_q = 35.0
+    experiment.peak.sharp_delta_1 = 0.0
+    experiment.peak.sharp_delta_2 = 4.0
+    experiment.peak.damp_particle_diameter = 0
+
+    # Select fitting parameters
+    project.sample_models['si'].cell.length_a.free = True
+    project.sample_models['si'].atom_sites['Si'].b_iso.free = True
+    experiment.linked_phases['si'].scale.free = True
+    experiment.peak.damp_q.free = True
+    experiment.peak.broad_q.free = True
+    experiment.peak.sharp_delta_1.free = True
+    experiment.peak.sharp_delta_2.free = True
+
+    # Fit
+    project.analysis.current_calculator = 'pdffit'
+    project.analysis.fit()
+
+    # Compare fit quality
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 170.54, decimal=1)
 
 
 if __name__ == '__main__':
     test_single_fit_neutron_pd_cwl_lbco()
     #test_single_fit_neutron_pd_tof_si()
     #test_single_fit_neutron_pd_tof_ncaf()
+    #test_single_fit_pdf_xray_pd_cw_nacl()
+    #test_single_fit_pdf_neutron_pd_cw_ni()
+    #test_single_fit_pdf_neutron_pd_tof_si()

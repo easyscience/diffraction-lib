@@ -2,9 +2,10 @@ from easydiffraction.core.objects import (
     Parameter,
     Component
 )
-from easydiffraction.core.constants import DEFAULT_BEAM_MODE
-from typing import Optional, Type, Dict
-
+from easydiffraction.core.constants import (
+    DEFAULT_SCATTERING_TYPE,
+    DEFAULT_BEAM_MODE
+)
 
 class InstrumentBase(Component):
     @property
@@ -93,21 +94,33 @@ class TimeOfFlightInstrument(InstrumentBase):
 
 
 class InstrumentFactory:
-    _supported: Dict[str, Type[InstrumentBase]] = {
-        "constant wavelength": ConstantWavelengthInstrument,
-        "time-of-flight": TimeOfFlightInstrument
+    _supported = {
+        "bragg": {
+            "constant wavelength": ConstantWavelengthInstrument,
+            "time-of-flight": TimeOfFlightInstrument,
+        }
     }
 
     @classmethod
-    def create(cls, beam_mode: str = DEFAULT_BEAM_MODE) -> InstrumentBase:
-        if beam_mode not in cls._supported:
-            supported = list(cls._supported.keys())
+    def create(cls,
+               scattering_type=DEFAULT_SCATTERING_TYPE,
+               beam_mode=DEFAULT_BEAM_MODE):
 
+        supported_scattering_types = list(cls._supported.keys())
+        if scattering_type not in supported_scattering_types:
             raise ValueError(
-                f"Unsupported beam mode: '{beam_mode}'.\n "
-                f"Supported beam modes are: {supported}"
+                f"Unsupported scattering type: '{scattering_type}'.\n "
+                f"Supported scattering types: {supported_scattering_types}"
             )
 
-        instrument_class: Type[InstrumentBase] = cls._supported[beam_mode]
-        instance: InstrumentBase = instrument_class()
-        return instance
+        supported_beam_modes = list(cls._supported[scattering_type].keys())
+        if beam_mode not in supported_beam_modes:
+            raise ValueError(
+                f"Unsupported beam mode: '{beam_mode}' for scattering type: '{scattering_type}'.\n "
+                f"Supported beam modes: {supported_beam_modes}"
+            )
+
+        instrument_class = cls._supported[scattering_type][beam_mode]
+        instrument_obj = instrument_class()
+
+        return instrument_obj

@@ -33,8 +33,22 @@ Development playground for the new EasyDiffraction API.
   python -c "from pycrysfml import cfml_py_utilities"
   ```
 
+- Install CBLAS library, required for using the Pair Distribution Function feature.
+  This step is required only on Windows.
+  ```bash
+  # Install from the conda-forge channel
+  conda install libcblas -c conda-forge
+
+  # Try to import the module
+  python -c "import diffpy.pdffit2"
+  ```
+
 ## Testing
 
+- Unit tests:
+  ```bash
+  PYTHONPATH=$(pwd)/src python -m pytest tests/unit_tests/ --color=yes -n auto
+  ```
 - Functional tests:
   ```bash
   PYTHONPATH=$(pwd)/src python -m pytest tests/functional_tests/ --color=yes -n auto

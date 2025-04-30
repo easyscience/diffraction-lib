@@ -8,10 +8,7 @@ from easydiffraction.utils.formatting import (
     paragraph,
     warning
 )
-from easydiffraction.utils.chart_plotter import (
-    ChartPlotter,
-    DEFAULT_HEIGHT
-)
+from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.core.objects import (
     Descriptor,
     Parameter
@@ -30,7 +27,7 @@ from .minimizers.minimizer_factory import MinimizerFactory
 class Analysis:
     _calculator = CalculatorFactory.create_calculator('cryspy')
 
-    def __init__(self, project: Project) -> None:
+    def __init__(self, project) -> None:
         self.project = project
         self.aliases = Aliases()
         self.constraints = Constraints()
@@ -340,57 +337,7 @@ class Analysis:
         self.constraints_handler.set_constraints(self.constraints)
         self.constraints_handler.apply()
 
-    def show_calc_chart(self, expt_name: str, x_min: Optional[float] = None, x_max: Optional[float] = None) -> None:
-        self.calculate_pattern(expt_name)
-
-        experiment = self.project.experiments[expt_name]
-        pattern = experiment.datastore.pattern
-
-        plotter = ChartPlotter()
-        plotter.plot(
-            y_values_list=[pattern.calc],
-            x_values=pattern.x,
-            x_min=x_min,
-            x_max=x_max,
-            title=paragraph(f"Calculated data for experiment 🔬 '{expt_name}'"),
-            labels=['calc']
-        )
-
-    def show_meas_vs_calc_chart(self,
-                                expt_name: str,
-                                x_min: Optional[float] = None,
-                                x_max: Optional[float] = None,
-                                show_residual: bool = False,
-                                chart_height: int = DEFAULT_HEIGHT) -> None:
-        experiment = self.project.experiments[expt_name]
-
-        self.calculate_pattern(expt_name)
-
-        pattern = experiment.datastore.pattern
-
-        if pattern.meas is None or pattern.calc is None or pattern.x is None:
-            print(f"No data available for {expt_name}. Cannot display chart.")
-            return
-
-        series = [pattern.meas, pattern.calc]
-        labels = ['meas', 'calc']
-
-        if show_residual:
-            residual = pattern.meas - pattern.calc
-            series.append(residual)
-            labels.append('residual')
-
-        plotter = ChartPlotter(height=chart_height)
-        plotter.plot(
-            y_values_list=series,
-            x_values=pattern.x,
-            x_min=x_min,
-            x_max=x_max,
-            title=paragraph(f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"),
-            labels=labels
-        )
-
-    def fit(self) -> None:
+    def fit(self):
         sample_models = self.project.sample_models
         if not sample_models:
             print("No sample models found in the project. Cannot run fit.")

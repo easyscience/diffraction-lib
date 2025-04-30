@@ -1,4 +1,4 @@
-'''
+"""
 Single Fit Example (Basic Usage)
 
 This example demonstrates the use of the EasyDiffraction API with a simplified,
@@ -11,7 +11,7 @@ and refining parameters.
 Only a single import is required (`import easydiffraction as ed`) and all
 operations are performed through high-level project components such as
 `project.sample_models`, `project.experiments`, and `project.analysis`.
-'''
+"""
 
 import easydiffraction as ed
 
@@ -127,7 +127,7 @@ print(ed.section('Show defined experiments'))
 project.experiments.show_names()
 
 print(ed.section('Show measured data'))
-project.experiments['hrpt'].show_meas_chart(x_min=65, x_max=68)
+project.plot_meas(expt_name='hrpt', x_min=65, x_max=68)
 
 print(ed.section('Modify experimental parameters'))
 
@@ -179,10 +179,10 @@ project.analysis.current_calculator = 'cryspy'  # Default
 #project.analysis.current_calculator = 'crysfml'
 
 print(ed.section('Show calculated data'))
-project.analysis.show_calc_chart(expt_name='hrpt', x_min=65, x_max=68)
+project.plot_calc(expt_name='hrpt', x_min=65, x_max=68)
 
 print(ed.section('Show calculated vs measured data'))
-project.analysis.show_meas_vs_calc_chart(expt_name='hrpt', x_min=65, x_max=68)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=65, x_max=68)
 
 # 1. All parameters include both
 #    * Descriptors (not subject to fitting), such as space group names, etc.
@@ -233,7 +233,7 @@ print(ed.section('Start fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after 1st fitting'))
-project.analysis.show_meas_vs_calc_chart(expt_name='hrpt', x_min=65, x_max=68)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=65, x_max=68)
 
 # ------------ 2nd fitting ------------
 
@@ -250,7 +250,7 @@ print(ed.section('Start 2nd fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after 2nd fitting'))
-project.analysis.show_meas_vs_calc_chart(expt_name='hrpt', x_min=65, x_max=68, show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=65, x_max=68, show_residual=True)
 
 # ------------ 3rd fitting ------------
 
@@ -267,7 +267,7 @@ print(ed.section('Start 3rd fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after 3rd fitting'))
-project.analysis.show_meas_vs_calc_chart(expt_name='hrpt', x_min=65, x_max=68, show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=65, x_max=68, show_residual=True)
 
 # ------------ 4th fitting ------------
 
@@ -301,7 +301,7 @@ print(ed.section('Start 4th fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after 4th fitting'))
-project.analysis.show_meas_vs_calc_chart(expt_name='hrpt', x_min=65, x_max=68, show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=65, x_max=68, show_residual=True)
 
 # ------------ 5th fitting ------------
 
@@ -333,7 +333,7 @@ print(ed.section('Start 5th fitting'))
 project.analysis.fit()
 
 print(ed.section('Show data charts after 5th fitting'))
-project.analysis.show_meas_vs_calc_chart(expt_name='hrpt', x_min=65, x_max=68, show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=65, x_max=68, show_residual=True)
 
 # Show analysis as CIF
 project.analysis.show_as_cif()

@@ -16,14 +16,14 @@ class Summary:
     about the fitted model, experiments, and analysis results.
     """
 
-    def __init__(self, project: Project) -> None:
+    def __init__(self, project) -> None:
         """
         Initialize the summary with a reference to the project.
 
         Args:
             project: The Project instance this summary belongs to.
         """
-        self.project: Project = project
+        self.project = project
 
     # ------------------------------------------
     #  Report Generation
@@ -90,27 +90,33 @@ class Summary:
             print(paragraph("Experiment type"))
             print(f'{expt.type.sample_form.value}, {expt.type.radiation_probe.value}, {expt.type.beam_mode.value}')
 
-            print(paragraph("Wavelength"))
-            print(expt.instrument.setup_wavelength.value)
+            if hasattr(expt, 'instrument'):
+                if hasattr(expt.instrument, 'setup_wavelength'):
+                    print(paragraph("Wavelength"))
+                    print(expt.instrument.setup_wavelength.value)
+                if hasattr(expt.instrument, 'calib_twotheta_offset'):
+                    print(paragraph("2θ offset"))
+                    print(expt.instrument.calib_twotheta_offset.value)
 
-            print(paragraph("2θ offset"))
-            print(expt.instrument.calib_twotheta_offset.value)
+            if hasattr(expt, 'peak_profile_type'):
+                print(paragraph("Profile type"))
+                print(expt.peak_profile_type)
 
-            print(paragraph("Profile type"))
-            print(expt.peak_profile_type)
+            if hasattr(expt, 'peak'):
+                if hasattr(expt.peak, 'broad_gauss_u'):
+                    print(paragraph("Peak broadening (Gaussian)"))
+                    print(tabulate([
+                        ["U", expt.peak.broad_gauss_u.value],
+                        ["V", expt.peak.broad_gauss_v.value],
+                        ["W", expt.peak.broad_gauss_w.value]
+                    ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
 
-            print(paragraph("Peak broadening (Gaussian)"))
-            print(tabulate([
-                ["U", expt.peak.broad_gauss_u.value],
-                ["V", expt.peak.broad_gauss_v.value],
-                ["W", expt.peak.broad_gauss_w.value]
-            ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
-
-            print(paragraph("Peak broadening (Lorentzian)"))
-            print(tabulate([
-                ["X", expt.peak.broad_lorentz_x.value],
-                ["Y", expt.peak.broad_lorentz_y.value]
-            ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
+                if hasattr(expt.peak, 'broad_lorentz_x'):
+                    print(paragraph("Peak broadening (Lorentzian)"))
+                    print(tabulate([
+                        ["X", expt.peak.broad_lorentz_x.value],
+                        ["Y", expt.peak.broad_lorentz_y.value]
+                    ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
 
         # ------------------------------------------
         print(section("Fitting"))

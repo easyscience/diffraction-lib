@@ -142,5 +142,5 @@ def test_peak_factory_create_invalid_beam_mode():
 
 
 def test_peak_factory_create_invalid_profile_type():
-    with pytest.raises(ValueError, match="Unsupported profile type 'invalid' for mode 'constant wavelength'.*"):
+    with pytest.raises(ValueError, match="Unsupported profile type 'invalid' for beam mode 'constant wavelength'.*"):
         PeakFactory.create(beam_mode="constant wavelength", profile_type="invalid")

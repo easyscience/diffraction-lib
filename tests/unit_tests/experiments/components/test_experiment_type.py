@@ -7,7 +7,8 @@ def test_experiment_type_initialization():
     experiment_type = ExperimentType(
         sample_form="powder",
         beam_mode="CW",
-        radiation_probe="neutron"
+        radiation_probe="neutron",
+        scattering_type="bragg"
     )
 
     assert isinstance(experiment_type.sample_form, Descriptor)
@@ -30,7 +31,8 @@ def test_experiment_type_properties():
     experiment_type = ExperimentType(
         sample_form="single_crystal",
         beam_mode="TOF",
-        radiation_probe="x-ray"
+        radiation_probe="x-ray",
+        scattering_type="bragg"
     )
 
     assert experiment_type.category_key == "expt_type"
@@ -45,7 +47,8 @@ def no_test_experiment_type_locking_attributes():
     experiment_type = ExperimentType(
         sample_form="powder",
         beam_mode="CW",
-        radiation_probe="neutron"
+        radiation_probe="neutron",
+        scattering_type="bragg"
     )
     experiment_type._locked = True  # Disallow adding new attributes
     experiment_type.new_attribute = "value"

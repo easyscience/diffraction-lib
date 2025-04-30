@@ -16,7 +16,8 @@ class ExperimentType(Component):
     def __init__(self,
                  sample_form: str,
                  beam_mode: str,
-                 radiation_probe: str) -> None:
+                 radiation_probe: str,
+                 scattering_type: str):
         super().__init__()
 
         self.sample_form: Descriptor = Descriptor(
@@ -36,6 +37,13 @@ class ExperimentType(Component):
             name="radiation_probe",
             cif_name="radiation_probe",
             description="Specifies whether the measurement uses neutrons or X-rays"
+        )
+        self.scattering_type: Descriptor = Descriptor(
+            value=scattering_type,
+            name="scattering_type",
+            cif_name="scattering_type",
+            description="Specifies whether the experiment uses Bragg scattering (for conventional structure refinement) or "
+                        "total scattering (for pair distribution function analysis - PDF)"
         )
 
         # Lock further attribute additions to prevent

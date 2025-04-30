@@ -13,7 +13,8 @@ from easydiffraction.experiments.components.experiment_type import ExperimentTyp
 from easydiffraction.core.constants import (
     DEFAULT_SAMPLE_FORM,
     DEFAULT_BEAM_MODE,
-    DEFAULT_RADIATION_PROBE
+    DEFAULT_RADIATION_PROBE,
+    DEFAULT_SCATTERING_TYPE
 )
 
 
@@ -22,7 +23,8 @@ def expt_type():
     return ExperimentType(
         sample_form=DEFAULT_SAMPLE_FORM,
         beam_mode=DEFAULT_BEAM_MODE,
-        radiation_probe="xray"
+        radiation_probe='xray',
+        scattering_type='bragg'
     )
 
 
@@ -53,8 +55,9 @@ def test_powder_experiment_initialization(expt_type):
     experiment = PowderExperiment(name="PowderTest", type=expt_type)
     assert experiment.name == "PowderTest"
     assert experiment.type == expt_type
-    assert experiment.peak is not None
     assert experiment.background is not None
+    assert experiment.peak is not None
+    assert experiment.linked_phases is not None
 
 
 def test_powder_experiment_load_ascii_data(expt_type):
@@ -67,16 +70,6 @@ def test_powder_experiment_load_ascii_data(expt_type):
     assert np.array_equal(experiment.datastore.pattern.x, mock_data[:, 0])
     assert np.array_equal(experiment.datastore.pattern.meas, mock_data[:, 1])
     assert np.array_equal(experiment.datastore.pattern.meas_su, mock_data[:, 2])
-
-
-def test_powder_experiment_show_meas_chart(expt_type):
-    experiment = PowderExperiment(name="PowderTest", type=expt_type)
-    experiment.datastore = MagicMock()
-    experiment.datastore.pattern.x = [1, 2, 3]
-    experiment.datastore.pattern.meas = [10, 20, 30]
-    with patch("easydiffraction.utils.chart_plotter.ChartPlotter.plot") as mock_plot:
-        experiment.show_meas_chart()
-        mock_plot.assert_called_once()
 
 
 def test_single_crystal_experiment_initialization(expt_type):
@@ -99,6 +92,7 @@ def test_experiment_factory_create_powder():
         sample_form="powder",
         beam_mode=DEFAULT_BEAM_MODE,
         radiation_probe=DEFAULT_RADIATION_PROBE,
+        scattering_type=DEFAULT_SCATTERING_TYPE
     )
     assert isinstance(experiment, PowderExperiment)
     assert experiment.name == "PowderTest"

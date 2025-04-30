@@ -54,7 +54,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     project.analysis.current_minimizer = 'lmfit (leastsq)'
 
     # Compare measured and calculated patterns
-    project.analysis.show_meas_vs_calc_chart('hrpt', 48, 51)
+    project.plot_meas_vs_calc('hrpt', 48, 51)
 
     # ------------ 1st fitting ------------
 
@@ -67,7 +67,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
 
     # Start fitting
     project.analysis.fit()
-    project.analysis.show_meas_vs_calc_chart('hrpt', 48, 51)
+    project.plot_meas_vs_calc('hrpt', 48, 51)
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 51.57, decimal=1)
@@ -85,7 +85,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
 
     # Start fitting
     project.analysis.fit()
-    project.analysis.show_meas_vs_calc_chart('hrpt', 48, 51)
+    project.plot_meas_vs_calc('hrpt', 48, 51)
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 12.41, decimal=1)
@@ -102,7 +102,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
 
     # Start fitting
     project.analysis.fit()
-    project.analysis.show_meas_vs_calc_chart('hrpt', 48, 51)
+    project.plot_meas_vs_calc('hrpt', 48, 51)
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 4.34, decimal=1)
@@ -120,7 +120,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     # Start fitting
     project.analysis.fit()
     project.analysis.show_fittable_params()
-    project.analysis.show_meas_vs_calc_chart('hrpt', 48, 51, show_residual=True)
+    project.plot_meas_vs_calc('hrpt', 48, 51, show_residual=True)
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, 2.11, decimal=1)

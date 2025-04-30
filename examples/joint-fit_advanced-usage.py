@@ -1,11 +1,11 @@
-'''
+"""
 Joint Refinement Example (Advanced Usage)
 
 This example demonstrates a more flexible and advanced usage of the
 EasyDiffraction library by explicitly creating and configuring some objects.
 It is more suitable for users comfortable with Python programming and those
 interested in custom workflows.
-'''
+"""
 
 from easydiffraction import (
     Project,

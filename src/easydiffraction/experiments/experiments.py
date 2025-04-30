@@ -25,18 +25,21 @@ class Experiments(Collection):
 
     def add(
         self,
-        experiment: Optional[BaseExperiment] = None,
-        name: Optional[str] = None,
-        sample_form: Optional[str] = None,
-        beam_mode: Optional[str] = None,
-        radiation_probe: Optional[str] = None,
-        cif_path: Optional[str] = None,
-        cif_str: Optional[str] = None,
-        data_path: Optional[str] = None
-    ) -> None:
+        experiment=None,
+        name=None,
+        sample_form=None,
+        beam_mode=None,
+        radiation_probe=None,
+        scattering_type=None,
+        cif_path=None,
+        cif_str=None,
+        data_path=None
+    ):
         """
         Add a new experiment to the collection.
         """
+        if scattering_type is None:
+            scattering_type = "bragg"
         if experiment:
             self._add_prebuilt_experiment(experiment)
         elif cif_path:
@@ -49,6 +52,7 @@ class Experiments(Collection):
                 sample_form=sample_form,
                 beam_mode=beam_mode,
                 radiation_probe=radiation_probe,
+                scattering_type=scattering_type,
                 data_path=data_path
             )
         else:
@@ -66,14 +70,13 @@ class Experiments(Collection):
         print("Loading Experiment from CIF string...")
         raise NotImplementedError("CIF loading not implemented.")
 
-    def _add_from_data_path(
-        self,
-        name: str,
-        sample_form: str,
-        beam_mode: str,
-        radiation_probe: str,
-        data_path: str
-    ) -> None:
+    def _add_from_data_path(self,
+                            name,
+                            sample_form,
+                            beam_mode,
+                            radiation_probe,
+                            scattering_type,
+                            data_path):
         """
         Load an experiment from raw data ASCII file.
         """
@@ -83,7 +86,8 @@ class Experiments(Collection):
             name=name,
             sample_form=sample_form,
             beam_mode=beam_mode,
-            radiation_probe=radiation_probe
+            radiation_probe=radiation_probe,
+            scattering_type=scattering_type
         )
         experiment._load_ascii_data_to_experiment(data_path)
         self._experiments[experiment.name] = experiment

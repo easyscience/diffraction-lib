@@ -72,7 +72,9 @@ class CalculatorBase(ABC):
             y_calc_scaled += sample_model_y_calc_scaled
 
         # Calculate background contribution
-        y_bkg = experiment.background.calculate(x_data)
+        y_bkg = np.zeros_like(x_data)
+        if hasattr(experiment, 'background'):
+            y_bkg = experiment.background.calculate(x_data)
         experiment.datastore.pattern.bkg = y_bkg
 
         # Calculate total pattern

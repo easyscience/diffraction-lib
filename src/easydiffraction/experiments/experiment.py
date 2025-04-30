@@ -1,8 +1,8 @@
 import numpy as np
 import tabulate
+from typing import List, Type, Optional, Dict, Any
 
-from abc import ABC, abstractmethod
-from typing import Optional, List, Dict, Type
+from abc import abstractmethod
 
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.experiments.components.experiment_type import ExperimentType
@@ -17,17 +17,35 @@ from easydiffraction.experiments.collections.background import BackgroundFactory
 from easydiffraction.experiments.collections.datastore import DatastoreFactory
 
 from easydiffraction.utils.formatting import paragraph, warning
-from easydiffraction.utils.chart_plotter import ChartPlotter
 
 from easydiffraction.core.objects import Datablock
-
 from easydiffraction.core.constants import (
     DEFAULT_SAMPLE_FORM,
     DEFAULT_BEAM_MODE,
     DEFAULT_RADIATION_PROBE,
     DEFAULT_PEAK_PROFILE_TYPE,
-    DEFAULT_BACKGROUND_TYPE
+    DEFAULT_BACKGROUND_TYPE,
+    DEFAULT_SCATTERING_TYPE
 )
+
+
+class InstrumentMixin:
+    def __init__(self, *args, **kwargs):
+        expt_type = kwargs.get("type")
+        super().__init__(*args, **kwargs)
+        self._instrument = InstrumentFactory.create(
+            scattering_type=expt_type.scattering_type.value,
+            beam_mode=expt_type.beam_mode.value
+        )
+
+    @property
+    def instrument(self):
+        return self._instrument
+
+    @instrument.setter
+    @enforce_type
+    def instrument(self, new_instrument: InstrumentBase):
+        self._instrument = new_instrument
 
 
 class BaseExperiment(Datablock):
@@ -41,12 +59,9 @@ class BaseExperiment(Datablock):
     #  2. It is not very clear what it refers to.
     def __init__(self,
                  name: str,
-                 type: ExperimentType) -> None:
-        super().__init__()
-        self._name: str = name
-        self.type: ExperimentType = type
-        self.instrument = InstrumentFactory.create(
-            beam_mode=self.type.beam_mode.value)
+                 type: ExperimentType):
+        self.name = name
+        self.type = type
         self.datastore = DatastoreFactory.create(
             sample_form=self.type.sample_form.value,
             experiment=self)
@@ -77,19 +92,6 @@ class BaseExperiment(Datablock):
     def type(self, new_experiment_type: ExperimentType):
         self._type = new_experiment_type
 
-    # ----------
-    # Instrument
-    # ----------
-
-    @property
-    def instrument(self):
-        return self._instrument
-
-    @instrument.setter
-    @enforce_type
-    def instrument(self, new_instrument: InstrumentBase):
-        self._instrument = new_instrument
-
     # ----------------
     # Misc. Need to be sorted
     # ----------------
@@ -107,7 +109,8 @@ class BaseExperiment(Datablock):
         cif_lines += ["", self.type.as_cif()]
 
         # Instrument setup and calibration
-        cif_lines += ["", self.instrument.as_cif()]
+        if hasattr(self, "instrument"):
+            cif_lines += ["", self.instrument.as_cif()]
 
         # Peak profile, broadening and asymmetry
         if hasattr(self, "peak"):
@@ -169,15 +172,75 @@ class BaseExperiment(Datablock):
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         pass
 
+
+class BasePowderExperiment(BaseExperiment):
+    """
+    Base class for all powder experiments.
+    """
+
+    def __init__(self,
+                 name: str,
+                 type: ExperimentType) -> None:
+        super().__init__(name=name,
+                         type=type)
+
+        self._peak_profile_type: str = DEFAULT_PEAK_PROFILE_TYPE[self.type.scattering_type.value][self.type.beam_mode.value]
+        self.peak = PeakFactory.create(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            profile_type=self._peak_profile_type)
+
+        self.linked_phases = LinkedPhases()
+
     @abstractmethod
-    def show_meas_chart(self, x_min: Optional[float] = None, x_max: Optional[float] = None) -> None:
-        """
-        Abstract method to display data chart. Should be implemented in specific experiment mixins.
-        """
-        raise NotImplementedError("show_meas_chart() must be implemented in the subclass")
+    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+        pass
+
+    @property
+    def peak_profile_type(self):
+        return self._peak_profile_type
+
+    @peak_profile_type.setter
+    def peak_profile_type(self, new_type: str):
+        if new_type not in PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value]:
+            supported_types = list(PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].keys())
+            print(warning(f"Unsupported peak profile '{new_type}'"))
+            print(f'Supported peak profiles: {supported_types}')
+            print(f"For more information, use 'show_supported_peak_profile_types()'")
+            return
+        self.peak = PeakFactory.create(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            profile_type=new_type)
+        self._peak_profile_type = new_type
+        print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
+        print(new_type)
+
+    def show_supported_peak_profile_types(self):
+        header = ["Peak profile type", "Description"]
+        table_data = []
+
+        for name, config in PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].items():
+            description = getattr(config, '_description', 'No description provided.')
+            table_data.append([name, description])
+
+        print(paragraph("Supported peak profile types"))
+        print(tabulate.tabulate(
+            table_data,
+            headers=header,
+            tablefmt="fancy_outline",
+            numalign="left",
+            stralign="left",
+            showindex=False
+        ))
+
+    def show_current_peak_profile_type(self):
+        print(paragraph("Current peak profile type"))
+        print(self.peak_profile_type)
 
 
-class PowderExperiment(BaseExperiment):
+class PowderExperiment(InstrumentMixin,
+                       BasePowderExperiment):
     """
     Powder experiment class with specific attributes.
     Wraps background, peak profile, and linked phases.
@@ -188,14 +251,10 @@ class PowderExperiment(BaseExperiment):
                  type: ExperimentType) -> None:
         super().__init__(name=name,
                          type=type)
+
         self._background_type: str = DEFAULT_BACKGROUND_TYPE
-        self._peak_profile_type: str = DEFAULT_PEAK_PROFILE_TYPE
         self.background = BackgroundFactory.create(
             background_type=self.background_type)
-        self.peak = PeakFactory.create(
-            beam_mode=self.type.beam_mode.value,
-            profile_type=self.peak_profile_type)
-        self.linked_phases = LinkedPhases()
 
     # -------------
     # Measured data
@@ -232,42 +291,11 @@ class PowderExperiment(BaseExperiment):
         print(paragraph("Data loaded successfully"))
         print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
 
-    def show_meas_chart(self, x_min: Optional[float] = None, x_max: Optional[float] = None) -> None:
-        pattern = self.datastore.pattern
-
-        if pattern.meas is None or pattern.x is None:
-            print(f"No measured data available for experiment {self.name}")
-            return
-
-        plotter = ChartPlotter()
-        plotter.plot(
-            y_values_list=[pattern.meas],
-            x_values=pattern.x,
-            x_min=x_min,
-            x_max=x_max,
-            title=paragraph(f"Measured data for experiment 🔬 '{self.name}'"),
-            labels=['meas']
-        )
-
-    # ----------
-    # Background
-    # -----------
-
-    @property
-    def background(self):
-        return self._background
-
-    @background.setter
-    def background(self, new_background):
-        self._background = new_background
-        #self._background.datablock_id = self.name
-
     @property
     def background_type(self):
         return self._background_type
 
     @background_type.setter
-    # TODO: check new_type type
     def background_type(self, new_type):
         if new_type not in BackgroundFactory._supported:
             supported_types = list(BackgroundFactory._supported.keys())
@@ -275,11 +303,10 @@ class PowderExperiment(BaseExperiment):
             print(f'Supported background types: {supported_types}')
             print(f"For more information, use 'show_supported_background_types()'")
             return
+        self.background = BackgroundFactory.create(new_type)
         self._background_type = new_type
         print(paragraph(f"Background type for experiment '{self.name}' changed to"))
         print(new_type)
-        # Recreate the background object with the new type
-        self.background = BackgroundFactory.create(new_type)
 
     def show_supported_background_types(self):
         header = ["Background type", "Description"]
@@ -303,72 +330,60 @@ class PowderExperiment(BaseExperiment):
         print(paragraph("Current background type"))
         print(self.background_type)
 
-    # ----
-    # Peak
-    # ----
+# TODO: Refactor this class to reuse PowderExperiment
+# TODO: This is not a specific experiment, but rather processed data from
+#  PowderExperiment. So, we should think of a better design.
+class PairDistributionFunctionExperiment(BasePowderExperiment):
+    """PDF experiment class with specific attributes."""
 
-    @property
-    def peak(self):
-        return self._peak
+    def __init__(self,
+                 name: str,
+                 type: ExperimentType):
+        super().__init__(name=name,
+                         type=type)
 
-    @peak.setter
-    # TODO: check new_peak type
-    def peak(self, new_peak):
-        self._peak = new_peak
+    def _load_ascii_data_to_experiment(self, data_path):
+        """
+        Loads x, y, sy values from an ASCII data file into the experiment.
 
-    @property
-    def peak_profile_type(self) -> str:
-        return self._peak_profile_type
+        The file must be structured as:
+            x  y  sy
+        """
+        try:
+            from diffpy.utils.parsers.loaddata import loadData
+        except ImportError:
+            raise ImportError("diffpy module not found.")
+        try:
+            data = loadData(data_path)
+        except Exception as e:
+            raise IOError(f"Failed to read data from {data_path}: {e}")
 
-    @peak_profile_type.setter
-    def peak_profile_type(self, new_type: str) -> None:
-        if new_type not in PeakFactory._supported[self.type.beam_mode.value]:
-            supported_types = list(PeakFactory._supported[self.type.beam_mode.value].keys())
-            print(warning(f"Unsupported peak profile '{new_type}'"))
-            print(f'Supported peak profiles: {supported_types}')
-            print(f"For more information, use 'show_supported_peak_profile_types()'")
-            return
-        self._peak_profile_type = new_type
-        print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
-        print(new_type)
-        # Recreate the peak object with the new type
-        self.peak = PeakFactory.create(beam_mode=self.type.beam_mode.value,
-                                       profile_type=new_type)
+        if data.shape[1] < 2:
+            raise ValueError("Data file must have at least two columns: x and y.")
 
-    def show_supported_peak_profile_types(self) -> None:
-        header: List[str] = ["Peak profile type", "Description"]
-        table_data: List[List[str]] = []
+        default_sy = 0.03
+        if data.shape[1] < 3:
+            print(f"Warning: No uncertainty (sy) column provided. Defaulting to {default_sy}.")
 
-        for name, config in PeakFactory._supported[self.type.beam_mode.value].items():
-            description: str = getattr(config, '_description', 'No description provided.')
-            table_data.append([name, description])
+        # Extract x, y, and sy data
+        x = data[:, 0]
+        # We should also add sx = data[:, 2] to capture the e.s.d. of x. It
+        # might be useful in future.
+        y = data[:, 1]
+        # Using sqrt isn’t appropriate here, as the y-scale isn’t raw counts
+        # and includes both positive and negative values. For now, set the
+        # e.s.d. to a fixed value of 0.03 if it’s not included in the measured
+        # data file. We should improve this later.
+        #sy = data[:, 3] if data.shape[1] > 2 else np.sqrt(y)
+        sy = data[:, 2] if data.shape[1] > 2 else np.full_like(y, fill_value=default_sy)
 
-        print(paragraph("Supported peak profile types"))
-        print(tabulate.tabulate(
-            table_data,
-            headers=header,
-            tablefmt="fancy_outline",
-            numalign="left",
-            stralign="left",
-            showindex=False
-        ))
+        # Attach the data to the experiment's datastore
+        self.datastore.pattern.x = x
+        self.datastore.pattern.meas = y
+        self.datastore.pattern.meas_su = sy
 
-    def show_current_peak_profile_type(self) -> None:
-        print(paragraph("Current peak profile type"))
-        print(self.peak_profile_type)
-
-    # -------------
-    # Linked phases
-    # -------------
-
-    @property
-    def linked_phases(self):
-        return self._linked_phases
-
-    @linked_phases.setter
-    @enforce_type
-    def linked_phases(self, new_linked_phases: LinkedPhases):
-        self._linked_phases = new_linked_phases
+        print(paragraph("Data loaded successfully"))
+        print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
 
 
 class SingleCrystalExperiment(BaseExperiment):
@@ -387,35 +402,54 @@ class SingleCrystalExperiment(BaseExperiment):
 
 class ExperimentFactory:
     """Creates Experiment instances with only relevant attributes."""
-    _supported: Dict[str, Type[BaseExperiment]] = {
-        "powder": PowderExperiment,
-        "single crystal": SingleCrystalExperiment
+
+    _supported = {
+        "bragg": {
+            "powder": PowderExperiment,
+            "single crystal": SingleCrystalExperiment,
+        },
+        "total": {
+            "powder": PairDistributionFunctionExperiment,
+        }
     }
 
     @classmethod
     def create(cls,
                name: str,
-               sample_form: str,
-               beam_mode: str,
-               radiation_probe: str) -> BaseExperiment:
-        expt_type: ExperimentType = ExperimentType(sample_form=sample_form,
-                                                   beam_mode=beam_mode,
-                                                   radiation_probe=radiation_probe)
-        expt_class: Type[BaseExperiment] = cls._supported[sample_form]
-        instance: BaseExperiment = expt_class(name=name, type=expt_type)
-        return instance
+               sample_form: DEFAULT_SAMPLE_FORM,
+               beam_mode: DEFAULT_BEAM_MODE,
+               radiation_probe: DEFAULT_RADIATION_PROBE,
+               scattering_type: DEFAULT_SCATTERING_TYPE,
+               ) -> BaseExperiment:
+
+        # TODO: Add checks for expt_type and expt_class
+        expt_type = ExperimentType(sample_form=sample_form,
+                                   beam_mode=beam_mode,
+                                   radiation_probe=radiation_probe,
+                                   scattering_type=scattering_type)
+
+        expt_class = cls._supported[scattering_type][sample_form]
+        expt_obj = expt_class(name=name, type=expt_type)
+
+        return expt_obj
 
 
+# User exposed API for convenience
+# TODO: Refactor based on the implementation of method add() in class Experiments
+# TODO: Think of where to keep default values for sample_form, beam_mode, radiation_probe, as they are also defined in the
+#  class ExperimentType
 def Experiment(name: str,
                sample_form: str = DEFAULT_SAMPLE_FORM,
                beam_mode: str = DEFAULT_BEAM_MODE,
                radiation_probe: str = DEFAULT_RADIATION_PROBE,
-               data_path: Optional[str] = None) -> BaseExperiment:
-    experiment: BaseExperiment = ExperimentFactory.create(
+               scattering_type: str = DEFAULT_SCATTERING_TYPE,
+               data_path: str = None):
+    experiment = ExperimentFactory.create(
         name=name,
         sample_form=sample_form,
         beam_mode=beam_mode,
-        radiation_probe=radiation_probe
+        radiation_probe=radiation_probe,
+        scattering_type=scattering_type
     )
     if data_path:
         experiment._load_ascii_data_to_experiment(data_path)
