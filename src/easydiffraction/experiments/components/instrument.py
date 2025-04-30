@@ -93,34 +93,11 @@ class TimeOfFlightInstrument(InstrumentBase):
         self._locked: bool = True
 
 
-# TODO: This is a specific instrument, but rather processed data from
-#  ConstantWavelengthInstrument. So, we should think of a better design.
-#  'calib_twotheta_offset' is not a proper parameter name here, but
-#  need to check if zero offset is used for PDF.
-class PairDistributionFunctionConstantWavelengthInstrument(InstrumentBase):
-    def __init__(self,
-                 setup_wavelength=1.5406):
-        super().__init__()
-
-        self.setup_wavelength = Parameter(
-            value=setup_wavelength,
-            name="wavelength",
-            cif_name="wavelength",
-            units="Å",
-            description="Incident neutron or X-ray wavelength"
-        )
-
-        self._locked = True  # Lock further attribute additions
-
-
 class InstrumentFactory:
     _supported = {
         "bragg": {
             "constant wavelength": ConstantWavelengthInstrument,
             "time-of-flight": TimeOfFlightInstrument,
-        },
-        "total": {
-            "constant wavelength": PairDistributionFunctionConstantWavelengthInstrument,
         }
     }
 

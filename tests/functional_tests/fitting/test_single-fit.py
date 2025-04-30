@@ -375,9 +375,6 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
 
     print(ed.section('Modify experimental parameters'))
 
-    # Instrument parameters
-    project.experiments['xray_pdf'].instrument.setup_wavelength = 0.21281
-
     # Peak profile parameters
     project.experiments['xray_pdf'].show_supported_peak_profile_types()
     project.experiments['xray_pdf'].show_current_peak_profile_type()
