@@ -30,7 +30,7 @@ model = SampleModel('si')
 
 # %%
 model.space_group.name_h_m = 'F d -3 m'
-model.space_group.it_coordinate_system_code = 2
+model.space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
 # ### Define unit cell

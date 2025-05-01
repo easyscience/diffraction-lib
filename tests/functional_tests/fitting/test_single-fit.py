@@ -101,10 +101,8 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     # Create and configure sample model
     model = SampleModel('si')
     model.space_group.name_h_m = 'F d -3 m'
-    model.space_group.it_coordinate_system_code = 2
+    model.space_group.it_coordinate_system_code = '2'
     model.cell.length_a = 5.431
-    model.cell.length_b = 5.431
-    model.cell.length_c = 5.431
     model.atom_sites.add('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.5)
     model.show_as_cif()
 
@@ -205,10 +203,8 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     # Create and configure sample model
     model = SampleModel('ncaf')
     model.space_group.name_h_m = 'I 21 3'
-    model.space_group.it_coordinate_system_code = 1
+    model.space_group.it_coordinate_system_code = '1'
     model.cell.length_a = 10.250256
-    model.cell.length_b = 10.250256
-    model.cell.length_c = 10.250256
     model.atom_sites.add('Ca', 'Ca', 0.4661, 0.0, 0.25, b_iso=0.9)
     model.atom_sites.add('Al', 'Al', 0.25171, 0.25171, 0.25171, b_iso=0.66)
     model.atom_sites.add('Na', 'Na', 0.08481, 0.08481, 0.08481, b_iso=1.9)
