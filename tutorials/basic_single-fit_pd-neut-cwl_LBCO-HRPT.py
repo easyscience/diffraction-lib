@@ -187,7 +187,18 @@ project.save()
 #
 # This section teaches how to add experiments, configure their parameters, and
 # link to them the sample models defined in the previous step.
+
+# %% [markdown]
+# ### Download measured data
 #
+# Download the data file from the EasyDiffraction repository on GitHub
+
+# %%
+ed.download_from_repository('hrpt_lbco.xye',
+                            branch='docs',
+                            destination='data')
+
+# %% [markdown]
 # ### Add diffraction experiment
 
 # %%
@@ -411,7 +422,7 @@ project.analysis.show_current_minimizer()
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
-# ### Fitting 1/5
+# ### Fitting Step 1/5
 #
 # Set sample model parameters to be fitted
 
@@ -456,7 +467,7 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=Tr
 project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %% [markdown]
-# ### Fitting 2/5
+# ### Fitting Step 2/5
 #
 # Set experimental parameters to be fitted
 
@@ -492,7 +503,7 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=Tr
 project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %% [markdown]
-# ### Fitting 3/5
+# ### Fitting Step 3/5
 #
 # Set sample model parameters to be fitted
 
@@ -528,7 +539,7 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=Tr
 project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %% [markdown]
-# ### Fitting 4/5
+# ### Fitting Step 4/5
 #
 # #### Define constraints
 #
@@ -597,7 +608,7 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=Tr
 project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %% [markdown]
-# ### Fitting 5/5
+# ### Fitting Step 5/5
 #
 # #### Define constraints
 #
