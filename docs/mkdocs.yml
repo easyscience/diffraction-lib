@@ -58,7 +58,8 @@ nav:
       - Basic Usage:
           - SingleFit pd-neut-cwl: tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb
       - Advanced Usage:
-          - SingleFit pd-neut-tof: tutorials/advanced_single-fit_pd-neut-tof_Si-SEPD.ipynb
+          - SingleFit pd-neut-tof 1: tutorials/advanced_single-fit_pd-neut-tof_Si-SEPD.ipynb
+          - SingleFit pd-neut-tof 2: tutorials/advanced_single-fit_pd-neut-tof_NCAF-WISH.ipynb
           - SingleFit pd-neut-cwl: tutorials/advanced_single-fit_pd-neut-cwl_HS-HRPT.ipynb
           - JointFit pd-neut-xray-cwl: tutorials/advanced_joint-fit_pd-neut-xray-cwl_PbSO4.ipynb
       - Pair Distribution Function:
