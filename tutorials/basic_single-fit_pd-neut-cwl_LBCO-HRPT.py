@@ -640,22 +640,10 @@ project.analysis.constraints.add(
 project.analysis.show_constraints()
 
 # %% [markdown]
-# Show free parameters before applying constraints
-
-# %%
-project.analysis.show_free_params()
-
-# %% [markdown]
 # Apply constraints
 
 # %%
 project.analysis.apply_constraints()
-
-# %% [markdown]
-# Show free parameters after applying constraints
-
-# %%
-project.analysis.show_free_params()
 
 # %% [markdown]
 # Set sample model parameters to be fitted
