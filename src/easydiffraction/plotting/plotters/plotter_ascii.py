@@ -33,7 +33,7 @@ class AsciiPlotter(PlotterBase):
              height=None):
 
         title = paragraph(title)
-        legend = " | ".join([self._get_legend_item(label) for label in labels])
+        legend = "\n".join([self._get_legend_item(label) for label in labels])
 
         if height is None:
             height = DEFAULT_HEIGHT
@@ -45,5 +45,5 @@ class AsciiPlotter(PlotterBase):
 
         print(f"{title}")
         print(f"Displaying data for selected x-range from {x[0]} to {x[-1]} ({len(x)} points)")
-        print(f"Legend: {legend}")
+        print(f"Legend:\n{legend}")
         print(chart)
