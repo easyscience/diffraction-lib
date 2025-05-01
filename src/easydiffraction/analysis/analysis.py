@@ -93,7 +93,7 @@ class Analysis:
                              "left",
                              "left",
                              "left",
-                             "left",
+                             "right",
                              "left"]
 
         sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
@@ -134,8 +134,8 @@ class Analysis:
                              "left",
                              "left",
                              "left",
-                             "left",
-                             "left",
+                             "right",
+                             "right",
                              "left",
                              "left"]
 
@@ -179,10 +179,10 @@ class Analysis:
                              "left",
                              "left",
                              "left",
-                             "left",
-                             "left",
-                             "left",
-                             "left",
+                             "right",
+                             "right",
+                             "right",
+                             "right",
                              "left"]
 
         dataframe = self._get_params_as_dataframe(free_params)
