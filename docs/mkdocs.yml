@@ -55,8 +55,10 @@ nav:
         - Summary: usage/workflow-steps/summary.md
   - Tutorials:
       - Tutorials: tutorials/index.md
-      - Basics:
-          - tutorials/single-fit_basic-usage.ipynb
+      - Basic Usage:
+          - SingleFit pd-neut-cwl: tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb
+      - Advanced Usage:
+          - JointFit pd-neut-xray-cwl: tutorials/advanced_joint-fit_pd-neut-xray-cwl_PbSO4.ipynb
   - API Reference:
       - API Reference: api/index.md
       - api/core.md
