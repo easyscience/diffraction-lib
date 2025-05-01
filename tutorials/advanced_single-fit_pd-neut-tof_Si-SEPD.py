@@ -118,6 +118,12 @@ expt.linked_phases.add('si', scale=10.0)
 project = Project()
 
 # %% [markdown]
+# ## Configure Plotting Engine
+
+# %%
+project.plotter.engine = 'plotly'
+
+# %% [markdown]
 # ### Add sample model
 
 # %%
