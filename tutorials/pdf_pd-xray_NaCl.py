@@ -109,7 +109,7 @@ project.analysis.current_calculator = 'pdffit'
 project.analysis.fit()
 
 # %% [markdown]
-# ## Plot Measured vs Calculated Data
+# ## Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='xray_pdf')

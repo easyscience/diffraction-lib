@@ -271,7 +271,7 @@ for term in expt2.background:
     term.coef.free = True
 
 # %% [markdown]
-# ### Fitting step
+# ### Perform Fit
 
 # %%
 project.analysis.fit()

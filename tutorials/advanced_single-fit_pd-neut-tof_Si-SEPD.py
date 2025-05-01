@@ -118,7 +118,7 @@ expt.linked_phases.add('si', scale=10.0)
 project = Project()
 
 # %% [markdown]
-# ## Configure Plotting Engine
+# ### Configure Plotting Engine
 
 # %%
 project.plotter.engine = 'plotly'
@@ -163,7 +163,7 @@ project.plot_meas_vs_calc(expt_name='sepd',
                           show_residual=True)
 
 # %% [markdown]
-# ### Fitting Step 1/5
+# ### Perform Fit 1/5
 #
 # Set parameters to be fitted
 
@@ -196,7 +196,7 @@ project.plot_meas_vs_calc(expt_name='sepd',
                           show_residual=True)
 
 # %% [markdown]
-# ### Fitting Step 2/5
+# ### Perform Fit 2/5
 #
 # Set parameters to be fitted
 
@@ -227,7 +227,7 @@ project.plot_meas_vs_calc(expt_name='sepd',
                           show_residual=True)
 
 # %% [markdown]
-# ### Fitting Step 3/5
+# ### Perform Fit 3/5
 #
 # Fix background points
 
@@ -266,7 +266,7 @@ project.plot_meas_vs_calc(expt_name='sepd',
                           show_residual=True)
 
 # %% [markdown]
-# ### Fitting Step 4/5
+# ### Perform Fit 4/5
 #
 # Set parameters to be fitted
 

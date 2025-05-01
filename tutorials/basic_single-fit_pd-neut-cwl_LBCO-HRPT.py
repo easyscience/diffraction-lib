@@ -422,7 +422,7 @@ project.analysis.show_current_minimizer()
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
-# ### Fitting Step 1/5
+# ### Perform Fit 1/5
 #
 # Set sample model parameters to be fitted
 
@@ -467,7 +467,7 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=Tr
 project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %% [markdown]
-# ### Fitting Step 2/5
+# ### Perform Fit 2/5
 #
 # Set experimental parameters to be fitted
 
@@ -503,7 +503,7 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=Tr
 project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %% [markdown]
-# ### Fitting Step 3/5
+# ### Perform Fit 3/5
 #
 # Set sample model parameters to be fitted
 
@@ -539,7 +539,7 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=Tr
 project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %% [markdown]
-# ### Fitting Step 4/5
+# ### Perform Fit 4/5
 #
 # #### Define constraints
 #
@@ -608,7 +608,7 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=Tr
 project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %% [markdown]
-# ### Fitting Step 5/5
+# ### Perform Fit 5/5
 #
 # #### Define constraints
 #
