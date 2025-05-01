@@ -7,6 +7,8 @@ asciichartpy
 plotly
 darkdetect
 
+pooch
+
 scipy
 
 lmfit

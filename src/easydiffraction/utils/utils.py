@@ -2,11 +2,8 @@
 General utilities and helpers for easydiffraction.
 """
 
-import os
 import pandas as pd
-import urllib.request
-
-from pathlib import Path
+import pooch
 from tabulate import tabulate
 
 try:
@@ -19,42 +16,28 @@ except ImportError:
     IPython = None
 
 
-def download_from_repository(url: str,
-                             save_path: str = ".",
-                             overwrite: bool = False) -> str:
+def download_from_repository(file_name: str,
+                             branch: str = 'master',
+                             destination: str = 'data') -> None:
     """
-    Downloads a file from a remote repository and saves it locally.
-
-    Args:
-        url (str): URL to the file to be downloaded.
-        save_path (str): Local directory or file path where the file will be saved.
-        overwrite (bool): If True, overwrites the existing file.
-
-    Returns:
-        str: Full path to the downloaded file.
+    This function downloads a file from the EasyDiffraction repository
+    on GitHub.
+    :param file_name: The name of the file to download
+    :param branch: The branch of the repository to download from
+    :param destination: The destination folder to save the file
+    :return: None
     """
-    save_path = Path(save_path)
-
-    # Determine if save_path is a directory or file
-    if save_path.is_dir():
-        filename = os.path.basename(url)
-        file_path = save_path / filename
-    else:
-        file_path = save_path
-
-    if file_path.exists() and not overwrite:
-        print(f"[INFO] File already exists: {file_path}. Use overwrite=True to replace it.")
-        return str(file_path)
-
-    try:
-        print(f"[INFO] Downloading from {url} to {file_path}")
-        urllib.request.urlretrieve(url, file_path)
-        print(f"[INFO] Download complete: {file_path}")
-    except Exception as e:
-        print(f"[ERROR] Failed to download {url}. Error: {e}")
-        raise
-
-    return str(file_path)
+    prefix = 'https://raw.githubusercontent.com'
+    organisation = 'easyscience'
+    repository = 'diffraction-lib'
+    source = 'tutorials/data'
+    url = f'{prefix}/{organisation}/{repository}/refs/heads/{branch}/{source}/{file_name}'
+    pooch.retrieve(
+        url=url,
+        known_hash=None,
+        fname=file_name,
+        path=destination
+    )
 
 
 def is_notebook() -> bool:
@@ -77,23 +60,6 @@ def is_notebook() -> bool:
             return False  # Other type (unlikely)
     except NameError:
         return False  # Probably standard Python interpreter
-
-
-def ensure_dir(directory: str) -> str:
-    """
-    Ensures that a directory exists. Creates it if it doesn't exist.
-
-    Args:
-        directory (str): Path to the directory to ensure.
-
-    Returns:
-        str: Absolute path of the ensured directory.
-    """
-    path = Path(directory)
-    if not path.exists():
-        print(f"[INFO] Creating directory: {directory}")
-        path.mkdir(parents=True, exist_ok=True)
-    return str(path.resolve())
 
 
 def render_table(columns_headers,
