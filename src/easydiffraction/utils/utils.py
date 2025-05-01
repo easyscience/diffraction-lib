@@ -87,9 +87,15 @@ def render_table(columns_headers,
         if show_index:
             df.index += 1
 
-        # Formatters for data cell alignment
+        # Replace None/NaN values with empty strings
+        df.fillna("", inplace=True)
+
+        # Formatters for data cell alignment and replacing None with empty string
+        def make_formatter(align):
+            return lambda x: f'<div style="text-align: {align};">{x}</div>'
+
         formatters = {
-            col: (lambda align: (lambda x: f'<div style="text-align: {align};">{x}</div>'))(align)
+            col: make_formatter(align)
             for col, align in zip(columns_headers, columns_alignment)
         }
 
