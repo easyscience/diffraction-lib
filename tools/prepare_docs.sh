@@ -15,7 +15,6 @@ cp ../assets-branding/easydiffraction/icons/bw.svg overrides/.icons/easydiffract
 cp ../assets-branding/easyscience-org/icons/eso-icon_bw.svg overrides/.icons/easyscience.svg
 
 echo "\033[0;33m:::::: Add Jupyter notebooks from the project to the docs/\033[0m"
-cp -R tutorials/data docs/tutorials/
 jupytext tutorials/*.py --to ipynb
 mv tutorials/*.ipynb docs/tutorials/
 
