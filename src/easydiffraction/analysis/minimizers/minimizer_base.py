@@ -86,11 +86,11 @@ class FitResults:
                       "left",
                       "left",
                       "left",
+                      "right",
+                      "right",
+                      "right",
                       "left",
-                      "left",
-                      "left",
-                      "left",
-                      "left"]
+                      "right"]
 
         rows = []
         for param in self.parameters:
