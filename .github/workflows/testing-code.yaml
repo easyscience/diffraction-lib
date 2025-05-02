@@ -68,7 +68,7 @@ jobs:
         shell: bash
         run: |
           export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
-          python -m pytest tests/unit_tests/ --color=yes -n auto
+          python -m pytest tests/unit_tests/ --color=yes
 
       - name: Run Python functional tests
         shell: bash
