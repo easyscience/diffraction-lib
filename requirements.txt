@@ -26,6 +26,7 @@ asteval
 
 pytest
 pytest-xdist
+nbmake
 
 mkdocs
 mkdocs-material 
