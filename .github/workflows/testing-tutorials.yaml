@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-code:
+  testing-tutorials:
 
     strategy:
       fail-fast: false

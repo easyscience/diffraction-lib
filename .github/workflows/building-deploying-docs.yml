@@ -18,7 +18,7 @@ env:
 
 jobs:
   # Job 1: Build the static files for the documentation site
-  build-docs:
+  building-docs:
     runs-on: macos-14 # Use macOS to switch to dark mode for Plotly charts
 
     steps:
@@ -159,8 +159,8 @@ jobs:
           compression-level: 0
 
   # Job 2: Deploy the static files
-  deploy-docs:
-    needs: build-docs # previous job 'build-docs' need to be finished first
+  deploying-docs:
+    needs: building-docs # previous job 'build-docs' need to be finished first
 
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
