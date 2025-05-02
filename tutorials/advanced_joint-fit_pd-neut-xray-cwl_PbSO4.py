@@ -1,13 +1,13 @@
 # %% [markdown]
-# # Joint Fit (Advanced Usage)
+# # Joint Fit (Advanced)
 #
-# This example demonstrates a more flexible and advanced usage of the
-# EasyDiffraction library by explicitly creating and configuring some objects.
-# It is more suitable for users comfortable with Python programming and those
-# interested in custom workflows.
+# This example demonstrates a flexible and advanced use of the
+# EasyDiffraction library by explicitly creating and configuring objects.
+# It is intended for users who are comfortable with Python programming and are
+# interested in creating custom workflows.
 
 # %% [markdown]
-# ## Import EasyDiffraction
+# ## Import Library
 
 # %%
 from easydiffraction import (
@@ -20,21 +20,21 @@ from easydiffraction import (
 # %% [markdown]
 # ## Define Sample Model
 #
-# This section covers how to add sample models and modify their parameters.
+# This section explains how to add sample models and modify their parameters.
 #
-# ### Create sample model object
+# ### Create Sample Model
 
 # %%
 model = SampleModel('pbso4')
 
 # %% [markdown]
-# ### Define space group
+# ### Set Space Group
 
 # %%
 model.space_group.name_h_m = 'P n m a'
 
 # %% [markdown]
-# ### Define unit cell
+# ### Set Unit Cell
 
 # %%
 model.cell.length_a = 8.47
@@ -42,7 +42,7 @@ model.cell.length_b = 5.39
 model.cell.length_c = 6.95
 
 # %% [markdown]
-# ### Define atom sites
+# ### Set Atom Sites
 
 # %%
 model.atom_sites.add('Pb', 'Pb', 0.1876, 0.25, 0.167, b_iso=1.37)
@@ -55,12 +55,12 @@ model.atom_sites.add('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
 # %% [markdown]
 # ## Define Experiments
 #
-# This section teaches how to add experiments, configure their parameters, and
-# link to them the sample models defined in the previous step.
+# This section explains how to add experiments, configure their parameters, and
+# link the sample models defined in the previous step.
 #
 # ### Experiment 1: npd
 #
-# #### Download measured data
+# #### Download Data
 
 # %%
 download_from_repository('d1a_pbso4.dat',
@@ -68,7 +68,7 @@ download_from_repository('d1a_pbso4.dat',
                          destination='data')
 
 # %% [markdown]
-# #### Create experiment object
+# #### Create Experiment
 
 # %%
 expt1 = Experiment('npd',
@@ -76,14 +76,14 @@ expt1 = Experiment('npd',
                    data_path='data/d1a_pbso4.dat')
 
 # %% [markdown]
-# #### Define instrument
+# #### Set Instrument
 
 # %%
 expt1.instrument.setup_wavelength = 1.91
 expt1.instrument.calib_twotheta_offset = -0.1406
 
 # %% [markdown]
-# #### Define peak profile
+# #### Set Peak Profile
 
 # %%
 expt1.peak.broad_gauss_u = 0.139
@@ -93,16 +93,16 @@ expt1.peak.broad_lorentz_x = 0
 expt1.peak.broad_lorentz_y = 0.088
 
 # %% [markdown]
-# #### Define background
+# #### Set Background
 
 # %% [markdown]
-# Select desired background type
+# Select Background Type
 
 # %%
 expt1.background_type = 'line-segment'
 
 # %% [markdown]
-# Add background points
+# Add Background Points
 
 # %%
 for x, y in [
@@ -118,7 +118,7 @@ for x, y in [
     expt1.background.add(x, y)
 
 # %% [markdown]
-# #### Define linked phases
+# #### Set Linked Phases
 
 # %%
 expt1.linked_phases.add('pbso4', scale=1.5)
@@ -126,7 +126,7 @@ expt1.linked_phases.add('pbso4', scale=1.5)
 # %% [markdown]
 # ### Experiment 2: xrd
 #
-# #### Download measured data
+# #### Download Data
 
 # %%
 download_from_repository('lab_pbso4.dat',
@@ -134,7 +134,7 @@ download_from_repository('lab_pbso4.dat',
                          destination='data')
 
 # %% [markdown]
-# #### Create experiment object
+# #### Create Experiment
 
 # %%
 expt2 = Experiment('xrd',
@@ -142,14 +142,14 @@ expt2 = Experiment('xrd',
                    data_path='data/lab_pbso4.dat')
 
 # %% [markdown]
-# #### Define instrument
+# #### Set Instrument
 
 # %%
 expt2.instrument.setup_wavelength = 1.540567
 expt2.instrument.calib_twotheta_offset = -0.05181
 
 # %% [markdown]
-# #### Define peak profile
+# #### Set Peak Profile
 
 # %%
 expt2.peak.broad_gauss_u = 0.304138
@@ -159,16 +159,16 @@ expt2.peak.broad_lorentz_x = 0
 expt2.peak.broad_lorentz_y = 0.057691
 
 # %% [markdown]
-# #### Define background
+# #### Set Background
 
 # %% [markdown]
-# Select desired background type
+# Select Background Type
 
 # %%
 expt2.background_type = 'chebyshev polynomial'
 
 # %% [markdown]
-# Add background points
+# Add Background Points
 
 # %%
 for x, y in [
@@ -182,7 +182,7 @@ for x, y in [
     expt2.background.add(x, y)
 
 # %% [markdown]
-# #### Define linked phases
+# #### Set Linked Phases
 
 # %%
 expt2.linked_phases.add('pbso4', scale=0.001)
@@ -190,22 +190,22 @@ expt2.linked_phases.add('pbso4', scale=0.001)
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage the sample model, experiments, and
-# analysis
+# The project object manages the sample model, experiments, and
+# analysis.
 #
-# ### Create project object
+# ### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# ### Add sample model
+# ### Add Sample Model
 
 # %%
 project.sample_models.add(model)
 
 # %% [markdown]
-# ### Add experiments
+# ### Add Experiments
 
 # %%
 project.experiments.add(expt1)
@@ -214,30 +214,30 @@ project.experiments.add(expt2)
 # %% [markdown]
 # ## Analysis
 #
-# This section will guide you through the analysis process, including setting
-# up calculators and fitting models.
+# This section explains the analysis process, including how to set
+# up calculators and fit models.
 #
-# ### Set calculation engine
+# ### Set Calculator
 
 # %%
 project.analysis.current_calculator = 'cryspy'
 
 # %% [markdown]
-# ### Set fit mode
+# ### Set Fit Mode
 
 # %%
 project.analysis.fit_mode = 'joint'
 
 # %% [markdown]
-# ### Set fitting engine
+# ### Set Minimizer
 
 # %%
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
-# ### Set fitting parameters
+# ### Set Fitting Parameters
 #
-# Set sample model parameters to be fitted
+# Set sample model parameters to be refined
 
 # %%
 model.cell.length_a.free = True
@@ -245,7 +245,7 @@ model.cell.length_b.free = True
 model.cell.length_c.free = True
 
 # %% [markdown]
-# Set experimental parameters to be fitted
+# Set experiment parameters to be refined
 
 # %%
 expt1.linked_phases['pbso4'].scale.free = True
@@ -271,13 +271,13 @@ for term in expt2.background:
     term.coef.free = True
 
 # %% [markdown]
-# ### Perform Fit
+# ### Run Fit
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# ### Show fitting results
+# ### Show Results
 
 # %%
 project.plot_meas_vs_calc(expt_name='npd',
