@@ -66,8 +66,12 @@ jobs:
 
       - name: Run Python unit tests
         shell: bash
-        run: PYTHONPATH=$(pwd)/src python -m pytest tests/unit_tests/ --color=yes -n auto
+        run: |
+          export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
+          python -m pytest tests/unit_tests/ --color=yes -n auto
 
       - name: Run Python functional tests
         shell: bash
-        run: PYTHONPATH=$(pwd)/src python -m pytest tests/functional_tests/ --color=yes -n auto
+        run: |
+          export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
+          python -m pytest tests/functional_tests/ --color=yes -n auto
