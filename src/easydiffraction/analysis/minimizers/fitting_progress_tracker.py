@@ -6,7 +6,9 @@ SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
 FIXED_WIDTH = 17
 
 
-def format_cell(cell: str, width: int = FIXED_WIDTH, align: str = "center") -> str:
+def format_cell(cell: str,
+                width: int = FIXED_WIDTH,
+                align: str = "center") -> str:
     cell_str = str(cell)
     if align == "center":
         return cell_str.center(width)
@@ -41,7 +43,9 @@ class FittingProgressTracker:
         self._best_iteration = None
         self._fitting_time = None
 
-    def track(self, residuals: np.ndarray, parameters: List[float]) -> np.ndarray:
+    def track(self,
+              residuals: np.ndarray,
+              parameters: List[float]) -> np.ndarray:
         """
         Track chi-square progress during the optimization process.
 
@@ -67,7 +71,6 @@ class FittingProgressTracker:
             row = [
                 str(self._iteration),
                 f"{reduced_chi2:.2f}",
-                "",
                 ""
             ]
 
@@ -77,7 +80,6 @@ class FittingProgressTracker:
 
             row = [
                 str(self._iteration),
-                f"{self._previous_chi2:.2f}",
                 f"{reduced_chi2:.2f}",
                 f"{change_percent:.1f}% ↓"
             ]
@@ -125,7 +127,7 @@ class FittingProgressTracker:
         self._fitting_time = self._end_time - self._start_time
 
     def start_tracking(self, minimizer_name: str) -> None:
-        headers: List[str] = ["iteration", "start", "improved", "improvement [%]"]
+        headers: List[str] = ["iteration", "χ²", "improvement [%]"]
 
         print(f"🚀 Starting fitting process with '{minimizer_name}'...")
         print("📈 Goodness-of-fit (reduced χ²) change:")
@@ -141,8 +143,8 @@ class FittingProgressTracker:
         print("╞" + "╪".join(["═" * FIXED_WIDTH for _ in headers]) + "╡")
 
     def add_tracking_info(self, row: List[str]) -> None:
-        # Alignments for each column: iteration, start, improved, change [%]
-        aligns: List[str] = ["center", "center", "center", "center"]
+        # Alignments for each column: iteration, χ², improvement [%]
+        aligns: List[str] = ["center", "center", "center"]
 
         formatted_row = "│" + "│".join([
             format_cell(cell, align=aligns[i])
@@ -155,14 +157,13 @@ class FittingProgressTracker:
         # Print last iteration as last row
         row: List[str] = [
             str(self._last_iteration),
-            "",
             f"{self._last_chi2:.2f}" if self._last_chi2 is not None else "",
             ""
         ]
         self.add_tracking_info(row)
 
         # Print bottom border
-        print("╘" + "╧".join(["═" * FIXED_WIDTH for _ in range(4)]) + "╛")
+        print("╘" + "╧".join(["═" * FIXED_WIDTH for _ in range(len(row))]) + "╛")
 
         # Print best result
         print(f"🏆 Best goodness-of-fit (reduced χ²) is {self._best_chi2:.2f} at iteration {self._best_iteration}")

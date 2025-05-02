@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Pair distribution function: Si, NPD
+# # Pair Distribution Function: Si, NPD
 #
 # This example demonstrates a pair distribution function (PDF) analysis of Si,
 # based on data collected from a powder neutron time-of-flight diffraction

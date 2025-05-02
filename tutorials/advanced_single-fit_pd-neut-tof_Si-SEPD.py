@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Standard diffraction: Si, TOF NPD
+# # Standard Diffraction: Si, TOF NPD
 #
 # This example demonstrates standard diffraction analysis of Si using neutron
 # powder diffraction data collected in time-of-flight mode from SEPD at

@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Pair distribution function: NaCl, XRD
+# # Pair Distribution Function: NaCl, XRD
 #
 # This example demonstrates a pair distribution function (PDF) analysis of Ni,
 # based on data collected from a powder X-ray diffraction experiment.

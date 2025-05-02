@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Standard diffraction: NCAF, TOF NPD
+# # Standard Diffraction: NCAF, TOF NPD
 #
 # This example demonstrates standard diffraction analysis of Na2Ca3Al2F14 using
 # neutron powder diffraction data collected in time-of-flight mode from WISH at
