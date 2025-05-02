@@ -1,26 +1,26 @@
 # %% [markdown]
-# # Pair distribution function: NaCl
+# # Pair distribution function: NaCl, XRD
 #
-# Pair distribution function (PDF) analysis of NaCl after the powder X-ray
-# diffraction experiment.
+# This example demonstrates a pair distribution function (PDF) analysis of Ni,
+# based on data collected from a powder X-ray diffraction experiment.
 #
-# Data is taken from
+# The dataset is taken from:
 # https://github.com/diffpy/add2019-diffpy-cmi/tree/master
 
 # %% [markdown]
-# ## Import EasyDiffraction
+# ## Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Initialize Project
+# ## Create Project
 
 # %%
 project = ed.Project()
 
 # %% [markdown]
-# ## Configure Plotting Engine
+# ## Set Plotting Engine
 
 # %%
 project.plotter.engine = 'plotly'
@@ -28,7 +28,7 @@ project.plotter.x_min = 2.0
 project.plotter.x_max = 30.0
 
 # %% [markdown]
-# ## Define Sample Model
+# ## Add Sample Model
 
 # %%
 project.sample_models.add(name='nacl')
@@ -53,7 +53,7 @@ project.sample_models['nacl'].atom_sites.add(label='Cl',
                                              b_iso=1.0)
 
 # %% [markdown]
-# ## Define Experiment
+# ## Add Experiment
 
 # %%
 ed.download_from_repository('NaCl.gr',
@@ -102,7 +102,7 @@ project.experiments['xray_pdf'].peak.damp_q.free = True
 project.experiments['xray_pdf'].peak.sharp_delta_2.free = True
 
 # %% [markdown]
-# ## Perform Fit
+# ## Run Fit
 
 # %%
 project.analysis.current_calculator = 'pdffit'

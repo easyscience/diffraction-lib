@@ -1,32 +1,33 @@
 # %% [markdown]
-# # Pair distribution function: Ni
+# # Pair Distribution Function: Ni, NPD
 #
-# Pair distribution function (PDF) analysis of Ni after the powder neutron
-# constant wavelength diffraction experiment.
+# This example demonstrates a pair distribution function (PDF) analysis of Ni,
+# based on data collected from a powder neutron constant wavelength diffraction
+# experiment.
 #
-# Data is taken from
+# The dataset is taken from:
 # https://github.com/diffpy/cmi_exchange/blob/main/cmi_scripts/fitNiPDF
 
 # %% [markdown]
-# ## Import EasyDiffraction
+# ## Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Initialize Project
+# ## Create Project
 
 # %%
 project = ed.Project()
 
 # %% [markdown]
-# ## Configure Plotting Engine
+# ## Set Plotting Engine
 
 # %%
 project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# ## Define Sample Model
+# ## Add Sample Model
 
 # %%
 project.sample_models.add(name='ni')
@@ -44,7 +45,7 @@ project.sample_models['ni'].atom_sites.add(label='Ni',
                                            b_iso=0.5)
 
 # %% [markdown]
-# ## Define Experiment
+# ## Add Experiment
 
 # %%
 ed.download_from_repository('ni-q27r100-neutron_from-2.gr',
@@ -81,7 +82,7 @@ project.experiments['pdf'].peak.broad_q.free = True
 project.experiments['pdf'].peak.sharp_delta_2.free = True
 
 # %% [markdown]
-# ## Perform Fit
+# ## Run Fit
 
 # %%
 project.analysis.current_calculator = 'pdffit'

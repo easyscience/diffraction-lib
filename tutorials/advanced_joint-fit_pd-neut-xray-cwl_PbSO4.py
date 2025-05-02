@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Joint Fit (Advanced)
+# # Standard Diffraction: PbSO4, NPD+XRD
 #
 # This example demonstrates a flexible and advanced use of the
 # EasyDiffraction library by explicitly creating and configuring objects.
@@ -20,7 +20,7 @@ from easydiffraction import (
 # %% [markdown]
 # ## Define Sample Model
 #
-# This section explains how to add sample models and modify their parameters.
+# This section shows how to add sample models and modify their parameters.
 #
 # ### Create Sample Model
 
@@ -55,7 +55,7 @@ model.atom_sites.add('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
 # %% [markdown]
 # ## Define Experiments
 #
-# This section explains how to add experiments, configure their parameters, and
+# This section shows how to add experiments, configure their parameters, and
 # link the sample models defined in the previous step.
 #
 # ### Experiment 1: npd
@@ -96,13 +96,13 @@ expt1.peak.broad_lorentz_y = 0.088
 # #### Set Background
 
 # %% [markdown]
-# Select Background Type
+# Select background type.
 
 # %%
 expt1.background_type = 'line-segment'
 
 # %% [markdown]
-# Add Background Points
+# Add background points.
 
 # %%
 for x, y in [
@@ -162,13 +162,13 @@ expt2.peak.broad_lorentz_y = 0.057691
 # #### Set Background
 
 # %% [markdown]
-# Select Background Type
+# Select background type.
 
 # %%
 expt2.background_type = 'chebyshev polynomial'
 
 # %% [markdown]
-# Add Background Points
+# Add background points.
 
 # %%
 for x, y in [
@@ -190,7 +190,7 @@ expt2.linked_phases.add('pbso4', scale=0.001)
 # %% [markdown]
 # ## Define Project
 #
-# The project object manages the sample model, experiments, and
+# The project object is used to manage the sample model, experiment, and
 # analysis.
 #
 # ### Create Project
@@ -214,8 +214,8 @@ project.experiments.add(expt2)
 # %% [markdown]
 # ## Analysis
 #
-# This section explains the analysis process, including how to set
-# up calculators and fit models.
+# This section shows the analysis process, including how to set up
+# calculation and fitting engines.
 #
 # ### Set Calculator
 
@@ -237,7 +237,7 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 # %% [markdown]
 # ### Set Fitting Parameters
 #
-# Set sample model parameters to be refined
+# Set sample model parameters to be refined.
 
 # %%
 model.cell.length_a.free = True
@@ -245,7 +245,7 @@ model.cell.length_b.free = True
 model.cell.length_c.free = True
 
 # %% [markdown]
-# Set experiment parameters to be refined
+# Set experiment parameters to be refined.
 
 # %%
 expt1.linked_phases['pbso4'].scale.free = True
@@ -277,7 +277,7 @@ for term in expt2.background:
 project.analysis.fit()
 
 # %% [markdown]
-# ### Show Results
+# ### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='npd',

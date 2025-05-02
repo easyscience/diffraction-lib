@@ -1,13 +1,14 @@
 # %% [markdown]
-# # Standard diffraction: Na2Ca3Al2F14
+# # Standard diffraction: NCAF, TOF NPD
 #
-# Standard diffraction analysis of Na2Ca3Al2F14 after the powder neutron
-# time-of-flight diffraction measurement from WISH at ISIS.
+# This example demonstrates standard diffraction analysis of Na2Ca3Al2F14 using
+# neutron powder diffraction data collected in time-of-flight mode from WISH at
+# ISIS.
 #
 # Only a single dataset from detector banks 5 & 6 is used here.
 
 # %% [markdown]
-# ## Import EasyDiffraction
+# ## Import Library
 
 # %%
 from easydiffraction import (
@@ -22,26 +23,26 @@ from easydiffraction import (
 #
 # This section covers how to add sample models and modify their parameters.
 #
-# ### Create sample model object
+# ### Create Sample Model
 
 # %%
 model = SampleModel('ncaf')
 
 # %% [markdown]
-# ### Define space group
+# ### Set Space Group
 
 # %%
 model.space_group.name_h_m = 'I 21 3'
 model.space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
-# ### Define unit cell
+# ### Set Unit Cell
 
 # %%
 model.cell.length_a = 10.250256
 
 # %% [markdown]
-# ### Define atom sites
+# ### Set Atom Sites
 
 # %%
 model.atom_sites.add('Ca', 'Ca', 0.4661, 0.0, 0.25, wyckoff_letter="b", b_iso=0.9)
@@ -54,10 +55,10 @@ model.atom_sites.add('F3', 'F', 0.4612, 0.4612, 0.4612, wyckoff_letter="a", b_is
 # %% [markdown]
 # ## Define Experiment
 #
-# This section teaches how to add experiments, configure their parameters, and
-# link to them the sample models defined in the previous step.
+# This section shows how to add experiments, configure their parameters, and
+# link the sample models defined in the previous step.
 #
-# ### Download measured data
+# ### Download Measured Data
 
 # %%
 download_from_repository('wish_ncaf.xye',
@@ -65,7 +66,7 @@ download_from_repository('wish_ncaf.xye',
                          destination='data')
 
 # %% [markdown]
-# ### Create experiment object
+# ### Create Experiment
 
 # %%
 expt = Experiment('wish',
@@ -73,7 +74,7 @@ expt = Experiment('wish',
                   data_path='data/wish_ncaf.xye')
 
 # %% [markdown]
-# ### Define instrument
+# ### Set Instrument
 
 # %%
 expt.instrument.setup_twotheta_bank = 152.827
@@ -82,7 +83,7 @@ expt.instrument.calib_d_to_tof_linear = 20770
 expt.instrument.calib_d_to_tof_quad = -1.08308
 
 # %% [markdown]
-# ### Define peak profile
+# ### Set Peak Profile
 
 # %%
 expt.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
@@ -93,14 +94,14 @@ expt.peak.broad_mix_beta_0 = 0.01
 expt.peak.broad_mix_beta_1 = 0.01
 
 # %% [markdown]
-# ### Define peak asymmetry
+# ### Set Peak Asymmetry
 
 # %%
 expt.peak.asym_alpha_0 = 0.0
 expt.peak.asym_alpha_1 = 0.1
 
 # %% [markdown]
-# ### Define background
+# ### Set Background
 
 # %%
 expt.background_type = 'line-segment'
@@ -137,7 +138,7 @@ for x, y in [
     expt.background.add(x, y)
 
 # %% [markdown]
-# ### Select linked phase
+# ### Set Linked Phases
 
 # %%
 expt.linked_phases.add('ncaf', scale=0.5)
@@ -148,25 +149,25 @@ expt.linked_phases.add('ncaf', scale=0.5)
 # The project object is used to manage the sample model, experiments, and
 # analysis
 #
-# ### Create project object
+# ### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# ### Configure Plotting Engine
+# ### Set Plotting Engine
 
 # %%
 project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# ### Add sample model
+# ### Add Sample Model
 
 # %%
 project.sample_models.add(model)
 
 # %% [markdown]
-# ### Add experiment
+# ### Add Experiment
 
 # %%
 project.experiments.add(expt)
@@ -174,26 +175,28 @@ project.experiments.add(expt)
 # %% [markdown]
 # ## Analysis
 #
-# This section will guide you through the analysis process, including setting
-# up calculators and fitting models.
+# This section shows the analysis process, including how to set up
+# calculation and fitting engines.
 #
-# ### Set calculation engine
+# ### Set Calculator
 
 # %%
 project.analysis.current_calculator = 'cryspy'
 
 # %% [markdown]
-# ### Set fitting engine
+# ### Set Minimizer
 
 # %%
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
-# ### Show measured vs calculated
+# ### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='wish',
                           show_residual=True)
+
+# %%
 project.plot_meas_vs_calc(expt_name='wish',
                           x_min=37000, x_max=40000,
                           show_residual=True)
@@ -201,7 +204,7 @@ project.plot_meas_vs_calc(expt_name='wish',
 # %% [markdown]
 # ### Perform Fit 1/5
 #
-# Set parameters to be fitted
+# Set parameters to be refined.
 
 # %%
 model.cell.length_a.free = True
@@ -210,23 +213,25 @@ expt.instrument.calib_d_to_tof_offset.free = True
 expt.linked_phases['ncaf'].scale.free = True
 
 # %% [markdown]
-# Show free parameters after selection
+# Show free parameters after selection.
 
 # %%
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Start fitting
+# #### Run Fit
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# #### Show fitting results
+# ### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='wish',
                           show_residual=True)
+
+# %%
 project.plot_meas_vs_calc(expt_name='wish',
                           x_min=37000, x_max=40000,
                           show_residual=True)
@@ -234,7 +239,7 @@ project.plot_meas_vs_calc(expt_name='wish',
 # %% [markdown]
 # ### Perform Fit 2/5
 #
-# Set parameters to be fitted
+# Set more parameters to be refined.
 
 # %%
 expt.peak.broad_gauss_sigma_2.free = True
@@ -244,23 +249,25 @@ expt.peak.asym_alpha_0.free = True
 expt.peak.asym_alpha_1.free = True
 
 # %% [markdown]
-# Show free parameters after selection
+# Show free parameters after selection.
 
 # %%
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Start fitting
+# #### Run Fit
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# #### Show fitting results
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='wish',
                           show_residual=True)
+
+# %%
 project.plot_meas_vs_calc(expt_name='wish',
                           x_min=37000, x_max=40000,
                           show_residual=True)
@@ -269,7 +276,7 @@ project.plot_meas_vs_calc(expt_name='wish',
 # %% [markdown]
 # ### Perform Fit 3/5
 #
-# Set parameters to be fitted
+# Set more parameters to be refined.
 
 # %%
 model.atom_sites['Ca'].fract_x.free = True
@@ -284,23 +291,25 @@ model.atom_sites['F2'].fract_z.free = True
 model.atom_sites['F3'].fract_x.free = True
 
 # %% [markdown]
-# Show free parameters after selection
+# Show free parameters after selection.
 
 # %%
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Start fitting
+# #### Run Fit
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# #### Show fitting results
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='wish',
                           show_residual=True)
+
+# %%
 project.plot_meas_vs_calc(expt_name='wish',
                           x_min=37000, x_max=40000,
                           show_residual=True)
@@ -308,7 +317,7 @@ project.plot_meas_vs_calc(expt_name='wish',
 # %% [markdown]
 # ### Perform Fit 4/5
 #
-# Set parameters to be fitted
+# Set more parameters to be refined.
 
 # %%
 expt.instrument.calib_d_to_tof_linear.free = True
@@ -321,23 +330,25 @@ model.atom_sites['F2'].b_iso.free = True
 model.atom_sites['F3'].b_iso.free = True
 
 # %% [markdown]
-# Show free parameters after selection
+# Show free parameters after selection.
 
 # %%
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Start fitting
+# #### Run Fit
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# #### Show fitting results
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='wish',
                           show_residual=True)
+
+# %%
 project.plot_meas_vs_calc(expt_name='wish',
                           x_min=37000, x_max=40000,
                           show_residual=True)
@@ -345,11 +356,10 @@ project.plot_meas_vs_calc(expt_name='wish',
 # %% [markdown]
 # ## Summary
 #
-# In this final section, you will learn how to review the results of the
-# analysis
+# This final section shows how to review the results of the analysis.
 
 # %% [markdown]
-# ### Show project summary report
+# ### Show Project Summary Report
 
 # %%
 project.summary.show_report()

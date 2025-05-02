@@ -1,30 +1,31 @@
 # %% [markdown]
-# # Pair distribution function: Si
+# # Pair distribution function: Si, NPD
 #
-# Pair distribution function (PDF) analysis of Si after the powder neutron
-# time-of-flight diffraction measurement from NOMAD at SNS.
+# This example demonstrates a pair distribution function (PDF) analysis of Si,
+# based on data collected from a powder neutron time-of-flight diffraction
+# experiment from NOMAD at SNS.
 
 # %% [markdown]
-# ## Import EasyDiffraction
+# ## Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Initialize Project
+# ## Create Project
 
 # %%
 project = ed.Project()
 
 # %% [markdown]
-# ## Configure Plotting Engine
+# ## Set Plotting Engine
 
 # %%
 project.plotter.engine = 'plotly'
 project.plotter.x_max = 40
 
 # %% [markdown]
-# ## Define Sample Model
+# ## Add Sample Model
 
 # %%
 project.sample_models.add(name='si')
@@ -43,7 +44,7 @@ sample_model.atom_sites.add(label='Si',
                             b_iso=0.5)
 
 # %% [markdown]
-# ## Define Experiment
+# ## Add Experiment
 
 # %%
 ed.download_from_repository('NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr',
@@ -83,7 +84,7 @@ experiment.peak.sharp_delta_1.free = True
 experiment.peak.sharp_delta_2.free = True
 
 # %% [markdown]
-# ## Perform Fit
+# ## Run Fit
 
 # %%
 project.analysis.current_calculator = 'pdffit'

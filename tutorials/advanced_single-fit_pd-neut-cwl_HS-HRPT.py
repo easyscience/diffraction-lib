@@ -1,11 +1,12 @@
 # %% [markdown]
-# # Standard diffraction: HS
+# # Standard Diffraction: HS, CWL NPD
 #
-# Standard diffraction analysis of HS after the powder neutron constant wavelength
-# diffraction measurement from HRPT at PSI.
+# This example demonstrates standard diffraction analysis of HS using neutron
+# powder diffraction data collected in constant wavelength mode from HRPT at
+# PSI.
 
 # %% [markdown]
-# ## Import EasyDiffraction
+# ## Import Library
 
 # %%
 from easydiffraction import (
@@ -18,29 +19,29 @@ from easydiffraction import (
 # %% [markdown]
 # ## Define Sample Model
 #
-# This section covers how to add sample models and modify their parameters.
+# This section shows how to add sample models and modify their parameters.
 #
-# ### Create sample model object
+# ### Create Sample Model
 
 # %%
 model = SampleModel('hs')
 
 # %% [markdown]
-# ### Define space group
+# ### Set Space Group
 
 # %%
 model.space_group.name_h_m = 'R -3 m'
 model.space_group.it_coordinate_system_code = 'h'
 
 # %% [markdown]
-# ### Define unit cell
+# ### Set Unit Cell
 
 # %%
 model.cell.length_a = 6.9
 model.cell.length_c = 14.1
 
 # %% [markdown]
-# ### Define atom sites
+# ### Set Atom Sites
 
 # %%
 model.atom_sites.add('Zn', 'Zn', 0, 0, 0.5, wyckoff_letter='b', b_iso=0.5)
@@ -52,18 +53,18 @@ model.atom_sites.add('H', '2H', 0.13, -0.13, 0.08, wyckoff_letter='h', b_iso=0.5
 # %% [markdown]
 # ### Symmetry constraints
 #
-# Model as CIF before applying symmetry constraints
+# Show CIF output before applying symmetry constraints.
 
 # %%
 model.show_as_cif()
 
 # %% [markdown]
-# Apply symmetry constraints
+# Apply symmetry constraints.
 
 # %%
 model.apply_symmetry_constraints()
 
-# Model as CIF after applying symmetry constraints
+# Show CIF output after applying symmetry constraints.
 
 # %%
 model.show_as_cif()
@@ -71,10 +72,10 @@ model.show_as_cif()
 # %% [markdown]
 # ## Define Experiment
 #
-# This section teaches how to add experiments, configure their parameters, and
-# link to them the sample models defined in the previous step.
+# This section shows how to add experiments, configure their parameters, and
+# link the sample models defined in the previous step.
 #
-# ### Download measured data
+# ### Download Measured Data
 
 # %%
 download_from_repository('hrpt_hs.xye',
@@ -82,21 +83,21 @@ download_from_repository('hrpt_hs.xye',
                          destination='data')
 
 # %% [markdown]
-# ### Create experiment object
+# ### Create Experiment
 
 # %%
 expt = Experiment(name='hrpt',
                   data_path='data/hrpt_hs.xye')
 
 # %% [markdown]
-# ### Define instrument
+# ### Set Instrument
 
 # %%
 expt.instrument.setup_wavelength = 1.89
 expt.instrument.calib_twotheta_offset = 0.0
 
 # %% [markdown]
-# ### Define peak profile
+# ### Set Peak Profile
 
 # %%
 expt.peak.broad_gauss_u = 0.1
@@ -106,7 +107,7 @@ expt.peak.broad_lorentz_x = 0.0
 expt.peak.broad_lorentz_y = 0
 
 # %% [markdown]
-# ### Define background
+# ### Set Background
 
 # %%
 expt.background.add(x=4.4196, y=500)
@@ -120,7 +121,7 @@ expt.background.add(x=121.6311, y=500)
 expt.background.add(x=159.4116, y=500)
 
 # %% [markdown]
-# ### Select linked phase
+# ### Set Linked Phases
 
 # %%
 expt.linked_phases.add('hs', scale=0.5)
@@ -128,28 +129,28 @@ expt.linked_phases.add('hs', scale=0.5)
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage the sample model, experiments, and
-# analysis
+# The project object is used to manage the sample model, experiment, and
+# analysis.
 #
-# ### Create project object
+# ### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# ### Configure Plotting Engine
+# ### Set Plotting Engine
 
 # %%
 project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# ### Add sample model
+# ### Add Sample Model
 
 # %%
 project.sample_models.add(model)
 
 # %% [markdown]
-# ### Add experiment
+# ### Add Experiment
 
 # %%
 project.experiments.add(expt)
@@ -157,26 +158,28 @@ project.experiments.add(expt)
 # %% [markdown]
 # ## Analysis
 #
-# This section will guide you through the analysis process, including setting
-# up calculators and fitting models.
+# This section shows the analysis process, including how to set up
+# calculation and fitting engines.
 #
-# ### Set calculation engine
+# ### Set Calculator
 
 # %%
 project.analysis.current_calculator = 'cryspy'
 
 # %% [markdown]
-# ### Set fitting engine
+# ### Set Minimizer
 
 # %%
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
-# ### Show measured vs calculated
+# ### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='hrpt',
                           show_residual=True)
+
+# %%
 project.plot_meas_vs_calc(expt_name='hrpt',
                           x_min=48, x_max=51,
                           show_residual=True)
@@ -184,7 +187,7 @@ project.plot_meas_vs_calc(expt_name='hrpt',
 # %% [markdown]
 # ### Perform Fit 1/5
 #
-# Set parameters to be fitted
+# Set parameters to be refined.
 
 # %%
 model.cell.length_a.free = True
@@ -194,23 +197,25 @@ expt.linked_phases['hs'].scale.free = True
 expt.instrument.calib_twotheta_offset.free = True
 
 # %% [markdown]
-# Show free parameters after selection
+# Show free parameters after selection.
 
 # %%
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Start fitting
+# #### Run Fit
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# #### Show fitting results
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='hrpt',
                           show_residual=True)
+
+# %%
 project.plot_meas_vs_calc(expt_name='hrpt',
                           x_min=48, x_max=51,
                           show_residual=True)
@@ -218,7 +223,7 @@ project.plot_meas_vs_calc(expt_name='hrpt',
 # %% [markdown]
 # ### Perform Fit 2/5
 #
-# Set parameters to be fitted
+# Set more parameters to be refined.
 
 # %%
 expt.peak.broad_gauss_u.free = True
@@ -230,23 +235,25 @@ for point in expt.background:
     point.y.free = True
 
 # %% [markdown]
-# Show free parameters after selection
+# Show free parameters after selection.
 
 # %%
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Start fitting
+# #### Run Fit
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# #### Show fitting results
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='hrpt',
                           show_residual=True)
+
+# %%
 project.plot_meas_vs_calc(expt_name='hrpt',
                           x_min=48, x_max=51,
                           show_residual=True)
@@ -254,7 +261,7 @@ project.plot_meas_vs_calc(expt_name='hrpt',
 # %% [markdown]
 # ### Perform Fit 3/5
 #
-# Set parameters to be fitted
+# Set more parameters to be refined.
 
 # %%
 model.atom_sites['O'].fract_x.free = True
@@ -264,23 +271,25 @@ model.atom_sites['H'].fract_x.free = True
 model.atom_sites['H'].fract_z.free = True
 
 # %% [markdown]
-# Show free parameters after selection
+# Show free parameters after selection.
 
 # %%
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Start fitting
+# #### Run Fit
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# #### Show fitting results
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='hrpt',
                           show_residual=True)
+
+# %%
 project.plot_meas_vs_calc(expt_name='hrpt',
                           x_min=48, x_max=51,
                           show_residual=True)
@@ -288,7 +297,7 @@ project.plot_meas_vs_calc(expt_name='hrpt',
 # %% [markdown]
 # ### Perform Fit 4/5
 #
-# Set parameters to be fitted
+# Set more parameters to be refined.
 
 # %%
 model.atom_sites['Zn'].b_iso.free = True
@@ -298,23 +307,25 @@ model.atom_sites['Cl'].b_iso.free = True
 model.atom_sites['H'].b_iso.free = True
 
 # %% [markdown]
-# Show free parameters after selection
+# Show free parameters after selection.
 
 # %%
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Start fitting
+# #### Run Fit
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# #### Show fitting results
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='hrpt',
                           show_residual=True)
+
+# %%
 project.plot_meas_vs_calc(expt_name='hrpt',
                           x_min=48, x_max=51,
                           show_residual=True)
@@ -322,11 +333,10 @@ project.plot_meas_vs_calc(expt_name='hrpt',
 # %% [markdown]
 # ## Summary
 #
-# In this final section, you will learn how to review the results of the
-# analysis
+# This final section shows how to review the results of the analysis.
 
 # %% [markdown]
-# ### Show project summary report
+# ### Show Project Summary Report
 
 # %%
 project.summary.show_report()
