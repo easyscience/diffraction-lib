@@ -1,4 +1,4 @@
-name: Build and deploy docs
+name: Building and deploying docs
 
 on:
   # Trigger the workflow on push

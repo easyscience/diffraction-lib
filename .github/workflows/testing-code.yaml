@@ -1,4 +1,4 @@
-name: Test code
+name: Testing code
 
 on:
   # Trigger the workflow on push
