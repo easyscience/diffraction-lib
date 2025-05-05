@@ -124,6 +124,7 @@ jobs:
       - name: Build site with MkDocs
         run: |
           export JUPYTER_PLATFORM_DIRS=1
+          export PYTHONWARNINGS="ignore::RuntimeWarning"
           export PYTHONPATH=$(pwd)/src:$PYTHONPATH
           mkdocs build
 
