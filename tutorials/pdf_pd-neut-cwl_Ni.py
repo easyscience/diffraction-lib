@@ -2,7 +2,7 @@
 # # Pair Distribution Function: Ni, NPD
 #
 # This example demonstrates a pair distribution function (PDF) analysis of Ni,
-# based on data collected from a powder neutron constant wavelength diffraction
+# based on data collected from a constant wavelength neutron powder diffraction
 # experiment.
 #
 # The dataset is taken from:

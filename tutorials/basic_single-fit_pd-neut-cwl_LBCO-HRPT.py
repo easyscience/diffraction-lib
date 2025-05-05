@@ -1,12 +1,15 @@
 # %% [markdown]
-# # Standard Diffraction: LBCO, CWL NPD
+# # Structure Refinement: LBCO, HRPT
 #
 # This example demonstrates how to use the EasyDiffraction API in a
-# simplified, user-friendly manner that closely follows the GUI workflow. It is
-# intended for users with minimal programming experience who want to learn how
-# to perform standard crystal structure fitting using diffraction data. This
-# script covers creating a project, adding sample models and experiments,
-# performing analysis, and refining parameters.
+# simplified, user-friendly manner that closely follows the GUI workflow for a
+# Rietveld refinement of La0.5Ba0.5CoO3 crystal structure using constant
+# wavelength neutron powder diffraction data from HRPT at PSI.
+#
+# It is intended for users with minimal programming experience who want to
+# learn how to perform standard crystal structure fitting using diffraction
+# data. This script covers creating a project, adding sample models and
+# experiments, performing analysis, and refining parameters.
 #
 # Only a single import of `easydiffraction` is required, and all operations are
 # performed through high-level components of the `project` object, such as

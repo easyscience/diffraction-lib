@@ -1,9 +1,8 @@
 # %% [markdown]
-# # Standard Diffraction: HS, CWL NPD
+# # Structure Refinement: Si, SEPD
 #
-# This example demonstrates standard diffraction analysis of HS using neutron
-# powder diffraction data collected in constant wavelength mode from HRPT at
-# PSI.
+# This example demonstrates a Rietveld refinement of Si crystal structure using
+# time-of-flight neutron powder diffraction data from SEPD at Argonne.
 
 # %% [markdown]
 # ## Import Library
@@ -24,50 +23,26 @@ from easydiffraction import (
 # ### Create Sample Model
 
 # %%
-model = SampleModel('hs')
+model = SampleModel('si')
 
 # %% [markdown]
 # ### Set Space Group
 
 # %%
-model.space_group.name_h_m = 'R -3 m'
-model.space_group.it_coordinate_system_code = 'h'
+model.space_group.name_h_m = 'F d -3 m'
+model.space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
 # ### Set Unit Cell
 
 # %%
-model.cell.length_a = 6.9
-model.cell.length_c = 14.1
+model.cell.length_a = 5.431
 
 # %% [markdown]
 # ### Set Atom Sites
 
 # %%
-model.atom_sites.add('Zn', 'Zn', 0, 0, 0.5, wyckoff_letter='b', b_iso=0.5)
-model.atom_sites.add('Cu', 'Cu', 0.5, 0, 0, wyckoff_letter='e', b_iso=0.5)
-model.atom_sites.add('O', 'O', 0.21, -0.21, 0.06, wyckoff_letter='h', b_iso=0.5)
-model.atom_sites.add('Cl', 'Cl', 0, 0, 0.197, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add('H', '2H', 0.13, -0.13, 0.08, wyckoff_letter='h', b_iso=0.5)
-
-# %% [markdown]
-# ### Symmetry constraints
-#
-# Show CIF output before applying symmetry constraints.
-
-# %%
-model.show_as_cif()
-
-# %% [markdown]
-# Apply symmetry constraints.
-
-# %%
-model.apply_symmetry_constraints()
-
-# Show CIF output after applying symmetry constraints.
-
-# %%
-model.show_as_cif()
+model.atom_sites.add('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.5)
 
 # %% [markdown]
 # ## Define Experiment
@@ -78,7 +53,7 @@ model.show_as_cif()
 # ### Download Measured Data
 
 # %%
-download_from_repository('hrpt_hs.xye',
+download_from_repository('sepd_si.xye',
                          branch='docs',
                          destination='data')
 
@@ -86,45 +61,50 @@ download_from_repository('hrpt_hs.xye',
 # ### Create Experiment
 
 # %%
-expt = Experiment(name='hrpt',
-                  data_path='data/hrpt_hs.xye')
+expt = Experiment('sepd',
+                  beam_mode='time-of-flight',
+                  data_path='data/sepd_si.xye')
 
 # %% [markdown]
 # ### Set Instrument
 
 # %%
-expt.instrument.setup_wavelength = 1.89
-expt.instrument.calib_twotheta_offset = 0.0
+expt.instrument.setup_twotheta_bank = 144.845
+expt.instrument.calib_d_to_tof_offset = 0.0
+expt.instrument.calib_d_to_tof_linear = 7476.91
+expt.instrument.calib_d_to_tof_quad = -1.54
 
 # %% [markdown]
 # ### Set Peak Profile
 
 # %%
-expt.peak.broad_gauss_u = 0.1
-expt.peak.broad_gauss_v = -0.2
-expt.peak.broad_gauss_w = 0.2
-expt.peak.broad_lorentz_x = 0.0
-expt.peak.broad_lorentz_y = 0
+expt.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+expt.peak.broad_gauss_sigma_0 = 3.0
+expt.peak.broad_gauss_sigma_1 = 40.0
+expt.peak.broad_gauss_sigma_2 = 2.0
+expt.peak.broad_mix_beta_0 = 0.04221
+expt.peak.broad_mix_beta_1 = 0.00946
+
+# %% [markdown]
+# ### Set Peak Asymmetry
+
+# %%
+expt.peak.asym_alpha_0 = 0.0
+expt.peak.asym_alpha_1 = 0.5971
 
 # %% [markdown]
 # ### Set Background
 
 # %%
-expt.background.add(x=4.4196, y=500)
-expt.background.add(x=6.6207, y=500)
-expt.background.add(x=10.4918, y=500)
-expt.background.add(x=15.4634, y=500)
-expt.background.add(x=45.6041, y=500)
-expt.background.add(x=74.6844, y=500)
-expt.background.add(x=103.4187, y=500)
-expt.background.add(x=121.6311, y=500)
-expt.background.add(x=159.4116, y=500)
+expt.background_type = 'line-segment'
+for x in range(0, 35000, 5000):
+    expt.background.add(x=x, y=200)
 
 # %% [markdown]
 # ### Set Linked Phases
 
 # %%
-expt.linked_phases.add('hs', scale=0.5)
+expt.linked_phases.add('si', scale=10.0)
 
 # %% [markdown]
 # ## Define Project
@@ -176,12 +156,10 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 # ### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
+project.plot_meas_vs_calc(expt_name='sepd',
                           show_residual=True)
-
-# %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=48, x_max=51,
+project.plot_meas_vs_calc(expt_name='sepd',
+                          x_min=23200, x_max=23700,
                           show_residual=True)
 
 # %% [markdown]
@@ -191,10 +169,9 @@ project.plot_meas_vs_calc(expt_name='hrpt',
 
 # %%
 model.cell.length_a.free = True
-model.cell.length_c.free = True
 
-expt.linked_phases['hs'].scale.free = True
-expt.instrument.calib_twotheta_offset.free = True
+expt.linked_phases['si'].scale.free = True
+expt.instrument.calib_d_to_tof_offset.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
@@ -212,12 +189,12 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
+project.plot_meas_vs_calc(expt_name='sepd',
                           show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=48, x_max=51,
+project.plot_meas_vs_calc(expt_name='sepd',
+                          x_min=23200, x_max=23700,
                           show_residual=True)
 
 # %% [markdown]
@@ -226,11 +203,6 @@ project.plot_meas_vs_calc(expt_name='hrpt',
 # Set more parameters to be refined.
 
 # %%
-expt.peak.broad_gauss_u.free = True
-expt.peak.broad_gauss_v.free = True
-expt.peak.broad_gauss_w.free = True
-expt.peak.broad_lorentz_x.free = True
-
 for point in expt.background:
     point.y.free = True
 
@@ -250,25 +222,30 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
+project.plot_meas_vs_calc(expt_name='sepd',
                           show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=48, x_max=51,
+project.plot_meas_vs_calc(expt_name='sepd',
+                          x_min=23200, x_max=23700,
                           show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 3/5
 #
+# Fix background points.
+
+# %%
+for point in expt.background:
+    point.y.free = False
+
+# %% [markdown]
 # Set more parameters to be refined.
 
 # %%
-model.atom_sites['O'].fract_x.free = True
-model.atom_sites['O'].fract_z.free = True
-model.atom_sites['Cl'].fract_z.free = True
-model.atom_sites['H'].fract_x.free = True
-model.atom_sites['H'].fract_z.free = True
+expt.peak.broad_gauss_sigma_0.free = True
+expt.peak.broad_gauss_sigma_1.free = True
+expt.peak.broad_gauss_sigma_2.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
@@ -286,12 +263,12 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
+project.plot_meas_vs_calc(expt_name='sepd',
                           show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=48, x_max=51,
+project.plot_meas_vs_calc(expt_name='sepd',
+                          x_min=23200, x_max=23700,
                           show_residual=True)
 
 # %% [markdown]
@@ -300,11 +277,7 @@ project.plot_meas_vs_calc(expt_name='hrpt',
 # Set more parameters to be refined.
 
 # %%
-model.atom_sites['Zn'].b_iso.free = True
-model.atom_sites['Cu'].b_iso.free = True
-model.atom_sites['O'].b_iso.free = True
-model.atom_sites['Cl'].b_iso.free = True
-model.atom_sites['H'].b_iso.free = True
+model.atom_sites['Si'].b_iso.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
@@ -322,21 +295,10 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
+project.plot_meas_vs_calc(expt_name='sepd',
                           show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=48, x_max=51,
+project.plot_meas_vs_calc(expt_name='sepd',
+                          x_min=23200, x_max=23700,
                           show_residual=True)
-
-# %% [markdown]
-# ## Summary
-#
-# This final section shows how to review the results of the analysis.
-
-# %% [markdown]
-# ### Show Project Summary Report
-
-# %%
-project.summary.show_report()

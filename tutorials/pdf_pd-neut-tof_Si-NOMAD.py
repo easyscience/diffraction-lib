@@ -2,8 +2,8 @@
 # # Pair Distribution Function: Si, NPD
 #
 # This example demonstrates a pair distribution function (PDF) analysis of Si,
-# based on data collected from a powder neutron time-of-flight diffraction
-# experiment from NOMAD at SNS.
+# based on data collected from a time-of-flight neutron powder diffraction
+# experiment at NOMAD at SNS.
 
 # %% [markdown]
 # ## Import Library

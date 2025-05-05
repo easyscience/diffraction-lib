@@ -1,10 +1,14 @@
 # %% [markdown]
-# # Standard Diffraction: PbSO4, NPD+XRD
+# # Structure Refinement: PbSO4, NPD + XRD
 #
-# This example demonstrates a flexible and advanced use of the
-# EasyDiffraction library by explicitly creating and configuring objects.
-# It is intended for users who are comfortable with Python programming and are
-# interested in creating custom workflows.
+# This example demonstrates a more advanced use of the EasyDiffraction library
+# by explicitly creating and configuring sample models and experiments
+# before adding them to a project. It could be more suitable for users who are
+# interested in creating custom workflows. This tutorial provides minimal
+# explanation and is intended for users already familiar with EasyDiffraction.
+#
+# The tutorial covers a Rietveld refinement of PbSO4 crystal structure based
+# on the joint fit of both X-ray and neutron diffraction data.
 
 # %% [markdown]
 # ## Import Library
@@ -96,7 +100,7 @@ expt1.peak.broad_lorentz_y = 0.088
 # #### Set Background
 
 # %% [markdown]
-# Select background type.
+# Select the background type.
 
 # %%
 expt1.background_type = 'line-segment'
@@ -190,8 +194,7 @@ expt2.linked_phases.add('pbso4', scale=0.001)
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage the sample model, experiment, and
-# analysis.
+# The project object is used to manage sample models, experiments, and analysis.
 #
 # ### Create Project
 
@@ -214,8 +217,7 @@ project.experiments.add(expt2)
 # %% [markdown]
 # ## Analysis
 #
-# This section shows the analysis process, including how to set up
-# calculation and fitting engines.
+# This section outlines the analysis process, including how to configure calculation and fitting engines.
 #
 # ### Set Calculator
 
@@ -237,7 +239,7 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 # %% [markdown]
 # ### Set Fitting Parameters
 #
-# Set sample model parameters to be refined.
+# Set sample model parameters to be optimized.
 
 # %%
 model.cell.length_a.free = True
@@ -245,7 +247,7 @@ model.cell.length_b.free = True
 model.cell.length_c.free = True
 
 # %% [markdown]
-# Set experiment parameters to be refined.
+# Set experiment parameters to be optimized.
 
 # %%
 expt1.linked_phases['pbso4'].scale.free = True

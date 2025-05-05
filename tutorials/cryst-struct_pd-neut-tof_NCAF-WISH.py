@@ -1,11 +1,11 @@
 # %% [markdown]
-# # Standard Diffraction: NCAF, TOF NPD
+# # Structure Refinement: NCAF, WISH
 #
-# This example demonstrates standard diffraction analysis of Na2Ca3Al2F14 using
-# neutron powder diffraction data collected in time-of-flight mode from WISH at
+# This example demonstrates a Rietveld refinement of Na2Ca3Al2F14 crystal
+# structure using time-of-flight neutron powder diffraction data from WISH at
 # ISIS.
 #
-# Only a single dataset from detector banks 5 & 6 is used here.
+# Temporarily, only a single dataset from detector banks 5 & 6 is used here.
 
 # %% [markdown]
 # ## Import Library

@@ -1,8 +1,8 @@
 # %% [markdown]
 # # Pair Distribution Function: NaCl, XRD
 #
-# This example demonstrates a pair distribution function (PDF) analysis of Ni,
-# based on data collected from a powder X-ray diffraction experiment.
+# This example demonstrates a pair distribution function (PDF) analysis of
+# NaCl, based on data collected from an X-ray powder diffraction experiment.
 #
 # The dataset is taken from:
 # https://github.com/diffpy/add2019-diffpy-cmi/tree/master
