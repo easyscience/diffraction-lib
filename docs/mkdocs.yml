@@ -54,18 +54,18 @@ nav:
         - Analysis: usage/workflow-steps/analysis.md
         - Summary: usage/workflow-steps/summary.md
   - Tutorials:
-      - Tutorials: tutorials/index.md
-      - Basic Usage:
-          - SingleFit pd-neut-cwl: tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb
-      - Advanced Usage:
-          - SingleFit pd-neut-tof 1: tutorials/advanced_single-fit_pd-neut-tof_Si-SEPD.ipynb
-          - SingleFit pd-neut-tof 2: tutorials/advanced_single-fit_pd-neut-tof_NCAF-WISH.ipynb
-          - SingleFit pd-neut-cwl: tutorials/advanced_single-fit_pd-neut-cwl_HS-HRPT.ipynb
-          - JointFit pd-neut-xray-cwl: tutorials/advanced_joint-fit_pd-neut-xray-cwl_PbSO4.ipynb
+      - Getting Started: tutorials/index.md
+      - Basic vs. Advanced:
+          - LBCO pd-neut-cwl: tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb
+          - PbSO4 pd-neut-xray-cwl: tutorials/advanced_joint-fit_pd-neut-xray-cwl_PbSO4.ipynb
+      - Structure Refinement:
+          - HS pd-neut-cwl: tutorials/cryst-struct_pd-neut-cwl_HS-HRPT.ipynb
+          - Si pd-neut-tof: tutorials/cryst-struct_pd-neut-tof_Si-SEPD.ipynb
+          - NCAF pd-neut-tof: tutorials/cryst-struct_pd-neut-tof_NCAF-WISH.ipynb
       - Pair Distribution Function:
-          - SingleFit pd-neut-tof: tutorials/pdf_pd-neut-tof_Si-NOMAD.ipynb
-          - SingleFit pd-neut-cwl: tutorials/pdf_pd-neut-cwl_Ni.ipynb
-          - SingleFit pd-xray: tutorials/pdf_pd-xray_NaCl.ipynb
+          - Ni pd-neut-cwl: tutorials/pdf_pd-neut-cwl_Ni.ipynb
+          - Si pd-neut-tof: tutorials/pdf_pd-neut-tof_Si-NOMAD.ipynb
+          - NaCl pd-xray: tutorials/pdf_pd-xray_NaCl.ipynb
   - API Reference:
       - API Reference: api/index.md
       - api/core.md

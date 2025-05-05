@@ -7,7 +7,7 @@ icon: material/cog-box
 ## Requirements
 
 EasyDiffraction is a multi-platform Python library compatible with **Python
-3.9 through 3.12**. Ensure Python is installed
+3.10 through 3.12**. Ensure that Python is installed
 on your system before proceeding with the installation.
 
 ## Environment setup <small>optional</small> { #environment-setup data-toc-label="Environment setup" }
@@ -35,9 +35,9 @@ recreate the environment.
         ```
     === ":fontawesome-brands-windows: Windows"
         ```console
-        . venv/Scripts/activate      # Windows with Unix like shells
+        . venv/Scripts/activate      # Windows with Unix-like shells
         .\venv\Scripts\activate.bat  # Windows with CMD
-        .\venv\Scripts\activate.ps1  # Windows with Power shell
+        .\venv\Scripts\activate.ps1  # Windows with PowerShell
         ```
 <!-- prettier-ignore-end -->
 - The terminal should now show `(venv)`, indicating that the virtual
@@ -91,7 +91,7 @@ with:
 pip install easydiffraction
 ```
 
-To install a specific version of EasyDiffraction, e.g. 1.0.3:
+To install a specific version of EasyDiffraction, e.g., 1.0.3:
 
 ```console
 pip install 'easydiffraction==1.0.3'
@@ -117,36 +117,41 @@ for testing purposes.
 To install EasyDiffraction from, e.g., the `develop` branch of GitHub:
 
 ```console
-pip install git+https://github.com/easyscience/EasyDiffractionLib@develop
+pip install git+https://github.com/easyscience/diffraction-lib@develop
 ```
 
 To include extra dependencies (e.g., charts):
 
 ```console
-pip install 'easydiffraction[charts] @ git+https://github.com/easyscience/EasyDiffractionLib@develop'
+pip install 'easydiffraction[charts] @ git+https://github.com/easyscience/diffraction-lib@develop'
 ```
 
 ## Running tutorials
 
 EasyDiffraction provides a collection of **Jupyter Notebook examples** that
-demonstrate various functionalities. These tutorials are available in the
-[:material-school: Hands-on tutorials](../tutorials/index.md) section of the
-documentation.
+demonstrate various functionalities. These tutorials serve as
+**step-by-step guides**, helping users understand the workflow of diffraction
+data analysis in EasyDiffraction. They are available in the
+[:material-school: Tutorials](../tutorials/index.md) section of the
+documentation as **static HTML pages** for easy reference. However, you can
+also run them interactively in two ways:
 
-You can also run these tutorials:
+- **Run Locally** – Download the Jupyter Notebook file using the
+  :material-download: **Download** button and execute it on your computer.
+- **Run Online** – Open it with the :google-colab: **Open in Google Colab**
+  button and execute the tutorial directly in **Google Colab**, without
+  requiring any local setup.
 
-- **Locally on your machine**
-- **Online via Google Colab** (no local installation required)
+!!! note
 
-These Jupyter Notebook examples can be downloaded either one by one from the
-[:material-school: Hands-on tutorials](../tutorials/index.md) section or all
-together as a zip archive from the
-[EasyDiffraction releases](https://github.com/easyscience/EasyDiffractionLib/releases/latest).
+    These Jupyter notebooks can also be downloaded all at once as a zip archive
+    from the
+    [EasyDiffraction releases](https://github.com/easyscience/diffraction-lib/releases/latest).
 
 ### Run tutorials locally
 
 To run tutorials locally, install Jupyter Notebook or JupyterLab.
-Here are the steps to take in the case of Jupyter Notebook:
+Here are the steps to follow in the case of Jupyter Notebook:
 
 - Install Jupyter Notebook:
   ```console
@@ -155,13 +160,13 @@ Here are the steps to take in the case of Jupyter Notebook:
 - Download the latest EasyDiffraction tutorial examples from GitHub, e.g.,
   using curl:
   ```console
-  curl --location --remote-name https://github.com/easyscience/EasyDiffractionLib/releases/latest/download/examples.zip
+  curl --location --remote-name https://github.com/easyscience/{{project__repos__lib}}/releases/latest/download/examples.zip
   ```
 - Unzip the archive:
   ```console
   unzip examples.zip
   ```
-- Run Jupyter Notebook server in the `examples/` directory:
+- Run the Jupyter Notebook server in the `examples/` directory:
   ```console
   jupyter notebook examples/
   ```
@@ -180,7 +185,7 @@ To use Google Colab:
 
 - Ensure you have a **Google account**.
 - Navigate to the
-  **[:material-school: Hands-on tutorials](../tutorials/index.md)** section of
+  **[:material-school: Tutorials](../tutorials/index.md)** section of
   the documentation.
 - Click the :google-colab: **Open in Google Colab** button available for each
   tutorial.

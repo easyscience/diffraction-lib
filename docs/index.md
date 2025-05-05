@@ -13,9 +13,8 @@ Here is a brief overview of the main documentation sections:
 - [:material-book-open-variant: User Guide](usage/index.md) - Covers core
   concepts, key terminology, workflow steps, and essential parameters for
   effective use of EasyDiffraction.
-- [:material-school: Hands-on Tutorials](tutorials/index.md) - Offers
-  practical, step-by-step examples demonstrating common workflows and data
-  analysis tasks.
+- [:material-school: Tutorials](tutorials/index.md) - Offers practical,
+  step-by-step examples demonstrating common workflows and data analysis tasks.
 - [:material-code-braces-box: API Reference](api/index.md) - An auto-generated
   reference detailing the available functions and modules in EasyDiffraction.
 - [:material-account-plus: Contributing](contributing/index.md) - Outlines
