@@ -244,18 +244,7 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 project.analysis.fit_mode = 'joint'
 
 # %% [markdown]
-# ### Plot Measured vs Calculated
-
-# %%
-project.plot_meas_vs_calc(expt_name='wish_5_6', show_residual=True)
-
-# %%
-project.plot_meas_vs_calc(expt_name='wish_4_7', show_residual=True)
-
-# %% [markdown]
-# ### Perform Fit
-#
-# Set parameters to be refined.
+# ### Set free parameters
 
 # %%
 model.atom_sites['Ca'].fract_x.free = True
@@ -297,19 +286,22 @@ expt47.peak.asym_alpha_0.free = True
 expt47.peak.asym_alpha_1.free = True
 
 # %% [markdown]
-# Show free parameters after selection.
+# ### Plot Measured vs Calculated
 
 # %%
-project.analysis.show_free_params()
+project.plot_meas_vs_calc(expt_name='wish_5_6', show_residual=True)
+
+# %%
+project.plot_meas_vs_calc(expt_name='wish_4_7', show_residual=True)
 
 # %% [markdown]
-# #### Run Fit
+# ### Run Fit
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# ### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='wish_5_6', show_residual=True)
