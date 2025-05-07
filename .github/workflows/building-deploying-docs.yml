@@ -44,12 +44,12 @@ jobs:
       # Need a better solution to automatically switch the chart colour theme based on the mkdocs material switcher
       # Something similar to mkdocs_plotly_plugin https://haoda-li.github.io/mkdocs-plotly-plugin/,
       # but for generating documentation from notepads
-      - name: Activate dark mode
-        run: |
-          brew install dark-mode
-          dark-mode status
-          dark-mode on
-          dark-mode status
+      #- name: Activate dark mode
+      #  run: |
+      #    brew install dark-mode
+      #    dark-mode status
+      #    dark-mode on
+      #    dark-mode status
 
       - name: Check-out repository
         uses: actions/checkout@v4
