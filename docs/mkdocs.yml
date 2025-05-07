@@ -60,6 +60,7 @@ nav:
           - LBCO basic: tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb
           - PbSO4 advanced: tutorials/advanced_joint-fit_pd-neut-xray-cwl_PbSO4.ipynb
       - Structure Refinement:
+          - Co2SiO4 pd-neut-cwl: tutorials/cryst-struct_pd-neut-cwl_CoSiO4-D20.ipynb
           - HS pd-neut-cwl: tutorials/cryst-struct_pd-neut-cwl_HS-HRPT.ipynb
           - Si pd-neut-tof: tutorials/cryst-struct_pd-neut-tof_Si-SEPD.ipynb
           - NCAF pd-neut-tof: tutorials/cryst-struct_pd-neut-tof_NCAF-WISH.ipynb

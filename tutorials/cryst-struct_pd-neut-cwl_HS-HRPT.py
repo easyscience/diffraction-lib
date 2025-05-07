@@ -63,6 +63,7 @@ model.show_as_cif()
 # %%
 model.apply_symmetry_constraints()
 
+# %% [markdown]
 # Show CIF output after applying symmetry constraints.
 
 # %%

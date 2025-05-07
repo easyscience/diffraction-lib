@@ -54,7 +54,11 @@ project.sample_models['lbco'].atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
 ed.download_from_repository('hrpt_lbco.xye', branch='docs', destination='data')
 
 # %%
-project.experiments.add(name='hrpt', data_path='data/hrpt_lbco.xye')
+project.experiments.add(name='hrpt',
+                        sample_form='powder',
+                        beam_mode='constant wavelength',
+                        radiation_probe='neutron',
+                        data_path='data/hrpt_lbco.xye')
 
 # %%
 project.experiments['hrpt'].instrument.setup_wavelength = 1.494
