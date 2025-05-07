@@ -11,7 +11,7 @@ the **experimental data** to analyze and refine the structural parameters.
 EasyDiffraction allows you to:
 
 - **Manually define** a new model by specifying crystallographic parameters.
-- **Load an existing model** from a **CIF file**.
+- **Load an existing model** from a file (**CIF** format).
 
 Below, you will find instructions on how to define and manage crystallographic
 models in EasyDiffraction. It is assumed that you have already created a 

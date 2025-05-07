@@ -4,50 +4,60 @@ icon: material/school
 
 # :material-school: Tutorials
 
-This section offers a collection of **Jupyter Notebook examples** illustrating
-the usage of EasyDiffraction for various tasks. These tutorials act as
-**step-by-step guides**, helping users grasp the workflow of diffraction data
-analysis within EasyDiffraction.
+This section presents a collection of **Jupyter Notebook** tutorials that 
+demonstrate how to use EasyDiffraction for various tasks. These tutorials serve
+as **step-by-step guides** to help users grasp the workflow of diffraction data
+analysis using EasyDiffraction.
 
-An instruction on how to run the tutorials is provided in the
+Instructions on how to run the tutorials are provided in the
 [:material-cog-box: Installation & Setup](../installation/index.md#running-tutorials)
 section of the documentation.
 
-The tutorials are categorized as follows.
+The tutorials are organized into the following categories.
 
-## Basic vs. Advanced
+## Getting Started
 
-- [LBCO `pd-neut-cwl`](basic_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb) -
-  Demonstrates usage of the EasyDiffraction API in a simplified,
+- [LBCO `quick`](quick_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb) -
+  A minimal example intended as a quick reference for users already familiar 
+  with the EasyDiffraction API or who want to see an example refinement in 
+  code. This tutorial covers a Rietveld refinement of the La0.5Ba0.5CoO3 
+  crystal structure using constant wavelength neutron powder diffraction data 
+  from HRPT at PSI.
+- [LBCO `basic`](basic_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb) -
+  Demonstrates the use of the EasyDiffraction API in a simplified, 
   user-friendly manner that closely follows the GUI workflow for a Rietveld
-  refinement of La0.5Ba0.5CoO3 crystal structure using constant wavelength
-  neutron powder diffraction data from HRPT at PSI.
-- [PbSO4 `pd-neut-xray-cwl`](advanced_joint-fit_pd-neut-xray-cwl_PbSO4.ipynb) -
-  Demonstrates a more flexible and advanced approach to use the
-  EasyDiffraction library, intended for users more comfortable with Python
-  programming. This tutorial covers a Rietveld refinement of PbSO4 crystal
-  structure based on the joint fit of both X-ray and neutron diffraction data.
+  refinement of the La0.5Ba0.5CoO3 crystal structure using constant wavelength
+  neutron powder diffraction data from HRPT at PSI. This tutorial provides a 
+  full explanation of the workflow with detailed comments and descriptions of 
+  every step, making it suitable for users who are new to EasyDiffraction or 
+  those who prefer a more guided approach.
+- [PbSO4 `advanced`](advanced_joint-fit_pd-neut-xray-cwl_PbSO4.ipynb) -
+  Demonstrates a more flexible and advanced approach to using the
+  EasyDiffraction library, intended for users who are more comfortable with 
+  Python programming. This tutorial covers a Rietveld refinement of the PbSO4 
+  crystal structure based on the joint fit of both X-ray and neutron 
+  diffraction data.
 
 ## Standard Diffraction
 
 - [HS `pd-neut-cwl`](cryst-struct_pd-neut-cwl_HS-HRPT.ipynb) -
-  Demonstrates a Rietveld refinement of HS crystal structure using constant
+  Demonstrates a Rietveld refinement of the HS crystal structure using constant
   wavelength neutron powder diffraction data from HRPT at PSI.
 - [Si `pd-neut-tof`](cryst-struct_pd-neut-tof_Si-SEPD.ipynb) -
-  Demonstrates a Rietveld refinement of Si crystal structure using
+  Demonstrates a Rietveld refinement of the Si crystal structure using
   time-of-flight neutron powder diffraction data from SEPD at Argonne.
 - [NCAF `pd-neut-tof`](cryst-struct_pd-neut-tof_NCAF-WISH.ipynb) -
-  Demonstrates a Rietveld refinement of Na2Ca3Al2F14 crystal structure using
-  time-of-flight neutron powder diffraction data from WISH at ISIS.
+  Demonstrates a Rietveld refinement of the Na2Ca3Al2F14 crystal structure 
+  using time-of-flight neutron powder diffraction data from WISH at ISIS.
 
 ## Pair Distribution Function (PDF)
 
 - [Ni `pd-neut-cwl`](pdf_pd-neut-cwl_Ni.ipynb) -
-  Demonstrates a PDF analysis of Ni based on data collected from a constant
+  Demonstrates a PDF analysis of Ni using data collected from a constant
   wavelength neutron powder diffraction experiment.
 - [Si `pd-neut-tof`](pdf_pd-neut-tof_Si-NOMAD.ipynb) -
-  Demonstrates a PDF analysis of Si based on data collected from a
+  Demonstrates a PDF analysis of Si using data collected from a
   time-of-flight neutron powder diffraction experiment at NOMAD at SNS.
 - [NaCl `pd-xray`](pdf_pd-xray_NaCl.ipynb) -
-  Demonstrates a PDF analysis of NaCl based on data collected from an X-ray
+  Demonstrates a PDF analysis of NaCl using data collected from an X-ray
   powder diffraction experiment.

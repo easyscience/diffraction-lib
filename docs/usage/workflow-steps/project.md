@@ -8,21 +8,21 @@ The **Project** serves as a container for all data and metadata associated with
 a diffraction experiment. It acts as the top-level entity in EasyDiffraction,
 ensuring structured organization and easy access to relevant information. Each
 project can contain multiple **experimental datasets**, with each dataset
-containing contribution from multiple **physical models**.
+containing contribution from multiple **sample models**.
 
 EasyDiffraction allows you to:
 
 - **Manually create** a new project.
-- **Load an existing project** from **CIF files**.
+- **Load an existing project** (**CIF** format).
 
 Below, you will find instructions on how to set project in EasyDiffraction. 
 It is assumed that you have already imported the `easydiffraction` package, as 
-described in the [Getting started](../getting-started.md) section.
+described in the [Getting Started](../getting-started.md) section.
 
 ## Creating a Project Manually
 
-You can manually create a new project and specify its **title** and 
-**description**.
+You can manually create a new project and specify its short **name**, **title** 
+and **description**. All these parameters are optional.
 
 ```python
 # Create a new project
@@ -41,7 +41,7 @@ HRPT diffractometer (PSI).'''
 Saving the initial project requires specifying the directory path:
 
 ```python
-project.save_as(dir_path='lbco_hrpt', temporary=True)
+project.save_as(dir_path='lbco_hrpt')
 ```
 
 If working in the interactive mode, you can also save the project after every
@@ -67,22 +67,19 @@ project.load_from_file('data/lbco_hrpt.cif')
 The example below illustrates a typical **project structure** for a
 **constant-wavelength powder neutron diffraction** experiment:
 
-Each file within the **Project** directory plays a crucial role in defining,
-analyzing, and refining diffraction experiments.
-
 <!-- prettier-ignore-start -->
 
 <div class="cif">
 <pre>
 📁 <span class="red"><b>La0.5Ba0.5CoO3</b></span>     - Project directory.
 ├── 📄 <span class="orange"><b>project.cif</b></span>    - Main project description file.
-├── 📁 models         - Folder with individual crystallographic phases.
-│   ├── 📄 <span class="orange"><b>lbco.cif</b></span>   - File with La0.5Ba0.5CoO3 phase parameters.
+├── 📁 sample_models  - Folder with sample models (crystallographic structures).
+│   ├── 📄 <span class="orange"><b>lbco.cif</b></span>   - File with La0.5Ba0.5CoO3 structure parameters.
 │   └── ...
 ├── 📁 experiments    - Folder with instrumental parameters and measured data.
-│   ├── 📄 <span class="orange"><b>hrpt.cif</b></span>   - Measured data from HRPT@PSI & instrumental parameters.
+│   ├── 📄 <span class="orange"><b>hrpt.cif</b></span>   - Instrumental parameters and measured data from HRPT@PSI.
 │   └── ...
-├── 📄 <span class="orange"><b>analysis.cif</b></span>   - Settings for data analysis.
+├── 📄 <span class="orange"><b>analysis.cif</b></span>   - Settings for data analysis (calculator, minimizer, etc.).
 └── 📁 summary
     └── 📄 report.cif - Summary report after structure refinement.
 </pre>
@@ -96,8 +93,8 @@ Below is a detailed breakdown of the content within each project file.
 
 ### <span class="orange">project.cif</span>
 
-This file provides an overview of the project, linking relevant **models** and
-**experimental datasets**.
+This file provides an overview of the project, including **sample models** and
+**experiments** associated with the project.
 
 <!-- prettier-ignore-start -->
 
@@ -105,10 +102,11 @@ This file provides an overview of the project, linking relevant **models** and
 <pre>
 data_<span class="red"><b>La0.5Ba0.5CoO3</b></span>
 
+<span class="blue"><b>_project</b>.title</span>       "La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI"
 <span class="blue"><b>_project</b>.description</span> "neutrons, powder, constant wavelength, HRPT@PSI"
 
 loop_
-<span class="green"><b>_model</b>.cif_file_name</span>
+<span class="green"><b>_sample_model</b>.cif_file_name</span>
 lbco.cif
 
 loop_
@@ -119,7 +117,7 @@ hrpt.cif
 
 <!-- prettier-ignore-end -->
 
-### models / <span class="orange">lbco.cif</span>
+### sample_models / <span class="orange">lbco.cif</span>
 
 This file contains crystallographic information, including **space group**,
 **unit cell parameters**, and **atomic positions**.
