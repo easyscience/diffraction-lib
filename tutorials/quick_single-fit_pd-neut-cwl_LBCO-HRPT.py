@@ -42,51 +42,19 @@ project.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
 project.sample_models['lbco'].cell.length_a = 3.88
 
 # %%
-project.sample_models['lbco'].atom_sites.add(label='La',
-                                             type_symbol='La',
-                                             fract_x=0,
-                                             fract_y=0,
-                                             fract_z=0,
-                                             wyckoff_letter='a',
-                                             b_iso=0.5,
-                                             occupancy=0.5)
-project.sample_models['lbco'].atom_sites.add(label='Ba',
-                                             type_symbol='Ba',
-                                             fract_x=0,
-                                             fract_y=0,
-                                             fract_z=0,
-                                             wyckoff_letter='a',
-                                             b_iso=0.5,
-                                             occupancy=0.5)
-project.sample_models['lbco'].atom_sites.add(label='Co',
-                                             type_symbol='Co',
-                                             fract_x=0.5,
-                                             fract_y=0.5,
-                                             fract_z=0.5,
-                                             wyckoff_letter='b',
-                                             b_iso=0.5)
-project.sample_models['lbco'].atom_sites.add(label='O',
-                                             type_symbol='O',
-                                             fract_x=0,
-                                             fract_y=0.5,
-                                             fract_z=0.5,
-                                             wyckoff_letter='c',
-                                             b_iso=0.5)
+project.sample_models['lbco'].atom_sites.add('La', 'La', 0, 0, 0, b_iso=0.5, occupancy=0.5)
+project.sample_models['lbco'].atom_sites.add('Ba', 'Ba', 0, 0, 0, b_iso=0.5, occupancy=0.5)
+project.sample_models['lbco'].atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, b_iso=0.5)
+project.sample_models['lbco'].atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
 
 # %% [markdown]
 # ## Step 3: Experiment
 
 # %%
-ed.download_from_repository('hrpt_lbco.xye',
-                            branch='docs',
-                            destination='data')
+ed.download_from_repository('hrpt_lbco.xye', branch='docs', destination='data')
 
 # %%
-project.experiments.add(name='hrpt',
-                        sample_form='powder',
-                        beam_mode='constant wavelength',
-                        radiation_probe='neutron',
-                        data_path='data/hrpt_lbco.xye')
+project.experiments.add(name='hrpt', data_path='data/hrpt_lbco.xye')
 
 # %%
 project.experiments['hrpt'].instrument.setup_wavelength = 1.494
@@ -96,7 +64,6 @@ project.experiments['hrpt'].instrument.calib_twotheta_offset = 0.6
 project.experiments['hrpt'].peak.broad_gauss_u = 0.1
 project.experiments['hrpt'].peak.broad_gauss_v = -0.1
 project.experiments['hrpt'].peak.broad_gauss_w = 0.1
-project.experiments['hrpt'].peak.broad_lorentz_x = 0
 project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
 
 # %%
