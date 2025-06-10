@@ -13,5 +13,5 @@ Here is a brief overview of the User Guide sections:
 - [Concept](concept.md) – Introduces the overall idea behind diffraction data processing and where EasyDiffraction fits.
 - [Data Format](data-format.md) – Explains the Crystallographic Information File (CIF) and how it’s used in EasyDiffraction.
 - [Parameters](parameters.md) – Describes how parameters are structured, named, and accessed within the EasyDiffraction library.
-- [Getting Started](getting-started.md) – Shows how to begin using EasyDiffraction in Python or Jupyter notebooks.
+- [First Steps](first-steps.md) – Shows how to begin using EasyDiffraction in Python or Jupyter notebooks.
 - [Workflow Steps](workflow-steps/index.md) – Breaks down the data analysis pipeline into practical, sequential steps.

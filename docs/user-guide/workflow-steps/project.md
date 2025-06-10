@@ -17,7 +17,7 @@ EasyDiffraction allows you to:
 
 Below are instructions on how to set up a project in EasyDiffraction. 
 It is assumed that you have already imported the `easydiffraction` package, as 
-described in the [First Steps](../getting-started.md) section.
+described in the [First Steps](../first-steps.md) section.
 
 ## Creating a Project Manually
 

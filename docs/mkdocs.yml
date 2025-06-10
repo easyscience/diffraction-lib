@@ -34,7 +34,7 @@ plugins:
 # Exclude files and folders from the global navigation
 not_in_nav: |
   index.md
-  usage/parameters
+  user-guide/parameters
 
 # Format and layout of the global navigation for the site
 nav:
@@ -43,19 +43,19 @@ nav:
   - Installation & Setup:
       - Installation & Setup: installation/index.md
   - User Guide:
-      - User Guide: usage/index.md
-      - Glossary: usage/glossary.md
-      - Concept: usage/concept.md
-      - Data Format: usage/data-format.md
-      - Parameters: usage/parameters.md
-      - Getting Started: usage/getting-started.md
+      - User Guide: user-guide/index.md
+      - Glossary: user-guide/glossary.md
+      - Concept: user-guide/concept.md
+      - Data Format: user-guide/data-format.md
+      - Parameters: user-guide/parameters.md
+      - Getting Started: user-guide/first-steps.md
       - Workflow Steps:
-        - Workflow Steps: usage/workflow-steps/index.md
-        - Project: usage/workflow-steps/project.md
-        - Sample Model: usage/workflow-steps/model.md
-        - Experiment: usage/workflow-steps/experiment.md
-        - Analysis: usage/workflow-steps/analysis.md
-        - Summary: usage/workflow-steps/summary.md
+        - Workflow Steps: user-guide/workflow-steps/index.md
+        - Project: user-guide/workflow-steps/project.md
+        - Sample Model: user-guide/workflow-steps/model.md
+        - Experiment: user-guide/workflow-steps/experiment.md
+        - Analysis: user-guide/workflow-steps/analysis.md
+        - Summary: user-guide/workflow-steps/summary.md
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:

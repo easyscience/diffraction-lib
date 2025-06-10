@@ -10,7 +10,7 @@ Here is a brief overview of the main documentation sections:
 - [:material-cog-box: Installation & Setup](installation/index.md) - Guides
   users through system requirements, environment configuration, and the
   installation process.
-- [:material-book-open-variant: User Guide](usage/index.md) - Covers core
+- [:material-book-open-variant: User Guide](user-guide/index.md) - Covers core
   concepts, key terminology, workflow steps, and essential parameters for
   effective use of EasyDiffraction.
 - [:material-school: Tutorials](tutorials/index.md) - Offers practical,
