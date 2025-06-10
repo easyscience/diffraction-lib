@@ -4,7 +4,7 @@ varname
 pandas
 
 asciichartpy
-plotly
+plotly<6.1.0
 darkdetect
 
 pooch
