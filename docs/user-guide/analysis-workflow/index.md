@@ -1,4 +1,4 @@
-# Workflow Steps
+# Analysis Workflow
 
 To streamline the **data analysis process**, EasyDiffraction follows a
 structured workflow divided into **five key steps**:

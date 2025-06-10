@@ -49,6 +49,6 @@ further analysis and documentation:
 ---
 
 Now that the initial user guide is complete, you can explore the
-[EasyDiffraction API](../../api/index.md) for detailed information on the available 
+[EasyDiffraction API](../../api-reference/index.md) for detailed information on the available 
 classes and methods. Additionally, you can find practical examples and 
 step-by-step guides in the [Tutorials](../../tutorials/index.md).

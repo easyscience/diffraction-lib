@@ -54,7 +54,8 @@ The project is maintained by the
 [European Spallation Source (ESS)](https://ess.eu).
 
 To contribute, see our 
-[:material-account-plus: Contributing Guidelines](https://github.com/EasyScience/EasyDiffractionLib/blob/master/CONTRIBUTING.md).
+[:material-account-plus: Contributing Guidelines](https://github.com/EasyScience/EasyDiffractionLib/blob/master/CONTRIBUTING.md)
+on GitHub.
 
 ## Get in Touch
 

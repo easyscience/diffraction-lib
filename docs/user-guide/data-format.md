@@ -15,7 +15,7 @@ parameters specific to powder diffraction, **magCIF** is used for magnetic struc
 
 As most parameters needed for diffraction data analysis are already covered by IUCr dictionaries,
 EasyDiffraction uses the strict **CIF format** and follows these dictionaries as closely as possible — 
-for both input and output — throughout the workflow described in the [Workflow Steps](workflow-steps/index.md) section.
+for both input and output — throughout the workflow described in the [Analysis Workflow](analysis-workflow/index.md) section.
 
 The key advantage of CIF is the standardized naming of parameters and categories, which promotes interoperability and 
 familiarity among researchers.
@@ -189,7 +189,7 @@ loop_
 <!-- prettier-ignore-end -->
 
 More details on how to define the experiment in CIF format are provided in the
-[Experiment](workflow-steps/experiment.md) section.
+[Experiment](analysis-workflow/experiment.md) section.
 
 ## Other Input/Output Blocks
 
@@ -201,7 +201,7 @@ EasyDiffraction uses CIF consistently throughout its workflow, including in the 
 - **analysis**: stores fitting and analysis parameters
 - **summary**: captures analysis results
 
-Example CIF files for each block are provided in the [Workflow Steps](workflow-steps/index.md) 
+Example CIF files for each block are provided in the [Analysis Workflow](analysis-workflow/index.md) 
  and [Tutorials](../tutorials/index.md).
 
 ## Other Data Formats
@@ -217,4 +217,4 @@ For example, in a standard constant-wavelength powder diffraction experiment:
 - Column 3: standard uncertainty of the intensity
 
 More details on supported input formats are provided in the
-[Experiment](workflow-steps/experiment.md) section.
+[Experiment](analysis-workflow/experiment.md) section.

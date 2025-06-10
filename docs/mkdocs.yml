@@ -25,6 +25,7 @@ extra:
 plugins:
   - mkdocs-jupyter:
       execute_ignore:
+        - '*.ipynb'  # Ignore quick notebooks from execution
 #        - '*emcee*.ipynb' # Ignore notebooks with 'emcee' in the name from execution
 
 ##################
@@ -41,21 +42,21 @@ nav:
   - Introduction:
       - Introduction: introduction/index.md
   - Installation & Setup:
-      - Installation & Setup: installation/index.md
+      - Installation & Setup: installation-and-setup/index.md
   - User Guide:
       - User Guide: user-guide/index.md
       - Glossary: user-guide/glossary.md
       - Concept: user-guide/concept.md
       - Data Format: user-guide/data-format.md
       - Parameters: user-guide/parameters.md
-      - Getting Started: user-guide/first-steps.md
-      - Workflow Steps:
-        - Workflow Steps: user-guide/workflow-steps/index.md
-        - Project: user-guide/workflow-steps/project.md
-        - Sample Model: user-guide/workflow-steps/model.md
-        - Experiment: user-guide/workflow-steps/experiment.md
-        - Analysis: user-guide/workflow-steps/analysis.md
-        - Summary: user-guide/workflow-steps/summary.md
+      - First Steps: user-guide/first-steps.md
+      - Analysis Workflow:
+        - Analysis Workflow: user-guide/analysis-workflow/index.md
+        - Project: user-guide/analysis-workflow/project.md
+        - Sample Model: user-guide/analysis-workflow/model.md
+        - Experiment: user-guide/analysis-workflow/experiment.md
+        - Analysis: user-guide/analysis-workflow/analysis.md
+        - Summary: user-guide/analysis-workflow/summary.md
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:
@@ -72,11 +73,11 @@ nav:
           - Si pd-neut-tof: tutorials/pdf_pd-neut-tof_Si-NOMAD.ipynb
           - NaCl pd-xray: tutorials/pdf_pd-xray_NaCl.ipynb
   - API Reference:
-      - API Reference: api/index.md
-      - api/core.md
-      - api/crystallography.md
-      - api/utils.md
-      - api/plotting.md
-      - api/sample_models.md
-      - api/experiments.md
-      - api/analysis.md
+      - API Reference: api-reference/index.md
+      - api-reference/core.md
+      - api-reference/crystallography.md
+      - api-reference/utils.md
+      - api-reference/plotting.md
+      - api-reference/sample_models.md
+      - api-reference/experiments.md
+      - api-reference/analysis.md

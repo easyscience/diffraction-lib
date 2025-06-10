@@ -134,5 +134,5 @@ easy to use, allowing you to focus on the analysis rather than low-level impleme
 
 Because this workflow is an important part of the EasyDiffraction
 package, it is described in detail in the separate 
-[Workflow Steps](workflow-steps/index.md) section of the
+[Analysis Workflow](analysis-workflow/index.md) section of the
 documentation. 

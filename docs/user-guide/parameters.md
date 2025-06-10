@@ -13,14 +13,14 @@ Each parameter in EasyDiffraction has a specific name used for code reference, a
 - When there is no defined CIF name for a parameter, EasyDiffraction introduces its own name, which is used in the code as well as an equivalent CIF name to be placed in the custom CIF dictionary `easydiffractionCIF`.
 
 EasyDiffraction names are used in code, while CIF names are used to store and retrieve the full state of a data analysis 
-project in CIF format. You can find more about the project in the [Project](workflow-steps/project.md) section.
+project in CIF format. You can find more about the project in the [Project](analysis-workflow/project.md) section.
 
 ## Parameter Attributes
 
 Parameters in EasyDiffraction are more than just variables. They are objects that, in addition to the name and value, also 
 include attributes such as the description, unit, uncertainty, minimum and maximum values, etc. All these attributes are 
-described in the [API Reference](../api/index.md) section. Examples of how to use these parameters in code are 
-provided in the [Workflow Steps](workflow-steps/index.md) and [Tutorials](../tutorials/index.md) sections.
+described in the [API Reference](../api-reference/index.md) section. Examples of how to use these parameters in code are 
+provided in the [Analysis Workflow](analysis-workflow/index.md) and [Tutorials](../tutorials/index.md) sections.
 
 The most important attribute, besides `name` and `value`, is `free`, which is used to define whether the parameter is free or fixed for optimization during the fitting process. The `free` attribute is set to `False` by default, which means the parameter is fixed. To optimize a parameter, set `free` to `True`.
 
