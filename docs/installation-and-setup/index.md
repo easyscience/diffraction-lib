@@ -124,7 +124,7 @@ To include extra dependencies (e.g., charts):
 pip install 'easydiffraction[charts] @ git+https://github.com/easyscience/diffraction-lib@develop'
 ```
 
-## Running Tutorials
+## How to Run Tutorials
 
 EasyDiffraction includes a collection of **Jupyter Notebook examples** that
 demonstrate key functionality. These tutorials serve as
