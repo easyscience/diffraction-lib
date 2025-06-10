@@ -21,13 +21,13 @@ The data is recorded by a detector that measures the intensity of the diffracted
 radiation as a function of angle or time. The radiation is scattered by the
 crystalline specimen (also called the sample), whose structural properties are being studied.
 
-![](../../assets/images/user-guide/data-acquisition_instrument.png){ width="450", loading=lazy }
+![](../assets/images/user-guide/data-acquisition_instrument.png){ width="450", loading=lazy }
 /// caption
 An illustration of the data acquisition step, where raw data is collected
 by a 2D detector. The studied sample originates from Mars. Credits: DOI 10.1126/science.1238932
 ///
 
-![](../../assets/images/user-guide/data-acquisition_2d-raw-data.jpg){ width="400", loading=lazy }
+![](../assets/images/user-guide/data-acquisition_2d-raw-data.jpg){ width="400", loading=lazy }
 /// caption
 A 2D diffraction pattern collected by the detector. Credits: DOI 10.1126/science.1238932
 ///
@@ -38,7 +38,7 @@ Data reduction involves processing the raw data to remove background noise,
 correct for instrumental effects, and convert the data into a more usable format.
 The goal is to produce a clean and reliable dataset suitable for analysis.
 
-![](../../assets/images/user-guide/data-reduction_1d-pattern.png){ width="450", loading=lazy }
+![](../assets/images/user-guide/data-reduction_1d-pattern.png){ width="450", loading=lazy }
 /// caption
 An illustration of a 1D diffraction pattern reduced from the measured 2D data. Credits: DOI 10.1126/science.1238932
 ///
@@ -66,14 +66,14 @@ The aim of data analysis is to refine the structural parameters of the sample
 by minimizing the difference (or **residual**) between the experimental and calculated data —
 and this is exactly where EasyDiffraction comes into play.
 
-![](../../assets/images/user-guide/data-analysis_refinement.png){ width="450", loading=lazy }
+![](../assets/images/user-guide/data-analysis_refinement.png){ width="450", loading=lazy }
 /// caption
 An illustration of the data analysis step: the experimental data (blue)
 is compared to the calculated data (red), and the residual (gray) is minimized. Credits: 
 DOI 10.1126/science.1238932
 ///
 
-![](../../assets/images/user-guide/data-analysis_model.png){ width="450", loading=lazy }
+![](../assets/images/user-guide/data-analysis_model.png){ width="450", loading=lazy }
 /// caption
 An example of a crystal structure model of the studied sample.
 ///

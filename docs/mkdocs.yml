@@ -18,8 +18,13 @@ extra:
   social:
     - icon: easydiffraction  # File: overrides/.icons/easydiffraction.svg
       link: https://easydiffraction.org
+      name: EasyDiffraction Main Webpage
+    - icon: app  # File: overrides/.icons/app.svg
+      link: https://docs.easydiffraction.org/app/
+      name: EasyDiffraction Application Docs
     - icon: fontawesome/brands/github  # Name as in Font Awesome
       link: https://github.com/easyscience/diffraction-lib
+      name: EasyDiffraction Library Source Code on GitHub
 
 # Jupyter notebooks
 #plugins:
@@ -73,10 +78,10 @@ nav:
           - NaCl pd-xray: tutorials/pdf_pd-xray_NaCl.ipynb
   - API Reference:
       - API Reference: api-reference/index.md
-      - api-reference/core.md
-      - api-reference/crystallography.md
-      - api-reference/utils.md
-      - api-reference/plotting.md
-      - api-reference/sample_models.md
-      - api-reference/experiments.md
-      - api-reference/analysis.md
+      - core: api-reference/core.md
+      - crystallography: api-reference/crystallography.md
+      - utils: api-reference/utils.md
+      - plotting: api-reference/plotting.md
+      - sample_models: api-reference/sample_models.md
+      - experiments: api-reference/experiments.md
+      - analysis: api-reference/analysis.md
