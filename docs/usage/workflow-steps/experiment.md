@@ -4,19 +4,349 @@ icon: material/microscope
 
 # :material-microscope: Experiment
 
-The **Experiment** section describes the different types of
-**experimental diffraction data** that EasyDiffraction can process.
-This includes both **constant-wavelength neutron diffraction (CWL)**,
-**time-of-flight neutron diffraction (TOF)**, and
-**single-crystal neutron diffraction (SC CWL)**.
+The **Experiment** in EasyDiffraction includes both the measured diffraction data
+and all the other relevant parameters that describe the experimental setup and 
+related conditions. This can include information about the instrumental 
+resolution, peak shape, background, etc. 
 
-EasyDiffraction supports **CIF-based(()) data formats and can also handle
-**measured data files** in standard formats.
+EasyDiffraction allows you to:
 
-## CIF-based data description
+- **Load an existing experiment** from a file (**CIF** format). Both the
+  metadata and measured data are expected to be in CIF format.
+- **Manually define** a new experiment by specifying its type, other
+  necessary experimental parameters, as well as load measured data. 
+  This is useful when you want to create an experiment from scratch or when 
+  you have a measured data file in a non-CIF format (e.g., `.xye`, `.xy`).
 
-The following examples demonstrate the **CIF data blocks** for different
-diffraction experiments supported in EasyDiffraction.
+Below, you will find instructions on how to define and manage experiments in EasyDiffraction. It is assumed that you have already created a 
+`project` object, as described in the [Project](project.md) section as well as
+defined its `sample_models`, as described in the [Sample Model](model.md) section.
+
+### Adding an Experiment from CIF
+
+This is the most straightforward way to define an experiment in EasyDiffraction. 
+If you have a crystallographic information file (CIF) for your experiment,
+that
+contains both the necessary information (metadata) about the experiment as
+well as the measured data, you can
+add it to your project using the `add_experiment_from_cif` method of the `project` instance. 
+In this case, the name of the experiment will be taken from CIF.
+
+```python
+# Load an experiment from a CIF file
+project.add_experiment_from_cif('data/hrpt_300K.cif')
+```
+Accessing the experiment after loading it will be done through the `experiments`
+object of the `project` instance. The name of the model will be the same as the
+data block id in the CIF file. For example, if the CIF file contains a data block
+with the id `hrpt`,
+
+<!-- prettier-ignore-start -->
+
+<div class="cif">
+<pre>
+data_<span class="red"><b>hrpt</b></span>
+
+<span class="blue"><b>_expt_type</b>.beam_mode</span>  "constant wavelength"
+...
+</pre>
+</div>
+
+<!-- prettier-ignore-end -->
+
+you can access it in the code as follows:
+
+```python
+# Access the experient by its name
+project.experiments['hrpt']
+```
+
+## Defining an Experiment Manually
+
+If you do not have a CIF file or prefer to define the experiment manually, 
+you can use the `add` method of the `experiments`
+object of the `project` instance. In this case, you will need to specify the
+name of the experiment, which will be used to reference it later. 
+Along with the name, you need to provide the following parameters, essential for
+defining the experiment, which define the **type of experiment**:
+
+- **sample_form**: The form of the sample (powder, single crystal).
+- **beam_mode**: The mode of the beam (constant wavelength, time-of-flight).
+- **radiation_probe**: The type of radiation used (neutron, X-ray).
+- **scattering_type**: The type of scattering (bragg, total).
+
+!!! warning "Important"
+
+    It is important to mention that once an experiment is added, you cannot change
+    these parameters. If you need to change them, you must create a new experiment 
+    or redefine the existing one.
+
+If you have a measured data file, you can also specify:
+
+- **data_path**: The path to the measured data file (e.g., `.xye`, `.xy`). 
+  Supported formats are described in the [Measured Data Category](#5-measured-data-category) section.
+
+Here is an example of how to add an experiment with all components needed to
+define the experiment explicitly set:
+
+```python
+# Add an experiment with default parameters, based on the specified type.
+# The experiment name is used to reference it later.
+project.experiments.add(name='hrpt',
+                        sample_form='powder',
+                        beam_mode='constant wavelength',
+                        radiation_probe='neutron',
+                        scattering_type='bragg',
+                        data_path='data/hrpt_lbco.xye')
+```
+
+To add an experiment of default type, you can simply do:
+
+```python
+# Add an experiment of default type
+# The experiment name is used to reference it later.
+project.experiments.add(name='hrpt',
+                        data_path='data/hrpt_lbco.xye')
+```
+
+You can now change the default parameters of the experiment, categorized into
+the groups based on the type of experiment.
+
+The `add` method creates a new experiment of the specified type with default parameters. You can
+then modify its parameters to match your specific experimental setup.
+All parameters are grouped into the following categories, which makes it easier to manage
+the experiment:
+
+1. **Instrument Category**: 
+   Defines the instrument configuration, including wavelength, two-theta offset, and resolution parameters.
+2. **Peak Category**: 
+   Specifies the peak profile type and its parameters, such as broadening and asymmetry.
+3. **Background Category**: 
+   Defines the background type and allows you to add background points.
+4. **Linked Phases Category**: 
+   Links the sample model defined in the previous step to the experiment, allowing you to specify the scale factor for the linked phase.
+5. **Measured Data Category**: 
+   Contains the measured data. The expected format depends on the experiment type, but generally includes columns for 2θ 
+   angle or TOF and intensity.
+
+### 1. Instrument Category
+
+```python
+# Modify the default instrument parameters
+project.experiments['hrpt'].instrument.setup_wavelength = 1.494
+project.experiments['hrpt'].instrument.calib_twotheta_offset = 0.6
+```
+
+### 2. Peak Category
+
+```python
+# Select the desired peak profile type
+project.experiments['hrpt'].peak_profile_type = 'pseudo-voigt'
+
+# Modify default peak profile parameters
+project.experiments['hrpt'].peak.broad_gauss_u = 0.1
+project.experiments['hrpt'].peak.broad_gauss_v = -0.1
+project.experiments['hrpt'].peak.broad_gauss_w = 0.1
+project.experiments['hrpt'].peak.broad_lorentz_x = 0
+project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
+```
+
+### 3. Background Category
+
+```python
+# Select the desired background type
+project.experiments['hrpt'].background_type = 'line-segment'
+
+# Add background points
+project.experiments['hrpt'].background.add(x=10, y=170)
+project.experiments['hrpt'].background.add(x=30, y=170)
+project.experiments['hrpt'].background.add(x=50, y=170)
+project.experiments['hrpt'].background.add(x=110, y=170)
+project.experiments['hrpt'].background.add(x=165, y=170)
+```
+
+### 4. Linked Phases Category
+
+```python
+# Link the sample model defined in the previous step to the experiment
+project.experiments['hrpt'].linked_phases.add(id='lbco', scale=10.0)
+```
+
+### 5. Measured Data Category
+
+If you do not have a CIF file for your experiment, you can load measured data 
+from a file in a supported format. The measured data will be automatically 
+converted into CIF format and added to the experiment. The expected format 
+depends on the experiment type.
+
+#### Supported data file formats:
+
+* `.xye` or `.xys` (3 columns, including standard deviations)
+    * [\_pd_meas.2theta\_scan](../parameters/pd_meas.md)
+    * [\_pd_meas.intensity\_total](../parameters/pd_meas.md)
+    * [\_pd_meas.intensity\_total\_su](../parameters/pd_meas.md)
+* `.xy` (2 columns, no standard deviations):
+    * [\_pd_meas.2theta\_scan](../parameters/pd_meas.md)
+    * [\_pd_meas.intensity\_total](../parameters/pd_meas.md)
+
+If no **standard deviations** are provided, they are automatically calculated as the **square root** of measured intensities.
+
+Optional comments with `#` are possible in data file headers.
+
+Here are some examples:
+
+#### example1.xye
+
+<!-- prettier-ignore-start -->
+<div class="cif">
+<pre>
+<span class="grey"># 2theta  intensity    su</span>
+   10.00     167      12.6
+   10.05     157      12.5
+   10.10     187      13.3
+   10.15     197      14.0
+   10.20     164      12.5
+  ...
+  164.65     173      30.1
+  164.70     187      27.9
+  164.75     175      38.2
+  164.80     168      30.9
+  164.85     109      41.2
+</pre>
+</div>
+<!-- prettier-ignore-end -->
+
+#### example2.xy
+
+<!-- prettier-ignore-start -->
+<div class="cif">
+<pre>
+<span class="grey"># 2theta  intensity</span>
+   10.00     167    
+   10.05     157    
+   10.10     187    
+   10.15     197    
+   10.20     164    
+  ...
+  164.65     173    
+  164.70     187    
+  164.75     175    
+  164.80     168    
+  164.85     109  
+</pre>
+</div>
+<!-- prettier-ignore-end -->
+
+#### example3.xy
+
+<!-- prettier-ignore-start -->
+<div class="cif">
+<pre>
+10  167.3    
+10.05  157.4    
+10.1  187.1    
+10.15  197.8    
+10.2  164.9    
+...
+164.65  173.3    
+164.7  187.5    
+164.75  175.8    
+164.8  168.1    
+164.85  109     
+</pre>
+</div>
+<!-- prettier-ignore-end -->
+
+## Listing Defined Experiments
+
+To check which experiments have been added to the `project`, use:
+
+```python
+# Show defined experiments
+project.experiments.show_names()
+```
+
+Expected output:
+
+```
+Defined experiments 🔬
+['hrpt']
+```
+
+## Viewing an Experiment as CIF
+
+To inspect an experiment in CIF format, use:
+
+```python
+# Show experiment as CIF
+project.experiments['hrpt'].show_as_cif()
+```
+
+Example output:
+
+```
+Experiment 🔬 'hrpt' as cif
+╒═════════════════════════════════════════════╕
+│ data_hrpt                                   │
+│                                             │
+│ _expt_type.beam_mode  "constant wavelength" │
+│ _expt_type.radiation_probe  neutron         │
+│ _expt_type.sample_form  powder              │
+│ _expt_type.scattering_type  bragg           │
+│                                             │
+│ _instr.2theta_offset  0.6                   │
+│ _instr.wavelength  1.494                    │
+│                                             │
+│ _peak.broad_gauss_u  0.1                    │
+│ _peak.broad_gauss_v  -0.1                   │
+│ _peak.broad_gauss_w  0.1                    │
+│ _peak.broad_lorentz_x  0                    │
+│ _peak.broad_lorentz_y  0.1                  │
+│                                             │
+│ loop_                                       │
+│ _pd_phase_block.id                          │
+│ _pd_phase_block.scale                       │
+│ lbco 10.0                                   │
+│                                             │
+│ loop_                                       │
+│ _pd_background.line_segment_X               │
+│ _pd_background.line_segment_intensity       │
+│ 10 170                                      │
+│ 30 170                                      │
+│ 50 170                                      │
+│ 110 170                                     │
+│ 165 170                                     │
+│                                             │
+│ loop_                                       │
+│ _pd_meas.2theta_scan                        │
+│ _pd_meas.intensity_total                    │
+│ _pd_meas.intensity_total_su                 │
+│ 10.0 167.0 12.6                             │
+│ 10.05 157.0 12.5                            │
+│ 10.1 187.0 13.3                             │
+│ 10.15 197.0 14.0                            │
+│ 10.2 164.0 12.5                             │
+│ ...                                         │
+│ 164.65 173.0 30.1                           │
+│ 164.7 187.0 27.9                            │
+│ 164.75 175.0 38.2                           │
+│ 164.8 168.0 30.9                            │
+│ 164.85 109.0 41.2                           │
+╘═════════════════════════════════════════════╛
+```
+
+## Saving an Experiment
+
+Saving the project, as described in the [Project](project.md) section, 
+will also save the experiment. Each experiment is saved as a separate
+CIF file in the `experiments` subdirectory of the project directory. The project file contains 
+references to these files.
+
+EasyDiffraction supports different types of experiments, and each experiment is saved in a 
+dedicated CIF file with 
+experiment-specific parameters. 
+
+Below are examples of how different experiments are saved in CIF format.
 
 ### [pd-neut-cwl][3]{:.label-experiment}
 
@@ -24,25 +354,24 @@ This example represents a constant-wavelength neutron powder diffraction
 experiment:
 
 <!-- prettier-ignore-start -->
+
 <div class="cif">
 <pre>
 data_<span class="red"><b>hrpt</b></span>
 
-<span class="blue"><b>_diffrn_radiation</b>.probe</span>                 neutron
-<span class="blue"><b>_diffrn_radiation_wavelength</b>.wavelength</span> 1.494
+<span class="blue"><b>_expt_type</b>.beam_mode</span>        "constant wavelength"
+<span class="blue"><b>_expt_type</b>.radiation_probe</span>  neutron
+<span class="blue"><b>_expt_type</b>.sample_form</span>      powder
+<span class="blue"><b>_expt_type</b>.scattering_type</span>  bragg
 
-<span class="blue"><b>_pd_calib</b>.2theta_offset</span> 0.6225(4)
+<span class="blue"><b>_instr</b>.wavelength</span>    1.494
+<span class="blue"><b>_instr</b>.2theta_offset</span> 0.6225(4)
 
-<span class="blue"><b>_pd_instr</b>.resolution_u</span>  0.0834
-<span class="blue"><b>_pd_instr</b>.resolution_v</span> -0.1168
-<span class="blue"><b>_pd_instr</b>.resolution_w</span>  0.123
-<span class="blue"><b>_pd_instr</b>.resolution_x</span>  0
-<span class="blue"><b>_pd_instr</b>.resolution_y</span>  0.0797
-
-<span class="blue"><b>_pd_instr</b>.reflex_asymmetry_p1</span> 0
-<span class="blue"><b>_pd_instr</b>.reflex_asymmetry_p2</span> 0
-<span class="blue"><b>_pd_instr</b>.reflex_asymmetry_p3</span> 0
-<span class="blue"><b>_pd_instr</b>.reflex_asymmetry_p4</span> 0
+<span class="blue"><b>_peak</b>.broad_gauss_u</span>    0.0834
+<span class="blue"><b>_peak</b>.broad_gauss_v</span>   -0.1168
+<span class="blue"><b>_peak</b>.broad_gauss_w</span>    0.123
+<span class="blue"><b>_peak</b>.broad_lorentz_x</span>  0
+<span class="blue"><b>_peak</b>.broad_lorentz_y</span>  0.0797
 
 loop_
 <span class="green"><b>_pd_phase_block</b>.id</span>
@@ -83,6 +412,7 @@ loop_
 164.85  109  41.2
 </pre>
 </div>
+
 <!-- prettier-ignore-end -->
 
 ### [pd-neut-tof][3]{:.label-experiment}
@@ -208,94 +538,13 @@ loop_
 </div>
 <!-- prettier-ignore-end -->
 
-## Other supported data formats
-
-If instrumental parameters are not available in a CIF file, EasyDiffraction
-allows importing **measured data files** in standard formats. These files are
-automatically converted into **CIF format** with default parameters, which can
-be later modified within the software.
-
-#### Supported data file formats:
-
-* `.xye` or `.xys` (3 columns, including standard deviations)
-    * [\_pd_meas.2theta\_scan](../dictionaries/_pd_meas.md),
-    * [\_pd_meas.intensity\_total](../dictionaries/_pd_meas.md), 
-    * [\_pd_meas.intensity\_total\_su](../dictionaries/_pd_meas.md).
-* `.xy` (2 columns, no standard deviations):
-    * [\_pd_meas.2theta\_scan](../dictionaries/_pd_meas.md),
-    * [\_pd_meas.intensity\_total](../dictionaries/_pd_meas.md). 
-
-If no **standard deviations** are provided, they are automatically calculated as the **square root** of measured intensities.
-
-Optional comments with `#` are possible in data file headers.
-
-Here are some examples:
-
-### example1.xye
-
 <!-- prettier-ignore-start -->
-<div class="cif">
-<pre>
-<span class="grey"># 2theta  intensity    su</span>
-   10.00     167      12.6
-   10.05     157      12.5
-   10.10     187      13.3
-   10.15     197      14.0
-   10.20     164      12.5
-  ...
-  164.65     173      30.1
-  164.70     187      27.9
-  164.75     175      38.2
-  164.80     168      30.9
-  164.85     109      41.2
-</pre>
-</div>
+[3]: ../glossary.md#experiment-type-labels
 <!-- prettier-ignore-end -->
 
-### example2.xy
+<br>
 
-<!-- prettier-ignore-start -->
-<div class="cif">
-<pre>
-<span class="grey"># 2theta  intensity</span>
-   10.00     167    
-   10.05     157    
-   10.10     187    
-   10.15     197    
-   10.20     164    
-  ...
-  164.65     173    
-  164.70     187    
-  164.75     175    
-  164.80     168    
-  164.85     109  
-</pre>
-</div>
-<!-- prettier-ignore-end -->
+---
 
-### example3.xy
-
-<!-- prettier-ignore-start -->
-<div class="cif">
-<pre>
-10  167.3    
-10.05  157.4    
-10.1  187.1    
-10.15  197.8    
-10.2  164.9    
-...
-164.65  173.3    
-164.7  187.5    
-164.75  175.8    
-164.8  168.1    
-164.85  109     
-</pre>
-</div>
-<!-- prettier-ignore-end -->
-
-<!-- prettier-ignore-start -->
-[3]: ../terminology.md#glossary
-<!-- prettier-ignore-end -->
-
-Now that the Experiment has been defined, you can proceed to the next step:
+Now that the experiment has been defined, you can proceed to the next step:
 [Analysis](analysis.md).

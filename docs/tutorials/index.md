@@ -6,7 +6,7 @@ icon: material/school
 
 This section presents a collection of **Jupyter Notebook** tutorials that 
 demonstrate how to use EasyDiffraction for various tasks. These tutorials serve
-as **step-by-step guides** to help users grasp the workflow of diffraction data
+as self-contained, step-by-step **guides** to help users grasp the workflow of diffraction data
 analysis using EasyDiffraction.
 
 Instructions on how to run the tutorials are provided in the

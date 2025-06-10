@@ -19,7 +19,7 @@ A code to identify the atom specie(s) occupying this site.
 
 ## \_atom_site.fract
 
-Atom-site coordinates as fractions of the [\_cell_length](_cell.md) values.
+Atom-site coordinates as fractions of the [\_cell_length](cell.md) values.
 
 - [\_atom_site.fract_x](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site.fract_x.html)
 - [\_atom_site.fract_y](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site.fract_y.html)

@@ -7,17 +7,17 @@ icon: material/code-braces-box
 This section contains the reference detailing the functions and modules 
 available in EasyDiffraction:
 
-- [Sample_models](sample_models.md) - 
-  Defines sample models, such as atomic structures and unit cells.
-- [Experiments](experiments.md) - 
-  Manages experimental setups and measurements.
-- [Analysis](analysis.md) - 
+- [sample_models](sample_models.md) - 
+  Defines sample models, such as crystallographic structures, and manages their properties.
+- [experiments](experiments.md) - 
+  Manages experimental setups and instrument parameters, as well as the associated diffraction data.
+- [analysis](analysis.md) - 
   Provides tools for analyzing diffraction data, including fitting and minimization.
-- [Core](core.md) - 
+- [core](core.md) - 
   Contains core utilities and foundational objects used across the package.
-- [Crystallography](crystallography.md) - 
+- [crystallography](crystallography.md) - 
   Handles crystallographic calculations, space groups, and symmetry operations.
-- [Utils](utils.md) - 
+- [utils](utils.md) - 
   Miscellaneous utility functions for formatting, decorators, and general helpers.
-- [Plotting](plotting.md) - 
+- [plotting](plotting.md) - 
   Tools for visualizing data and fitting results.

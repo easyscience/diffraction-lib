@@ -6,15 +6,14 @@ icon: material/cog-box
 
 ## Requirements
 
-EasyDiffraction is a multi-platform Python library compatible with **Python
-3.10 through 3.12**. Ensure that Python is installed
-on your system before proceeding with the installation.
+EasyDiffraction is a cross-platform Python library compatible with **Python 3.10 through 3.12**.  
+Make sure Python is installed on your system before proceeding with the installation.
 
-## Environment setup <small>optional</small> { #environment-setup data-toc-label="Environment setup" }
+## Environment Setup <small>optional</small> { #environment-setup data-toc-label="Environment Setup" }
 
-We recommend using a **virtual environment** to isolate dependencies and avoid
-conflicts with system-wide packages. If issues arise, you can simply delete and
-recreate the environment.
+We recommend using a **virtual environment** to isolate dependencies and avoid 
+conflicts with system-wide packages. If any issues arise, you can simply delete 
+and recreate the environment.
 
 #### Creating and Activating a Virtual Environment:
 
@@ -45,7 +44,7 @@ recreate the environment.
 
 #### Deactivating and Removing the Virtual Environment:
 
-- Exit the environment with:
+- Exit the environment:
   ```console
   deactivate
   ```
@@ -66,14 +65,14 @@ recreate the environment.
         ```
 <!-- prettier-ignore-end -->
 
-## Installation guide
+## Installation Guide
 
 ### Installing from PyPI <small>recommended</small> { #from-pypi data-toc-label="Installing from PyPI" }
 
-EasyDiffraction is available on **PyPI (Python Package Index)** and
-can be installed using `pip`. It is advised to install it within a virtual
-environment, as outlined in the previous section
-[Environment setup](#environment-setup).
+EasyDiffraction is available on **PyPI (Python Package Index)** and can be 
+installed using `pip`. We strongly recommend installing it within a virtual 
+environment, as described in the 
+[Environment Setup](#environment-setup) section.
 
 We recommend installing the latest release of EasyDiffraction with the
 `charts` extras, which include optional dependencies used for simplified
@@ -97,7 +96,7 @@ To install a specific version of EasyDiffraction, e.g., 1.0.3:
 pip install 'easydiffraction==1.0.3'
 ```
 
-Upgrading to the latest version can be done with:
+To upgrade to the latest version:
 
 ```console
 pip install --upgrade --force-reinstall easydiffraction
@@ -111,8 +110,7 @@ pip show easydiffraction
 
 ### Installing from GitHub
 
-Installing an unreleased version is generally not recommended but can be useful
-for testing purposes.
+Installing unreleased versions is generally not recommended but may be useful for testing.
 
 To install EasyDiffraction from, e.g., the `develop` branch of GitHub:
 
@@ -126,32 +124,30 @@ To include extra dependencies (e.g., charts):
 pip install 'easydiffraction[charts] @ git+https://github.com/easyscience/diffraction-lib@develop'
 ```
 
-## Running tutorials
+## Running Tutorials
 
-EasyDiffraction provides a collection of **Jupyter Notebook examples** that
-demonstrate various functionalities. These tutorials serve as
-**step-by-step guides**, helping users understand the workflow of diffraction
-data analysis in EasyDiffraction. They are available in the
-[:material-school: Tutorials](../tutorials/index.md) section of the
-documentation as **static HTML pages** for easy reference. However, you can
-also run them interactively in two ways:
+EasyDiffraction includes a collection of **Jupyter Notebook examples** that
+demonstrate key functionality. These tutorials serve as
+**step-by-step guides** to help users understand the diffraction data analysis 
+workflow. 
 
-- **Run Locally** – Download the Jupyter Notebook file using the
-  :material-download: **Download** button and execute it on your computer.
-- **Run Online** – Open it with the :google-colab: **Open in Google Colab**
-  button and execute the tutorial directly in **Google Colab**, without
-  requiring any local setup.
+They are available as **static HTML pages** in the
+[:material-school: Tutorials](../tutorials/index.md) section. You can also run them interactively in two ways:
+
+- **Run Locally** – Download the notebook via the
+  :material-download: **Download** button and run it on your computer.
+- **Run Online** – Use the :google-colab: **Open in Google Colab**
+  button to run the tutorial directly in your browser (no setup required).
 
 !!! note
 
-    These Jupyter notebooks can also be downloaded all at once as a zip archive
-    from the
-    [EasyDiffraction releases](https://github.com/easyscience/diffraction-lib/releases/latest).
+    You can also download all Jupyter notebooks at once as a zip archive from the
+    [EasyDiffraction Releases](https://github.com/easyscience/diffraction-lib/releases/latest).
 
-### Run tutorials locally
+### Run Tutorials Locally
 
-To run tutorials locally, install Jupyter Notebook or JupyterLab.
-Here are the steps to follow in the case of Jupyter Notebook:
+To run tutorials locally, install **Jupyter Notebook** or **JupyterLab**.
+Here are the steps to follow in the case of **Jupyter Notebook**:
 
 - Install Jupyter Notebook:
   ```console
@@ -160,35 +156,32 @@ Here are the steps to follow in the case of Jupyter Notebook:
 - Download the latest EasyDiffraction tutorial examples from GitHub, e.g.,
   using curl:
   ```console
-  curl --location --remote-name https://github.com/easyscience/{{project__repos__lib}}/releases/latest/download/examples.zip
+  curl --location --remote-name https://github.com/easyscience/diffraction-lib/releases/latest/download/examples.zip
   ```
 - Unzip the archive:
   ```console
   unzip examples.zip
   ```
-- Run the Jupyter Notebook server in the `examples/` directory:
+- Launch the Jupyter Notebook server in the `examples/` directory:
   ```console
   jupyter notebook examples/
   ```
-- Open your web browser and go to:
+- In your web browser, go to:
   ```console
   http://localhost:8888/
   ```
-- Select one of the `*.ipynb` files.
+- Open one of the `*.ipynb` files.
 
-### Running tutorials via Google Colab
+### Run Tutorials via Google Colab
 
-**Google Colab** allows you to run Jupyter Notebooks in the cloud without any
+**Google Colab** lets you run Jupyter Notebooks in the cloud without any
 local installation.
 
 To use Google Colab:
 
 - Ensure you have a **Google account**.
-- Navigate to the
-  **[:material-school: Tutorials](../tutorials/index.md)** section of
-  the documentation.
-- Click the :google-colab: **Open in Google Colab** button available for each
-  tutorial.
+- Go to the
+  **[:material-school: Tutorials](../tutorials/index.md)** section.
+- Click the :google-colab: **Open in Google Colab** button on any tutorial.
 
-This method allows you to experiment with EasyDiffraction tutorials
-instantly, without setting up a Python environment on your system.
+This is the fastest way to start experimenting with EasyDiffraction, without setting up Python on your system.
