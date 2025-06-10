@@ -25,10 +25,6 @@ extra:
 plugins:
   - mkdocs-jupyter:
       execute_ignore:
-        - '*basic*.ipynb'
-        - '*advanced*.ipynb'
-        - '*cryst-struct*.ipynb'
-        - '*pdf*.ipynb'
 #        - '*emcee*.ipynb' # Ignore notebooks with 'emcee' in the name from execution
 
 ##################
