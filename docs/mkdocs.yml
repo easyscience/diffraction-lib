@@ -22,10 +22,9 @@ extra:
       link: https://github.com/easyscience/diffraction-lib
 
 # Jupyter notebooks
-plugins:
-  - mkdocs-jupyter:
-      execute_ignore:
-        - '*.ipynb'  # Ignore quick notebooks from execution
+#plugins:
+#  - mkdocs-jupyter:
+#      execute_ignore:
 #        - '*emcee*.ipynb' # Ignore notebooks with 'emcee' in the name from execution
 
 ##################
