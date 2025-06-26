@@ -325,10 +325,6 @@ class PairDistributionFunctionGaussianDampedSinc(PeakBase,
         self._add_pair_distribution_function_broadening()
         self._locked = True  # Lock further attribute additions
 
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked = True
-
 
 # --- Peak factory ---
 class PeakFactory:
