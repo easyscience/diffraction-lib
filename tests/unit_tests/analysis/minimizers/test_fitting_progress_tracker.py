@@ -34,11 +34,11 @@ def test_start_tracking(mock_print, tracker):
 
 @patch("builtins.print")
 def test_add_tracking_info(mock_print, tracker):
-    tracker.add_tracking_info([1, "10.0", "9.0", "10% ↓"])
+    tracker.add_tracking_info([1, "9.0", "10% ↓"])
 
     # Assertions
     mock_print.assert_called_once()
-    assert "│        1        │       10.0      │       9.0       │      10% ↓      │" in mock_print.call_args[0][0]
+    assert "│        1        │       9.0       │      10% ↓      │" in mock_print.call_args[0][0]
 
 
 @patch("builtins.print")

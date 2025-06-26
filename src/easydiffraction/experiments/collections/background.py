@@ -1,11 +1,11 @@
 import numpy as np
-import tabulate
 
-from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Type, Union
+from abc import abstractmethod
+from typing import Dict, List, Type, Union
 from numpy.polynomial.chebyshev import chebval
 from scipy.interpolate import interp1d
 
+from easydiffraction.utils.utils import render_table
 from easydiffraction.utils.formatting import (
     paragraph,
     warning
@@ -133,23 +133,18 @@ class LineSegmentBackground(BackgroundBase):
         return y_data
 
     def show(self) -> None:
-        header: List[str] = ["X", "Intensity"]
-        table_data: List[List[float]] = []
-
+        columns_headers: List[str] = ["X", "Intensity"]
+        columns_alignment = ["left", "left"]
+        columns_data: List[List[float]] = []
         for point in self._items.values():
             x = point.x.value
             y = point.y.value
-            table_data.append([x, y])
+            columns_data.append([x, y])
 
         print(paragraph("Line-segment background points"))
-        print(tabulate.tabulate(
-            table_data,
-            headers=header,
-            tablefmt="fancy_outline",
-            numalign="left",
-            stralign="left",
-            showindex=False
-        ))
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=columns_data)
 
 
 class ChebyshevPolynomialBackground(BackgroundBase):
@@ -171,23 +166,18 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         return y_data
 
     def show(self) -> None:
-        header: List[str] = ["Order", "Coefficient"]
-        table_data: List[List[Union[int, float]]] = []
-
+        columns_headers: List[str] = ["Order", "Coefficient"]
+        columns_alignment = ["left", "left"]
+        columns_data: List[List[Union[int, float]]] = []
         for term in self._items.values():
             order = term.order.value
             coef = term.coef.value
-            table_data.append([order, coef])
+            columns_data.append([order, coef])
 
         print(paragraph("Chebyshev polynomial background terms"))
-        print(tabulate.tabulate(
-            table_data,
-            headers=header,
-            tablefmt="fancy_outline",
-            numalign="left",
-            stralign="left",
-            showindex=False
-        ))
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=columns_data)
 
 
 class BackgroundFactory:

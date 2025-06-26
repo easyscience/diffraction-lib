@@ -4,7 +4,10 @@ varname
 pandas
 
 asciichartpy
-plotly
+plotly<6.1.0
+darkdetect
+
+pooch
 
 scipy
 
@@ -23,3 +26,13 @@ asteval
 
 pytest
 pytest-xdist
+nbmake
+
+mkdocs
+mkdocs-material 
+mkdocs-autorefs<1.3.0
+mkdocs-jupyter 
+mkdocs-plugin-inline-svg 
+mkdocs-markdownextradata-plugin 
+mkdocstrings-python 
+pyyaml

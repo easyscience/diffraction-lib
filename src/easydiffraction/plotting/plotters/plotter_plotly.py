@@ -1,3 +1,4 @@
+import darkdetect
 import plotly.graph_objects as go
 import plotly.io as pio
 
@@ -14,7 +15,7 @@ DEFAULT_COLORS = {
 
 
 class PlotlyPlotter(PlotterBase):
-    pio.templates.default = 'plotly_white'
+    pio.templates.default = 'plotly_dark' if darkdetect.isDark() else 'plotly_white'
 
     def _get_trace(self, x, y, label):
         mode = SERIES_CONFIG[label]['mode']

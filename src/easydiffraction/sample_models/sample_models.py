@@ -4,6 +4,7 @@ from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.core.objects import Collection
 from easydiffraction.sample_models.sample_model import SampleModel
 from easydiffraction.utils.formatting import paragraph
+from easydiffraction.sample_models.sample_model import SampleModel
 
 
 class SampleModels(Collection):

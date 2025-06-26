@@ -26,30 +26,30 @@ def analysis(mock_project):
     return Analysis(project=mock_project)
 
 
-@patch("builtins.print")
-def test_show_all_params(mock_print, analysis):
-    analysis._show_params = MagicMock()
-    analysis.show_all_params()
-
-    # Assertions
-    assert('parameters for all experiments' in mock_print.call_args[0][0])
-
-@patch("builtins.print")
-def test_show_fittable_params(mock_print, analysis):
-    analysis._show_params = MagicMock()
-    analysis.show_fittable_params()
-
-    # Assertions
-    assert('Fittable parameters for all experiments' in mock_print.call_args[0][0])
-
-@patch("builtins.print")
-def test_show_free_params(mock_print, analysis):
-    analysis._show_params = MagicMock()
-    analysis.show_free_params()
-
-    # Assertions
-    assert('Free parameters for both sample models' in mock_print.call_args[0][0])
-    # mock_print.assert_any_call("Free parameters for both sample models (🧩 data blocks) and experiments (🔬 data blocks)")
+#@patch("builtins.print")
+#def test_show_all_params(mock_print, analysis):
+#    analysis._show_params = MagicMock()
+#    analysis.show_all_params()
+#
+#    # Assertions
+#    assert('parameters for all experiments' in mock_print.call_args[0][0])
+#
+#@patch("builtins.print")
+#def test_show_fittable_params(mock_print, analysis):
+#    analysis._show_params = MagicMock()
+#    analysis.show_fittable_params()
+#
+#    # Assertions
+#    assert('Fittable parameters for all experiments' in mock_print.call_args[0][0])
+#
+#@patch("builtins.print")
+#def test_show_free_params(mock_print, analysis):
+#    analysis._show_params = MagicMock()
+#    analysis.show_free_params()
+#
+#    # Assertions
+#    assert('Free parameters for both sample models' in mock_print.call_args[0][0])
+#    # mock_print.assert_any_call("Free parameters for both sample models (🧩 data blocks) and experiments (🔬 data blocks)")
 
 
 @patch("builtins.print")

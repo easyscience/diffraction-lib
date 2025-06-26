@@ -4,7 +4,7 @@ import tempfile
 from textwrap import wrap
 
 from varname import varname
-from tabulate import tabulate
+from typing import List
 
 from easydiffraction.utils.formatting import (
     paragraph,
@@ -83,8 +83,8 @@ class ProjectInfo:
 
     def as_cif(self) -> str:
         """Export project metadata to CIF."""
-        wrapped_title: List[str] = wrap(self.title, width=60)
-        wrapped_description: List[str] = wrap(self.description, width=60)
+        wrapped_title: List[str] = wrap(self.title, width=46)
+        wrapped_description: List[str] = wrap(self.description, width=46)
 
         title_str: str = f"_project.title            '{wrapped_title[0]}'"
         for line in wrapped_title[1:]:

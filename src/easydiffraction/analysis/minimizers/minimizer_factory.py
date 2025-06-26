@@ -1,6 +1,6 @@
-import tabulate
 from typing import List, Type, Optional, Dict, Any
 
+from easydiffraction.utils.utils import render_table
 from easydiffraction.utils.formatting import paragraph
 
 from .minimizer_lmfit import LmfitMinimizer
@@ -51,22 +51,17 @@ class MinimizerFactory:
         """
         Display a table of available minimizers and their descriptions.
         """
-        header: List[str] = ["Minimizer", "Description"]
-        table_data: List[List[str]] = []
-
+        columns_headers: List[str] = ["Minimizer", "Description"]
+        columns_alignment = ["left", "left"]
+        columns_data: List[List[str]] = []
         for name, config in cls._available_minimizers.items():
             description: str = config.get('description', 'No description provided.')
-            table_data.append([name, description])
+            columns_data.append([name, description])
 
-        print(paragraph("Available minimizers"))
-        print(tabulate.tabulate(
-            table_data,
-            headers=header,
-            tablefmt="fancy_outline",
-            numalign="left",
-            stralign="left",
-            showindex=False
-        ))
+        print(paragraph("Supported minimizers"))
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=columns_data)
 
     @classmethod
     def create_minimizer(cls, selection: str) -> MinimizerBase:

@@ -7,7 +7,7 @@ DEFAULT_SCATTERING_TYPE = "bragg"
 DEFAULT_PEAK_PROFILE_TYPE = {
     "bragg": {
         "constant wavelength": "pseudo-voigt",
-        "time-of-flight": "pseudo-voigt"
+        "time-of-flight": "pseudo-voigt * ikeda-carpenter"
     },
     "total": {
         "constant wavelength": "gaussian-damped-sinc",

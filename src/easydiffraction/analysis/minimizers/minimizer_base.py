@@ -1,8 +1,6 @@
 import numpy as np
-import pandas as pd
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List, Optional, Union
-from tabulate import tabulate
 
 from ..reliability_factors import (
     calculate_r_factor,
@@ -12,6 +10,7 @@ from ..reliability_factors import (
 )
 from .fitting_progress_tracker import FittingProgressTracker
 
+from easydiffraction.utils.utils import render_table
 from easydiffraction.utils.formatting import paragraph
 
 
@@ -83,6 +82,15 @@ class FitResults:
                    "uncertainty",
                    "units",
                    "change"]
+        alignments = ["left",
+                      "left",
+                      "left",
+                      "left",
+                      "right",
+                      "right",
+                      "right",
+                      "left",
+                      "right"]
 
         rows = []
         for param in self.parameters:
@@ -112,13 +120,10 @@ class FitResults:
                          units,
                          relative_change])
 
-        dataframe = pd.DataFrame(rows)
-        indices = range(1, len(dataframe) + 1)
-
-        print(tabulate(dataframe,
-                       headers=headers,
-                       tablefmt="fancy_outline",
-                       showindex=indices))
+        render_table(columns_headers=headers,
+                     columns_alignment=alignments,
+                     columns_data=rows,
+                     show_index=True)
 
 
 class MinimizerBase(ABC):

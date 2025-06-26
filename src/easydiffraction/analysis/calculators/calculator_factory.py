@@ -1,6 +1,6 @@
-import tabulate
 from typing import Dict, Type, List, Optional, Union, Any
 
+from easydiffraction.utils.utils import render_table
 from easydiffraction.utils.formatting import (
     paragraph,
     error
@@ -41,22 +41,17 @@ class CalculatorFactory:
 
     @classmethod
     def show_supported_calculators(cls) -> None:
-        header: List[str] = ["Calculator", "Description"]
-        table_data: List[List[str]] = []
-
+        columns_headers: List[str] = ["Calculator", "Description"]
+        columns_alignment = ["left", "left"]
+        columns_data: List[List[str]] = []
         for name, config in cls._supported_calculators().items():
             description: str = config.get('description', 'No description provided.')
-            table_data.append([name, description])
+            columns_data.append([name, description])
 
         print(paragraph("Supported calculators"))
-        print(tabulate.tabulate(
-            table_data,
-            headers=header,
-            tablefmt="fancy_outline",
-            numalign="left",
-            stralign="left",
-            showindex=False
-        ))
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=columns_data)
 
     @classmethod
     def create_calculator(cls, calculator_name: str) -> Optional[CalculatorBase]:
