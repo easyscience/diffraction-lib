@@ -82,6 +82,8 @@ nav:
       - crystallography: api-reference/crystallography.md
       - utils: api-reference/utils.md
       - plotting: api-reference/plotting.md
+      - project: api-reference/project.md
       - sample_models: api-reference/sample_models.md
       - experiments: api-reference/experiments.md
       - analysis: api-reference/analysis.md
+      - summary: api-reference/summary.md
