@@ -68,7 +68,7 @@ def test_calculate_single_model_pattern(mock_rhochi_calc, mock_sample_model, moc
 def test_recreate_cryspy_dict(mock_sample_model, mock_experiment):
     calculator = CryspyCalculator()
     calculator._cryspy_dicts = {
-        "experiment1": {
+        "sample1_experiment1": {
             "pd_experiment1": {
                 "offset_ttheta": [0.1],
                 "wavelength": [1.54],

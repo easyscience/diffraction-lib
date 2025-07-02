@@ -72,6 +72,7 @@ nav:
           - HS pd-neut-cwl: tutorials/cryst-struct_pd-neut-cwl_HS-HRPT.ipynb
           - Si pd-neut-tof: tutorials/cryst-struct_pd-neut-tof_Si-SEPD.ipynb
           - NCAF pd-neut-tof: tutorials/cryst-struct_pd-neut-tof_NCAF-WISH.ipynb
+          - LBCO+Si McStas: tutorials/cryst-struct_pd-neut-tof_multphase-LBCO-Si_McStas.ipynb
       - Pair Distribution Function:
           - Ni pd-neut-cwl: tutorials/pdf_pd-neut-cwl_Ni.ipynb
           - Si pd-neut-tof: tutorials/pdf_pd-neut-tof_Si-NOMAD.ipynb
