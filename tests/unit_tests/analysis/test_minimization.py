@@ -64,7 +64,7 @@ def test_fit_no_params(diffraction_minimizer, mock_sample_models, mock_experimen
 
 
 def test_fit_with_params(diffraction_minimizer, mock_sample_models, mock_experiments, mock_calculator):
-    result = diffraction_minimizer.fit(mock_sample_models, mock_experiments, mock_calculator)
+    diffraction_minimizer.fit(mock_sample_models, mock_experiments, mock_calculator)
 
     # Assertions
     assert diffraction_minimizer.results.success is True
