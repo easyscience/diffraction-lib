@@ -127,11 +127,11 @@ class BaseExperiment(Datablock):
             cif_lines += ["", self.linked_crystal.as_cif()]
 
         # Background points
-        if hasattr(self, "background") and self.background:
+        if hasattr(self, "background") and self.background._items:
             cif_lines += ["", self.background.as_cif()]
 
         # Excluded regions
-        if hasattr(self, "excluded_regions") and self.excluded_regions:
+        if hasattr(self, "excluded_regions") and self.excluded_regions._items:
             cif_lines += ["", self.excluded_regions.as_cif()]
 
         # Measured data
