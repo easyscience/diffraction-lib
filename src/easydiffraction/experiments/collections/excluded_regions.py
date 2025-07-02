@@ -57,17 +57,14 @@ class ExcludedRegions(Collection):
 
     def on_item_added(self, item: ExcludedRegion) -> None:
         """
-        Update the excluded points in experiments. Called by "Collection" when
-        a new item is added to the collection.
+        Mark excluded points in the experiment pattern when a new region is added.
         """
-        minimum = item.minimum.value
-        maximum = item.maximum.value
         experiment = self._parent
-        excluded_regions = experiment.excluded_regions._items  # List of excluded regions
+        pattern = experiment.datastore.pattern
+        x = pattern.x
 
-        if excluded_regions:  # If there are any excluded regions
-            pattern = experiment.datastore.pattern
+        # Boolean mask for points within the new excluded region
+        in_region = (x >= item.minimum.value) & (x <= item.maximum.value)
 
-            for idx, x_coord in enumerate(pattern.x):
-                if minimum <= x_coord <= maximum:
-                    pattern.excluded[idx] = True
+        # Update the exclusion mask
+        pattern.excluded[in_region] = True
