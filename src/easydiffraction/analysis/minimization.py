@@ -144,14 +144,24 @@ class DiffractionMinimizer:
         residuals: List[float] = []
         
         for (expt_id, experiment), weight in zip(experiments._items.items(), _weights):
+
+            # Calculate the difference between measured and calculated patterns
             y_calc: np.ndarray = calculator.calculate_pattern(sample_models,
                                                              experiment,
-                                                             called_by_minimizer=True)  # True False
+                                                             called_by_minimizer=True)
             y_meas: np.ndarray = experiment.datastore.pattern.meas
             y_meas_su: np.ndarray = experiment.datastore.pattern.meas_su
-            excluded: np.ndarray = experiment.datastore.pattern.excluded
-            diff = ((y_meas - y_calc) / y_meas_su)[~excluded]  # Exclude points that are marked as excluded
-            diff *= np.sqrt(weight)  # Residuals are squared before going into reduced chi-squared
+            diff = ((y_meas - y_calc) / y_meas_su)
+
+            # Exclude points that are marked as excluded
+            excluded = experiment.datastore.pattern.excluded
+            if excluded is not None:
+                diff = diff[~excluded]
+
+            # Residuals are squared before going into reduced chi-squared
+            diff *= np.sqrt(weight)
+
+            # Append the residuals for this experiment
             residuals.extend(diff)
 
         return self.minimizer.tracker.track(np.array(residuals), parameters)
