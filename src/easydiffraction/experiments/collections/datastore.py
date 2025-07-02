@@ -16,7 +16,7 @@ class Pattern:
         self.meas: Optional[np.ndarray] = None
         self.meas_su: Optional[np.ndarray] = None
         self.bkg: Optional[np.ndarray] = None
-        self.excluded: Optional[np.ndarray] = None  # Excluded points
+        self.excluded: Optional[np.ndarray] = None  # Flags for excluded points
         self._calc: Optional[np.ndarray] = None  # Cached calculated intensities
 
     @property
@@ -57,6 +57,8 @@ class Datastore:
 
     def load_measured_data(self, file_path: str) -> None:
         """Load measured data from an ASCII file."""
+        # TODO: Check if this method is used...
+        #  Looks like _load_ascii_data_to_experiment from experiments.py is used instead
         print(f"Loading measured data for {self.sample_form} diffraction from {file_path}")
 
         try:
@@ -75,6 +77,7 @@ class Datastore:
         self.pattern.x = x
         self.pattern.meas = y
         self.pattern.meas_su = sy
+        self.pattern.excluded = np.full(x.shape, fill_value=False, dtype=bool)  # No excluded points by default
 
         print(f"Loaded {len(x)} points for experiment '{self.pattern.experiment.name}'.")
 

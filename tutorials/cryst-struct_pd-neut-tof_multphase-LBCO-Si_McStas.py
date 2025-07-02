@@ -200,6 +200,27 @@ project.experiments.add(experiment)
 project.analysis.current_calculator = 'cryspy'
 
 # %% [markdown]
+# ### Set Excluded Regions
+
+# %% [markdown]
+# Show initial Measured vs Calculated
+
+# %%
+project.plot_meas_vs_calc(expt_name='mcstas')
+
+# %% [markdown]
+# Add Excluded Regions
+
+# %%
+project.experiments['mcstas'].excluded_regions.add(minimum=108000, maximum=200000)
+
+# %% [markdown]
+# Show Measured vs Calculated after adding excluded regions
+
+# %%
+project.plot_meas_vs_calc(expt_name='mcstas')
+
+# %% [markdown]
 # ### Set Fit Mode
 
 # %%
@@ -210,12 +231,6 @@ project.analysis.current_calculator = 'cryspy'
 
 # %%
 project.analysis.current_minimizer = 'lmfit (leastsq)'
-
-# %% [markdown]
-# ### Set Excluded Regions
-
-# %%
-project.experiments['mcstas'].excluded_regions.add(minimum=108000, maximum=200000)
 
 # %% [markdown]
 # ### Set Fitting Parameters

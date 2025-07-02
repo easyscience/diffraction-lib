@@ -289,6 +289,7 @@ class PowderExperiment(InstrumentMixin,
         self.datastore.pattern.x = x
         self.datastore.pattern.meas = y
         self.datastore.pattern.meas_su = sy
+        self.datastore.pattern.excluded = np.full(x.shape, fill_value=False, dtype=bool)  # No excluded points by default
 
         print(paragraph("Data loaded successfully"))
         print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
