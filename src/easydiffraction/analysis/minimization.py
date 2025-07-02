@@ -121,21 +121,6 @@ class DiffractionMinimizer:
         # Sync parameters back to objects
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
 
-        # Update the excluded points in experiments
-        # TODO: This should not be handled here every time
-        #  This implementation is just very quick and dirty
-        for experiment in experiments._items.values():
-            experiment.datastore.pattern.excluded = np.full(experiment.datastore.pattern.x.shape,
-                                                            fill_value=False,
-                                                            dtype=bool)  # Reset excluded points
-            excluded_regions = experiment.excluded_regions._items  # List of excluded regions
-            if excluded_regions:  # If there are any excluded regions
-                for idx, point in enumerate(experiment.datastore.pattern.x):  # Set excluded points
-                    for region in excluded_regions.values():
-                        if region.minimum.value <= point <= region.maximum.value:
-                            experiment.datastore.pattern.excluded[idx] = True
-                            break
-
         # Prepare weights for joint fitting
         num_expts: int = len(experiments.ids)
         if weights is None:
@@ -161,13 +146,7 @@ class DiffractionMinimizer:
             y_meas: np.ndarray = experiment.datastore.pattern.meas
             y_meas_su: np.ndarray = experiment.datastore.pattern.meas_su
             excluded: np.ndarray = experiment.datastore.pattern.excluded
-            # TODO: Excluded points must be handled differently.
-            #  They should not contribute to the residuals.
-            diff = np.where(
-                excluded,
-                0.0,  # Excluded points contribute zero to the residuals
-                (y_meas - y_calc) / y_meas_su  # Normalized residuals
-            )
+            diff = ((y_meas - y_calc) / y_meas_su)[~excluded]  # Exclude points that are marked as excluded
             diff *= np.sqrt(weight)  # Residuals are squared before going into reduced chi-squared
             residuals.extend(diff)
 
