@@ -211,6 +211,12 @@ project.experiments['mcstas'].excluded_regions.add(minimum=108000, maximum=20000
 project.plot_meas(expt_name='mcstas')
 
 # %% [markdown]
+# Show experiment as CIF
+
+# %%
+project.experiments['mcstas'].show_as_cif()
+
+# %% [markdown]
 # ## Analysis
 #
 # This section outlines the analysis process, including how to configure calculation and fitting engines.
