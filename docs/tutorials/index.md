@@ -48,7 +48,12 @@ The tutorials are organized into the following categories.
   time-of-flight neutron powder diffraction data from SEPD at Argonne.
 - [NCAF `pd-neut-tof`](cryst-struct_pd-neut-tof_NCAF-WISH.ipynb) –
   Demonstrates a Rietveld refinement of the Na2Ca3Al2F14 crystal structure 
-  using time-of-flight neutron powder diffraction data from WISH at ISIS.
+  using time-of-flight neutron powder diffraction data from two detector banks 
+  of the WISH instrument at ISIS.
+- [LBCO+Si McStas](cryst-struct_pd-neut-tof_NCAF-WISH.ipynb) –
+  Demonstrates a Rietveld refinement of the La0.5Ba0.5CoO3 crystal structure
+  with a small amount of Si impurity as a secondary phase using time-of-flight 
+  neutron powder diffraction data simulated with McStas.
 
 ## Pair Distribution Function (PDF)
 

@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Structure Refinement: LBCO + Si, NPD McStas
+# # Structure Refinement: LBCO+Si, McStas
 #
 # This example demonstrates a Rietveld refinement of La0.5Ba0.5CoO3 crystal
 # structure with a small amount of Si phase using time-of-flight neutron powder
@@ -27,20 +27,20 @@ from easydiffraction import (
 model_1 = SampleModel('lbco')
 
 # %% [markdown]
-# ### Set Space Group
+# #### Set Space Group
 
 # %%
 model_1.space_group.name_h_m = 'P m -3 m'
 model_1.space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
-# ### Set Unit Cell
+# #### Set Unit Cell
 
 # %%
 model_1.cell.length_a = 3.8909
 
 # %% [markdown]
-# ### Set Atom Sites
+# #### Set Atom Sites
 
 # %%
 model_1.atom_sites.add('La', 'La', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
@@ -48,26 +48,27 @@ model_1.atom_sites.add('Ba', 'Ba', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occup
 model_1.atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, wyckoff_letter='b', b_iso=0.2567)
 model_1.atom_sites.add('O', 'O', 0, 0.5, 0.5, wyckoff_letter='c', b_iso=1.4041)
 
+# %% [markdown]
 # ### Create Sample Model 2: Si
 
 # %%
 model_2 = SampleModel('si')
 
 # %% [markdown]
-# ### Set Space Group
+# #### Set Space Group
 
 # %%
 model_2.space_group.name_h_m = 'F d -3 m'
 model_2.space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
-# ### Set Unit Cell
+# #### Set Unit Cell
 
 # %%
 model_2.cell.length_a = 5.43146
 
 # %% [markdown]
-# ### Set Atom Sites
+# #### Set Atom Sites
 
 # %%
 model_2.atom_sites.add('Si', 'Si', 0.0, 0.0, 0.0, wyckoff_letter='a', b_iso=0.0)
@@ -201,8 +202,8 @@ project.plot_meas(expt_name='mcstas')
 # Add excluded regions
 
 # %%
-project.experiments['mcstas'].excluded_regions.add(minimum=0, maximum=40000)
-project.experiments['mcstas'].excluded_regions.add(minimum=108000, maximum=200000)
+experiment.excluded_regions.add(minimum=0, maximum=40000)
+experiment.excluded_regions.add(minimum=108000, maximum=200000)
 
 # %% [markdown]
 # Show measured data after adding excluded regions
@@ -219,7 +220,8 @@ project.experiments['mcstas'].show_as_cif()
 # %% [markdown]
 # ## Analysis
 #
-# This section outlines the analysis process, including how to configure calculation and fitting engines.
+# This section outlines the analysis process, including how to configure
+# calculation and fitting engines.
 #
 # ### Set Calculator
 
@@ -239,13 +241,10 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %%
 model_1.cell.length_a.free = True
-model_1.atom_sites['La'].b_iso.free = True
-model_1.atom_sites['Ba'].b_iso.free = True
 model_1.atom_sites['Co'].b_iso.free = True
 model_1.atom_sites['O'].b_iso.free = True
 
 model_2.cell.length_a.free = True
-model_2.atom_sites['Si'].b_iso.free = True
 
 # %% [markdown]
 # Set experiment parameters to be optimized.
@@ -265,24 +264,6 @@ experiment.peak.broad_mix_beta_1.free = True
 for point in experiment.background:
     point.y.free = True
 
-# %% [markdown]
-# ### Set Constraints
-
-# %%
-project.analysis.aliases.add(
-    label='biso_La',
-    param_uid=project.sample_models['lbco'].atom_sites['La'].b_iso.uid
-)
-project.analysis.aliases.add(
-    label='biso_Ba',
-    param_uid=project.sample_models['lbco'].atom_sites['Ba'].b_iso.uid
-)
-
-# %%
-project.analysis.constraints.add(
-    lhs_alias='biso_Ba',
-    rhs_expr='biso_La'
-)
 
 # %%
 project.analysis.apply_constraints()
@@ -297,4 +278,4 @@ project.analysis.fit()
 # ### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='mcstas', show_residual=False)
+project.plot_meas_vs_calc(expt_name='mcstas')
