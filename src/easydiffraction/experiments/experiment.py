@@ -15,6 +15,7 @@ from easydiffraction.experiments.components.peak import PeakFactory
 
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
 from easydiffraction.experiments.collections.background import BackgroundFactory
+from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.datastore import DatastoreFactory
 
 from easydiffraction.utils.formatting import paragraph, warning
@@ -129,6 +130,10 @@ class BaseExperiment(Datablock):
         if hasattr(self, "background") and self.background:
             cif_lines += ["", self.background.as_cif()]
 
+        # Excluded regions
+        if hasattr(self, "excluded_regions") and self.excluded_regions:
+            cif_lines += ["", self.excluded_regions.as_cif()]
+
         # Measured data
         if hasattr(self, "datastore") and hasattr(self.datastore, "pattern"):
             cif_lines.append("")
@@ -191,7 +196,8 @@ class BasePowderExperiment(BaseExperiment):
             beam_mode=self.type.beam_mode.value,
             profile_type=self._peak_profile_type)
 
-        self.linked_phases = LinkedPhases()
+        self.linked_phases: LinkedPhases = LinkedPhases()
+        self.excluded_regions: ExcludedRegions = ExcludedRegions()
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:

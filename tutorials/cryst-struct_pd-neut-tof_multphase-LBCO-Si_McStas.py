@@ -212,6 +212,12 @@ project.analysis.current_calculator = 'cryspy'
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
+# ### Set Excluded Regions
+
+# %%
+project.experiments['mcstas'].excluded_regions.add(minimum=108000, maximum=200000)
+
+# %% [markdown]
 # ### Set Fitting Parameters
 #
 # Set sample model parameters to be optimized.

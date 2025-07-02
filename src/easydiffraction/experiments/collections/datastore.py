@@ -16,6 +16,7 @@ class Pattern:
         self.meas: Optional[np.ndarray] = None
         self.meas_su: Optional[np.ndarray] = None
         self.bkg: Optional[np.ndarray] = None
+        self.excluded: Optional[np.ndarray] = None  # Excluded points
         self._calc: Optional[np.ndarray] = None  # Cached calculated intensities
 
     @property
@@ -33,6 +34,7 @@ class PowderPattern(Pattern):
     """
     Specialized pattern for powder diffraction (can be extended in the future).
     """
+    # TODO: Check if this class is needed or if it can be merged with Pattern
     def __init__(self, experiment: Experiment) -> None:
         super().__init__(experiment)
         # Additional powder-specific initialization if needed
@@ -49,7 +51,7 @@ class Datastore:
         if sample_form == "powder":
             self.pattern: Pattern = PowderPattern(experiment)
         elif sample_form == "single_crystal":
-            self.pattern: Pattern = Pattern(experiment)
+            self.pattern: Pattern = Pattern(experiment)  # TODO: Find better name for single crystal pattern
         else:
             raise ValueError(f"Unknown sample form '{sample_form}'")
 

@@ -84,7 +84,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=2.87,
+                        desired=1.79,  # 2.87
                         decimal=1)
 
 

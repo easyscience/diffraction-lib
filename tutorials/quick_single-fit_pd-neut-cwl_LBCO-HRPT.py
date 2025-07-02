@@ -78,6 +78,14 @@ project.experiments['hrpt'].background.add(x=110, y=170)
 project.experiments['hrpt'].background.add(x=165, y=170)
 
 # %%
+project.experiments['hrpt'].excluded_regions.add(minimum=0, maximum=5)
+project.experiments['hrpt'].excluded_regions.add(minimum=165, maximum=180)
+
+# %%
+project.experiments['hrpt'].show_as_cif()
+
+
+# %%
 project.experiments['hrpt'].linked_phases.add(id='lbco', scale=10.0)
 
 # %% [markdown]
