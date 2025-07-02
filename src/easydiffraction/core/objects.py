@@ -341,7 +341,8 @@ class Collection(ABC):
     def _child_class(self):
         return None
 
-    def __init__(self):
+    def __init__(self, parent=None):
+        self._parent = parent  # Parent datablock
         self._datablock_id = None  # Parent datablock name to be set by the parent
         self._items = {}
 
@@ -372,6 +373,10 @@ class Collection(ABC):
         child_obj.datablock_id = self.datablock_id  # Setting the datablock_id to update its child parameters
         child_obj.entry_id = child_obj.entry_id  # Forcing the entry_id to be reset to update its child parameters
         self._items[child_obj._entry_id] = child_obj
+
+        # Call on_item_added if it exists
+        if hasattr(self, "on_item_added"):
+            self.on_item_added(child_obj)
 
     def get_all_params(self):
         params = []

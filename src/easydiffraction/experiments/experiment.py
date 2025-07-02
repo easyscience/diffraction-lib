@@ -197,7 +197,7 @@ class BasePowderExperiment(BaseExperiment):
             profile_type=self._peak_profile_type)
 
         self.linked_phases: LinkedPhases = LinkedPhases()
-        self.excluded_regions: ExcludedRegions = ExcludedRegions()
+        self.excluded_regions: ExcludedRegions = ExcludedRegions(parent=self)
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
