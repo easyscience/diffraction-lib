@@ -78,7 +78,11 @@ class DiffractionMinimizer:
         f_obs, f_calc = None, None
 
         if self.results:
-            self.results.display_results(y_obs=y_obs, y_calc=y_calc, y_err=y_err, f_obs=f_obs, f_calc=f_calc)
+            self.results.display_results(y_obs=y_obs,
+                                         y_calc=y_calc,
+                                         y_err=y_err,
+                                         f_obs=f_obs,
+                                         f_calc=f_calc)
 
     def _collect_free_parameters(self,
                                  sample_models: SampleModels,

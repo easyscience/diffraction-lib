@@ -374,7 +374,7 @@ class Collection(ABC):
         child_obj.entry_id = child_obj.entry_id  # Forcing the entry_id to be reset to update its child parameters
         self._items[child_obj._entry_id] = child_obj
 
-        # Call on_item_added if it exists
+        # Call on_item_added if it exists, i.e. defined in the derived class
         if hasattr(self, "on_item_added"):
             self.on_item_added(child_obj)
 
