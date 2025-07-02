@@ -24,7 +24,9 @@ def mock_experiments():
     experiments._items = {
         "experiment1": MagicMock(
             datastore=MagicMock(
-                pattern=MagicMock(meas=np.array([10.0, 20.0, 30.0]), meas_su=np.array([1.0, 1.0, 1.0]))
+                pattern=MagicMock(meas=np.array([10.0, 20.0, 30.0]),
+                                  meas_su=np.array([1.0, 1.0, 1.0]),
+                                  excluded=np.array([False, False, False]))
             )
         )
     }
