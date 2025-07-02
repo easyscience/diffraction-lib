@@ -190,6 +190,27 @@ project.sample_models.show_names()
 project.experiments.add(experiment)
 
 # %% [markdown]
+# ### Set Excluded Regions
+#
+# Show measured data as loaded from the file
+
+# %%
+project.plot_meas(expt_name='mcstas')
+
+# %% [markdown]
+# Add excluded regions
+
+# %%
+project.experiments['mcstas'].excluded_regions.add(minimum=0, maximum=40000)
+project.experiments['mcstas'].excluded_regions.add(minimum=108000, maximum=200000)
+
+# %% [markdown]
+# Show measured data after adding excluded regions
+
+# %%
+project.plot_meas(expt_name='mcstas')
+
+# %% [markdown]
 # ## Analysis
 #
 # This section outlines the analysis process, including how to configure calculation and fitting engines.
@@ -198,33 +219,6 @@ project.experiments.add(experiment)
 
 # %%
 project.analysis.current_calculator = 'cryspy'
-
-# %% [markdown]
-# ### Set Excluded Regions
-
-# %% [markdown]
-# Show initial Measured vs Calculated
-
-# %%
-project.plot_meas_vs_calc(expt_name='mcstas')
-
-# %% [markdown]
-# Add Excluded Regions
-
-# %%
-project.experiments['mcstas'].excluded_regions.add(minimum=108000, maximum=200000)
-
-# %% [markdown]
-# Show Measured vs Calculated after adding excluded regions
-
-# %%
-project.plot_meas_vs_calc(expt_name='mcstas')
-
-# %% [markdown]
-# ### Set Fit Mode
-
-# %%
-#project.analysis.fit_mode = 'joint'
 
 # %% [markdown]
 # ### Set Minimizer
