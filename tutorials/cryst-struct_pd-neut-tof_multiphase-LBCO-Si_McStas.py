@@ -206,6 +206,12 @@ experiment.excluded_regions.add(minimum=0, maximum=40000)
 experiment.excluded_regions.add(minimum=108000, maximum=200000)
 
 # %% [markdown]
+# Show excluded regions
+
+# %%
+experiment.excluded_regions.show()
+
+# %% [markdown]
 # Show measured data after adding excluded regions
 
 # %%

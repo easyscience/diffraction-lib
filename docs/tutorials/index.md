@@ -46,7 +46,7 @@ The tutorials are organized into the following categories.
 - [Si `pd-neut-tof`](cryst-struct_pd-neut-tof_Si-SEPD.ipynb) –
   Demonstrates a Rietveld refinement of the Si crystal structure using
   time-of-flight neutron powder diffraction data from SEPD at Argonne.
-- [NCAF `pd-neut-tof`](cryst-struct_pd-neut-tof_multidata_NCAF-WISH.py) –
+- [NCAF `pd-neut-tof`](cryst-struct_pd-neut-tof_multidata_NCAF-WISH.ipynb) –
   Demonstrates a Rietveld refinement of the Na2Ca3Al2F14 crystal structure 
   using two time-of-flight neutron powder diffraction datasets (from two 
   detector banks) of the WISH instrument at ISIS.

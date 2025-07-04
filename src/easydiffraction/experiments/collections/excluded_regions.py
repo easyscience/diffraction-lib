@@ -1,6 +1,7 @@
-import numpy as np
-from typing import Type
+from typing import List, Type
 
+from easydiffraction.utils.utils import render_table
+from easydiffraction.utils.formatting import paragraph
 from easydiffraction.core.objects import (
     Parameter,
     Descriptor,
@@ -73,3 +74,20 @@ class ExcludedRegions(Collection):
         pattern.x = pattern.full_x[~pattern.excluded]
         pattern.meas = pattern.full_meas[~pattern.excluded]
         pattern.meas_su = pattern.full_meas_su[~pattern.excluded]
+
+    def show(self) -> None:
+        # TODO: Consider moving this to the base class
+        #  to avoid code duplication with implementations in Background, etc.
+        #  Consider using parameter names as column headers
+        columns_headers: List[str] = ["minimum", "maximum"]
+        columns_alignment = ["left", "left"]
+        columns_data: List[List[float]] = []
+        for region in self._items.values():
+            minimum = region.minimum.value
+            maximum = region.maximum.value
+            columns_data.append([minimum, maximum])
+
+        print(paragraph("Excluded regions"))
+        render_table(columns_headers=columns_headers,
+                     columns_alignment=columns_alignment,
+                     columns_data=columns_data)
