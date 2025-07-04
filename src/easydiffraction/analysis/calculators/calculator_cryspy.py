@@ -127,6 +127,7 @@ class CryspyCalculator(CalculatorBase):
 
         cryspy_model_id = f'crystal_{sample_model.name}'
         cryspy_model_dict = cryspy_dict[cryspy_model_id]
+
         # Cell
         cryspy_cell = cryspy_model_dict['unit_cell_parameters']
         cryspy_cell[0] = sample_model.cell.length_a.value
@@ -135,6 +136,7 @@ class CryspyCalculator(CalculatorBase):
         cryspy_cell[3] = np.deg2rad(sample_model.cell.angle_alpha.value)
         cryspy_cell[4] = np.deg2rad(sample_model.cell.angle_beta.value)
         cryspy_cell[5] = np.deg2rad(sample_model.cell.angle_gamma.value)
+
         # Atomic coordinates
         cryspy_xyz = cryspy_model_dict['atom_fract_xyz']
         for idx, atom_site in enumerate(sample_model.atom_sites):

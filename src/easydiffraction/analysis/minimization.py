@@ -153,11 +153,6 @@ class DiffractionMinimizer:
             y_meas_su: np.ndarray = experiment.datastore.pattern.meas_su
             diff = ((y_meas - y_calc) / y_meas_su)
 
-            # Exclude points that are marked as excluded
-            excluded = experiment.datastore.pattern.excluded
-            if excluded is not None:
-                diff = diff[~excluded]
-
             # Residuals are squared before going into reduced chi-squared
             diff *= np.sqrt(weight)
 

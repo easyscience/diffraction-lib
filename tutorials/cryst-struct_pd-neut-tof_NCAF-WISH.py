@@ -5,7 +5,7 @@
 # structure using time-of-flight neutron powder diffraction data from WISH at
 # ISIS.
 #
-# Two datasets from detector banks 5_6 and 4_7 are used for joint fitting.
+# Two datasets from detector banks 5+6 and 4+7 are used for joint fitting.
 
 # %% [markdown]
 # ## Import Library
@@ -61,19 +61,19 @@ model.atom_sites.add('F3', 'F', 0.4611, 0.4611, 0.4611, wyckoff_letter="a", b_is
 # ### Download Measured Data
 
 # %%
-download_from_repository('wish_ncaf_5_6.xye', branch='docs', destination='data')
+download_from_repository('wish_ncaf_5_6.xys', branch='docs', destination='data')
 
 # %%
-download_from_repository('wish_ncaf_4_7.xye', branch='docs', destination='data')
+download_from_repository('wish_ncaf_4_7.xys', branch='docs', destination='data')
 
 # %% [markdown]
 # ### Create Experiment
 
 # %%
-expt56 = Experiment('wish_5_6', beam_mode='time-of-flight', data_path='data/wish_ncaf_5_6.xye')
+expt56 = Experiment('wish_5_6', beam_mode='time-of-flight', data_path='data/wish_ncaf_5_6.xys')
 
 # %%
-expt47 = Experiment('wish_4_7', beam_mode='time-of-flight', data_path='data/wish_ncaf_4_7.xye')
+expt47 = Experiment('wish_4_7', beam_mode='time-of-flight', data_path='data/wish_ncaf_4_7.xys')
 
 # %% [markdown]
 # ### Set Instrument
@@ -189,6 +189,17 @@ expt56.linked_phases.add('ncaf', scale=1.0)
 
 # %%
 expt47.linked_phases.add('ncaf', scale=2.0)
+
+# %% [markdown]
+# ### Set Excluded Regions
+
+# %%
+expt56.excluded_regions.add(minimum=0, maximum=10010)
+expt56.excluded_regions.add(minimum=100010, maximum=200000)
+
+# %%
+expt47.excluded_regions.add(minimum=0, maximum=10006)
+expt47.excluded_regions.add(minimum=100004, maximum=200000)
 
 # %% [markdown]
 # ## Define Project

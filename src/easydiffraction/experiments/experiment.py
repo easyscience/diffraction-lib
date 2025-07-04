@@ -286,10 +286,23 @@ class PowderExperiment(InstrumentMixin,
         sy: np.ndarray = data[:, 2] if data.shape[1] > 2 else np.sqrt(y)
 
         # Attach the data to the experiment's datastore
+
+        # The full pattern data
+        self.datastore.pattern.full_x = x
+        self.datastore.pattern.full_meas = y
+        self.datastore.pattern.full_meas_su = sy
+
+        # The pattern data used for fitting (without excluded points)
+        # This is the same as full_x, full_meas, full_meas_su by default
         self.datastore.pattern.x = x
         self.datastore.pattern.meas = y
         self.datastore.pattern.meas_su = sy
-        self.datastore.pattern.excluded = np.full(x.shape, fill_value=False, dtype=bool)  # No excluded points by default
+
+        # Excluded mask
+        # No excluded points by default
+        self.datastore.pattern.excluded = np.full(x.shape,
+                                                  fill_value=False,
+                                                  dtype=bool)
 
         print(paragraph("Data loaded successfully"))
         print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")

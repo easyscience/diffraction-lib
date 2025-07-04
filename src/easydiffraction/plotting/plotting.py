@@ -140,15 +140,6 @@ class Plotter():
                                         x_min=x_min,
                                         x_max=x_max)
 
-        # Exclude points based on the pattern's excluded mask
-        if pattern.excluded is not None:
-            excluded = self._filtered_y_array(y_array=pattern.excluded,
-                                              x_array=pattern.x,
-                                              x_min=x_min,
-                                              x_max=x_max)
-            x = x[~excluded]
-            y_meas = y_meas[~excluded]
-
         y_series = [y_meas]
         y_labels = ['meas']
 
@@ -184,15 +175,6 @@ class Plotter():
                                         x_array=pattern.x,
                                         x_min=x_min,
                                         x_max=x_max)
-
-        # Exclude points based on the pattern's excluded mask
-        if pattern.excluded is not None:
-            excluded = self._filtered_y_array(y_array=pattern.excluded,
-                                              x_array=pattern.x,
-                                              x_min=x_min,
-                                              x_max=x_max)
-            x = x[~excluded]
-            y_calc = y_calc[~excluded]
 
         y_series = [y_calc]
         y_labels = ['calc']
@@ -237,16 +219,6 @@ class Plotter():
                                         x_array=pattern.x,
                                         x_min=x_min,
                                         x_max=x_max)
-
-        # Exclude points based on the pattern's excluded mask
-        if pattern.excluded is not None:
-            excluded = self._filtered_y_array(y_array=pattern.excluded,
-                                              x_array=pattern.x,
-                                              x_min=x_min,
-                                              x_max=x_max)
-            x = x[~excluded]
-            y_meas = y_meas[~excluded]
-            y_calc = y_calc[~excluded]
 
         y_series = [y_meas, y_calc]
         y_labels = ['meas', 'calc']

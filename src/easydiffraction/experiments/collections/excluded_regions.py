@@ -61,10 +61,15 @@ class ExcludedRegions(Collection):
         """
         experiment = self._parent
         pattern = experiment.datastore.pattern
-        x = pattern.x
 
         # Boolean mask for points within the new excluded region
-        in_region = (x >= item.minimum.value) & (x <= item.maximum.value)
+        in_region = ((pattern.full_x >= item.minimum.value) &
+                     (pattern.full_x <= item.maximum.value))
 
         # Update the exclusion mask
         pattern.excluded[in_region] = True
+
+        # Update the excluded points in the datastore
+        pattern.x = pattern.full_x[~pattern.excluded]
+        pattern.meas = pattern.full_meas[~pattern.excluded]
+        pattern.meas_su = pattern.full_meas_su[~pattern.excluded]

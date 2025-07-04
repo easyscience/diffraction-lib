@@ -132,14 +132,6 @@ def get_reliability_inputs(sample_models: SampleModels,
             if y_meas_su is None:
                 y_meas_su = np.ones_like(y_meas)
 
-            # Exclude points that are marked as excluded
-            excluded = experiment.datastore.pattern.excluded
-            if excluded is not None:
-                y_meas = y_meas[~excluded]
-                y_calc = y_calc[~excluded]
-                if y_meas_su is not None:
-                    y_meas_su = y_meas_su[~excluded]
-
             y_obs_all.extend(y_meas)
             y_calc_all.extend(y_calc)
             y_err_all.extend(y_meas_su)
