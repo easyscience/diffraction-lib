@@ -2,7 +2,22 @@
 
 Development playground for the new EasyDiffraction API.
 
-## Installation & Setup
+## User Installation & Setup
+
+- Create a new virtual environment:
+  ```bash
+  python3 -m venv .venv
+  ```
+- Activate the environment:
+  ```bash
+  . .venv/bin/activate
+  ```
+- Install the package from GitHub:
+  ```bash
+  pip install git+https://github.com/easyscience/diffraction-lib@develop#egg=easydiffraction
+  ```
+
+## Developer Installation & Setup
 
 - Create a new virtual environment:
   ```bash
@@ -15,7 +30,7 @@ Development playground for the new EasyDiffraction API.
 - Install dependencies:
   ```bash
   pip install --upgrade pip
-  pip install -r requirements.txt
+  pip install .
   ```
 - Install pycrysfml (pyenv python 3.12, macOS 14, Apple Silicon):
   ```bash
