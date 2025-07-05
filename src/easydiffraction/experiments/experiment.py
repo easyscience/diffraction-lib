@@ -280,10 +280,22 @@ class PowderExperiment(InstrumentMixin,
         if data.shape[1] < 3:
             print("Warning: No uncertainty (sy) column provided. Defaulting to sqrt(y).")
 
-        # Extract x, y, and sy data
+        # Extract x, y data
         x: np.ndarray = data[:, 0]
         y: np.ndarray = data[:, 1]
+
+        # Round x to 4 decimal places
+        # TODO: This is needed for CrysPy, as otherwise it fails to match
+        #  the size of the data arrays.
+        x = np.round(x, 4)
+
+        # Determine sy from column 3 if available, otherwise use sqrt(y)
         sy: np.ndarray = data[:, 2] if data.shape[1] > 2 else np.sqrt(y)
+
+        # Replace values smaller than 0.0001 with 1.0
+        # TODO: This is needed for minimization algorithms that fail with
+        #  very small or zero uncertainties.
+        sy = np.where(sy < 0.0001, 1.0, sy)
 
         # Attach the data to the experiment's datastore
 
