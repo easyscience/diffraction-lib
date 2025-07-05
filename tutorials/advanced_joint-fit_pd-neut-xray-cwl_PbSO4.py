@@ -26,19 +26,19 @@ from easydiffraction import (
 #
 # This section shows how to add sample models and modify their parameters.
 #
-# ### Create Sample Model
+# #### Create Sample Model
 
 # %%
 model = SampleModel('pbso4')
 
 # %% [markdown]
-# ### Set Space Group
+# #### Set Space Group
 
 # %%
 model.space_group.name_h_m = 'P n m a'
 
 # %% [markdown]
-# ### Set Unit Cell
+# #### Set Unit Cell
 
 # %%
 model.cell.length_a = 8.47
@@ -46,7 +46,7 @@ model.cell.length_b = 5.39
 model.cell.length_c = 6.95
 
 # %% [markdown]
-# ### Set Atom Sites
+# #### Set Atom Sites
 
 # %%
 model.atom_sites.add('Pb', 'Pb', 0.1876, 0.25, 0.167, b_iso=1.37)
@@ -196,48 +196,48 @@ expt2.linked_phases.add('pbso4', scale=0.001)
 #
 # The project object is used to manage sample models, experiments, and analysis.
 #
-# ### Create Project
+# #### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# ### Add Sample Model
+# #### Add Sample Model
 
 # %%
 project.sample_models.add(model)
 
 # %% [markdown]
-# ### Add Experiments
+# #### Add Experiments
 
 # %%
 project.experiments.add(expt1)
 project.experiments.add(expt2)
 
 # %% [markdown]
-# ## Analysis
+# ## Perform Analysis
 #
 # This section outlines the analysis process, including how to configure calculation and fitting engines.
 #
-# ### Set Calculator
+# #### Set Calculator
 
 # %%
 project.analysis.current_calculator = 'cryspy'
 
 # %% [markdown]
-# ### Set Fit Mode
+# #### Set Fit Mode
 
 # %%
 project.analysis.fit_mode = 'joint'
 
 # %% [markdown]
-# ### Set Minimizer
+# #### Set Minimizer
 
 # %%
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
-# ### Set Fitting Parameters
+# #### Set Fitting Parameters
 #
 # Set sample model parameters to be optimized.
 
@@ -273,13 +273,13 @@ for term in expt2.background:
     term.coef.free = True
 
 # %% [markdown]
-# ### Run Fit
+# #### Perform Fit
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# ### Plot Measured vs Calculated
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='npd',

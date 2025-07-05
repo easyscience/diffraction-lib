@@ -20,26 +20,26 @@ from easydiffraction import (
 #
 # This section shows how to add sample models and modify their parameters.
 #
-# ### Create Sample Model
+# #### Create Sample Model
 
 # %%
 model = SampleModel('si')
 
 # %% [markdown]
-# ### Set Space Group
+# #### Set Space Group
 
 # %%
 model.space_group.name_h_m = 'F d -3 m'
 model.space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
-# ### Set Unit Cell
+# #### Set Unit Cell
 
 # %%
 model.cell.length_a = 5.431
 
 # %% [markdown]
-# ### Set Atom Sites
+# #### Set Atom Sites
 
 # %%
 model.atom_sites.add('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.5)
@@ -50,7 +50,7 @@ model.atom_sites.add('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.5)
 # This section shows how to add experiments, configure their parameters, and
 # link the sample models defined in the previous step.
 #
-# ### Download Measured Data
+# #### Download Measured Data
 
 # %%
 download_from_repository('sepd_si.xye',
@@ -58,7 +58,7 @@ download_from_repository('sepd_si.xye',
                          destination='data')
 
 # %% [markdown]
-# ### Create Experiment
+# #### Create Experiment
 
 # %%
 expt = Experiment('sepd',
@@ -66,7 +66,7 @@ expt = Experiment('sepd',
                   data_path='data/sepd_si.xye')
 
 # %% [markdown]
-# ### Set Instrument
+# #### Set Instrument
 
 # %%
 expt.instrument.setup_twotheta_bank = 144.845
@@ -75,7 +75,7 @@ expt.instrument.calib_d_to_tof_linear = 7476.91
 expt.instrument.calib_d_to_tof_quad = -1.54
 
 # %% [markdown]
-# ### Set Peak Profile
+# #### Set Peak Profile
 
 # %%
 expt.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
@@ -86,14 +86,14 @@ expt.peak.broad_mix_beta_0 = 0.04221
 expt.peak.broad_mix_beta_1 = 0.00946
 
 # %% [markdown]
-# ### Set Peak Asymmetry
+# #### Set Peak Asymmetry
 
 # %%
 expt.peak.asym_alpha_0 = 0.0
 expt.peak.asym_alpha_1 = 0.5971
 
 # %% [markdown]
-# ### Set Background
+# #### Set Background
 
 # %%
 expt.background_type = 'line-segment'
@@ -101,7 +101,7 @@ for x in range(0, 35000, 5000):
     expt.background.add(x=x, y=200)
 
 # %% [markdown]
-# ### Set Linked Phases
+# #### Set Linked Phases
 
 # %%
 expt.linked_phases.add('si', scale=10.0)
@@ -112,48 +112,48 @@ expt.linked_phases.add('si', scale=10.0)
 # The project object is used to manage the sample model, experiment, and
 # analysis.
 #
-# ### Create Project
+# #### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# ### Set Plotting Engine
+# #### Set Plotting Engine
 
 # %%
 project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# ### Add Sample Model
+# #### Add Sample Model
 
 # %%
 project.sample_models.add(model)
 
 # %% [markdown]
-# ### Add Experiment
+# #### Add Experiment
 
 # %%
 project.experiments.add(expt)
 
 # %% [markdown]
-# ## Analysis
+# ## Perform Analysis
 #
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# ### Set Calculator
+# #### Set Calculator
 
 # %%
 project.analysis.current_calculator = 'cryspy'
 
 # %% [markdown]
-# ### Set Minimizer
+# #### Set Minimizer
 
 # %%
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
-# ### Plot Measured vs Calculated
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='sepd',
@@ -180,7 +180,7 @@ expt.instrument.calib_d_to_tof_offset.free = True
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -213,7 +213,7 @@ for point in expt.background:
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -254,7 +254,7 @@ expt.peak.broad_gauss_sigma_2.free = True
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -286,7 +286,7 @@ model.atom_sites['Si'].b_iso.free = True
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()

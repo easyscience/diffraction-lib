@@ -10,7 +10,7 @@ as self-contained, step-by-step **guides** to help users grasp the workflow of d
 analysis using EasyDiffraction.
 
 Instructions on how to run the tutorials are provided in the
-[:material-cog-box: Installation & Setup](../installation-and-setup/index.md#running-tutorials)
+[:material-cog-box: Installation & Setup](../installation-and-setup/index.md#how-to-run-tutorials)
 section of the documentation.
 
 The tutorials are organized into the following categories.

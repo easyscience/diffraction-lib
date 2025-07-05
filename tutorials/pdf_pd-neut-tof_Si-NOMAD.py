@@ -84,7 +84,7 @@ experiment.peak.sharp_delta_1.free = True
 experiment.peak.sharp_delta_2.free = True
 
 # %% [markdown]
-# ## Run Fit
+# ## Run Fitting
 
 # %%
 project.analysis.current_calculator = 'pdffit'

@@ -28,13 +28,13 @@ import easydiffraction as ed
 # This section explains how to create a project and define its metadata.
 
 # %% [markdown]
-# ### Create Project
+# #### Create Project
 
 # %%
 project = ed.Project(name='lbco_hrpt')
 
 # %% [markdown]
-# ### Set Project Metadata
+# #### Set Project Metadata
 
 # %%
 project.info.title = 'La0.5Ba0.5CoO3 at HRPT@PSI'
@@ -44,13 +44,13 @@ structure, using neutron powder diffraction data collected in constant
 wavelength mode at the HRPT diffractometer (PSI)."""
 
 # %% [markdown]
-# ### Show Project Metadata as CIF
+# #### Show Project Metadata as CIF
 
 # %%
 project.info.show_as_cif()
 
 # %% [markdown]
-# ### Save Project
+# #### Save Project
 #
 # When saving the project for the first time, you need to specify the
 # directory path. In the example below, the project is saved to a
@@ -60,7 +60,7 @@ project.info.show_as_cif()
 project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %% [markdown]
-# ### Set Up Data Plotter
+# #### Set Up Data Plotter
 
 # %% [markdown]
 # Show supported plotting engines.
@@ -86,13 +86,13 @@ project.plotter.engine = 'plotly'
 # This section shows how to add sample models and modify their parameters.
 
 # %% [markdown]
-# ### Add Sample Model
+# #### Add Sample Model
 
 # %%
 project.sample_models.add(name='lbco')
 
 # %% [markdown]
-# ### Show Defined Sample Models
+# #### Show Defined Sample Models
 #
 # Show the names of the models added. These names are used to access the
 # model using the syntax: `project.sample_models['model_name']`. All model
@@ -102,7 +102,7 @@ project.sample_models.add(name='lbco')
 project.sample_models.show_names()
 
 # %% [markdown]
-# ### Set Space Group
+# #### Set Space Group
 #
 # Modify the default space group parameters.
 
@@ -111,7 +111,7 @@ project.sample_models['lbco'].space_group.name_h_m = 'P m -3 m'
 project.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
-# ### Set Unit Cell
+# #### Set Unit Cell
 #
 # Modify the default unit cell parameters.
 
@@ -119,7 +119,7 @@ project.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
 project.sample_models['lbco'].cell.length_a = 3.88
 
 # %% [markdown]
-# ### Set Atom Sites
+# #### Set Atom Sites
 #
 # Add atom sites to the sample model.
 
@@ -156,25 +156,25 @@ project.sample_models['lbco'].atom_sites.add(label='O',
                                              b_iso=0.5)
 
 # %% [markdown]
-# ### Apply Symmetry Constraints
+# #### Apply Symmetry Constraints
 
 # %%
 project.sample_models['lbco'].apply_symmetry_constraints()
 
 # %% [markdown]
-# ### Show Sample Model as CIF
+# #### Show Sample Model as CIF
 
 # %%
 project.sample_models['lbco'].show_as_cif()
 
 # %% [markdown]
-# ### Show Sample Model Structure
+# #### Show Sample Model Structure
 
 # %%
 project.sample_models['lbco'].show_structure()
 
 # %% [markdown]
-# ### Save Project State
+# #### Save Project State
 #
 # Save the project state after adding the sample model. This ensures
 # that all changes are stored and can be accessed later. The project
@@ -190,7 +190,7 @@ project.save()
 # link the sample models defined in the previous step.
 
 # %% [markdown]
-# ### Download Measured Data
+# #### Download Measured Data
 #
 # Download the data file from the EasyDiffraction repository on GitHub.
 
@@ -200,7 +200,7 @@ ed.download_from_repository('hrpt_lbco.xye',
                             destination='data')
 
 # %% [markdown]
-# ### Add Diffraction Experiment
+# #### Add Diffraction Experiment
 
 # %%
 project.experiments.add(name='hrpt',
@@ -210,19 +210,19 @@ project.experiments.add(name='hrpt',
                         data_path='data/hrpt_lbco.xye')
 
 # %% [markdown]
-# ### Show Defined Experiments
+# #### Show Defined Experiments
 
 # %%
 project.experiments.show_names()
 
 # %% [markdown]
-# ### Show Measured Data
+# #### Show Measured Data
 
 # %%
 project.plot_meas(expt_name='hrpt')
 
 # %% [markdown]
-# ### Set Instrument
+# #### Set Instrument
 #
 # Modify the default instrument parameters.
 
@@ -231,7 +231,7 @@ project.experiments['hrpt'].instrument.setup_wavelength = 1.494
 project.experiments['hrpt'].instrument.calib_twotheta_offset = 0.6
 
 # %% [markdown]
-# ### Set Peak Profile
+# #### Set Peak Profile
 #
 # Show supported peak profile types.
 
@@ -261,7 +261,7 @@ project.experiments['hrpt'].peak.broad_lorentz_x = 0
 project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
 
 # %% [markdown]
-# ### Set Background
+# #### Set Background
 
 # %% [markdown]
 # Show supported background types.
@@ -298,7 +298,7 @@ project.experiments['hrpt'].background.add(x=165, y=170)
 project.experiments['hrpt'].background.show()
 
 # %% [markdown]
-# ### Set Linked Phases
+# #### Set Linked Phases
 #
 # Link the sample model defined in the previous step to the experiment.
 
@@ -306,24 +306,24 @@ project.experiments['hrpt'].background.show()
 project.experiments['hrpt'].linked_phases.add(id='lbco', scale=10.0)
 
 # %% [markdown]
-# ### Show Experiment as CIF
+# #### Show Experiment as CIF
 
 # %%
 project.experiments['hrpt'].show_as_cif()
 
 # %% [markdown]
-# ### Save Project State
+# #### Save Project State
 
 # %%
 project.save()
 
 # %% [markdown]
-# ## Step 4: Analysis
+# ## Step 4: Perform Analysis
 #
 # This section explains the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# ### Set Calculator
+# #### Set Calculator
 #
 # Show supported calculation engines.
 
@@ -343,13 +343,13 @@ project.analysis.show_current_calculator()
 project.analysis.current_calculator = 'cryspy'
 
 # %% [markdown]
-# ### Show Calculated Data
+# #### Show Calculated Data
 
 # %%
 project.plot_calc(expt_name='hrpt')
 
 # %% [markdown]
-# ### Plot Measured vs Calculated
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='hrpt',
@@ -361,7 +361,7 @@ project.plot_meas_vs_calc(expt_name='hrpt',
                           show_residual=True)
 
 # %% [markdown]
-# ### Show Parameters
+# #### Show Parameters
 #
 # Show all parameters of the project.
 
@@ -387,7 +387,7 @@ project.analysis.show_free_params()
 project.analysis.how_to_access_parameters()
 
 # %% [markdown]
-# ### Set Fit Mode
+# #### Set Fit Mode
 #
 # Show supported fit modes.
 
@@ -407,7 +407,7 @@ project.analysis.show_current_fit_mode()
 project.analysis.fit_mode = 'single'
 
 # %% [markdown]
-# ### Set Minimizer
+# #### Set Minimizer
 #
 # Show supported fitting engines.
 
@@ -453,7 +453,7 @@ project.experiments['hrpt'].background['165'].y.free = True
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -494,7 +494,7 @@ project.experiments['hrpt'].peak.broad_lorentz_y.free = True
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -535,7 +535,7 @@ project.sample_models['lbco'].atom_sites['O'].b_iso.free = True
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -609,7 +609,7 @@ project.analysis.apply_constraints()
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -683,7 +683,7 @@ project.sample_models['lbco'].atom_sites['La'].occupancy.free = True
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -712,7 +712,7 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # This final section shows how to review the results of the analysis.
 
 # %% [markdown]
-# ### Show Project Summary Report
+# #### Show Project Summary
 
 # %%
 project.summary.show_report()

@@ -79,8 +79,6 @@ model_2.atom_sites.add('Si', 'Si', 0.0, 0.0, 0.0, wyckoff_letter='a', b_iso=0.0)
 # This section shows how to add experiments, configure their parameters, and
 # link the sample models defined in the previous step.
 #
-# ### Experiment
-#
 # #### Download Data
 
 # %%
@@ -160,88 +158,88 @@ experiment.linked_phases.add('si', scale=0.2)
 #
 # The project object is used to manage sample models, experiments, and analysis.
 #
-# ### Create Project
+# #### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# ### Set Plotting Engine
+# #### Set Plotting Engine
 
 # %%
 project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# ### Add Sample Models
+# #### Add Sample Models
 
 # %%
 project.sample_models.add(model_1)
 project.sample_models.add(model_2)
 
 # %% [markdown]
-# ### Show Defined Sample Models
+# #### Show Sample Models
 
 # %%
 project.sample_models.show_names()
 
 # %% [markdown]
-# ### Add Experiments
+# #### Add Experiments
 
 # %%
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ### Set Excluded Regions
+# #### Set Excluded Regions
 #
-# Show measured data as loaded from the file
+# Show measured data as loaded from the file.
 
 # %%
 project.plot_meas(expt_name='mcstas')
 
 # %% [markdown]
-# Add excluded regions
+# Add excluded regions.
 
 # %%
 experiment.excluded_regions.add(minimum=0, maximum=40000)
 experiment.excluded_regions.add(minimum=108000, maximum=200000)
 
 # %% [markdown]
-# Show excluded regions
+# Show excluded regions.
 
 # %%
 experiment.excluded_regions.show()
 
 # %% [markdown]
-# Show measured data after adding excluded regions
+# Show measured data after adding excluded regions.
 
 # %%
 project.plot_meas(expt_name='mcstas')
 
 # %% [markdown]
-# Show experiment as CIF
+# Show experiment as CIF.
 
 # %%
 project.experiments['mcstas'].show_as_cif()
 
 # %% [markdown]
-# ## Analysis
+# ## Perform Analysis
 #
 # This section outlines the analysis process, including how to configure
 # calculation and fitting engines.
 #
-# ### Set Calculator
+# #### Set Calculator
 
 # %%
 project.analysis.current_calculator = 'cryspy'
 
 # %% [markdown]
-# ### Set Minimizer
+# #### Set Minimizer
 
 # %%
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
-# ### Set Fitting Parameters
+# #### Set Fitting Parameters
 #
 # Set sample model parameters to be optimized.
 
@@ -270,18 +268,14 @@ experiment.peak.broad_mix_beta_1.free = True
 for point in experiment.background:
     point.y.free = True
 
-
-# %%
-project.analysis.apply_constraints()
-
 # %% [markdown]
-# ### Run Fit
+# #### Perform Fit
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# ### Plot Measured vs Calculated
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='mcstas')
