@@ -82,7 +82,7 @@ project.experiments['pdf'].peak.broad_q.free = True
 project.experiments['pdf'].peak.sharp_delta_2.free = True
 
 # %% [markdown]
-# ## Run Fit
+# ## Run Fitting
 
 # %%
 project.analysis.current_calculator = 'pdffit'

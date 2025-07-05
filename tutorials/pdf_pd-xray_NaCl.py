@@ -102,7 +102,7 @@ project.experiments['xray_pdf'].peak.damp_q.free = True
 project.experiments['xray_pdf'].peak.sharp_delta_2.free = True
 
 # %% [markdown]
-# ## Run Fit
+# ## Run Fitting
 
 # %%
 project.analysis.current_calculator = 'pdffit'

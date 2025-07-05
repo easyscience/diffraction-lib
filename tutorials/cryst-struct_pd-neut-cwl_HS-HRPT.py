@@ -20,27 +20,27 @@ from easydiffraction import (
 #
 # This section shows how to add sample models and modify their parameters.
 #
-# ### Create Sample Model
+# #### Create Sample Model
 
 # %%
 model = SampleModel('hs')
 
 # %% [markdown]
-# ### Set Space Group
+# #### Set Space Group
 
 # %%
 model.space_group.name_h_m = 'R -3 m'
 model.space_group.it_coordinate_system_code = 'h'
 
 # %% [markdown]
-# ### Set Unit Cell
+# #### Set Unit Cell
 
 # %%
 model.cell.length_a = 6.9
 model.cell.length_c = 14.1
 
 # %% [markdown]
-# ### Set Atom Sites
+# #### Set Atom Sites
 
 # %%
 model.atom_sites.add('Zn', 'Zn', 0, 0, 0.5, wyckoff_letter='b', b_iso=0.5)
@@ -50,7 +50,7 @@ model.atom_sites.add('Cl', 'Cl', 0, 0, 0.197, wyckoff_letter='c', b_iso=0.5)
 model.atom_sites.add('H', '2H', 0.13, -0.13, 0.08, wyckoff_letter='h', b_iso=0.5)
 
 # %% [markdown]
-# ### Symmetry constraints
+# #### Symmetry constraints
 #
 # Show CIF output before applying symmetry constraints.
 
@@ -75,7 +75,7 @@ model.show_as_cif()
 # This section shows how to add experiments, configure their parameters, and
 # link the sample models defined in the previous step.
 #
-# ### Download Measured Data
+# #### Download Measured Data
 
 # %%
 download_from_repository('hrpt_hs.xye',
@@ -83,21 +83,21 @@ download_from_repository('hrpt_hs.xye',
                          destination='data')
 
 # %% [markdown]
-# ### Create Experiment
+# #### Create Experiment
 
 # %%
 expt = Experiment(name='hrpt',
                   data_path='data/hrpt_hs.xye')
 
 # %% [markdown]
-# ### Set Instrument
+# #### Set Instrument
 
 # %%
 expt.instrument.setup_wavelength = 1.89
 expt.instrument.calib_twotheta_offset = 0.0
 
 # %% [markdown]
-# ### Set Peak Profile
+# #### Set Peak Profile
 
 # %%
 expt.peak.broad_gauss_u = 0.1
@@ -107,7 +107,7 @@ expt.peak.broad_lorentz_x = 0.0
 expt.peak.broad_lorentz_y = 0
 
 # %% [markdown]
-# ### Set Background
+# #### Set Background
 
 # %%
 expt.background.add(x=4.4196, y=500)
@@ -121,7 +121,7 @@ expt.background.add(x=121.6311, y=500)
 expt.background.add(x=159.4116, y=500)
 
 # %% [markdown]
-# ### Set Linked Phases
+# #### Set Linked Phases
 
 # %%
 expt.linked_phases.add('hs', scale=0.5)
@@ -132,48 +132,48 @@ expt.linked_phases.add('hs', scale=0.5)
 # The project object is used to manage the sample model, experiment, and
 # analysis.
 #
-# ### Create Project
+# #### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# ### Set Plotting Engine
+# #### Set Plotting Engine
 
 # %%
 project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# ### Add Sample Model
+# #### Add Sample Model
 
 # %%
 project.sample_models.add(model)
 
 # %% [markdown]
-# ### Add Experiment
+# #### Add Experiment
 
 # %%
 project.experiments.add(expt)
 
 # %% [markdown]
-# ## Analysis
+# ## Perform Analysis
 #
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# ### Set Calculator
+# #### Set Calculator
 
 # %%
 project.analysis.current_calculator = 'cryspy'
 
 # %% [markdown]
-# ### Set Minimizer
+# #### Set Minimizer
 
 # %%
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
-# ### Plot Measured vs Calculated
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='hrpt',
@@ -203,7 +203,7 @@ expt.instrument.calib_twotheta_offset.free = True
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -241,7 +241,7 @@ for point in expt.background:
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -277,7 +277,7 @@ model.atom_sites['H'].fract_z.free = True
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -313,7 +313,7 @@ model.atom_sites['H'].b_iso.free = True
 project.analysis.show_free_params()
 
 # %% [markdown]
-# #### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -336,7 +336,7 @@ project.plot_meas_vs_calc(expt_name='hrpt',
 # This final section shows how to review the results of the analysis.
 
 # %% [markdown]
-# ### Show Project Summary Report
+# #### Show Project Summary
 
 # %%
 project.summary.show_report()

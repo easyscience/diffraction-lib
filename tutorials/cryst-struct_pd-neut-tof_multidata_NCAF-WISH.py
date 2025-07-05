@@ -5,7 +5,7 @@
 # structure using time-of-flight neutron powder diffraction data from WISH at
 # ISIS.
 #
-# Two datasets from detector banks 5_6 and 4_7 are used for joint fitting.
+# Two datasets from detector banks 5+6 and 4+7 are used for joint fitting.
 
 # %% [markdown]
 # ## Import Library
@@ -23,26 +23,26 @@ from easydiffraction import (
 #
 # This section covers how to add sample models and modify their parameters.
 #
-# ### Create Sample Model
+# #### Create Sample Model
 
 # %%
 model = SampleModel('ncaf')
 
 # %% [markdown]
-# ### Set Space Group
+# #### Set Space Group
 
 # %%
 model.space_group.name_h_m = 'I 21 3'
 model.space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
-# ### Set Unit Cell
+# #### Set Unit Cell
 
 # %%
 model.cell.length_a = 10.250256
 
 # %% [markdown]
-# ### Set Atom Sites
+# #### Set Atom Sites
 
 # %%
 model.atom_sites.add('Ca', 'Ca', 0.4665, 0.0, 0.25, wyckoff_letter="b", b_iso=0.92)
@@ -58,25 +58,25 @@ model.atom_sites.add('F3', 'F', 0.4611, 0.4611, 0.4611, wyckoff_letter="a", b_is
 # This section shows how to add experiments, configure their parameters, and
 # link the sample models defined in the previous step.
 #
-# ### Download Measured Data
+# #### Download Measured Data
 
 # %%
-download_from_repository('wish_ncaf_5_6.xye', branch='docs', destination='data')
+download_from_repository('wish_ncaf_5_6.xys', branch='docs', destination='data')
 
 # %%
-download_from_repository('wish_ncaf_4_7.xye', branch='docs', destination='data')
+download_from_repository('wish_ncaf_4_7.xys', branch='docs', destination='data')
 
 # %% [markdown]
-# ### Create Experiment
+# #### Create Experiment
 
 # %%
-expt56 = Experiment('wish_5_6', beam_mode='time-of-flight', data_path='data/wish_ncaf_5_6.xye')
+expt56 = Experiment('wish_5_6', beam_mode='time-of-flight', data_path='data/wish_ncaf_5_6.xys')
 
 # %%
-expt47 = Experiment('wish_4_7', beam_mode='time-of-flight', data_path='data/wish_ncaf_4_7.xye')
+expt47 = Experiment('wish_4_7', beam_mode='time-of-flight', data_path='data/wish_ncaf_4_7.xys')
 
 # %% [markdown]
-# ### Set Instrument
+# #### Set Instrument
 
 # %%
 expt56.instrument.setup_twotheta_bank = 152.827
@@ -91,7 +91,7 @@ expt47.instrument.calib_d_to_tof_linear = 18640.7
 expt47.instrument.calib_d_to_tof_quad = -0.47488
 
 # %% [markdown]
-# ### Set Peak Profile
+# #### Set Peak Profile
 
 # %%
 expt56.peak.broad_gauss_sigma_0 = 0.0
@@ -112,7 +112,7 @@ expt47.peak.asym_alpha_0 = -0.01
 expt47.peak.asym_alpha_1 = 0.10
 
 # %% [markdown]
-# ### Set Background
+# #### Set Background
 
 # %%
 expt56.background_type = 'line-segment'
@@ -182,7 +182,7 @@ for x, y in [
     expt47.background.add(x, y)
 
 # %% [markdown]
-# ### Set Linked Phases
+# #### Set Linked Phases
 
 # %%
 expt56.linked_phases.add('ncaf', scale=1.0)
@@ -191,60 +191,71 @@ expt56.linked_phases.add('ncaf', scale=1.0)
 expt47.linked_phases.add('ncaf', scale=2.0)
 
 # %% [markdown]
+# #### Set Excluded Regions
+
+# %%
+expt56.excluded_regions.add(minimum=0, maximum=10010)
+expt56.excluded_regions.add(minimum=100010, maximum=200000)
+
+# %%
+expt47.excluded_regions.add(minimum=0, maximum=10006)
+expt47.excluded_regions.add(minimum=100004, maximum=200000)
+
+# %% [markdown]
 # ## Define Project
 #
 # The project object is used to manage the sample model, experiments, and
 # analysis
 #
-# ### Create Project
+# #### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# ### Set Plotting Engine
+# #### Set Plotting Engine
 
 # %%
 project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# ### Add Sample Model
+# #### Add Sample Model
 
 # %%
 project.sample_models.add(model)
 
 # %% [markdown]
-# ### Add Experiment
+# #### Add Experiment
 
 # %%
 project.experiments.add(expt56)
 project.experiments.add(expt47)
 
 # %% [markdown]
-# ## Analysis
+# ## Perform Analysis
 #
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# ### Set Calculator
+# #### Set Calculator
 
 # %%
 project.analysis.current_calculator = 'cryspy'
 
 # %% [markdown]
-# ### Set Minimizer
+# #### Set Minimizer
 
 # %%
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
-# ### Set Fit Mode
+# #### Set Fit Mode
 
 # %%
 project.analysis.fit_mode = 'joint'
 
 # %% [markdown]
-# ### Set free parameters
+# #### Set Free Parameters
 
 # %%
 model.atom_sites['Ca'].fract_x.free = True
@@ -286,7 +297,7 @@ expt47.peak.asym_alpha_0.free = True
 expt47.peak.asym_alpha_1.free = True
 
 # %% [markdown]
-# ### Plot Measured vs Calculated
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='wish_5_6', show_residual=True)
@@ -295,13 +306,13 @@ project.plot_meas_vs_calc(expt_name='wish_5_6', show_residual=True)
 project.plot_meas_vs_calc(expt_name='wish_4_7', show_residual=True)
 
 # %% [markdown]
-# ### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# ### Plot Measured vs Calculated
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='wish_5_6', show_residual=True)
@@ -315,7 +326,7 @@ project.plot_meas_vs_calc(expt_name='wish_4_7', show_residual=True)
 # This final section shows how to review the results of the analysis.
 
 # %% [markdown]
-# ### Show Project Summary Report
+# #### Show Project Summary
 
 # %%
 project.summary.show_report()

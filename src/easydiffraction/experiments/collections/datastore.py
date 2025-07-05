@@ -16,6 +16,7 @@ class Pattern:
         self.meas: Optional[np.ndarray] = None
         self.meas_su: Optional[np.ndarray] = None
         self.bkg: Optional[np.ndarray] = None
+        self.excluded: Optional[np.ndarray] = None  # Flags for excluded points
         self._calc: Optional[np.ndarray] = None  # Cached calculated intensities
 
     @property
@@ -33,6 +34,7 @@ class PowderPattern(Pattern):
     """
     Specialized pattern for powder diffraction (can be extended in the future).
     """
+    # TODO: Check if this class is needed or if it can be merged with Pattern
     def __init__(self, experiment: Experiment) -> None:
         super().__init__(experiment)
         # Additional powder-specific initialization if needed
@@ -49,12 +51,14 @@ class Datastore:
         if sample_form == "powder":
             self.pattern: Pattern = PowderPattern(experiment)
         elif sample_form == "single_crystal":
-            self.pattern: Pattern = Pattern(experiment)
+            self.pattern: Pattern = Pattern(experiment)  # TODO: Find better name for single crystal pattern
         else:
             raise ValueError(f"Unknown sample form '{sample_form}'")
 
     def load_measured_data(self, file_path: str) -> None:
         """Load measured data from an ASCII file."""
+        # TODO: Check if this method is used...
+        #  Looks like _load_ascii_data_to_experiment from experiments.py is used instead
         print(f"Loading measured data for {self.sample_form} diffraction from {file_path}")
 
         try:
@@ -73,6 +77,7 @@ class Datastore:
         self.pattern.x = x
         self.pattern.meas = y
         self.pattern.meas_su = sy
+        self.pattern.excluded = np.full(x.shape, fill_value=False, dtype=bool)  # No excluded points by default
 
         print(f"Loaded {len(x)} points for experiment '{self.pattern.experiment.name}'.")
 

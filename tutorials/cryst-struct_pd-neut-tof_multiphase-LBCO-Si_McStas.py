@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Structure Refinement: LBCO + Si, NPD McStas
+# # Structure Refinement: LBCO+Si, McStas
 #
 # This example demonstrates a Rietveld refinement of La0.5Ba0.5CoO3 crystal
 # structure with a small amount of Si phase using time-of-flight neutron powder
@@ -27,20 +27,20 @@ from easydiffraction import (
 model_1 = SampleModel('lbco')
 
 # %% [markdown]
-# ### Set Space Group
+# #### Set Space Group
 
 # %%
 model_1.space_group.name_h_m = 'P m -3 m'
 model_1.space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
-# ### Set Unit Cell
+# #### Set Unit Cell
 
 # %%
 model_1.cell.length_a = 3.8909
 
 # %% [markdown]
-# ### Set Atom Sites
+# #### Set Atom Sites
 
 # %%
 model_1.atom_sites.add('La', 'La', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
@@ -48,26 +48,27 @@ model_1.atom_sites.add('Ba', 'Ba', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occup
 model_1.atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, wyckoff_letter='b', b_iso=0.2567)
 model_1.atom_sites.add('O', 'O', 0, 0.5, 0.5, wyckoff_letter='c', b_iso=1.4041)
 
+# %% [markdown]
 # ### Create Sample Model 2: Si
 
 # %%
 model_2 = SampleModel('si')
 
 # %% [markdown]
-# ### Set Space Group
+# #### Set Space Group
 
 # %%
 model_2.space_group.name_h_m = 'F d -3 m'
 model_2.space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
-# ### Set Unit Cell
+# #### Set Unit Cell
 
 # %%
 model_2.cell.length_a = 5.43146
 
 # %% [markdown]
-# ### Set Atom Sites
+# #### Set Atom Sites
 
 # %%
 model_2.atom_sites.add('Si', 'Si', 0.0, 0.0, 0.0, wyckoff_letter='a', b_iso=0.0)
@@ -77,8 +78,6 @@ model_2.atom_sites.add('Si', 'Si', 0.0, 0.0, 0.0, wyckoff_letter='a', b_iso=0.0)
 #
 # This section shows how to add experiments, configure their parameters, and
 # link the sample models defined in the previous step.
-#
-# ### Experiment
 #
 # #### Download Data
 
@@ -159,72 +158,97 @@ experiment.linked_phases.add('si', scale=0.2)
 #
 # The project object is used to manage sample models, experiments, and analysis.
 #
-# ### Create Project
+# #### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# ### Set Plotting Engine
+# #### Set Plotting Engine
 
 # %%
 project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# ### Add Sample Models
+# #### Add Sample Models
 
 # %%
 project.sample_models.add(model_1)
 project.sample_models.add(model_2)
 
 # %% [markdown]
-# ### Show Defined Sample Models
+# #### Show Sample Models
 
 # %%
 project.sample_models.show_names()
 
 # %% [markdown]
-# ### Add Experiments
+# #### Add Experiments
 
 # %%
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## Analysis
+# #### Set Excluded Regions
 #
-# This section outlines the analysis process, including how to configure calculation and fitting engines.
+# Show measured data as loaded from the file.
+
+# %%
+project.plot_meas(expt_name='mcstas')
+
+# %% [markdown]
+# Add excluded regions.
+
+# %%
+experiment.excluded_regions.add(minimum=0, maximum=40000)
+experiment.excluded_regions.add(minimum=108000, maximum=200000)
+
+# %% [markdown]
+# Show excluded regions.
+
+# %%
+experiment.excluded_regions.show()
+
+# %% [markdown]
+# Show measured data after adding excluded regions.
+
+# %%
+project.plot_meas(expt_name='mcstas')
+
+# %% [markdown]
+# Show experiment as CIF.
+
+# %%
+project.experiments['mcstas'].show_as_cif()
+
+# %% [markdown]
+# ## Perform Analysis
 #
-# ### Set Calculator
+# This section outlines the analysis process, including how to configure
+# calculation and fitting engines.
+#
+# #### Set Calculator
 
 # %%
 project.analysis.current_calculator = 'cryspy'
 
 # %% [markdown]
-# ### Set Fit Mode
-
-# %%
-#project.analysis.fit_mode = 'joint'
-
-# %% [markdown]
-# ### Set Minimizer
+# #### Set Minimizer
 
 # %%
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
-# ### Set Fitting Parameters
+# #### Set Fitting Parameters
 #
 # Set sample model parameters to be optimized.
 
 # %%
 model_1.cell.length_a.free = True
-model_1.atom_sites['La'].b_iso.free = True
-model_1.atom_sites['Ba'].b_iso.free = True
 model_1.atom_sites['Co'].b_iso.free = True
 model_1.atom_sites['O'].b_iso.free = True
 
 model_2.cell.length_a.free = True
-model_2.atom_sites['Si'].b_iso.free = True
 
 # %% [markdown]
 # Set experiment parameters to be optimized.
@@ -245,35 +269,13 @@ for point in experiment.background:
     point.y.free = True
 
 # %% [markdown]
-# ### Set Constraints
-
-# %%
-project.analysis.aliases.add(
-    label='biso_La',
-    param_uid=project.sample_models['lbco'].atom_sites['La'].b_iso.uid
-)
-project.analysis.aliases.add(
-    label='biso_Ba',
-    param_uid=project.sample_models['lbco'].atom_sites['Ba'].b_iso.uid
-)
-
-# %%
-project.analysis.constraints.add(
-    lhs_alias='biso_Ba',
-    rhs_expr='biso_La'
-)
-
-# %%
-project.analysis.apply_constraints()
-
-# %% [markdown]
-# ### Run Fit
+# #### Perform Fit
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# ### Plot Measured vs Calculated
+# #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='mcstas', show_residual=False)
+project.plot_meas_vs_calc(expt_name='mcstas')

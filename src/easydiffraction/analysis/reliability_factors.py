@@ -4,7 +4,8 @@ from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
 
-def calculate_r_factor(y_obs: np.ndarray, y_calc: np.ndarray) -> float:
+def calculate_r_factor(y_obs: np.ndarray,
+                       y_calc: np.ndarray) -> float:
     """
     Calculate the R-factor (reliability factor) between observed and calculated data.
     
@@ -22,7 +23,9 @@ def calculate_r_factor(y_obs: np.ndarray, y_calc: np.ndarray) -> float:
     return numerator / denominator if denominator != 0 else np.nan
 
 
-def calculate_weighted_r_factor(y_obs: np.ndarray, y_calc: np.ndarray, weights: np.ndarray) -> float:
+def calculate_weighted_r_factor(y_obs: np.ndarray,
+                                y_calc: np.ndarray,
+                                weights: np.ndarray) -> float:
     """
     Calculate the weighted R-factor between observed and calculated data.
     
@@ -42,7 +45,8 @@ def calculate_weighted_r_factor(y_obs: np.ndarray, y_calc: np.ndarray, weights: 
     return np.sqrt(numerator / denominator) if denominator != 0 else np.nan
 
 
-def calculate_rb_factor(y_obs: np.ndarray, y_calc: np.ndarray) -> float:
+def calculate_rb_factor(y_obs: np.ndarray,
+                        y_calc: np.ndarray) -> float:
     """
     Calculate the Bragg R-factor between observed and calculated data.
     
@@ -60,7 +64,8 @@ def calculate_rb_factor(y_obs: np.ndarray, y_calc: np.ndarray) -> float:
     return numerator / denominator if denominator != 0 else np.nan
 
 
-def calculate_r_factor_squared(y_obs: np.ndarray, y_calc: np.ndarray) -> float:
+def calculate_r_factor_squared(y_obs: np.ndarray,
+                               y_calc: np.ndarray) -> float:
     """
     Calculate the R-factor squared between observed and calculated data.
     
@@ -78,7 +83,8 @@ def calculate_r_factor_squared(y_obs: np.ndarray, y_calc: np.ndarray) -> float:
     return np.sqrt(numerator / denominator) if denominator != 0 else np.nan
 
 
-def calculate_reduced_chi_square(residuals: np.ndarray, num_parameters: int) -> float:
+def calculate_reduced_chi_square(residuals: np.ndarray,
+                                 num_parameters: int) -> float:
     """
     Calculate the reduced chi-square statistic.
     
@@ -99,7 +105,9 @@ def calculate_reduced_chi_square(residuals: np.ndarray, num_parameters: int) -> 
         return np.nan
 
 
-def get_reliability_inputs(sample_models: SampleModels, experiments: Experiments, calculator: CalculatorBase) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
+def get_reliability_inputs(sample_models: SampleModels,
+                           experiments: Experiments,
+                           calculator: CalculatorBase) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
     """
     Collect observed and calculated data points for reliability calculations.
     
@@ -120,9 +128,13 @@ def get_reliability_inputs(sample_models: SampleModels, experiments: Experiments
         y_meas_su = experiment.datastore.pattern.meas_su
 
         if y_meas is not None and y_calc is not None:
+            # If standard uncertainty is not provided, use ones
+            if y_meas_su is None:
+                y_meas_su = np.ones_like(y_meas)
+
             y_obs_all.extend(y_meas)
             y_calc_all.extend(y_calc)
-            y_err_all.extend(y_meas_su if y_meas_su is not None else np.ones_like(y_meas))
+            y_err_all.extend(y_meas_su)
 
     return (
         np.array(y_obs_all),

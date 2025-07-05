@@ -78,7 +78,11 @@ class DiffractionMinimizer:
         f_obs, f_calc = None, None
 
         if self.results:
-            self.results.display_results(y_obs=y_obs, y_calc=y_calc, y_err=y_err, f_obs=f_obs, f_calc=f_calc)
+            self.results.display_results(y_obs=y_obs,
+                                         y_calc=y_calc,
+                                         y_err=y_err,
+                                         f_obs=f_obs,
+                                         f_calc=f_calc)
 
     def _collect_free_parameters(self,
                                  sample_models: SampleModels,
@@ -140,13 +144,19 @@ class DiffractionMinimizer:
         residuals: List[float] = []
         
         for (expt_id, experiment), weight in zip(experiments._items.items(), _weights):
+
+            # Calculate the difference between measured and calculated patterns
             y_calc: np.ndarray = calculator.calculate_pattern(sample_models,
                                                              experiment,
-                                                             called_by_minimizer=True)  # True False
+                                                             called_by_minimizer=True)
             y_meas: np.ndarray = experiment.datastore.pattern.meas
             y_meas_su: np.ndarray = experiment.datastore.pattern.meas_su
-            diff: np.ndarray = (y_meas - y_calc) / y_meas_su
-            diff *= np.sqrt(weight)  # Residuals are squared before going into reduced chi-squared
+            diff = ((y_meas - y_calc) / y_meas_su)
+
+            # Residuals are squared before going into reduced chi-squared
+            diff *= np.sqrt(weight)
+
+            # Append the residuals for this experiment
             residuals.extend(diff)
 
         return self.minimizer.tracker.track(np.array(residuals), parameters)

@@ -15,6 +15,7 @@ from easydiffraction.experiments.components.peak import PeakFactory
 
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
 from easydiffraction.experiments.collections.background import BackgroundFactory
+from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.datastore import DatastoreFactory
 
 from easydiffraction.utils.formatting import paragraph, warning
@@ -126,8 +127,12 @@ class BaseExperiment(Datablock):
             cif_lines += ["", self.linked_crystal.as_cif()]
 
         # Background points
-        if hasattr(self, "background") and self.background:
+        if hasattr(self, "background") and self.background._items:
             cif_lines += ["", self.background.as_cif()]
+
+        # Excluded regions
+        if hasattr(self, "excluded_regions") and self.excluded_regions._items:
+            cif_lines += ["", self.excluded_regions.as_cif()]
 
         # Measured data
         if hasattr(self, "datastore") and hasattr(self.datastore, "pattern"):
@@ -191,7 +196,8 @@ class BasePowderExperiment(BaseExperiment):
             beam_mode=self.type.beam_mode.value,
             profile_type=self._peak_profile_type)
 
-        self.linked_phases = LinkedPhases()
+        self.linked_phases: LinkedPhases = LinkedPhases()
+        self.excluded_regions: ExcludedRegions = ExcludedRegions(parent=self)
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
@@ -274,15 +280,41 @@ class PowderExperiment(InstrumentMixin,
         if data.shape[1] < 3:
             print("Warning: No uncertainty (sy) column provided. Defaulting to sqrt(y).")
 
-        # Extract x, y, and sy data
+        # Extract x, y data
         x: np.ndarray = data[:, 0]
         y: np.ndarray = data[:, 1]
+
+        # Round x to 4 decimal places
+        # TODO: This is needed for CrysPy, as otherwise it fails to match
+        #  the size of the data arrays.
+        x = np.round(x, 4)
+
+        # Determine sy from column 3 if available, otherwise use sqrt(y)
         sy: np.ndarray = data[:, 2] if data.shape[1] > 2 else np.sqrt(y)
 
+        # Replace values smaller than 0.0001 with 1.0
+        # TODO: This is needed for minimization algorithms that fail with
+        #  very small or zero uncertainties.
+        sy = np.where(sy < 0.0001, 1.0, sy)
+
         # Attach the data to the experiment's datastore
+
+        # The full pattern data
+        self.datastore.pattern.full_x = x
+        self.datastore.pattern.full_meas = y
+        self.datastore.pattern.full_meas_su = sy
+
+        # The pattern data used for fitting (without excluded points)
+        # This is the same as full_x, full_meas, full_meas_su by default
         self.datastore.pattern.x = x
         self.datastore.pattern.meas = y
         self.datastore.pattern.meas_su = sy
+
+        # Excluded mask
+        # No excluded points by default
+        self.datastore.pattern.excluded = np.full(x.shape,
+                                                  fill_value=False,
+                                                  dtype=bool)
 
         print(paragraph("Data loaded successfully"))
         print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")

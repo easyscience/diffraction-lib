@@ -20,7 +20,7 @@
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Step 1: Project
+# ## Step 1: Define Project
 
 # %%
 project = ed.Project()
@@ -29,7 +29,7 @@ project = ed.Project()
 project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# ## Step 2: Sample Model
+# ## Step 2: Define Sample Model
 
 # %%
 project.sample_models.add(name='lbco')
@@ -48,7 +48,7 @@ project.sample_models['lbco'].atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, b_iso=0.
 project.sample_models['lbco'].atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
 
 # %% [markdown]
-# ## Step 3: Experiment
+# ## Step 3: Define Experiment
 
 # %%
 ed.download_from_repository('hrpt_lbco.xye', branch='docs', destination='data')
@@ -78,10 +78,18 @@ project.experiments['hrpt'].background.add(x=110, y=170)
 project.experiments['hrpt'].background.add(x=165, y=170)
 
 # %%
+project.experiments['hrpt'].excluded_regions.add(minimum=0, maximum=5)
+project.experiments['hrpt'].excluded_regions.add(minimum=165, maximum=180)
+
+# %%
+project.experiments['hrpt'].show_as_cif()
+
+
+# %%
 project.experiments['hrpt'].linked_phases.add(id='lbco', scale=10.0)
 
 # %% [markdown]
-# ## Step 4: Analysis
+# ## Step 4: Perform Analysis
 
 # %%
 project.sample_models['lbco'].cell.length_a.free = True

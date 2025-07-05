@@ -56,6 +56,9 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     project.sample_models.add(model_2)
     project.experiments.add(expt)
 
+    # Exclude regions from fitting
+    project.experiments['mcstas'].excluded_regions.add(minimum=108000, maximum=200000)
+
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
     project.analysis.current_minimizer = 'lmfit (leastsq)'

@@ -95,6 +95,7 @@ def test_get_reliability_inputs():
                 pattern=Mock(
                     meas=np.array([10.0, 20.0, 30.0]),
                     meas_su=np.array([1.0, 1.0, 1.0]),
+                    excluded=np.array([False, False, False])
                 )
             )
         )

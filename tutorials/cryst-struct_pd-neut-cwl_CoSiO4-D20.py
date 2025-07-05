@@ -20,20 +20,20 @@ from easydiffraction import (
 #
 # This section shows how to add sample models and modify their parameters.
 #
-# ### Create Sample Model
+# #### Create Sample Model
 
 # %%
 model = SampleModel('cosio')
 
 # %% [markdown]
-# ### Set Space Group
+# #### Set Space Group
 
 # %%
 model.space_group.name_h_m = 'P n m a'
 model.space_group.it_coordinate_system_code = 'abc'
 
 # %% [markdown]
-# ### Set Unit Cell
+# #### Set Unit Cell
 
 # %%
 model.cell.length_a = 10.3
@@ -41,7 +41,7 @@ model.cell.length_b = 6.0
 model.cell.length_c = 4.8
 
 # %% [markdown]
-# ### Set Atom Sites
+# #### Set Atom Sites
 
 # %%
 model.atom_sites.add('Co1', 'Co', 0, 0, 0, wyckoff_letter='a', b_iso=0.5)
@@ -52,7 +52,7 @@ model.atom_sites.add('O2', 'O', 0.448, 0.25, 0.217, wyckoff_letter='c', b_iso=0.
 model.atom_sites.add('O3', 'O', 0.164, 0.032, 0.28, wyckoff_letter='d', b_iso=0.5)
 
 # %% [markdown]
-# ### Symmetry constraints
+# #### Symmetry Constraints
 #
 # Show CIF output before applying symmetry constraints.
 
@@ -77,26 +77,26 @@ model.show_as_cif()
 # This section shows how to add experiments, configure their parameters, and
 # link the sample models defined in the previous step.
 #
-# ### Download Measured Data
+# #### Download Measured Data
 
 # %%
 download_from_repository('co2sio4_d20.xye', branch='docs', destination='data')
 
 # %% [markdown]
-# ### Create Experiment
+# #### Create Experiment
 
 # %%
 expt = Experiment('d20', data_path='data/co2sio4_d20.xye')
 
 # %% [markdown]
-# ### Set Instrument
+# #### Set Instrument
 
 # %%
 expt.instrument.setup_wavelength = 1.87
 expt.instrument.calib_twotheta_offset = 0.1
 
 # %% [markdown]
-# ### Set Peak Profile
+# #### Set Peak Profile
 
 # %%
 expt.peak.broad_gauss_u = 0.3
@@ -104,7 +104,7 @@ expt.peak.broad_gauss_v = -0.5
 expt.peak.broad_gauss_w = 0.4
 
 # %% [markdown]
-# ### Set Background
+# #### Set Background
 
 # %%
 expt.background.add(x=8, y=500)
@@ -123,7 +123,7 @@ expt.background.add(x=130, y=500)
 expt.background.add(x=150, y=500)
 
 # %% [markdown]
-# ### Set Linked Phases
+# #### Set Linked Phases
 
 # %%
 expt.linked_phases.add('cosio', scale=1.0)
@@ -134,48 +134,48 @@ expt.linked_phases.add('cosio', scale=1.0)
 # The project object is used to manage the sample model, experiment, and
 # analysis.
 #
-# ### Create Project
+# #### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# ### Set Plotting Engine
+# #### Set Plotting Engine
 
 # %%
 project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# ### Add Sample Model
+# #### Add Sample Model
 
 # %%
 project.sample_models.add(model)
 
 # %% [markdown]
-# ### Add Experiment
+# #### Add Experiment
 
 # %%
 project.experiments.add(expt)
 
 # %% [markdown]
-# ## Analysis
+# ## Perform Analysis
 #
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# ### Set Calculator
+# #### Set Calculator
 
 # %%
 project.analysis.current_calculator = 'cryspy'
 
 # %% [markdown]
-# ### Set Minimizer
+# #### Set Minimizer
 
 # %%
 project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
-# ### Plot Measured vs Calculated
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='d20', show_residual=True)
@@ -184,7 +184,7 @@ project.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 project.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
 
 # %% [markdown]
-# ### Set Free Parameters
+# #### Set Free Parameters
 
 # %%
 model.cell.length_a.free = True
@@ -224,7 +224,7 @@ for point in expt.background:
     point.y.free = True
 
 # %% [markdown]
-# ### Set Constraints
+# #### Set Constraints
 #
 # Set aliases for parameters.
 
@@ -254,13 +254,13 @@ project.analysis.constraints.add(
 project.analysis.apply_constraints()
 
 # %% [markdown]
-# ### Run Fit
+# #### Run Fitting
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# ### Plot Measured vs Calculated
+# #### Plot Measured vs Calculated
 
 # %%
 project.plot_meas_vs_calc(expt_name='d20', show_residual=True)
@@ -274,7 +274,7 @@ project.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=Tru
 # This final section shows how to review the results of the analysis.
 
 # %% [markdown]
-# ### Show Project Summary Report
+# #### Show Project Summary
 
 # %%
 project.summary.show_report()
