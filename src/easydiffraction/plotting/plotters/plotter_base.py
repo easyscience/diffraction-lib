@@ -12,7 +12,7 @@ SERIES_CONFIG = dict(
         name='Total calculated (Icalc)'
     ),
     meas=dict(
-        mode='markers',
+        mode='lines+markers',
         name='Measured (Imeas)'
     ),
     resid=dict(
