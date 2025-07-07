@@ -80,7 +80,7 @@ model.show_as_cif()
 # #### Download Measured Data
 
 # %%
-download_from_repository('co2sio4_d20.xye', branch='docs', destination='data')
+download_from_repository('co2sio4_d20.xye', branch='develop', destination='data')
 
 # %% [markdown]
 # #### Create Experiment

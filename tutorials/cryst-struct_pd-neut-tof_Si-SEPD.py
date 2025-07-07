@@ -54,7 +54,7 @@ model.atom_sites.add('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.5)
 
 # %%
 download_from_repository('sepd_si.xye',
-                         branch='docs',
+                         branch='develop',
                          destination='data')
 
 # %% [markdown]

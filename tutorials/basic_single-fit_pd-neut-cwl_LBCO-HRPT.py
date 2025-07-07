@@ -196,7 +196,7 @@ project.save()
 
 # %%
 ed.download_from_repository('hrpt_lbco.xye',
-                            branch='docs',
+                            branch='develop',
                             destination='data')
 
 # %% [markdown]

@@ -51,7 +51,7 @@ project.sample_models['lbco'].atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
 # ## Step 3: Define Experiment
 
 # %%
-ed.download_from_repository('hrpt_lbco.xye', branch='docs', destination='data')
+ed.download_from_repository('hrpt_lbco.xye', branch='develop', destination='data')
 
 # %%
 project.experiments.add(name='hrpt',

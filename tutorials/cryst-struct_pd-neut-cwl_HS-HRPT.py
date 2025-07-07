@@ -79,7 +79,7 @@ model.show_as_cif()
 
 # %%
 download_from_repository('hrpt_hs.xye',
-                         branch='docs',
+                         branch='develop',
                          destination='data')
 
 # %% [markdown]

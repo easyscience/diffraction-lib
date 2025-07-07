@@ -49,7 +49,7 @@ project.sample_models['ni'].atom_sites.add(label='Ni',
 
 # %%
 ed.download_from_repository('ni-q27r100-neutron_from-2.gr',
-                            branch='docs',
+                            branch='develop',
                             destination='data')
 
 # %%

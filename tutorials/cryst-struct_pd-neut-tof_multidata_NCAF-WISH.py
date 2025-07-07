@@ -61,10 +61,10 @@ model.atom_sites.add('F3', 'F', 0.4611, 0.4611, 0.4611, wyckoff_letter="a", b_is
 # #### Download Measured Data
 
 # %%
-download_from_repository('wish_ncaf_5_6.xys', branch='docs', destination='data')
+download_from_repository('wish_ncaf_5_6.xys', branch='develop', destination='data')
 
 # %%
-download_from_repository('wish_ncaf_4_7.xys', branch='docs', destination='data')
+download_from_repository('wish_ncaf_4_7.xys', branch='develop', destination='data')
 
 # %% [markdown]
 # #### Create Experiment
