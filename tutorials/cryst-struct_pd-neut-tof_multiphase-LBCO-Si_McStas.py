@@ -82,7 +82,7 @@ model_2.atom_sites.add('Si', 'Si', 0.0, 0.0, 0.0, wyckoff_letter='a', b_iso=0.0)
 # #### Download Data
 
 # %%
-download_from_repository('mcstas_lbco-si.xys',
+download_from_repository('mcstas_lbco-si.xye',
                          branch='fix-multiphase-fit',
                          destination='data')
 
@@ -95,7 +95,7 @@ experiment = Experiment('mcstas',
                         beam_mode='time-of-flight',
                         radiation_probe='neutron',
                         scattering_type='bragg',
-                        data_path='data/mcstas_lbco-si.xys')
+                        data_path='data/mcstas_lbco-si.xye')
 
 # %% [markdown]
 # #### Set Instrument
