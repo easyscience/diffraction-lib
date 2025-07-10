@@ -123,7 +123,8 @@ class Plotter():
                   expt_name,
                   expt_type,
                   x_min=None,
-                  x_max=None):
+                  x_max=None,
+                  d_spacing=False):
         if pattern.x is None:
             error(f"No data available for experiment {expt_name}")
             return
@@ -131,19 +132,26 @@ class Plotter():
             error(f"No measured data available for experiment {expt_name}")
             return
 
-        x = self._filtered_y_array(y_array=pattern.x,
-                                   x_array=pattern.x,
+        if d_spacing:
+            x_array = pattern.d
+        else:
+            x_array = pattern.x
+        x = self._filtered_y_array(y_array=x_array,
+                                   x_array=x_array,
                                    x_min=x_min,
                                    x_max=x_max)
         y_meas = self._filtered_y_array(y_array=pattern.meas,
-                                        x_array=pattern.x,
+                                        x_array=x_array,
                                         x_min=x_min,
                                         x_max=x_max)
 
         y_series = [y_meas]
         y_labels = ['meas']
 
-        axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value][expt_type.beam_mode.value]
+        if d_spacing:
+            axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value]['d-spacing']
+        else:
+            axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value][expt_type.beam_mode.value]
 
         self._plotter.plot(
             x=x,
@@ -159,7 +167,8 @@ class Plotter():
                   expt_name,
                   expt_type,
                   x_min=None,
-                  x_max=None):
+                  x_max=None,
+                  d_spacing=False):
         if pattern.x is None:
             error(f"No data available for experiment {expt_name}")
             return
@@ -167,19 +176,26 @@ class Plotter():
             print(f"No calculated data available for experiment {expt_name}")
             return
 
-        x = self._filtered_y_array(y_array=pattern.x,
-                                   x_array=pattern.x,
+        if d_spacing:
+            x_array = pattern.d
+        else:
+            x_array = pattern.x
+        x = self._filtered_y_array(y_array=x_array,
+                                   x_array=x_array,
                                    x_min=x_min,
                                    x_max=x_max)
         y_calc = self._filtered_y_array(y_array=pattern.calc,
-                                        x_array=pattern.x,
+                                        x_array=x_array,
                                         x_min=x_min,
                                         x_max=x_max)
 
         y_series = [y_calc]
         y_labels = ['calc']
 
-        axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value][expt_type.beam_mode.value]
+        if d_spacing:
+            axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value]['d-spacing']
+        else:
+            axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value][expt_type.beam_mode.value]
 
         self._plotter.plot(
             x=x,
@@ -228,7 +244,10 @@ class Plotter():
         y_series = [y_meas, y_calc]
         y_labels = ['meas', 'calc']
 
-        axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value][expt_type.beam_mode.value]
+        if d_spacing:
+            axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value]['d-spacing']
+        else:
+            axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value][expt_type.beam_mode.value]
 
         if show_residual:
             y_resid = y_meas - y_calc

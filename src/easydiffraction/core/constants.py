@@ -18,6 +18,7 @@ DEFAULT_AXES_LABELS = {
     'bragg': {
         'constant wavelength' : ['2θ (degree)', 'Intensity (arb. units)'],
         'time-of-flight': ['TOF (µs)', 'Intensity (arb. units)'],
+        'd-spacing': ['d (Å)', 'Intensity (arb. units)'],
     },
     'total': {
         'constant wavelength' : ['r (Å)', 'G(r) (Å)'],

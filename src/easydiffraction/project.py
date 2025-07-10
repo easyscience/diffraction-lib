@@ -6,6 +6,7 @@ from textwrap import wrap
 from varname import varname
 from typing import List
 
+from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.formatting import (
     paragraph,
     error
@@ -245,29 +246,49 @@ class Project:
     def plot_meas(self,
                   expt_name,
                   x_min=None,
-                  x_max=None):
+                  x_max=None,
+                  d_spacing=False):
         experiment = self.experiments[expt_name]
         pattern = experiment.datastore.pattern
         expt_type = experiment.type
+
+        beam_mode = expt_type.beam_mode.value
+        if d_spacing:  # TODO: move this logic to somewhere else
+            if beam_mode == 'time-of-flight':
+                self.update_pattern_d_spacing(expt_name)
+            else:
+                d_spacing = False
+
         self.plotter.plot_meas(pattern,
                                expt_name,
                                expt_type,
                                x_min=x_min,
-                               x_max=x_max)
+                               x_max=x_max,
+                               d_spacing=d_spacing)
 
     def plot_calc(self,
                   expt_name,
                   x_min=None,
-                  x_max=None):
+                  x_max=None,
+                  d_spacing=False):
         self.analysis.calculate_pattern(expt_name) # Recalculate pattern
         experiment = self.experiments[expt_name]
         pattern = experiment.datastore.pattern
         expt_type = experiment.type
+
+        beam_mode = expt_type.beam_mode.value
+        if d_spacing:  # TODO: move this logic to somewhere else
+            if beam_mode == 'time-of-flight':
+                self.update_pattern_d_spacing(expt_name)
+            else:
+                d_spacing = False
+
         self.plotter.plot_calc(pattern,
                                expt_name,
                                expt_type,
                                x_min=x_min,
-                               x_max=x_max)
+                               x_max=x_max,
+                               d_spacing=d_spacing)
 
     def plot_meas_vs_calc(self,
                           expt_name,
@@ -279,6 +300,14 @@ class Project:
         experiment = self.experiments[expt_name]
         pattern = experiment.datastore.pattern
         expt_type = experiment.type
+
+        beam_mode = expt_type.beam_mode.value
+        if d_spacing:  # TODO: move this logic to somewhere else
+            if beam_mode == 'time-of-flight':
+                self.update_pattern_d_spacing(expt_name)
+            else:
+                d_spacing = False
+
         self.plotter.plot_meas_vs_calc(pattern,
                                        expt_name,
                                        expt_type,
@@ -286,3 +315,20 @@ class Project:
                                        x_max=x_max,
                                        show_residual=show_residual,
                                        d_spacing=d_spacing)
+
+    def update_pattern_d_spacing(self, expt_name: str) -> None:
+        """
+        Update the pattern's d-spacing based on the experiment's beam mode.
+        """
+        experiment = self.experiments[expt_name]
+        pattern = experiment.datastore.pattern
+        expt_type = experiment.type
+        beam_mode = expt_type.beam_mode.value
+
+        if beam_mode == 'time-of-flight':
+            pattern.d = tof_to_d(pattern.x,
+                                 experiment.instrument.calib_d_to_tof_offset.value,
+                                 experiment.instrument.calib_d_to_tof_linear.value,
+                                 experiment.instrument.calib_d_to_tof_quad.value)
+        else:
+            print(error(f"Unsupported beam mode: {beam_mode} for d-spacing update."))

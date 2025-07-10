@@ -13,6 +13,7 @@ class Pattern:
 
         # Data arrays
         self.x: Optional[np.ndarray] = None
+        self.d: Optional[np.ndarray] = None
         self.meas: Optional[np.ndarray] = None
         self.meas_su: Optional[np.ndarray] = None
         self.bkg: Optional[np.ndarray] = None

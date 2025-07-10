@@ -2,6 +2,7 @@
 General utilities and helpers for easydiffraction.
 """
 
+import numpy as np
 import pandas as pd
 import pooch
 from tabulate import tabulate
@@ -137,3 +138,29 @@ def render_table(columns_headers,
         )
 
         print(table)
+
+
+def tof_to_d(tof, offset, linear, quad):
+    """
+    Convert TOF to d-spacing using quadratic calibration.
+
+    Parameters:
+        tof (float or np.ndarray): Time-of-flight in microseconds.
+        offset (float): Time offset.
+        linear (float): Linear coefficient.
+        quad (float): Quadratic coefficient.
+
+    Returns:
+        d (float or np.ndarray): d-spacing in Å.
+    """
+    A = quad
+    B = linear
+    C = offset - tof
+
+    discriminant = B**2 - 4*A*C
+    if np.any(discriminant < 0):
+        raise ValueError("Negative discriminant: invalid calibration or TOF range")
+
+    sqrt_discriminant = np.sqrt(discriminant)
+    d = (-B + sqrt_discriminant) / (2*A)
+    return d
