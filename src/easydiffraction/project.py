@@ -273,7 +273,8 @@ class Project:
                           expt_name,
                           x_min=None,
                           x_max=None,
-                          show_residual=False):
+                          show_residual=False,
+                          d_spacing=False):
         self.analysis.calculate_pattern(expt_name) # Recalculate pattern
         experiment = self.experiments[expt_name]
         pattern = experiment.datastore.pattern
@@ -283,4 +284,5 @@ class Project:
                                        expt_type,
                                        x_min=x_min,
                                        x_max=x_max,
-                                       show_residual=show_residual)
+                                       show_residual=show_residual,
+                                       d_spacing=d_spacing)
