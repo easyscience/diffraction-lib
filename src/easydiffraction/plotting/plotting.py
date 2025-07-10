@@ -196,7 +196,8 @@ class Plotter():
                           expt_type,
                           x_min=None,
                           x_max=None,
-                          show_residual=False):
+                          show_residual=False,
+                          d_spacing=False):
         if pattern.x is None:
             error(f"No data available for experiment {expt_name}")
             return
@@ -207,16 +208,20 @@ class Plotter():
             print(f"No calculated data available for experiment {expt_name}")
             return
 
-        x = self._filtered_y_array(y_array=pattern.x,
-                                   x_array=pattern.x,
+        if d_spacing:
+            x_array = pattern.d
+        else:
+            x_array = pattern.x
+        x = self._filtered_y_array(y_array=x_array,
+                                   x_array=x_array,
                                    x_min=x_min,
                                    x_max=x_max)
         y_meas = self._filtered_y_array(y_array=pattern.meas,
-                                        x_array=pattern.x,
+                                        x_array=x_array,
                                         x_min=x_min,
                                         x_max=x_max)
         y_calc = self._filtered_y_array(y_array=pattern.calc,
-                                        x_array=pattern.x,
+                                        x_array=x_array,
                                         x_min=x_min,
                                         x_max=x_max)
 
