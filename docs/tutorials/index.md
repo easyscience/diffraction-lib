@@ -66,3 +66,11 @@ The tutorials are organized into the following categories.
 - [NaCl `pd-xray`](pdf_pd-xray_NaCl.ipynb) –
   Demonstrates a PDF analysis of NaCl using data collected from an X-ray
   powder diffraction experiment.
+
+## Workshops & Schools
+
+- [2025 DMSC](dmsc-summer-school-2025_analysis-powder-diffraction.ipynb) –
+  A workshop tutorial that demonstrates a Rietveld refinement of the 
+  La0.5Ba0.5CoO3 crystal structure using time-of-flight neutron powder 
+  diffraction data simulated with McStas. This tutorial is designed for 
+  the ESS DMSC Summer School 2025.
