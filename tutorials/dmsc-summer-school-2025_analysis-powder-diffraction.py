@@ -1,8 +1,7 @@
 # %%
 # TODO: Remove this cell in the final version of the tutorial.
-# Google Colab and Jupyter Notebook environments may not have the
-# easydiffraction library installed by default. So, we check if the
-# library is available and install it if necessary.
+# Needed for the Google Colab environment.
+# Install the easydiffraction library if it is not already installed.
 import builtins
 import importlib.util
 
@@ -14,16 +13,16 @@ if hasattr(builtins, "__IPYTHON__"):
 # %% [markdown]
 # # Data Analysis: Powder Diffraction
 #
-# This tutorial will guide you through the refinement of simulated diffraction
+# This tutorial guides you through the refinement of simulated diffraction
 # patterns for Si (Part 1) and La₀.₅Ba₀.₅CoO₃ (LBCO) (Part 2) using the
 # EasyDiffraction Python library.
 #
-# The objective is to develop familiarity with the Rietveld refinement process
+# The goal is to develop familiarity with the Rietveld refinement process
 # for crystal structures using powder diffraction data.
 #
 # ## 🛠️ Import Library
 #
-# First, import the necessary library for the analysis. In this tutorial, we
+# Start by importing the necessary library for the analysis. In this tutorial, we
 # use the EasyDiffraction library, which offers tools for
 # analyzing and refining powder diffraction data.
 #
@@ -107,7 +106,7 @@ project_1.experiments.add(name='sim_si',
 # #### Inspect Measured Data
 #
 # After creating the experiment, we can examine the measured data. The measured
-# data consists of a diffraction pattern comprising time-of-flight (TOF) values
+# data consists of a diffraction pattern having time-of-flight (TOF) values
 # and corresponding intensities. The TOF values are given in microseconds (μs),
 # and the intensities are in arbitrary units.
 #
@@ -158,7 +157,6 @@ project_1.plot_meas(expt_name='sim_si')
 
 # %%
 project_1.experiments['sim_si'].instrument.setup_twotheta_bank = 101.46
-#project_1.experiments['sim_si'].instrument.calib_d_to_tof_offset = 0.0
 project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear = 61710.64
 project_1.experiments['sim_si'].instrument.calib_d_to_tof_quad = -0.00001
 
@@ -178,13 +176,14 @@ project_1.experiments['sim_si'].instrument.calib_d_to_tof_quad = -0.00001
 
 # %%
 project_1.experiments['sim_si'].peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
-project_1.experiments['sim_si'].peak.broad_gauss_sigma_0 = 45137
-project_1.experiments['sim_si'].peak.broad_gauss_sigma_1 = -52394
-project_1.experiments['sim_si'].peak.broad_gauss_sigma_2 = 22998
+project_1.experiments['sim_si'].peak.broad_gauss_sigma_0 = 47347.42
+project_1.experiments['sim_si'].peak.broad_gauss_sigma_1 = -55360.02
+project_1.experiments['sim_si'].peak.broad_gauss_sigma_2 = 23882.42
 project_1.experiments['sim_si'].peak.broad_mix_beta_0 = 0.0055
 project_1.experiments['sim_si'].peak.broad_mix_beta_1 = 0.0041
 project_1.experiments['sim_si'].peak.asym_alpha_0 = 0
-project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0097
+project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0096
+
 
 # %% [markdown]
 # #### Set Background
@@ -277,12 +276,12 @@ project_1.sample_models['si'].cell.length_a = 5.43
 
 # %%
 project_1.sample_models['si'].atom_sites.add(label='Si',
-                                               type_symbol='Si',
-                                               fract_x=0,
-                                               fract_y=0,
-                                               fract_z=0,
-                                               wyckoff_letter='a',
-                                               b_iso=0.95)
+                                             type_symbol='Si',
+                                             fract_x=0,
+                                             fract_y=0,
+                                             fract_z=0,
+                                             wyckoff_letter='a',
+                                             b_iso=0.95)
 
 # %% [markdown]
 # ### 🔗 Assign Sample Model to Experiment
@@ -427,7 +426,7 @@ project_2.info.title = 'La0.5Ba0.5CoO3 Fit'
 project_2.info.description = 'Fitting simulated powder diffraction pattern of La0.5Ba0.5CoO3.'
 
 # %% [markdown]
-# ### 🔬 Exercise 2: Define an Experiment – LBCO
+# ### 🔬 Exercise 2: Define an Experiment
 #
 # #### Exercise 2.1: Create an Experiment
 #
@@ -487,9 +486,8 @@ project_2.plot_meas(expt_name='sim_lbco')
 # **Solution:**
 
 # %%
-project_2.experiments['sim_lbco'].instrument.setup_twotheta_bank = 94.90931761529106
-project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_offset = 0.0
-project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = 58752.5575 #58724.76869981215
+project_2.experiments['sim_lbco'].instrument.setup_twotheta_bank = 94.91
+project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = 58752.56
 project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_quad = -0.00001
 
 # %% [markdown]
@@ -503,13 +501,13 @@ project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_quad = -0.00001
 
 # %%
 project_2.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
-project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0 = 47347.4233 #45211
-project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1 = -55360.0162 #-52477
-project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2 = 23882.4236 #23014
+project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0 = 47347.42
+project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1 = -55360.02
+project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2 = 23882.42
 project_2.experiments['sim_lbco'].peak.broad_mix_beta_0 = 0.0055
 project_2.experiments['sim_lbco'].peak.broad_mix_beta_1 = 0.0041
 project_2.experiments['sim_lbco'].peak.asym_alpha_0 = 0
-project_2.experiments['sim_lbco'].peak.asym_alpha_1 = 0.0096 #0.0097
+project_2.experiments['sim_lbco'].peak.asym_alpha_1 = 0.0096
 
 # %% [markdown]
 # #### Exercise 2.4: Set Background
@@ -622,35 +620,35 @@ project_2.sample_models['lbco'].cell.length_a = 3.88
 
 # %%
 project_2.sample_models['lbco'].atom_sites.add(label='La',
-                                                  type_symbol='La',
-                                                  fract_x=0,
-                                                  fract_y=0,
-                                                  fract_z=0,
-                                                  wyckoff_letter='a',
-                                                  b_iso=0.1,
-                                                  occupancy=0.5)
+                                               type_symbol='La',
+                                               fract_x=0,
+                                               fract_y=0,
+                                               fract_z=0,
+                                               wyckoff_letter='a',
+                                               b_iso=0.1,
+                                               occupancy=0.5)
 project_2.sample_models['lbco'].atom_sites.add(label='Ba',
-                                                  type_symbol='Ba',
-                                                  fract_x=0,
-                                                  fract_y=0,
-                                                  fract_z=0,
-                                                  wyckoff_letter='a',
-                                                  b_iso=0.1,
-                                                  occupancy=0.5)
+                                               type_symbol='Ba',
+                                               fract_x=0,
+                                               fract_y=0,
+                                               fract_z=0,
+                                               wyckoff_letter='a',
+                                               b_iso=0.1,
+                                               occupancy=0.5)
 project_2.sample_models['lbco'].atom_sites.add(label='Co',
-                                                  type_symbol='Co',
-                                                  fract_x=0.5,
-                                                  fract_y=0.5,
-                                                  fract_z=0.5,
-                                                  wyckoff_letter='b',
-                                                  b_iso=0.36)
+                                               type_symbol='Co',
+                                               fract_x=0.5,
+                                               fract_y=0.5,
+                                               fract_z=0.5,
+                                               wyckoff_letter='b',
+                                               b_iso=0.36)
 project_2.sample_models['lbco'].atom_sites.add(label='O',
-                                                  type_symbol='O',
-                                                  fract_x=0,
-                                                  fract_y=0.5,
-                                                  fract_z=0.5,
-                                                  wyckoff_letter='c',
-                                                  b_iso=2.14)
+                                               type_symbol='O',
+                                               fract_x=0,
+                                               fract_y=0.5,
+                                               fract_z=0.5,
+                                               wyckoff_letter='c',
+                                               b_iso=2.14)
 
 # %% [markdown]
 # ### 🔗 Exercise 4: Assign Sample Model to Experiment
@@ -702,13 +700,13 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 project_2.analysis.fit()
 
 # %% [markdown]
-# #### Exercise 6.1: ❓Find the Misfit in the Fit
+# #### Exercise 5.3: Find the Misfit in the Fit
 #
 # Visualize the measured and calculated diffraction patterns after the fit. As
 # you can see, the fit shows noticeable discrepancies. If you zoom in on different regions of the pattern,
 # you will observe that all the calculated peaks are shifted to the left.
 #
-# **Question**: What could be the reason for the misfit?
+# What could be the reason for the misfit?
 #
 # **Hint**: Consider the following options:
 # - The conversion parameters from TOF to d-spacing are not correct.
@@ -727,7 +725,7 @@ project_2.analysis.fit()
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %% [markdown]
-# ### 🚀 Exercise 6.2: Refine the LBCO Lattice Parameter
+# #### Exercise 5.4: Refine the LBCO Lattice Parameter
 #
 # To improve the fit, refine the lattice parameter of the LBCO phase.
 #
@@ -748,7 +746,7 @@ project_2.analysis.fit()
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %% [markdown]
-# ### Exercise 6.3: Visualize the Fit Results in d-spacing
+# #### Exercise 5.5: Visualize the Fit Results in d-spacing
 #
 # Plot measured vs calculated diffraction patterns in d-spacing instead of TOF.
 #
@@ -761,7 +759,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True)
 
 # %% [markdown]
-# ### ❓Exercise 7.1: Find Undefined Features
+# #### Exercise 5.6: Find Undefined Features
 #
 # After refining the lattice parameter, the fit is significantly improved, but
 # inspect the diffraction pattern again. Are you noticing anything undefined?
@@ -777,23 +775,23 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True)
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spacing=True)
 
 # %% [markdown]
-# ### Exercise 7.2: Identify the Cause of the Unexplained Peaks
+# #### Exercise 5.7: Identify the Cause of the Unexplained Peaks
 #
 # **Hint**: Consider the following options:
-# - The LBCO phase is not the only phase present in the sample.
 # - The LBCO phase is not correctly modeled.
+# - The LBCO phase is not the only phase present in the sample.
 # - The data reduction process introduced artifacts.
 #
 # **Solution**:
+# - ❌ In principle, this could be the case, but in this case, the LBCO phase is correctly modeled.
 # - ✅ The LBCO phase is not the only phase present in the sample. The unexplained peaks
 # are likely due to the presence of an impurity phase in the sample, which is not
 # included in the current model.
-# - ❌ In principle, this could be the case, but in this case, the LBCO phase is correctly modeled.
 # - ❌ The data reduction process is not likely to introduce such specific peaks, as it is
 # tested and verified in the previous part of the tutorial.
 
 # %% [markdown]
-# ### 🧠 Exercise 7.3: Identify the impurity phase
+# #### Exercise 5.8: Identify the impurity phase
 #
 # Identify the impurity phase.
 #
@@ -803,11 +801,22 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spaci
 #
 # **Solution**:
 # The unexplained peaks are likely due to the presence of silicon (Si) in the sample.
+# You can visalize both the patterns of the Si and LBCO phases to confirm this hypothesis.
+
+# %%
+project_1.plot_meas_vs_calc(expt_name='sim_si', x_min=1, x_max=1.7, d_spacing=True)
+project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1, x_max=1.7, d_spacing=True)
 
 # %% [markdown]
-# ### 🧠 Exercise 8: Refine with the Impurity Phase
+# #### Exercise 5.9: Create a Second Sample Model – Si as Impurity
 #
-# #### 🧩 Exercise 8.1: Create a Second Sample Model – Si as Impurity
+# Create a second sample model for the Si phase, which is the impurity phase
+# identified in the previous step. Link this sample model to the LBCO
+# experiment.
+#
+# **Hint**: You can use the same approach as in the previous part of the
+# tutorial, but this time you need to create a sample model for Si and link it
+# to the LBCO experiment.
 #
 # **Solution:**
 
@@ -846,8 +855,17 @@ project_2.sample_models['si'].atom_sites.add(label='Si',
 project_2.experiments['sim_lbco'].linked_phases.add(id='si', scale=1.0)
 
 # %% [markdown]
-# #### 🚀 Exercise 8.3: Analyze and Fit the Data: 3rd Fit
-
+# #### Exercise 5.10: Refine the Scale of the Si Phase
+#
+# Visualize the measured diffraction pattern and the calculated diffraction
+# pattern. Check if the Si phase is contributing to the calculated diffraction
+# pattern. Refine the scale factor of the Si phase to improve the fit.
+#
+# **Hint**: You can use the `plot_meas_vs_calc` method of the project to
+# visualize the patterns. Then, set the `free` attribute of the `scale`
+# parameter of the Si phase to `True` to allow the fitting process to adjust
+# the scale factor.
+#
 # **Solution:**
 #
 # Before optimizing the parameters, we can visualize the measured
@@ -891,7 +909,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=85000, x_max=105000)
 
 # %% [markdown]
-# Now there are no unexplained peaks in the pattern, and the fit is improved.
+# All previously unexplained peaks are now accounted for in the pattern, and the fit is improved.
 # Some discrepancies in the peak intensities remain, but
 # further improvements would require more advanced data reduction and analysis,
 # which are beyond the scope of this tutorial.
@@ -901,7 +919,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=85000, x_max=105000)
 #
 # In this tutorial, you refined two simulated diffraction patterns:
 # - **Si** as a simple reference system, and
-# - **LBCO** as a more complex, realistic case with an unknown impurity.
+# - **LBCO** as a more complex, realistic case with an initially unknown impurity.
 #
 # Along the way, you learned how to:
 # - Define a project, experiment, and sample model in EasyDiffraction
@@ -913,15 +931,13 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=85000, x_max=105000)
 # Key Takeaways:
 # - A good refinement starts with a reasonable structural model and
 #   well-defined instrument parameters.
-# - Even simulated data may include artifacts or unintended
-#   contributions—mimicking real experimental conditions.
 # - Visual inspection is a critical part of model validation. Residual peaks
 #   often reveal missing physics or contamination.
 
 # %% [markdown]
 # ## 🎁 Bonus
 #
-# You've now completed the fitting portion of the Summer School workflow,
+# You've now completed the analysis part of the Summer School workflow,
 # demonstrating the practical use of EasyDiffraction for refining simulated
 # powder diffraction data.
 #
