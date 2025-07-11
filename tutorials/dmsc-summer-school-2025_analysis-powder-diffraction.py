@@ -1,17 +1,15 @@
 # %% [markdown]
 # # Data Analysis: Powder Diffraction
 #
-# This tutorial guides you through the refinement of simulated diffraction
-# patterns for Si (Part 1) and La₀.₅Ba₀.₅CoO₃ (LBCO) (Part 2) using the
-# EasyDiffraction Python library.
-#
-# The goal is to develop familiarity with the Rietveld refinement process
-# for crystal structures using powder diffraction data.
+# This tutorial guides you through the Rietveld refinement of crystal
+# structures using simulated powder diffraction data. It consists of two parts:
+# - Introduction: A simple reference fit using silicon (Si) crystal structure.
+# - Exercise: A more complex fit using La₀.₅Ba₀.₅CoO₃ (LBCO) crystal structure.
 #
 # ## 🛠️ Import Library
 #
-# Start by importing the necessary library for the analysis. In this tutorial, we
-# use the EasyDiffraction library, which offers tools for
+# We start by importing the necessary library for the analysis. In this
+# tutorial, we use the EasyDiffraction library, which offers tools for
 # analyzing and refining powder diffraction data.
 #
 # This tutorial is self-contained and designed for hands-on learning.
@@ -48,7 +46,7 @@ import easydiffraction as ed
 # diffraction data.
 #
 # For this part of the tutorial, we will use the powder diffraction data
-# from the [previous tutorial](#), simulated using the Si crystal structure.
+# from the previous tutorial, simulated using the Si crystal structure.
 #
 # ### 📦 Create a Project – 'reference'
 #
@@ -67,8 +65,8 @@ project_1 = ed.Project(name='reference')
 
 # You can set the title and description of the project to provide context
 # and information about the analysis being performed. This is useful for
-# documentation purposes and helps others (or yourself in the future) understand
-# the purpose of the project at a glance.
+# documentation purposes and helps others (or yourself in the future)
+# understand the purpose of the project at a glance.
 
 # %%
 project_1.info.title = 'Reference Silicon Fit'
@@ -79,14 +77,12 @@ project_1.info.description = 'Fitting simulated powder diffraction pattern of Si
 #
 # Now we will create an experiment within the project. An experiment
 # represents a specific diffraction measurement performed on a specific sample
-# using a particular instrument. It contains
-# details about the measured data, instrument parameters, and other relevant
-# information.
+# using a particular instrument. It contains details about the measured data,
+# instrument parameters, and other relevant information.
 #
 # In this case, the experiment is defined as a powder diffraction measurement
 # using time-of-flight neutrons. The measured data is loaded from a file
-# containing the reduced diffraction pattern of Si from the previous
-# tutorial.
+# containing the reduced diffraction pattern of Si from the previous tutorial.
 
 # %%
 # TODO: Remove this cell in the final version of the tutorial.
@@ -130,8 +126,8 @@ project_1.plot_meas(expt_name='sim_si')
 # that it has a broad and unusual shape. This is a result of the simplified
 # data reduction process. Obtaining a more accurate diffraction pattern would
 # require a more advanced data reduction, which is beyond the scope of this
-# tutorial. Therefore, we will simply exclude the high TOF region from the analysis by
-# adding an excluded region to the experiment.
+# tutorial. Therefore, we will simply exclude the high TOF region from the
+# analysis by adding an excluded region to the experiment.
 
 # %%
 project_1.experiments['sim_si'].excluded_regions.add(minimum=108000, maximum=200000)
@@ -164,15 +160,17 @@ project_1.experiments['sim_si'].instrument.calib_d_to_tof_quad = -0.00001
 # #### Set Peak Profile Parameters
 #
 # The next set of parameters is needed to define the peak profile used in the
-# fitting process. The peak profile describes shape of the diffraction peaks.
-# They include parameters for the broadening and asymmetry of the peaks. Here,
-# we use a pseudo-Voigt peak profile function with Ikeda-Carpenter asymmetry, which is a common
-# choice for neutron powder diffraction data. The values are typically determined
-# experimentally on the same instrument and under the same configuration as the
-# data being analyzed based on measurements of a standard
-# sample. In some cases, these parameters are refined during the fitting
-# process to improve the fit between the measured and calculated diffraction, but
-# in this case, we will use the values from another simulation.
+# fitting process. The peak profile describes the shape of the diffraction peaks.
+# They include parameters for the broadening and asymmetry of the peaks.
+#
+# Here, we use a pseudo-Voigt peak profile function with Ikeda-Carpenter
+# asymmetry, which is a common choice for neutron powder diffraction data.
+#
+# The values are typically determined experimentally on the same instrument and
+# under the same configuration as the data being analyzed based on measurements
+# of a standard sample. In some cases, these parameters are refined during the
+# fitting process to improve the fit between the measured and calculated
+# diffraction, but in this case, we will use the values from another simulation.
 
 # %%
 project_1.experiments['sim_si'].peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
@@ -188,22 +186,26 @@ project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0096
 # %% [markdown]
 # #### Set Background
 #
-# The background of the diffraction pattern represents the portion of the pattern that
-# is not related to the crystal structure of the sample, but rather to
-# incoherent scattering from the sample itself, the sample holder, the sample
-# environment, and the instrument. The background can be modeled in various
-# ways. In this case, we will use a simple line segment background, which is a
-# common approach for powder diffraction data. The background intensity at any
-# point is defined by linear interpolation between neighboring points.
-# The background points are selected
+# The background of the diffraction pattern represents the portion of the
+# pattern that is not related to the crystal structure of the sample. It's
+# rather representing the noise and other sources of scattering that can affect
+# the measured intensities. This includes contributions from the instrument,
+# the sample holder, the sample environment, and other sources of incoherent
+# scattering.
+#
+# The background can be modeled in various ways. In this example, we will use
+# a simple line segment background, which is a common approach for powder
+# diffraction data. The background intensity at any point is defined by linear
+# interpolation between neighboring points. The background points are selected
 # to span the range of the diffraction pattern while avoiding the peaks.
 #
-# In this case, we will add several background points at specific TOF values
-# (in microseconds) and corresponding intensity values. These points are
-# chosen to represent the background level in the diffraction pattern free from
-# any peaks. The background points are added using the `add` method of the
-# `background` attribute of the experiment. The `x` parameter represents the TOF
-# value, and the `y` parameter represents the intensity value at that TOF.
+# We will add several background points at specific TOF values (in μs) and
+# corresponding intensity values. These points are chosen to represent the
+# background level in the diffraction pattern free from any peaks.
+#
+# The background points are added using the `add` method of the `background`
+# object. The `x` parameter represents the TOF value, and the `y` parameter
+# represents the intensity value at that TOF.
 #
 # Let's set all the background points at a constant value of 0.01, which can be
 # roughly determined by the eye, and we will refine them later during the fitting
@@ -234,9 +236,11 @@ project_1.experiments['sim_si'].background.add(x=110000, y=0.01)
 #
 # EasyDiffraction refines the crystal structure of the sample,
 # but does not solve it. Therefore, we need a good starting point with
-# reasonable structural parameters. Here, we define the Si structure as a
-# cubic structure with the space group F d -3 m. As this is a simple cubic
-# structure, we only need to define the single lattice parameter, which
+# reasonable structural parameters.
+#
+# Here, we define the Si structure as a
+# cubic structure. As this is a cubic structure, we only need to define
+# the single lattice parameter, which
 # is the length of the unit cell edge. The Si crystal structure has a
 # single atom in the unit cell, which is located at the origin (0, 0, 0) of
 # the unit cell. The symmetry of this site is defined by the Wyckoff letter 'a'.
@@ -248,6 +252,40 @@ project_1.experiments['sim_si'].background.add(x=110000, y=0.01)
 # the Crystallography Open Database (COD). In this case, we use the COD
 # entry for silicon as a reference for the initial crystal structure model:
 # https://www.crystallography.net/cod/4507226.html
+#
+# Usually, the crystal structure parameters are provided in a CIF file
+# format, which is a standard format for crystallographic data. An example
+# of a CIF file for silicon is shown below. The CIF file contains the
+# space group information, unit cell parameters, and atomic positions.
+
+# %% [markdown]
+# ```
+# data_si
+#
+# _space_group.name_H-M_alt  "F d -3 m"
+# _space_group.IT_coordinate_system_code  2
+#
+# _cell.length_a      5.43
+# _cell.length_b      5.43
+# _cell.length_c      5.43
+# _cell.angle_alpha  90.0
+# _cell.angle_beta   90.0
+# _cell.angle_gamma  90.0
+#
+# loop_
+# _atom_site.label
+# _atom_site.type_symbol
+# _atom_site.fract_x
+# _atom_site.fract_y
+# _atom_site.fract_z
+# _atom_site.wyckoff_letter
+# _atom_site.occupancy
+# _atom_site.ADP_type
+# _atom_site.B_iso_or_equiv
+# Si Si   0 0 0   a  1.0   Biso 0.95
+# ```
+
+# %% [markdown]
 #
 # As with adding the experiment in the
 # previous step, we will create a default sample model
@@ -297,7 +335,7 @@ project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
 # ### 🚀 Analyze and Fit the Data
 #
 # After setting up the experiment and sample model, we can now analyze the
-# measured diffraction pattern and perform the fitting process.
+# measured diffraction pattern and perform the fit.
 #
 # The fitting process involves comparing the measured diffraction pattern with
 # the calculated diffraction pattern based on the sample model and instrument
@@ -335,7 +373,7 @@ project_1.analysis.show_free_params()
 #
 # Before performing the fit, we can visually compare the measured
 # diffraction pattern with the calculated diffraction pattern based on the
-# initial parameters of the sample model and the instrument settings.
+# initial parameters of the sample model and the instrument.
 # This provides an indication of how well the initial parameters
 # match the measured data. The `plot_meas_vs_calc` method of the project
 # allows this comparison.
@@ -354,15 +392,16 @@ project_1.analysis.fit()
 
 # %% [markdown]
 # #### Check Fit Results
-# You will
-# see that the fit is now much improved and that the intensities of the
+# You can
+# see that the agreement between the measured and calculated diffraction patterns
+# is now much improved and that the intensities of the
 # calculated peaks align much better with the measured peaks. To check the
 # quality of the fit numerically, we can look at the goodness-of-fit
-# chi-squared value and the R-factors. The chi-squared value is a measure of how well
+# χ² value and the reliability R-factors. The χ² value is a measure of how well
 # the calculated diffraction pattern matches the measured pattern, and it is
 # calculated as the sum of the squared differences between the measured and
 # calculated intensities, divided by the number of data points. Ideally, the
-# chi-squared value should be close to 1, indicating a good fit.
+# χ² value should be close to 1, indicating a good fit.
 
 # %% [markdown]
 # #### Visualize Fit Results
@@ -405,7 +444,7 @@ project_1.plot_meas_vs_calc(expt_name='sim_si', d_spacing=True)
 #
 # Now that you have a basic understanding of the fitting process, we will
 # undertake a more complex fit of the La₀.₅Ba₀.₅CoO₃ (LBCO) crystal structure
-# using simulated powder diffraction data from the [previous tutorial](#).
+# using simulated powder diffraction data from the previous tutorial.
 #
 # You can use the same approach as in the previous part of the tutorial, but
 # this time we will refine a more complex crystal structure LBCO with multiple atoms
@@ -447,17 +486,17 @@ ed.download_from_repository('powder_reduced_lbco_0_05si_2large_bank.xye',
 
 # %%
 project_2.experiments.add(name='sim_lbco',
-                             sample_form='powder',
-                             beam_mode='time-of-flight',
-                             radiation_probe='neutron',
-                             data_path='data/powder_reduced_lbco_0_05si_2large_bank.xye')
+                          sample_form='powder',
+                          beam_mode='time-of-flight',
+                          radiation_probe='neutron',
+                          data_path='data/powder_reduced_lbco_0_05si_2large_bank.xye')
 
 # %% [markdown]
 # #### Exercise 2.1: Inspect Measured Data
 #
 # Check the measured data of the LBCO experiment. Are there any
-# peaks with the shape similar to the Si peaks? If so, exclude them from the
-# analysis.
+# peaks with the shape similar to those excluded in the Si fit?
+# If so, exclude them from this analysis as well.
 #
 # **Hint:** You can use the `plot_meas` method of the project to visualize the
 # measured diffraction pattern. You can also use the `excluded_regions` attribute
@@ -653,7 +692,7 @@ project_2.sample_models['lbco'].atom_sites.add(label='O',
 # %% [markdown]
 # ### 🔗 Exercise 4: Assign Sample Model to Experiment
 #
-# Now assign the LBCO sample model to the LBCO experiment created above.
+# Now assign the LBCO sample model to the experiment created above.
 #
 # **Hint:** Use the `linked_phases` attribute of the experiment to link the sample model.
 #
@@ -709,17 +748,16 @@ project_2.analysis.fit()
 # What could be the reason for the misfit?
 #
 # **Hint**: Consider the following options:
-# - The conversion parameters from TOF to d-spacing are not correct.
-# - The lattice parameters of the LBCO phase are not correct.
-# - The peak profile parameters are not correct.
-# - The background points are not correct.
+# 1. The conversion parameters from TOF to d-spacing are not correct.
+# 2. The lattice parameters of the LBCO phase are not correct.
+# 3. The peak profile parameters are not correct.
+# 4. The background points are not correct.
 #
 # **Solution**:
-# - ❌ The conversion parameters from TOF to d-spacing were set based on the data reduction process and this was verified in
-# the Si fit.
-# - ✅ The lattice parameters of the LBCO phase were set based on the CIF data, which is a good starting point.
-# - ❌ The peak profile parameters do not change the position of the peaks, but rather their shape.
-# - ❌ The background points affect the background level, but not the peak positions.
+# 1. ❌ The conversion parameters from TOF to d-spacing were set based on the data reduction process and this was verified in the Si fit.
+# 2. ✅ The lattice parameters of the LBCO phase were set based on the CIF data, which is a good starting point, but they are not necessarily as accurate as needed for the fit. The lattice parameters may need to be refined.
+# 3. ❌ The peak profile parameters do not change the position of the peaks, but rather their shape.
+# 4. ❌ The background points affect the background level, but not the peak positions.
 
 # %%
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
@@ -769,7 +807,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True)
 # For example, if you zoom in on the region around 1.6 Å (or 95,000 μs), you will
 # notice that the rightmost peak is not explained by the LBCO phase at all.
 #
-# Solution:
+# **Solution**:
 
 # %%
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spacing=True)
@@ -778,16 +816,18 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spaci
 # #### Exercise 5.7: Identify the Cause of the Unexplained Peaks
 #
 # **Hint**: Consider the following options:
-# - The LBCO phase is not correctly modeled.
-# - The LBCO phase is not the only phase present in the sample.
-# - The data reduction process introduced artifacts.
+# 1. The LBCO phase is not correctly modeled.
+# 2. The LBCO phase is not the only phase present in the sample.
+# 3. The data reduction process introduced artifacts.
 #
 # **Solution**:
-# - ❌ In principle, this could be the case, but in this case, the LBCO phase is correctly modeled.
-# - ✅ The LBCO phase is not the only phase present in the sample. The unexplained peaks
-# are likely due to the presence of an impurity phase in the sample, which is not
-# included in the current model.
-# - ❌ The data reduction process is not likely to introduce such specific peaks, as it is
+# 1. ❌ In principle, this could be the case, as sometimes the presence of
+# extra peaks in the diffraction pattern can indicate a lower symmetry
+# than the one used in the model, or that the model is not complete. However,
+# in this case, the LBCO phase is correctly modeled based on the CIF data.
+# 2. ✅ The unexplained peaks are due to the presence of an impurity phase
+# in the sample, which is not included in the current model.
+# 3. ❌ The data reduction process is not likely to introduce such specific peaks, as it is
 # tested and verified in the previous part of the tutorial.
 
 # %% [markdown]
@@ -800,7 +840,10 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spaci
 # tutorial.
 #
 # **Solution**:
-# The unexplained peaks are likely due to the presence of silicon (Si) in the sample.
+# The unexplained peaks are likely due to the presence of small amount of
+# Si in the LBCO sample. In real experiments, it might happen, e.g., because the
+# sample holder was not cleaned properly after the Si experiment.
+#
 # You can visalize both the patterns of the Si and LBCO phases to confirm this hypothesis.
 
 # %%
@@ -900,13 +943,13 @@ project_2.analysis.fit()
 
 # Let's plot the measured diffraction pattern and the calculated diffraction
 # pattern both for the full range and for a zoomed-in region around the previously unexplained
-# peak near 90,000 μs. The calculated pattern will be the sum of the two phases.
+# peak near 95,000 μs. The calculated pattern will be the sum of the two phases.
 
 # %%
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %%
-project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=85000, x_max=105000)
+project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
 
 # %% [markdown]
 # All previously unexplained peaks are now accounted for in the pattern, and the fit is improved.
@@ -921,12 +964,12 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=85000, x_max=105000)
 # - **Si** as a simple reference system, and
 # - **LBCO** as a more complex, realistic case with an initially unknown impurity.
 #
-# Along the way, you learned how to:
-# - Define a project, experiment, and sample model in EasyDiffraction
-# - Set up instrument and peak profile parameters
-# - Visualize measured and calculated patterns
-# - Identify and interpret misfits in the diffraction data
-# - Add and refine multiple phases to improve the model
+# Along the way, you learned how to work with the EasyDiffraction library to:
+# - Define a project, experiment, and sample model.
+# - Set up instrument and peak profile parameters.
+# - Visualize measured and calculated patterns.
+# - Identify and interpret misfits in the diffraction data.
+# - Add and refine multiple phases to improve the model.
 #
 # Key Takeaways:
 # - A good refinement starts with a reasonable structural model and
@@ -937,7 +980,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=85000, x_max=105000)
 # %% [markdown]
 # ## 🎁 Bonus
 #
-# You've now completed the analysis part of the Summer School workflow,
+# You've now completed the analysis part of the DMSC Summer School workflow,
 # demonstrating the practical use of EasyDiffraction for refining simulated
 # powder diffraction data.
 #
