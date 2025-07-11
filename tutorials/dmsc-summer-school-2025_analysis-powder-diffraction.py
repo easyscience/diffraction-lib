@@ -1,15 +1,3 @@
-# %%
-# TODO: Remove this cell in the final version of the tutorial.
-# Needed for the Google Colab environment.
-# Install the easydiffraction library if it is not already installed.
-import builtins
-import importlib.util
-
-if hasattr(builtins, "__IPYTHON__"):
-    if importlib.util.find_spec('easydiffraction') is None:
-        print('Installing the easydiffraction library...')
-        # !pip install git+https://github.com/easyscience/diffraction-lib@d-spacing
-
 # %% [markdown]
 # # Data Analysis: Powder Diffraction
 #
@@ -34,6 +22,18 @@ if hasattr(builtins, "__IPYTHON__"):
 # Depending on your requirements, you may choose to import only specific
 # classes. However, for the sake of simplicity in this tutorial, we will import
 # the entire library.
+
+# %%
+# TODO: Remove this cell in the final version of the tutorial.
+# Needed for the Google Colab environment.
+# Install the easydiffraction library if it is not already installed.
+import builtins
+import importlib.util
+
+if hasattr(builtins, "__IPYTHON__"):
+    if importlib.util.find_spec('easydiffraction') is None:
+        print('Installing the easydiffraction library...')
+        # !pip install git+https://github.com/easyscience/diffraction-lib@d-spacing
 
 # %%
 import easydiffraction as ed
