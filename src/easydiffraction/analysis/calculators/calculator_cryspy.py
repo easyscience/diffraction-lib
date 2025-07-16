@@ -1,4 +1,6 @@
 import copy
+import io
+import contextlib
 import numpy as np
 from typing import Any, Dict, List, Union
 from .calculator_base import CalculatorBase
@@ -81,12 +83,20 @@ class CryspyCalculator(CalculatorBase):
         self._cryspy_dicts[combined_name] = copy.deepcopy(cryspy_dict)
 
         cryspy_in_out_dict: Dict[str, Any] = {}
-        rhochi_calc_chi_sq_by_dictionary(
-            cryspy_dict,
-            dict_in_out=cryspy_in_out_dict,
-            flag_use_precalculated_data=False,
-            flag_calc_analytical_derivatives=False
-        )
+
+        # Calculate the pattern using Cryspy
+        # TODO: Redirect stderr to suppress Cryspy warnings.
+        #  This is a temporary solution to avoid cluttering the output.
+        #  E.g. cryspy/A_functions_base/powder_diffraction_tof.py:106:
+        #  RuntimeWarning: overflow encountered in exp
+        #  Remove this when Cryspy is updated to handle warnings better.
+        with contextlib.redirect_stderr(io.StringIO()):
+            rhochi_calc_chi_sq_by_dictionary(
+                cryspy_dict,
+                dict_in_out=cryspy_in_out_dict,
+                flag_use_precalculated_data=False,
+                flag_calc_analytical_derivatives=False
+            )
 
         prefixes = {
             "constant wavelength": "pd",
