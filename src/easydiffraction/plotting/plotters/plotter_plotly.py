@@ -2,6 +2,15 @@ import darkdetect
 import plotly.graph_objects as go
 import plotly.io as pio
 
+try:
+    import IPython
+    from IPython.display import (
+        display,
+        HTML
+    )
+except ImportError:
+    IPython = None
+
 from .plotter_base import (
     PlotterBase,
     SERIES_CONFIG
@@ -82,4 +91,18 @@ class PlotlyPlotter(PlotterBase):
             layout=layout
         )
 
-        fig.show()
+        # Show the figure
+
+        # This can lead to warnings in Jupyter notebooks:
+        # WARNING: skipping unknown output mime type: application/vnd.plotly.v1+json [mystnb.unknown_mime_type]
+        if IPython is None:
+            fig.show()
+
+        # If IPython is available, we can convert the figure to HTML and
+        # display it in the notebook.
+        else:
+            # Convert figure to HTML
+            html_fig = pio.to_html(fig, include_plotlyjs="cdn", full_html=False)
+
+            # Display it in the notebook
+            display(HTML(html_fig))
