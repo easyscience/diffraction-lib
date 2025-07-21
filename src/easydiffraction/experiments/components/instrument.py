@@ -48,7 +48,7 @@ class TimeOfFlightInstrument(InstrumentBase):
                  setup_twotheta_bank: float = 150.0,
                  calib_d_to_tof_offset: float = 0.0,
                  calib_d_to_tof_linear: float = 10000.0,
-                 calib_d_to_tof_quad: float = -1.0,
+                 calib_d_to_tof_quad: float = -0.00001,
                  calib_d_to_tof_recip: float = 0.0) -> None:
         super().__init__()
 
