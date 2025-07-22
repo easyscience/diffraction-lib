@@ -5,6 +5,7 @@ General utilities and helpers for easydiffraction.
 import numpy as np
 import pandas as pd
 import pooch
+import re
 from tabulate import tabulate
 
 try:
@@ -164,3 +165,29 @@ def tof_to_d(tof, offset, linear, quad):
     sqrt_discriminant = np.sqrt(discriminant)
     d = (-B + sqrt_discriminant) / (2*A)
     return d
+
+
+def get_value_from_xye_header(file_path, key):
+    """
+    Extracts a floating point value from the first line of the file, corresponding to the given key.
+
+    Parameters:
+        file_path (str): Path to the input file.
+        key (str): The key to extract ('DIFC' or 'two_theta').
+
+    Returns:
+        float: The extracted value.
+
+    Raises:
+        ValueError: If the key is not found.
+    """
+    pattern = rf"{key}\s*=\s*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)"
+
+    with open(file_path, 'r') as f:
+        first_line = f.readline()
+
+    match = re.search(pattern, first_line)
+    if match:
+        return float(match.group(1))
+    else:
+        raise ValueError(f"{key} not found in the header.")
