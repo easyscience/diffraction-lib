@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Data Analysis: Powder Diffraction
+# # Fitting Powder Diffraction data
 #
 # This tutorial guides you through the Rietveld refinement of crystal
 # structures using simulated powder diffraction data. It consists of two parts:
@@ -22,7 +22,6 @@
 # the entire library.
 
 # %%
-# TODO: Remove this cell in the final version of the tutorial.
 # Needed for the Google Colab environment.
 # Install the easydiffraction library if it is not already installed.
 import builtins
@@ -59,18 +58,18 @@ import easydiffraction as ed
 # other things.
 
 # %%
-project_1 = ed.Project(name='reference')
+project_1 = ed.Project(name="reference")
 
 # %% [markdown]
-
+#
 # You can set the title and description of the project to provide context
 # and information about the analysis being performed. This is useful for
 # documentation purposes and helps others (or yourself in the future)
 # understand the purpose of the project at a glance.
 
 # %%
-project_1.info.title = 'Reference Silicon Fit'
-project_1.info.description = 'Fitting simulated powder diffraction pattern of Si.'
+project_1.info.title = "Reference Silicon Fit"
+project_1.info.description = "Fitting simulated powder diffraction pattern of Si."
 
 # %% [markdown]
 # ### 🔬 Create an Experiment
@@ -82,21 +81,26 @@ project_1.info.description = 'Fitting simulated powder diffraction pattern of Si
 #
 # In this case, the experiment is defined as a powder diffraction measurement
 # using time-of-flight neutrons. The measured data is loaded from a file
-# containing the reduced diffraction pattern of Si from the previous tutorial.
+# containing the reduced diffraction pattern of Si from the data reduction tutorial.
 
 # %%
-# TODO: Remove this cell in the final version of the tutorial.
+# To load the measured data from the EasyDiffraction repository, as
 # Google Colab does not have the data files needed for this tutorial.
-ed.download_from_repository('powder_reduced_Si_2large_bank.xye',
+ed.download_from_repository('reduced_Si.xye',
                             branch='d-spacing',
                             destination='data')
 
 # %%
-project_1.experiments.add(name='sim_si',
-                          sample_form='powder',
-                          beam_mode='time-of-flight',
-                          radiation_probe='neutron',
-                          data_path='data/powder_reduced_Si_2large_bank.xye')
+si_xye_path = "data/reduced_Si.xye"
+
+# %%
+project_1.experiments.add(
+    name="sim_si",
+    sample_form="powder",
+    beam_mode="time-of-flight",
+    radiation_probe="neutron",
+    data_path=si_xye_path,
+)
 
 # %% [markdown]
 # #### Inspect Measured Data
@@ -116,21 +120,23 @@ project_1.experiments.add(name='sim_si',
 # interactive visualizations.
 
 # %%
-project_1.plotter.engine = 'plotly'
+project_1.plotter.engine = "plotly"
 
 # %%
-project_1.plot_meas(expt_name='sim_si')
+project_1.plot_meas(expt_name="sim_si")
 
 # %% [markdown]
 # If you zoom in on the highest TOF peak (around 120,000 μs), you will notice
-# that it has a broad and unusual shape. This is a result of the simplified
-# data reduction process. Obtaining a more accurate diffraction pattern would
-# require a more advanced data reduction, which is beyond the scope of this
-# tutorial. Therefore, we will simply exclude the high TOF region from the
-# analysis by adding an excluded region to the experiment.
+# that it has a broad and unusual shape. This distortion, along with some more
+# effects on the low TOF peaks, is a result of the simplified data reduction
+# process. Obtaining a more accurate diffraction pattern would require a more
+# advanced data reduction, which is beyond the scope of this tutorial.
+# Therefore, we will simply exclude both the low and high TOF regions from the
+# analysis by adding an excluded regions to the experiment.
 
 # %%
-project_1.experiments['sim_si'].excluded_regions.add(minimum=108000, maximum=200000)
+project_1.experiments["sim_si"].excluded_regions.add(minimum=0, maximum=55000)
+project_1.experiments["sim_si"].excluded_regions.add(minimum=105500, maximum=200000)
 
 # %% [markdown]
 # To visualize the effect of excluding the high TOF region, we can plot
@@ -138,23 +144,57 @@ project_1.experiments['sim_si'].excluded_regions.add(minimum=108000, maximum=200
 # and is not used in the fitting process.
 
 # %%
-project_1.plot_meas(expt_name='sim_si')
+project_1.plot_meas(expt_name="sim_si")
 
 # %% [markdown]
 # #### Set Instrument Parameters
 #
-# After experiment is created and measured data are loaded, we would need
+# After the experiment is created and measured data are loaded, we need
 # to set the instrument parameters.
 #
 # In this type of experiment, the instrument parameters define how the
 # measured data is converted between d-spacing and time-of-flight (TOF)
 # during the data reduction process as well as the angular position of the
-# detector. So, we put values based on those from the reduction.
+# detector. So, we put values based on those from the reduction. These
+# values can be found in the header of the corresponding .XYE file. Their
+# names are `two_theta` and `DIFC`, which stand for the two-theta angle
+# and the linear conversion factor from d-spacing to TOF, respectively.
+#
+# You can set them manually, but it is more convenient to use the
+# `get_value_from_xye_header` function from the EasyDiffraction library.
 
 # %%
-project_1.experiments['sim_si'].instrument.setup_twotheta_bank = 101.46
-project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear = 61710.64
-project_1.experiments['sim_si'].instrument.calib_d_to_tof_quad = -0.00001
+project_1.experiments["sim_si"].instrument.setup_twotheta_bank = ed.get_value_from_xye_header(
+    si_xye_path, "two_theta"
+)
+project_1.experiments["sim_si"].instrument.calib_d_to_tof_linear = ed.get_value_from_xye_header(
+    si_xye_path, "DIFC"
+)
+
+# %% [markdown]
+# Every parameters is an object, which has different attributes, such as
+# `value`, `free`, etc. To display the parameter of interest, you can simply
+# print the parameter object. For example, to display the linear conversion
+# factor from d-spacing to TOF, which is the `calib_d_to_tof_linear` parameter,
+# you can use the following code:
+
+# %%
+print(project_1.experiments["sim_si"].instrument.calib_d_to_tof_linear)
+
+# %% [markdown]
+# The `value` attribute represents the current value of the parameter as a float.
+# You can access it directly by using the `value` attribute of the parameter.
+# This is useful when you want to use the parameter value in calculations or
+# when you want to assign it to another parameter. For example, to get only the
+# value of the same parameter as floating point number, but not the whole object,
+# you can do the following:
+
+# %%
+print(project_1.experiments["sim_si"].instrument.calib_d_to_tof_linear.value)
+
+# %% [markdown]
+# Note that to set the value of the parameter, you can simply assign a new value
+# to the parameter object without using the `value` attribute, as we did above.
 
 # %% [markdown]
 # #### Set Peak Profile Parameters
@@ -168,20 +208,21 @@ project_1.experiments['sim_si'].instrument.calib_d_to_tof_quad = -0.00001
 #
 # The values are typically determined experimentally on the same instrument and
 # under the same configuration as the data being analyzed based on measurements
-# of a standard sample. In some cases, these parameters are refined during the
-# fitting process to improve the fit between the measured and calculated
-# diffraction, but in this case, we will use the values from another simulation.
+# of a standard sample. We consider this Si sample as a standard reference.
+# Therefore, we will set the initial values of the peak profile parameters based
+# on the values obtained from another simulation and refine them during the
+# fitting process. The refined parameters will be used as a starting point for the
+# more complex fit in the next part of the tutorial.
 
 # %%
-project_1.experiments['sim_si'].peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
-project_1.experiments['sim_si'].peak.broad_gauss_sigma_0 = 47347.42
-project_1.experiments['sim_si'].peak.broad_gauss_sigma_1 = -55360.02
-project_1.experiments['sim_si'].peak.broad_gauss_sigma_2 = 23882.42
-project_1.experiments['sim_si'].peak.broad_mix_beta_0 = 0.0055
-project_1.experiments['sim_si'].peak.broad_mix_beta_1 = 0.0041
-project_1.experiments['sim_si'].peak.asym_alpha_0 = 0
-project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0096
-
+project_1.experiments["sim_si"].peak_profile_type = "pseudo-voigt * ikeda-carpenter"
+project_1.experiments["sim_si"].peak.broad_gauss_sigma_0 = 69498
+project_1.experiments["sim_si"].peak.broad_gauss_sigma_1 = -55578
+project_1.experiments["sim_si"].peak.broad_gauss_sigma_2 = 14560
+project_1.experiments["sim_si"].peak.broad_mix_beta_0 = 0.0019
+project_1.experiments["sim_si"].peak.broad_mix_beta_1 = 0.0137
+project_1.experiments["sim_si"].peak.asym_alpha_0 = -0.0055
+project_1.experiments["sim_si"].peak.asym_alpha_1 = 0.0147
 
 # %% [markdown]
 # #### Set Background
@@ -212,14 +253,14 @@ project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0096
 # process.
 
 # %%
-project_1.experiments['sim_si'].background_type = 'line-segment'
-project_1.experiments['sim_si'].background.add(x=50000, y=0.01)
-project_1.experiments['sim_si'].background.add(x=60000, y=0.01)
-project_1.experiments['sim_si'].background.add(x=70000, y=0.01)
-project_1.experiments['sim_si'].background.add(x=80000, y=0.01)
-project_1.experiments['sim_si'].background.add(x=90000, y=0.01)
-project_1.experiments['sim_si'].background.add(x=100000, y=0.01)
-project_1.experiments['sim_si'].background.add(x=110000, y=0.01)
+project_1.experiments["sim_si"].background_type = "line-segment"
+project_1.experiments["sim_si"].background.add(x=50000, y=0.01)
+project_1.experiments["sim_si"].background.add(x=60000, y=0.01)
+project_1.experiments["sim_si"].background.add(x=70000, y=0.01)
+project_1.experiments["sim_si"].background.add(x=80000, y=0.01)
+project_1.experiments["sim_si"].background.add(x=90000, y=0.01)
+project_1.experiments["sim_si"].background.add(x=100000, y=0.01)
+project_1.experiments["sim_si"].background.add(x=110000, y=0.01)
 
 # %% [markdown]
 # ### 🧩 Create a Sample Model – Si
@@ -282,7 +323,7 @@ project_1.experiments['sim_si'].background.add(x=110000, y=0.01)
 # _atom_site.occupancy
 # _atom_site.ADP_type
 # _atom_site.B_iso_or_equiv
-# Si Si   0 0 0   a  1.0   Biso 0.95
+# Si Si   0 0 0   a  1.0   Biso 0.89
 # ```
 
 # %% [markdown]
@@ -294,32 +335,34 @@ project_1.experiments['sim_si'].background.add(x=110000, y=0.01)
 # #### Add Sample Model
 
 # %%
-project_1.sample_models.add(name='si')
+project_1.sample_models.add(name="si")
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-project_1.sample_models['si'].space_group.name_h_m = 'F d -3 m'
-project_1.sample_models['si'].space_group.it_coordinate_system_code = '2'
+project_1.sample_models["si"].space_group.name_h_m = "F d -3 m"
+project_1.sample_models["si"].space_group.it_coordinate_system_code = "2"
 
 # %% [markdown]
 # #### Set Lattice Parameters
 
 # %%
-project_1.sample_models['si'].cell.length_a = 5.43
+project_1.sample_models["si"].cell.length_a = 5.43
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-project_1.sample_models['si'].atom_sites.add(label='Si',
-                                             type_symbol='Si',
-                                             fract_x=0,
-                                             fract_y=0,
-                                             fract_z=0,
-                                             wyckoff_letter='a',
-                                             b_iso=0.95)
+project_1.sample_models["si"].atom_sites.add(
+    label="Si",
+    type_symbol="Si",
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter="a",
+    b_iso=0.89,
+)
 
 # %% [markdown]
 # ### 🔗 Assign Sample Model to Experiment
@@ -329,7 +372,7 @@ project_1.sample_models['si'].atom_sites.add(label='Si',
 # pattern based on the crystal structure defined in the sample model.
 
 # %%
-project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
+project_1.experiments["sim_si"].linked_phases.add(id="si", scale=1.0)
 
 # %% [markdown]
 # ### 🚀 Analyze and Fit the Data
@@ -349,15 +392,27 @@ project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
 # To perform the fit, we need to specify the refinement parameters. These
 # are the parameters that will be adjusted during the fitting process to
 # minimize the difference between the measured and calculated diffraction
-# patterns. In this case, we will refine only the scale factor of the Si phase
-# in the experiment, as well as the intensities of the background points.
-# This is done by setting
-# the `free` attribute of the corresponding parameters to `True`.
+# patterns. This is done by setting the `free` attribute of the
+# corresponding parameters to `True`.
+#
+# We will refine the scale factor of the Si phase, the intensities of the
+# background points as well as the peak profile parameters. The structure
+# parameters of the Si phase will not be refined, as this sample is
+# considered a reference sample with known parameters.
 
 # %%
-project_1.experiments['sim_si'].linked_phases['si'].scale.free = True
-for line_segment in project_1.experiments['sim_si'].background:
+project_1.experiments["sim_si"].linked_phases["si"].scale.free = True
+
+for line_segment in project_1.experiments["sim_si"].background:
     line_segment.y.free = True
+
+project_1.experiments["sim_si"].peak.broad_gauss_sigma_0.free = True
+project_1.experiments["sim_si"].peak.broad_gauss_sigma_1.free = True
+project_1.experiments["sim_si"].peak.broad_gauss_sigma_2.free = True
+project_1.experiments["sim_si"].peak.broad_mix_beta_0.free = True
+project_1.experiments["sim_si"].peak.broad_mix_beta_1.free = True
+project_1.experiments["sim_si"].peak.asym_alpha_0.free = True
+project_1.experiments["sim_si"].peak.asym_alpha_1.free = True
 
 # %% [markdown]
 # #### Show Free Parameters
@@ -379,7 +434,7 @@ project_1.analysis.show_free_params()
 # allows this comparison.
 
 # %%
-project_1.plot_meas_vs_calc(expt_name='sim_si')
+project_1.plot_meas_vs_calc(expt_name="sim_si")
 
 # %% [markdown]
 # #### Run Fitting
@@ -412,7 +467,7 @@ project_1.analysis.fit()
 # is now based on the refined parameters.
 
 # %%
-project_1.plot_meas_vs_calc(expt_name='sim_si')
+project_1.plot_meas_vs_calc(expt_name="sim_si")
 
 # %% [markdown]
 # #### TOF vs d-spacing
@@ -428,7 +483,7 @@ project_1.plot_meas_vs_calc(expt_name='sim_si')
 # by setting the `d_spacing` parameter to `True`.
 
 # %%
-project_1.plot_meas_vs_calc(expt_name='sim_si', d_spacing=True)
+project_1.plot_meas_vs_calc(expt_name="sim_si", d_spacing=True)
 
 # %% [markdown]
 # As you can see, the calculated diffraction pattern now matches the measured
@@ -460,9 +515,11 @@ project_1.plot_meas_vs_calc(expt_name='sim_si', d_spacing=True)
 # **Solution:**
 
 # %%
-project_2 = ed.Project(name='main')
-project_2.info.title = 'La0.5Ba0.5CoO3 Fit'
-project_2.info.description = 'Fitting simulated powder diffraction pattern of La0.5Ba0.5CoO3.'
+project_2 = ed.Project(name="main")
+project_2.info.title = "La0.5Ba0.5CoO3 Fit"
+project_2.info.description = (
+    "Fitting simulated powder diffraction pattern of La0.5Ba0.5CoO3."
+)
 
 # %% [markdown]
 # ### 🔬 Exercise 2: Define an Experiment
@@ -478,18 +535,23 @@ project_2.info.description = 'Fitting simulated powder diffraction pattern of La
 # **Solution:**
 
 # %%
-# TODO: Remove this cell in the final version of the tutorial.
+# To load the measured data from the EasyDiffraction repository, as
 # Google Colab does not have the data files needed for this tutorial.
-ed.download_from_repository('powder_reduced_lbco_0_05si_2large_bank.xye',
+ed.download_from_repository('reduced_LBCO.xye',
                             branch='d-spacing',
                             destination='data')
 
 # %%
-project_2.experiments.add(name='sim_lbco',
-                          sample_form='powder',
-                          beam_mode='time-of-flight',
-                          radiation_probe='neutron',
-                          data_path='data/powder_reduced_lbco_0_05si_2large_bank.xye')
+lbco_xye_path = "data/reduced_LBCO.xye"
+
+# %%
+project_2.experiments.add(
+    name="sim_lbco",
+    sample_form="powder",
+    beam_mode="time-of-flight",
+    radiation_probe="neutron",
+    data_path=lbco_xye_path,
+)
 
 # %% [markdown]
 # #### Exercise 2.1: Inspect Measured Data
@@ -500,19 +562,21 @@ project_2.experiments.add(name='sim_lbco',
 #
 # **Hint:** You can use the `plot_meas` method of the project to visualize the
 # measured diffraction pattern. You can also use the `excluded_regions` attribute
-# of the experiment to exclude specific regions from the analysis.
+# of the experiment to exclude specific regions from the analysis as we did
+# in the previous part of the tutorial.
 #
 # **Solution:**
 
 # %%
-project_2.plotter.engine = 'plotly'
-project_2.plot_meas(expt_name='sim_lbco')
+project_2.plotter.engine = "plotly"
+project_2.plot_meas(expt_name="sim_lbco")
 
 # %%
-project_2.experiments['sim_lbco'].excluded_regions.add(minimum=108000, maximum=200000)
+project_2.experiments["sim_lbco"].excluded_regions.add(minimum=0, maximum=55000)
+project_2.experiments["sim_lbco"].excluded_regions.add(minimum=105500, maximum=200000)
 
 # %%
-project_2.plot_meas(expt_name='sim_lbco')
+project_2.plot_meas(expt_name="sim_lbco")
 
 # %% [markdown]
 # #### Exercise 2.2: Set Instrument Parameters
@@ -525,28 +589,34 @@ project_2.plot_meas(expt_name='sim_lbco')
 # **Solution:**
 
 # %%
-project_2.experiments['sim_lbco'].instrument.setup_twotheta_bank = 94.91
-project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = 58752.56
-project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_quad = -0.00001
+project_2.experiments["sim_lbco"].instrument.setup_twotheta_bank = ed.get_value_from_xye_header(
+    lbco_xye_path, "two_theta"
+)
+project_2.experiments["sim_lbco"].instrument.calib_d_to_tof_linear = ed.get_value_from_xye_header(
+    lbco_xye_path, "DIFC"
+)
 
 # %% [markdown]
 # #### Exercise 2.3: Set Peak Profile Parameters
 #
 # Set the peak profile parameters for the LBCO experiment.
 #
-# **Hint:** Use the values from the previous part of the tutorial.
+# **Hint:** Use the values from the previous part of the tutorial. You can
+# either manually copy the values from the Si fit or use the `value` attribute of
+# the parameters from the Si experiment to set the initial values for the LBCO
+# experiment. This will help us to have a good starting point for the fit.
 #
 # **Solution:**
 
 # %%
-project_2.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
-project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0 = 47347.42
-project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1 = -55360.02
-project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2 = 23882.42
-project_2.experiments['sim_lbco'].peak.broad_mix_beta_0 = 0.0055
-project_2.experiments['sim_lbco'].peak.broad_mix_beta_1 = 0.0041
-project_2.experiments['sim_lbco'].peak.asym_alpha_0 = 0
-project_2.experiments['sim_lbco'].peak.asym_alpha_1 = 0.0096
+project_2.peak_profile_type = "pseudo-voigt * ikeda-carpenter"
+project_2.experiments["sim_lbco"].peak.broad_gauss_sigma_0 = project_1.experiments["sim_si"].peak.broad_gauss_sigma_0.value
+project_2.experiments["sim_lbco"].peak.broad_gauss_sigma_1 = project_1.experiments["sim_si"].peak.broad_gauss_sigma_1.value
+project_2.experiments["sim_lbco"].peak.broad_gauss_sigma_2 = project_1.experiments["sim_si"].peak.broad_gauss_sigma_2.value
+project_2.experiments["sim_lbco"].peak.broad_mix_beta_0 = project_1.experiments["sim_si"].peak.broad_mix_beta_0.value
+project_2.experiments["sim_lbco"].peak.broad_mix_beta_1 = project_1.experiments["sim_si"].peak.broad_mix_beta_1.value
+project_2.experiments["sim_lbco"].peak.asym_alpha_0 = project_1.experiments["sim_si"].peak.asym_alpha_0.value
+project_2.experiments["sim_lbco"].peak.asym_alpha_1 = project_1.experiments["sim_si"].peak.asym_alpha_1.value
 
 # %% [markdown]
 # #### Exercise 2.4: Set Background
@@ -562,21 +632,25 @@ project_2.experiments['sim_lbco'].peak.asym_alpha_1 = 0.0096
 # **Solution:**
 
 # %%
-project_2.experiments['sim_lbco'].background_type = 'line-segment'
-project_2.experiments['sim_lbco'].background.add(x=50000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(x=60000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(x=70000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(x=80000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(x=90000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(x=100000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(x=110000, y=0.2)
+project_2.experiments["sim_lbco"].background_type = "line-segment"
+project_2.experiments["sim_lbco"].background.add(x=50000, y=0.2)
+project_2.experiments["sim_lbco"].background.add(x=60000, y=0.2)
+project_2.experiments["sim_lbco"].background.add(x=70000, y=0.2)
+project_2.experiments["sim_lbco"].background.add(x=80000, y=0.2)
+project_2.experiments["sim_lbco"].background.add(x=90000, y=0.2)
+project_2.experiments["sim_lbco"].background.add(x=100000, y=0.2)
+project_2.experiments["sim_lbco"].background.add(x=110000, y=0.2)
 
 # %% [markdown]
 # ### 🧩 Exercise 3: Define a Sample Model – LBCO
 #
 # The LBSO structure is not as simple as the Si model, as it contains multiple
 # atoms in the unit cell. It is not in COD, so we give you the structural
-# parameters in CIF format to create the sample model right here:
+# parameters in CIF format to create the sample model.
+#
+# Note that those parameters are not necessarily the most accurate ones, but they
+# are a good starting point for the fit. The aim of the study is to refine the
+# LBCO lattice parameters.
 
 # %% [markdown]
 # ```
@@ -602,10 +676,10 @@ project_2.experiments['sim_lbco'].background.add(x=110000, y=0.2)
 # _atom_site.occupancy
 # _atom_site.ADP_type
 # _atom_site.B_iso_or_equiv
-# La La   0.0 0.0 0.0   a   0.5   Biso 0.10
-# Ba Ba   0.0 0.0 0.0   a   0.5   Biso 0.10
-# Co Co   0.5 0.5 0.5   b   1.0   Biso 0.36
-# O  O    0.0 0.5 0.5   c   1.0   Biso 2.14
+# La La   0.0 0.0 0.0   a   0.5   Biso 0.95
+# Ba Ba   0.0 0.0 0.0   a   0.5   Biso 0.95
+# Co Co   0.5 0.5 0.5   b   1.0   Biso 0.80
+# O  O    0.0 0.5 0.5   c   1.0   Biso 1.66
 # ```
 
 # %% [markdown]
@@ -619,7 +693,7 @@ project_2.experiments['sim_lbco'].background.add(x=110000, y=0.2)
 # **Solution:**
 
 # %%
-project_2.sample_models.add(name='lbco')
+project_2.sample_models.add(name="lbco")
 
 # %% [markdown]
 # #### Exercise 3.2: Set Space Group
@@ -631,8 +705,8 @@ project_2.sample_models.add(name='lbco')
 # **Solution:**
 
 # %%
-project_2.sample_models['lbco'].space_group.name_h_m = 'P m -3 m'
-project_2.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
+project_2.sample_models["lbco"].space_group.name_h_m = "P m -3 m"
+project_2.sample_models["lbco"].space_group.it_coordinate_system_code = "1"
 
 # %% [markdown]
 # #### Exercise 3.3: Set Lattice Parameters
@@ -644,7 +718,7 @@ project_2.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
 # **Solution:**
 
 # %%
-project_2.sample_models['lbco'].cell.length_a = 3.88
+project_2.sample_models["lbco"].cell.length_a = 3.88
 
 # %% [markdown]
 # #### Exercise 3.4: Set Atom Sites
@@ -658,36 +732,44 @@ project_2.sample_models['lbco'].cell.length_a = 3.88
 # an extra attribute `occupancy` needs to be set for those atoms.
 
 # %%
-project_2.sample_models['lbco'].atom_sites.add(label='La',
-                                               type_symbol='La',
-                                               fract_x=0,
-                                               fract_y=0,
-                                               fract_z=0,
-                                               wyckoff_letter='a',
-                                               b_iso=0.1,
-                                               occupancy=0.5)
-project_2.sample_models['lbco'].atom_sites.add(label='Ba',
-                                               type_symbol='Ba',
-                                               fract_x=0,
-                                               fract_y=0,
-                                               fract_z=0,
-                                               wyckoff_letter='a',
-                                               b_iso=0.1,
-                                               occupancy=0.5)
-project_2.sample_models['lbco'].atom_sites.add(label='Co',
-                                               type_symbol='Co',
-                                               fract_x=0.5,
-                                               fract_y=0.5,
-                                               fract_z=0.5,
-                                               wyckoff_letter='b',
-                                               b_iso=0.36)
-project_2.sample_models['lbco'].atom_sites.add(label='O',
-                                               type_symbol='O',
-                                               fract_x=0,
-                                               fract_y=0.5,
-                                               fract_z=0.5,
-                                               wyckoff_letter='c',
-                                               b_iso=2.14)
+project_2.sample_models["lbco"].atom_sites.add(
+    label="La",
+    type_symbol="La",
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter="a",
+    b_iso=0.95,
+    occupancy=0.5,
+)
+project_2.sample_models["lbco"].atom_sites.add(
+    label="Ba",
+    type_symbol="Ba",
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter="a",
+    b_iso=0.95,
+    occupancy=0.5,
+)
+project_2.sample_models["lbco"].atom_sites.add(
+    label="Co",
+    type_symbol="Co",
+    fract_x=0.5,
+    fract_y=0.5,
+    fract_z=0.5,
+    wyckoff_letter="b",
+    b_iso=0.80,
+)
+project_2.sample_models["lbco"].atom_sites.add(
+    label="O",
+    type_symbol="O",
+    fract_x=0,
+    fract_y=0.5,
+    fract_z=0.5,
+    wyckoff_letter="c",
+    b_iso=1.66,
+)
 
 # %% [markdown]
 # ### 🔗 Exercise 4: Assign Sample Model to Experiment
@@ -699,24 +781,26 @@ project_2.sample_models['lbco'].atom_sites.add(label='O',
 # **Solution:**
 
 # %%
-project_2.experiments['sim_lbco'].linked_phases.add(id='lbco', scale=1.0)
+project_2.experiments["sim_lbco"].linked_phases.add(id="lbco", scale=1.0)
 
 # %% [markdown]
 # ### 🚀 Exercise 5: Analyze and Fit the Data
 #
 # #### Exercise 5.1: Set Fit Parameters
 #
-# Select the parameters to be refined during the fitting process.
+# Select the initial set of parameters to be refined during the fitting
+# process.
 #
-# **Hint:** You can start with the same parameters as in the Si fit, but
-# this time you will refine the scale factor of the LBCO phase and the
-# background points for the second simulation.
+# **Hint:** You can start with the scale factor and the background
+# points, as in the Si fit, but this time you will refine the LBCO
+# phase related parameters.
 #
 # **Solution:**
 
 # %%
-project_2.experiments['sim_lbco'].linked_phases['lbco'].scale.free = True
-for line_segment in project_2.experiments['sim_lbco'].background:
+project_2.experiments["sim_lbco"].linked_phases["lbco"].scale.free = True
+
+for line_segment in project_2.experiments["sim_lbco"].background:
     line_segment.y.free = True
 
 # %% [markdown]
@@ -733,7 +817,7 @@ for line_segment in project_2.experiments['sim_lbco'].background:
 # **Solution:**
 
 # %%
-project_2.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.plot_meas_vs_calc(expt_name="sim_lbco")
 
 # %%
 project_2.analysis.fit()
@@ -754,34 +838,37 @@ project_2.analysis.fit()
 # 4. The background points are not correct.
 #
 # **Solution**:
-# 1. ❌ The conversion parameters from TOF to d-spacing were set based on the data reduction process and this was verified in the Si fit.
+# 1. ❌ The conversion parameters from TOF to d-spacing were set based on the data reduction step. While they are
+# specific to each dataset and thus differ from those used for the Si data, the full reduction workflow has already been
+# validated with the Si fit. Therefore, they are not the cause of the misfit in this case.
 # 2. ✅ The lattice parameters of the LBCO phase were set based on the CIF data, which is a good starting point, but they are not necessarily as accurate as needed for the fit. The lattice parameters may need to be refined.
 # 3. ❌ The peak profile parameters do not change the position of the peaks, but rather their shape.
 # 4. ❌ The background points affect the background level, but not the peak positions.
 
 # %%
-project_2.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.plot_meas_vs_calc(expt_name="sim_lbco")
 
 # %% [markdown]
 # #### Exercise 5.4: Refine the LBCO Lattice Parameter
 #
 # To improve the fit, refine the lattice parameter of the LBCO phase.
 #
-# **Hint**: To accomplish this, we will set the `free` attribute of the `length_a` parameter
-# of the LBCO cell to `True`. This will allow the fitting process to adjust
-# the lattice parameter in addition to the scale factor of the LBCO phase
-# and the background points. Then, you can run the fitting process again.
+# **Hint**: To achieve this, we will set the `free` attribute of the `length_a` parameter
+# of the LBCO cell to `True`.
 #
 # **Solution**:
 
 # %%
-project_2.sample_models['lbco'].cell.length_a.free = True
+project_2.sample_models["lbco"].cell.length_a.free = True
 
 # %%
 project_2.analysis.fit()
 
 # %%
-project_2.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.plot_meas_vs_calc(expt_name="sim_lbco")
+
+# %% [markdown]
+# One of the main goals of this study was to refine the lattice parameter of the LBCO phase. As shown in the updated fit results, the overall fit has improved significantly, even though the change in cell length is less than 1% of the initial value. This demonstrates how even a small adjustment to the lattice parameter can have a substantial impact on the quality of the fit.
 
 # %% [markdown]
 # #### Exercise 5.5: Visualize the Fit Results in d-spacing
@@ -794,13 +881,59 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 # **Solution**:
 
 # %%
-project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True)
+project_2.plot_meas_vs_calc(expt_name="sim_lbco", d_spacing=True)
 
 # %% [markdown]
-# #### Exercise 5.6: Find Undefined Features
+# #### Exercise 5.6: Refine the Peak Profile Parameters
 #
-# After refining the lattice parameter, the fit is significantly improved, but
-# inspect the diffraction pattern again. Are you noticing anything undefined?
+# As you can see, the fit is now relatively good and the peak positions are much
+# closer to the measured data.
+#
+# The peak profile parameters were not refined, and their starting values were
+# set based on the previous fit of the Si standard sample. Although these starting
+# values are reasonable and provide a good starting point for the fit, they are
+# not necessarily optimal for the LBCO phase. This can be seen while inspecting
+# the individual peaks in the diffraction pattern. For example, the calculated curve
+# does not perfectly describe the peak at about 1.38 Å, as can be seen below:
+
+# %%
+project_2.plot_meas_vs_calc(expt_name="sim_lbco", d_spacing=True, x_min=1.35, x_max=1.40)
+
+# %% [markdown]
+# The peak profile parameters are determined based on both the instrument
+# and the sample characteristics, so they can vary when analyzing different
+# samples on the same instrument. Therefore, it is better to refine them as well.
+#
+# Select the peak profile parameters to be refined during the fitting process.
+#
+# **Hint**: You can set the `free` attribute of the peak profile parameters to `True`
+# to allow the fitting process to adjust them. You can use the same approach as in
+# the previous part of the tutorial, but this time you will refine the peak profile
+# parameters of the LBCO phase.
+#
+# **Solution**:
+
+# %%
+project_2.experiments["sim_lbco"].peak.broad_gauss_sigma_0.free = True
+project_2.experiments["sim_lbco"].peak.broad_gauss_sigma_1.free = True
+project_2.experiments["sim_lbco"].peak.broad_gauss_sigma_2.free = True
+project_2.experiments["sim_lbco"].peak.broad_mix_beta_0.free = True
+project_2.experiments["sim_lbco"].peak.broad_mix_beta_1.free = True
+project_2.experiments["sim_lbco"].peak.asym_alpha_0.free = True
+project_2.experiments["sim_lbco"].peak.asym_alpha_1.free = True
+
+# %%
+project_2.analysis.fit()
+
+# %%
+project_2.plot_meas_vs_calc(expt_name="sim_lbco", d_spacing=True, x_min=1.35, x_max=1.40)
+
+# %% [markdown]
+# #### Exercise 5.7: Find Undefined Features
+#
+# After refining the lattice parameter and the peak profile parameters, the fit is
+# significantly improved, but inspect the diffraction pattern again. Are you noticing
+# anything undefined?
 #
 # **Hint**: While the fit is now significantly better, there are still some unexplained peaks
 # in the diffraction pattern. These peaks are not accounted for by the LBCO phase.
@@ -810,15 +943,16 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True)
 # **Solution**:
 
 # %%
-project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spacing=True)
+project_2.plot_meas_vs_calc(expt_name="sim_lbco", x_min=1.53, x_max=1.7, d_spacing=True)
 
 # %% [markdown]
-# #### Exercise 5.7: Identify the Cause of the Unexplained Peaks
+# #### Exercise 5.8: Identify the Cause of the Unexplained Peaks
 #
 # **Hint**: Consider the following options:
 # 1. The LBCO phase is not correctly modeled.
 # 2. The LBCO phase is not the only phase present in the sample.
 # 3. The data reduction process introduced artifacts.
+# 4. The studied sample is not LBCO, but rather a different phase.
 #
 # **Solution**:
 # 1. ❌ In principle, this could be the case, as sometimes the presence of
@@ -827,11 +961,13 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spaci
 # in this case, the LBCO phase is correctly modeled based on the CIF data.
 # 2. ✅ The unexplained peaks are due to the presence of an impurity phase
 # in the sample, which is not included in the current model.
-# 3. ❌ The data reduction process is not likely to introduce such specific peaks, as it is
-# tested and verified in the previous part of the tutorial.
+# 3. ❌ The data reduction process is not likely to introduce such specific
+# peaks, as it is tested and verified in the previous part of the tutorial.
+# 4. ❌ This could also be the case in real experiments, but in this case,
+# we know that the sample is LBCO, as it was simulated based on the CIF data.
 
 # %% [markdown]
-# #### Exercise 5.8: Identify the impurity phase
+# #### Exercise 5.9: Identify the impurity phase
 #
 # Identify the impurity phase.
 #
@@ -840,18 +976,18 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spaci
 # tutorial.
 #
 # **Solution**:
-# The unexplained peaks are likely due to the presence of small amount of
+# The unexplained peaks are likely due to the presence of a small amount of
 # Si in the LBCO sample. In real experiments, it might happen, e.g., because the
 # sample holder was not cleaned properly after the Si experiment.
 #
 # You can visalize both the patterns of the Si and LBCO phases to confirm this hypothesis.
 
 # %%
-project_1.plot_meas_vs_calc(expt_name='sim_si', x_min=1, x_max=1.7, d_spacing=True)
-project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1, x_max=1.7, d_spacing=True)
+project_1.plot_meas_vs_calc(expt_name="sim_si", x_min=1, x_max=1.7, d_spacing=True)
+project_2.plot_meas_vs_calc(expt_name="sim_lbco", x_min=1, x_max=1.7, d_spacing=True)
 
 # %% [markdown]
-# #### Exercise 5.9: Create a Second Sample Model – Si as Impurity
+# #### Exercise 5.10: Create a Second Sample Model – Si as Impurity
 #
 # Create a second sample model for the Si phase, which is the impurity phase
 # identified in the previous step. Link this sample model to the LBCO
@@ -867,38 +1003,40 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1, x_max=1.7, d_spacing=
 # **Set Space Group**
 
 # %%
-project_2.sample_models.add(name='si')
+project_2.sample_models.add(name="si")
 
 # %%
-project_2.sample_models['si'].space_group.name_h_m = 'F d -3 m'
-project_2.sample_models['si'].space_group.it_coordinate_system_code = '2'
+project_2.sample_models["si"].space_group.name_h_m = "F d -3 m"
+project_2.sample_models["si"].space_group.it_coordinate_system_code = "2"
 
 # %% [markdown]
 # **Set Lattice Parameters**
 
 # %%
-project_2.sample_models['si'].cell.length_a = 5.43
+project_2.sample_models["si"].cell.length_a = 5.43
 
 # %% [markdown]
 # **Set Atom Sites**
 
 # %%
-project_2.sample_models['si'].atom_sites.add(label='Si',
-                                             type_symbol='Si',
-                                             fract_x=0,
-                                             fract_y=0,
-                                             fract_z=0,
-                                             wyckoff_letter='a',
-                                             b_iso=0.95)
+project_2.sample_models["si"].atom_sites.add(
+    label="Si",
+    type_symbol="Si",
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter="a",
+    b_iso=0.89,
+)
 
 # %% [markdown]
 # **🔗 Assign Sample Model to Experiment**
 
 # %%
-project_2.experiments['sim_lbco'].linked_phases.add(id='si', scale=1.0)
+project_2.experiments["sim_lbco"].linked_phases.add(id="si", scale=1.0)
 
 # %% [markdown]
-# #### Exercise 5.10: Refine the Scale of the Si Phase
+# #### Exercise 5.11: Refine the Scale of the Si Phase
 #
 # Visualize the measured diffraction pattern and the calculated diffraction
 # pattern. Check if the Si phase is contributing to the calculated diffraction
@@ -918,7 +1056,7 @@ project_2.experiments['sim_lbco'].linked_phases.add(id='si', scale=1.0)
 # **Visualize Diffraction Patterns**
 
 # %%
-project_2.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.plot_meas_vs_calc(expt_name="sim_lbco")
 
 # %% [markdown]
 # As you can see, the calculated pattern is now the sum of both phases,
@@ -928,7 +1066,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 # **Set Fit Parameters**
 
 # %%
-project_2.experiments['sim_lbco'].linked_phases['si'].scale.free = True
+project_2.experiments["sim_lbco"].linked_phases["si"].scale.free = True
 
 # %% [markdown]
 # **Run Fitting**
@@ -940,42 +1078,30 @@ project_2.analysis.fit()
 
 # %% [markdown]
 # **Visualize Fit Results**
-
+#
 # Let's plot the measured diffraction pattern and the calculated diffraction
 # pattern both for the full range and for a zoomed-in region around the previously unexplained
 # peak near 95,000 μs. The calculated pattern will be the sum of the two phases.
 
 # %%
-project_2.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.plot_meas_vs_calc(expt_name="sim_lbco")
 
 # %%
-project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
+project_2.plot_meas_vs_calc(expt_name="sim_lbco", x_min=88000, x_max=101000)
 
 # %% [markdown]
 # All previously unexplained peaks are now accounted for in the pattern, and the fit is improved.
 # Some discrepancies in the peak intensities remain, but
 # further improvements would require more advanced data reduction and analysis,
 # which are beyond the scope of this tutorial.
-
-# %% [markdown]
-# ## 📑 Summary
 #
-# In this tutorial, you refined two simulated diffraction patterns:
-# - **Si** as a simple reference system, and
-# - **LBCO** as a more complex, realistic case with an initially unknown impurity.
+# #### Final Remarks
 #
-# Along the way, you learned how to work with the EasyDiffraction library to:
-# - Define a project, experiment, and sample model.
-# - Set up instrument and peak profile parameters.
-# - Visualize measured and calculated patterns.
-# - Identify and interpret misfits in the diffraction data.
-# - Add and refine multiple phases to improve the model.
-#
-# Key Takeaways:
-# - A good refinement starts with a reasonable structural model and
-#   well-defined instrument parameters.
-# - Visual inspection is a critical part of model validation. Residual peaks
-#   often reveal missing physics or contamination.
+# In this part of the tutorial, we have demonstrated how to use EasyDiffraction
+# to refine lattice parameters for a more complex crystal structure, La₀.₅Ba₀.₅CoO₃ (LBCO).
+# In real experiments, additional parameters, such as atomic positions, occupancies, and atomic displacement factors, can also be refined to further improve the fit.
+# However, we will stop here, as the purpose of this part of the tutorial is to demonstrate the practical use of
+# EasyDiffraction for fitting powder diffraction data.
 
 # %% [markdown]
 # ## 🎁 Bonus
