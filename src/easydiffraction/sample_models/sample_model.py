@@ -1,5 +1,6 @@
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.utils import render_cif
 from easydiffraction.core.objects import Datablock
 from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.sample_models.components.space_group import SpaceGroup
@@ -193,15 +194,7 @@ class SampleModel(Datablock):
         print("Atom sites:")
         self.atom_sites.show()
 
-    def show_as_cif(self):
-        cif_text = self.as_cif()
-        lines = cif_text.splitlines()
-        max_width = max(len(line) for line in lines)
-        padded_lines = [f"│ {line.ljust(max_width)} │" for line in lines]
-        top = f"╒{'═' * (max_width + 2)}╕"
-        bottom = f"╘{'═' * (max_width + 2)}╛"
-
-        print(paragraph(f"Sample model 🧩 '{self.name}' as cif"))
-        print(top)
-        print("\n".join(padded_lines))
-        print(bottom)
+    def show_as_cif(self) -> None:
+        cif_text: str = self.as_cif()
+        paragraph_title: str = paragraph(f"Sample model 🧩 '{self.name}' as cif")
+        render_cif(cif_text, paragraph_title)

@@ -6,7 +6,10 @@ from textwrap import wrap
 from varname import varname
 from typing import List
 
-from easydiffraction.utils.utils import tof_to_d
+from easydiffraction.utils.utils import (
+    render_cif,
+    tof_to_d
+)
 from easydiffraction.utils.formatting import (
     paragraph,
     error
@@ -111,16 +114,8 @@ class ProjectInfo:
 
     def show_as_cif(self) -> None:
         cif_text: str = self.as_cif()
-        lines: List[str] = cif_text.splitlines()
-        max_width: int = max(len(line) for line in lines)
-        padded_lines: List[str] = [f"│ {line.ljust(max_width)} │" for line in lines]
-        top: str = f"╒{'═' * (max_width + 2)}╕"
-        bottom: str = f"╘{'═' * (max_width + 2)}╛"
-
-        print(paragraph(f"Project 📦 '{self.name}' info as cif"))
-        print(top)
-        print("\n".join(padded_lines))
-        print(bottom)
+        paragraph_title: str = paragraph(f"Project 📦 '{self.name}' info as cif")
+        render_cif(cif_text, paragraph_title)
 
 
 class Project:

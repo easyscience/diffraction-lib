@@ -8,6 +8,7 @@ import pooch
 import re
 import os
 from tabulate import tabulate
+from typing import List, Optional
 
 try:
     import IPython
@@ -75,26 +76,33 @@ def is_pycharm() -> bool:
     return os.environ.get("PYCHARM_HOSTED") == "1"
 
 
-def render_table(columns_headers,
+def render_table(columns_data,
                  columns_alignment,
-                 columns_data,
+                 columns_headers=None,
                  show_index=False):
     """
     Renders a table either as an HTML (in Jupyter Notebook) or ASCII (in terminal),
     with aligned columns.
 
     Args:
-        columns_headers (list): List of column headers.
+        columns_data (list): List of lists, where each inner list represents a row of data.
         columns_alignment (list): Corresponding text alignment for each column (e.g., 'left', 'center', 'right').
-        columns_data (list): List of row data.
+        columns_headers (list): List of column headers.
         show_index (bool): Whether to show the index column.
     """
 
     # Use pandas DataFrame for Jupyter Notebook rendering
     if is_notebook():
         # Create DataFrame
-        df = pd.DataFrame(columns_data,
-                          columns=columns_headers)
+        if columns_headers is None:
+            df = pd.DataFrame(columns_data)
+            df.columns = range(df.shape[1])  # Ensure numeric column labels
+            columns_headers = df.columns.tolist()
+            skip_headers = True
+        else:
+            df = pd.DataFrame(columns_data,
+                              columns=columns_headers)
+            skip_headers = False
 
         # Force starting index from 1
         if show_index:
@@ -116,7 +124,8 @@ def render_table(columns_headers,
         html = df.to_html(escape=False,
                           index=show_index,
                           formatters=formatters,
-                          border=0)
+                          border=0,
+                          header=not skip_headers)
 
         # Add inline CSS to align the entire table to the left and show border
         html = html.replace('<table class="dataframe">',
@@ -128,13 +137,17 @@ def render_table(columns_headers,
                             '">')
 
         # Manually apply text alignment to headers
-        for col, align in zip(columns_headers, columns_alignment):
-            html = html.replace(f'<th>{col}', f'<th style="text-align: {align};">{col}')
+        if not skip_headers:
+            for col, align in zip(columns_headers, columns_alignment):
+                html = html.replace(f'<th>{col}', f'<th style="text-align: {align};">{col}')
 
         display(HTML(html))
 
     # Use tabulate for terminal rendering
     else:
+        if columns_headers is None:
+            columns_headers = []
+
         indices = show_index
         if show_index:
             # Force starting index from 1
@@ -150,6 +163,29 @@ def render_table(columns_headers,
         )
 
         print(table)
+
+
+def render_cif(cif_text, paragraph_title) -> None:
+    """
+    Display the CIF text as a formatted table in Jupyter Notebook or terminal.
+    """
+    # Split into lines and replace empty ones with a '&nbsp;'
+    # (non-breaking space) to force empty lines to be rendered in
+    # full height in the table. This is only needed in Jupyter Notebook.
+    if is_notebook():
+        lines: List[str] = [line if line.strip() else '&nbsp;' for line in cif_text.splitlines()]
+    else:
+        lines: List[str] = [line for line in cif_text.splitlines()]
+
+    # Convert each line into a single-column format for table rendering
+    columns: List[List[str]] = [[line] for line in lines]
+
+    # Print title paragraph
+    print(paragraph_title)
+
+    # Render the table using left alignment and no headers
+    render_table(columns_data=columns,
+                 columns_alignment=["left"])
 
 
 def tof_to_d(tof, offset, linear, quad):

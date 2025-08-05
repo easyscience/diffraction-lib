@@ -2,7 +2,10 @@ import pandas as pd
 import numpy as np
 from typing import List, Optional, Union
 
-from easydiffraction.utils.utils import render_table
+from easydiffraction.utils.utils import (
+    render_cif,
+    render_table
+)
 from easydiffraction.utils.formatting import (
     paragraph,
     warning
@@ -417,14 +420,6 @@ class Analysis:
         return "\n".join(lines)
 
     def show_as_cif(self) -> None:
-        cif_text = self.as_cif()
-        lines = cif_text.splitlines()
-        max_width = max(len(line) for line in lines)
-        padded_lines = [f"│ {line.ljust(max_width)} │" for line in lines]
-        top = f"╒{'═' * (max_width + 2)}╕"
-        bottom = f"╘{'═' * (max_width + 2)}╛"
-
-        print(paragraph(f"Analysis 🧮 info as cif"))
-        print(top)
-        print("\n".join(padded_lines))
-        print(bottom)
+        cif_text: str = self.as_cif()
+        paragraph_title: str = paragraph(f"Analysis 🧮 info as cif")
+        render_cif(cif_text, paragraph_title)
