@@ -214,6 +214,26 @@ def tof_to_d(tof, offset, linear, quad):
     return d
 
 
+def two_theta_to_d(two_theta, wavelength):
+    """
+    Convert 2-theta to d-spacing using Bragg's law.
+
+    Parameters:
+        two_theta (float or np.ndarray): 2-theta angle in degrees.
+        wavelength (float): Wavelength in Å.
+
+    Returns:
+        d (float or np.ndarray): d-spacing in Å.
+    """
+    # Convert two_theta from degrees to radians
+    theta_rad = np.radians(two_theta / 2)
+
+    # Calculate d-spacing using Bragg's law
+    d = wavelength / (2 * np.sin(theta_rad))
+
+    return d
+
+
 def get_value_from_xye_header(file_path, key):
     """
     Extracts a floating point value from the first line of the file, corresponding to the given key.

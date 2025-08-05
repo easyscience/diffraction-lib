@@ -8,7 +8,8 @@ from typing import List
 
 from easydiffraction.utils.utils import (
     render_cif,
-    tof_to_d
+    tof_to_d,
+    two_theta_to_d
 )
 from easydiffraction.utils.formatting import (
     paragraph,
@@ -247,13 +248,15 @@ class Project:
         pattern = experiment.datastore.pattern
         expt_type = experiment.type
 
-        beam_mode = expt_type.beam_mode.value
-        if d_spacing:  # TODO: move this logic to somewhere else
-            if beam_mode == 'time-of-flight':
-                self.update_pattern_d_spacing(expt_name)
-            else:
-                d_spacing = False
+        # Update d-spacing if necessary
+        # TODO: This is done before every plot, and not when parameters
+        #  needed for d-spacing conversion are changed. The reason is
+        #  to minimize the performance impact during the fitting process.
+        #  Need to find a better way to handle this.
+        if d_spacing:
+            self.update_pattern_d_spacing(expt_name)
 
+        # Plot measured pattern
         self.plotter.plot_meas(pattern,
                                expt_name,
                                expt_type,
@@ -271,13 +274,15 @@ class Project:
         pattern = experiment.datastore.pattern
         expt_type = experiment.type
 
-        beam_mode = expt_type.beam_mode.value
-        if d_spacing:  # TODO: move this logic to somewhere else
-            if beam_mode == 'time-of-flight':
-                self.update_pattern_d_spacing(expt_name)
-            else:
-                d_spacing = False
+        # Update d-spacing if necessary
+        # TODO: This is done before every plot, and not when parameters
+        #  needed for d-spacing conversion are changed. The reason is
+        #  to minimize the performance impact during the fitting process.
+        #  Need to find a better way to handle this.
+        if d_spacing:
+            self.update_pattern_d_spacing(expt_name)
 
+        # Plot calculated pattern
         self.plotter.plot_calc(pattern,
                                expt_name,
                                expt_type,
@@ -296,13 +301,15 @@ class Project:
         pattern = experiment.datastore.pattern
         expt_type = experiment.type
 
-        beam_mode = expt_type.beam_mode.value
-        if d_spacing:  # TODO: move this logic to somewhere else
-            if beam_mode == 'time-of-flight':
-                self.update_pattern_d_spacing(expt_name)
-            else:
-                d_spacing = False
+        # Update d-spacing if necessary
+        # TODO: This is done before every plot, and not when parameters
+        #  needed for d-spacing conversion are changed. The reason is
+        #  to minimize the performance impact during the fitting process.
+        #  Need to find a better way to handle this.
+        if d_spacing:
+            self.update_pattern_d_spacing(expt_name)
 
+        # Plot measured vs calculated
         self.plotter.plot_meas_vs_calc(pattern,
                                        expt_name,
                                        expt_type,
@@ -325,5 +332,8 @@ class Project:
                                  experiment.instrument.calib_d_to_tof_offset.value,
                                  experiment.instrument.calib_d_to_tof_linear.value,
                                  experiment.instrument.calib_d_to_tof_quad.value)
+        elif beam_mode == 'constant wavelength':
+            pattern.d = two_theta_to_d(pattern.x,
+                                       experiment.instrument.setup_wavelength.value)
         else:
             print(error(f"Unsupported beam mode: {beam_mode} for d-spacing update."))
