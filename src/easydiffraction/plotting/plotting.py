@@ -215,13 +215,13 @@ class Plotter():
                           show_residual=False,
                           d_spacing=False):
         if pattern.x is None:
-            error(f"No data available for experiment {expt_name}")
+            print(error(f"No data available for experiment {expt_name}"))
             return
         if pattern.meas is None:
-            error(f"No measured data available for experiment {expt_name}")
+            print(error(f"No measured data available for experiment {expt_name}"))
             return
         if pattern.calc is None:
-            print(f"No calculated data available for experiment {expt_name}")
+            print(error(f"No calculated data available for experiment {expt_name}"))
             return
 
         if d_spacing:
