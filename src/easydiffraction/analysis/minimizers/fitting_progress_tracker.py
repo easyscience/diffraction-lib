@@ -1,5 +1,20 @@
 import numpy as np
+import time
 from typing import List, Optional
+
+try:
+    from IPython.display import (
+        display,
+        clear_output
+    )
+except ImportError:
+    display = None
+    clear_output = None
+
+from easydiffraction.utils.utils import (
+    is_notebook,
+    render_table
+)
 from easydiffraction.analysis.reliability_factors import calculate_reduced_chi_square
 
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
@@ -33,6 +48,9 @@ class FittingProgressTracker:
         self._best_chi2: Optional[float] = None
         self._best_iteration: Optional[int] = None
         self._fitting_time: Optional[float] = None
+        self._headers: List[str] = ["iteration", "χ²", "improvement [%]"]
+        self._alignments: List[str] = ["center", "center", "center"]
+        self._df_rows: List[List[str]] = []
 
     def reset(self) -> None:
         self._iteration = 0
@@ -118,43 +136,48 @@ class FittingProgressTracker:
         return self._fitting_time
 
     def start_timer(self) -> None:
-        import time
         self._start_time = time.perf_counter()
 
     def stop_timer(self) -> None:
-        import time
         self._end_time = time.perf_counter()
         self._fitting_time = self._end_time - self._start_time
 
     def start_tracking(self, minimizer_name: str) -> None:
-        headers: List[str] = ["iteration", "χ²", "improvement [%]"]
-
         print(f"🚀 Starting fitting process with '{minimizer_name}'...")
         print("📈 Goodness-of-fit (reduced χ²) change:")
 
-        # Top border
-        print("╒" + "╤".join(["═" * FIXED_WIDTH for _ in headers]) + "╕")
+        if is_notebook() and display is not None:
+            self._df_rows = []  # Reset notebook tracking
+        else:
+            # Top border
+            print("╒" + "╤".join(["═" * FIXED_WIDTH for _ in self._headers]) + "╕")
 
-        # Header row (all centered)
-        header_row = "│" + "│".join([format_cell(h, align="center") for h in headers]) + "│"
-        print(header_row)
+            # Header row (all centered)
+            header_row = "│" + "│".join([format_cell(h, align="center") for h in self._headers]) + "│"
+            print(header_row)
 
-        # Separator
-        print("╞" + "╪".join(["═" * FIXED_WIDTH for _ in headers]) + "╡")
+            # Separator
+            print("╞" + "╪".join(["═" * FIXED_WIDTH for _ in self._headers]) + "╡")
 
     def add_tracking_info(self, row: List[str]) -> None:
-        # Alignments for each column: iteration, χ², improvement [%]
-        aligns: List[str] = ["center", "center", "center"]
+        if is_notebook() and display is not None and clear_output is not None:
+            # Add row to DataFrame, clear previous output, and show updated table
+            self._df_rows.append(row)
+            clear_output(wait=True)
+            render_table(columns_data=self._df_rows,
+                         columns_alignment=self._alignments,
+                         columns_headers=self._headers)
+        else:
+            # Alignments for each column
+            formatted_row = "│" + "│".join([
+                format_cell(cell, align=self._alignments[i])
+                for i, cell in enumerate(row)
+            ]) + "│"
 
-        formatted_row = "│" + "│".join([
-            format_cell(cell, align=aligns[i])
-            for i, cell in enumerate(row)
-        ]) + "│"
-
-        print(formatted_row)
+            print(formatted_row)
 
     def finish_tracking(self) -> None:
-        # Print last iteration as last row
+        # Add last iteration as last row
         row: List[str] = [
             str(self._last_iteration),
             f"{self._last_chi2:.2f}" if self._last_chi2 is not None else "",
@@ -162,8 +185,9 @@ class FittingProgressTracker:
         ]
         self.add_tracking_info(row)
 
-        # Print bottom border
-        print("╘" + "╧".join(["═" * FIXED_WIDTH for _ in range(len(row))]) + "╛")
+        if not is_notebook():
+            # Bottom border for terminal only
+            print("╘" + "╧".join(["═" * FIXED_WIDTH for _ in range(len(row))]) + "╛")
 
         # Print best result
         print(f"🏆 Best goodness-of-fit (reduced χ²) is {self._best_chi2:.2f} at iteration {self._best_iteration}")
