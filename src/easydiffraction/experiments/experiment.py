@@ -122,7 +122,7 @@ class BaseExperiment(Datablock):
             cif_lines += ["", self.peak.as_cif()]
 
         # Phase scale factors for powder experiments
-        if hasattr(self, "linked_phases"):
+        if hasattr(self, "linked_phases") and self.linked_phases._items:
             cif_lines += ["", self.linked_phases.as_cif()]
 
         # Crystal scale factor for single crystal experiments
