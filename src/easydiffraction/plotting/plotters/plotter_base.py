@@ -1,8 +1,13 @@
 import numpy as np
 from abc import ABC, abstractmethod
 
+from easydiffraction.utils.utils import (
+    is_notebook,
+    is_pycharm
+)
+
+DEFAULT_ENGINE = 'plotly' if is_notebook() or is_pycharm() else 'asciichartpy'
 DEFAULT_HEIGHT = 9
-DEFAULT_ENGINE = 'asciichartpy'
 DEFAULT_MIN = -np.inf
 DEFAULT_MAX = np.inf
 
