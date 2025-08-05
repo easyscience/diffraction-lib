@@ -3,13 +3,18 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 try:
-    import IPython
     from IPython.display import (
         display,
         HTML
     )
 except ImportError:
-    IPython = None
+    display = None
+    HTML = None
+
+from easydiffraction.utils.utils import (
+    is_notebook,
+    is_pycharm
+)
 
 from .plotter_base import (
     PlotterBase,
@@ -86,23 +91,35 @@ class PlotlyPlotter(PlotterBase):
             ),
         )
 
+        config=dict(
+            displaylogo=False,
+            modeBarButtonsToRemove=['select2d',
+                                    'lasso2d',
+                                    'zoomIn2d',
+                                    'zoomOut2d',
+                                    'autoScale2d'],
+        )
+
         fig = go.Figure(
             data=data,
-            layout=layout
+            layout=layout,
         )
 
         # Show the figure
 
         # This can lead to warnings in Jupyter notebooks:
         # WARNING: skipping unknown output mime type: application/vnd.plotly.v1+json [mystnb.unknown_mime_type]
-        if IPython is None:
-            fig.show()
+        if is_notebook() or is_pycharm() or display is None or HTML is None:
+            fig.show(config=config)
 
         # If IPython is available, we can convert the figure to HTML and
         # display it in the notebook.
         else:
             # Convert figure to HTML
-            html_fig = pio.to_html(fig, include_plotlyjs="cdn", full_html=False)
+            html_fig = pio.to_html(fig,
+                                   include_plotlyjs="cdn",
+                                   full_html=False,
+                                   config=config)
 
             # Display it in the notebook
             display(HTML(html_fig))

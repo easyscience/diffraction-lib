@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import pooch
 import re
+import os
 from tabulate import tabulate
 
 try:
@@ -62,6 +63,16 @@ def is_notebook() -> bool:
             return False  # Other type (unlikely)
     except NameError:
         return False  # Probably standard Python interpreter
+
+
+def is_pycharm() -> bool:
+    """
+    Determines if the current environment is PyCharm.
+
+    Returns:
+        bool: True if running inside PyCharm, False otherwise.
+    """
+    return os.environ.get("PYCHARM_HOSTED") == "1"
 
 
 def render_table(columns_headers,
