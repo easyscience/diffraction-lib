@@ -16,6 +16,9 @@
 # might look like in code. For a more detailed explanation of the code, please
 # refer to the other tutorials.
 
+# %% [markdown]
+# ## Import Library
+
 # %%
 import easydiffraction as ed
 
@@ -25,9 +28,6 @@ import easydiffraction as ed
 # %%
 project = ed.Project()
 
-# %%
-project.plotter.engine = 'plotly'
-
 # %% [markdown]
 # ## Step 2: Define Sample Model
 
@@ -35,23 +35,28 @@ project.plotter.engine = 'plotly'
 project.sample_models.add(name='lbco')
 
 # %%
-project.sample_models['lbco'].space_group.name_h_m = 'P m -3 m'
-project.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
+sample_model = project.sample_models['lbco']
 
 # %%
-project.sample_models['lbco'].cell.length_a = 3.88
+sample_model.space_group.name_h_m = 'P m -3 m'
+sample_model.space_group.it_coordinate_system_code = '1'
 
 # %%
-project.sample_models['lbco'].atom_sites.add('La', 'La', 0, 0, 0, b_iso=0.5, occupancy=0.5)
-project.sample_models['lbco'].atom_sites.add('Ba', 'Ba', 0, 0, 0, b_iso=0.5, occupancy=0.5)
-project.sample_models['lbco'].atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, b_iso=0.5)
-project.sample_models['lbco'].atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
+sample_model.cell.length_a = 3.88
+
+# %%
+sample_model.atom_sites.add('La', 'La', 0, 0, 0, b_iso=0.5, occupancy=0.5)
+sample_model.atom_sites.add('Ba', 'Ba', 0, 0, 0, b_iso=0.5, occupancy=0.5)
+sample_model.atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, b_iso=0.5)
+sample_model.atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
 
 # %% [markdown]
 # ## Step 3: Define Experiment
 
 # %%
-ed.download_from_repository('hrpt_lbco.xye', branch='develop', destination='data')
+ed.download_from_repository('hrpt_lbco.xye',
+                            branch='develop',
+                            destination='data')
 
 # %%
 project.experiments.add(name='hrpt',
@@ -61,58 +66,62 @@ project.experiments.add(name='hrpt',
                         data_path='data/hrpt_lbco.xye')
 
 # %%
-project.experiments['hrpt'].instrument.setup_wavelength = 1.494
-project.experiments['hrpt'].instrument.calib_twotheta_offset = 0.6
+experiment = project.experiments['hrpt']
 
 # %%
-project.experiments['hrpt'].peak.broad_gauss_u = 0.1
-project.experiments['hrpt'].peak.broad_gauss_v = -0.1
-project.experiments['hrpt'].peak.broad_gauss_w = 0.1
-project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
+experiment.instrument.setup_wavelength = 1.494
+experiment.instrument.calib_twotheta_offset = 0.6
 
 # %%
-project.experiments['hrpt'].background.add(x=10, y=170)
-project.experiments['hrpt'].background.add(x=30, y=170)
-project.experiments['hrpt'].background.add(x=50, y=170)
-project.experiments['hrpt'].background.add(x=110, y=170)
-project.experiments['hrpt'].background.add(x=165, y=170)
+experiment.peak.broad_gauss_u = 0.1
+experiment.peak.broad_gauss_v = -0.1
+experiment.peak.broad_gauss_w = 0.1
+experiment.peak.broad_lorentz_y = 0.1
 
 # %%
-project.experiments['hrpt'].excluded_regions.add(minimum=0, maximum=5)
-project.experiments['hrpt'].excluded_regions.add(minimum=165, maximum=180)
+experiment.background.add(x=10, y=170)
+experiment.background.add(x=30, y=170)
+experiment.background.add(x=50, y=170)
+experiment.background.add(x=110, y=170)
+experiment.background.add(x=165, y=170)
 
 # %%
-project.experiments['hrpt'].linked_phases.add(id='lbco', scale=10.0)
+experiment.excluded_regions.add(minimum=0, maximum=5)
+experiment.excluded_regions.add(minimum=165, maximum=180)
+
+# %%
+experiment.linked_phases.add(id='lbco', scale=10.0)
 
 # %% [markdown]
 # ## Step 4: Perform Analysis
 
 # %%
-project.sample_models['lbco'].cell.length_a.free = True
+sample_model.cell.length_a.free = True
 
-project.sample_models['lbco'].atom_sites['La'].b_iso.free = True
-project.sample_models['lbco'].atom_sites['Ba'].b_iso.free = True
-project.sample_models['lbco'].atom_sites['Co'].b_iso.free = True
-project.sample_models['lbco'].atom_sites['O'].b_iso.free = True
+sample_model.atom_sites['La'].b_iso.free = True
+sample_model.atom_sites['Ba'].b_iso.free = True
+sample_model.atom_sites['Co'].b_iso.free = True
+sample_model.atom_sites['O'].b_iso.free = True
 
 # %%
-project.experiments['hrpt'].linked_phases['lbco'].scale.free = True
+experiment.instrument.calib_twotheta_offset.free = True
 
-project.experiments['hrpt'].instrument.calib_twotheta_offset.free = True
+experiment.peak.broad_gauss_u.free = True
+experiment.peak.broad_gauss_v.free = True
+experiment.peak.broad_gauss_w.free = True
+experiment.peak.broad_lorentz_y.free = True
 
-project.experiments['hrpt'].background['10'].y.free = True
-project.experiments['hrpt'].background['30'].y.free = True
-project.experiments['hrpt'].background['50'].y.free = True
-project.experiments['hrpt'].background['110'].y.free = True
-project.experiments['hrpt'].background['165'].y.free = True
+experiment.background['10'].y.free = True
+experiment.background['30'].y.free = True
+experiment.background['50'].y.free = True
+experiment.background['110'].y.free = True
+experiment.background['165'].y.free = True
 
-project.experiments['hrpt'].peak.broad_gauss_u.free = True
-project.experiments['hrpt'].peak.broad_gauss_v.free = True
-project.experiments['hrpt'].peak.broad_gauss_w.free = True
-project.experiments['hrpt'].peak.broad_lorentz_y.free = True
+experiment.linked_phases['lbco'].scale.free = True
 
 # %%
 project.analysis.fit()
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt',
+                          show_residual=True)
