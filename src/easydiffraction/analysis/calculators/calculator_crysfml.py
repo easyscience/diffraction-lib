@@ -148,8 +148,8 @@ class CrysfmlCalculator(CalculatorBase):
         peak = getattr(experiment, "peak", None)
 
         x_data = experiment.datastore.pattern.x
-        two_theta_min = float(x_data.min())
-        two_theta_max = float(x_data.max())
+        twotheta_min = float(x_data.min())
+        twotheta_max = float(x_data.max())
 
         exp_dict = {
             "NPD": {
@@ -163,9 +163,9 @@ class CrysfmlCalculator(CalculatorBase):
                 #"_pd_instr_reflex_s_l": peak_asymm.s_l.value if peak_asymm else 0.0,
                 #"_pd_instr_reflex_d_l": peak_asymm.d_l.value if peak_asymm else 0.0,
                 "_pd_meas_2theta_offset": instrument.calib_twotheta_offset.value if instrument else 0.0,
-                "_pd_meas_2theta_range_min": two_theta_min,
-                "_pd_meas_2theta_range_max": two_theta_max,
-                "_pd_meas_2theta_range_inc": (two_theta_max - two_theta_min) / len(x_data)
+                "_pd_meas_2theta_range_min": twotheta_min,
+                "_pd_meas_2theta_range_max": twotheta_max,
+                "_pd_meas_2theta_range_inc": (twotheta_max - twotheta_min) / len(x_data)
             }
         }
 

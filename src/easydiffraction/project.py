@@ -9,7 +9,7 @@ from typing import List
 from easydiffraction.utils.utils import (
     render_cif,
     tof_to_d,
-    two_theta_to_d
+    twotheta_to_d
 )
 from easydiffraction.utils.formatting import (
     paragraph,
@@ -333,7 +333,7 @@ class Project:
                                  experiment.instrument.calib_d_to_tof_linear.value,
                                  experiment.instrument.calib_d_to_tof_quad.value)
         elif beam_mode == 'constant wavelength':
-            pattern.d = two_theta_to_d(pattern.x,
-                                       experiment.instrument.setup_wavelength.value)
+            pattern.d = twotheta_to_d(pattern.x,
+                                      experiment.instrument.setup_wavelength.value)
         else:
             print(error(f"Unsupported beam mode: {beam_mode} for d-spacing update."))

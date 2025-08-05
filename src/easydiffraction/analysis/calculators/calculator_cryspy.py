@@ -310,15 +310,15 @@ class CryspyCalculator(CalculatorBase):
                     cif_lines.append(f"{engine_key_name} {attr_value}")
 
         x_data = experiment.datastore.pattern.x
-        two_theta_min = float(x_data.min())
-        two_theta_max = float(x_data.max())
+        twotheta_min = float(x_data.min())
+        twotheta_max = float(x_data.max())
         cif_lines.append("")
         if expt_type.beam_mode.value == "constant wavelength":
-            cif_lines.append(f"_range_2theta_min {two_theta_min}")
-            cif_lines.append(f"_range_2theta_max {two_theta_max}")
+            cif_lines.append(f"_range_2theta_min {twotheta_min}")
+            cif_lines.append(f"_range_2theta_max {twotheta_max}")
         elif expt_type.beam_mode.value == "time-of-flight":
-            cif_lines.append(f"_range_time_min {two_theta_min}")
-            cif_lines.append(f"_range_time_max {two_theta_max}")
+            cif_lines.append(f"_range_time_min {twotheta_min}")
+            cif_lines.append(f"_range_time_max {twotheta_max}")
 
         cif_lines.append("")
         cif_lines.append("loop_")
@@ -331,15 +331,15 @@ class CryspyCalculator(CalculatorBase):
             cif_lines.append("loop_")
             cif_lines.append("_pd_background_2theta")
             cif_lines.append("_pd_background_intensity")
-            cif_lines.append(f"{two_theta_min} 0.0")
-            cif_lines.append(f"{two_theta_max} 0.0")
+            cif_lines.append(f"{twotheta_min} 0.0")
+            cif_lines.append(f"{twotheta_max} 0.0")
         elif expt_type.beam_mode.value == "time-of-flight":
             cif_lines.append("")
             cif_lines.append("loop_")
             cif_lines.append("_tof_backgroundpoint_time")
             cif_lines.append("_tof_backgroundpoint_intensity")
-            cif_lines.append(f"{two_theta_min} 0.0")
-            cif_lines.append(f"{two_theta_max} 0.0")
+            cif_lines.append(f"{twotheta_min} 0.0")
+            cif_lines.append(f"{twotheta_max} 0.0")
 
         if expt_type.beam_mode.value == "constant wavelength":
             cif_lines.append("")
