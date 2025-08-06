@@ -27,7 +27,7 @@ def test_start_tracking(mock_print, tracker):
     tracker.start_tracking("MockMinimizer")
 
     # Assertions
-    mock_print.assert_any_call("🚀 Starting fitting process with 'MockMinimizer'...")
+    mock_print.assert_any_call("🚀 Starting fit process with 'MockMinimizer'...")
     mock_print.assert_any_call("📈 Goodness-of-fit (reduced χ²) change:")
     assert mock_print.call_count > 2  # Ensure headers and borders are printed
 
