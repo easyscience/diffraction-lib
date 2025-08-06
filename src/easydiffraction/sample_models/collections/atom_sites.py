@@ -73,6 +73,7 @@ class AtomSite(Component):
         self.b_iso = Parameter(
             value=b_iso,
             name="b_iso",
+            units="Å²",
             cif_name="B_iso_or_equiv",
         )
         # Select which of the input parameters is used for the
