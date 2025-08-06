@@ -1,11 +1,12 @@
 import numpy as np
 from typing import Any, Dict, List, Union
-from .calculator_base import CalculatorBase
-from easydiffraction.utils.formatting import warning
+
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.sample_models.sample_models import SampleModel
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.experiments.experiments import Experiments
+
+from .calculator_base import CalculatorBase
 
 try:
     from pycrysfml import cfml_py_utilities
@@ -26,7 +27,11 @@ class CrysfmlCalculator(CalculatorBase):
     def name(self) -> str:
         return "crysfml"
 
-    def calculate_structure_factors(self, sample_models: SampleModels, experiments: Experiments) -> None:
+    def calculate_structure_factors(
+            self,
+            sample_models: SampleModels,
+            experiments: Experiments
+    ) -> None:
         """
         Call Crysfml to calculate structure factors.
 
@@ -62,7 +67,11 @@ class CrysfmlCalculator(CalculatorBase):
             y = []
         return y
 
-    def _adjust_pattern_length(self, pattern: List[float], target_length: int) -> List[float]:
+    def _adjust_pattern_length(
+            self,
+            pattern: List[float],
+            target_length: int
+    ) -> List[float]:
         """
         Adjusts the length of the pattern to match the target length.
 
@@ -78,7 +87,11 @@ class CrysfmlCalculator(CalculatorBase):
             return pattern[:target_length]
         return pattern
 
-    def _crysfml_dict(self, sample_model: SampleModels, experiment: Experiment) -> Dict[str, Union[Experiment, SampleModel]]:
+    def _crysfml_dict(
+            self,
+            sample_model: SampleModels,
+            experiment: Experiment
+    ) -> Dict[str, Union[Experiment, SampleModel]]:
         """
         Converts the sample model and experiment into a dictionary format for Crysfml.
 
@@ -96,7 +109,10 @@ class CrysfmlCalculator(CalculatorBase):
             "experiments": [experiment_dict]
         }
 
-    def _convert_sample_model_to_dict(self, sample_model: SampleModels) -> Dict[str, SampleModel]:
+    def _convert_sample_model_to_dict(
+            self,
+            sample_model: SampleModel
+    ) -> Dict[str, Any]:
         """
         Converts a sample model into a dictionary format.
 
@@ -134,7 +150,10 @@ class CrysfmlCalculator(CalculatorBase):
 
         return sample_model_dict
 
-    def _convert_experiment_to_dict(self, experiment: Experiment) -> Dict[str, Any]:
+    def _convert_experiment_to_dict(
+            self,
+            experiment: Experiment
+    ) -> Dict[str, Any]:
         """
         Converts an experiment into a dictionary format.
 
