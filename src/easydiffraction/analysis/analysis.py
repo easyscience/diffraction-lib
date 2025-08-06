@@ -207,8 +207,15 @@ class Analysis:
             print(warning(f"No parameters found."))
             return
 
-        columns_headers = ['Code variable', 'Unique ID for CIF']
-        columns_alignment = ["left", "left"]
+        columns_headers = ['datablock',
+                           'category',
+                           'entry',
+                           'parameter',
+                           'How to Access in Python Code',
+                           'Unique Identifier for CIF Constraints']
+
+        columns_alignment = ['left', 'left', 'left', 'left', 'left', 'left']
+
         columns_data = []
         project_varname = self.project._varname
         for datablock_type, params in params.items():
@@ -218,12 +225,17 @@ class Analysis:
                     category_key = param.category_key
                     entry_id = param.collection_entry_id
                     param_key = param.name
-                    variable = f"{project_varname}.{datablock_type}['{datablock_id}'].{category_key}"
+                    code_variable = f"{project_varname}.{datablock_type}['{datablock_id}'].{category_key}"
                     if entry_id:
-                        variable += f"['{entry_id}']"
-                    variable += f".{param_key}"
-                    uid = param._generate_human_readable_unique_id()
-                    columns_data.append([variable, uid])
+                        code_variable += f"['{entry_id}']"
+                    code_variable += f".{param_key}"
+                    cif_uid = param._generate_human_readable_unique_id()
+                    columns_data.append([datablock_id,
+                                         category_key,
+                                         entry_id,
+                                         param_key,
+                                         code_variable,
+                                         cif_uid])
 
         print(paragraph("How to access parameters"))
         render_table(columns_headers=columns_headers,
