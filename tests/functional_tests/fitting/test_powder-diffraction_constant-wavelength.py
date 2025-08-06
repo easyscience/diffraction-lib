@@ -24,7 +24,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
 
     # Set experiment
     data_file = 'hrpt_lbco.xye'
-    download_from_repository(data_file, branch='docs', destination=TEMP_DIR)
+    download_from_repository(data_file, branch='d-spacing', destination=TEMP_DIR)
     expt = Experiment('hrpt', data_path=os.path.join(TEMP_DIR, data_file))
     expt.instrument.setup_wavelength = 1.494
     expt.instrument.calib_twotheta_offset = 0
@@ -114,7 +114,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
 
     # Set experiment
     data_file = 'hrpt_lbco.xye'
-    download_from_repository(data_file, branch='docs', destination=TEMP_DIR)
+    download_from_repository(data_file, branch='d-spacing', destination=TEMP_DIR)
 
     expt = Experiment('hrpt', data_path=os.path.join(TEMP_DIR, data_file))
 
@@ -240,7 +240,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
 
     # Set experiment
     data_file = 'hrpt_hs.xye'
-    download_from_repository(data_file, branch='docs', destination=TEMP_DIR)
+    download_from_repository(data_file, branch='d-spacing', destination=TEMP_DIR)
     expt = Experiment('hrpt', data_path=os.path.join(TEMP_DIR, data_file))
     expt.instrument.setup_wavelength = 1.89
     expt.instrument.calib_twotheta_offset = 0.0

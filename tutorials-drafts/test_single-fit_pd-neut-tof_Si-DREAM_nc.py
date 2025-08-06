@@ -41,7 +41,7 @@ sample_model.atom_sites.add(label='Si',
 
 # %%
 #ed.download_from_repository('NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr',
-#                            branch='docs',
+#                            branch='d-spacing',
 #                            destination='data')
 
 # %%
