@@ -54,6 +54,7 @@ class Summary:
         space groups, cell parameters, and atom sites.
         """
         print(section("Crystallographic data"))
+
         for model in self.project.sample_models._models.values():
             print(paragraph("Phase datablock"))
             print(f'🧩 {model.name}')

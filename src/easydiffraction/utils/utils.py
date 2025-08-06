@@ -134,7 +134,9 @@ def render_table(columns_data,
                             'style="'
                             'border-collapse: collapse; '
                             'border: 1px solid #515155; '
-                            'margin-left: 0;'
+                            'margin-left: 0.5em;'
+                            'margin-top: 0.5em;'
+                            'margin-bottom: 1em;'
                             '">')
 
         # Manually apply text alignment to headers
