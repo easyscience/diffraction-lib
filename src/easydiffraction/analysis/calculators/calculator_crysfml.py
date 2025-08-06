@@ -9,8 +9,9 @@ from easydiffraction.experiments.experiments import Experiments
 
 try:
     from pycrysfml import cfml_py_utilities
+    print("✅ 'pycrysfml' calculation engine is successfully imported.")
 except ImportError:
-    print(warning('"pycrysfml" module not found. This calculator will not work.'))
+    print("⚠️ 'pycrysfml' module not found. This calculation engine will not be available.")
     cfml_py_utilities = None
 
 

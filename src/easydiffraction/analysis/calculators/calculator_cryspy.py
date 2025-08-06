@@ -13,8 +13,9 @@ try:
     import cryspy
     from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
     from cryspy.H_functions_global.function_1_cryspy_objects import str_to_globaln
+    print("✅ 'cryspy' calculation engine is successfully imported.")
 except ImportError:
-    print(warning("'cryspy' module not found. This calculator will not work."))
+    print("⚠️ 'cryspy' module not found. This calculation engine will not be available.")
     cryspy = None
 
 
