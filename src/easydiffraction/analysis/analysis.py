@@ -387,14 +387,19 @@ class Analysis:
 
         if self.fit_mode == 'joint':
             print(paragraph(f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"))
-            self.fitter.fit(sample_models, experiments, calculator, weights=self.joint_fit_experiments)
+            self.fitter.fit(sample_models,
+                            experiments,
+                            calculator,
+                            weights=self.joint_fit_experiments)
         elif self.fit_mode == 'single':
             for expt_name in experiments.ids:
                 print(paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"))
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name
                 dummy_experiments.add(experiment)
-                self.fitter.fit(sample_models, dummy_experiments, calculator)
+                self.fitter.fit(sample_models,
+                                dummy_experiments,
+                                calculator)
         else:
             raise NotImplementedError(f"Fit mode {self.fit_mode} not implemented yet.")
 
