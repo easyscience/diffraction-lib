@@ -12,7 +12,7 @@ class AtomSite(Component):
     """
     @property
     def category_key(self):
-        return "atom_site"
+        return "atom_sites"
 
     @property
     def cif_category_key(self):
