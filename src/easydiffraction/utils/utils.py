@@ -79,7 +79,8 @@ def is_pycharm() -> bool:
 def render_table(columns_data,
                  columns_alignment,
                  columns_headers=None,
-                 show_index=False):
+                 show_index=False,
+                 display_handle=None):
     """
     Renders a table either as an HTML (in Jupyter Notebook) or ASCII (in terminal),
     with aligned columns.
@@ -141,7 +142,11 @@ def render_table(columns_data,
             for col, align in zip(columns_headers, columns_alignment):
                 html = html.replace(f'<th>{col}', f'<th style="text-align: {align};">{col}')
 
-        display(HTML(html))
+        # Display or update the table in Jupyter Notebook
+        if display_handle is not None:
+            display_handle.update(HTML(html))
+        else:
+            display(HTML(html))
 
     # Use tabulate for terminal rendering
     else:

@@ -5,7 +5,8 @@ from typing import List, Optional
 try:
     from IPython.display import (
         display,
-        clear_output
+        HTML,
+        DisplayHandle
     )
 except ImportError:
     display = None
@@ -48,9 +49,11 @@ class FittingProgressTracker:
         self._best_chi2: Optional[float] = None
         self._best_iteration: Optional[int] = None
         self._fitting_time: Optional[float] = None
+
         self._headers: List[str] = ["iteration", "χ²", "improvement [%]"]
         self._alignments: List[str] = ["center", "center", "center"]
         self._df_rows: List[List[str]] = []
+        self._display_handle: Optional[DisplayHandle] = None
 
     def reset(self) -> None:
         self._iteration = 0
@@ -143,11 +146,24 @@ class FittingProgressTracker:
         self._fitting_time = self._end_time - self._start_time
 
     def start_tracking(self, minimizer_name: str) -> None:
-        print(f"🚀 Starting fitting process with '{minimizer_name}'...")
+        print(f"🚀 Starting fit process with '{minimizer_name}'...")
         print("📈 Goodness-of-fit (reduced χ²) change:")
 
         if is_notebook() and display is not None:
-            self._df_rows = []  # Reset notebook tracking
+            # Reset the DataFrame rows
+            self._df_rows = []
+
+            # Recreate display handle for updating the table
+            self._display_handle = DisplayHandle()
+
+            # Create placeholder for display
+            self._display_handle.display(HTML(""))
+
+            # Show empty table with headers
+            render_table(columns_data=self._df_rows,
+                         columns_alignment=self._alignments,
+                         columns_headers=self._headers,
+                         display_handle=self._display_handle)
         else:
             # Top border
             print("╒" + "╤".join(["═" * FIXED_WIDTH for _ in self._headers]) + "╕")
@@ -160,13 +176,15 @@ class FittingProgressTracker:
             print("╞" + "╪".join(["═" * FIXED_WIDTH for _ in self._headers]) + "╡")
 
     def add_tracking_info(self, row: List[str]) -> None:
-        if is_notebook() and display is not None and clear_output is not None:
-            # Add row to DataFrame, clear previous output, and show updated table
+        if is_notebook() and display is not None:
+            # Add row to DataFrame
             self._df_rows.append(row)
-            clear_output(wait=True)
+
+            # Show fully updated table
             render_table(columns_data=self._df_rows,
                          columns_alignment=self._alignments,
-                         columns_headers=self._headers)
+                         columns_headers=self._headers,
+                         display_handle=self._display_handle)
         else:
             # Alignments for each column
             formatted_row = "│" + "│".join([
@@ -174,6 +192,7 @@ class FittingProgressTracker:
                 for i, cell in enumerate(row)
             ]) + "│"
 
+            # Print the new row
             print(formatted_row)
 
     def finish_tracking(self) -> None:
@@ -185,7 +204,8 @@ class FittingProgressTracker:
         ]
         self.add_tracking_info(row)
 
-        if not is_notebook():
+        # Bottom border for terminal only
+        if not is_notebook() or display is None:
             # Bottom border for terminal only
             print("╘" + "╧".join(["═" * FIXED_WIDTH for _ in range(len(row))]) + "╛")
 
