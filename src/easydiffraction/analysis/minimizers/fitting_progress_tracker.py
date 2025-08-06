@@ -20,6 +20,8 @@ from easydiffraction.analysis.reliability_factors import calculate_reduced_chi_s
 
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
 FIXED_WIDTH = 17
+DEFAULT_HEADERS = ["iteration", "χ²", "improvement [%]"]
+DEFAULT_ALIGNMENTS = ["center", "center", "center"]
 
 
 def format_cell(cell: str,
@@ -50,8 +52,6 @@ class FittingProgressTracker:
         self._best_iteration: Optional[int] = None
         self._fitting_time: Optional[float] = None
 
-        self._headers: List[str] = ["iteration", "χ²", "improvement [%]"]
-        self._alignments: List[str] = ["center", "center", "center"]
         self._df_rows: List[List[str]] = []
         self._display_handle: Optional[DisplayHandle] = None
 
@@ -161,19 +161,19 @@ class FittingProgressTracker:
 
             # Show empty table with headers
             render_table(columns_data=self._df_rows,
-                         columns_alignment=self._alignments,
-                         columns_headers=self._headers,
+                         columns_alignment=DEFAULT_ALIGNMENTS,
+                         columns_headers=DEFAULT_HEADERS,
                          display_handle=self._display_handle)
         else:
             # Top border
-            print("╒" + "╤".join(["═" * FIXED_WIDTH for _ in self._headers]) + "╕")
+            print("╒" + "╤".join(["═" * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + "╕")
 
             # Header row (all centered)
-            header_row = "│" + "│".join([format_cell(h, align="center") for h in self._headers]) + "│"
+            header_row = "│" + "│".join([format_cell(h, align="center") for h in DEFAULT_HEADERS]) + "│"
             print(header_row)
 
             # Separator
-            print("╞" + "╪".join(["═" * FIXED_WIDTH for _ in self._headers]) + "╡")
+            print("╞" + "╪".join(["═" * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + "╡")
 
     def add_tracking_info(self, row: List[str]) -> None:
         if is_notebook() and display is not None:
@@ -182,13 +182,13 @@ class FittingProgressTracker:
 
             # Show fully updated table
             render_table(columns_data=self._df_rows,
-                         columns_alignment=self._alignments,
-                         columns_headers=self._headers,
+                         columns_alignment=DEFAULT_ALIGNMENTS,
+                         columns_headers=DEFAULT_HEADERS,
                          display_handle=self._display_handle)
         else:
             # Alignments for each column
             formatted_row = "│" + "│".join([
-                format_cell(cell, align=self._alignments[i])
+                format_cell(cell, align=DEFAULT_ALIGNMENTS[i])
                 for i, cell in enumerate(row)
             ]) + "│"
 
