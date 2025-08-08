@@ -68,4 +68,4 @@ jobs:
           export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
           jupytext tutorials/*.py --from py:percent --to ipynb
           nbstripout tutorials/*.ipynb
-          python -m pytest --nbmake tutorials/ --nbmake-timeout=300 --color=yes -n=auto
+          python -m pytest --nbmake tutorials/ --nbmake-timeout=300 --color=yes -n auto

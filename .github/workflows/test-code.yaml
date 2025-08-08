@@ -16,7 +16,7 @@
 #    - Test the code base
 #    - Check if Jupyter Notebooks run without errors
 
-name: Test code
+name: Test code, notebooks and package
 
 on:
   # Trigger the workflow on push
@@ -70,10 +70,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install Python dependencies
-        # Install 'validate-pyproject' for checking pyproject.toml
-        # Install 'ruff' for code linting and formatting
-        # Install 'nbqa' for quality assurance of Jupyter notebooks
-        run: pip install '.[dev]'
+        run: python -m pip install .'[dev,docs,visualization]'
 
       - name: Install npm dependencies
         # Install 'prettier' for code formatting of Markdown, YAML, etc. files
@@ -217,9 +214,9 @@ jobs:
 
       - name: Check if Jupyter Notebooks run without errors
         shell: bash
-        run: >
-          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/
-          --nbmake-timeout=300 --color=yes -n auto
+        run: |
+          export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
+          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/ --nbmake-timeout=300 --color=yes -n auto
 
       - name: Create Python package
         run: python -m build --wheel --outdir dist
@@ -293,6 +290,6 @@ jobs:
 
       - name: Check if Jupyter Notebooks run without errors
         shell: bash
-        run: >
-          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/
-          --nbmake-timeout=300 --color=yes -n auto
+        run: |
+          export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
+          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/ --nbmake-timeout=300 --color=yes -n auto
