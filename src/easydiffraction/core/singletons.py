@@ -9,6 +9,7 @@ from asteval import Interpreter
 
 T = TypeVar('T', bound='BaseSingleton')
 
+
 class BaseSingleton:
     """Base class to implement Singleton pattern.
 

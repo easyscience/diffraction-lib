@@ -37,9 +37,11 @@ class DiffractionCalculator:
         """
         self._calculator = self.calculator_factory.create_calculator(engine)
 
-    def calculate_structure_factors(self,
-                                    sample_models: SampleModels,
-                                    experiments: Experiments) -> Optional[List[Any]]:
+    def calculate_structure_factors(
+        self,
+        sample_models: SampleModels,
+        experiments: Experiments,
+    ) -> Optional[List[Any]]:
         """
         Calculate HKL intensities (structure factors) for sample models and experiments.
 
@@ -52,9 +54,11 @@ class DiffractionCalculator:
         """
         return self._calculator.calculate_structure_factors(sample_models, experiments)
 
-    def calculate_pattern(self,
-                          sample_models: SampleModels,
-                          experiment: Experiment) -> np.ndarray:
+    def calculate_pattern(
+        self,
+        sample_models: SampleModels,
+        experiment: Experiment,
+    ) -> np.ndarray:
         """
         Calculate diffraction pattern based on sample models and experiment.
 

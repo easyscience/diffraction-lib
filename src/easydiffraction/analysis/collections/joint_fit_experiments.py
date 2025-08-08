@@ -8,26 +8,24 @@ from easydiffraction.core.objects import Descriptor
 class JointFitExperiment(Component):
     @property
     def category_key(self) -> str:
-        return "joint_fit_experiment"
+        return 'joint_fit_experiment'
 
     @property
     def cif_category_key(self) -> str:
-        return "joint_fit_experiment"
+        return 'joint_fit_experiment'
 
-    def __init__(self,
-                 id: str,
-                 weight: float) -> None:
+    def __init__(self, id: str, weight: float) -> None:
         super().__init__()
 
         self.id: Descriptor = Descriptor(
             value=id,
-            name="id",
-            cif_name="id"
+            name='id',
+            cif_name='id',
         )
         self.weight: Descriptor = Descriptor(
             value=weight,
-            name="weight",
-            cif_name="weight"
+            name='weight',
+            cif_name='weight',
         )
 
         # Select which of the input parameters is used for the
@@ -44,9 +42,10 @@ class JointFitExperiments(Collection):
     Collection manager for experiments that are fitted together
     in a `joint` fit.
     """
+
     @property
     def _type(self) -> str:
-        return "category"  # datablock or category
+        return 'category'  # datablock or category
 
     @property
     def _child_class(self) -> Type[JointFitExperiment]:

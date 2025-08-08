@@ -25,17 +25,17 @@ from easydiffraction.utils.utils import get_value_from_xye_header
 
 # Expose the public API
 __all__ = [
-    "Project",
-    "ProjectInfo",
-    "SampleModel",
-    "SampleModels",
-    "Experiment",
-    "Experiments",
-    "Analysis",
-    "Summary",
-    "chapter",
-    "section",
-    "paragraph",
-    "download_from_repository",
-    "get_value_from_xye_header"
+    'Project',
+    'ProjectInfo',
+    'SampleModel',
+    'SampleModels',
+    'Experiment',
+    'Experiments',
+    'Analysis',
+    'Summary',
+    'chapter',
+    'section',
+    'paragraph',
+    'download_from_repository',
+    'get_value_from_xye_header',
 ]

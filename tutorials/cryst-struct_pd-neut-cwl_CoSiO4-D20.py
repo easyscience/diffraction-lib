@@ -229,11 +229,11 @@ for point in expt.background:
 # %%
 project.analysis.aliases.add(
     label='biso_Co1',
-    param_uid=project.sample_models['cosio'].atom_sites['Co1'].b_iso.uid
+    param_uid=project.sample_models['cosio'].atom_sites['Co1'].b_iso.uid,
 )
 project.analysis.aliases.add(
     label='biso_Co2',
-    param_uid=project.sample_models['cosio'].atom_sites['Co2'].b_iso.uid
+    param_uid=project.sample_models['cosio'].atom_sites['Co2'].b_iso.uid,
 )
 
 # %% [markdown]
@@ -242,7 +242,7 @@ project.analysis.aliases.add(
 # %%
 project.analysis.constraints.add(
     lhs_alias='biso_Co2',
-    rhs_expr='biso_Co1'
+    rhs_expr='biso_Co1',
 )
 
 # %% [markdown]

@@ -28,9 +28,9 @@ class CalculatorBase(ABC):
 
     @abstractmethod
     def calculate_structure_factors(
-            self,
-            sample_model: SampleModel,
-            experiment: Experiment
+        self,
+        sample_model: SampleModel,
+        experiment: Experiment,
     ) -> None:
         """
         Calculate structure factors for a single sample model and experiment.
@@ -38,10 +38,10 @@ class CalculatorBase(ABC):
         pass
 
     def calculate_pattern(
-            self,
-            sample_models: SampleModels,
-            experiment: Experiment,
-            called_by_minimizer: bool = False
+        self,
+        sample_models: SampleModels,
+        experiment: Experiment,
+        called_by_minimizer: bool = False,
     ) -> np.ndarray:
         """
         Calculate the diffraction pattern for multiple sample models and a single experiment.
@@ -76,7 +76,7 @@ class CalculatorBase(ABC):
             sample_model_y_calc = self._calculate_single_model_pattern(
                 sample_model,
                 experiment,
-                called_by_minimizer=called_by_minimizer
+                called_by_minimizer=called_by_minimizer,
             )
 
             sample_model_y_calc_scaled = sample_model_scale * sample_model_y_calc
@@ -96,10 +96,10 @@ class CalculatorBase(ABC):
 
     @abstractmethod
     def _calculate_single_model_pattern(
-            self,
-            sample_model: SampleModels,
-            experiment: Experiment,
-            called_by_minimizer: bool
+        self,
+        sample_model: SampleModels,
+        experiment: Experiment,
+        called_by_minimizer: bool,
     ) -> np.ndarray:
         """
         Calculate the diffraction pattern for a single sample model and experiment.
@@ -115,9 +115,9 @@ class CalculatorBase(ABC):
         pass
 
     def _get_valid_linked_phases(
-            self,
-            sample_models: SampleModels,
-            experiment: Experiment
+        self,
+        sample_models: SampleModels,
+        experiment: Experiment,
     ) -> List[Any]:
         """
         Get valid linked phases from the experiment.

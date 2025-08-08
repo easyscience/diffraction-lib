@@ -27,7 +27,7 @@
 import builtins
 import importlib.util
 
-if hasattr(builtins, "__IPYTHON__"):
+if hasattr(builtins, '__IPYTHON__'):
     if importlib.util.find_spec('easydiffraction') is None:
         print('Installing the easydiffraction library...')
         # !pip install git+https://github.com/easyscience/diffraction-lib@d-spacing
@@ -58,7 +58,7 @@ import easydiffraction as ed
 # other things.
 
 # %%
-project_1 = ed.Project(name="reference")
+project_1 = ed.Project(name='reference')
 
 # %% [markdown]
 #
@@ -68,8 +68,8 @@ project_1 = ed.Project(name="reference")
 # understand the purpose of the project at a glance.
 
 # %%
-project_1.info.title = "Reference Silicon Fit"
-project_1.info.description = "Fitting simulated powder diffraction pattern of Si."
+project_1.info.title = 'Reference Silicon Fit'
+project_1.info.description = 'Fitting simulated powder diffraction pattern of Si.'
 
 # %% [markdown]
 # ### 🔬 Create an Experiment
@@ -86,18 +86,17 @@ project_1.info.description = "Fitting simulated powder diffraction pattern of Si
 # %%
 # To load the measured data from the EasyDiffraction repository, as
 # Google Colab does not have the data files needed for this tutorial.
-ed.download_from_repository('reduced_Si.xye',
-                            destination='data')
+ed.download_from_repository('reduced_Si.xye', destination='data')
 
 # %%
-si_xye_path = "data/reduced_Si.xye"
+si_xye_path = 'data/reduced_Si.xye'
 
 # %%
 project_1.experiments.add(
-    name="sim_si",
-    sample_form="powder",
-    beam_mode="time-of-flight",
-    radiation_probe="neutron",
+    name='sim_si',
+    sample_form='powder',
+    beam_mode='time-of-flight',
+    radiation_probe='neutron',
     data_path=si_xye_path,
 )
 
@@ -119,10 +118,10 @@ project_1.experiments.add(
 # interactive visualizations.
 
 # %%
-project_1.plotter.engine = "plotly"
+project_1.plotter.engine = 'plotly'
 
 # %%
-project_1.plot_meas(expt_name="sim_si")
+project_1.plot_meas(expt_name='sim_si')
 
 # %% [markdown]
 # If you zoom in on the highest TOF peak (around 120,000 μs), you will notice
@@ -134,8 +133,8 @@ project_1.plot_meas(expt_name="sim_si")
 # analysis by adding an excluded regions to the experiment.
 
 # %%
-project_1.experiments["sim_si"].excluded_regions.add(minimum=0, maximum=55000)
-project_1.experiments["sim_si"].excluded_regions.add(minimum=105500, maximum=200000)
+project_1.experiments['sim_si'].excluded_regions.add(minimum=0, maximum=55000)
+project_1.experiments['sim_si'].excluded_regions.add(minimum=105500, maximum=200000)
 
 # %% [markdown]
 # To visualize the effect of excluding the high TOF region, we can plot
@@ -143,7 +142,7 @@ project_1.experiments["sim_si"].excluded_regions.add(minimum=105500, maximum=200
 # and is not used in the fitting process.
 
 # %%
-project_1.plot_meas(expt_name="sim_si")
+project_1.plot_meas(expt_name='sim_si')
 
 # %% [markdown]
 # #### Set Instrument Parameters
@@ -163,12 +162,8 @@ project_1.plot_meas(expt_name="sim_si")
 # `get_value_from_xye_header` function from the EasyDiffraction library.
 
 # %%
-project_1.experiments["sim_si"].instrument.setup_twotheta_bank = ed.get_value_from_xye_header(
-    si_xye_path, "two_theta"
-)
-project_1.experiments["sim_si"].instrument.calib_d_to_tof_linear = ed.get_value_from_xye_header(
-    si_xye_path, "DIFC"
-)
+project_1.experiments['sim_si'].instrument.setup_twotheta_bank = ed.get_value_from_xye_header(si_xye_path, 'two_theta')
+project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear = ed.get_value_from_xye_header(si_xye_path, 'DIFC')
 
 # %% [markdown]
 # Every parameters is an object, which has different attributes, such as
@@ -178,7 +173,7 @@ project_1.experiments["sim_si"].instrument.calib_d_to_tof_linear = ed.get_value_
 # you can use the following code:
 
 # %%
-print(project_1.experiments["sim_si"].instrument.calib_d_to_tof_linear)
+print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear)
 
 # %% [markdown]
 # The `value` attribute represents the current value of the parameter as a float.
@@ -189,7 +184,7 @@ print(project_1.experiments["sim_si"].instrument.calib_d_to_tof_linear)
 # you can do the following:
 
 # %%
-print(project_1.experiments["sim_si"].instrument.calib_d_to_tof_linear.value)
+print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value)
 
 # %% [markdown]
 # Note that to set the value of the parameter, you can simply assign a new value
@@ -214,14 +209,14 @@ print(project_1.experiments["sim_si"].instrument.calib_d_to_tof_linear.value)
 # more complex fit in the next part of the tutorial.
 
 # %%
-project_1.experiments["sim_si"].peak_profile_type = "pseudo-voigt * ikeda-carpenter"
-project_1.experiments["sim_si"].peak.broad_gauss_sigma_0 = 69498
-project_1.experiments["sim_si"].peak.broad_gauss_sigma_1 = -55578
-project_1.experiments["sim_si"].peak.broad_gauss_sigma_2 = 14560
-project_1.experiments["sim_si"].peak.broad_mix_beta_0 = 0.0019
-project_1.experiments["sim_si"].peak.broad_mix_beta_1 = 0.0137
-project_1.experiments["sim_si"].peak.asym_alpha_0 = -0.0055
-project_1.experiments["sim_si"].peak.asym_alpha_1 = 0.0147
+project_1.experiments['sim_si'].peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+project_1.experiments['sim_si'].peak.broad_gauss_sigma_0 = 69498
+project_1.experiments['sim_si'].peak.broad_gauss_sigma_1 = -55578
+project_1.experiments['sim_si'].peak.broad_gauss_sigma_2 = 14560
+project_1.experiments['sim_si'].peak.broad_mix_beta_0 = 0.0019
+project_1.experiments['sim_si'].peak.broad_mix_beta_1 = 0.0137
+project_1.experiments['sim_si'].peak.asym_alpha_0 = -0.0055
+project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0147
 
 # %% [markdown]
 # #### Set Background
@@ -252,14 +247,14 @@ project_1.experiments["sim_si"].peak.asym_alpha_1 = 0.0147
 # process.
 
 # %%
-project_1.experiments["sim_si"].background_type = "line-segment"
-project_1.experiments["sim_si"].background.add(x=50000, y=0.01)
-project_1.experiments["sim_si"].background.add(x=60000, y=0.01)
-project_1.experiments["sim_si"].background.add(x=70000, y=0.01)
-project_1.experiments["sim_si"].background.add(x=80000, y=0.01)
-project_1.experiments["sim_si"].background.add(x=90000, y=0.01)
-project_1.experiments["sim_si"].background.add(x=100000, y=0.01)
-project_1.experiments["sim_si"].background.add(x=110000, y=0.01)
+project_1.experiments['sim_si'].background_type = 'line-segment'
+project_1.experiments['sim_si'].background.add(x=50000, y=0.01)
+project_1.experiments['sim_si'].background.add(x=60000, y=0.01)
+project_1.experiments['sim_si'].background.add(x=70000, y=0.01)
+project_1.experiments['sim_si'].background.add(x=80000, y=0.01)
+project_1.experiments['sim_si'].background.add(x=90000, y=0.01)
+project_1.experiments['sim_si'].background.add(x=100000, y=0.01)
+project_1.experiments['sim_si'].background.add(x=110000, y=0.01)
 
 # %% [markdown]
 # ### 🧩 Create a Sample Model – Si
@@ -334,32 +329,32 @@ project_1.experiments["sim_si"].background.add(x=110000, y=0.01)
 # #### Add Sample Model
 
 # %%
-project_1.sample_models.add(name="si")
+project_1.sample_models.add(name='si')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-project_1.sample_models["si"].space_group.name_h_m = "F d -3 m"
-project_1.sample_models["si"].space_group.it_coordinate_system_code = "2"
+project_1.sample_models['si'].space_group.name_h_m = 'F d -3 m'
+project_1.sample_models['si'].space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
 # #### Set Lattice Parameters
 
 # %%
-project_1.sample_models["si"].cell.length_a = 5.43
+project_1.sample_models['si'].cell.length_a = 5.43
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-project_1.sample_models["si"].atom_sites.add(
-    label="Si",
-    type_symbol="Si",
+project_1.sample_models['si'].atom_sites.add(
+    label='Si',
+    type_symbol='Si',
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter="a",
+    wyckoff_letter='a',
     b_iso=0.89,
 )
 
@@ -371,7 +366,7 @@ project_1.sample_models["si"].atom_sites.add(
 # pattern based on the crystal structure defined in the sample model.
 
 # %%
-project_1.experiments["sim_si"].linked_phases.add(id="si", scale=1.0)
+project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
 
 # %% [markdown]
 # ### 🚀 Analyze and Fit the Data
@@ -400,18 +395,18 @@ project_1.experiments["sim_si"].linked_phases.add(id="si", scale=1.0)
 # considered a reference sample with known parameters.
 
 # %%
-project_1.experiments["sim_si"].linked_phases["si"].scale.free = True
+project_1.experiments['sim_si'].linked_phases['si'].scale.free = True
 
-for line_segment in project_1.experiments["sim_si"].background:
+for line_segment in project_1.experiments['sim_si'].background:
     line_segment.y.free = True
 
-project_1.experiments["sim_si"].peak.broad_gauss_sigma_0.free = True
-project_1.experiments["sim_si"].peak.broad_gauss_sigma_1.free = True
-project_1.experiments["sim_si"].peak.broad_gauss_sigma_2.free = True
-project_1.experiments["sim_si"].peak.broad_mix_beta_0.free = True
-project_1.experiments["sim_si"].peak.broad_mix_beta_1.free = True
-project_1.experiments["sim_si"].peak.asym_alpha_0.free = True
-project_1.experiments["sim_si"].peak.asym_alpha_1.free = True
+project_1.experiments['sim_si'].peak.broad_gauss_sigma_0.free = True
+project_1.experiments['sim_si'].peak.broad_gauss_sigma_1.free = True
+project_1.experiments['sim_si'].peak.broad_gauss_sigma_2.free = True
+project_1.experiments['sim_si'].peak.broad_mix_beta_0.free = True
+project_1.experiments['sim_si'].peak.broad_mix_beta_1.free = True
+project_1.experiments['sim_si'].peak.asym_alpha_0.free = True
+project_1.experiments['sim_si'].peak.asym_alpha_1.free = True
 
 # %% [markdown]
 # #### Show Free Parameters
@@ -433,7 +428,7 @@ project_1.analysis.show_free_params()
 # allows this comparison.
 
 # %%
-project_1.plot_meas_vs_calc(expt_name="sim_si")
+project_1.plot_meas_vs_calc(expt_name='sim_si')
 
 # %% [markdown]
 # #### Run Fitting
@@ -466,7 +461,7 @@ project_1.analysis.fit()
 # is now based on the refined parameters.
 
 # %%
-project_1.plot_meas_vs_calc(expt_name="sim_si")
+project_1.plot_meas_vs_calc(expt_name='sim_si')
 
 # %% [markdown]
 # #### TOF vs d-spacing
@@ -482,7 +477,7 @@ project_1.plot_meas_vs_calc(expt_name="sim_si")
 # by setting the `d_spacing` parameter to `True`.
 
 # %%
-project_1.plot_meas_vs_calc(expt_name="sim_si", d_spacing=True)
+project_1.plot_meas_vs_calc(expt_name='sim_si', d_spacing=True)
 
 # %% [markdown]
 # As you can see, the calculated diffraction pattern now matches the measured
@@ -514,11 +509,9 @@ project_1.plot_meas_vs_calc(expt_name="sim_si", d_spacing=True)
 # **Solution:**
 
 # %%
-project_2 = ed.Project(name="main")
-project_2.info.title = "La0.5Ba0.5CoO3 Fit"
-project_2.info.description = (
-    "Fitting simulated powder diffraction pattern of La0.5Ba0.5CoO3."
-)
+project_2 = ed.Project(name='main')
+project_2.info.title = 'La0.5Ba0.5CoO3 Fit'
+project_2.info.description = 'Fitting simulated powder diffraction pattern of La0.5Ba0.5CoO3.'
 
 # %% [markdown]
 # ### 🔬 Exercise 2: Define an Experiment
@@ -536,18 +529,17 @@ project_2.info.description = (
 # %%
 # To load the measured data from the EasyDiffraction repository, as
 # Google Colab does not have the data files needed for this tutorial.
-ed.download_from_repository('reduced_LBCO.xye',
-                            destination='data')
+ed.download_from_repository('reduced_LBCO.xye', destination='data')
 
 # %%
-lbco_xye_path = "data/reduced_LBCO.xye"
+lbco_xye_path = 'data/reduced_LBCO.xye'
 
 # %%
 project_2.experiments.add(
-    name="sim_lbco",
-    sample_form="powder",
-    beam_mode="time-of-flight",
-    radiation_probe="neutron",
+    name='sim_lbco',
+    sample_form='powder',
+    beam_mode='time-of-flight',
+    radiation_probe='neutron',
     data_path=lbco_xye_path,
 )
 
@@ -566,15 +558,15 @@ project_2.experiments.add(
 # **Solution:**
 
 # %%
-project_2.plotter.engine = "plotly"
-project_2.plot_meas(expt_name="sim_lbco")
+project_2.plotter.engine = 'plotly'
+project_2.plot_meas(expt_name='sim_lbco')
 
 # %%
-project_2.experiments["sim_lbco"].excluded_regions.add(minimum=0, maximum=55000)
-project_2.experiments["sim_lbco"].excluded_regions.add(minimum=105500, maximum=200000)
+project_2.experiments['sim_lbco'].excluded_regions.add(minimum=0, maximum=55000)
+project_2.experiments['sim_lbco'].excluded_regions.add(minimum=105500, maximum=200000)
 
 # %%
-project_2.plot_meas(expt_name="sim_lbco")
+project_2.plot_meas(expt_name='sim_lbco')
 
 # %% [markdown]
 # #### Exercise 2.2: Set Instrument Parameters
@@ -587,12 +579,8 @@ project_2.plot_meas(expt_name="sim_lbco")
 # **Solution:**
 
 # %%
-project_2.experiments["sim_lbco"].instrument.setup_twotheta_bank = ed.get_value_from_xye_header(
-    lbco_xye_path, "two_theta"
-)
-project_2.experiments["sim_lbco"].instrument.calib_d_to_tof_linear = ed.get_value_from_xye_header(
-    lbco_xye_path, "DIFC"
-)
+project_2.experiments['sim_lbco'].instrument.setup_twotheta_bank = ed.get_value_from_xye_header(lbco_xye_path, 'two_theta')
+project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.get_value_from_xye_header(lbco_xye_path, 'DIFC')
 
 # %% [markdown]
 # #### Exercise 2.3: Set Peak Profile Parameters
@@ -607,14 +595,14 @@ project_2.experiments["sim_lbco"].instrument.calib_d_to_tof_linear = ed.get_valu
 # **Solution:**
 
 # %%
-project_2.peak_profile_type = "pseudo-voigt * ikeda-carpenter"
-project_2.experiments["sim_lbco"].peak.broad_gauss_sigma_0 = project_1.experiments["sim_si"].peak.broad_gauss_sigma_0.value
-project_2.experiments["sim_lbco"].peak.broad_gauss_sigma_1 = project_1.experiments["sim_si"].peak.broad_gauss_sigma_1.value
-project_2.experiments["sim_lbco"].peak.broad_gauss_sigma_2 = project_1.experiments["sim_si"].peak.broad_gauss_sigma_2.value
-project_2.experiments["sim_lbco"].peak.broad_mix_beta_0 = project_1.experiments["sim_si"].peak.broad_mix_beta_0.value
-project_2.experiments["sim_lbco"].peak.broad_mix_beta_1 = project_1.experiments["sim_si"].peak.broad_mix_beta_1.value
-project_2.experiments["sim_lbco"].peak.asym_alpha_0 = project_1.experiments["sim_si"].peak.asym_alpha_0.value
-project_2.experiments["sim_lbco"].peak.asym_alpha_1 = project_1.experiments["sim_si"].peak.asym_alpha_1.value
+project_2.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0 = project_1.experiments['sim_si'].peak.broad_gauss_sigma_0.value
+project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1 = project_1.experiments['sim_si'].peak.broad_gauss_sigma_1.value
+project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2 = project_1.experiments['sim_si'].peak.broad_gauss_sigma_2.value
+project_2.experiments['sim_lbco'].peak.broad_mix_beta_0 = project_1.experiments['sim_si'].peak.broad_mix_beta_0.value
+project_2.experiments['sim_lbco'].peak.broad_mix_beta_1 = project_1.experiments['sim_si'].peak.broad_mix_beta_1.value
+project_2.experiments['sim_lbco'].peak.asym_alpha_0 = project_1.experiments['sim_si'].peak.asym_alpha_0.value
+project_2.experiments['sim_lbco'].peak.asym_alpha_1 = project_1.experiments['sim_si'].peak.asym_alpha_1.value
 
 # %% [markdown]
 # #### Exercise 2.4: Set Background
@@ -630,14 +618,14 @@ project_2.experiments["sim_lbco"].peak.asym_alpha_1 = project_1.experiments["sim
 # **Solution:**
 
 # %%
-project_2.experiments["sim_lbco"].background_type = "line-segment"
-project_2.experiments["sim_lbco"].background.add(x=50000, y=0.2)
-project_2.experiments["sim_lbco"].background.add(x=60000, y=0.2)
-project_2.experiments["sim_lbco"].background.add(x=70000, y=0.2)
-project_2.experiments["sim_lbco"].background.add(x=80000, y=0.2)
-project_2.experiments["sim_lbco"].background.add(x=90000, y=0.2)
-project_2.experiments["sim_lbco"].background.add(x=100000, y=0.2)
-project_2.experiments["sim_lbco"].background.add(x=110000, y=0.2)
+project_2.experiments['sim_lbco'].background_type = 'line-segment'
+project_2.experiments['sim_lbco'].background.add(x=50000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(x=60000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(x=70000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(x=80000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(x=90000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(x=100000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(x=110000, y=0.2)
 
 # %% [markdown]
 # ### 🧩 Exercise 3: Define a Sample Model – LBCO
@@ -691,7 +679,7 @@ project_2.experiments["sim_lbco"].background.add(x=110000, y=0.2)
 # **Solution:**
 
 # %%
-project_2.sample_models.add(name="lbco")
+project_2.sample_models.add(name='lbco')
 
 # %% [markdown]
 # #### Exercise 3.2: Set Space Group
@@ -703,8 +691,8 @@ project_2.sample_models.add(name="lbco")
 # **Solution:**
 
 # %%
-project_2.sample_models["lbco"].space_group.name_h_m = "P m -3 m"
-project_2.sample_models["lbco"].space_group.it_coordinate_system_code = "1"
+project_2.sample_models['lbco'].space_group.name_h_m = 'P m -3 m'
+project_2.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
 # #### Exercise 3.3: Set Lattice Parameters
@@ -716,7 +704,7 @@ project_2.sample_models["lbco"].space_group.it_coordinate_system_code = "1"
 # **Solution:**
 
 # %%
-project_2.sample_models["lbco"].cell.length_a = 3.88
+project_2.sample_models['lbco'].cell.length_a = 3.88
 
 # %% [markdown]
 # #### Exercise 3.4: Set Atom Sites
@@ -730,42 +718,42 @@ project_2.sample_models["lbco"].cell.length_a = 3.88
 # an extra attribute `occupancy` needs to be set for those atoms.
 
 # %%
-project_2.sample_models["lbco"].atom_sites.add(
-    label="La",
-    type_symbol="La",
+project_2.sample_models['lbco'].atom_sites.add(
+    label='La',
+    type_symbol='La',
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter="a",
+    wyckoff_letter='a',
     b_iso=0.95,
     occupancy=0.5,
 )
-project_2.sample_models["lbco"].atom_sites.add(
-    label="Ba",
-    type_symbol="Ba",
+project_2.sample_models['lbco'].atom_sites.add(
+    label='Ba',
+    type_symbol='Ba',
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter="a",
+    wyckoff_letter='a',
     b_iso=0.95,
     occupancy=0.5,
 )
-project_2.sample_models["lbco"].atom_sites.add(
-    label="Co",
-    type_symbol="Co",
+project_2.sample_models['lbco'].atom_sites.add(
+    label='Co',
+    type_symbol='Co',
     fract_x=0.5,
     fract_y=0.5,
     fract_z=0.5,
-    wyckoff_letter="b",
+    wyckoff_letter='b',
     b_iso=0.80,
 )
-project_2.sample_models["lbco"].atom_sites.add(
-    label="O",
-    type_symbol="O",
+project_2.sample_models['lbco'].atom_sites.add(
+    label='O',
+    type_symbol='O',
     fract_x=0,
     fract_y=0.5,
     fract_z=0.5,
-    wyckoff_letter="c",
+    wyckoff_letter='c',
     b_iso=1.66,
 )
 
@@ -779,7 +767,7 @@ project_2.sample_models["lbco"].atom_sites.add(
 # **Solution:**
 
 # %%
-project_2.experiments["sim_lbco"].linked_phases.add(id="lbco", scale=1.0)
+project_2.experiments['sim_lbco'].linked_phases.add(id='lbco', scale=1.0)
 
 # %% [markdown]
 # ### 🚀 Exercise 5: Analyze and Fit the Data
@@ -796,9 +784,9 @@ project_2.experiments["sim_lbco"].linked_phases.add(id="lbco", scale=1.0)
 # **Solution:**
 
 # %%
-project_2.experiments["sim_lbco"].linked_phases["lbco"].scale.free = True
+project_2.experiments['sim_lbco'].linked_phases['lbco'].scale.free = True
 
-for line_segment in project_2.experiments["sim_lbco"].background:
+for line_segment in project_2.experiments['sim_lbco'].background:
     line_segment.y.free = True
 
 # %% [markdown]
@@ -815,7 +803,7 @@ for line_segment in project_2.experiments["sim_lbco"].background:
 # **Solution:**
 
 # %%
-project_2.plot_meas_vs_calc(expt_name="sim_lbco")
+project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %%
 project_2.analysis.fit()
@@ -844,7 +832,7 @@ project_2.analysis.fit()
 # 4. ❌ The background points affect the background level, but not the peak positions.
 
 # %%
-project_2.plot_meas_vs_calc(expt_name="sim_lbco")
+project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %% [markdown]
 # #### Exercise 5.4: Refine the LBCO Lattice Parameter
@@ -857,13 +845,13 @@ project_2.plot_meas_vs_calc(expt_name="sim_lbco")
 # **Solution**:
 
 # %%
-project_2.sample_models["lbco"].cell.length_a.free = True
+project_2.sample_models['lbco'].cell.length_a.free = True
 
 # %%
 project_2.analysis.fit()
 
 # %%
-project_2.plot_meas_vs_calc(expt_name="sim_lbco")
+project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %% [markdown]
 # One of the main goals of this study was to refine the lattice parameter of the LBCO phase. As shown in the updated fit results, the overall fit has improved significantly, even though the change in cell length is less than 1% of the initial value. This demonstrates how even a small adjustment to the lattice parameter can have a substantial impact on the quality of the fit.
@@ -879,7 +867,7 @@ project_2.plot_meas_vs_calc(expt_name="sim_lbco")
 # **Solution**:
 
 # %%
-project_2.plot_meas_vs_calc(expt_name="sim_lbco", d_spacing=True)
+project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True)
 
 # %% [markdown]
 # #### Exercise 5.6: Refine the Peak Profile Parameters
@@ -895,7 +883,7 @@ project_2.plot_meas_vs_calc(expt_name="sim_lbco", d_spacing=True)
 # does not perfectly describe the peak at about 1.38 Å, as can be seen below:
 
 # %%
-project_2.plot_meas_vs_calc(expt_name="sim_lbco", d_spacing=True, x_min=1.35, x_max=1.40)
+project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_max=1.40)
 
 # %% [markdown]
 # The peak profile parameters are determined based on both the instrument
@@ -912,19 +900,19 @@ project_2.plot_meas_vs_calc(expt_name="sim_lbco", d_spacing=True, x_min=1.35, x_
 # **Solution**:
 
 # %%
-project_2.experiments["sim_lbco"].peak.broad_gauss_sigma_0.free = True
-project_2.experiments["sim_lbco"].peak.broad_gauss_sigma_1.free = True
-project_2.experiments["sim_lbco"].peak.broad_gauss_sigma_2.free = True
-project_2.experiments["sim_lbco"].peak.broad_mix_beta_0.free = True
-project_2.experiments["sim_lbco"].peak.broad_mix_beta_1.free = True
-project_2.experiments["sim_lbco"].peak.asym_alpha_0.free = True
-project_2.experiments["sim_lbco"].peak.asym_alpha_1.free = True
+project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0.free = True
+project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1.free = True
+project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2.free = True
+project_2.experiments['sim_lbco'].peak.broad_mix_beta_0.free = True
+project_2.experiments['sim_lbco'].peak.broad_mix_beta_1.free = True
+project_2.experiments['sim_lbco'].peak.asym_alpha_0.free = True
+project_2.experiments['sim_lbco'].peak.asym_alpha_1.free = True
 
 # %%
 project_2.analysis.fit()
 
 # %%
-project_2.plot_meas_vs_calc(expt_name="sim_lbco", d_spacing=True, x_min=1.35, x_max=1.40)
+project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_max=1.40)
 
 # %% [markdown]
 # #### Exercise 5.7: Find Undefined Features
@@ -941,7 +929,7 @@ project_2.plot_meas_vs_calc(expt_name="sim_lbco", d_spacing=True, x_min=1.35, x_
 # **Solution**:
 
 # %%
-project_2.plot_meas_vs_calc(expt_name="sim_lbco", x_min=1.53, x_max=1.7, d_spacing=True)
+project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spacing=True)
 
 # %% [markdown]
 # #### Exercise 5.8: Identify the Cause of the Unexplained Peaks
@@ -981,8 +969,8 @@ project_2.plot_meas_vs_calc(expt_name="sim_lbco", x_min=1.53, x_max=1.7, d_spaci
 # You can visalize both the patterns of the Si and LBCO phases to confirm this hypothesis.
 
 # %%
-project_1.plot_meas_vs_calc(expt_name="sim_si", x_min=1, x_max=1.7, d_spacing=True)
-project_2.plot_meas_vs_calc(expt_name="sim_lbco", x_min=1, x_max=1.7, d_spacing=True)
+project_1.plot_meas_vs_calc(expt_name='sim_si', x_min=1, x_max=1.7, d_spacing=True)
+project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1, x_max=1.7, d_spacing=True)
 
 # %% [markdown]
 # #### Exercise 5.10: Create a Second Sample Model – Si as Impurity
@@ -1001,29 +989,29 @@ project_2.plot_meas_vs_calc(expt_name="sim_lbco", x_min=1, x_max=1.7, d_spacing=
 # **Set Space Group**
 
 # %%
-project_2.sample_models.add(name="si")
+project_2.sample_models.add(name='si')
 
 # %%
-project_2.sample_models["si"].space_group.name_h_m = "F d -3 m"
-project_2.sample_models["si"].space_group.it_coordinate_system_code = "2"
+project_2.sample_models['si'].space_group.name_h_m = 'F d -3 m'
+project_2.sample_models['si'].space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
 # **Set Lattice Parameters**
 
 # %%
-project_2.sample_models["si"].cell.length_a = 5.43
+project_2.sample_models['si'].cell.length_a = 5.43
 
 # %% [markdown]
 # **Set Atom Sites**
 
 # %%
-project_2.sample_models["si"].atom_sites.add(
-    label="Si",
-    type_symbol="Si",
+project_2.sample_models['si'].atom_sites.add(
+    label='Si',
+    type_symbol='Si',
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter="a",
+    wyckoff_letter='a',
     b_iso=0.89,
 )
 
@@ -1031,7 +1019,7 @@ project_2.sample_models["si"].atom_sites.add(
 # **🔗 Assign Sample Model to Experiment**
 
 # %%
-project_2.experiments["sim_lbco"].linked_phases.add(id="si", scale=1.0)
+project_2.experiments['sim_lbco'].linked_phases.add(id='si', scale=1.0)
 
 # %% [markdown]
 # #### Exercise 5.11: Refine the Scale of the Si Phase
@@ -1054,7 +1042,7 @@ project_2.experiments["sim_lbco"].linked_phases.add(id="si", scale=1.0)
 # **Visualize Diffraction Patterns**
 
 # %%
-project_2.plot_meas_vs_calc(expt_name="sim_lbco")
+project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %% [markdown]
 # As you can see, the calculated pattern is now the sum of both phases,
@@ -1064,7 +1052,7 @@ project_2.plot_meas_vs_calc(expt_name="sim_lbco")
 # **Set Fit Parameters**
 
 # %%
-project_2.experiments["sim_lbco"].linked_phases["si"].scale.free = True
+project_2.experiments['sim_lbco'].linked_phases['si'].scale.free = True
 
 # %% [markdown]
 # **Run Fitting**
@@ -1082,10 +1070,10 @@ project_2.analysis.fit()
 # peak near 95,000 μs. The calculated pattern will be the sum of the two phases.
 
 # %%
-project_2.plot_meas_vs_calc(expt_name="sim_lbco")
+project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %%
-project_2.plot_meas_vs_calc(expt_name="sim_lbco", x_min=88000, x_max=101000)
+project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
 
 # %% [markdown]
 # All previously unexplained peaks are now accounted for in the pattern, and the fit is improved.

@@ -38,6 +38,7 @@ class PowderPattern(Pattern):
     """
     Specialized pattern for powder diffraction (can be extended in the future).
     """
+
     # TODO: Check if this class is needed or if it can be merged with Pattern
     def __init__(self, experiment: Experiment) -> None:
         super().__init__(experiment)
@@ -52,9 +53,9 @@ class Datastore:
     def __init__(self, sample_form: str, experiment: Experiment) -> None:
         self.sample_form: str = sample_form
 
-        if sample_form == "powder":
+        if sample_form == 'powder':
             self.pattern: Pattern = PowderPattern(experiment)
-        elif sample_form == "single_crystal":
+        elif sample_form == 'single_crystal':
             self.pattern: Pattern = Pattern(experiment)  # TODO: Find better name for single crystal pattern
         else:
             raise ValueError(f"Unknown sample form '{sample_form}'")
@@ -63,16 +64,16 @@ class Datastore:
         """Load measured data from an ASCII file."""
         # TODO: Check if this method is used...
         #  Looks like _load_ascii_data_to_experiment from experiments.py is used instead
-        print(f"Loading measured data for {self.sample_form} diffraction from {file_path}")
+        print(f'Loading measured data for {self.sample_form} diffraction from {file_path}')
 
         try:
             data: np.ndarray = np.loadtxt(file_path)
         except Exception as e:
-            print(f"Failed to load data: {e}")
+            print(f'Failed to load data: {e}')
             return
 
         if data.shape[1] < 2:
-            raise ValueError("Data file must have at least two columns (x and y).")
+            raise ValueError('Data file must have at least two columns (x and y).')
 
         x: np.ndarray = data[:, 0]
         y: np.ndarray = data[:, 1]
@@ -87,15 +88,15 @@ class Datastore:
 
     def show_measured_data(self) -> None:
         """Display measured data in console."""
-        print(f"\nMeasured data ({self.sample_form}):")
-        print(f"x: {self.pattern.x}")
-        print(f"meas: {self.pattern.meas}")
-        print(f"meas_su: {self.pattern.meas_su}")
+        print(f'\nMeasured data ({self.sample_form}):')
+        print(f'x: {self.pattern.x}')
+        print(f'meas: {self.pattern.meas}')
+        print(f'meas_su: {self.pattern.meas_su}')
 
     def show_calculated_data(self) -> None:
         """Display calculated data in console."""
-        print(f"\nCalculated data ({self.sample_form}):")
-        print(f"calc: {self.pattern.calc}")
+        print(f'\nCalculated data ({self.sample_form}):')
+        print(f'calc: {self.pattern.calc}')
 
 
 class DatastoreFactory:

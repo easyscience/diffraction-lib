@@ -10,7 +10,7 @@ from easydiffraction.analysis.calculators.calculator_cryspy import CryspyCalcula
 @pytest.fixture
 def mock_sample_model():
     sample_model = MagicMock()
-    sample_model.name = "sample1"
+    sample_model.name = 'sample1'
     sample_model.cell.length_a.value = 1.0
     sample_model.cell.length_b.value = 2.0
     sample_model.cell.length_c.value = 3.0
@@ -18,8 +18,13 @@ def mock_sample_model():
     sample_model.cell.angle_beta.value = 90.0
     sample_model.cell.angle_gamma.value = 90.0
     sample_model.atom_sites = [
-        MagicMock(fract_x=MagicMock(value=0.1), fract_y=MagicMock(value=0.2), fract_z=MagicMock(value=0.3),
-                  occupancy=MagicMock(value=1.0), b_iso=MagicMock(value=0.5))
+        MagicMock(
+            fract_x=MagicMock(value=0.1),
+            fract_y=MagicMock(value=0.2),
+            fract_z=MagicMock(value=0.3),
+            occupancy=MagicMock(value=1.0),
+            b_iso=MagicMock(value=0.5),
+        )
     ]
     return sample_model
 
@@ -27,8 +32,8 @@ def mock_sample_model():
 @pytest.fixture
 def mock_experiment():
     experiment = MagicMock()
-    experiment.name = "experiment1"
-    experiment.type.beam_mode.value = "constant wavelength"
+    experiment.name = 'experiment1'
+    experiment.type.beam_mode.value = 'constant wavelength'
     experiment.datastore.pattern.x = np.array([1.0, 2.0, 3.0])
     experiment.datastore.pattern.meas = np.array([10.0, 20.0, 30.0])
     experiment.datastore.pattern.meas_su = np.array([0.1, 0.2, 0.3])
@@ -42,7 +47,7 @@ def mock_experiment():
     return experiment
 
 
-@patch("easydiffraction.analysis.calculators.calculator_cryspy.str_to_globaln")
+@patch('easydiffraction.analysis.calculators.calculator_cryspy.str_to_globaln')
 def test_recreate_cryspy_obj(mock_str_to_globaln, mock_sample_model, mock_experiment):
     mock_str_to_globaln.return_value = MagicMock(add_items=MagicMock())
 
@@ -54,12 +59,12 @@ def test_recreate_cryspy_obj(mock_str_to_globaln, mock_sample_model, mock_experi
     assert cryspy_obj.add_items.called
 
 
-@patch("easydiffraction.analysis.calculators.calculator_cryspy.rhochi_calc_chi_sq_by_dictionary")
+@patch('easydiffraction.analysis.calculators.calculator_cryspy.rhochi_calc_chi_sq_by_dictionary')
 def test_calculate_single_model_pattern(mock_rhochi_calc, mock_sample_model, mock_experiment):
     mock_rhochi_calc.return_value = None
 
     calculator = CryspyCalculator()
-    calculator._cryspy_dicts = {"experiment1": {"mock_key": "mock_value"}}
+    calculator._cryspy_dicts = {'experiment1': {'mock_key': 'mock_value'}}
 
     result = calculator._calculate_single_model_pattern(mock_sample_model, mock_experiment, called_by_minimizer=False)
 
@@ -71,29 +76,28 @@ def test_calculate_single_model_pattern(mock_rhochi_calc, mock_sample_model, moc
 def test_recreate_cryspy_dict(mock_sample_model, mock_experiment):
     calculator = CryspyCalculator()
     calculator._cryspy_dicts = {
-        "sample1_experiment1": {
-            "pd_experiment1": {
-                "offset_ttheta": [0.1],
-                "wavelength": [1.54],
-                "resolution_parameters": [0.1, 0.2, 0.3, 0.4, 0.5],
+        'sample1_experiment1': {
+            'pd_experiment1': {
+                'offset_ttheta': [0.1],
+                'wavelength': [1.54],
+                'resolution_parameters': [0.1, 0.2, 0.3, 0.4, 0.5],
             },
-            "crystal_sample1": {
-                "unit_cell_parameters": [0, 0, 0, 0, 0, 0],
-                "atom_fract_xyz": [[0], [0], [0]],
-                "atom_occupancy": [0],
-                "atom_b_iso": [0],
-            }
+            'crystal_sample1': {
+                'unit_cell_parameters': [0, 0, 0, 0, 0, 0],
+                'atom_fract_xyz': [[0], [0], [0]],
+                'atom_occupancy': [0],
+                'atom_b_iso': [0],
+            },
         }
     }
 
     cryspy_dict = calculator._recreate_cryspy_dict(mock_sample_model, mock_experiment)
 
     # Assertions
-    assert cryspy_dict["crystal_sample1"]["unit_cell_parameters"][:3] == [1.0, 2.0, 3.0]
-    assert cryspy_dict["crystal_sample1"]["atom_fract_xyz"][0][0] == 0.1
-    assert cryspy_dict["crystal_sample1"]["atom_occupancy"][0] == 1.0
-    assert cryspy_dict["crystal_sample1"]["atom_b_iso"][0] == 0.5
-    assert cryspy_dict["pd_experiment1"]["offset_ttheta"][0] == 0.0
-    assert cryspy_dict["pd_experiment1"]["wavelength"][0] == 1.54
-    assert cryspy_dict["pd_experiment1"]["resolution_parameters"] == [0.1, 0.2, 0.3, 0.4, 0.5]
-
+    assert cryspy_dict['crystal_sample1']['unit_cell_parameters'][:3] == [1.0, 2.0, 3.0]
+    assert cryspy_dict['crystal_sample1']['atom_fract_xyz'][0][0] == 0.1
+    assert cryspy_dict['crystal_sample1']['atom_occupancy'][0] == 1.0
+    assert cryspy_dict['crystal_sample1']['atom_b_iso'][0] == 0.5
+    assert cryspy_dict['pd_experiment1']['offset_ttheta'][0] == 0.0
+    assert cryspy_dict['pd_experiment1']['wavelength'][0] == 1.54
+    assert cryspy_dict['pd_experiment1']['resolution_parameters'] == [0.1, 0.2, 0.3, 0.4, 0.5]

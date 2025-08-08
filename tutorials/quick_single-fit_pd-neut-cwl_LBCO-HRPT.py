@@ -54,15 +54,16 @@ sample_model.atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
 # ## Step 3: Define Experiment
 
 # %%
-ed.download_from_repository('hrpt_lbco.xye',
-                            destination='data')
+ed.download_from_repository('hrpt_lbco.xye', destination='data')
 
 # %%
-project.experiments.add(name='hrpt',
-                        sample_form='powder',
-                        beam_mode='constant wavelength',
-                        radiation_probe='neutron',
-                        data_path='data/hrpt_lbco.xye')
+project.experiments.add(
+    name='hrpt',
+    sample_form='powder',
+    beam_mode='constant wavelength',
+    radiation_probe='neutron',
+    data_path='data/hrpt_lbco.xye',
+)
 
 # %%
 experiment = project.experiments['hrpt']
@@ -122,5 +123,4 @@ experiment.linked_phases['lbco'].scale.free = True
 project.analysis.fit()
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)

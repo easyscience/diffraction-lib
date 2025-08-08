@@ -8,26 +8,24 @@ from easydiffraction.core.objects import Descriptor
 class Alias(Component):
     @property
     def category_key(self) -> str:
-        return "alias"
+        return 'alias'
 
     @property
     def cif_category_key(self) -> str:
-        return "alias"
+        return 'alias'
 
-    def __init__(self,
-                 label: str,
-                 param_uid: str) -> None:
+    def __init__(self, label: str, param_uid: str) -> None:
         super().__init__()
 
         self.label: Descriptor = Descriptor(
             value=label,
-            name="label",
-            cif_name="label"
+            name='label',
+            cif_name='label',
         )
         self.param_uid: Descriptor = Descriptor(
             value=param_uid,
-            name="param_uid",
-            cif_name="param_uid"
+            name='param_uid',
+            cif_name='param_uid',
         )
 
         # Select which of the input parameters is used for the
@@ -42,9 +40,8 @@ class Alias(Component):
 class Aliases(Collection):
     @property
     def _type(self) -> str:
-        return "category"  # datablock or category
+        return 'category'  # datablock or category
 
     @property
     def _child_class(self) -> Type[Alias]:
         return Alias
-

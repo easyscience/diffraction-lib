@@ -61,9 +61,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=3.19,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=3.19, decimal=1)
 
 
 def test_single_fit_neutron_pd_tof_ncaf() -> None:
@@ -72,12 +70,12 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     model.space_group.name_h_m = 'I 21 3'
     model.space_group.it_coordinate_system_code = '1'
     model.cell.length_a = 10.250256
-    model.atom_sites.add('Ca', 'Ca', 0.4661, 0.0, 0.25, wyckoff_letter="b", b_iso=0.9)
-    model.atom_sites.add('Al', 'Al', 0.25171, 0.25171, 0.25171, wyckoff_letter="a", b_iso=0.66)
-    model.atom_sites.add('Na', 'Na', 0.08481, 0.08481, 0.08481, wyckoff_letter="a", b_iso=1.9)
-    model.atom_sites.add('F1', 'F', 0.1375, 0.3053, 0.1195, wyckoff_letter="c", b_iso=0.9)
-    model.atom_sites.add('F2', 'F', 0.3626, 0.3634, 0.1867, wyckoff_letter="c", b_iso=1.28)
-    model.atom_sites.add('F3', 'F', 0.4612, 0.4612, 0.4612, wyckoff_letter="a", b_iso=0.79)
+    model.atom_sites.add('Ca', 'Ca', 0.4661, 0.0, 0.25, wyckoff_letter='b', b_iso=0.9)
+    model.atom_sites.add('Al', 'Al', 0.25171, 0.25171, 0.25171, wyckoff_letter='a', b_iso=0.66)
+    model.atom_sites.add('Na', 'Na', 0.08481, 0.08481, 0.08481, wyckoff_letter='a', b_iso=1.9)
+    model.atom_sites.add('F1', 'F', 0.1375, 0.3053, 0.1195, wyckoff_letter='c', b_iso=0.9)
+    model.atom_sites.add('F2', 'F', 0.3626, 0.3634, 0.1867, wyckoff_letter='c', b_iso=1.28)
+    model.atom_sites.add('F3', 'F', 0.4612, 0.4612, 0.4612, wyckoff_letter='a', b_iso=0.79)
 
     # Set experiment
     data_file = 'wish_ncaf.xye'
@@ -124,7 +122,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         (74204, 262),
         (82103, 268),
         (91958, 268),
-        (102712, 262)
+        (102712, 262),
     ]:
         expt.background.add(x, y)
 
@@ -148,9 +146,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=15.25,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=15.25, decimal=1)
 
 
 if __name__ == '__main__':

@@ -15,7 +15,12 @@ class DfolsMinimizer(MinimizerBase):
     Minimizer using the DFO-LS package (Derivative-Free Optimization for Least-Squares).
     """
 
-    def __init__(self, name: str = 'dfols', max_iterations: int = DEFAULT_MAX_ITERATIONS, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        name: str = 'dfols',
+        max_iterations: int = DEFAULT_MAX_ITERATIONS,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(name=name, method=None, max_iterations=max_iterations)
 
     def _prepare_solver_args(self, parameters: List[Any]) -> Dict[str, Any]:
@@ -32,12 +37,13 @@ class DfolsMinimizer(MinimizerBase):
     def _run_solver(self, objective_function: Any, **kwargs: Any) -> Any:
         x0 = kwargs.get('x0')
         bounds = kwargs.get('bounds')
-        return solve(objective_function,
-                     x0=x0,
-                     bounds=bounds,
-                     maxfun=self.max_iterations)
+        return solve(objective_function, x0=x0, bounds=bounds, maxfun=self.max_iterations)
 
-    def _sync_result_to_parameters(self, parameters: List[Any], raw_result: Any) -> None:
+    def _sync_result_to_parameters(
+        self,
+        parameters: List[Any],
+        raw_result: Any,
+    ) -> None:
         """
         Synchronizes the result from the solver to the parameters.
 

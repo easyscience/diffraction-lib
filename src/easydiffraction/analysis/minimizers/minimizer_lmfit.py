@@ -15,15 +15,22 @@ class LmfitMinimizer(MinimizerBase):
     Minimizer using the lmfit package.
     """
 
-    def __init__(self,
-                 name: str = 'lmfit',
-                 method: str = DEFAULT_METHOD,
-                 max_iterations: int = DEFAULT_MAX_ITERATIONS) -> None:
-        super().__init__(name=name,
-                         method=method,
-                         max_iterations=max_iterations)
+    def __init__(
+        self,
+        name: str = 'lmfit',
+        method: str = DEFAULT_METHOD,
+        max_iterations: int = DEFAULT_MAX_ITERATIONS,
+    ) -> None:
+        super().__init__(
+            name=name,
+            method=method,
+            max_iterations=max_iterations,
+        )
 
-    def _prepare_solver_args(self, parameters: List[Any]) -> Dict[str, Any]:
+    def _prepare_solver_args(
+        self,
+        parameters: List[Any],
+    ) -> Dict[str, Any]:
         """
         Prepares the solver arguments for the lmfit minimizer.
 
@@ -40,13 +47,11 @@ class LmfitMinimizer(MinimizerBase):
                 value=param.value,
                 vary=param.free,
                 min=param.min,
-                max=param.max
+                max=param.max,
             )
         return {'engine_parameters': engine_parameters}
 
-    def _run_solver(self,
-                    objective_function: Any,
-                    **kwargs: Any) -> Any:
+    def _run_solver(self, objective_function: Any, **kwargs: Any) -> Any:
         """
         Runs the lmfit solver.
 
@@ -59,15 +64,19 @@ class LmfitMinimizer(MinimizerBase):
         """
         engine_parameters = kwargs.get('engine_parameters')
 
-        return lmfit.minimize(objective_function,
-                              params=engine_parameters,
-                              method=self.method,
-                              nan_policy='propagate',
-                              max_nfev=self.max_iterations)
+        return lmfit.minimize(
+            objective_function,
+            params=engine_parameters,
+            method=self.method,
+            nan_policy='propagate',
+            max_nfev=self.max_iterations,
+        )
 
-    def _sync_result_to_parameters(self,
-                                   parameters: List[Any],
-                                   raw_result: Any) -> None:
+    def _sync_result_to_parameters(
+        self,
+        parameters: List[Any],
+        raw_result: Any,
+    ) -> None:
         """
         Synchronizes the result from the solver to the parameters.
 
@@ -98,12 +107,14 @@ class LmfitMinimizer(MinimizerBase):
         """
         return getattr(raw_result, 'success', False)
 
-    def _iteration_callback(self,
-                            params: lmfit.Parameters,
-                            iter: int,
-                            resid: Any,
-                            *args: Any,
-                            **kwargs: Any) -> None:
+    def _iteration_callback(
+        self,
+        params: lmfit.Parameters,
+        iter: int,
+        resid: Any,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
         """
         Callback function for each iteration of the minimizer.
 

@@ -124,36 +124,44 @@ project.sample_models['lbco'].cell.length_a = 3.88
 # Add atom sites to the sample model.
 
 # %%
-project.sample_models['lbco'].atom_sites.add(label='La',
-                                             type_symbol='La',
-                                             fract_x=0,
-                                             fract_y=0,
-                                             fract_z=0,
-                                             wyckoff_letter='a',
-                                             b_iso=0.5,
-                                             occupancy=0.5)
-project.sample_models['lbco'].atom_sites.add(label='Ba',
-                                             type_symbol='Ba',
-                                             fract_x=0,
-                                             fract_y=0,
-                                             fract_z=0,
-                                             wyckoff_letter='a',
-                                             b_iso=0.5,
-                                             occupancy=0.5)
-project.sample_models['lbco'].atom_sites.add(label='Co',
-                                             type_symbol='Co',
-                                             fract_x=0.5,
-                                             fract_y=0.5,
-                                             fract_z=0.5,
-                                             wyckoff_letter='b',
-                                             b_iso=0.5)
-project.sample_models['lbco'].atom_sites.add(label='O',
-                                             type_symbol='O',
-                                             fract_x=0,
-                                             fract_y=0.5,
-                                             fract_z=0.5,
-                                             wyckoff_letter='c',
-                                             b_iso=0.5)
+project.sample_models['lbco'].atom_sites.add(
+    label='La',
+    type_symbol='La',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=0.5,
+    occupancy=0.5,
+)
+project.sample_models['lbco'].atom_sites.add(
+    label='Ba',
+    type_symbol='Ba',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=0.5,
+    occupancy=0.5,
+)
+project.sample_models['lbco'].atom_sites.add(
+    label='Co',
+    type_symbol='Co',
+    fract_x=0.5,
+    fract_y=0.5,
+    fract_z=0.5,
+    wyckoff_letter='b',
+    b_iso=0.5,
+)
+project.sample_models['lbco'].atom_sites.add(
+    label='O',
+    type_symbol='O',
+    fract_x=0,
+    fract_y=0.5,
+    fract_z=0.5,
+    wyckoff_letter='c',
+    b_iso=0.5,
+)
 
 # %% [markdown]
 # #### Apply Symmetry Constraints
@@ -195,18 +203,19 @@ project.save()
 # Download the data file from the EasyDiffraction repository on GitHub.
 
 # %%
-ed.download_from_repository('hrpt_lbco.xye',
-                            destination='data')
+ed.download_from_repository('hrpt_lbco.xye', destination='data')
 
 # %% [markdown]
 # #### Add Diffraction Experiment
 
 # %%
-project.experiments.add(name='hrpt',
-                        sample_form='powder',
-                        beam_mode='constant wavelength',
-                        radiation_probe='neutron',
-                        data_path='data/hrpt_lbco.xye')
+project.experiments.add(
+    name='hrpt',
+    sample_form='powder',
+    beam_mode='constant wavelength',
+    radiation_probe='neutron',
+    data_path='data/hrpt_lbco.xye',
+)
 
 # %% [markdown]
 # #### Show Defined Experiments
@@ -351,13 +360,10 @@ project.plot_calc(expt_name='hrpt')
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=38, x_max=41,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
 
 # %% [markdown]
 # #### Show Parameters
@@ -461,13 +467,10 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=38, x_max=41,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
 
 # %% [markdown]
 # #### Save Project State
@@ -502,13 +505,10 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=38, x_max=41,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
 
 # %% [markdown]
 # #### Save Project State
@@ -543,13 +543,10 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=38, x_max=41,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
 
 # %% [markdown]
 # #### Save Project State
@@ -565,23 +562,14 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Set aliases for parameters.
 
 # %%
-project.analysis.aliases.add(
-    label='biso_La',
-    param_uid=project.sample_models['lbco'].atom_sites['La'].b_iso.uid
-)
-project.analysis.aliases.add(
-    label='biso_Ba',
-    param_uid=project.sample_models['lbco'].atom_sites['Ba'].b_iso.uid
-)
+project.analysis.aliases.add(label='biso_La', param_uid=project.sample_models['lbco'].atom_sites['La'].b_iso.uid)
+project.analysis.aliases.add(label='biso_Ba', param_uid=project.sample_models['lbco'].atom_sites['Ba'].b_iso.uid)
 
 # %% [markdown]
 # Set constraints.
 
 # %%
-project.analysis.constraints.add(
-    lhs_alias='biso_Ba',
-    rhs_expr='biso_La'
-)
+project.analysis.constraints.add(lhs_alias='biso_Ba', rhs_expr='biso_La')
 
 # %% [markdown]
 # Show defined constraints.
@@ -617,13 +605,10 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=38, x_max=41,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
 
 # %% [markdown]
 # #### Save Project State
@@ -641,11 +626,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # %%
 project.analysis.aliases.add(
     label='occ_La',
-    param_uid=project.sample_models['lbco'].atom_sites['La'].occupancy.uid
+    param_uid=project.sample_models['lbco'].atom_sites['La'].occupancy.uid,
 )
 project.analysis.aliases.add(
     label='occ_Ba',
-    param_uid=project.sample_models['lbco'].atom_sites['Ba'].occupancy.uid
+    param_uid=project.sample_models['lbco'].atom_sites['Ba'].occupancy.uid,
 )
 
 # %% [markdown]
@@ -654,7 +639,7 @@ project.analysis.aliases.add(
 # %%
 project.analysis.constraints.add(
     lhs_alias='occ_Ba',
-    rhs_expr='1 - occ_La'
+    rhs_expr='1 - occ_La',
 )
 
 # %% [markdown]
@@ -691,13 +676,10 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=38, x_max=41,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
 
 # %% [markdown]
 # #### Save Project State

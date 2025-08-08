@@ -86,8 +86,8 @@ def test_ikeda_carpenter_asymmetry_mixin():
 # --- Tests for Base and Derived Peak Classes ---
 def test_peak_base_properties():
     peak = PeakBase()
-    assert peak.cif_category_key == "peak"
-    assert peak.category_key == "peak"
+    assert peak.cif_category_key == 'peak'
+    assert peak.category_key == 'peak'
     assert peak._entry_id is None
 
 
@@ -131,15 +131,15 @@ def test_time_of_flight_pseudo_voigt_back_to_back_exponential_initialization():
 
 # --- Tests for PeakFactory ---
 def test_peak_factory_create_constant_wavelength_pseudo_voigt():
-    peak = PeakFactory.create(beam_mode="constant wavelength", profile_type="pseudo-voigt")
+    peak = PeakFactory.create(beam_mode='constant wavelength', profile_type='pseudo-voigt')
     assert isinstance(peak, ConstantWavelengthPseudoVoigt)
 
 
 def test_peak_factory_create_invalid_beam_mode():
     with pytest.raises(ValueError, match="Unsupported beam mode: 'invalid'.*"):
-        PeakFactory.create(beam_mode="invalid", profile_type="pseudo-voigt")
+        PeakFactory.create(beam_mode='invalid', profile_type='pseudo-voigt')
 
 
 def test_peak_factory_create_invalid_profile_type():
     with pytest.raises(ValueError, match="Unsupported profile type 'invalid' for beam mode 'constant wavelength'.*"):
-        PeakFactory.create(beam_mode="constant wavelength", profile_type="invalid")
+        PeakFactory.create(beam_mode='constant wavelength', profile_type='invalid')

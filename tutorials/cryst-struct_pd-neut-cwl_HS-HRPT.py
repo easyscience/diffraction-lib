@@ -76,15 +76,13 @@ model.show_as_cif()
 # #### Download Measured Data
 
 # %%
-download_from_repository('hrpt_hs.xye',
-                         destination='data')
+download_from_repository('hrpt_hs.xye', destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt = Experiment(name='hrpt',
-                  data_path='data/hrpt_hs.xye')
+expt = Experiment(name='hrpt', data_path='data/hrpt_hs.xye')
 
 # %% [markdown]
 # #### Set Instrument
@@ -173,13 +171,10 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=48, x_max=51,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 1/5
@@ -209,13 +204,10 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=48, x_max=51,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 2/5
@@ -247,13 +239,10 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=48, x_max=51,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 3/5
@@ -283,13 +272,10 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=48, x_max=51,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 4/5
@@ -319,13 +305,10 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          x_min=48, x_max=51,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
 # ## Summary

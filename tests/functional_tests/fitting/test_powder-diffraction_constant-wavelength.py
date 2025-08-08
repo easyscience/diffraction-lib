@@ -58,9 +58,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=5.79,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=5.79, decimal=1)
 
     # ------------ 2nd fitting ------------
 
@@ -74,9 +72,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=4.41,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=4.41, decimal=1)
 
     # ------------ 3rd fitting ------------
 
@@ -90,9 +86,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=1.3,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=1.3, decimal=1)
 
 
 def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
@@ -181,27 +175,19 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     assert_almost_equal(atom_sites['Ba'].occupancy.value, desired=1.3206, decimal=2)
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=1.24,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=1.24, decimal=1)
 
     # ------------ 2nd fitting ------------
 
     # Set aliases for parameters
-    project.analysis.aliases.add(label='biso_La',
-                                 param_uid=atom_sites['La'].b_iso.uid)
-    project.analysis.aliases.add(label='biso_Ba',
-                                 param_uid=atom_sites['Ba'].b_iso.uid)
-    project.analysis.aliases.add(label='occ_La',
-                                 param_uid=atom_sites['La'].occupancy.uid)
-    project.analysis.aliases.add(label='occ_Ba',
-                                 param_uid=atom_sites['Ba'].occupancy.uid)
+    project.analysis.aliases.add(label='biso_La', param_uid=atom_sites['La'].b_iso.uid)
+    project.analysis.aliases.add(label='biso_Ba', param_uid=atom_sites['Ba'].b_iso.uid)
+    project.analysis.aliases.add(label='occ_La', param_uid=atom_sites['La'].occupancy.uid)
+    project.analysis.aliases.add(label='occ_Ba', param_uid=atom_sites['Ba'].occupancy.uid)
 
     # Set constraints
-    project.analysis.constraints.add(lhs_alias='biso_Ba',
-                                     rhs_expr='biso_La')
-    project.analysis.constraints.add(lhs_alias='occ_Ba',
-                                     rhs_expr='1 - occ_La')
+    project.analysis.constraints.add(lhs_alias='biso_Ba', rhs_expr='biso_La')
+    project.analysis.constraints.add(lhs_alias='occ_Ba', rhs_expr='1 - occ_La')
 
     # Apply constraints
     project.analysis.apply_constraints()
@@ -218,9 +204,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     assert_almost_equal(atom_sites['Ba'].occupancy.value, desired=0.4726, decimal=2)
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=1.24,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=1.24, decimal=1)
 
 
 def test_fit_neutron_pd_cwl_hs() -> None:
@@ -280,8 +264,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=2.11, decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=2.11, decimal=1)
 
     # ------------ 2nd fitting ------------
 
@@ -297,9 +280,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=2.11,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=2.11, decimal=1)
 
     # ------------ 3rd fitting ------------
 
@@ -314,9 +295,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=2.11,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=2.11, decimal=1)
 
     # ------------ 3rd fitting ------------
 
@@ -331,9 +310,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=2.11,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=2.11, decimal=1)
 
 
 if __name__ == '__main__':

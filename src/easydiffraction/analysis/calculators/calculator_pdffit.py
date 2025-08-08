@@ -12,7 +12,8 @@ try:
     from diffpy.pdffit2 import PdfFit as pdffit
     from diffpy.pdffit2 import redirect_stdout
     from diffpy.structure.parsers.p_cif import P_cif as pdffit_cif_parser
-    redirect_stdout(open(os.path.devnull, 'w')) # silence the C++ engine output
+
+    redirect_stdout(open(os.path.devnull, 'w'))  # silence the C++ engine output
     print("✅ 'pdffit' calculation engine is successfully imported.")
 except ImportError:
     print("⚠️ 'pdffit' module not found. This calculation engine will not be available.")
@@ -28,18 +29,19 @@ class PdffitCalculator(CalculatorBase):
 
     @property
     def name(self):
-        return "pdffit"
+        return 'pdffit'
 
     def calculate_structure_factors(self, sample_models, experiments):
         # PDF doesn't compute HKL but we keep interface consistent
-        print("[pdffit] Calculating HKLs (not applicable)...")
+        print('[pdffit] Calculating HKLs (not applicable)...')
         return []
 
-    def _calculate_single_model_pattern(self,
-                                        sample_model: SampleModel,
-                                        experiment: Experiment,
-                                        called_by_minimizer: bool = False):
-
+    def _calculate_single_model_pattern(
+        self,
+        sample_model: SampleModel,
+        experiment: Experiment,
+        called_by_minimizer: bool = False,
+    ):
         # Create PDF calculator object
         calculator = pdffit()
 
@@ -53,8 +55,8 @@ class PdffitCalculator(CalculatorBase):
         # convert to version 1 of CIF format
         # this means: replace all dots with underscores for
         # cases where the dot is surrounded by letters on both sides.
-        pattern = r"(?<=[a-zA-Z])\.(?=[a-zA-Z])"
-        cif_string_v1 =  re.sub(pattern, "_", cif_string_v2)
+        pattern = r'(?<=[a-zA-Z])\.(?=[a-zA-Z])'
+        cif_string_v1 = re.sub(pattern, '_', cif_string_v2)
 
         # Create the PDFit structure
         structure = pdffit_cif_parser().parse(cif_string_v1)
@@ -79,11 +81,13 @@ class PdffitCalculator(CalculatorBase):
         y_noise = list(np.zeros_like(pattern.x))
 
         # Assign the data to the PDFfit calculator
-        calculator.read_data_lists(stype=experiment.type.radiation_probe.value[0].upper(),
-                                   qmax=experiment.peak.cutoff_q.value,
-                                   qdamp=experiment.peak.damp_q.value,
-                                   r_data=x,
-                                   Gr_data=y_noise)
+        calculator.read_data_lists(
+            stype=experiment.type.radiation_probe.value[0].upper(),
+            qmax=experiment.peak.cutoff_q.value,
+            qdamp=experiment.peak.damp_q.value,
+            r_data=x,
+            Gr_data=y_noise,
+        )
 
         # qbroad must be set after read_data_lists
         calculator.setvar('qbroad', experiment.peak.broad_q.value)

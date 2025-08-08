@@ -18,19 +18,21 @@ from easydiffraction.utils.utils import render_table
 
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
 FIXED_WIDTH = 17
-DEFAULT_HEADERS = ["iteration", "χ²", "improvement [%]"]
-DEFAULT_ALIGNMENTS = ["center", "center", "center"]
+DEFAULT_HEADERS = ['iteration', 'χ²', 'improvement [%]']
+DEFAULT_ALIGNMENTS = ['center', 'center', 'center']
 
 
-def format_cell(cell: str,
-                width: int = FIXED_WIDTH,
-                align: str = "center") -> str:
+def format_cell(
+    cell: str,
+    width: int = FIXED_WIDTH,
+    align: str = 'center',
+) -> str:
     cell_str = str(cell)
-    if align == "center":
+    if align == 'center':
         return cell_str.center(width)
-    elif align == "left":
+    elif align == 'left':
         return cell_str.ljust(width)
-    elif align == "right":
+    elif align == 'right':
         return cell_str.rjust(width)
     else:
         return cell_str
@@ -62,9 +64,11 @@ class FittingProgressTracker:
         self._best_iteration = None
         self._fitting_time = None
 
-    def track(self,
-              residuals: np.ndarray,
-              parameters: List[float]) -> np.ndarray:
+    def track(
+        self,
+        residuals: np.ndarray,
+        parameters: List[float],
+    ) -> np.ndarray:
         """
         Track chi-square progress during the optimization process.
 
@@ -89,8 +93,8 @@ class FittingProgressTracker:
 
             row = [
                 str(self._iteration),
-                f"{reduced_chi2:.2f}",
-                ""
+                f'{reduced_chi2:.2f}',
+                '',
             ]
 
         # Improvement check
@@ -99,8 +103,8 @@ class FittingProgressTracker:
 
             row = [
                 str(self._iteration),
-                f"{reduced_chi2:.2f}",
-                f"{change_percent:.1f}% ↓"
+                f'{reduced_chi2:.2f}',
+                f'{change_percent:.1f}% ↓',
             ]
 
             self._previous_chi2 = reduced_chi2
@@ -145,7 +149,7 @@ class FittingProgressTracker:
 
     def start_tracking(self, minimizer_name: str) -> None:
         print(f"🚀 Starting fit process with '{minimizer_name}'...")
-        print("📈 Goodness-of-fit (reduced χ²) change:")
+        print('📈 Goodness-of-fit (reduced χ²) change:')
 
         if is_notebook() and display is not None:
             # Reset the DataFrame rows
@@ -155,23 +159,25 @@ class FittingProgressTracker:
             self._display_handle = DisplayHandle()
 
             # Create placeholder for display
-            self._display_handle.display(HTML(""))
+            self._display_handle.display(HTML(''))
 
             # Show empty table with headers
-            render_table(columns_data=self._df_rows,
-                         columns_alignment=DEFAULT_ALIGNMENTS,
-                         columns_headers=DEFAULT_HEADERS,
-                         display_handle=self._display_handle)
+            render_table(
+                columns_data=self._df_rows,
+                columns_alignment=DEFAULT_ALIGNMENTS,
+                columns_headers=DEFAULT_HEADERS,
+                display_handle=self._display_handle,
+            )
         else:
             # Top border
-            print("╒" + "╤".join(["═" * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + "╕")
+            print('╒' + '╤'.join(['═' * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + '╕')
 
             # Header row (all centered)
-            header_row = "│" + "│".join([format_cell(h, align="center") for h in DEFAULT_HEADERS]) + "│"
+            header_row = '│' + '│'.join([format_cell(h, align='center') for h in DEFAULT_HEADERS]) + '│'
             print(header_row)
 
             # Separator
-            print("╞" + "╪".join(["═" * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + "╡")
+            print('╞' + '╪'.join(['═' * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + '╡')
 
     def add_tracking_info(self, row: List[str]) -> None:
         if is_notebook() and display is not None:
@@ -179,16 +185,17 @@ class FittingProgressTracker:
             self._df_rows.append(row)
 
             # Show fully updated table
-            render_table(columns_data=self._df_rows,
-                         columns_alignment=DEFAULT_ALIGNMENTS,
-                         columns_headers=DEFAULT_HEADERS,
-                         display_handle=self._display_handle)
+            render_table(
+                columns_data=self._df_rows,
+                columns_alignment=DEFAULT_ALIGNMENTS,
+                columns_headers=DEFAULT_HEADERS,
+                display_handle=self._display_handle,
+            )
         else:
             # Alignments for each column
-            formatted_row = "│" + "│".join([
-                format_cell(cell, align=DEFAULT_ALIGNMENTS[i])
-                for i, cell in enumerate(row)
-            ]) + "│"
+            formatted_row = (
+                '│' + '│'.join([format_cell(cell, align=DEFAULT_ALIGNMENTS[i]) for i, cell in enumerate(row)]) + '│'
+            )
 
             # Print the new row
             print(formatted_row)
@@ -197,16 +204,16 @@ class FittingProgressTracker:
         # Add last iteration as last row
         row: List[str] = [
             str(self._last_iteration),
-            f"{self._last_chi2:.2f}" if self._last_chi2 is not None else "",
-            ""
+            f'{self._last_chi2:.2f}' if self._last_chi2 is not None else '',
+            '',
         ]
         self.add_tracking_info(row)
 
         # Bottom border for terminal only
         if not is_notebook() or display is None:
             # Bottom border for terminal only
-            print("╘" + "╧".join(["═" * FIXED_WIDTH for _ in range(len(row))]) + "╛")
+            print('╘' + '╧'.join(['═' * FIXED_WIDTH for _ in range(len(row))]) + '╛')
 
         # Print best result
-        print(f"🏆 Best goodness-of-fit (reduced χ²) is {self._best_chi2:.2f} at iteration {self._best_iteration}")
-        print("✅ Fitting complete.")
+        print(f'🏆 Best goodness-of-fit (reduced χ²) is {self._best_chi2:.2f} at iteration {self._best_iteration}')
+        print('✅ Fitting complete.')

@@ -14,18 +14,18 @@ def test_point_initialization():
     point = Point(x=1.0, y=2.0)
     assert point.x.value == 1.0
     assert point.y.value == 2.0
-    assert point.cif_category_key == "pd_background"
-    assert point.category_key == "background"
-    assert point._entry_id == "1.0"
+    assert point.cif_category_key == 'pd_background'
+    assert point.category_key == 'background'
+    assert point._entry_id == '1.0'
 
 
 def test_polynomial_term_initialization():
     term = PolynomialTerm(order=2, coef=3.0)
     assert term.order.value == 2
     assert term.coef.value == 3.0
-    assert term.cif_category_key == "pd_background"
-    assert term.category_key == "background"
-    assert term._entry_id == "2"
+    assert term.cif_category_key == 'pd_background'
+    assert term.category_key == 'background'
+    assert term._entry_id == '2'
 
 
 def test_line_segment_background_add_and_calculate():
@@ -43,10 +43,11 @@ def test_line_segment_background_calculate_no_points():
     background = LineSegmentBackground()
     x_data = np.array([1.0, 2.0, 3.0])
 
-    with patch("builtins.print") as mock_print:
+    with patch('builtins.print') as mock_print:
         y_data = background.calculate(x_data)
         assert np.array_equal(y_data, np.zeros_like(x_data))
-        assert("No background points found. Setting background to zero." in str(mock_print.call_args.args[0]))
+        assert 'No background points found. Setting background to zero.' in str(mock_print.call_args.args[0])
+
 
 def test_line_segment_background_show(capsys):
     background = LineSegmentBackground()
@@ -55,7 +56,8 @@ def test_line_segment_background_show(capsys):
 
     background.show()
     captured = capsys.readouterr()
-    assert "Line-segment background points" in captured.out
+    assert 'Line-segment background points' in captured.out
+
 
 def test_chebyshev_polynomial_background_add_and_calculate():
     background = ChebyshevPolynomialBackground()
@@ -75,10 +77,11 @@ def test_chebyshev_polynomial_background_calculate_no_terms():
     background = ChebyshevPolynomialBackground()
     x_data = np.array([0.0, 0.5, 1.0])
 
-    with patch("builtins.print") as mock_print:
+    with patch('builtins.print') as mock_print:
         y_data = background.calculate(x_data)
         assert np.array_equal(y_data, np.zeros_like(x_data))
-        assert("No background points found. Setting background to zero." in str(mock_print.call_args.args[0]))
+        assert 'No background points found. Setting background to zero.' in str(mock_print.call_args.args[0])
+
 
 def test_chebyshev_polynomial_background_show(capsys):
     background = ChebyshevPolynomialBackground()
@@ -87,16 +90,17 @@ def test_chebyshev_polynomial_background_show(capsys):
 
     background.show()
     captured = capsys.readouterr()
-    assert "Chebyshev polynomial background terms" in captured.out
+    assert 'Chebyshev polynomial background terms' in captured.out
+
 
 def test_background_factory_create_supported_types():
-    line_segment_background = BackgroundFactory.create("line-segment")
+    line_segment_background = BackgroundFactory.create('line-segment')
     assert isinstance(line_segment_background, LineSegmentBackground)
 
-    chebyshev_background = BackgroundFactory.create("chebyshev polynomial")
+    chebyshev_background = BackgroundFactory.create('chebyshev polynomial')
     assert isinstance(chebyshev_background, ChebyshevPolynomialBackground)
 
 
 def test_background_factory_create_unsupported_type():
     with pytest.raises(ValueError, match="Unsupported background type: 'unsupported'.*"):
-        BackgroundFactory.create("unsupported")
+        BackgroundFactory.create('unsupported')

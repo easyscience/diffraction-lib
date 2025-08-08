@@ -28,11 +28,11 @@ from easydiffraction.utils.utils import render_table
 
 class InstrumentMixin:
     def __init__(self, *args, **kwargs):
-        expt_type = kwargs.get("type")
+        expt_type = kwargs.get('type')
         super().__init__(*args, **kwargs)
         self._instrument = InstrumentFactory.create(
             scattering_type=expt_type.scattering_type.value,
-            beam_mode=expt_type.beam_mode.value
+            beam_mode=expt_type.beam_mode.value,
         )
 
     @property
@@ -54,14 +54,13 @@ class BaseExperiment(Datablock):
     # TODO: Find better name for the attribute 'type'.
     #  1. It shadows the built-in type() function.
     #  2. It is not very clear what it refers to.
-    def __init__(self,
-                 name: str,
-                 type: ExperimentType):
+    def __init__(self, name: str, type: ExperimentType):
         self.name = name
         self.type = type
         self.datastore = DatastoreFactory.create(
             sample_form=self.type.sample_form.value,
-            experiment=self)
+            experiment=self,
+        )
 
     # ---------------------------
     # Name (ID) of the experiment
@@ -93,68 +92,71 @@ class BaseExperiment(Datablock):
     # Misc. Need to be sorted
     # ----------------
 
-    def as_cif(self, max_points: Optional[int] = None) -> str:
+    def as_cif(
+        self,
+        max_points: Optional[int] = None,
+    ) -> str:
         """
         Export the sample model to CIF format.
         Returns:
             str: CIF string representation of the experiment.
         """
         # Data block header
-        cif_lines: List[str] = [f"data_{self.name}"]
+        cif_lines: List[str] = [f'data_{self.name}']
 
         # Experiment type
-        cif_lines += ["", self.type.as_cif()]
+        cif_lines += ['', self.type.as_cif()]
 
         # Instrument setup and calibration
-        if hasattr(self, "instrument"):
-            cif_lines += ["", self.instrument.as_cif()]
+        if hasattr(self, 'instrument'):
+            cif_lines += ['', self.instrument.as_cif()]
 
         # Peak profile, broadening and asymmetry
-        if hasattr(self, "peak"):
-            cif_lines += ["", self.peak.as_cif()]
+        if hasattr(self, 'peak'):
+            cif_lines += ['', self.peak.as_cif()]
 
         # Phase scale factors for powder experiments
-        if hasattr(self, "linked_phases") and self.linked_phases._items:
-            cif_lines += ["", self.linked_phases.as_cif()]
+        if hasattr(self, 'linked_phases') and self.linked_phases._items:
+            cif_lines += ['', self.linked_phases.as_cif()]
 
         # Crystal scale factor for single crystal experiments
-        if hasattr(self, "linked_crystal"):
-            cif_lines += ["", self.linked_crystal.as_cif()]
+        if hasattr(self, 'linked_crystal'):
+            cif_lines += ['', self.linked_crystal.as_cif()]
 
         # Background points
-        if hasattr(self, "background") and self.background._items:
-            cif_lines += ["", self.background.as_cif()]
+        if hasattr(self, 'background') and self.background._items:
+            cif_lines += ['', self.background.as_cif()]
 
         # Excluded regions
-        if hasattr(self, "excluded_regions") and self.excluded_regions._items:
-            cif_lines += ["", self.excluded_regions.as_cif()]
+        if hasattr(self, 'excluded_regions') and self.excluded_regions._items:
+            cif_lines += ['', self.excluded_regions.as_cif()]
 
         # Measured data
-        if hasattr(self, "datastore") and hasattr(self.datastore, "pattern"):
-            cif_lines.append("")
-            cif_lines.append("loop_")
+        if hasattr(self, 'datastore') and hasattr(self.datastore, 'pattern'):
+            cif_lines.append('')
+            cif_lines.append('loop_')
             category = '_pd_meas'  # TODO: Add category to pattern component
             attributes = ('2theta_scan', 'intensity_total', 'intensity_total_su')
             for attribute in attributes:
-                cif_lines.append(f"{category}.{attribute}")
+                cif_lines.append(f'{category}.{attribute}')
             pattern = self.datastore.pattern
             if max_points is not None and len(pattern.x) > 2 * max_points:
                 for i in range(max_points):
                     x = pattern.x[i]
                     meas = pattern.meas[i]
                     meas_su = pattern.meas_su[i]
-                    cif_lines.append(f"{x} {meas} {meas_su}")
-                cif_lines.append("...")
+                    cif_lines.append(f'{x} {meas} {meas_su}')
+                cif_lines.append('...')
                 for i in range(-max_points, 0):
                     x = pattern.x[i]
                     meas = pattern.meas[i]
                     meas_su = pattern.meas_su[i]
-                    cif_lines.append(f"{x} {meas} {meas_su}")
+                    cif_lines.append(f'{x} {meas} {meas_su}')
             else:
                 for x, meas, meas_su in zip(pattern.x, pattern.meas, pattern.meas_su):
-                    cif_lines.append(f"{x} {meas} {meas_su}")
+                    cif_lines.append(f'{x} {meas} {meas_su}')
 
-        return "\n".join(cif_lines)
+        return '\n'.join(cif_lines)
 
     def show_as_cif(self) -> None:
         cif_text: str = self.as_cif(max_points=5)
@@ -171,17 +173,19 @@ class BasePowderExperiment(BaseExperiment):
     Base class for all powder experiments.
     """
 
-    def __init__(self,
-                 name: str,
-                 type: ExperimentType) -> None:
-        super().__init__(name=name,
-                         type=type)
+    def __init__(
+        self,
+        name: str,
+        type: ExperimentType,
+    ) -> None:
+        super().__init__(name=name, type=type)
 
         self._peak_profile_type: str = DEFAULT_PEAK_PROFILE_TYPE[self.type.scattering_type.value][self.type.beam_mode.value]
         self.peak = PeakFactory.create(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
-            profile_type=self._peak_profile_type)
+            profile_type=self._peak_profile_type,
+        )
 
         self.linked_phases: LinkedPhases = LinkedPhases()
         self.excluded_regions: ExcludedRegions = ExcludedRegions(parent=self)
@@ -203,47 +207,46 @@ class BasePowderExperiment(BaseExperiment):
             print("For more information, use 'show_supported_peak_profile_types()'")
             return
         self.peak = PeakFactory.create(
-            scattering_type=self.type.scattering_type.value,
-            beam_mode=self.type.beam_mode.value,
-            profile_type=new_type)
+            scattering_type=self.type.scattering_type.value, beam_mode=self.type.beam_mode.value, profile_type=new_type
+        )
         self._peak_profile_type = new_type
         print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
         print(new_type)
 
     def show_supported_peak_profile_types(self):
-        columns_headers = ["Peak profile type", "Description"]
-        columns_alignment = ["left", "left"]
+        columns_headers = ['Peak profile type', 'Description']
+        columns_alignment = ['left', 'left']
         columns_data = []
         for name, config in PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].items():
             description = getattr(config, '_description', 'No description provided.')
             columns_data.append([name, description])
 
-        print(paragraph("Supported peak profile types"))
-        render_table(columns_headers=columns_headers,
-                     columns_alignment=columns_alignment,
-                     columns_data=columns_data)
+        print(paragraph('Supported peak profile types'))
+        render_table(columns_headers=columns_headers, columns_alignment=columns_alignment, columns_data=columns_data)
 
     def show_current_peak_profile_type(self):
-        print(paragraph("Current peak profile type"))
+        print(paragraph('Current peak profile type'))
         print(self.peak_profile_type)
 
 
-class PowderExperiment(InstrumentMixin,
-                       BasePowderExperiment):
+class PowderExperiment(
+    InstrumentMixin,
+    BasePowderExperiment,
+):
     """
     Powder experiment class with specific attributes.
     Wraps background, peak profile, and linked phases.
     """
 
-    def __init__(self,
-                 name: str,
-                 type: ExperimentType) -> None:
-        super().__init__(name=name,
-                         type=type)
+    def __init__(
+        self,
+        name: str,
+        type: ExperimentType,
+    ) -> None:
+        super().__init__(name=name, type=type)
 
         self._background_type: str = DEFAULT_BACKGROUND_TYPE
-        self.background = BackgroundFactory.create(
-            background_type=self.background_type)
+        self.background = BackgroundFactory.create(background_type=self.background_type)
 
     # -------------
     # Measured data
@@ -259,13 +262,13 @@ class PowderExperiment(InstrumentMixin,
         try:
             data = np.loadtxt(data_path)
         except Exception as e:
-            raise IOError(f"Failed to read data from {data_path}: {e}")
+            raise IOError(f'Failed to read data from {data_path}: {e}')
 
         if data.shape[1] < 2:
-            raise ValueError("Data file must have at least two columns: x and y.")
+            raise ValueError('Data file must have at least two columns: x and y.')
 
         if data.shape[1] < 3:
-            print("Warning: No uncertainty (sy) column provided. Defaulting to sqrt(y).")
+            print('Warning: No uncertainty (sy) column provided. Defaulting to sqrt(y).')
 
         # Extract x, y data
         x: np.ndarray = data[:, 0]
@@ -299,11 +302,9 @@ class PowderExperiment(InstrumentMixin,
 
         # Excluded mask
         # No excluded points by default
-        self.datastore.pattern.excluded = np.full(x.shape,
-                                                  fill_value=False,
-                                                  dtype=bool)
+        self.datastore.pattern.excluded = np.full(x.shape, fill_value=False, dtype=bool)
 
-        print(paragraph("Data loaded successfully"))
+        print(paragraph('Data loaded successfully'))
         print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
 
     @property
@@ -324,21 +325,20 @@ class PowderExperiment(InstrumentMixin,
         print(new_type)
 
     def show_supported_background_types(self):
-        columns_headers = ["Background type", "Description"]
-        columns_alignment = ["left", "left"]
+        columns_headers = ['Background type', 'Description']
+        columns_alignment = ['left', 'left']
         columns_data = []
         for name, config in BackgroundFactory._supported.items():
             description = getattr(config, '_description', 'No description provided.')
             columns_data.append([name, description])
 
-        print(paragraph("Supported background types"))
-        render_table(columns_headers=columns_headers,
-                     columns_alignment=columns_alignment,
-                     columns_data=columns_data)
+        print(paragraph('Supported background types'))
+        render_table(columns_headers=columns_headers, columns_alignment=columns_alignment, columns_data=columns_data)
 
     def show_current_background_type(self):
-        print(paragraph("Current background type"))
+        print(paragraph('Current background type'))
         print(self.background_type)
+
 
 # TODO: Refactor this class to reuse PowderExperiment
 # TODO: This is not a specific experiment, but rather processed data from
@@ -346,11 +346,12 @@ class PowderExperiment(InstrumentMixin,
 class PairDistributionFunctionExperiment(BasePowderExperiment):
     """PDF experiment class with specific attributes."""
 
-    def __init__(self,
-                 name: str,
-                 type: ExperimentType):
-        super().__init__(name=name,
-                         type=type)
+    def __init__(
+        self,
+        name: str,
+        type: ExperimentType,
+    ):
+        super().__init__(name=name, type=type)
 
     def _load_ascii_data_to_experiment(self, data_path):
         """
@@ -362,18 +363,18 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
         try:
             from diffpy.utils.parsers.loaddata import loadData
         except ImportError:
-            raise ImportError("diffpy module not found.")
+            raise ImportError('diffpy module not found.')
         try:
             data = loadData(data_path)
         except Exception as e:
-            raise IOError(f"Failed to read data from {data_path}: {e}")
+            raise IOError(f'Failed to read data from {data_path}: {e}')
 
         if data.shape[1] < 2:
-            raise ValueError("Data file must have at least two columns: x and y.")
+            raise ValueError('Data file must have at least two columns: x and y.')
 
         default_sy = 0.03
         if data.shape[1] < 3:
-            print(f"Warning: No uncertainty (sy) column provided. Defaulting to {default_sy}.")
+            print(f'Warning: No uncertainty (sy) column provided. Defaulting to {default_sy}.')
 
         # Extract x, y, and sy data
         x = data[:, 0]
@@ -384,7 +385,7 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
         # and includes both positive and negative values. For now, set the
         # e.s.d. to a fixed value of 0.03 if it’s not included in the measured
         # data file. We should improve this later.
-        #sy = data[:, 3] if data.shape[1] > 2 else np.sqrt(y)
+        # sy = data[:, 3] if data.shape[1] > 2 else np.sqrt(y)
         sy = data[:, 2] if data.shape[1] > 2 else np.full_like(y, fill_value=default_sy)
 
         # Attach the data to the experiment's datastore
@@ -392,18 +393,19 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
         self.datastore.pattern.meas = y
         self.datastore.pattern.meas_su = sy
 
-        print(paragraph("Data loaded successfully"))
+        print(paragraph('Data loaded successfully'))
         print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
 
 
 class SingleCrystalExperiment(BaseExperiment):
     """Single crystal experiment class with specific attributes."""
 
-    def __init__(self,
-                 name: str,
-                 type: ExperimentType) -> None:
-        super().__init__(name=name,
-                         type=type)
+    def __init__(
+        self,
+        name: str,
+        type: ExperimentType,
+    ) -> None:
+        super().__init__(name=name, type=type)
         self.linked_crystal = None
 
     def show_meas_chart(self) -> None:
@@ -414,32 +416,37 @@ class ExperimentFactory:
     """Creates Experiment instances with only relevant attributes."""
 
     _supported = {
-        "bragg": {
-            "powder": PowderExperiment,
-            "single crystal": SingleCrystalExperiment,
+        'bragg': {
+            'powder': PowderExperiment,
+            'single crystal': SingleCrystalExperiment,
         },
-        "total": {
-            "powder": PairDistributionFunctionExperiment,
-        }
+        'total': {
+            'powder': PairDistributionFunctionExperiment,
+        },
     }
 
     @classmethod
-    def create(cls,
-               name: str,
-               sample_form: DEFAULT_SAMPLE_FORM,
-               beam_mode: DEFAULT_BEAM_MODE,
-               radiation_probe: DEFAULT_RADIATION_PROBE,
-               scattering_type: DEFAULT_SCATTERING_TYPE,
-               ) -> BaseExperiment:
-
+    def create(
+        cls,
+        name: str,
+        sample_form: DEFAULT_SAMPLE_FORM,
+        beam_mode: DEFAULT_BEAM_MODE,
+        radiation_probe: DEFAULT_RADIATION_PROBE,
+        scattering_type: DEFAULT_SCATTERING_TYPE,
+    ) -> BaseExperiment:
         # TODO: Add checks for expt_type and expt_class
-        expt_type = ExperimentType(sample_form=sample_form,
-                                   beam_mode=beam_mode,
-                                   radiation_probe=radiation_probe,
-                                   scattering_type=scattering_type)
+        expt_type = ExperimentType(
+            sample_form=sample_form,
+            beam_mode=beam_mode,
+            radiation_probe=radiation_probe,
+            scattering_type=scattering_type,
+        )
 
         expt_class = cls._supported[scattering_type][sample_form]
-        expt_obj = expt_class(name=name, type=expt_type)
+        expt_obj = expt_class(
+            name=name,
+            type=expt_type,
+        )
 
         return expt_obj
 
@@ -448,18 +455,20 @@ class ExperimentFactory:
 # TODO: Refactor based on the implementation of method add() in class Experiments
 # TODO: Think of where to keep default values for sample_form, beam_mode, radiation_probe, as they are also defined in the
 #  class ExperimentType
-def Experiment(name: str,
-               sample_form: str = DEFAULT_SAMPLE_FORM,
-               beam_mode: str = DEFAULT_BEAM_MODE,
-               radiation_probe: str = DEFAULT_RADIATION_PROBE,
-               scattering_type: str = DEFAULT_SCATTERING_TYPE,
-               data_path: str = None):
+def Experiment(
+    name: str,
+    sample_form: str = DEFAULT_SAMPLE_FORM,
+    beam_mode: str = DEFAULT_BEAM_MODE,
+    radiation_probe: str = DEFAULT_RADIATION_PROBE,
+    scattering_type: str = DEFAULT_SCATTERING_TYPE,
+    data_path: str = None,
+):
     experiment = ExperimentFactory.create(
         name=name,
         sample_form=sample_form,
         beam_mode=beam_mode,
         radiation_probe=radiation_probe,
-        scattering_type=scattering_type
+        scattering_type=scattering_type,
     )
     if data_path:
         experiment._load_ascii_data_to_experiment(data_path)

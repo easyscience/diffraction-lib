@@ -10,12 +10,8 @@ from easydiffraction.core.singletons import UidMapHandler
 
 @pytest.fixture
 def params():
-    param1 = Parameter(value=1.0,
-                       name='param1',
-                       cif_name='param1_cif')
-    param2 = Parameter(value=2.0,
-                       name='param2',
-                       cif_name='param2_cif')
+    param1 = Parameter(value=1.0, name='param1', cif_name='param1_cif')
+    param2 = Parameter(value=2.0, name='param2', cif_name='param2_cif')
     return param1, param2
 
 
@@ -24,10 +20,8 @@ def mock_aliases(params):
     param1, param2 = params
     mock = MagicMock()
     mock._items = {
-        'alias1': MagicMock(label=MagicMock(value='alias1'),
-                            param_uid=MagicMock(value=param1.uid)),
-        'alias2': MagicMock(label=MagicMock(value='alias2'),
-                            param_uid=MagicMock(value=param2.uid)),
+        'alias1': MagicMock(label=MagicMock(value='alias1'), param_uid=MagicMock(value=param1.uid)),
+        'alias2': MagicMock(label=MagicMock(value='alias2'), param_uid=MagicMock(value=param2.uid)),
     }
     return mock
 
@@ -36,10 +30,8 @@ def mock_aliases(params):
 def mock_constraints():
     mock = MagicMock()
     mock._items = {
-        'expr1': MagicMock(lhs_alias=MagicMock(value='alias1'),
-                           rhs_expr=MagicMock(value='alias2 + 1')),
-        'expr2': MagicMock(lhs_alias=MagicMock(value='alias2'),
-                           rhs_expr=MagicMock(value='alias1 * 2')),
+        'expr1': MagicMock(lhs_alias=MagicMock(value='alias1'), rhs_expr=MagicMock(value='alias2 + 1')),
+        'expr2': MagicMock(lhs_alias=MagicMock(value='alias2'), rhs_expr=MagicMock(value='alias1 * 2')),
     }
     return mock
 

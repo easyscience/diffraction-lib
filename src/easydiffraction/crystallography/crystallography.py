@@ -13,8 +13,10 @@ from sympy import sympify
 from easydiffraction.crystallography.space_group_lookup_table import SPACE_GROUP_LOOKUP_DICT
 
 
-def apply_cell_symmetry_constraints(cell: Dict[str, float],
-                                    name_hm: str) -> Dict[str, float]:
+def apply_cell_symmetry_constraints(
+    cell: Dict[str, float],
+    name_hm: str,
+) -> Dict[str, float]:
     """
     Apply symmetry constraints to unit cell parameters based on space group.
 
@@ -37,51 +39,53 @@ def apply_cell_symmetry_constraints(cell: Dict[str, float],
         print(error_msg)
         return cell
 
-    if crystal_system == "cubic":
-        a = cell["lattice_a"]
-        cell["lattice_b"] = a
-        cell["lattice_c"] = a
-        cell["angle_alpha"] = 90
-        cell["angle_beta"] = 90
-        cell["angle_gamma"] = 90
+    if crystal_system == 'cubic':
+        a = cell['lattice_a']
+        cell['lattice_b'] = a
+        cell['lattice_c'] = a
+        cell['angle_alpha'] = 90
+        cell['angle_beta'] = 90
+        cell['angle_gamma'] = 90
 
-    elif crystal_system == "tetragonal":
-        a = cell["lattice_a"]
-        cell["lattice_b"] = a
-        cell["angle_alpha"] = 90
-        cell["angle_beta"] = 90
-        cell["angle_gamma"] = 90
+    elif crystal_system == 'tetragonal':
+        a = cell['lattice_a']
+        cell['lattice_b'] = a
+        cell['angle_alpha'] = 90
+        cell['angle_beta'] = 90
+        cell['angle_gamma'] = 90
 
-    elif crystal_system == "orthorhombic":
-        cell["angle_alpha"] = 90
-        cell["angle_beta"] = 90
-        cell["angle_gamma"] = 90
+    elif crystal_system == 'orthorhombic':
+        cell['angle_alpha'] = 90
+        cell['angle_beta'] = 90
+        cell['angle_gamma'] = 90
 
-    elif crystal_system in {"hexagonal", "trigonal"}:
-        a = cell["lattice_a"]
-        cell["lattice_b"] = a
-        cell["angle_alpha"] = 90
-        cell["angle_beta"] = 90
-        cell["angle_gamma"] = 120
+    elif crystal_system in {'hexagonal', 'trigonal'}:
+        a = cell['lattice_a']
+        cell['lattice_b'] = a
+        cell['angle_alpha'] = 90
+        cell['angle_beta'] = 90
+        cell['angle_gamma'] = 120
 
-    elif crystal_system == "monoclinic":
-        cell["angle_alpha"] = 90
-        cell["angle_gamma"] = 90
+    elif crystal_system == 'monoclinic':
+        cell['angle_alpha'] = 90
+        cell['angle_gamma'] = 90
 
-    elif crystal_system == "triclinic":
+    elif crystal_system == 'triclinic':
         pass  # No constraints to apply
 
     else:
-        error_msg = f"Unknown or unsupported crystal system: {crystal_system}"
+        error_msg = f'Unknown or unsupported crystal system: {crystal_system}'
         print(error_msg)
 
     return cell
 
 
-def apply_atom_site_symmetry_constraints(atom_site: Dict[str, Any],
-                                         name_hm: str,
-                                         coord_code: int,
-                                         wyckoff_letter: str) -> Dict[str, Any]:
+def apply_atom_site_symmetry_constraints(
+    atom_site: Dict[str, Any],
+    name_hm: str,
+    coord_code: int,
+    wyckoff_letter: str,
+) -> Dict[str, Any]:
     """
     Apply symmetry constraints to atomic coordinates based on site symmetry.
 
@@ -102,30 +106,26 @@ def apply_atom_site_symmetry_constraints(atom_site: Dict[str, Any],
 
     it_coordinate_system_code = coord_code
     if it_coordinate_system_code is None:
-        error_msg = "IT_coordinate_system_code is not set"
+        error_msg = 'IT_coordinate_system_code is not set'
         print(error_msg)
         return atom_site
 
     space_group_entry = SPACE_GROUP_LOOKUP_DICT[(it_number, it_coordinate_system_code)]
-    wyckoff_positions = space_group_entry["Wyckoff_positions"][wyckoff_letter]
-    coords_xyz = wyckoff_positions["coords_xyz"]
+    wyckoff_positions = space_group_entry['Wyckoff_positions'][wyckoff_letter]
+    coords_xyz = wyckoff_positions['coords_xyz']
 
     first_position = coords_xyz[0]
-    components = first_position.strip("()").split(",")
+    components = first_position.strip('()').split(',')
     parsed_exprs: List[Expr] = [sympify(comp.strip()) for comp in components]
 
-    x_val: Expr = sympify(atom_site["fract_x"])
-    y_val: Expr = sympify(atom_site["fract_y"])
-    z_val: Expr = sympify(atom_site["fract_z"])
+    x_val: Expr = sympify(atom_site['fract_x'])
+    y_val: Expr = sympify(atom_site['fract_y'])
+    z_val: Expr = sympify(atom_site['fract_z'])
 
-    substitutions: Dict[str, Expr] = {
-        "x": x_val,
-        "y": y_val,
-        "z": z_val
-    }
+    substitutions: Dict[str, Expr] = {'x': x_val, 'y': y_val, 'z': z_val}
 
-    axes: tuple[str, ...] = ("x", "y", "z")
-    x, y, z = symbols("x y z")
+    axes: tuple[str, ...] = ('x', 'y', 'z')
+    x, y, z = symbols('x y z')
     symbols_xyz: tuple[Symbol, ...] = (x, y, z)
 
     for i, axis in enumerate(axes):
@@ -135,6 +135,6 @@ def apply_atom_site_symmetry_constraints(atom_site: Dict[str, Any],
         if not is_free:
             evaluated = parsed_exprs[i].subs(substitutions)
             simplified = simplify(evaluated)
-            atom_site[f"fract_{axis}"] = float(simplified)
+            atom_site[f'fract_{axis}'] = float(simplified)
 
     return atom_site

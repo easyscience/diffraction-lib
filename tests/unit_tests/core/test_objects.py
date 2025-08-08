@@ -8,19 +8,19 @@ from easydiffraction.core.objects import Parameter
 
 
 def test_descriptor_initialization():
-    desc = Descriptor(value=10, name="test", cif_name="test_cif", editable=True)
+    desc = Descriptor(value=10, name='test', cif_name='test_cif', editable=True)
     assert desc.value == 10
-    assert desc.name == "test"
-    assert desc.cif_name == "test_cif"
+    assert desc.name == 'test'
+    assert desc.cif_name == 'test_cif'
     assert desc.editable is True
 
 
 def test_descriptor_value_setter():
-    desc = Descriptor(value=10, name="test", cif_name="test_cif", editable=True)
+    desc = Descriptor(value=10, name='test', cif_name='test_cif', editable=True)
     desc.value = 20
     assert desc.value == 20
 
-    desc_non_editable = Descriptor(value=10, name="test", cif_name="test_cif", editable=False)
+    desc_non_editable = Descriptor(value=10, name='test', cif_name='test_cif', editable=False)
     desc_non_editable.value = 30
     assert desc_non_editable.value == 10  # Value should not change
 
@@ -28,8 +28,8 @@ def test_descriptor_value_setter():
 def test_parameter_initialization():
     param = Parameter(
         value=5.0,
-        name="param",
-        cif_name="param_cif",
+        name='param',
+        cif_name='param_cif',
         uncertainty=0.1,
         free=True,
         constrained=False,
@@ -48,27 +48,29 @@ def test_component_abstract_methods():
     class TestComponent(Component):
         @property
         def category_key(self):
-            return "test_category"
+            return 'test_category'
+
         @property
         def cif_category_key(self):
-            return "test_cif_category"
+            return 'test_cif_category'
 
     comp = TestComponent()
-    assert comp.category_key == "test_category"
-    assert comp.cif_category_key == "test_cif_category"
+    assert comp.category_key == 'test_category'
+    assert comp.cif_category_key == 'test_cif_category'
 
 
 def test_component_attribute_handling():
     class TestComponent(Component):
         @property
         def category_key(self):
-            return "test_category"
+            return 'test_category'
+
         @property
         def cif_category_key(self):
-            return "test_cif_category"
+            return 'test_cif_category'
 
     comp = TestComponent()
-    desc = Descriptor(value=10, name="test", cif_name="test_cif")
+    desc = Descriptor(value=10, name='test', cif_name='test_cif')
     comp.test_attr = desc
     assert comp.test_attr.value == 10  # Access Descriptor value directly
 
@@ -81,11 +83,11 @@ def test_collection_add_and_retrieve():
 
     collection = TestCollection()
 
-    collection._items["item1"] = "value1"
-    collection._items["item2"] = "value2"
+    collection._items['item1'] = 'value1'
+    collection._items['item2'] = 'value2'
 
-    assert collection["item1"] == "value1"
-    assert collection["item2"] == "value2"
+    assert collection['item1'] == 'value1'
+    assert collection['item2'] == 'value2'
 
 
 def test_collection_iteration():
@@ -96,21 +98,22 @@ def test_collection_iteration():
 
     collection = TestCollection()
 
-    collection._items["item1"] = "value1"
-    collection._items["item2"] = "value2"
+    collection._items['item1'] = 'value1'
+    collection._items['item2'] = 'value2'
 
     items = list(collection)
-    assert items == ["value1", "value2"]
+    assert items == ['value1', 'value2']
 
 
 def test_datablock_components():
     class TestComponent(Component):
         @property
         def category_key(self):
-            return "test_category"
+            return 'test_category'
+
         @property
         def cif_category_key(self):
-            return "test_cif_category"
+            return 'test_cif_category'
 
     class TestDatablock(Datablock):
         def __init__(self):

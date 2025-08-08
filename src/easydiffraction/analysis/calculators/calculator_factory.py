@@ -19,16 +19,16 @@ class CalculatorFactory:
     _potential_calculators: Dict[str, Dict[str, Union[str, Type[CalculatorBase]]]] = {
         'crysfml': {
             'description': 'CrysFML library for crystallographic calculations',
-            'class': CrysfmlCalculator
+            'class': CrysfmlCalculator,
         },
         'cryspy': {
             'description': 'CrysPy library for crystallographic calculations',
-            'class': CryspyCalculator
+            'class': CryspyCalculator,
         },
         'pdffit': {
             'description': 'PDFfit2 library for pair distribution function calculations',
             'class': PdffitCalculator,
-        }
+        },
     }
 
     @classmethod
@@ -45,23 +45,22 @@ class CalculatorFactory:
 
     @classmethod
     def show_supported_calculators(cls) -> None:
-        columns_headers: List[str] = ["Calculator", "Description"]
-        columns_alignment = ["left", "left"]
+        columns_headers: List[str] = ['Calculator', 'Description']
+        columns_alignment = ['left', 'left']
         columns_data: List[List[str]] = []
         for name, config in cls._supported_calculators().items():
             description: str = config.get('description', 'No description provided.')
             columns_data.append([name, description])
 
-        print(paragraph("Supported calculators"))
-        render_table(columns_headers=columns_headers,
-                     columns_alignment=columns_alignment,
-                     columns_data=columns_data)
+        print(paragraph('Supported calculators'))
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )
 
     @classmethod
-    def create_calculator(
-            cls,
-            calculator_name: str
-    ) -> Optional[CalculatorBase]:
+    def create_calculator(cls, calculator_name: str) -> Optional[CalculatorBase]:
         config = cls._supported_calculators().get(calculator_name)
         if not config:
             print(error(f"Unknown calculator '{calculator_name}'"))
@@ -72,27 +71,27 @@ class CalculatorFactory:
 
     @classmethod
     def register_calculator(
-            cls,
-            calculator_type: str,
-            calculator_cls: Type[CalculatorBase],
-            description: str = 'No description provided.'
+        cls,
+        calculator_type: str,
+        calculator_cls: Type[CalculatorBase],
+        description: str = 'No description provided.',
     ) -> None:
         cls._potential_calculators[calculator_type] = {
             'class': calculator_cls,
-            'description': description
+            'description': description,
         }
 
     @classmethod
     def register_minimizer(
-            cls,
-            name: str,
-            minimizer_cls: Type[Any],
-            method: Optional[str] = None,
-            description: str = 'No description provided.'
+        cls,
+        name: str,
+        minimizer_cls: Type[Any],
+        method: Optional[str] = None,
+        description: str = 'No description provided.',
     ) -> None:
         cls._available_minimizers[name] = {
             'engine': name,
             'method': method,
             'description': description,
-            'class': minimizer_cls
+            'class': minimizer_cls,
         }

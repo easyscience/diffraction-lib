@@ -20,11 +20,13 @@ class SampleModels(Collection):
         super().__init__()  # Initialize Collection
         self._models = self._items  # Alias for legacy support
 
-    def add(self,
-            model: Optional[SampleModel] = None,
-            name: Optional[str] = None,
-            cif_path: Optional[str] = None,
-            cif_str: Optional[str] = None) -> None:
+    def add(
+        self,
+        model: Optional[SampleModel] = None,
+        name: Optional[str] = None,
+        cif_path: Optional[str] = None,
+        cif_str: Optional[str] = None,
+    ) -> None:
         """
         Add a new sample model to the collection.
         Dispatches based on input type: pre-built model or parameters for new creation.
@@ -66,7 +68,7 @@ class SampleModels(Collection):
 
     def show_names(self) -> None:
         """List all model IDs in the collection."""
-        print(paragraph("Defined sample models" + " 🧩"))
+        print(paragraph('Defined sample models' + ' 🧩'))
         print(self.get_ids())
 
     def show_params(self) -> None:
@@ -81,7 +83,7 @@ class SampleModels(Collection):
         Returns:
             CIF string representation of all sample models.
         """
-        return "\n".join([model.as_cif() for model in self._models.values()])
+        return '\n'.join([model.as_cif() for model in self._models.values()])
 
     @enforce_type
     def _add_prebuilt_sample_model(self, sample_model: SampleModel) -> None:
@@ -96,10 +98,12 @@ class SampleModels(Collection):
         """
         self._models[sample_model.name] = sample_model
 
-    def _create_and_add_sample_model(self,
-                                    name: Optional[str] = None,
-                                    cif_path: Optional[str] = None,
-                                    cif_str: Optional[str] = None) -> None:
+    def _create_and_add_sample_model(
+        self,
+        name: Optional[str] = None,
+        cif_path: Optional[str] = None,
+        cif_str: Optional[str] = None,
+    ) -> None:
         """
         Create a SampleModel instance and add it to the collection.
 
@@ -118,6 +122,6 @@ class SampleModels(Collection):
         elif name:
             model = SampleModel(name=name)
         else:
-            raise ValueError("You must provide a name, cif_path, or cif_str.")
+            raise ValueError('You must provide a name, cif_path, or cif_str.')
 
         self._models[model.name] = model

@@ -14,6 +14,7 @@ from .calculator_base import CalculatorBase
 
 try:
     from pycrysfml import cfml_py_utilities
+
     print("✅ 'pycrysfml' calculation engine is successfully imported.")
 except ImportError:
     print("⚠️ 'pycrysfml' module not found. This calculation engine will not be available.")
@@ -29,12 +30,12 @@ class CrysfmlCalculator(CalculatorBase):
 
     @property
     def name(self) -> str:
-        return "crysfml"
+        return 'crysfml'
 
     def calculate_structure_factors(
-            self,
-            sample_models: SampleModels,
-            experiments: Experiments
+        self,
+        sample_models: SampleModels,
+        experiments: Experiments,
     ) -> None:
         """
         Call Crysfml to calculate structure factors.
@@ -43,13 +44,13 @@ class CrysfmlCalculator(CalculatorBase):
             sample_models: The sample models to calculate structure factors for.
             experiments: The experiments associated with the sample models.
         """
-        raise NotImplementedError("HKL calculation is not implemented for CrysfmlCalculator.")
+        raise NotImplementedError('HKL calculation is not implemented for CrysfmlCalculator.')
 
     def _calculate_single_model_pattern(
         self,
         sample_model: SampleModels,
         experiment: Experiment,
-        called_by_minimizer: bool = False
+        called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
         """
         Calculates the diffraction pattern using Crysfml for the given sample model and experiment.
@@ -67,14 +68,14 @@ class CrysfmlCalculator(CalculatorBase):
             _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
             y = self._adjust_pattern_length(y, len(experiment.datastore.pattern.x))
         except KeyError:
-            print("[CrysfmlCalculator] Error: No calculated data")
+            print('[CrysfmlCalculator] Error: No calculated data')
             y = []
         return y
 
     def _adjust_pattern_length(
-            self,
-            pattern: List[float],
-            target_length: int
+        self,
+        pattern: List[float],
+        target_length: int,
     ) -> List[float]:
         """
         Adjusts the length of the pattern to match the target length.
@@ -92,9 +93,9 @@ class CrysfmlCalculator(CalculatorBase):
         return pattern
 
     def _crysfml_dict(
-            self,
-            sample_model: SampleModels,
-            experiment: Experiment
+        self,
+        sample_model: SampleModels,
+        experiment: Experiment,
     ) -> Dict[str, Union[Experiment, SampleModel]]:
         """
         Converts the sample model and experiment into a dictionary format for Crysfml.
@@ -109,13 +110,13 @@ class CrysfmlCalculator(CalculatorBase):
         sample_model_dict = self._convert_sample_model_to_dict(sample_model)
         experiment_dict = self._convert_experiment_to_dict(experiment)
         return {
-            "phases": [sample_model_dict],
-            "experiments": [experiment_dict]
+            'phases': [sample_model_dict],
+            'experiments': [experiment_dict],
         }
 
     def _convert_sample_model_to_dict(
-            self,
-            sample_model: SampleModel
+        self,
+        sample_model: SampleModel,
     ) -> Dict[str, Any]:
         """
         Converts a sample model into a dictionary format.
@@ -128,35 +129,35 @@ class CrysfmlCalculator(CalculatorBase):
         """
         sample_model_dict = {
             sample_model.name: {
-                "_space_group_name_H-M_alt": sample_model.space_group.name_h_m.value,
-                "_cell_length_a": sample_model.cell.length_a.value,
-                "_cell_length_b": sample_model.cell.length_b.value,
-                "_cell_length_c": sample_model.cell.length_c.value,
-                "_cell_angle_alpha": sample_model.cell.angle_alpha.value,
-                "_cell_angle_beta": sample_model.cell.angle_beta.value,
-                "_cell_angle_gamma": sample_model.cell.angle_gamma.value,
-                "_atom_site": []
+                '_space_group_name_H-M_alt': sample_model.space_group.name_h_m.value,
+                '_cell_length_a': sample_model.cell.length_a.value,
+                '_cell_length_b': sample_model.cell.length_b.value,
+                '_cell_length_c': sample_model.cell.length_c.value,
+                '_cell_angle_alpha': sample_model.cell.angle_alpha.value,
+                '_cell_angle_beta': sample_model.cell.angle_beta.value,
+                '_cell_angle_gamma': sample_model.cell.angle_gamma.value,
+                '_atom_site': [],
             }
         }
 
         for atom in sample_model.atom_sites:
             atom_site = {
-                "_label": atom.label.value,
-                "_type_symbol": atom.type_symbol.value,
-                "_fract_x": atom.fract_x.value,
-                "_fract_y": atom.fract_y.value,
-                "_fract_z": atom.fract_z.value,
-                "_occupancy": atom.occupancy.value,
-                "_adp_type": "Biso",  # Assuming Biso for simplicity
-                "_B_iso_or_equiv": atom.b_iso.value
+                '_label': atom.label.value,
+                '_type_symbol': atom.type_symbol.value,
+                '_fract_x': atom.fract_x.value,
+                '_fract_y': atom.fract_y.value,
+                '_fract_z': atom.fract_z.value,
+                '_occupancy': atom.occupancy.value,
+                '_adp_type': 'Biso',  # Assuming Biso for simplicity
+                '_B_iso_or_equiv': atom.b_iso.value,
             }
-            sample_model_dict[sample_model.name]["_atom_site"].append(atom_site)
+            sample_model_dict[sample_model.name]['_atom_site'].append(atom_site)
 
         return sample_model_dict
 
     def _convert_experiment_to_dict(
-            self,
-            experiment: Experiment
+        self,
+        experiment: Experiment,
     ) -> Dict[str, Any]:
         """
         Converts an experiment into a dictionary format.
@@ -167,29 +168,29 @@ class CrysfmlCalculator(CalculatorBase):
         Returns:
             A dictionary representation of the experiment.
         """
-        expt_type = getattr(experiment, "type", None)
-        instrument = getattr(experiment, "instrument", None)
-        peak = getattr(experiment, "peak", None)
+        expt_type = getattr(experiment, 'type', None)
+        instrument = getattr(experiment, 'instrument', None)
+        peak = getattr(experiment, 'peak', None)
 
         x_data = experiment.datastore.pattern.x
         twotheta_min = float(x_data.min())
         twotheta_max = float(x_data.max())
 
         exp_dict = {
-            "NPD": {
-                "_diffrn_radiation_probe": expt_type.radiation_probe.value if expt_type else "neutron",
-                "_diffrn_radiation_wavelength": instrument.setup_wavelength.value if instrument else 1.0,
-                "_pd_instr_resolution_u": peak.broad_gauss_u.value if peak else 0.0,
-                "_pd_instr_resolution_v": peak.broad_gauss_v.value if peak else 0.0,
-                "_pd_instr_resolution_w": peak.broad_gauss_w.value if peak else 0.0,
-                "_pd_instr_resolution_x": peak.broad_lorentz_x.value if peak else 0.0,
-                "_pd_instr_resolution_y": peak.broad_lorentz_y.value if peak else 0.0,
-                #"_pd_instr_reflex_s_l": peak_asymm.s_l.value if peak_asymm else 0.0,
-                #"_pd_instr_reflex_d_l": peak_asymm.d_l.value if peak_asymm else 0.0,
-                "_pd_meas_2theta_offset": instrument.calib_twotheta_offset.value if instrument else 0.0,
-                "_pd_meas_2theta_range_min": twotheta_min,
-                "_pd_meas_2theta_range_max": twotheta_max,
-                "_pd_meas_2theta_range_inc": (twotheta_max - twotheta_min) / len(x_data)
+            'NPD': {
+                '_diffrn_radiation_probe': expt_type.radiation_probe.value if expt_type else 'neutron',
+                '_diffrn_radiation_wavelength': instrument.setup_wavelength.value if instrument else 1.0,
+                '_pd_instr_resolution_u': peak.broad_gauss_u.value if peak else 0.0,
+                '_pd_instr_resolution_v': peak.broad_gauss_v.value if peak else 0.0,
+                '_pd_instr_resolution_w': peak.broad_gauss_w.value if peak else 0.0,
+                '_pd_instr_resolution_x': peak.broad_lorentz_x.value if peak else 0.0,
+                '_pd_instr_resolution_y': peak.broad_lorentz_y.value if peak else 0.0,
+                # "_pd_instr_reflex_s_l": peak_asymm.s_l.value if peak_asymm else 0.0,
+                # "_pd_instr_reflex_d_l": peak_asymm.d_l.value if peak_asymm else 0.0,
+                '_pd_meas_2theta_offset': instrument.calib_twotheta_offset.value if instrument else 0.0,
+                '_pd_meas_2theta_range_min': twotheta_min,
+                '_pd_meas_2theta_range_max': twotheta_max,
+                '_pd_meas_2theta_range_inc': (twotheta_max - twotheta_min) / len(x_data),
             }
         }
 

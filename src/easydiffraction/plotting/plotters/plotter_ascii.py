@@ -9,30 +9,30 @@ from .plotter_base import PlotterBase
 DEFAULT_COLORS = {
     'meas': asciichartpy.blue,
     'calc': asciichartpy.red,
-    'resid': asciichartpy.green
+    'resid': asciichartpy.green,
 }
 
 
 class AsciiPlotter(PlotterBase):
-
     def _get_legend_item(self, label):
         color_start = DEFAULT_COLORS[label]
         color_end = asciichartpy.reset
-        line = "────"
+        line = '────'
         name = SERIES_CONFIG[label]['name']
-        item = f"{color_start}{line}{color_end} {name}"
+        item = f'{color_start}{line}{color_end} {name}'
         return item
 
-    def plot(self,
-             x,
-             y_series,
-             labels,
-             axes_labels,
-             title,
-             height=None):
-
+    def plot(
+        self,
+        x,
+        y_series,
+        labels,
+        axes_labels,
+        title,
+        height=None,
+    ):
         title = paragraph(title)
-        legend = "\n".join([self._get_legend_item(label) for label in labels])
+        legend = '\n'.join([self._get_legend_item(label) for label in labels])
 
         if height is None:
             height = DEFAULT_HEIGHT
@@ -42,7 +42,7 @@ class AsciiPlotter(PlotterBase):
 
         chart = asciichartpy.plot(y_series, config)
 
-        print(f"{title}")
-        print(f"Displaying data for selected x-range from {x[0]} to {x[-1]} ({len(x)} points)")
-        print(f"Legend:\n{legend}")
+        print(f'{title}')
+        print(f'Displaying data for selected x-range from {x[0]} to {x[-1]} ({len(x)} points)')
+        print(f'Legend:\n{legend}')
         print(chart)

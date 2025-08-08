@@ -43,12 +43,12 @@ model.cell.length_a = 10.250256
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Ca', 'Ca', 0.4665, 0.0, 0.25, wyckoff_letter="b", b_iso=0.92)
-model.atom_sites.add('Al', 'Al', 0.2520, 0.2520, 0.2520, wyckoff_letter="a", b_iso=0.73)
-model.atom_sites.add('Na', 'Na', 0.0852, 0.0852, 0.0852, wyckoff_letter="a", b_iso=2.08)
-model.atom_sites.add('F1', 'F', 0.1376, 0.3055, 0.1196, wyckoff_letter="c", b_iso=0.90)
-model.atom_sites.add('F2', 'F', 0.3623, 0.3631, 0.1870, wyckoff_letter="c", b_iso=1.37)
-model.atom_sites.add('F3', 'F', 0.4611, 0.4611, 0.4611, wyckoff_letter="a", b_iso=0.88)
+model.atom_sites.add('Ca', 'Ca', 0.4665, 0.0, 0.25, wyckoff_letter='b', b_iso=0.92)
+model.atom_sites.add('Al', 'Al', 0.2520, 0.2520, 0.2520, wyckoff_letter='a', b_iso=0.73)
+model.atom_sites.add('Na', 'Na', 0.0852, 0.0852, 0.0852, wyckoff_letter='a', b_iso=2.08)
+model.atom_sites.add('F1', 'F', 0.1376, 0.3055, 0.1196, wyckoff_letter='c', b_iso=0.90)
+model.atom_sites.add('F2', 'F', 0.3623, 0.3631, 0.1870, wyckoff_letter='c', b_iso=1.37)
+model.atom_sites.add('F3', 'F', 0.4611, 0.4611, 0.4611, wyckoff_letter='a', b_iso=0.88)
 
 # %% [markdown]
 # ## Define Experiment
@@ -142,7 +142,7 @@ for x, y in [
     (74204, 262),
     (82103, 268),
     (91958, 268),
-    (102712, 262)
+    (102712, 262),
 ]:
     expt56.background.add(x, y)
 
@@ -175,7 +175,7 @@ for x, y in [
     (75002, 258),
     (83649, 257),
     (92770, 255),
-    (101524, 260)
+    (101524, 260),
 ]:
     expt47.background.add(x, y)
 

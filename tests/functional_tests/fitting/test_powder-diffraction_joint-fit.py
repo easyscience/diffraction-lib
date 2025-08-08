@@ -13,16 +13,16 @@ TEMP_DIR = tempfile.gettempdir()
 
 def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     # Set sample model
-    model = SampleModel("pbso4")
-    model.space_group.name_h_m.value = "P n m a"
+    model = SampleModel('pbso4')
+    model.space_group.name_h_m.value = 'P n m a'
     model.cell.length_a.value = 8.47
     model.cell.length_b.value = 5.39
     model.cell.length_c.value = 6.95
-    model.atom_sites.add("Pb", "Pb", 0.1876, 0.25, 0.167, b_iso=1.37)
-    model.atom_sites.add("S", "S", 0.0654, 0.25, 0.684, b_iso=0.3777)
-    model.atom_sites.add("O1", "O", 0.9082, 0.25, 0.5954, b_iso=1.9764)
-    model.atom_sites.add("O2", "O", 0.1935, 0.25, 0.5432, b_iso=1.4456)
-    model.atom_sites.add("O3", "O", 0.0811, 0.0272, 0.8086, b_iso=1.2822)
+    model.atom_sites.add('Pb', 'Pb', 0.1876, 0.25, 0.167, b_iso=1.37)
+    model.atom_sites.add('S', 'S', 0.0654, 0.25, 0.684, b_iso=0.3777)
+    model.atom_sites.add('O1', 'O', 0.9082, 0.25, 0.5954, b_iso=1.9764)
+    model.atom_sites.add('O2', 'O', 0.1935, 0.25, 0.5432, b_iso=1.4456)
+    model.atom_sites.add('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
 
     # Set experiments
     data_file = 'd1a_pbso4_first-half.dat'
@@ -35,8 +35,8 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt1.peak.broad_gauss_w = 0.386
     expt1.peak.broad_lorentz_x = 0
     expt1.peak.broad_lorentz_y = 0.0878
-    expt1.linked_phases.add("pbso4", scale=1.46)
-    expt1.background_type = "line-segment"
+    expt1.linked_phases.add('pbso4', scale=1.46)
+    expt1.background_type = 'line-segment'
     for x, y in [
         (11.0, 206.1624),
         (15.0, 194.75),
@@ -59,8 +59,8 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt2.peak.broad_gauss_w = 0.386
     expt2.peak.broad_lorentz_x = 0
     expt2.peak.broad_lorentz_y = 0.0878
-    expt2.linked_phases.add("pbso4", scale=1.46)
-    expt2.background_type = "line-segment"
+    expt2.linked_phases.add('pbso4', scale=1.46)
+    expt2.background_type = 'line-segment'
     for x, y in [
         (11.0, 206.1624),
         (15.0, 194.75),
@@ -93,9 +93,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=4.66,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=4.66, decimal=1)
 
 
 def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
@@ -182,9 +180,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=26.05,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=26.05, decimal=1)
 
     # ------------ 2nd fitting ------------
 
@@ -193,9 +189,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=21.09,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=21.09, decimal=1)
 
     # ------------ 3rd fitting ------------
 
@@ -206,9 +200,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=21.09,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=21.09, decimal=1)
 
     # ------------ 4th fitting ------------
 
@@ -219,9 +211,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=14.39,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=14.39, decimal=1)
 
 
 if __name__ == '__main__':

@@ -14,27 +14,28 @@ DEFAULT_MAX = np.inf
 SERIES_CONFIG = dict(
     calc=dict(
         mode='lines',
-        name='Total calculated (Icalc)'
+        name='Total calculated (Icalc)',
     ),
     meas=dict(
         mode='lines+markers',
-        name='Measured (Imeas)'
+        name='Measured (Imeas)',
     ),
     resid=dict(
         mode='lines',
-        name='Residual (Imeas - Icalc)'
-    )
+        name='Residual (Imeas - Icalc)',
+    ),
 )
 
 
 class PlotterBase(ABC):
-
     @abstractmethod
-    def plot(self,
-             x,
-             y_series,
-             labels,
-             axes_labels,
-             title,
-             height):
+    def plot(
+        self,
+        x,
+        y_series,
+        labels,
+        axes_labels,
+        title,
+        height,
+    ):
         pass
