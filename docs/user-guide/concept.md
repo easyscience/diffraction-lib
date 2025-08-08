@@ -24,8 +24,7 @@ crystalline specimen (also called the sample), whose structural properties are
 being studied.
 
 <!-- prettier-ignore-start -->
-![](../assets/images/user-guide/data-acquisition_instrument.png){ width="450",
-loading=lazy }
+![](../assets/images/user-guide/data-acquisition_instrument.png){ width="450", loading=lazy }
 /// caption
 An illustration of the data acquisition step, where raw data is collected
 by a 2D detector. The studied sample originates from Mars. 
@@ -34,8 +33,7 @@ Credits: DOI 10.1126/science.1238932
 <!-- prettier-ignore-end -->
 
 <!-- prettier-ignore-start -->
-![](../assets/images/user-guide/data-acquisition_2d-raw-data.jpg){ width="400",
-loading=lazy }
+![](../assets/images/user-guide/data-acquisition_2d-raw-data.jpg){ width="400", loading=lazy }
 /// caption
 A 2D diffraction pattern collected by the detector. 
 Credits: DOI 10.1126/science.1238932
@@ -50,8 +48,7 @@ format. The goal is to produce a clean and reliable dataset suitable for
 analysis.
 
 <!-- prettier-ignore-start -->
-![](../assets/images/user-guide/data-reduction_1d-pattern.png){ width="450",
-loading=lazy }
+![](../assets/images/user-guide/data-reduction_1d-pattern.png){ width="450", loading=lazy }
 /// caption
 An illustration of a 1D diffraction pattern reduced from the measured 2D data. 
 Credits: DOI 10.1126/science.1238932
@@ -84,8 +81,7 @@ minimizing the difference (or **residual**) between the experimental and
 calculated data — and this is exactly where EasyDiffraction comes into play.
 
 <!-- prettier-ignore-start -->
-![](../assets/images/user-guide/data-analysis_refinement.png){ width="450",
-loading=lazy }
+![](../assets/images/user-guide/data-analysis_refinement.png){ width="450", loading=lazy }
 /// caption
 An illustration of the data analysis step: the experimental data (blue)
 is compared to the calculated data (red), and the residual (gray) is minimized. 
@@ -94,8 +90,7 @@ Credits: DOI 10.1126/science.1238932
 <!-- prettier-ignore-end -->
 
 <!-- prettier-ignore-start -->
-![](../assets/images/user-guide/data-analysis_model.png){ width="450",
-loading=lazy }
+![](../assets/images/user-guide/data-analysis_model.png){ width="450", loading=lazy }
 /// caption
 An example of a crystal structure model of the studied sample.
 ///

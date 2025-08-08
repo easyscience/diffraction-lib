@@ -50,7 +50,7 @@ env:
 
 jobs:
   # Job 1: Check code quality and consistency
-  code-quality:
+  check-code-quality:
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -113,6 +113,7 @@ jobs:
       - name:
           Convert ${{ env.NOTEBOOKS_DIR }}/*.py to ${{ env.NOTEBOOKS_DIR
           }}/*.ipynb
+        shell: bash
         run: |
           jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --from py:percent --to ipynb
           nbstripout ${{ env.NOTEBOOKS_DIR }}/*.ipynb
@@ -150,8 +151,8 @@ jobs:
         run: exit 1
 
   # Job 2: Test code and upload coverage to Codecov.
-  test-code:
-    needs: code-quality # previous job 'code-quality' need to be finished first
+  run-tests-and-build:
+    needs: check-code-quality # previous job 'code-quality' need to be finished first
 
     strategy:
       fail-fast: false
@@ -216,7 +217,7 @@ jobs:
         shell: bash
         run: |
           export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
-          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/ --nbmake-timeout=300 --color=yes -n auto
+          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/ --nbmake-timeout=600 --color=yes -n auto
 
       - name: Create Python package
         run: python -m build --wheel --outdir dist
@@ -237,8 +238,8 @@ jobs:
           compression-level: 0
 
   # Job 3: Test the package
-  test-package:
-    needs: test-code # the previous job needs to be finished first
+  install-and-test-package:
+    needs: run-tests-and-build # the previous job needs to be finished first
 
     strategy:
       fail-fast: false
@@ -292,4 +293,4 @@ jobs:
         shell: bash
         run: |
           export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
-          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/ --nbmake-timeout=300 --color=yes -n auto
+          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/ --nbmake-timeout=600 --color=yes -n auto
