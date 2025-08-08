@@ -6,7 +6,7 @@ on:
   #  # Every branch
   #  branches:
   #    - '**'
-  #  # But do not run this workflow on creating a new tag starting with 'v', e.g. 'v1.0.3' (see pypi-publish.yml)
+  #  # But do not run this workflow on creating a new tag starting with 'v', e.g. 'v1.0.3' (see publish-pypi.yml)
   #  tags-ignore:
   #    - 'v*'
   # Trigger the workflow on pull request
