@@ -1,63 +1,82 @@
 # Parameters
 
 The data analysis process, introduced in the [Concept](concept.md) section,
-assumes that you mainly work with different
-parameters. The parameters are used to describe the sample model and the
-experiment and are required to set up the analysis.
+assumes that you mainly work with different parameters. The parameters are used
+to describe the sample model and the experiment and are required to set up the
+analysis.
 
-Each parameter in EasyDiffraction has a specific name used for code reference, and it belongs to a specific category.
+Each parameter in EasyDiffraction has a specific name used for code reference,
+and it belongs to a specific category.
 
 - In many cases, the EasyDiffraction name is the same as the CIF name.
-- In some cases, the EasyDiffraction name is a slightly modified version of the CIF name to comply with Python naming conventions. For example, `name_H-M_alt` becomes `name_h_m`, replacing hyphens with underscores and using lowercase letters.
-- In rare cases, the EasyDiffraction name is a bit shorter, like `b_iso` instead of CIF `B_iso_or_equiv`, to make the code a bit more user-friendly.
-- When there is no defined CIF name for a parameter, EasyDiffraction introduces its own name, which is used in the code as well as an equivalent CIF name to be placed in the custom CIF dictionary `easydiffractionCIF`.
+- In some cases, the EasyDiffraction name is a slightly modified version of the
+  CIF name to comply with Python naming conventions. For example, `name_H-M_alt`
+  becomes `name_h_m`, replacing hyphens with underscores and using lowercase
+  letters.
+- In rare cases, the EasyDiffraction name is a bit shorter, like `b_iso` instead
+  of CIF `B_iso_or_equiv`, to make the code a bit more user-friendly.
+- When there is no defined CIF name for a parameter, EasyDiffraction introduces
+  its own name, which is used in the code as well as an equivalent CIF name to
+  be placed in the custom CIF dictionary `easydiffractionCIF`.
 
-EasyDiffraction names are used in code, while CIF names are used to store and retrieve the full state of a data analysis 
-project in CIF format. You can find more about the project in the [Project](analysis-workflow/project.md) section.
+EasyDiffraction names are used in code, while CIF names are used to store and
+retrieve the full state of a data analysis project in CIF format. You can find
+more about the project in the [Project](analysis-workflow/project.md) section.
 
 ## Parameter Attributes
 
-Parameters in EasyDiffraction are more than just variables. They are objects that, in addition to the name and value, also 
-include attributes such as the description, unit, uncertainty, minimum and maximum values, etc. All these attributes are 
-described in the [API Reference](../api-reference/index.md) section. Examples of how to use these parameters in code are 
-provided in the [Analysis Workflow](analysis-workflow/index.md) and [Tutorials](../tutorials/index.md) sections.
+Parameters in EasyDiffraction are more than just variables. They are objects
+that, in addition to the name and value, also include attributes such as the
+description, unit, uncertainty, minimum and maximum values, etc. All these
+attributes are described in the [API Reference](../api-reference/index.md)
+section. Examples of how to use these parameters in code are provided in the
+[Analysis Workflow](analysis-workflow/index.md) and
+[Tutorials](../tutorials/index.md) sections.
 
-The most important attribute, besides `name` and `value`, is `free`, which is used to define whether the parameter is free or fixed for optimization during the fitting process. The `free` attribute is set to `False` by default, which means the parameter is fixed. To optimize a parameter, set `free` to `True`.
+The most important attribute, besides `name` and `value`, is `free`, which is
+used to define whether the parameter is free or fixed for optimization during
+the fitting process. The `free` attribute is set to `False` by default, which
+means the parameter is fixed. To optimize a parameter, set `free` to `True`.
 
-Although parameters are central, EasyDiffraction hides their creation and attribute handling from the user. The user only accesses the required parameters through the top-level objects, such as `project`, `sample_models`, `experiments`, etc. The parameters are created and initialized automatically when a new project is created or an existing one is loaded.
+Although parameters are central, EasyDiffraction hides their creation and
+attribute handling from the user. The user only accesses the required parameters
+through the top-level objects, such as `project`, `sample_models`,
+`experiments`, etc. The parameters are created and initialized automatically
+when a new project is created or an existing one is loaded.
 
-In the following sections, you can see a list of the parameters used in EasyDiffraction. Use the tabs to switch between how to access a parameter in code and its CIF name for serialization.
+In the following sections, you can see a list of the parameters used in
+EasyDiffraction. Use the tabs to switch between how to access a parameter in
+code and its CIF name for serialization.
 
 !!! warning "Important"
 
-    Remember that parameters are accessed in code through their parent objects, 
-    such as `project`, `sample_models`, or `experiments`. For example, if you 
-    have a sample model with the ID `nacl`, you can access the space group name 
+    Remember that parameters are accessed in code through their parent objects,
+    such as `project`, `sample_models`, or `experiments`. For example, if you
+    have a sample model with the ID `nacl`, you can access the space group name
     using the following syntax:
 
     ```python
     project.sample_models['nacl'].space_group.name_h_m
     ```
 
-In the example above, `space_group` is a sample model category, and `name_h_m` is the parameter. For simplicity, only the last 
-part (`category.parameter`) of the full access name will be shown in the tables below. 
+In the example above, `space_group` is a sample model category, and `name_h_m`
+is the parameter. For simplicity, only the last part (`category.parameter`) of
+the full access name will be shown in the tables below.
 
 In addition, the CIF names are also provided for each parameter, which are used
-to serialize the parameters in the CIF format. 
+to serialize the parameters in the CIF format.
 
-Tags defining
-the corresponding experiment type are also given before the table.
+Tags defining the corresponding experiment type are also given before the table.
 
 ## Sample model parameters
 
-Below is a list of parameters used to describe the sample model in EasyDiffraction.
+Below is a list of parameters used to describe the sample model in
+EasyDiffraction.
 
 ### Crystall structure parameters
 
-[pd-neut-cwl][3]{:.label-experiment} 
-[pd-neut-tof][3]{:.label-experiment}
-[pd-xray][3]{:.label-experiment}
-[sc-neut-cwl][3]{:.label-experiment}
+[pd-neut-cwl][3]{:.label-experiment} [pd-neut-tof][3]{:.label-experiment}
+[pd-xray][3]{:.label-experiment} [sc-neut-cwl][3]{:.label-experiment}
 
 === "How to access in the code"
 
@@ -107,14 +126,13 @@ Below is a list of parameters used to describe the sample model in EasyDiffracti
 
 ## Experiment parameters
 
-Below is a list of parameters used to describe the experiment in EasyDiffraction.
+Below is a list of parameters used to describe the experiment in
+EasyDiffraction.
 
 ### Common parameters
 
-[pd-neut-cwl][3]{:.label-experiment} 
-[pd-neut-tof][3]{:.label-experiment}
-[pd-xray][3]{:.label-experiment}
-[sc-neut-cwl][3]{:.label-experiment}
+[pd-neut-cwl][3]{:.label-experiment} [pd-neut-tof][3]{:.label-experiment}
+[pd-xray][3]{:.label-experiment} [sc-neut-cwl][3]{:.label-experiment}
 
 === "How to access in the code"
 
@@ -134,11 +152,9 @@ Below is a list of parameters used to describe the experiment in EasyDiffraction
     |                                              | :material-diamond-stone: [sample_form][expt_type]             | \_expt_type.sample_form      | [easydiffractionCIF][0]{:.label-cif} |
     |                                              | :material-chart-bell-curve: [scattering_type][expt_type]      | \_expt_type.scattering_type  | [easydiffractionCIF][0]{:.label-cif} |
 
-
 ### Standard powder diffraction
 
-[pd-neut-cwl][3]{:.label-experiment} 
-[pd-neut-tof][3]{:.label-experiment}
+[pd-neut-cwl][3]{:.label-experiment} [pd-neut-tof][3]{:.label-experiment}
 [pd-xray][3]{:.label-experiment}
 
 === "How to access in the code"
@@ -161,8 +177,7 @@ Below is a list of parameters used to describe the experiment in EasyDiffraction
     |                                                  | :material-arrow-collapse-up: [coef][background]            | \_pd_background.chebyshev_coef         | [pdCIF][0]{:.label-cif} |
     | :material-puzzle: [linked_phases][linked_phases] | :material-scale: [scale][linked_phases]                    | \_pd_phase_block.scale                 | [pdCIF][0]{:.label-cif} |
 
-[pd-neut-cwl][3]{:.label-experiment} 
-[pd-xray][3]{:.label-experiment}
+[pd-neut-cwl][3]{:.label-experiment} [pd-xray][3]{:.label-experiment}
 
 === "How to access in the code"
 
@@ -207,7 +222,6 @@ Below is a list of parameters used to describe the experiment in EasyDiffraction
     |                                                | :material-scale-unbalanced: [asym_alpha_0][peak]               | peak.asym_alpha_0                |
     |                                                | :material-scale-unbalanced: [asym_alpha_1][peak]               | peak.asym_alpha_1                |
 
-
 === "CIF name for serialization"
 
     | Category                                       | Parameter                                                      | CIF name for serialization         | CIF dictionary                       |
@@ -227,8 +241,7 @@ Below is a list of parameters used to describe the experiment in EasyDiffraction
 
 ### Total scattering
 
-[pd-neut-total][3]{:.label-experiment} 
-[pd-xray-total][3]{:.label-experiment}
+[pd-neut-total][3]{:.label-experiment} [pd-xray-total][3]{:.label-experiment}
 
 === "How to access in the code"
 
@@ -251,7 +264,6 @@ Below is a list of parameters used to describe the experiment in EasyDiffraction
      |                                                | :material-knife: [sharp_delta_2][peak]                       | \_peak.sharp_delta_2          | [easydiffractionCIF][0]{:.label-cif} |
      |                                                | :material-arrow-bottom-right: [damp_q][peak]                 | \_peak.damp_q                 | [easydiffractionCIF][0]{:.label-cif} |
      |                                                | :material-arrow-bottom-right: [damp_particle_diameter][peak] | \_peak.damp_particle_diameter | [easydiffractionCIF][0]{:.label-cif} |
-
 
 <!-- prettier-ignore-start -->
 [0]: #

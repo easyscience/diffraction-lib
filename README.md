@@ -33,6 +33,7 @@ Development playground for the new EasyDiffraction API.
   pip python -m pip install . '[visualization]'
   ```
 - Install pycrysfml (pyenv python 3.12, macOS 14, Apple Silicon):
+
   ```bash
   # Install from local wheel
   pip install deps/pycrysfml-0.1.6-py312-none-macosx_14_0_arm64.whl
@@ -48,8 +49,9 @@ Development playground for the new EasyDiffraction API.
   python -c "from pycrysfml import cfml_py_utilities"
   ```
 
-- Install CBLAS library, required for using the Pair Distribution Function feature.
-  This step is required only on Windows.
+- Install CBLAS library, required for using the Pair Distribution Function
+  feature. This step is required only on Windows.
+
   ```bash
   # Install from the conda-forge channel
   conda install libcblas -c conda-forge

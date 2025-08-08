@@ -98,7 +98,9 @@ jobs:
 
       # Copy Jupyter notebooks from the project to the docs folder
       # The notebooks are used to generate the documentation
-      - name: Convert ${{ env.NOTEBOOKS_DIR }}/*.py to docs/${{env.NOTEBOOKS_DIR }}/*.ipynb
+      - name:
+          Convert ${{ env.NOTEBOOKS_DIR }}/*.py to docs/${{env.NOTEBOOKS_DIR
+          }}/*.ipynb
         run: |
           cp -R ${{ env.NOTEBOOKS_DIR }}/data docs/${{ env.NOTEBOOKS_DIR }}/
           jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --from py:percent --to ipynb
@@ -149,8 +151,7 @@ jobs:
       # Upload the static files from the site/ directory to be used in the next job
       # This extra step is needed to allow the download of the artifact in the next job
       # for pushing its content to the branch named 'gh_pages'
-      - name:
-          Upload built site as artifact for gh_pages (master branch)
+      - name: Upload built site as artifact for gh_pages (master branch)
         if: ${{ env.CI_BRANCH == 'master' }}
         uses: actions/upload-artifact@v4
         with:
@@ -209,7 +210,8 @@ jobs:
       # https://github.com/easyscience/diffraction-lib/settings/hooks
       # This is done for the gh_pages branch when the site is tested with a step above
       - name:
-          Deploy to gh_pages branch to trigger deployment to custom domain (master branch)
+          Deploy to gh_pages branch to trigger deployment to custom domain
+          (master branch)
         if: ${{ env.CI_BRANCH == 'master' }}
         uses: s0/git-publish-subdir-action@develop
         env:

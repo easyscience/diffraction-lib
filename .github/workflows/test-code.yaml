@@ -27,10 +27,9 @@ env:
   # Set the environment variables to be used in all jobs defined in this workflow
   # Set the CI_BRANCH environment variable to be the branch name
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
-  
+
 jobs:
   test-code:
-
     strategy:
       fail-fast: false
       matrix:

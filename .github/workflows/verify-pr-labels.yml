@@ -17,6 +17,8 @@ jobs:
         uses: jesusvasquez333/verify-pr-label-action@v1.4.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          valid-labels: '[scope] bug, [scope] documentation, [scope] enhancement, [scope] maintenance, [scope] significant'
+          valid-labels:
+            '[scope] bug, [scope] documentation, [scope] enhancement, [scope]
+            maintenance, [scope] significant'
           pull-request-number: ${{ github.event.pull_request.number }}
           disable-reviews: false

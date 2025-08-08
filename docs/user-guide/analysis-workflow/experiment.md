@@ -4,42 +4,43 @@ icon: material/microscope
 
 # :material-microscope: Experiment
 
-The **Experiment** in EasyDiffraction includes both the measured diffraction data
-and all the other relevant parameters that describe the experimental setup and 
-related conditions. This can include information about the instrumental 
-resolution, peak shape, background, etc. 
+The **Experiment** in EasyDiffraction includes both the measured diffraction
+data and all the other relevant parameters that describe the experimental setup
+and related conditions. This can include information about the instrumental
+resolution, peak shape, background, etc.
 
 EasyDiffraction allows you to:
 
 - **Load an existing experiment** from a file (**CIF** format). Both the
   metadata and measured data are expected to be in CIF format.
-- **Manually define** a new experiment by specifying its type, other
-  necessary experimental parameters, as well as load measured data. 
-  This is useful when you want to create an experiment from scratch or when 
-  you have a measured data file in a non-CIF format (e.g., `.xye`, `.xy`).
+- **Manually define** a new experiment by specifying its type, other necessary
+  experimental parameters, as well as load measured data. This is useful when
+  you want to create an experiment from scratch or when you have a measured data
+  file in a non-CIF format (e.g., `.xye`, `.xy`).
 
-Below, you will find instructions on how to define and manage experiments in EasyDiffraction. It is assumed that you have already created a 
-`project` object, as described in the [Project](project.md) section as well as
-defined its `sample_models`, as described in the [Sample Model](model.md) section.
+Below, you will find instructions on how to define and manage experiments in
+EasyDiffraction. It is assumed that you have already created a `project` object,
+as described in the [Project](project.md) section as well as defined its
+`sample_models`, as described in the [Sample Model](model.md) section.
 
 ### Adding an Experiment from CIF
 
-This is the most straightforward way to define an experiment in EasyDiffraction. 
-If you have a crystallographic information file (CIF) for your experiment,
-that
-contains both the necessary information (metadata) about the experiment as
-well as the measured data, you can
-add it to your project using the `add_experiment_from_cif` method of the `project` instance. 
-In this case, the name of the experiment will be taken from CIF.
+This is the most straightforward way to define an experiment in EasyDiffraction.
+If you have a crystallographic information file (CIF) for your experiment, that
+contains both the necessary information (metadata) about the experiment as well
+as the measured data, you can add it to your project using the
+`add_experiment_from_cif` method of the `project` instance. In this case, the
+name of the experiment will be taken from CIF.
 
 ```python
 # Load an experiment from a CIF file
 project.add_experiment_from_cif('data/hrpt_300K.cif')
 ```
+
 Accessing the experiment after loading it will be done through the `experiments`
 object of the `project` instance. The name of the model will be the same as the
-data block id in the CIF file. For example, if the CIF file contains a data block
-with the id `hrpt`,
+data block id in the CIF file. For example, if the CIF file contains a data
+block with the id `hrpt`,
 
 <!-- prettier-ignore-start -->
 
@@ -63,12 +64,12 @@ project.experiments['hrpt']
 
 ## Defining an Experiment Manually
 
-If you do not have a CIF file or prefer to define the experiment manually, 
-you can use the `add` method of the `experiments`
-object of the `project` instance. In this case, you will need to specify the
-name of the experiment, which will be used to reference it later. 
-Along with the name, you need to provide the following parameters, essential for
-defining the experiment, which define the **type of experiment**:
+If you do not have a CIF file or prefer to define the experiment manually, you
+can use the `add` method of the `experiments` object of the `project` instance.
+In this case, you will need to specify the name of the experiment, which will be
+used to reference it later. Along with the name, you need to provide the
+following parameters, essential for defining the experiment, which define the
+**type of experiment**:
 
 - **sample_form**: The form of the sample (powder, single crystal).
 - **beam_mode**: The mode of the beam (constant wavelength, time-of-flight).
@@ -78,13 +79,14 @@ defining the experiment, which define the **type of experiment**:
 !!! warning "Important"
 
     It is important to mention that once an experiment is added, you cannot change
-    these parameters. If you need to change them, you must create a new experiment 
+    these parameters. If you need to change them, you must create a new experiment
     or redefine the existing one.
 
 If you have a measured data file, you can also specify:
 
-- **data_path**: The path to the measured data file (e.g., `.xye`, `.xy`). 
-  Supported formats are described in the [Measured Data Category](#5-measured-data-category) section.
+- **data_path**: The path to the measured data file (e.g., `.xye`, `.xy`).
+  Supported formats are described in the
+  [Measured Data Category](#5-measured-data-category) section.
 
 Here is an example of how to add an experiment with all components needed to
 define the experiment explicitly set:
@@ -112,22 +114,23 @@ project.experiments.add(name='hrpt',
 You can now change the default parameters of the experiment, categorized into
 the groups based on the type of experiment.
 
-The `add` method creates a new experiment of the specified type with default parameters. You can
-then modify its parameters to match your specific experimental setup.
-All parameters are grouped into the following categories, which makes it easier to manage
-the experiment:
+The `add` method creates a new experiment of the specified type with default
+parameters. You can then modify its parameters to match your specific
+experimental setup. All parameters are grouped into the following categories,
+which makes it easier to manage the experiment:
 
-1. **Instrument Category**: 
-   Defines the instrument configuration, including wavelength, two-theta offset, and resolution parameters.
-2. **Peak Category**: 
-   Specifies the peak profile type and its parameters, such as broadening and asymmetry.
-3. **Background Category**: 
-   Defines the background type and allows you to add background points.
-4. **Linked Phases Category**: 
-   Links the sample model defined in the previous step to the experiment, allowing you to specify the scale factor for the linked phase.
-5. **Measured Data Category**: 
-   Contains the measured data. The expected format depends on the experiment type, but generally includes columns for 2θ 
-   angle or TOF and intensity.
+1. **Instrument Category**: Defines the instrument configuration, including
+   wavelength, two-theta offset, and resolution parameters.
+2. **Peak Category**: Specifies the peak profile type and its parameters, such
+   as broadening and asymmetry.
+3. **Background Category**: Defines the background type and allows you to add
+   background points.
+4. **Linked Phases Category**: Links the sample model defined in the previous
+   step to the experiment, allowing you to specify the scale factor for the
+   linked phase.
+5. **Measured Data Category**: Contains the measured data. The expected format
+   depends on the experiment type, but generally includes columns for 2θ angle
+   or TOF and intensity.
 
 ### 1. Instrument Category
 
@@ -174,22 +177,23 @@ project.experiments['hrpt'].linked_phases.add(id='lbco', scale=10.0)
 
 ### 5. Measured Data Category
 
-If you do not have a CIF file for your experiment, you can load measured data 
-from a file in a supported format. The measured data will be automatically 
-converted into CIF format and added to the experiment. The expected format 
+If you do not have a CIF file for your experiment, you can load measured data
+from a file in a supported format. The measured data will be automatically
+converted into CIF format and added to the experiment. The expected format
 depends on the experiment type.
 
 #### Supported data file formats:
 
-* `.xye` or `.xys` (3 columns, including standard deviations)
-    * [\_pd_meas.2theta\_scan](../parameters/pd_meas.md)
-    * [\_pd_meas.intensity\_total](../parameters/pd_meas.md)
-    * [\_pd_meas.intensity\_total\_su](../parameters/pd_meas.md)
-* `.xy` (2 columns, no standard deviations):
-    * [\_pd_meas.2theta\_scan](../parameters/pd_meas.md)
-    * [\_pd_meas.intensity\_total](../parameters/pd_meas.md)
+- `.xye` or `.xys` (3 columns, including standard deviations)
+  - [\_pd_meas.2theta_scan](../parameters/pd_meas.md)
+  - [\_pd_meas.intensity_total](../parameters/pd_meas.md)
+  - [\_pd_meas.intensity_total_su](../parameters/pd_meas.md)
+- `.xy` (2 columns, no standard deviations):
+  - [\_pd_meas.2theta_scan](../parameters/pd_meas.md)
+  - [\_pd_meas.intensity_total](../parameters/pd_meas.md)
 
-If no **standard deviations** are provided, they are automatically calculated as the **square root** of measured intensities.
+If no **standard deviations** are provided, they are automatically calculated as
+the **square root** of measured intensities.
 
 Optional comments with `#` are possible in data file headers.
 

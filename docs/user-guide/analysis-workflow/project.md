@@ -5,23 +5,23 @@ icon: material/archive
 # :material-archive: Project
 
 The **Project** serves as a container for all data and metadata associated with
-a particular data analysis task. It acts as the top-level entity in EasyDiffraction,
-ensuring structured organization and easy access to relevant information. Each
-project can contain multiple **experimental datasets**, with each dataset
-containing contribution from multiple **sample models**.
+a particular data analysis task. It acts as the top-level entity in
+EasyDiffraction, ensuring structured organization and easy access to relevant
+information. Each project can contain multiple **experimental datasets**, with
+each dataset containing contribution from multiple **sample models**.
 
 EasyDiffraction allows you to:
 
 - **Manually create** a new project by specifying its metadata.
 - **Load an existing project** from a file (**CIF** format).
 
-Below are instructions on how to set up a project in EasyDiffraction. 
-It is assumed that you have already imported the `easydiffraction` package, as 
+Below are instructions on how to set up a project in EasyDiffraction. It is
+assumed that you have already imported the `easydiffraction` package, as
 described in the [First Steps](../first-steps.md) section.
 
 ## Creating a Project Manually
 
-You can manually create a new project and specify its short **name**, **title** 
+You can manually create a new project and specify its short **name**, **title**
 and **description**. All these parameters are optional.
 
 ```py
@@ -30,9 +30,9 @@ project = ed.Project(name='lbco_hrpt')
 
 # Define project info
 project.info.title = 'La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI'
-project.info.description = '''This project demonstrates a standard refinement 
-of La0.5Ba0.5CoO3, which crystallizes in a perovskite-type structure, using 
-neutron powder diffraction data collected in constant wavelength mode at the 
+project.info.description = '''This project demonstrates a standard refinement
+of La0.5Ba0.5CoO3, which crystallizes in a perovskite-type structure, using
+neutron powder diffraction data collected in constant wavelength mode at the
 HRPT diffractometer (PSI).'''
 ```
 
@@ -45,10 +45,9 @@ project.save_as(dir_path='lbco_hrpt')
 ```
 
 If working in the interactive mode in a Jupyter notebook or similar environment,
-you can also save the project after every significant change. This is useful 
-for keeping track of changes and ensuring that your work
-is not lost. If you already saved the project with `save_as`, you can just call 
-the `save`:
+you can also save the project after every significant change. This is useful for
+keeping track of changes and ensuring that your work is not lost. If you already
+saved the project with `save_as`, you can just call the `save`:
 
 ```python
 project.save()
@@ -90,14 +89,14 @@ The example below illustrates a typical **project structure** for a
 
 ## Project Files
 
-Below is a complete project example stored in the `La0.5Ba0.5CoO3` directory, 
+Below is a complete project example stored in the `La0.5Ba0.5CoO3` directory,
 showing the contents of all files in the project.
 
 !!! warning "Important"
 
     If you save the project right after creating it, the project directory will
-    only contain the `project.cif` file. The other folders and files will be 
-    created as you add sample models, experiments, and set up the analysis. The 
+    only contain the `project.cif` file. The other folders and files will be
+    created as you add sample models, experiments, and set up the analysis. The
     summary folder will be created after the analysis is completed.
 
 ### 1. <span class="orange">project.cif</span>
@@ -128,8 +127,9 @@ hrpt.cif
 
 ### 2. sample_models / <span class="orange">lbco.cif</span>
 
-This file contains crystallographic information associated with the sample model, including **space group**,
-**unit cell parameters**, and **atomic positions**.
+This file contains crystallographic information associated with the sample
+model, including **space group**, **unit cell parameters**, and **atomic
+positions**.
 
 <!-- prettier-ignore-start -->
 
@@ -168,9 +168,9 @@ O  O    0   0.5 0.5   c   1    Biso 1.4041
 
 ### 3. experiments / <span class="orange">hrpt.cif</span>
 
-This file contains the **experiment type**, **instrumental parameters**, 
-**peak parameters**, **associated phases**, **background parameters** and
-**measured diffraction data**.
+This file contains the **experiment type**, **instrumental parameters**, **peak
+parameters**, **associated phases**, **background parameters** and **measured
+diffraction data**.
 
 <!-- prettier-ignore-start -->
 
@@ -234,11 +234,11 @@ loop_
 
 <!-- prettier-ignore-end -->
 
-
 ### 4. <span class="orange">analysis.cif</span>
 
 This file contains settings used for data analysis, including the choice of
-**calculation** and **fitting** engines, as well as user defined **constraints**.
+**calculation** and **fitting** engines, as well as user defined
+**constraints**.
 
 <!-- prettier-ignore-start -->
 

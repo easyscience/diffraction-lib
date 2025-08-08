@@ -16,35 +16,35 @@ classifiers = [
   'Operating System :: OS Independent',
   'Programming Language :: Python :: 3 :: Only',
   'Programming Language :: Python :: 3',
-      "Programming Language :: Python :: 3.10",
-      "Programming Language :: Python :: 3.11",
-      "Programming Language :: Python :: 3.12",
-      "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
 requires-python = '>=3.10,<=3.13'
 dependencies = [
-  'colorama',        # Color terminal output
-  'tabulate',        # Pretty-print tabular data for terminal output
-  'asciichartpy',    # ASCII charts for terminal output
+  'colorama',     # Color terminal output
+  'tabulate',     # Pretty-print tabular data for terminal output
+  'asciichartpy', # ASCII charts for terminal output
 
-  'pooch',           # Data downloader
+  'pooch', # Data downloader
 
-  'varname',         # Variable name introspection
+  'varname', # Variable name introspection
 
-  'asteval',         # An expression evaluator for Python
+  'asteval', # An expression evaluator for Python
 
-  'scipy',           # Scientific computing library
-  'sympy',           # Symbolic mathematics library
+  'scipy', # Scientific computing library
+  'sympy', # Symbolic mathematics library
 
-  'lmfit',           # Non-linear optimization and curve fitting
-  'bumps',           # Non-linear optimization and curve fitting
-  'dfo-ls',          # Non-linear optimization and curve fitting
+  'lmfit',  # Non-linear optimization and curve fitting
+  'bumps',  # Non-linear optimization and curve fitting
+  'dfo-ls', # Non-linear optimization and curve fitting
 
-  'gemmi',           # Crystallography library
+  'gemmi', # Crystallography library
 
-  'cryspy',          # Calculations of diffraction patterns
-  'diffpy.pdffit2',  # Calculations of Pair Distribution Function (PDF)
-  'diffpy.utils',    # Utilities for PDF calculations
+  'cryspy',         # Calculations of diffraction patterns
+  'diffpy.pdffit2', # Calculations of Pair Distribution Function (PDF)
+  'diffpy.utils',   # Utilities for PDF calculations
 ]
 
 [project.optional-dependencies]
@@ -170,23 +170,3 @@ docstring-code-format = true # Whether to format code snippets in docstrings
 indent-style = 'space'       # PEP 8 recommends using spaces over tabs
 line-ending = 'lf'           # Line endings will be converted to \n
 quote-style = 'single'       # But double quotes in docstrings (PEP 8, PEP 257)
-
-############################
-# Configuration for prettier
-############################
-
-# 'prettier' -- Code formatter
-# https://prettier.io/
-
-[tool.prettier]
-endOfLine = 'lf'     # change line endings to LF
-printWidth = 80      # wrap Markdown files at 80 characters
-proseWrap = 'always' # change wrapping in Markdown files
-semi = false         # remove semicolons
-singleQuote = true   # use single quotes instead of double quotes
-tabWidth = 2         # change tab width to 2 spaces
-useTabs = false      # use spaces instead of tabs
-
-plugins = [
-  'prettier-plugin-toml', # use the TOML plugin
-]
