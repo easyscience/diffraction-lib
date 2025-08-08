@@ -195,30 +195,79 @@ def render_cif(cif_text, paragraph_title) -> None:
                  columns_alignment=["left"])
 
 
-def tof_to_d(tof, offset, linear, quad):
-    """
-    Convert TOF to d-spacing using quadratic calibration.
+def tof_to_d(
+        tof: np.ndarray,
+        offset: float,
+        linear: float,
+        quad: float,
+        quad_eps=1e-20
+) -> np.ndarray:
+    """Convert time-of-flight (TOF) to d-spacing using a quadratic calibration.
 
-    Parameters:
-        tof (float or np.ndarray): Time-of-flight in microseconds.
-        offset (float): Time offset.
-        linear (float): Linear coefficient.
-        quad (float): Quadratic coefficient.
+    Model:
+        TOF = offset + linear * d + quad * d²
+
+    The function:
+      - Uses a linear fallback when the quadratic term is effectively zero.
+      - Solves the quadratic for d and selects the smallest positive, finite root.
+      - Returns NaN where no valid solution exists.
+      - Expects ``tof`` as a NumPy array; output matches its shape.
+
+    Args:
+        tof (np.ndarray): Time-of-flight values (µs). Must be a NumPy array.
+        offset (float): Calibration offset (µs).
+        linear (float): Linear calibration coefficient (µs/Å).
+        quad (float): Quadratic calibration coefficient (µs/Å²).
+        quad_eps (float, optional): Threshold to treat ``quad`` as zero. Defaults to 1e-20.
 
     Returns:
-        d (float or np.ndarray): d-spacing in Å.
+        np.ndarray: d-spacing values (Å), NaN where invalid.
+
+    Raises:
+        TypeError: If ``tof`` is not a NumPy array or coefficients are not real numbers.
     """
-    A = quad
-    B = linear
-    C = offset - tof
+    # Type checks
+    if not isinstance(tof, np.ndarray):
+        raise TypeError(f"'tof' must be a NumPy array, got {type(tof).__name__}")
+    for name, val in (("offset", offset), ("linear", linear), ("quad", quad), ("quad_eps", quad_eps)):
+        if not isinstance(val, (int, float, np.integer, np.floating)):
+            raise TypeError(f"'{name}' must be a real number, got {type(val).__name__}")
 
-    discriminant = B**2 - 4*A*C
-    if np.any(discriminant < 0):
-        raise ValueError("Negative discriminant: invalid calibration or TOF range")
+    # Output initialized to NaN
+    d_out = np.full_like(tof, np.nan, dtype=float)
 
-    sqrt_discriminant = np.sqrt(discriminant)
-    d = (-B + sqrt_discriminant) / (2*A)
-    return d
+    # 1) If quadratic term is effectively zero, use linear formula:
+    #    TOF ≈ offset + linear * d =>
+    #    d ≈ (tof - offset) / linear
+    if abs(quad) < quad_eps:
+        if linear != 0.0:
+            d = (tof - offset) / linear
+            # Keep only positive, finite results
+            valid = np.isfinite(d) & (d > 0)
+            d_out[valid] = d[valid]
+        # If B == 0 too, there's no solution; leave NaN
+        return d_out
+
+    # 2) If quadratic term is significant, solve the quadratic equation:
+    #    TOF = offset + linear * d + quad * d² =>
+    #    quad * d² + linear * d + (offset - tof) = 0
+    discr = linear**2 - 4 * quad * (offset - tof)
+    has_real_roots = discr >= 0
+
+    if np.any(has_real_roots):
+        sqrt_discr = np.sqrt(discr[has_real_roots])
+
+        root_1  = (-linear + sqrt_discr) / (2 * quad)
+        root_2 = (-linear - sqrt_discr) / (2 * quad)
+
+        # Pick smallest positive, finite root per element
+        roots = np.stack((root_1, root_2), axis=0)  # Stack roots for comparison
+        roots = np.where(np.isfinite(roots) & (roots > 0), roots, np.nan)  # Replace non-finite or negative roots with NaN
+        chosen = np.nanmin(roots, axis=0)  # Choose the smallest positive root or NaN if none are valid
+
+        d_out[has_real_roots] = chosen
+
+    return d_out
 
 
 def twotheta_to_d(twotheta, wavelength):
