@@ -58,7 +58,6 @@ dev = [
   'pytest-cov',              # Test coverage
   'pytest-xdist',            # Enable parallel testing
   'ruff',                    # Linting and formatting code
-  'yapf',                    # Formatting code (extra)
   'validate-pyproject[all]', # Validate pyproject.toml
   'versioningit',            # Automatic versioning from git tags
 ]
@@ -171,16 +170,6 @@ docstring-code-format = true # Whether to format code snippets in docstrings
 indent-style = 'space'       # PEP 8 recommends using spaces over tabs
 line-ending = 'lf'           # Line endings will be converted to \n
 quote-style = 'single'       # But double quotes in docstrings (PEP 8, PEP 257)
-
-########################
-# Configuration for yapf
-#########################
-
-# 'yapf' -- Python code formatter
-# https://github.com/google/yapf
-
-[tool.yapf]
-split_all_comma_separated_values = true  # Split all comma-separated values into separate lines
 
 ############################
 # Configuration for prettier

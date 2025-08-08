@@ -824,11 +824,15 @@ project_2.analysis.fit()
 # 4. The background points are not correct.
 #
 # **Solution**:
-# 1. ❌ The conversion parameters from TOF to d-spacing were set based on the data reduction step. While they are
-# specific to each dataset and thus differ from those used for the Si data, the full reduction workflow has already been
+# 1. ❌ The conversion parameters from TOF to d-spacing were set based on the
+# data reduction step. While they are specific to each dataset and thus differ
+# from those used for the Si data,  the full reduction workflow has already been
 # validated with the Si fit. Therefore, they are not the cause of the misfit in this case.
-# 2. ✅ The lattice parameters of the LBCO phase were set based on the CIF data, which is a good starting point, but they are not necessarily as accurate as needed for the fit. The lattice parameters may need to be refined.
-# 3. ❌ The peak profile parameters do not change the position of the peaks, but rather their shape.
+# 2. ✅ The lattice parameters of the LBCO phase were set based on the CIF data,
+# which is a good starting point, but they are not necessarily as accurate as
+# needed for the fit. The lattice parameters may need to be refined.
+# 3. ❌ The peak profile parameters do not change the position of the peaks, but
+# rather their shape.
 # 4. ❌ The background points affect the background level, but not the peak positions.
 
 # %%
@@ -854,7 +858,11 @@ project_2.analysis.fit()
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %% [markdown]
-# One of the main goals of this study was to refine the lattice parameter of the LBCO phase. As shown in the updated fit results, the overall fit has improved significantly, even though the change in cell length is less than 1% of the initial value. This demonstrates how even a small adjustment to the lattice parameter can have a substantial impact on the quality of the fit.
+# One of the main goals of this study was to refine the lattice parameter of
+# the LBCO phase. As shown in the updated fit results, the overall fit has
+# improved significantly, even though the change in cell length is less than
+# 1% of the initial value. This demonstrates how even a small adjustment to
+# the lattice parameter can have a substantial impact on the quality of the fit.
 
 # %% [markdown]
 # #### Exercise 5.5: Visualize the Fit Results in d-spacing
@@ -1076,7 +1084,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
 
 # %% [markdown]
-# All previously unexplained peaks are now accounted for in the pattern, and the fit is improved.
+# All previously unexplained peaks are now accounted for in the pattern, and the
+# fit is improved.
 # Some discrepancies in the peak intensities remain, but
 # further improvements would require more advanced data reduction and analysis,
 # which are beyond the scope of this tutorial.
@@ -1084,9 +1093,11 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
 # #### Final Remarks
 #
 # In this part of the tutorial, we have demonstrated how to use EasyDiffraction
-# to refine lattice parameters for a more complex crystal structure, La₀.₅Ba₀.₅CoO₃ (LBCO).
-# In real experiments, additional parameters, such as atomic positions, occupancies, and atomic displacement factors, can also be refined to further improve the fit.
-# However, we will stop here, as the purpose of this part of the tutorial is to demonstrate the practical use of
+# to refine lattice parameters for a more complex crystal structure,
+# La₀.₅Ba₀.₅CoO₃ (LBCO). In real experiments, additional parameters, such as
+# atomic positions, occupancies, and atomic displacement factors, can also be
+# refined to further improve the fit. However, we will stop here, as the
+# purpose of this part of the tutorial is to demonstrate the practical use of
 # EasyDiffraction for fitting powder diffraction data.
 
 # %% [markdown]

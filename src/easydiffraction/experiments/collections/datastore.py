@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from typing import Optional
+
+if TYPE_CHECKING:
+    from ..experiment import Experiment  # adjust path if needed
 
 import numpy as np
 

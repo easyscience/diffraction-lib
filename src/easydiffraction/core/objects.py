@@ -1,4 +1,4 @@
-import random
+import secrets
 import string
 from abc import ABC
 from abc import abstractmethod
@@ -75,7 +75,7 @@ class Descriptor:
         # used to create the alias for the parameter in the constraint
         # expression.
         length = 16
-        letters = random.choices(string.ascii_lowercase, k=length)
+        letters = [secrets.choice(string.ascii_lowercase) for _ in range(length)]
         uid = ''.join(letters)
         return uid
 
