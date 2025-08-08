@@ -179,6 +179,15 @@ jobs:
         with:
           fetch-depth: '0' # full history with tags to get the version number by versioningit
 
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Upgrade package installer for Python
+        shell: bash
+        run: python -m pip install --upgrade pip
+
       - name: Set up conda (Windows only)
         if: runner.os == 'Windows'
         uses: s-weigand/setup-conda@v1
@@ -191,15 +200,6 @@ jobs:
         if: runner.os == 'Windows'
         shell: bash
         run: conda install -y -c conda-forge libcblas
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Upgrade package installer for Python
-        shell: bash
-        run: python -m pip install --upgrade pip
 
       - name: Install Python dependencies
         shell: bash
