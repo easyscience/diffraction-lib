@@ -24,7 +24,8 @@ on:
     # Every branch
     branches:
       - '**'
-    # But do not run this workflow on creating a new tag starting with 'v', e.g. 'v1.0.3' (see publish-pypi.yml)
+    # But do not run this workflow on creating a new tag starting with
+    # 'v', e.g. 'v1.0.3' (see publish-pypi.yml)
     tags-ignore:
       - 'v*'
   # Trigger the workflow on pull request
@@ -34,23 +35,23 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Allow only one concurrent workflow, skipping runs queued between the run in-progress and latest queued.
-# And cancel in-progress runs.
+# Allow only one concurrent workflow, skipping runs queued between the run
+# in-progress and latest queued. And cancel in-progress runs.
 concurrency:
   group:
     ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
-  # Set the environment variables to be used in all jobs defined in this workflow
-  # Set the CI_BRANCH environment variable to be the branch name
-  # Set the NOTEBOOKS_DIR environment variable to be the directory containing the Jupyter notebooks
+  # Set the environment vars to be used in all jobs defined in this workflow
+  # Set the CI_BRANCH environment var to be the branch name
+  # Set the NOTEBOOKS_DIR environment var to be the dir of Jupyter notebooks
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
   NOTEBOOKS_DIR: tutorials
 
 jobs:
   # Job 1: Check code quality and consistency
-  check-code-quality:
+  code-quality:
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -74,9 +75,9 @@ jobs:
 
       - name: Install npm dependencies
         # Install 'prettier' for code formatting of Markdown, YAML, etc. files
-        # Install 'prettier-plugin-toml' plugin for code formatting of TOML files
+        # Install 'prettier-plugin-toml' plugin for formatting of TOML files
         run: >
-          npm install --no-save --no-audit --no-fund 'prettier@>=3.3.3'
+          npm install --no-save --no-audit --no-fund  'prettier@>=3.3.3'
           'prettier-plugin-toml@>=0.13.0'
 
       # Check the validity of pyproject.toml
@@ -91,7 +92,7 @@ jobs:
         continue-on-error: true
         run: ruff check .
 
-      - name: Suggestion to fix code linting issues (for *.py files)
+      - name: Suggestion to fix code linting issues (*.py files)
         if: steps.check_code_linting.outcome == 'failure'
         run: >
           echo "In project root run 'ruff check . --fix' and commit changes to
@@ -103,13 +104,13 @@ jobs:
         continue-on-error: true
         run: ruff format . --check
 
-      - name: Suggestion to fix code formatting issues (for *.py files)
+      - name: Suggestion to fix code formatting issues (*.py files)
         if: steps.check_code_formatting.outcome == 'failure'
         run: >
           echo "In project root run 'ruff format .' and commit changes to fix
           issues."
 
-      # Check Jupyter notebooks with nbQA in the sample directory
+      # Check Jupyter notebooks with nbQA in the notebooks directory
       - name: Convert ${{ env.NOTEBOOKS_DIR }}/*.py to *.ipynb
         shell: bash
         run: |
@@ -121,19 +122,20 @@ jobs:
         continue-on-error: true
         run: nbqa ruff ${{ env.NOTEBOOKS_DIR }}/
 
-      - name: Suggestion to fix notebook formatting issues (for *.ipynb files)
+      - name: Suggestion to fix notebook formatting issues (*.ipynb files)
         if: steps.check_notebooks.outcome == 'failure'
         run: >
           echo "In project root run 'nbqa ruff ${{ env.NOTEBOOKS_DIR }}/ --fix'
           and commit changes to fix issues."
 
-      # Check formatting of Markdown, YAML, TOML, etc. files with Prettier in the project root
+      # Check formatting of Markdown, YAML, TOML, etc. files with Prettier in
+      # the project root
       - name: Check formatting of Markdown, YAML, TOML, etc. files
         id: check_others_formatting
         continue-on-error: true
         run: npx prettier . --check --config=prettierrc.toml
 
-      - name: Suggestion to fix non-code formatting issues (for *.md, etc.)
+      - name: Suggestion to fix non-code formatting issues (*.md, *.yml, etc.)
         if: steps.check_others_formatting.outcome == 'failure'
         run: >
           echo "In project root run 'npx prettier . --write
@@ -149,8 +151,8 @@ jobs:
         run: exit 1
 
   # Job 2: Test code and upload coverage to Codecov.
-  run-tests-and-build:
-    needs: check-code-quality # previous job 'code-quality' need to be finished first
+  run-tests:
+    needs: code-quality # previous job needs to be finished first
 
     strategy:
       fail-fast: false
@@ -166,15 +168,6 @@ jobs:
         with:
           fetch-depth: '0' # full history with tags to get the version number by versioningit
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Upgrade package installer for Python
-        shell: bash
-        run: python -m pip install --upgrade pip
-
       - name: Set up conda (Windows only)
         if: runner.os == 'Windows'
         uses: s-weigand/setup-conda@v1
@@ -188,17 +181,26 @@ jobs:
         shell: bash
         run: conda install -y -c conda-forge libcblas
 
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Upgrade package installer for Python
+        shell: bash
+        run: python -m pip install --upgrade pip
+
       - name: Install Python dependencies
         shell: bash
         run: python -m pip install .'[dev,docs,visualization]'
 
-      - name: Run Python unit tests
+      - name: Run Python unit tests (using src/ as the source dir)
         shell: bash
         run: |
           export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
           python -m pytest tests/unit_tests/ --color=yes
 
-      - name: Run Python functional tests
+      - name: Run Python functional tests (using src/ as the source dir)
         shell: bash
         run: |
           export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
@@ -210,13 +212,15 @@ jobs:
           jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --from py:percent --to ipynb
           nbstripout ${{ env.NOTEBOOKS_DIR }}/*.ipynb
 
-      - name: Check if Jupyter Notebooks run without errors
+      - name:
+          Check if Jupyter Notebooks run without errors (using src/ as the
+          source dir)
         shell: bash
         run: |
           export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
           python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/ --nbmake-timeout=600 --color=yes -n auto
 
-      - name: Create Python package
+      - name: Create Python package for the next job
         run: python -m build --wheel --outdir dist
 
       - name:
@@ -225,8 +229,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name:
-            EasyDiffractionLib_py${{ matrix.python-version }}_${{ matrix.os
-            }}_${{ runner.arch }}
+            edl_py${{ matrix.python-version }}_${{ matrix.os }}_${{ runner.arch
+            }}
           path: |
             dist/*.whl
             tests/
@@ -235,8 +239,8 @@ jobs:
           compression-level: 0
 
   # Job 3: Test the package
-  install-and-test-package:
-    needs: run-tests-and-build # the previous job needs to be finished first
+  check-package:
+    needs: run-tests # the previous job needs to be finished first
 
     strategy:
       fail-fast: false
@@ -261,8 +265,8 @@ jobs:
         uses: actions/download-artifact@v4
         with: # name or path are taken from the upload step of the previous job
           name:
-            EasyDiffractionLib_py${{ matrix.python-version }}_${{ matrix.os
-            }}_${{ runner.arch }}
+            edl_py${{ matrix.python-version }}_${{ matrix.os }}_${{ runner.arch
+            }}
           path: . # directory to extract downloaded zipped artifacts
 
       # The local version must be higher than the PyPI version for pip to
@@ -274,20 +278,15 @@ jobs:
           pip install 'easydiffraction[dev,docs,visualization]'
           --find-links=dist
 
-      - name: Run Python unit tests
+      - name: Run Python unit tests (using installed package)
         shell: bash
-        run: |
-          export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
-          python -m pytest tests/unit_tests/ --color=yes
+        run: python -m pytest tests/unit_tests/ --color=yes
 
-      - name: Run Python functional tests
+      - name: Run Python functional tests (using installed package)
         shell: bash
-        run: |
-          export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
-          python -m pytest tests/functional_tests/ --color=yes -n auto
+        run: python -m pytest tests/functional_tests/ --color=yes -n auto
 
       - name: Check if Jupyter Notebooks run without errors
         shell: bash
         run: |
-          export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
           python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/ --nbmake-timeout=600 --color=yes -n auto
