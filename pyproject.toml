@@ -58,6 +58,7 @@ dev = [
   'pytest-cov',              # Test coverage
   'pytest-xdist',            # Enable parallel testing
   'ruff',                    # Linting and formatting code
+  'yapf',                    # Formatting code (extra)
   'validate-pyproject[all]', # Validate pyproject.toml
   'versioningit',            # Automatic versioning from git tags
 ]
@@ -137,15 +138,9 @@ default-tag = 'v999.0.0'
 # https://docs.astral.sh/ruff/rules/
 
 [tool.ruff]
-exclude = ['examples', 'examples_old', 'tests_old']
+exclude = ['tutorials-drafts']
 indent-width = 4
 line-length = 127
-
-[tool.ruff.format]
-docstring-code-format = true # Whether to format code snippets in docstrings
-indent-style = 'space'       # PEP 8 recommends using spaces over tabs
-line-ending = 'lf'           # Line endings will be converted to \n
-quote-style = 'single'       # But double quotes in docstrings (PEP 8, PEP 257)
 
 [tool.ruff.lint]
 select = [
@@ -170,6 +165,22 @@ force-single-line = true
 #[tool.ruff.lint.pycodestyle]
 #max-line-length = 88 # https://peps.python.org/pep-0008/#maximum-line-length
 #max-doc-length = 72  # https://peps.python.org/pep-0008/#maximum-line-length
+
+[tool.ruff.format]
+docstring-code-format = true # Whether to format code snippets in docstrings
+indent-style = 'space'       # PEP 8 recommends using spaces over tabs
+line-ending = 'lf'           # Line endings will be converted to \n
+quote-style = 'single'       # But double quotes in docstrings (PEP 8, PEP 257)
+
+########################
+# Configuration for yapf
+#########################
+
+# 'yapf' -- Python code formatter
+# https://github.com/google/yapf
+
+[tool.yapf]
+split_all_comma_separated_values = true  # Split all comma-separated values into separate lines
 
 ############################
 # Configuration for prettier
