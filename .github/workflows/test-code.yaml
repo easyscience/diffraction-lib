@@ -319,4 +319,6 @@ jobs:
 
       - name: Run tutorials as Jupyter Notebooks (using installed package)
         shell: bash
-        run: python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/ --nbmake-timeout=600 --color=yes -n auto
+        run: >
+          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/
+          --nbmake-timeout=600 --color=yes -n auto
