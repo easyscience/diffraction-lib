@@ -78,7 +78,9 @@ jobs:
       - name: Install npm dependencies
         # Install 'prettier' for code formatting of Markdown, YAML, etc. files
         # Install 'prettier-plugin-toml' plugin for code formatting of TOML files
-        run: npm install --no-save --no-audit --no-fund 'prettier@>=3.3.3' 'prettier-plugin-toml@>=0.13.0'
+        run: >
+          npm install --no-save --no-audit --no-fund 'prettier@>=3.3.3'
+          'prettier-plugin-toml@>=0.13.0'
 
       # Check the validity of pyproject.toml
       - name: Check validity of pyproject.toml
@@ -94,7 +96,7 @@ jobs:
 
       - name: Suggestion to fix code linting issues (for *.py files)
         if: steps.check_code_linting.outcome == 'failure'
-        run:
+        run: >
           echo "In project root run 'ruff check . --fix' and commit changes to
           fix issues."
 
@@ -106,7 +108,7 @@ jobs:
 
       - name: Suggestion to fix code formatting issues (for *.py files)
         if: steps.check_code_formatting.outcome == 'failure'
-        run:
+        run: >
           echo "In project root run 'ruff format .' and commit changes to fix
           issues."
 
@@ -118,7 +120,7 @@ jobs:
 
       - name: Suggestion to fix notebook formatting issues (for *.ipynb files)
         if: steps.check_notebooks.outcome == 'failure'
-        run:
+        run: >
           echo "In project root run 'nbqa ruff examples/ --fix' and commit
           changes to fix issues."
 
@@ -130,7 +132,7 @@ jobs:
 
       - name: Suggestion to fix non-code formatting issues (for *.md, etc.)
         if: steps.check_others_formatting.outcome == 'failure'
-        run:
+        run: >
           echo "In project root run 'npx prettier . --write
           --config=prettierrc.toml' and commit changes to fix issues."
 
@@ -197,17 +199,20 @@ jobs:
         shell: bash
         run: |
           export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
-          python -m pytest tests/functional_tests/ --color=yes -n=auto
+          python -m pytest tests/functional_tests/ --color=yes -n auto
 
       - name:
-          Convert ${{ env.NOTEBOOKS_DIR }}/*.py to ${{ env.NOTEBOOKS_DIR }}/*.ipynb
+          Convert ${{ env.NOTEBOOKS_DIR }}/*.py to ${{ env.NOTEBOOKS_DIR
+          }}/*.ipynb
         run: |
           jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --from py:percent --to ipynb
           nbstripout ${{ env.NOTEBOOKS_DIR }}/*.ipynb
 
       - name: Check if Jupyter Notebooks run without errors
         shell: bash
-        run: python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/ --nbmake-timeout=300 --color=yes -n=auto
+        run: >
+          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/
+          --nbmake-timeout=300 --color=yes -n auto
 
       - name: Create Python package
         run: python -m build --wheel --outdir dist
@@ -262,7 +267,9 @@ jobs:
       # remember to merge the master branch with the develop branch,
       # and then create a new feature branch from the develop branch.
       - name: Install Python package from previous job with all extras
-        run: pip install 'easydiffraction[dev,docs,visualization]' --find-links=dist
+        run: >
+          pip install 'easydiffraction[dev,docs,visualization]'
+          --find-links=dist
 
       - name: Run Python unit tests
         shell: bash
@@ -274,8 +281,10 @@ jobs:
         shell: bash
         run: |
           export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
-          python -m pytest tests/functional_tests/ --color=yes -n=auto
+          python -m pytest tests/functional_tests/ --color=yes -n auto
 
       - name: Check if Jupyter Notebooks run without errors
         shell: bash
-        run: python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/ --nbmake-timeout=300 --color=yes -n=auto
+        run: >
+          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/
+          --nbmake-timeout=300 --color=yes -n auto
