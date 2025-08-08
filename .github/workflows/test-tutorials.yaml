@@ -1,4 +1,4 @@
-name: Testing tutorials
+name: Test tutorials
 
 on:
   # Trigger the workflow on a schedule (every day at midnight)
@@ -20,7 +20,7 @@ env:
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
 
 jobs:
-  testing-tutorials:
+  test-tutorials:
 
     strategy:
       fail-fast: false
@@ -59,6 +59,7 @@ jobs:
 
       # Check if tutorials as Jupyter Notebooks run without errors
       # Convert all Python scripts in the folder tutorials/ to Jupyter Notebooks
+      # Strip output from Jupyter Notebooks and rename cell ids
       # Run all Jupyter Notebooks in the folder tutorials/ in parallel
       # -n=auto: run as many in parallel as you have cores (auto mode)
       # --nbmake-timeout=300: set timeout to 300 seconds
@@ -66,5 +67,6 @@ jobs:
         shell: bash
         run: |
           export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
-          jupytext tutorials/*.py --to ipynb
+          jupytext tutorials/*.py --from py:percent --to ipynb
+          nbstripout tutorials/*.ipynb
           python -m pytest --nbmake tutorials/ --nbmake-timeout=300 --color=yes -n=auto
