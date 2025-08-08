@@ -113,16 +113,23 @@ jobs:
           issues."
 
       # Check Jupyter notebooks with nbQA in the sample directory
+      - name:
+          Convert ${{ env.NOTEBOOKS_DIR }}/*.py to ${{ env.NOTEBOOKS_DIR
+          }}/*.ipynb
+        run: |
+          jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --from py:percent --to ipynb
+          nbstripout ${{ env.NOTEBOOKS_DIR }}/*.ipynb
+
       - name: Check Jupyter notebooks formatting
         id: check_notebooks
         continue-on-error: true
-        run: nbqa ruff examples/
+        run: nbqa ruff ${{ env.NOTEBOOKS_DIR }}/
 
       - name: Suggestion to fix notebook formatting issues (for *.ipynb files)
         if: steps.check_notebooks.outcome == 'failure'
         run: >
-          echo "In project root run 'nbqa ruff examples/ --fix' and commit
-          changes to fix issues."
+          echo "In project root run 'nbqa ruff ${{ env.NOTEBOOKS_DIR }}/ --fix'
+          and commit changes to fix issues."
 
       # Check formatting of Markdown, YAML, TOML, etc. files with Prettier in the project root
       - name: Check formatting of Markdown, YAML, TOML, etc. files
@@ -218,7 +225,8 @@ jobs:
         run: python -m build --wheel --outdir dist
 
       - name:
-          Upload zipped Python package (with tests and examples) for next job
+          Upload zipped Python package (with tests and ${{ env.NOTEBOOKS_DIR }})
+          for next job
         uses: actions/upload-artifact@v4
         with:
           name:
@@ -253,8 +261,8 @@ jobs:
         run: python -m pip install --upgrade pip
 
       - name:
-          Download zipped Python package (with tests and examples) from previous
-          job
+          Download zipped Python package (with tests and ${{ env.NOTEBOOKS_DIR
+          }}) from previous job
         uses: actions/download-artifact@v4
         with: # name or path are taken from the upload step of the previous job
           name:
