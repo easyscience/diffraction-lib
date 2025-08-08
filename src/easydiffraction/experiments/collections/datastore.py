@@ -107,11 +107,11 @@ class DatastoreFactory:
     def create(sample_form: str, experiment: Experiment) -> Datastore:
         """
         Create a datastore object depending on the sample form.
-        
+
         Args:
             sample_form: The form of the sample ("powder" or "single_crystal").
             experiment: The experiment object.
-            
+
         Returns:
             A new Datastore instance appropriate for the sample form.
         """

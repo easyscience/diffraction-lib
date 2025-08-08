@@ -28,7 +28,7 @@ class SampleModels(Collection):
         """
         Add a new sample model to the collection.
         Dispatches based on input type: pre-built model or parameters for new creation.
-        
+
         Args:
             model: An existing SampleModel instance.
             name: Name for a new model if created from scratch.
@@ -43,7 +43,7 @@ class SampleModels(Collection):
     def remove(self, name: str) -> None:
         """
         Remove a sample model by its ID.
-        
+
         Args:
             name: ID of the model to remove.
         """
@@ -53,7 +53,7 @@ class SampleModels(Collection):
     def get_ids(self) -> List[str]:
         """
         Return a list of all model IDs in the collection.
-        
+
         Returns:
             List of model IDs.
         """
@@ -77,7 +77,7 @@ class SampleModels(Collection):
     def as_cif(self) -> str:
         """
         Export all sample models to CIF format.
-        
+
         Returns:
             CIF string representation of all sample models.
         """
@@ -87,10 +87,10 @@ class SampleModels(Collection):
     def _add_prebuilt_sample_model(self, sample_model: SampleModel) -> None:
         """
         Add a pre-built SampleModel instance.
-        
+
         Args:
             model: The SampleModel instance to add.
-        
+
         Raises:
             TypeError: If model is not a SampleModel instance.
         """
@@ -102,12 +102,12 @@ class SampleModels(Collection):
                                     cif_str: Optional[str] = None) -> None:
         """
         Create a SampleModel instance and add it to the collection.
-        
+
         Args:
             name: Name for the new model.
             cif_path: Path to a CIF file.
             cif_str: CIF content as string.
-        
+
         Raises:
             ValueError: If neither name, cif_path, nor cif_str is provided.
         """

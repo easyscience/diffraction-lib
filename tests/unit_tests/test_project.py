@@ -87,10 +87,10 @@ def test_project_info_show_as_cif(mock_print):
 # ------------------------------------------
 
 def test_project_initialization():
-    with patch("easydiffraction.sample_models.sample_models.SampleModels") as MockSampleModels, \
-         patch("easydiffraction.experiments.experiments.Experiments") as MockExperiments, \
-         patch("easydiffraction.analysis.analysis.Analysis") as MockAnalysis, \
-         patch("easydiffraction.summary.Summary") as MockSummary:
+    with patch("easydiffraction.sample_models.sample_models.SampleModels"), \
+         patch("easydiffraction.experiments.experiments.Experiments"), \
+         patch("easydiffraction.analysis.analysis.Analysis"), \
+         patch("easydiffraction.summary.Summary"):
         project = Project()  # Directly assign the instance to a variable
 
     # Assertions

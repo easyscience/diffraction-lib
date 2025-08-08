@@ -12,11 +12,11 @@ def calculate_r_factor(y_obs: np.ndarray,
                        y_calc: np.ndarray) -> float:
     """
     Calculate the R-factor (reliability factor) between observed and calculated data.
-    
+
     Args:
         y_obs: Observed data points.
         y_calc: Calculated data points.
-        
+
     Returns:
         R-factor value.
     """
@@ -32,12 +32,12 @@ def calculate_weighted_r_factor(y_obs: np.ndarray,
                                 weights: np.ndarray) -> float:
     """
     Calculate the weighted R-factor between observed and calculated data.
-    
+
     Args:
         y_obs: Observed data points.
         y_calc: Calculated data points.
         weights: Weights for each data point.
-        
+
     Returns:
         Weighted R-factor value.
     """
@@ -53,11 +53,11 @@ def calculate_rb_factor(y_obs: np.ndarray,
                         y_calc: np.ndarray) -> float:
     """
     Calculate the Bragg R-factor between observed and calculated data.
-    
+
     Args:
         y_obs: Observed data points.
         y_calc: Calculated data points.
-        
+
     Returns:
         Bragg R-factor value.
     """
@@ -72,11 +72,11 @@ def calculate_r_factor_squared(y_obs: np.ndarray,
                                y_calc: np.ndarray) -> float:
     """
     Calculate the R-factor squared between observed and calculated data.
-    
+
     Args:
         y_obs: Observed data points.
         y_calc: Calculated data points.
-        
+
     Returns:
         R-factor squared value.
     """
@@ -91,11 +91,11 @@ def calculate_reduced_chi_square(residuals: np.ndarray,
                                  num_parameters: int) -> float:
     """
     Calculate the reduced chi-square statistic.
-    
+
     Args:
         residuals: Residuals between observed and calculated data.
         num_parameters: Number of free parameters used in the model.
-        
+
     Returns:
         Reduced chi-square value.
     """
@@ -114,12 +114,12 @@ def get_reliability_inputs(sample_models: SampleModels,
                            calculator: CalculatorBase) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
     """
     Collect observed and calculated data points for reliability calculations.
-    
+
     Args:
         sample_models: Collection of sample models.
         experiments: Collection of experiments.
         calculator: The calculator to use for pattern generation.
-        
+
     Returns:
         Tuple containing arrays of (observed values, calculated values, error values)
     """

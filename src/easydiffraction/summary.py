@@ -9,7 +9,7 @@ from easydiffraction.utils.utils import render_table
 class Summary:
     """
     Generates reports and exports results from the project.
-    
+
     This class collects and presents all relevant information
     about the fitted model, experiments, and analysis results.
     """

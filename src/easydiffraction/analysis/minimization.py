@@ -1,5 +1,4 @@
 from typing import Any
-from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -51,14 +50,15 @@ class DiffractionMinimizer:
         for param in params:
             param.start_value = param.value
 
-        objective_function: Callable[[Dict[str, Any]], np.ndarray] = lambda engine_params: self._residual_function(
-            engine_params=engine_params,
-            parameters=params,
-            sample_models=sample_models,
-            experiments=experiments,
-            calculator=calculator,
-            weights=weights,
-        )
+        def objective_function(engine_params: Dict[str, Any]) -> np.ndarray:
+            return self._residual_function(
+                    engine_params=engine_params,
+                    parameters=params,
+                    sample_models=sample_models,
+                    experiments=experiments,
+                    calculator=calculator,
+                    weights=weights,
+                )
 
         # Perform fitting
         self.results = self.minimizer.fit(params, objective_function)

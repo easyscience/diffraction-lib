@@ -17,11 +17,11 @@ def apply_cell_symmetry_constraints(cell: Dict[str, float],
                                     name_hm: str) -> Dict[str, float]:
     """
     Apply symmetry constraints to unit cell parameters based on space group.
-    
+
     Args:
         cell: Dictionary containing lattice parameters.
         name_hm: Hermann-Mauguin symbol of the space group.
-        
+
     Returns:
         The cell dictionary with applied symmetry constraints.
     """
@@ -84,13 +84,13 @@ def apply_atom_site_symmetry_constraints(atom_site: Dict[str, Any],
                                          wyckoff_letter: str) -> Dict[str, Any]:
     """
     Apply symmetry constraints to atomic coordinates based on site symmetry.
-    
+
     Args:
         atom_site: Dictionary containing atom position data.
         name_hm: Hermann-Mauguin symbol of the space group.
         coord_code: Coordinate system code.
         wyckoff_letter: Wyckoff position letter.
-        
+
     Returns:
         The atom_site dictionary with applied symmetry constraints.
     """
