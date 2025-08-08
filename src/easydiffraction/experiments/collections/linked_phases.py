@@ -11,7 +11,7 @@ from easydiffraction.core.objects import (
 class LinkedPhase(Component):
     @property
     def category_key(self) -> str:
-        return "linked_phase"
+        return "linked_phases"
 
     @property
     def cif_category_key(self) -> str:

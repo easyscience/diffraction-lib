@@ -1,5 +1,3 @@
-from __future__ import annotations
-from tabulate import tabulate
 from textwrap import wrap
 from typing import List
 
@@ -7,6 +5,8 @@ from easydiffraction.utils.formatting import (
     paragraph,
     section
 )
+from easydiffraction.utils.utils import render_table
+
 
 class Summary:
     """
@@ -30,27 +30,30 @@ class Summary:
     # ------------------------------------------
 
     def show_report(self) -> None:
-        """
-        Show a report of the entire analysis process, including:
-        - Project metadata
-        - Sample models and parameters
-        - Experiment configurations and results
-        - Analysis and fitting results
-        """
+        self.show_project_info()
+        self.show_crystallographic_data()
+        self.show_experimental_data()
+        self.show_fitting_details()
 
-        # ------------------------------------------
+    def show_project_info(self) -> None:
+        """
+        Print the project title and description.
+        """
         print(section("Project info"))
-        # ------------------------------------------
 
         print(paragraph("Title"))
         print(self.project.info.title)
 
-        print(paragraph("Description"))
-        print('\n'.join(wrap(self.project.info.description, width=60)))
+        if self.project.info.description:
+            print(paragraph("Description"))
+            print('\n'.join(wrap(self.project.info.description, width=60)))
 
-        # ------------------------------------------
+    def show_crystallographic_data(self) -> None:
+        """
+        Print crystallographic data including phase datablocks,
+        space groups, cell parameters, and atom sites.
+        """
         print(section("Crystallographic data"))
-        # ------------------------------------------
 
         for model in self.project.sample_models._models.values():
             print(paragraph("Phase datablock"))
@@ -60,28 +63,32 @@ class Summary:
             print(model.space_group.name_h_m.value)
 
             print(paragraph("Cell parameters"))
-            cell_data = [[k.replace('length_', '').replace('angle_', ''), f"{v:.4f}"] for k, v in model.cell.as_dict().items()]
-            print(tabulate(cell_data, headers=["Parameter", "Value"], tablefmt="fancy_outline"))
+            columns_alignment: List[str] = ["left", "right"]
+            cell_data = [[k.replace('length_', '').replace('angle_', ''), f"{v:.5f}"]
+                         for k, v in model.cell.as_dict().items()]
+            render_table(columns_alignment=columns_alignment,
+                         columns_data=cell_data)
 
             print(paragraph("Atom sites"))
-            atom_table: List[List[str]] = []
+            columns_headers = ["Label", "Type", "fract_x", "fract_y", "fract_z", "Occupancy", "B_iso"]
+            columns_alignment = ["left", "left", "right", "right", "right", "right", "right"]
+            atom_table = []
             for site in model.atom_sites:
-                fract_x: float = site.fract_x.value
-                fract_y: float = site.fract_y.value
-                fract_z: float = site.fract_z.value
-                b_iso: float = site.b_iso.value
-                occ: float = site.occupancy.value
                 atom_table.append([
                     site.label.value, site.type_symbol.value,
-                    f"{fract_x:.5f}", f"{fract_y:.5f}", f"{fract_z:.5f}",
-                    f"{occ:.5f}", f"{b_iso:.5f}"
+                    f"{site.fract_x.value:.5f}", f"{site.fract_y.value:.5f}", f"{site.fract_z.value:.5f}",
+                    f"{site.occupancy.value:.5f}", f"{site.b_iso.value:.5f}"
                 ])
-            headers: List[str] = ["Label", "Type", "fract_x", "fract_y", "fract_z", "Occupancy", "B_iso"]
-            print(tabulate(atom_table, headers=headers, tablefmt="fancy_outline"))
+            render_table(columns_headers=columns_headers,
+                         columns_alignment=columns_alignment,
+                         columns_data=atom_table)
 
-        # ------------------------------------------
+    def show_experimental_data(self) -> None:
+        """
+        Print experimental data including experiment datablocks,
+        types, instrument settings, and peak profile information.
+        """
         print(section("Experiments"))
-        # ------------------------------------------
 
         for expt in self.project.experiments._experiments.values():
             print(paragraph("Experiment datablock"))
@@ -93,10 +100,10 @@ class Summary:
             if hasattr(expt, 'instrument'):
                 if hasattr(expt.instrument, 'setup_wavelength'):
                     print(paragraph("Wavelength"))
-                    print(expt.instrument.setup_wavelength.value)
+                    print(f"{expt.instrument.setup_wavelength.value:.5f}")
                 if hasattr(expt.instrument, 'calib_twotheta_offset'):
                     print(paragraph("2θ offset"))
-                    print(expt.instrument.calib_twotheta_offset.value)
+                    print(f"{expt.instrument.calib_twotheta_offset.value:.5f}")
 
             if hasattr(expt, 'peak_profile_type'):
                 print(paragraph("Profile type"))
@@ -105,22 +112,30 @@ class Summary:
             if hasattr(expt, 'peak'):
                 if hasattr(expt.peak, 'broad_gauss_u'):
                     print(paragraph("Peak broadening (Gaussian)"))
-                    print(tabulate([
-                        ["U", expt.peak.broad_gauss_u.value],
-                        ["V", expt.peak.broad_gauss_v.value],
-                        ["W", expt.peak.broad_gauss_w.value]
-                    ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
-
+                    columns_alignment = ["left", "right"]
+                    columns_data = [
+                        ["U", f"{expt.peak.broad_gauss_u.value:.5f}"],
+                        ["V", f"{expt.peak.broad_gauss_v.value:.5f}"],
+                        ["W", f"{expt.peak.broad_gauss_w.value:.5f}"]
+                    ]
+                    render_table(columns_alignment=columns_alignment,
+                                 columns_data=columns_data)
                 if hasattr(expt.peak, 'broad_lorentz_x'):
                     print(paragraph("Peak broadening (Lorentzian)"))
-                    print(tabulate([
-                        ["X", expt.peak.broad_lorentz_x.value],
-                        ["Y", expt.peak.broad_lorentz_y.value]
-                    ], headers=["Parameter", "Value"], tablefmt="fancy_outline"))
+                    columns_alignment = ["left", "right"]
+                    columns_data = [
+                        ["X", f"{expt.peak.broad_lorentz_x.value:.5f}"],
+                        ["Y", f"{expt.peak.broad_lorentz_y.value:.5f}"]
+                    ]
+                    render_table(columns_alignment=columns_alignment,
+                                 columns_data=columns_data)
 
-        # ------------------------------------------
+    def show_fitting_details(self) -> None:
+        """
+        Print fitting details including calculation and minimization engines,
+        and fit quality metrics.
+        """
         print(section("Fitting"))
-        # ------------------------------------------
 
         print(paragraph("Calculation engine"))
         print(self.project.analysis.current_calculator)
@@ -129,10 +144,12 @@ class Summary:
         print(self.project.analysis.current_minimizer)
 
         print(paragraph("Fit quality"))
+        columns_alignment = ["left", "right"]
         fit_metrics = [
             ["Goodness-of-fit (reduced χ²)", f"{self.project.analysis.fit_results.reduced_chi_square:.2f}"]
         ]
-        print(tabulate(fit_metrics, tablefmt="fancy_outline"))
+        render_table(columns_alignment=columns_alignment,
+                     columns_data=fit_metrics)
 
     # ------------------------------------------
     #  Exporting

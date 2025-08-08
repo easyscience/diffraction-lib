@@ -19,7 +19,10 @@ from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.summary import Summary
 
 # Utils
-from easydiffraction.utils.utils import download_from_repository
+from easydiffraction.utils.utils import (
+    download_from_repository,
+    get_value_from_xye_header
+)
 from easydiffraction.utils.formatting import (
     chapter,
     section,
@@ -39,5 +42,6 @@ __all__ = [
     "chapter",
     "section",
     "paragraph",
-    'download_from_repository'
+    "download_from_repository",
+    "get_value_from_xye_header"
 ]

@@ -4,7 +4,7 @@ on:
   # Trigger the workflow on push
   push:
     # To the develop and master branches
-    branches: [develop, master, docs]
+    branches: [develop, master, docs, d-spacing]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -101,7 +101,7 @@ jobs:
       - name: Convert ${{ env.NOTEBOOKS_DIR }}/*.py to docs/${{env.NOTEBOOKS_DIR }}/*.ipynb
         run: |
           cp -R ${{ env.NOTEBOOKS_DIR }}/data docs/${{ env.NOTEBOOKS_DIR }}/
-          jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --to ipynb
+          jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --from py:percent --to ipynb
           mv ${{ env.NOTEBOOKS_DIR }}/*.ipynb docs/${{ env.NOTEBOOKS_DIR }}/
 
       # The following step is needed to avoid the following message during the build:

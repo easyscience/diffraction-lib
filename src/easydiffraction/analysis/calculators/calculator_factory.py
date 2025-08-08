@@ -54,7 +54,10 @@ class CalculatorFactory:
                      columns_data=columns_data)
 
     @classmethod
-    def create_calculator(cls, calculator_name: str) -> Optional[CalculatorBase]:
+    def create_calculator(
+            cls,
+            calculator_name: str
+    ) -> Optional[CalculatorBase]:
         config = cls._supported_calculators().get(calculator_name)
         if not config:
             print(error(f"Unknown calculator '{calculator_name}'"))
@@ -64,14 +67,25 @@ class CalculatorFactory:
         return config['class']()
 
     @classmethod
-    def register_calculator(cls, calculator_type: str, calculator_cls: Type[CalculatorBase], description: str = 'No description provided.') -> None:
+    def register_calculator(
+            cls,
+            calculator_type: str,
+            calculator_cls: Type[CalculatorBase],
+            description: str = 'No description provided.'
+    ) -> None:
         cls._potential_calculators[calculator_type] = {
             'class': calculator_cls,
             'description': description
         }
 
     @classmethod
-    def register_minimizer(cls, name: str, minimizer_cls: Type[Any], method: Optional[str] = None, description: str = 'No description provided.') -> None:
+    def register_minimizer(
+            cls,
+            name: str,
+            minimizer_cls: Type[Any],
+            method: Optional[str] = None,
+            description: str = 'No description provided.'
+    ) -> None:
         cls._available_minimizers[name] = {
             'engine': name,
             'method': method,

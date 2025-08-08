@@ -13,7 +13,7 @@ from easydiffraction.core.objects import (
 class ExcludedRegion(Component):
     @property
     def category_key(self) -> str:
-        return "excluded_region"
+        return "excluded_regions"
 
     @property
     def cif_category_key(self) -> str:

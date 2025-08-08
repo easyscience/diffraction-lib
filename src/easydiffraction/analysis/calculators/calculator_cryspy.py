@@ -1,18 +1,21 @@
+import contextlib
 import copy
+import io
 import numpy as np
 from typing import Any, Dict, List, Union
-from .calculator_base import CalculatorBase
-from easydiffraction.utils.formatting import warning
 
 from easydiffraction.sample_models.sample_model import SampleModel
 from easydiffraction.experiments.experiment import Experiment
+
+from .calculator_base import CalculatorBase
 
 try:
     import cryspy
     from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
     from cryspy.H_functions_global.function_1_cryspy_objects import str_to_globaln
+    print("✅ 'cryspy' calculation engine is successfully imported.")
 except ImportError:
-    print(warning("'cryspy' module not found. This calculator will not work."))
+    print("⚠️ 'cryspy' module not found. This calculation engine will not be available.")
     cryspy = None
 
 
@@ -32,9 +35,11 @@ class CryspyCalculator(CalculatorBase):
         super().__init__()
         self._cryspy_dicts: Dict[str, Dict[str, Any]] = {}
 
-    def calculate_structure_factors(self,
-                                    sample_model: SampleModel,
-                                    experiment: Experiment) -> None:
+    def calculate_structure_factors(
+            self,
+            sample_model: SampleModel,
+            experiment: Experiment
+    ) -> None:
         """
         Raises a NotImplementedError as HKL calculation is not implemented.
 
@@ -81,12 +86,20 @@ class CryspyCalculator(CalculatorBase):
         self._cryspy_dicts[combined_name] = copy.deepcopy(cryspy_dict)
 
         cryspy_in_out_dict: Dict[str, Any] = {}
-        rhochi_calc_chi_sq_by_dictionary(
-            cryspy_dict,
-            dict_in_out=cryspy_in_out_dict,
-            flag_use_precalculated_data=False,
-            flag_calc_analytical_derivatives=False
-        )
+
+        # Calculate the pattern using Cryspy
+        # TODO: Redirect stderr to suppress Cryspy warnings.
+        #  This is a temporary solution to avoid cluttering the output.
+        #  E.g. cryspy/A_functions_base/powder_diffraction_tof.py:106:
+        #  RuntimeWarning: overflow encountered in exp
+        #  Remove this when Cryspy is updated to handle warnings better.
+        with contextlib.redirect_stderr(io.StringIO()):
+            rhochi_calc_chi_sq_by_dictionary(
+                cryspy_dict,
+                dict_in_out=cryspy_in_out_dict,
+                flag_use_precalculated_data=False,
+                flag_calc_analytical_derivatives=False
+            )
 
         prefixes = {
             "constant wavelength": "pd",
@@ -109,9 +122,11 @@ class CryspyCalculator(CalculatorBase):
 
         return y_calc
 
-    def _recreate_cryspy_dict(self,
-                              sample_model: SampleModel,
-                              experiment: Experiment) -> Dict[str, Any]:
+    def _recreate_cryspy_dict(
+            self,
+            sample_model: SampleModel,
+            experiment: Experiment
+    ) -> Dict[str, Any]:
         """
         Recreates the Cryspy dictionary for the given sample model and experiment.
 
@@ -193,9 +208,11 @@ class CryspyCalculator(CalculatorBase):
 
         return cryspy_dict
 
-    def _recreate_cryspy_obj(self,
-                             sample_model: SampleModel,
-                             experiment: Experiment) -> Any:
+    def _recreate_cryspy_obj(
+            self,
+            sample_model: SampleModel,
+            experiment: Experiment
+    ) -> Any:
         """
         Recreates the Cryspy object for the given sample model and experiment.
 
@@ -222,8 +239,10 @@ class CryspyCalculator(CalculatorBase):
 
         return cryspy_obj
 
-    def _convert_sample_model_to_cryspy_cif(self,
-                                            sample_model: SampleModel) -> str:
+    def _convert_sample_model_to_cryspy_cif(
+            self,
+            sample_model: SampleModel
+    ) -> str:
         """
         Converts a sample model to a Cryspy CIF string.
 
@@ -235,9 +254,11 @@ class CryspyCalculator(CalculatorBase):
         """
         return sample_model.as_cif()
 
-    def _convert_experiment_to_cryspy_cif(self,
-                                          experiment: Experiment,
-                                          linked_phase: Any) -> str:
+    def _convert_experiment_to_cryspy_cif(
+            self,
+            experiment: Experiment,
+            linked_phase: Any
+    ) -> str:
         """
         Converts an experiment to a Cryspy CIF string.
 
@@ -300,15 +321,15 @@ class CryspyCalculator(CalculatorBase):
                     cif_lines.append(f"{engine_key_name} {attr_value}")
 
         x_data = experiment.datastore.pattern.x
-        two_theta_min = float(x_data.min())
-        two_theta_max = float(x_data.max())
+        twotheta_min = float(x_data.min())
+        twotheta_max = float(x_data.max())
         cif_lines.append("")
         if expt_type.beam_mode.value == "constant wavelength":
-            cif_lines.append(f"_range_2theta_min {two_theta_min}")
-            cif_lines.append(f"_range_2theta_max {two_theta_max}")
+            cif_lines.append(f"_range_2theta_min {twotheta_min}")
+            cif_lines.append(f"_range_2theta_max {twotheta_max}")
         elif expt_type.beam_mode.value == "time-of-flight":
-            cif_lines.append(f"_range_time_min {two_theta_min}")
-            cif_lines.append(f"_range_time_max {two_theta_max}")
+            cif_lines.append(f"_range_time_min {twotheta_min}")
+            cif_lines.append(f"_range_time_max {twotheta_max}")
 
         cif_lines.append("")
         cif_lines.append("loop_")
@@ -321,15 +342,15 @@ class CryspyCalculator(CalculatorBase):
             cif_lines.append("loop_")
             cif_lines.append("_pd_background_2theta")
             cif_lines.append("_pd_background_intensity")
-            cif_lines.append(f"{two_theta_min} 0.0")
-            cif_lines.append(f"{two_theta_max} 0.0")
+            cif_lines.append(f"{twotheta_min} 0.0")
+            cif_lines.append(f"{twotheta_max} 0.0")
         elif expt_type.beam_mode.value == "time-of-flight":
             cif_lines.append("")
             cif_lines.append("loop_")
             cif_lines.append("_tof_backgroundpoint_time")
             cif_lines.append("_tof_backgroundpoint_intensity")
-            cif_lines.append(f"{two_theta_min} 0.0")
-            cif_lines.append(f"{two_theta_max} 0.0")
+            cif_lines.append(f"{twotheta_min} 0.0")
+            cif_lines.append(f"{twotheta_max} 0.0")
 
         if expt_type.beam_mode.value == "constant wavelength":
             cif_lines.append("")

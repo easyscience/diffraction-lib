@@ -31,7 +31,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
 
     # Set experiment
     data_file = 'mcstas_lbco-si.xys'
-    download_from_repository(data_file, branch='fix-multiphase-fit', destination=TEMP_DIR)
+    download_from_repository(data_file, destination=TEMP_DIR)
     expt = Experiment('mcstas', beam_mode='time-of-flight', data_path=os.path.join(TEMP_DIR, data_file))
     expt.instrument.setup_twotheta_bank = 94.90931761529106
     expt.instrument.calib_d_to_tof_offset = 0.0

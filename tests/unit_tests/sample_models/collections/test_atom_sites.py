@@ -38,7 +38,7 @@ def test_atom_site_properties():
 
     # Assertions
     assert atom_site.cif_category_key == "atom_site"
-    assert atom_site.category_key == "atom_site"
+    assert atom_site.category_key == "atom_sites"
     assert atom_site._entry_id == "O1"
 
 

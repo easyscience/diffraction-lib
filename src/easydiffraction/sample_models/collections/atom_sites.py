@@ -12,7 +12,7 @@ class AtomSite(Component):
     """
     @property
     def category_key(self):
-        return "atom_site"
+        return "atom_sites"
 
     @property
     def cif_category_key(self):
@@ -73,6 +73,7 @@ class AtomSite(Component):
         self.b_iso = Parameter(
             value=b_iso,
             name="b_iso",
+            units="Å²",
             cif_name="B_iso_or_equiv",
         )
         # Select which of the input parameters is used for the

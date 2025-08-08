@@ -1,20 +1,20 @@
-# SPDX-FileCopyrightText: 2025 EasyDiffraction contributors
-# SPDX-License-Identifier: BSD-3-Clause
-# © 2021-2025 Contributors to the EasyDiffraction project <https://github.com/EasyScience/EasyDiffraction>
-
 import os
 import re
 import numpy as np
+
+from easydiffraction.sample_models.sample_model import SampleModel
+from easydiffraction.experiments.experiment import Experiment
+
 from .calculator_base import CalculatorBase
-from easydiffraction.utils.formatting import warning
 
 try:
     from diffpy.pdffit2 import PdfFit as pdffit
     from diffpy.pdffit2 import redirect_stdout
     from diffpy.structure.parsers.p_cif import P_cif as pdffit_cif_parser
     redirect_stdout(open(os.path.devnull, 'w')) # silence the C++ engine output
+    print("✅ 'pdffit' calculation engine is successfully imported.")
 except ImportError:
-    print(warning('"pdffit" module not found. This calculator will not work.'))
+    print("⚠️ 'pdffit' module not found. This calculation engine will not be available.")
     pdffit = None
 
 
@@ -35,9 +35,9 @@ class PdffitCalculator(CalculatorBase):
         return []
 
     def _calculate_single_model_pattern(self,
-                                        sample_model,
-                                        experiment,
-                                        called_by_minimizer=False):
+                                        sample_model: SampleModel,
+                                        experiment: Experiment,
+                                        called_by_minimizer: bool = False):
 
         # Create PDF calculator object
         calculator = pdffit()

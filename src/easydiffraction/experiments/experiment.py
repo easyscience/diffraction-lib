@@ -4,7 +4,10 @@ from typing import List, Optional
 
 from abc import abstractmethod
 
-from easydiffraction.utils.utils import render_table
+from easydiffraction.utils.utils import (
+    render_cif,
+    render_table
+)
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.experiments.components.experiment_type import ExperimentType
 from easydiffraction.experiments.components.instrument import (
@@ -119,7 +122,7 @@ class BaseExperiment(Datablock):
             cif_lines += ["", self.peak.as_cif()]
 
         # Phase scale factors for powder experiments
-        if hasattr(self, "linked_phases"):
+        if hasattr(self, "linked_phases") and self.linked_phases._items:
             cif_lines += ["", self.linked_phases.as_cif()]
 
         # Crystal scale factor for single crystal experiments
@@ -163,16 +166,8 @@ class BaseExperiment(Datablock):
 
     def show_as_cif(self) -> None:
         cif_text: str = self.as_cif(max_points=5)
-        lines: List[str] = cif_text.splitlines()
-        max_width: int = max(len(line) for line in lines)
-        padded_lines: List[str] = [f"│ {line.ljust(max_width)} │" for line in lines]
-        top: str = f"╒{'═' * (max_width + 2)}╕"
-        bottom: str = f"╘{'═' * (max_width + 2)}╛"
-
-        print(paragraph(f"Experiment 🔬 '{self.name}' as cif"))
-        print(top)
-        print("\n".join(padded_lines))
-        print(bottom)
+        paragraph_title: str = paragraph(f"Experiment 🔬 '{self.name}' as cif")
+        render_cif(cif_text, paragraph_title)
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:

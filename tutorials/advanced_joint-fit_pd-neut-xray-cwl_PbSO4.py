@@ -68,7 +68,6 @@ model.atom_sites.add('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
 
 # %%
 download_from_repository('d1a_pbso4.dat',
-                         branch='develop',
                          destination='data')
 
 # %% [markdown]
@@ -134,7 +133,6 @@ expt1.linked_phases.add('pbso4', scale=1.5)
 
 # %%
 download_from_repository('lab_pbso4.dat',
-                         branch='develop',
                          destination='data')
 
 # %% [markdown]

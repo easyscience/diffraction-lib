@@ -50,7 +50,21 @@ class Descriptor:
         UidMapHandler.get().add_to_uid_map(self)
 
     def __str__(self):
-        return f"{self.__class__.__name__}: {self.uid} = {self.value} {self.units or ''}".strip()
+        # Base value string
+        value_str = f"{self.__class__.__name__}: {self.uid} = {self.value}"
+
+        # Append ± uncertainty if it exists and is nonzero
+        if hasattr(self, "uncertainty") and getattr(self, "uncertainty") != 0.0:
+            value_str += f" ± {self.uncertainty}"
+
+        # Append units if available
+        if self.units:
+            value_str += f" {self.units}"
+
+        return value_str
+
+    def __repr__(self):
+        return self.__str__()
 
     def _generate_random_unique_id(self) -> str:
         # Derived class Parameter will use this unique id for the

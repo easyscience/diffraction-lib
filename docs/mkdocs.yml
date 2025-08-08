@@ -77,6 +77,8 @@ nav:
           - Ni pd-neut-cwl: tutorials/pdf_pd-neut-cwl_Ni.ipynb
           - Si pd-neut-tof: tutorials/pdf_pd-neut-tof_Si-NOMAD.ipynb
           - NaCl pd-xray: tutorials/pdf_pd-xray_NaCl.ipynb
+      - Workshops & Schools:
+          - 2025 DMSC: tutorials/dmsc-summer-school-2025_analysis-powder-diffraction.ipynb
   - API Reference:
       - API Reference: api-reference/index.md
       - core: api-reference/core.md

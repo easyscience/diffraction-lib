@@ -2,7 +2,10 @@ import pandas as pd
 import numpy as np
 from typing import List, Optional, Union
 
-from easydiffraction.utils.utils import render_table
+from easydiffraction.utils.utils import (
+    render_cif,
+    render_table
+)
 from easydiffraction.utils.formatting import (
     paragraph,
     warning
@@ -204,8 +207,15 @@ class Analysis:
             print(warning(f"No parameters found."))
             return
 
-        columns_headers = ['Code variable', 'Unique ID for CIF']
-        columns_alignment = ["left", "left"]
+        columns_headers = ['datablock',
+                           'category',
+                           'entry',
+                           'parameter',
+                           'How to Access in Python Code',
+                           'Unique Identifier for CIF Constraints']
+
+        columns_alignment = ['left', 'left', 'left', 'left', 'left', 'left']
+
         columns_data = []
         project_varname = self.project._varname
         for datablock_type, params in params.items():
@@ -215,12 +225,17 @@ class Analysis:
                     category_key = param.category_key
                     entry_id = param.collection_entry_id
                     param_key = param.name
-                    variable = f"{project_varname}.{datablock_type}['{datablock_id}'].{category_key}"
+                    code_variable = f"{project_varname}.{datablock_type}['{datablock_id}'].{category_key}"
                     if entry_id:
-                        variable += f"['{entry_id}']"
-                    variable += f".{param_key}"
-                    uid = param._generate_human_readable_unique_id()
-                    columns_data.append([variable, uid])
+                        code_variable += f"['{entry_id}']"
+                    code_variable += f".{param_key}"
+                    cif_uid = param._generate_human_readable_unique_id()
+                    columns_data.append([datablock_id,
+                                         category_key,
+                                         entry_id,
+                                         param_key,
+                                         code_variable,
+                                         cif_uid])
 
         print(paragraph("How to access parameters"))
         render_table(columns_headers=columns_headers,
@@ -384,14 +399,19 @@ class Analysis:
 
         if self.fit_mode == 'joint':
             print(paragraph(f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"))
-            self.fitter.fit(sample_models, experiments, calculator, weights=self.joint_fit_experiments)
+            self.fitter.fit(sample_models,
+                            experiments,
+                            calculator,
+                            weights=self.joint_fit_experiments)
         elif self.fit_mode == 'single':
             for expt_name in experiments.ids:
                 print(paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"))
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name
                 dummy_experiments.add(experiment)
-                self.fitter.fit(sample_models, dummy_experiments, calculator)
+                self.fitter.fit(sample_models,
+                                dummy_experiments,
+                                calculator)
         else:
             raise NotImplementedError(f"Fit mode {self.fit_mode} not implemented yet.")
 
@@ -417,14 +437,6 @@ class Analysis:
         return "\n".join(lines)
 
     def show_as_cif(self) -> None:
-        cif_text = self.as_cif()
-        lines = cif_text.splitlines()
-        max_width = max(len(line) for line in lines)
-        padded_lines = [f"│ {line.ljust(max_width)} │" for line in lines]
-        top = f"╒{'═' * (max_width + 2)}╕"
-        bottom = f"╘{'═' * (max_width + 2)}╛"
-
-        print(paragraph(f"Analysis 🧮 info as cif"))
-        print(top)
-        print("\n".join(padded_lines))
-        print(bottom)
+        cif_text: str = self.as_cif()
+        paragraph_title: str = paragraph(f"Analysis 🧮 info as cif")
+        render_cif(cif_text, paragraph_title)

@@ -1,16 +1,18 @@
 import numpy as np
 from typing import Any, Dict, List, Union
-from .calculator_base import CalculatorBase
-from easydiffraction.utils.formatting import warning
+
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.sample_models.sample_models import SampleModel
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.experiments.experiments import Experiments
 
+from .calculator_base import CalculatorBase
+
 try:
     from pycrysfml import cfml_py_utilities
+    print("✅ 'pycrysfml' calculation engine is successfully imported.")
 except ImportError:
-    print(warning('"pycrysfml" module not found. This calculator will not work.'))
+    print("⚠️ 'pycrysfml' module not found. This calculation engine will not be available.")
     cfml_py_utilities = None
 
 
@@ -25,7 +27,11 @@ class CrysfmlCalculator(CalculatorBase):
     def name(self) -> str:
         return "crysfml"
 
-    def calculate_structure_factors(self, sample_models: SampleModels, experiments: Experiments) -> None:
+    def calculate_structure_factors(
+            self,
+            sample_models: SampleModels,
+            experiments: Experiments
+    ) -> None:
         """
         Call Crysfml to calculate structure factors.
 
@@ -61,7 +67,11 @@ class CrysfmlCalculator(CalculatorBase):
             y = []
         return y
 
-    def _adjust_pattern_length(self, pattern: List[float], target_length: int) -> List[float]:
+    def _adjust_pattern_length(
+            self,
+            pattern: List[float],
+            target_length: int
+    ) -> List[float]:
         """
         Adjusts the length of the pattern to match the target length.
 
@@ -77,7 +87,11 @@ class CrysfmlCalculator(CalculatorBase):
             return pattern[:target_length]
         return pattern
 
-    def _crysfml_dict(self, sample_model: SampleModels, experiment: Experiment) -> Dict[str, Union[Experiment, SampleModel]]:
+    def _crysfml_dict(
+            self,
+            sample_model: SampleModels,
+            experiment: Experiment
+    ) -> Dict[str, Union[Experiment, SampleModel]]:
         """
         Converts the sample model and experiment into a dictionary format for Crysfml.
 
@@ -95,7 +109,10 @@ class CrysfmlCalculator(CalculatorBase):
             "experiments": [experiment_dict]
         }
 
-    def _convert_sample_model_to_dict(self, sample_model: SampleModels) -> Dict[str, SampleModel]:
+    def _convert_sample_model_to_dict(
+            self,
+            sample_model: SampleModel
+    ) -> Dict[str, Any]:
         """
         Converts a sample model into a dictionary format.
 
@@ -133,7 +150,10 @@ class CrysfmlCalculator(CalculatorBase):
 
         return sample_model_dict
 
-    def _convert_experiment_to_dict(self, experiment: Experiment) -> Dict[str, Any]:
+    def _convert_experiment_to_dict(
+            self,
+            experiment: Experiment
+    ) -> Dict[str, Any]:
         """
         Converts an experiment into a dictionary format.
 
@@ -148,8 +168,8 @@ class CrysfmlCalculator(CalculatorBase):
         peak = getattr(experiment, "peak", None)
 
         x_data = experiment.datastore.pattern.x
-        two_theta_min = float(x_data.min())
-        two_theta_max = float(x_data.max())
+        twotheta_min = float(x_data.min())
+        twotheta_max = float(x_data.max())
 
         exp_dict = {
             "NPD": {
@@ -163,9 +183,9 @@ class CrysfmlCalculator(CalculatorBase):
                 #"_pd_instr_reflex_s_l": peak_asymm.s_l.value if peak_asymm else 0.0,
                 #"_pd_instr_reflex_d_l": peak_asymm.d_l.value if peak_asymm else 0.0,
                 "_pd_meas_2theta_offset": instrument.calib_twotheta_offset.value if instrument else 0.0,
-                "_pd_meas_2theta_range_min": two_theta_min,
-                "_pd_meas_2theta_range_max": two_theta_max,
-                "_pd_meas_2theta_range_inc": (two_theta_max - two_theta_min) / len(x_data)
+                "_pd_meas_2theta_range_min": twotheta_min,
+                "_pd_meas_2theta_range_max": twotheta_max,
+                "_pd_meas_2theta_range_inc": (twotheta_max - twotheta_min) / len(x_data)
             }
         }
 
