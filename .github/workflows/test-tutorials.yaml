@@ -45,7 +45,7 @@ jobs:
 
       - name: Install Python dependencies
         shell: bash
-        run: python -m pip install .
+        run: python -m pip install . '[dev,docs,visualization]'
 
       # Check if tutorials as python scripts run without errors
       # Run all Python scripts in the folder tutorials/ in parallel

@@ -30,7 +30,7 @@ Development playground for the new EasyDiffraction API.
 - Install dependencies:
   ```bash
   pip install --upgrade pip
-  pip install .
+  pip python -m pip install . '[visualization]'
   ```
 - Install pycrysfml (pyenv python 3.12, macOS 14, Apple Silicon):
   ```bash
