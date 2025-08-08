@@ -1,22 +1,21 @@
-import numpy as np
-
 from abc import abstractmethod
-from typing import Dict, List, Type, Union
+from typing import Dict
+from typing import List
+from typing import Type
+from typing import Union
+
+import numpy as np
 from numpy.polynomial.chebyshev import chebval
 from scipy.interpolate import interp1d
 
-from easydiffraction.utils.utils import render_table
-from easydiffraction.utils.formatting import (
-    paragraph,
-    warning
-)
-from easydiffraction.core.objects import (
-    Parameter,
-    Descriptor,
-    Component,
-    Collection
-)
 from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
+from easydiffraction.core.objects import Collection
+from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import Descriptor
+from easydiffraction.core.objects import Parameter
+from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.formatting import warning
+from easydiffraction.utils.utils import render_table
 
 
 # TODO: rename to LineSegment

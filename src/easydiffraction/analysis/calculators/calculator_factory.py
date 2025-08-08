@@ -1,14 +1,18 @@
-from typing import Dict, Type, List, Optional, Union, Any
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Type
+from typing import Union
 
+from easydiffraction.utils.formatting import error
+from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_table
-from easydiffraction.utils.formatting import (
-    paragraph,
-    error
-)
+
+from .calculator_base import CalculatorBase
 from .calculator_crysfml import CrysfmlCalculator
 from .calculator_cryspy import CryspyCalculator
 from .calculator_pdffit import PdffitCalculator
-from .calculator_base import CalculatorBase
 
 
 class CalculatorFactory:

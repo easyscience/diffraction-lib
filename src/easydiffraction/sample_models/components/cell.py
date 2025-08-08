@@ -1,9 +1,7 @@
-from typing import Optional
 
-from easydiffraction.core.objects import (
-    Parameter,
-    Component
-)
+from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import Parameter
+
 
 class Cell(Component):
     """

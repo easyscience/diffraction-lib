@@ -1,11 +1,11 @@
+from easydiffraction.core.objects import Datablock
+from easydiffraction.crystallography import crystallography as ecr
+from easydiffraction.sample_models.collections.atom_sites import AtomSites
+from easydiffraction.sample_models.components.cell import Cell
+from easydiffraction.sample_models.components.space_group import SpaceGroup
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_cif
-from easydiffraction.core.objects import Datablock
-from easydiffraction.crystallography import crystallography as ecr
-from easydiffraction.sample_models.components.space_group import SpaceGroup
-from easydiffraction.sample_models.components.cell import Cell
-from easydiffraction.sample_models.collections.atom_sites import AtomSites
 
 
 class SampleModel(Datablock):

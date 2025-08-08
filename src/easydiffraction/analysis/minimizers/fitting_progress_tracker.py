@@ -1,22 +1,20 @@
-import numpy as np
 import time
-from typing import List, Optional
+from typing import List
+from typing import Optional
+
+import numpy as np
 
 try:
-    from IPython.display import (
-        display,
-        HTML,
-        DisplayHandle
-    )
+    from IPython.display import HTML
+    from IPython.display import DisplayHandle
+    from IPython.display import display
 except ImportError:
     display = None
     clear_output = None
 
-from easydiffraction.utils.utils import (
-    is_notebook,
-    render_table
-)
 from easydiffraction.analysis.reliability_factors import calculate_reduced_chi_square
+from easydiffraction.utils.utils import is_notebook
+from easydiffraction.utils.utils import render_table
 
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
 FIXED_WIDTH = 17

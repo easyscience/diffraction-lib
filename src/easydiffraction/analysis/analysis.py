@@ -1,26 +1,23 @@
-import pandas as pd
-import numpy as np
-from typing import List, Optional, Union
+from typing import List
+from typing import Optional
+from typing import Union
 
-from easydiffraction.utils.utils import (
-    render_cif,
-    render_table
-)
-from easydiffraction.utils.formatting import (
-    paragraph,
-    warning
-)
-from easydiffraction.core.objects import (
-    Descriptor,
-    Parameter
-)
+import numpy as np
+import pandas as pd
+
+from easydiffraction.core.objects import Descriptor
+from easydiffraction.core.objects import Parameter
 from easydiffraction.core.singletons import ConstraintsHandler
 from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.formatting import warning
+from easydiffraction.utils.utils import render_cif
+from easydiffraction.utils.utils import render_table
 
+from .calculators.calculator_factory import CalculatorFactory
 from .collections.aliases import Aliases
 from .collections.constraints import Constraints
 from .collections.joint_fit_experiments import JointFitExperiments
-from .calculators.calculator_factory import CalculatorFactory
 from .minimization import DiffractionMinimizer
 from .minimizers.minimizer_factory import MinimizerFactory
 
@@ -83,7 +80,7 @@ class Analysis:
         experiments_params = self.project.experiments.get_all_params()
 
         if not sample_models_params and not experiments_params:
-            print(warning(f"No parameters found."))
+            print(warning("No parameters found."))
             return
 
         columns_headers = ['datablock',
@@ -122,7 +119,7 @@ class Analysis:
         experiments_params = self.project.experiments.get_fittable_params()
 
         if not sample_models_params and not experiments_params:
-            print(warning(f"No fittable parameters found."))
+            print(warning("No fittable parameters found."))
             return
 
         columns_headers = ['datablock',
@@ -166,7 +163,7 @@ class Analysis:
         free_params = sample_models_params + experiments_params
 
         if not free_params:
-            print(warning(f"No free parameters found."))
+            print(warning("No free parameters found."))
             return
 
         columns_headers = ['datablock',
@@ -204,7 +201,7 @@ class Analysis:
                   'experiments': experiments_params}
 
         if not params:
-            print(warning(f"No parameters found."))
+            print(warning("No parameters found."))
             return
 
         columns_headers = ['datablock',
@@ -280,7 +277,7 @@ class Analysis:
     @current_minimizer.setter
     def current_minimizer(self, selection: str) -> None:
         self.fitter = DiffractionMinimizer(selection)
-        print(paragraph(f"Current minimizer changed to"))
+        print(paragraph("Current minimizer changed to"))
         print(self.current_minimizer)
 
     @property
@@ -348,7 +345,7 @@ class Analysis:
         constraints_dict = self.constraints._items
 
         if not self.constraints._items:
-            print(warning(f"No constraints defined."))
+            print(warning("No constraints defined."))
             return
 
         rows = []
@@ -364,14 +361,14 @@ class Analysis:
         alignments = ['left', 'left', 'left']
         rows = [[row[header] for header in headers] for row in rows]
 
-        print(paragraph(f"User defined constraints"))
+        print(paragraph("User defined constraints"))
         render_table(columns_headers=headers,
                      columns_alignment=alignments,
                      columns_data=rows)
 
     def apply_constraints(self):
         if not self.constraints._items:
-            print(warning(f"No constraints defined."))
+            print(warning("No constraints defined."))
             return
 
         self.constraints_handler.set_aliases(self.aliases)
@@ -438,5 +435,5 @@ class Analysis:
 
     def show_as_cif(self) -> None:
         cif_text: str = self.as_cif()
-        paragraph_title: str = paragraph(f"Analysis 🧮 info as cif")
+        paragraph_title: str = paragraph("Analysis 🧮 info as cif")
         render_cif(cif_text, paragraph_title)

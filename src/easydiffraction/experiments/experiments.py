@@ -1,12 +1,11 @@
 import os.path
-from typing import Optional, Union, Dict, List
+from typing import Dict
+from typing import List
 
-from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.core.objects import Collection
-from easydiffraction.experiments.experiment import (
-    BaseExperiment,
-    ExperimentFactory
-)
+from easydiffraction.experiments.experiment import BaseExperiment
+from easydiffraction.experiments.experiment import ExperimentFactory
+from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 
 
@@ -63,7 +62,7 @@ class Experiments(Collection):
         self._experiments[experiment.name] = experiment
 
     def _add_from_cif_path(self, cif_path: str) -> None:
-        print(f"Loading Experiment from CIF path...")
+        print("Loading Experiment from CIF path...")
         raise NotImplementedError("CIF loading not implemented.")
 
     def _add_from_cif_string(self, cif_str: str) -> None:

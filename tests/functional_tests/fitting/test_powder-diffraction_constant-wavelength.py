@@ -1,13 +1,12 @@
 import os
 import tempfile
+
 from numpy.testing import assert_almost_equal
 
-from easydiffraction import (
-    Project,
-    SampleModel,
-    Experiment,
-    download_from_repository
-)
+from easydiffraction import Experiment
+from easydiffraction import Project
+from easydiffraction import SampleModel
+from easydiffraction import download_from_repository
 
 TEMP_DIR = tempfile.gettempdir()
 

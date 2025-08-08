@@ -1,21 +1,19 @@
-import pytest
-import numpy as np
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
-from easydiffraction.experiments.experiment import (
-    BaseExperiment,
-    PowderExperiment,
-    SingleCrystalExperiment,
-    ExperimentFactory,
-    Experiment,
-)
+import numpy as np
+import pytest
+
+from easydiffraction.core.constants import DEFAULT_BEAM_MODE
+from easydiffraction.core.constants import DEFAULT_RADIATION_PROBE
+from easydiffraction.core.constants import DEFAULT_SAMPLE_FORM
+from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.experiments.components.experiment_type import ExperimentType
-from easydiffraction.core.constants import (
-    DEFAULT_SAMPLE_FORM,
-    DEFAULT_BEAM_MODE,
-    DEFAULT_RADIATION_PROBE,
-    DEFAULT_SCATTERING_TYPE
-)
+from easydiffraction.experiments.experiment import BaseExperiment
+from easydiffraction.experiments.experiment import Experiment
+from easydiffraction.experiments.experiment import ExperimentFactory
+from easydiffraction.experiments.experiment import PowderExperiment
+from easydiffraction.experiments.experiment import SingleCrystalExperiment
 
 
 @pytest.fixture

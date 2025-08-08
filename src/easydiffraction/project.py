@@ -1,25 +1,21 @@
-import os
 import datetime
+import os
 import tempfile
 from textwrap import wrap
-
-from varname import varname
 from typing import List
 
-from easydiffraction.utils.utils import (
-    render_cif,
-    tof_to_d,
-    twotheta_to_d
-)
-from easydiffraction.utils.formatting import (
-    paragraph,
-    error
-)
-from easydiffraction.sample_models.sample_models import SampleModels
-from easydiffraction.experiments.experiments import Experiments
+from varname import varname
+
 from easydiffraction.analysis.analysis import Analysis
-from easydiffraction.summary import Summary
+from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.plotting.plotting import Plotter
+from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.summary import Summary
+from easydiffraction.utils.formatting import error
+from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.utils import render_cif
+from easydiffraction.utils.utils import tof_to_d
+from easydiffraction.utils.utils import twotheta_to_d
 
 
 class ProjectInfo:

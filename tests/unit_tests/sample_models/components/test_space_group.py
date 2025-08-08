@@ -1,4 +1,3 @@
-import pytest
 from easydiffraction.sample_models.components.space_group import SpaceGroup
 
 

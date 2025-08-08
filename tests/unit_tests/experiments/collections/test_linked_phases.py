@@ -1,13 +1,13 @@
-import pytest
-import numpy as np
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
-from easydiffraction.experiments.collections.datastore import (
-    Pattern,
-    PowderPattern,
-    Datastore,
-    DatastoreFactory,
-)
+import numpy as np
+import pytest
+
+from easydiffraction.experiments.collections.datastore import Datastore
+from easydiffraction.experiments.collections.datastore import DatastoreFactory
+from easydiffraction.experiments.collections.datastore import Pattern
+from easydiffraction.experiments.collections.datastore import PowderPattern
 
 
 def test_pattern_initialization():

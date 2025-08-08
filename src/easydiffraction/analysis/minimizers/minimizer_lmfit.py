@@ -1,6 +1,10 @@
+from typing import Any
+from typing import Dict
+from typing import List
+
 import lmfit
+
 from .minimizer_base import MinimizerBase
-from typing import Any, Dict, List
 
 DEFAULT_METHOD = 'leastsq'
 DEFAULT_MAX_ITERATIONS = 1000

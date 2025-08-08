@@ -1,14 +1,13 @@
-import pytest
-import numpy as np
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
-from easydiffraction.experiments.collections.background import (
-    Point,
-    PolynomialTerm,
-    LineSegmentBackground,
-    ChebyshevPolynomialBackground,
-    BackgroundFactory,
-)
+import numpy as np
+import pytest
+
+from easydiffraction.experiments.collections.background import BackgroundFactory
+from easydiffraction.experiments.collections.background import ChebyshevPolynomialBackground
+from easydiffraction.experiments.collections.background import LineSegmentBackground
+from easydiffraction.experiments.collections.background import Point
+from easydiffraction.experiments.collections.background import PolynomialTerm
 
 
 def test_point_initialization():
@@ -80,7 +79,7 @@ def test_chebyshev_polynomial_background_calculate_no_terms():
         y_data = background.calculate(x_data)
         assert np.array_equal(y_data, np.zeros_like(x_data))
         assert("No background points found. Setting background to zero." in str(mock_print.call_args.args[0]))
-    
+
 def test_chebyshev_polynomial_background_show(capsys):
     background = ChebyshevPolynomialBackground()
     background.add(order=0, coef=1.0)

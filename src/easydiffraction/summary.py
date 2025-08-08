@@ -1,10 +1,8 @@
 from textwrap import wrap
 from typing import List
 
-from easydiffraction.utils.formatting import (
-    paragraph,
-    section
-)
+from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.formatting import section
 from easydiffraction.utils.utils import render_table
 
 

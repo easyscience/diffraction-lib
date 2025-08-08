@@ -1,10 +1,10 @@
-from typing import Dict, List, Optional
+from typing import List
+from typing import Optional
 
-from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.core.objects import Collection
 from easydiffraction.sample_models.sample_model import SampleModel
+from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
-from easydiffraction.sample_models.sample_model import SampleModel
 
 
 class SampleModels(Collection):
@@ -20,10 +20,10 @@ class SampleModels(Collection):
         super().__init__()  # Initialize Collection
         self._models = self._items  # Alias for legacy support
 
-    def add(self, 
-            model: Optional[SampleModel] = None, 
-            name: Optional[str] = None, 
-            cif_path: Optional[str] = None, 
+    def add(self,
+            model: Optional[SampleModel] = None,
+            name: Optional[str] = None,
+            cif_path: Optional[str] = None,
             cif_str: Optional[str] = None) -> None:
         """
         Add a new sample model to the collection.
@@ -96,9 +96,9 @@ class SampleModels(Collection):
         """
         self._models[sample_model.name] = sample_model
 
-    def _create_and_add_sample_model(self, 
-                                    name: Optional[str] = None, 
-                                    cif_path: Optional[str] = None, 
+    def _create_and_add_sample_model(self,
+                                    name: Optional[str] = None,
+                                    cif_path: Optional[str] = None,
                                     cif_str: Optional[str] = None) -> None:
         """
         Create a SampleModel instance and add it to the collection.

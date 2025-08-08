@@ -1,6 +1,5 @@
-import pytest
-from easydiffraction.experiments.components.experiment_type import ExperimentType
 from easydiffraction.core.objects import Descriptor
+from easydiffraction.experiments.components.experiment_type import ExperimentType
 
 
 def test_experiment_type_initialization():
@@ -43,7 +42,7 @@ def test_experiment_type_properties():
 
 
 def no_test_experiment_type_locking_attributes():
-    # hmm this doesn't work as expected.
+    # TODO: hmm this doesn't work as expected.
     experiment_type = ExperimentType(
         sample_form="powder",
         beam_mode="CW",

@@ -1,13 +1,19 @@
-from typing import Any, Optional, List, Callable, Dict
-from .minimizers.minimizer_factory import MinimizerFactory
-from .minimizers.minimizer_base import FitResults
-from ..analysis.reliability_factors import get_reliability_inputs
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+
 import numpy as np
 
-from easydiffraction.sample_models.sample_models import SampleModels
-from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.core.objects import Parameter
 from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
+from easydiffraction.core.objects import Parameter
+from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.sample_models.sample_models import SampleModels
+
+from ..analysis.reliability_factors import get_reliability_inputs
+from .minimizers.minimizer_base import FitResults
+from .minimizers.minimizer_factory import MinimizerFactory
 
 
 class DiffractionMinimizer:
@@ -140,9 +146,9 @@ class DiffractionMinimizer:
         # We should obtain the same reduced chi_squared when a single dataset is split into
         # two parts and fit together. If weights sum to one, then reduced chi_squared
         # will be half as large as expected.
-        _weights *= num_expts / np.sum(_weights)   
+        _weights *= num_expts / np.sum(_weights)
         residuals: List[float] = []
-        
+
         for (expt_id, experiment), weight in zip(experiments._items.items(), _weights):
 
             # Calculate the difference between measured and calculated patterns

@@ -1,5 +1,8 @@
-import pytest
-from easydiffraction.core.objects import Descriptor, Parameter, Component, Collection, Datablock
+from easydiffraction.core.objects import Collection
+from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import Datablock
+from easydiffraction.core.objects import Descriptor
+from easydiffraction.core.objects import Parameter
 
 # filepath: src/easydiffraction/core/test_objects.py
 

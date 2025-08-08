@@ -1,4 +1,3 @@
-import pytest
 from easydiffraction.analysis.collections.joint_fit_experiments import JointFitExperiment
 
 # filepath: src/easydiffraction/analysis/collections/test_joint_fit_experiments.py

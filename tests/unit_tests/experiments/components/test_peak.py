@@ -1,20 +1,19 @@
 import pytest
-from easydiffraction.experiments.components.peak import (
-    ConstantWavelengthBroadeningMixin,
-    TimeOfFlightBroadeningMixin,
-    EmpiricalAsymmetryMixin,
-    FcjAsymmetryMixin,
-    IkedaCarpenterAsymmetryMixin,
-    PeakBase,
-    ConstantWavelengthPseudoVoigt,
-    ConstantWavelengthSplitPseudoVoigt,
-    ConstantWavelengthThompsonCoxHastings,
-    TimeOfFlightPseudoVoigt,
-    TimeOfFlightPseudoVoigtIkedaCarpenter,
-    TimeOfFlightPseudoVoigtBackToBackExponential,
-    PeakFactory,
-)
+
 from easydiffraction.core.objects import Parameter
+from easydiffraction.experiments.components.peak import ConstantWavelengthBroadeningMixin
+from easydiffraction.experiments.components.peak import ConstantWavelengthPseudoVoigt
+from easydiffraction.experiments.components.peak import ConstantWavelengthSplitPseudoVoigt
+from easydiffraction.experiments.components.peak import ConstantWavelengthThompsonCoxHastings
+from easydiffraction.experiments.components.peak import EmpiricalAsymmetryMixin
+from easydiffraction.experiments.components.peak import FcjAsymmetryMixin
+from easydiffraction.experiments.components.peak import IkedaCarpenterAsymmetryMixin
+from easydiffraction.experiments.components.peak import PeakBase
+from easydiffraction.experiments.components.peak import PeakFactory
+from easydiffraction.experiments.components.peak import TimeOfFlightBroadeningMixin
+from easydiffraction.experiments.components.peak import TimeOfFlightPseudoVoigt
+from easydiffraction.experiments.components.peak import TimeOfFlightPseudoVoigtBackToBackExponential
+from easydiffraction.experiments.components.peak import TimeOfFlightPseudoVoigtIkedaCarpenter
 
 
 # --- Tests for Mixins ---

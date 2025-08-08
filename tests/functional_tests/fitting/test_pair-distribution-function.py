@@ -1,5 +1,6 @@
 import os
 import tempfile
+
 from numpy.testing import assert_almost_equal
 
 import easydiffraction as ed

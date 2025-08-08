@@ -1,9 +1,7 @@
-from easydiffraction.core.objects import (
-    Descriptor,
-    Parameter,
-    Component,
-    Collection
-)
+from easydiffraction.core.objects import Collection
+from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import Descriptor
+from easydiffraction.core.objects import Parameter
 
 
 class AtomSite(Component):

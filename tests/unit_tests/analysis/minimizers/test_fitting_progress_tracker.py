@@ -1,7 +1,10 @@
-import pytest
+from unittest.mock import patch
+
 import numpy as np
-from unittest.mock import patch, MagicMock
-from easydiffraction.analysis.minimizers.fitting_progress_tracker import format_cell, FittingProgressTracker
+import pytest
+
+from easydiffraction.analysis.minimizers.fitting_progress_tracker import FittingProgressTracker
+from easydiffraction.analysis.minimizers.fitting_progress_tracker import format_cell
 
 
 def test_format_cell():

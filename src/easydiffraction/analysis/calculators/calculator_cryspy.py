@@ -1,18 +1,22 @@
 import contextlib
 import copy
 import io
-import numpy as np
-from typing import Any, Dict, List, Union
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Union
 
-from easydiffraction.sample_models.sample_model import SampleModel
+import numpy as np
+
 from easydiffraction.experiments.experiment import Experiment
+from easydiffraction.sample_models.sample_model import SampleModel
 
 from .calculator_base import CalculatorBase
 
 try:
     import cryspy
-    from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
     from cryspy.H_functions_global.function_1_cryspy_objects import str_to_globaln
+    from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
     print("✅ 'cryspy' calculation engine is successfully imported.")
 except ImportError:
     print("⚠️ 'cryspy' module not found. This calculation engine will not be available.")
@@ -314,7 +318,7 @@ class CryspyCalculator(CalculatorBase):
             }
             cif_lines.append("")
             if expt_type.beam_mode.value == "time-of-flight":
-                cif_lines.append(f"_tof_profile_peak_shape Gauss")
+                cif_lines.append("_tof_profile_peak_shape Gauss")
             for local_attr_name, engine_key_name in peak_mapping.items():
                 if hasattr(peak, local_attr_name):
                     attr_value = getattr(peak, local_attr_name).value

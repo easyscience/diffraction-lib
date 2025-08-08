@@ -1,7 +1,11 @@
+from typing import Any
+from typing import Dict
+from typing import List
+
 import numpy as np
 from dfols import solve
+
 from .minimizer_base import MinimizerBase
-from typing import Any, Dict, List
 
 DEFAULT_MAX_ITERATIONS = 1000
 

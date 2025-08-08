@@ -1,9 +1,15 @@
-from typing import Any, Optional, List
+from typing import Any
+from typing import List
+from typing import Optional
+
 import numpy as np
-from .calculators.calculator_factory import CalculatorFactory
-from easydiffraction.sample_models.sample_models import SampleModels
-from easydiffraction.experiments.experiments import Experiments
+
 from easydiffraction.experiments.experiment import Experiment
+from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.sample_models.sample_models import SampleModels
+
+from .calculators.calculator_factory import CalculatorFactory
+
 
 class DiffractionCalculator:
     """

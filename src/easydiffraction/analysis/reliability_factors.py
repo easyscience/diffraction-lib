@@ -1,8 +1,12 @@
+from typing import Optional
+from typing import Tuple
+
 import numpy as np
-from typing import Tuple, Optional
-from easydiffraction.sample_models.sample_models import SampleModels
-from easydiffraction.experiments.experiments import Experiments
+
 from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
+from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.sample_models.sample_models import SampleModels
+
 
 def calculate_r_factor(y_obs: np.ndarray,
                        y_calc: np.ndarray) -> float:

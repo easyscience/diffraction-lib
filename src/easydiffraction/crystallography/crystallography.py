@@ -1,17 +1,15 @@
-from typing import Dict, List, Optional, Any
-from sympy import (
-    symbols,
-    sympify,
-    simplify,
-    Symbol,
-    Expr
-)
+from typing import Any
+from typing import Dict
+from typing import List
 
-from cryspy.A_functions_base.function_2_space_group import (
-    get_crystal_system_by_it_number,
-    get_it_number_by_name_hm_short,
-    get_symop_pcentr_multiplicity_letter_site_symmetry_coords_xyz_2
-)
+from cryspy.A_functions_base.function_2_space_group import get_crystal_system_by_it_number
+from cryspy.A_functions_base.function_2_space_group import get_it_number_by_name_hm_short
+from sympy import Expr
+from sympy import Symbol
+from sympy import simplify
+from sympy import symbols
+from sympy import sympify
+
 from easydiffraction.crystallography.space_group_lookup_table import SPACE_GROUP_LOOKUP_DICT
 
 
@@ -111,7 +109,7 @@ def apply_atom_site_symmetry_constraints(atom_site: Dict[str, Any],
     space_group_entry = SPACE_GROUP_LOOKUP_DICT[(it_number, it_coordinate_system_code)]
     wyckoff_positions = space_group_entry["Wyckoff_positions"][wyckoff_letter]
     coords_xyz = wyckoff_positions["coords_xyz"]
-    
+
     first_position = coords_xyz[0]
     components = first_position.strip("()").split(",")
     parsed_exprs: List[Expr] = [sympify(comp.strip()) for comp in components]

@@ -1,37 +1,29 @@
-import numpy as np
-import tabulate
-from typing import List, Optional
-
 from abc import abstractmethod
+from typing import List
+from typing import Optional
 
-from easydiffraction.utils.utils import (
-    render_cif,
-    render_table
-)
-from easydiffraction.utils.decorators import enforce_type
-from easydiffraction.experiments.components.experiment_type import ExperimentType
-from easydiffraction.experiments.components.instrument import (
-    InstrumentBase,
-    InstrumentFactory
-)
-from easydiffraction.experiments.components.peak import PeakFactory
+import numpy as np
 
-from easydiffraction.experiments.collections.linked_phases import LinkedPhases
-from easydiffraction.experiments.collections.background import BackgroundFactory
-from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
-from easydiffraction.experiments.collections.datastore import DatastoreFactory
-
-from easydiffraction.utils.formatting import paragraph, warning
-
+from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
+from easydiffraction.core.constants import DEFAULT_BEAM_MODE
+from easydiffraction.core.constants import DEFAULT_PEAK_PROFILE_TYPE
+from easydiffraction.core.constants import DEFAULT_RADIATION_PROBE
+from easydiffraction.core.constants import DEFAULT_SAMPLE_FORM
+from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.core.objects import Datablock
-from easydiffraction.core.constants import (
-    DEFAULT_SAMPLE_FORM,
-    DEFAULT_BEAM_MODE,
-    DEFAULT_RADIATION_PROBE,
-    DEFAULT_PEAK_PROFILE_TYPE,
-    DEFAULT_BACKGROUND_TYPE,
-    DEFAULT_SCATTERING_TYPE
-)
+from easydiffraction.experiments.collections.background import BackgroundFactory
+from easydiffraction.experiments.collections.datastore import DatastoreFactory
+from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
+from easydiffraction.experiments.collections.linked_phases import LinkedPhases
+from easydiffraction.experiments.components.experiment_type import ExperimentType
+from easydiffraction.experiments.components.instrument import InstrumentBase
+from easydiffraction.experiments.components.instrument import InstrumentFactory
+from easydiffraction.experiments.components.peak import PeakFactory
+from easydiffraction.utils.decorators import enforce_type
+from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.formatting import warning
+from easydiffraction.utils.utils import render_cif
+from easydiffraction.utils.utils import render_table
 
 
 class InstrumentMixin:
@@ -208,7 +200,7 @@ class BasePowderExperiment(BaseExperiment):
             supported_types = list(PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].keys())
             print(warning(f"Unsupported peak profile '{new_type}'"))
             print(f'Supported peak profiles: {supported_types}')
-            print(f"For more information, use 'show_supported_peak_profile_types()'")
+            print("For more information, use 'show_supported_peak_profile_types()'")
             return
         self.peak = PeakFactory.create(
             scattering_type=self.type.scattering_type.value,
@@ -324,7 +316,7 @@ class PowderExperiment(InstrumentMixin,
             supported_types = list(BackgroundFactory._supported.keys())
             print(warning(f"Unknown background type '{new_type}'"))
             print(f'Supported background types: {supported_types}')
-            print(f"For more information, use 'show_supported_background_types()'")
+            print("For more information, use 'show_supported_background_types()'")
             return
         self.background = BackgroundFactory.create(new_type)
         self._background_type = new_type

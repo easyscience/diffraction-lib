@@ -1,14 +1,15 @@
-import pytest
-import os
 import datetime
+import os
 import time
-from unittest.mock import MagicMock, patch
-from easydiffraction.project import Project, ProjectInfo
-from easydiffraction.sample_models.sample_models import SampleModels
-from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.analysis.analysis import Analysis
-from easydiffraction.summary import Summary
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
+from easydiffraction.analysis.analysis import Analysis
+from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.project import Project
+from easydiffraction.project import ProjectInfo
+from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.summary import Summary
 
 # ------------------------------------------
 # Tests for ProjectInfo

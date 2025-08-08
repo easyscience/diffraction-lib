@@ -3,23 +3,17 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 try:
-    from IPython.display import (
-        display,
-        HTML
-    )
+    from IPython.display import HTML
+    from IPython.display import display
 except ImportError:
     display = None
     HTML = None
 
-from easydiffraction.utils.utils import (
-    is_notebook,
-    is_pycharm
-)
+from easydiffraction.utils.utils import is_notebook
+from easydiffraction.utils.utils import is_pycharm
 
-from .plotter_base import (
-    PlotterBase,
-    SERIES_CONFIG
-)
+from .plotter_base import SERIES_CONFIG
+from .plotter_base import PlotterBase
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',

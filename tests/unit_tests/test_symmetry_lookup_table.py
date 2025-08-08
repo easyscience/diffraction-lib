@@ -1,5 +1,5 @@
-import pytest
 import numpy as np
+import pytest
 
 from easydiffraction.crystallography.space_group_lookup_table import SPACE_GROUP_LOOKUP_DICT
 
@@ -13,7 +13,7 @@ def test_lookup_table_consistency():
 
 
 @pytest.mark.parametrize("key, expected", [
-    ((62, "cab"), 
+    ((62, "cab"),
     {
         "IT_number": 62,
         "setting": 2,
@@ -100,7 +100,7 @@ def test_space_group_lookup_table_yields_expected(key, expected):
         assert expected[sub_key] == entry[sub_key]
 
     # Then check Wyckoff
-    wyckoff_entry = entry["Wyckoff_positions"] 
+    wyckoff_entry = entry["Wyckoff_positions"]
     wyckoff_expected = expected["Wyckoff_positions"]
     for site in wyckoff_expected.keys():
         assert site in wyckoff_expected.keys()

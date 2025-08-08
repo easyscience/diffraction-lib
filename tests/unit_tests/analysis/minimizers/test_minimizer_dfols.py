@@ -1,6 +1,9 @@
-import pytest
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
 import numpy as np
-from unittest.mock import MagicMock, patch
+import pytest
+
 from easydiffraction.analysis.minimizers.minimizer_dfols import DfolsMinimizer
 
 

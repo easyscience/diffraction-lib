@@ -1,4 +1,5 @@
-from colorama import Fore, Style
+from colorama import Fore
+from colorama import Style
 
 WIDTH = 100
 SYMBOL = "═"

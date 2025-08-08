@@ -1,10 +1,14 @@
-import numpy as np
-from typing import Any, Dict, List, Union
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Union
 
-from easydiffraction.sample_models.sample_models import SampleModels
-from easydiffraction.sample_models.sample_models import SampleModel
+import numpy as np
+
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.sample_models.sample_models import SampleModel
+from easydiffraction.sample_models.sample_models import SampleModels
 
 from .calculator_base import CalculatorBase
 
@@ -63,7 +67,7 @@ class CrysfmlCalculator(CalculatorBase):
             _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
             y = self._adjust_pattern_length(y, len(experiment.datastore.pattern.x))
         except KeyError:
-            print(f"[CrysfmlCalculator] Error: No calculated data")
+            print("[CrysfmlCalculator] Error: No calculated data")
             y = []
         return y
 

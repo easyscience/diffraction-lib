@@ -1,11 +1,15 @@
+from abc import ABC
+from abc import abstractmethod
+from typing import Any
+from typing import List
+
 import numpy as np
-from abc import ABC, abstractmethod
-from typing import List, Any
 
 from easydiffraction.core.singletons import ConstraintsHandler
+from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.sample_models.sample_model import SampleModel
 from easydiffraction.sample_models.sample_models import SampleModels
-from easydiffraction.experiments.experiment import Experiment
+
 
 class CalculatorBase(ABC):
     """

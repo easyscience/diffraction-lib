@@ -1,5 +1,8 @@
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import MagicMock, patch
+
 from easydiffraction.analysis.analysis import Analysis
 
 

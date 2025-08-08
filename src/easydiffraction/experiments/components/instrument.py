@@ -1,11 +1,8 @@
-from easydiffraction.core.objects import (
-    Parameter,
-    Component
-)
-from easydiffraction.core.constants import (
-    DEFAULT_SCATTERING_TYPE,
-    DEFAULT_BEAM_MODE
-)
+from easydiffraction.core.constants import DEFAULT_BEAM_MODE
+from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
+from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import Parameter
+
 
 class InstrumentBase(Component):
     @property

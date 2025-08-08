@@ -2,20 +2,19 @@
 General utilities and helpers for easydiffraction.
 """
 
+import os
+import re
+from typing import List
+
 import numpy as np
 import pandas as pd
 import pooch
-import re
-import os
 from tabulate import tabulate
-from typing import List, Optional
 
 try:
     import IPython
-    from IPython.display import (
-        display,
-        HTML
-    )
+    from IPython.display import HTML
+    from IPython.display import display
 except ImportError:
     IPython = None
 

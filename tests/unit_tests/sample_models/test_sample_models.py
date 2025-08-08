@@ -1,6 +1,10 @@
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import patch, MagicMock
-from easydiffraction.sample_models.sample_models import SampleModel, SampleModels
+
+from easydiffraction.sample_models.sample_models import SampleModel
+from easydiffraction.sample_models.sample_models import SampleModels
 
 
 @pytest.fixture

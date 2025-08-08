@@ -1,4 +1,10 @@
-from typing import Dict, List, Tuple, Any, TypeVar, Type, Optional
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Tuple
+from typing import Type
+from typing import TypeVar
+
 from asteval import Interpreter
 
 T = TypeVar('T', bound='BaseSingleton')

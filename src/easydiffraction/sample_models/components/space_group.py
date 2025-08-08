@@ -1,9 +1,7 @@
 from typing import Optional
 
-from easydiffraction.core.objects import (
-    Descriptor,
-    Component
-)
+from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import Descriptor
 
 
 class SpaceGroup(Component):

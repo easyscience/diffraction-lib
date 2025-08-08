@@ -1,8 +1,10 @@
-import pytest
-from unittest.mock import MagicMock, patch
-from easydiffraction.analysis.minimizers.minimizer_lmfit import LmfitMinimizer
-import lmfit
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
+import lmfit
+import pytest
+
+from easydiffraction.analysis.minimizers.minimizer_lmfit import LmfitMinimizer
 from easydiffraction.core.objects import Parameter
 
 

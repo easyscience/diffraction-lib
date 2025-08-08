@@ -1,17 +1,21 @@
+from abc import ABC
+from abc import abstractmethod
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+
 import numpy as np
-from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Optional, Union
 
-from ..reliability_factors import (
-    calculate_r_factor,
-    calculate_r_factor_squared,
-    calculate_weighted_r_factor,
-    calculate_rb_factor
-)
-from .fitting_progress_tracker import FittingProgressTracker
-
-from easydiffraction.utils.utils import render_table
 from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.utils import render_table
+
+from ..reliability_factors import calculate_r_factor
+from ..reliability_factors import calculate_r_factor_squared
+from ..reliability_factors import calculate_rb_factor
+from ..reliability_factors import calculate_weighted_r_factor
+from .fitting_progress_tracker import FittingProgressTracker
 
 
 class FitResults:
@@ -71,7 +75,7 @@ class FitResults:
             print(f"📏 Weighted R-factor (wR): {wr:.2f}%")
         if br is not None:
             print(f"📏 Bragg R-factor (BR): {br:.2f}%")
-        print(f"📈 Fitted parameters:")
+        print("📈 Fitted parameters:")
 
         headers = ["datablock",
                    "category",

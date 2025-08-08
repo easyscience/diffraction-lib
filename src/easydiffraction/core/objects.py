@@ -1,16 +1,18 @@
 import random
 import string
-from abc import (
-    ABC,
-    abstractmethod
-)
-from typing import Any, Dict, List, Optional, Union, Iterator, TypeVar
+from abc import ABC
+from abc import abstractmethod
+from typing import Any
+from typing import Dict
+from typing import Iterator
+from typing import List
+from typing import Optional
+from typing import TypeVar
+from typing import Union
 
 from easydiffraction.core.singletons import UidMapHandler
-from easydiffraction.utils.formatting import (
-    warning,
-    error
-)
+from easydiffraction.utils.formatting import error
+from easydiffraction.utils.formatting import warning
 
 T = TypeVar('T')
 
@@ -448,7 +450,7 @@ class Collection(ABC):
                     values.append(value)
                 # Header is added only for the first item
                 if idx == 0:
-                    lines.append(f"loop_")
+                    lines.append("loop_")
                     header = "\n".join(keys)
                     lines.append(header)
                 line = ' '.join(values)

@@ -1,13 +1,20 @@
 import os
 import re
+from typing import Any
+from typing import Dict
+from typing import List
+
 import yaml
-from typing import Any, Dict, List
+
+# ---------------
+# Special imports
+# ---------------
 
 # Needed to parse !!python/name:material.extensions.emoji.twemoji
-import material.extensions.emoji
+import material.extensions.emoji  # noqa: F401  # isort: skip
 
 # Needed to parse !!python/name:pymdownx.superfences.fence_code_format
-import pymdownx.superfences
+import pymdownx.superfences  # noqa: F401  # isort: skip
 
 
 def load_yaml_with_env_variables(file_path: str) -> Dict[str, Any]:

@@ -1,9 +1,10 @@
 import os
 import re
+
 import numpy as np
 
-from easydiffraction.sample_models.sample_model import SampleModel
 from easydiffraction.experiments.experiment import Experiment
+from easydiffraction.sample_models.sample_model import SampleModel
 
 from .calculator_base import CalculatorBase
 

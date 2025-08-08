@@ -1,13 +1,9 @@
-from easydiffraction.core.objects import (
-    Parameter,
-    Component
-)
-from easydiffraction.core.constants import (
-    DEFAULT_SCATTERING_TYPE,
-    DEFAULT_BEAM_MODE,
-    DEFAULT_PEAK_PROFILE_TYPE
-)
-from typing import Dict, Type, Optional
+
+from easydiffraction.core.constants import DEFAULT_BEAM_MODE
+from easydiffraction.core.constants import DEFAULT_PEAK_PROFILE_TYPE
+from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
+from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import Parameter
 
 
 # --- Mixins ---

@@ -1,13 +1,12 @@
-from typing import List, Type
+from typing import List
+from typing import Type
 
-from easydiffraction.utils.utils import render_table
+from easydiffraction.core.objects import Collection
+from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import Descriptor
+from easydiffraction.core.objects import Parameter
 from easydiffraction.utils.formatting import paragraph
-from easydiffraction.core.objects import (
-    Parameter,
-    Descriptor,
-    Component,
-    Collection
-)
+from easydiffraction.utils.utils import render_table
 
 
 class ExcludedRegion(Component):

@@ -1,5 +1,7 @@
 import pytest
-from easydiffraction.sample_models.collections.atom_sites import AtomSite, AtomSites
+
+from easydiffraction.sample_models.collections.atom_sites import AtomSite
+from easydiffraction.sample_models.collections.atom_sites import AtomSites
 
 
 def test_atom_site_initialization():

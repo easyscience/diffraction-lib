@@ -1,17 +1,13 @@
 from easydiffraction.core.constants import DEFAULT_AXES_LABELS
-from easydiffraction.utils.formatting import (
-    paragraph,
-    error
-)
-from easydiffraction.utils.utils import render_table
-from easydiffraction.plotting.plotters.plotter_base import (
-    DEFAULT_HEIGHT,
-    DEFAULT_ENGINE,
-    DEFAULT_MIN,
-    DEFAULT_MAX
-)
 from easydiffraction.plotting.plotters.plotter_ascii import AsciiPlotter
+from easydiffraction.plotting.plotters.plotter_base import DEFAULT_ENGINE
+from easydiffraction.plotting.plotters.plotter_base import DEFAULT_HEIGHT
+from easydiffraction.plotting.plotters.plotter_base import DEFAULT_MAX
+from easydiffraction.plotting.plotters.plotter_base import DEFAULT_MIN
 from easydiffraction.plotting.plotters.plotter_plotly import PlotlyPlotter
+from easydiffraction.utils.formatting import error
+from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.utils import render_table
 
 
 class Plotter():

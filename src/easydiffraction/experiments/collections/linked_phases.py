@@ -1,11 +1,9 @@
 from typing import Type
 
-from easydiffraction.core.objects import (
-    Parameter,
-    Descriptor,
-    Component,
-    Collection
-)
+from easydiffraction.core.objects import Collection
+from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import Descriptor
+from easydiffraction.core.objects import Parameter
 
 
 class LinkedPhase(Component):

@@ -1,6 +1,10 @@
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import MagicMock, patch
-from easydiffraction.analysis.minimizers.minimizer_base import MinimizerBase, FitResults
+
+from easydiffraction.analysis.minimizers.minimizer_base import FitResults
+from easydiffraction.analysis.minimizers.minimizer_base import MinimizerBase
 
 
 # Mock subclass of MinimizerBase to test its methods

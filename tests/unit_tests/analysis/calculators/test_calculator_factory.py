@@ -1,13 +1,13 @@
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import MagicMock, patch
-from easydiffraction.analysis.calculators.calculator_factory import CalculatorFactory
+
 from easydiffraction.analysis.calculators.calculator_crysfml import CrysfmlCalculator
 from easydiffraction.analysis.calculators.calculator_cryspy import CryspyCalculator
+from easydiffraction.analysis.calculators.calculator_factory import CalculatorFactory
 from easydiffraction.analysis.calculators.calculator_pdffit import PdffitCalculator
-from easydiffraction.utils.formatting import (
-    paragraph,
-    error
-)
+from easydiffraction.utils.formatting import paragraph
+
 
 @pytest.fixture
 def mock_calculators():
