@@ -22,7 +22,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
     # Set experiment
     data_file = 'sepd_si.xye'
-    download_from_repository(data_file, branch='d-spacing', destination=TEMP_DIR)
+    download_from_repository(data_file, destination=TEMP_DIR)
     expt = Experiment('sepd', beam_mode='time-of-flight', data_path=os.path.join(TEMP_DIR, data_file))
     expt.instrument.setup_twotheta_bank = 144.845
     expt.instrument.calib_d_to_tof_offset = -9.29
@@ -82,7 +82,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
 
     # Set experiment
     data_file = 'wish_ncaf.xye'
-    download_from_repository(data_file, branch='d-spacing', destination=TEMP_DIR)
+    download_from_repository(data_file, destination=TEMP_DIR)
     expt = Experiment('wish', beam_mode='time-of-flight', data_path=os.path.join(TEMP_DIR, data_file))
     expt.instrument.setup_twotheta_bank = 152.827
     expt.instrument.calib_d_to_tof_offset = -13.7123

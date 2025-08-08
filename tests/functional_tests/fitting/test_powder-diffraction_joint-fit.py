@@ -27,7 +27,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
 
     # Set experiments
     data_file = 'd1a_pbso4_first-half.dat'
-    download_from_repository(data_file, branch='d-spacing', destination=TEMP_DIR)
+    download_from_repository(data_file, destination=TEMP_DIR)
     expt1 = Experiment('npd1', data_path=os.path.join(TEMP_DIR, data_file))
     expt1.instrument.setup_wavelength = 1.91
     expt1.instrument.calib_twotheta_offset = -0.1406
@@ -51,7 +51,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         expt1.background.add(x, y)
 
     data_file = 'd1a_pbso4_second-half.dat'
-    download_from_repository(data_file, branch='d-spacing', destination=TEMP_DIR)
+    download_from_repository(data_file, destination=TEMP_DIR)
     expt2 = Experiment('npd2', data_path=os.path.join(TEMP_DIR, data_file))
     expt2.instrument.setup_wavelength = 1.91
     expt2.instrument.calib_twotheta_offset = -0.1406
@@ -114,7 +114,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
 
     # Set experiments
     data_file = 'd1a_pbso4.dat'
-    download_from_repository(data_file, branch='d-spacing', destination=TEMP_DIR)
+    download_from_repository(data_file, destination=TEMP_DIR)
     expt1 = Experiment('npd', radiation_probe='neutron', data_path=os.path.join(TEMP_DIR, data_file))
     expt1.instrument.setup_wavelength = 1.91
     expt1.instrument.calib_twotheta_offset = -0.1406
@@ -137,7 +137,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         expt1.background.add(x, y)
 
     data_file = 'lab_pbso4.dat'
-    download_from_repository(data_file, branch='d-spacing', destination=TEMP_DIR)
+    download_from_repository(data_file, destination=TEMP_DIR)
     expt2 = Experiment('xrd', radiation_probe='xray', data_path=os.path.join(TEMP_DIR, data_file))
     expt2.instrument.setup_wavelength = 1.540567
     expt2.instrument.calib_twotheta_offset = -0.05181

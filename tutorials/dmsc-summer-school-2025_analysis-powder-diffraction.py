@@ -87,7 +87,6 @@ project_1.info.description = "Fitting simulated powder diffraction pattern of Si
 # To load the measured data from the EasyDiffraction repository, as
 # Google Colab does not have the data files needed for this tutorial.
 ed.download_from_repository('reduced_Si.xye',
-                            branch='d-spacing',
                             destination='data')
 
 # %%
@@ -538,7 +537,6 @@ project_2.info.description = (
 # To load the measured data from the EasyDiffraction repository, as
 # Google Colab does not have the data files needed for this tutorial.
 ed.download_from_repository('reduced_LBCO.xye',
-                            branch='d-spacing',
                             destination='data')
 
 # %%

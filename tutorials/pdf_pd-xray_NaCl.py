@@ -57,7 +57,6 @@ project.sample_models['nacl'].atom_sites.add(label='Cl',
 
 # %%
 ed.download_from_repository('NaCl.gr',
-                            branch='develop',
                             destination='data')
 
 # %%

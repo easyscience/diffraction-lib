@@ -20,22 +20,33 @@ except ImportError:
     IPython = None
 
 
-def download_from_repository(file_name: str,
-                             branch: str = 'master',
-                             destination: str = 'data') -> None:
+# Single source of truth for the data repository branch.
+# This can be overridden in CI or development environments.
+DATA_REPO_BRANCH = (
+    os.environ.get("CI_BRANCH")  # CI/dev override
+    or "master"  # Default branch for the data repository
+)
+
+
+def download_from_repository(
+        file_name: str,
+        branch: str | None = None,
+        destination: str = 'data'
+) -> None:
+    """Download a data file from the EasyDiffraction repository on GitHub.
+
+    Args:
+        file_name: The file name to fetch (e.g., "NaCl.gr").
+        branch: Branch to fetch from. If None, uses DATA_REPO_BRANCH.
+        destination: Directory to save the file into (created if missing).
     """
-    This function downloads a file from the EasyDiffraction repository
-    on GitHub.
-    :param file_name: The name of the file to download
-    :param branch: The branch of the repository to download from
-    :param destination: The destination folder to save the file
-    :return: None
-    """
-    prefix = 'https://raw.githubusercontent.com'
-    organisation = 'easyscience'
-    repository = 'diffraction-lib'
-    source = 'tutorials/data'
-    url = f'{prefix}/{organisation}/{repository}/refs/heads/{branch}/{source}/{file_name}'
+    base = 'https://raw.githubusercontent.com'
+    org = 'easyscience'
+    repo = 'diffraction-lib'
+    branch = branch or DATA_REPO_BRANCH  # Use the global branch variable if not provided
+    path_in_repo = 'tutorials/data'
+    url = f'{base}/{org}/{repo}/refs/heads/{branch}/{path_in_repo}/{file_name}'
+
     pooch.retrieve(
         url=url,
         known_hash=None,
@@ -142,7 +153,8 @@ def render_table(columns_data,
         # Manually apply text alignment to headers
         if not skip_headers:
             for col, align in zip(columns_headers, columns_alignment):
-                html = html.replace(f'<th>{col}', f'<th style="text-align: {align};">{col}')
+                html = html.replace(f'<th>{col}',
+                                    f'<th style="text-align: {align};">{col}')
 
         # Display or update the table in Jupyter Notebook
         if display_handle is not None:

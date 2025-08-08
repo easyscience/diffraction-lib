@@ -83,7 +83,6 @@ model_2.atom_sites.add('Si', 'Si', 0.0, 0.0, 0.0, wyckoff_letter='a', b_iso=0.0)
 
 # %%
 download_from_repository('mcstas_lbco-si.xye',
-                         branch='develop',
                          destination='data')
 
 # %% [markdown]
