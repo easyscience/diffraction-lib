@@ -55,7 +55,6 @@ sample_model.atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
 
 # %%
 ed.download_from_repository('hrpt_lbco.xye',
-                            branch='develop',
                             destination='data')
 
 # %%
