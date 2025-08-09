@@ -47,6 +47,7 @@ env:
   # Set the NOTEBOOKS_DIR environment var to be the dir of Jupyter notebooks
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
   NOTEBOOKS_DIR: tutorials
+  PYTHONIOENCODING: utf-8
 
 jobs:
   # Job 1: Check code quality and consistency
