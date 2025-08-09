@@ -1,22 +1,21 @@
-# This is the main workflow for testing the code, notebooks and package.
-# It is divided into three jobs:
+# This is the main workflow for testing the code before and after
+# packaging it.
+# The workflow is divided into three jobs:
 # 1. code-quality:
 #    - Check the validity of pyproject.toml
 #    - Check code linting
 #    - Check code formatting
-#    - Check Jupyter notebooks formatting
 #    - Check formatting of Markdown, YAML, TOML, etc. files
 # 2. run-tests:
-#    - Test the code base and upload coverage to Codecov
+#    - Test the code base against the latest code in the repository
 #    - Create the Python package
 #    - Upload the Python package for the next job
 # 3. check-package:
 #    - Download the Python package from the previous job
 #    - Install the downloaded Python package
-#    - Test the code base
-#    - Check if Jupyter Notebooks run without errors
+#    - Test the code base against the installed package
 
-name: Test code, notebooks and package
+name: Test code and package
 
 on:
   # Trigger the workflow on push
@@ -70,9 +69,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Upgrade package installer for Python
+        shell: bash
+        run: python -m pip install --upgrade pip
+
       - name: Install Python dependencies
         shell: bash
-        run: python -m pip install .'[dev,docs,visualization]'
+        run: python -m pip install .'[dev]'
 
       - name: Install npm dependencies
         # Install 'prettier' for code formatting of Markdown, YAML, etc. files
@@ -117,26 +120,6 @@ jobs:
           echo "In project root run 'ruff format .' and commit changes to fix
           issues."
 
-      # Check Jupyter notebooks with nbQA in the notebooks directory
-      - name: Convert ${{ env.NOTEBOOKS_DIR }}/*.py to *.ipynb
-        shell: bash
-        run: |
-          jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --from py:percent --to ipynb
-          nbstripout ${{ env.NOTEBOOKS_DIR }}/*.ipynb
-
-      - name: Check Jupyter notebooks formatting
-        id: check_notebooks
-        continue-on-error: true
-        shell: bash
-        run: nbqa ruff ${{ env.NOTEBOOKS_DIR }}/
-
-      - name: Suggestion to fix notebook formatting issues (*.ipynb files)
-        if: steps.check_notebooks.outcome == 'failure'
-        shell: bash
-        run: >
-          echo "In project root run 'nbqa ruff ${{ env.NOTEBOOKS_DIR }}/ --fix'
-          and commit changes to fix issues."
-
       # Check formatting of Markdown, YAML, TOML, etc. files with Prettier in
       # the project root
       - name: Check formatting of Markdown, YAML, TOML, etc. files
@@ -157,7 +140,6 @@ jobs:
           steps.check_pyproject.outcome == 'failure' ||
           steps.check_code_linting.outcome == 'failure' ||
           steps.check_code_formatting.outcome == 'failure' || 
-          steps.check_notebooks.outcome == 'failure' || 
           steps.check_others_formatting.outcome == 'failure'
         run: exit 1
 
@@ -169,7 +151,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
-        python-version: ['3.12']
+        python-version: ['3.10', '3.11', '3.12']
 
     runs-on: ${{ matrix.os }}
 
@@ -203,7 +185,7 @@ jobs:
 
       - name: Install Python dependencies
         shell: bash
-        run: python -m pip install .'[dev,docs,visualization]'
+        run: python -m pip install .'[dev]'
 
       - name: Run Python unit tests (using src/ as the source dir)
         shell: bash
@@ -216,34 +198,6 @@ jobs:
         run: |
           export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
           python -m pytest tests/functional_tests/ --color=yes -n auto
-
-      # Check if tutorials as python scripts run without errors
-      # Run all Python scripts in the folder tutorials/ in parallel
-      # -n 1: run one script per Python invocation
-      #	-P 0: run as many in parallel as you have cores (auto mode)
-      - name: Run tutorials as python scripts (using src/ as the source dir)
-        shell: bash
-        run: |
-          export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
-          find ${{ env.NOTEBOOKS_DIR }}/ -name "*.py" | xargs -n 1 -P 0 python
-
-      # Check if tutorials as Jupyter Notebooks run without errors
-      # Convert all Python scripts in the folder tutorials/ to Jupyter Notebooks
-      # Strip output from Jupyter Notebooks and rename cell ids
-      # Run all Jupyter Notebooks in the folder tutorials/ in parallel
-      # -n auto: run as many in parallel as you have cores (auto mode)
-      # --nbmake-timeout=600: set timeout to 600 seconds
-      - name: Convert ${{ env.NOTEBOOKS_DIR }}/*.py to *.ipynb
-        shell: bash
-        run: |
-          jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --from py:percent --to ipynb
-          nbstripout ${{ env.NOTEBOOKS_DIR }}/*.ipynb
-
-      - name: Run tutorials as Jupyter Notebooks (using src/ as the source dir)
-        shell: bash
-        run: |
-          export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
-          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/ --nbmake-timeout=600 --color=yes -n auto
 
       - name: Create Python package for the next job
         shell: bash
@@ -265,14 +219,14 @@ jobs:
           compression-level: 0
 
   # Job 3: Test the package
-  check-package:
+  test-package:
     needs: run-tests # the previous job needs to be finished first
 
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
-        python-version: ['3.12']
+        python-version: ['3.10', '3.11', '3.12']
 
     runs-on: ${{ matrix.os }}
 
@@ -315,8 +269,7 @@ jobs:
       - name: Install Python package from previous job with all extras
         shell: bash
         run: >
-          pip install 'easydiffraction[dev,docs,visualization]'
-          --find-links=dist
+          pip install 'easydiffraction[dev]' --find-links=dist
 
       - name: Run Python unit tests (using installed package)
         shell: bash
@@ -325,13 +278,3 @@ jobs:
       - name: Run Python functional tests (using installed package)
         shell: bash
         run: python -m pytest tests/functional_tests/ --color=yes -n auto
-
-      - name: Run tutorials as python scripts (using installed package)
-        shell: bash
-        run: find tutorials/ -name "*.py" | xargs -n 1 -P 0 python
-
-      - name: Run tutorials as Jupyter Notebooks (using installed package)
-        shell: bash
-        run: >
-          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/
-          --nbmake-timeout=600 --color=yes -n auto

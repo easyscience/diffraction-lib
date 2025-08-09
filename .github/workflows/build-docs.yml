@@ -3,11 +3,17 @@ name: Build and deploy docs
 on:
   # Trigger the workflow on push
   push:
-    # To the develop and master branches
-    branches: [develop, master, docs, d-spacing]
-
+    # Selected branches
+    branches: [develop, master, docs]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+# Allow only one concurrent workflow, skipping runs queued between the run
+# in-progress and latest queued. And cancel in-progress runs.
+concurrency:
+  group:
+    ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 env:
   # Set the environment variables to be used in all jobs defined in this workflow
@@ -19,24 +25,24 @@ env:
 jobs:
   # Job 1: Build the static files for the documentation site
   build-docs:
-    runs-on: macos-14 # Use macOS to switch to dark mode for Plotly charts
+    strategy:
+      matrix:
+        os: [macos-14] # Use macOS to switch to dark mode for Plotly charts
+        python-version: ['3.12']
+
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Cancel previous workflow runs
-        uses: n1hility/cancel-previous-runs@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       # Without this step, GITHUB_REPOSITORY is not accessible from mkdocs.yml
       - name: Get GitHub repository
         run: echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY" >> $GITHUB_ENV
 
-      # Save the latest release version of easyscience/EasyDiffractionLib to RELEASE_VERSION
+      # Save the latest release version of easyscience/diffraction-lib to RELEASE_VERSION
       # RELEASE_VERSION is used in the mkdocs.yml file to set release_version.
       # The release_version is then needed to display the latest release version in the index.md file
-      - name: Get the latest release version of EasyDiffraction Library
+      - name: Get the latest release version of easydiffraction library
         run: |
-          git clone --depth 1 https://github.com/easyscience/EasyDiffractionLib .
+          git clone --depth 1 https://github.com/easyscience/${{ github.event.repository.name }} .
           git fetch --tags
           echo "RELEASE_VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
@@ -54,16 +60,17 @@ jobs:
       - name: Check-out repository
         uses: actions/checkout@v4
 
-      - name: Set up Python environment
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python-version }}
 
       - name: Upgrade package installer for Python
+        shell: bash
         run: python -m pip install --upgrade pip
 
       # Install EasyDiffraction Library to run Jupyter notebooks
-      # Install with the 'charts' and 'docs' extras
+      # Install with the 'docs' and 'visualization' extras
       - name: Install EasyDiffraction Library and its dependencies
         run: python -m pip install .'[dev,docs,visualization]'
 
@@ -112,7 +119,7 @@ jobs:
       # "Matplotlib is building the font cache; this may take a moment"
       - name: Pre-build site step
         run: |
-          export PYTHONPATH=$(pwd)/src:$PYTHONPATH
+          export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
           python -c "import easydiffraction"
 
       # Create the mkdocs.yml configuration file
@@ -129,7 +136,7 @@ jobs:
         run: |
           export JUPYTER_PLATFORM_DIRS=1
           export PYTHONWARNINGS="ignore::RuntimeWarning"
-          export PYTHONPATH=$(pwd)/src:$PYTHONPATH
+          export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
           mkdocs build
 
       # Set up the Pages action to configure the static files to be deployed
@@ -144,8 +151,8 @@ jobs:
       # The artifact is then used in the next job by actions/deploy-pages to deploy the static files to GitHub Pages
       # Unfortunately, the artifact is not available for download, so extra steps below are needed to do similar things
       - name:
-          Upload built site as artifact for
-          easyscience.github.io/EasyDiffractionLib (all branches)
+          Upload built site as artifact for easyscience.github.io/${{
+          github.event.repository.name }} (all branches)
         uses: actions/upload-pages-artifact@v3
         with:
           path: site/
@@ -192,7 +199,9 @@ jobs:
       # https://github.com/easyscience/diffraction-lib/settings/environments
       # Currently, only develop and master branches are allowed to deploy to GitHub Pages
       # Deployed pages are available at https://easyscience.github.io/diffraction-lib
-      - name: Deploy to easyscience.github.io/diffraction-lib (all branches)
+      - name:
+          Deploy to easyscience.github.io/${{ github.event.repository.name }}
+          (all branches)
         uses: actions/deploy-pages@v4
 
       # Download built site as artifact from a previous job for gh_pages (master branch)
