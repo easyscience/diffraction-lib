@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-14] # Use macOS to switch to dark mode for Plotly charts
-        python-version: ['3.12']
+        python-version: ['3.13']
 
     runs-on: ${{ matrix.os }}
 
