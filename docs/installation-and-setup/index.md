@@ -83,13 +83,13 @@ installed using `pip`. We strongly recommend installing it within a virtual
 environment, as described in the [Environment Setup](#environment-setup)
 section.
 
-We recommend installing the latest release of EasyDiffraction with the `charts`
-extras, which include optional dependencies used for simplified visualization of
-charts and tables. This can be especially useful for running the Jupyter
-Notebook examples. To do so, use the following command:
+We recommend installing the latest release of EasyDiffraction with the 
+`visualization` extras, which include optional dependencies used for simplified 
+visualization of charts and tables. This can be especially useful for running 
+the Jupyter Notebook examples. To do so, use the following command:
 
 ```console
-pip install 'easydiffraction[charts]'
+pip install 'easydiffraction[visualization]'
 ```
 
 If only the core functionality is needed, the library can be installed simply
@@ -128,10 +128,10 @@ To install EasyDiffraction from, e.g., the `develop` branch of GitHub:
 pip install git+https://github.com/easyscience/diffraction-lib@develop
 ```
 
-To include extra dependencies (e.g., charts):
+To include extra dependencies (e.g., visualization):
 
 ```console
-pip install 'easydiffraction[charts] @ git+https://github.com/easyscience/diffraction-lib@develop'
+pip install 'easydiffraction[visualization] @ git+https://github.com/easyscience/diffraction-lib@develop'
 ```
 
 ## How to Run Tutorials
