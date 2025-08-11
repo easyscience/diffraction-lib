@@ -24,10 +24,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
 
       - name: Upgrade package installer for Python
         run: pip install --upgrade pip
+
+      - name: Install build frontend
+        run: pip install --upgrade build
 
       - name: Create Python package
         run: python -m build
