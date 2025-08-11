@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/EasyScience/diffraction-lib>
+# SPDX-License-Identifier: BSD-3-Clause
+
 from easydiffraction.core.objects import Datablock
 from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.sample_models.collections.atom_sites import AtomSites

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/EasyScience/diffraction-lib>
+# SPDX-License-Identifier: BSD-3-Clause
+
 from easydiffraction.core.constants import DEFAULT_AXES_LABELS
 from easydiffraction.plotting.plotters.plotter_ascii import AsciiPlotter
 from easydiffraction.plotting.plotters.plotter_base import DEFAULT_ENGINE
