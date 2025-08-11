@@ -53,6 +53,10 @@ def update_spdx_header(file_path: Path):
 
 
 def main():
+    """
+    Recursively update or insert SPDX headers in all Python files under the 'src' directory,
+    skipping files located in virtual environment folders ('venv' or '.venv').
+    """
     for py_file in Path('src').rglob('*.py'):
         if 'venv' in py_file.parts or '.venv' in py_file.parts:
             continue
