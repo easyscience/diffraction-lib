@@ -110,6 +110,10 @@ class PlotlyPlotter(PlotterBase):
         # This can lead to warnings in Jupyter notebooks:
         # WARNING: skipping unknown output mime type: application/vnd.plotly.v1+json [mystnb.unknown_mime_type]
         if is_notebook() or is_pycharm() or display is None or HTML is None:
+            print(
+                f'----DEBUG----: fig.show(): is_notebook()={is_notebook()}, is_pycharm()={is_pycharm()}, '
+                f'display={display}, HTML={HTML}'
+            )
             fig.show(config=config)
 
         # If IPython is available, we can convert the figure to HTML and
@@ -124,4 +128,5 @@ class PlotlyPlotter(PlotterBase):
             )
 
             # Display it in the notebook
+            print('----DEBUG----: display(HTML(html_fig))')
             display(HTML(html_fig))
