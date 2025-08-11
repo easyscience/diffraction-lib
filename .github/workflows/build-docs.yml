@@ -33,18 +33,22 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      # Without this step, GITHUB_REPOSITORY is not accessible from mkdocs.yml
-      - name: Get GitHub repository
-        run: echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY" >> $GITHUB_ENV
+      - name: Check-out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history + tags. needed to get the latest release version
 
       # Save the latest release version of easyscience/diffraction-lib to RELEASE_VERSION
       # RELEASE_VERSION is used in the mkdocs.yml file to set release_version.
       # The release_version is then needed to display the latest release version in the index.md file
       - name: Get the latest release version of easydiffraction library
         run: |
-          git clone --depth 1 https://github.com/easyscience/${{ github.event.repository.name }} .
-          git fetch --tags
-          echo "RELEASE_VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+          git fetch --tags --force
+          echo "RELEASE_VERSION=$(git describe --tags --abbrev=0)" >> "$GITHUB_ENV"
+
+      # Without this step, GITHUB_REPOSITORY is not accessible from mkdocs.yml
+      - name: Get GitHub repository
+        run: echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY" >> "$GITHUB_ENV"
 
       # Activate dark mode to create documentation with Plotly charts in dark mode
       # Need a better solution to automatically switch the chart colour theme based on the mkdocs material switcher
@@ -56,9 +60,6 @@ jobs:
       #    dark-mode status
       #    dark-mode on
       #    dark-mode status
-
-      - name: Check-out repository
-        uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
