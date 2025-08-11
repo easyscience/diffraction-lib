@@ -1,38 +1,38 @@
-from typing import List, Type
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-License-Identifier: BSD-3-Clause
 
-from easydiffraction.utils.utils import render_table
+from typing import List
+from typing import Type
+
+from easydiffraction.core.objects import Collection
+from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import Descriptor
+from easydiffraction.core.objects import Parameter
 from easydiffraction.utils.formatting import paragraph
-from easydiffraction.core.objects import (
-    Parameter,
-    Descriptor,
-    Component,
-    Collection
-)
+from easydiffraction.utils.utils import render_table
 
 
 class ExcludedRegion(Component):
     @property
     def category_key(self) -> str:
-        return "excluded_regions"
+        return 'excluded_regions'
 
     @property
     def cif_category_key(self) -> str:
-        return "excluded_region"
+        return 'excluded_region'
 
-    def __init__(self,
-                 minimum: float,
-                 maximum: float):
+    def __init__(self, minimum: float, maximum: float):
         super().__init__()
 
         self.minimum = Descriptor(
             value=minimum,
-            name="minimum",
-            cif_name="minimum"
+            name='minimum',
+            cif_name='minimum',
         )
         self.maximum = Parameter(
             value=maximum,
-            name="maximum",
-            cif_name="maximum"
+            name='maximum',
+            cif_name='maximum',
         )
 
         # Select which of the input parameters is used for the
@@ -48,9 +48,10 @@ class ExcludedRegions(Collection):
     """
     Collection of ExcludedRegion instances.
     """
+
     @property
     def _type(self) -> str:
-        return "category"  # datablock or category
+        return 'category'  # datablock or category
 
     @property
     def _child_class(self) -> Type[ExcludedRegion]:
@@ -64,8 +65,7 @@ class ExcludedRegions(Collection):
         pattern = experiment.datastore.pattern
 
         # Boolean mask for points within the new excluded region
-        in_region = ((pattern.full_x >= item.minimum.value) &
-                     (pattern.full_x <= item.maximum.value))
+        in_region = (pattern.full_x >= item.minimum.value) & (pattern.full_x <= item.maximum.value)
 
         # Update the exclusion mask
         pattern.excluded[in_region] = True
@@ -79,15 +79,17 @@ class ExcludedRegions(Collection):
         # TODO: Consider moving this to the base class
         #  to avoid code duplication with implementations in Background, etc.
         #  Consider using parameter names as column headers
-        columns_headers: List[str] = ["minimum", "maximum"]
-        columns_alignment = ["left", "left"]
+        columns_headers: List[str] = ['minimum', 'maximum']
+        columns_alignment = ['left', 'left']
         columns_data: List[List[float]] = []
         for region in self._items.values():
             minimum = region.minimum.value
             maximum = region.maximum.value
             columns_data.append([minimum, maximum])
 
-        print(paragraph("Excluded regions"))
-        render_table(columns_headers=columns_headers,
-                     columns_alignment=columns_alignment,
-                     columns_data=columns_data)
+        print(paragraph('Excluded regions'))
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )

@@ -1,13 +1,16 @@
-import pytest
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
 import numpy as np
-from unittest.mock import MagicMock, patch
+import pytest
+
 from easydiffraction.analysis.minimizers.minimizer_dfols import DfolsMinimizer
 
 
 @pytest.fixture
 def mock_parameters():
-    param1 = MagicMock(name="param1", value=1.0, min=0.0, max=2.0, uncertainty=None)
-    param2 = MagicMock(name="param2", value=2.0, min=1.0, max=3.0, uncertainty=None)
+    param1 = MagicMock(name='param1', value=1.0, min=0.0, max=2.0, uncertainty=None)
+    param2 = MagicMock(name='param2', value=2.0, min=1.0, max=3.0, uncertainty=None)
     return [param1, param2]
 
 
@@ -18,7 +21,7 @@ def mock_objective_function():
 
 @pytest.fixture
 def dfols_minimizer():
-    return DfolsMinimizer(name="dfols", max_iterations=100)
+    return DfolsMinimizer(name='dfols', max_iterations=100)
 
 
 def test_prepare_solver_args(dfols_minimizer, mock_parameters):
@@ -30,7 +33,7 @@ def test_prepare_solver_args(dfols_minimizer, mock_parameters):
     assert np.allclose(solver_args['bounds'][1], [2.0, 3.0])  # Upper bounds
 
 
-@patch("easydiffraction.analysis.minimizers.minimizer_dfols.solve")
+@patch('easydiffraction.analysis.minimizers.minimizer_dfols.solve')
 def test_run_solver(mock_solve, dfols_minimizer, mock_objective_function):
     mock_solve.return_value = MagicMock(x=np.array([1.5, 2.5]), flag=0)
 
@@ -39,10 +42,7 @@ def test_run_solver(mock_solve, dfols_minimizer, mock_objective_function):
 
     # Assertions
     mock_solve.assert_called_once_with(
-        mock_objective_function,
-        x0=solver_args['x0'],
-        bounds=solver_args['bounds'],
-        maxfun=dfols_minimizer.max_iterations
+        mock_objective_function, x0=solver_args['x0'], bounds=solver_args['bounds'], maxfun=dfols_minimizer.max_iterations
     )
     assert np.allclose(raw_result.x, [1.5, 2.5])
 
@@ -67,7 +67,7 @@ def test_check_success(dfols_minimizer):
     assert dfols_minimizer._check_success(raw_result) is False
 
 
-@patch("easydiffraction.analysis.minimizers.minimizer_dfols.solve")
+@patch('easydiffraction.analysis.minimizers.minimizer_dfols.solve')
 def test_fit(mock_solve, dfols_minimizer, mock_parameters, mock_objective_function):
     mock_solve.return_value = MagicMock(x=np.array([1.5, 2.5]), flag=0)
     dfols_minimizer.tracker.finish_tracking = MagicMock()

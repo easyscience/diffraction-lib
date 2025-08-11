@@ -1,11 +1,14 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-License-Identifier: BSD-3-Clause
+
+from easydiffraction.core.objects import Datablock
+from easydiffraction.crystallography import crystallography as ecr
+from easydiffraction.sample_models.collections.atom_sites import AtomSites
+from easydiffraction.sample_models.components.cell import Cell
+from easydiffraction.sample_models.components.space_group import SpaceGroup
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_cif
-from easydiffraction.core.objects import Datablock
-from easydiffraction.crystallography import crystallography as ecr
-from easydiffraction.sample_models.components.space_group import SpaceGroup
-from easydiffraction.sample_models.components.cell import Cell
-from easydiffraction.sample_models.collections.atom_sites import AtomSites
 
 
 class SampleModel(Datablock):
@@ -16,10 +19,7 @@ class SampleModel(Datablock):
     """
 
     # TODO: Move cif_path and cif_str out of __init__ and into separate methods
-    def __init__(self,
-                 name: str,
-                 cif_path: str = None,
-                 cif_str: str = None):
+    def __init__(self, name: str, cif_path: str = None, cif_str: str = None):
         super().__init__()
         self._name = name
         self.space_group = SpaceGroup()
@@ -88,15 +88,16 @@ class SampleModel(Datablock):
     # --------------------
 
     def _apply_cell_symmetry_constraints(self):
-        dummy_cell = {'lattice_a': self.cell.length_a.value,
-                      'lattice_b': self.cell.length_b.value,
-                      'lattice_c': self.cell.length_c.value,
-                      'angle_alpha': self.cell.angle_alpha.value,
-                      'angle_beta': self.cell.angle_beta.value,
-                      'angle_gamma': self.cell.angle_gamma.value}
+        dummy_cell = {
+            'lattice_a': self.cell.length_a.value,
+            'lattice_b': self.cell.length_b.value,
+            'lattice_c': self.cell.length_c.value,
+            'angle_alpha': self.cell.angle_alpha.value,
+            'angle_beta': self.cell.angle_beta.value,
+            'angle_gamma': self.cell.angle_gamma.value,
+        }
         space_group_name = self.space_group.name_h_m.value
-        ecr.apply_cell_symmetry_constraints(cell=dummy_cell,
-                                            name_hm=space_group_name)
+        ecr.apply_cell_symmetry_constraints(cell=dummy_cell, name_hm=space_group_name)
         self.cell.length_a.value = dummy_cell['lattice_a']
         self.cell.length_b.value = dummy_cell['lattice_b']
         self.cell.length_c.value = dummy_cell['lattice_c']
@@ -108,17 +109,21 @@ class SampleModel(Datablock):
         space_group_name = self.space_group.name_h_m.value
         space_group_coord_code = self.space_group.it_coordinate_system_code.value
         for atom in self.atom_sites:
-            dummy_atom = {"fract_x": atom.fract_x.value,
-                          "fract_y": atom.fract_y.value,
-                          "fract_z": atom.fract_z.value}
+            dummy_atom = {
+                'fract_x': atom.fract_x.value,
+                'fract_y': atom.fract_y.value,
+                'fract_z': atom.fract_z.value,
+            }
             wl = atom.wyckoff_letter.value
             if not wl:
-                #raise ValueError("Wyckoff letter is not defined for atom.")
+                # raise ValueError("Wyckoff letter is not defined for atom.")
                 continue
-            ecr.apply_atom_site_symmetry_constraints(atom_site=dummy_atom,
-                                                     name_hm=space_group_name,
-                                                     coord_code=space_group_coord_code,
-                                                     wyckoff_letter=wl)
+            ecr.apply_atom_site_symmetry_constraints(
+                atom_site=dummy_atom,
+                name_hm=space_group_name,
+                coord_code=space_group_coord_code,
+                wyckoff_letter=wl,
+            )
             atom.fract_x.value = dummy_atom['fract_x']
             atom.fract_y.value = dummy_atom['fract_y']
             atom.fract_z.value = dummy_atom['fract_z']
@@ -138,13 +143,13 @@ class SampleModel(Datablock):
     def load_from_cif_file(self, cif_path: str):
         """Load model data from a CIF file."""
         # TODO: Implement CIF parsing here
-        print(f"Loading SampleModel from CIF file: {cif_path}")
+        print(f'Loading SampleModel from CIF file: {cif_path}')
         # Example: self.id = extract_id_from_cif(cif_path)
 
     def load_from_cif_string(self, cif_str: str):
         """Load model data from a CIF string."""
         # TODO: Implement CIF parsing from a string
-        print("Loading SampleModel from CIF string.")
+        print('Loading SampleModel from CIF string.')
 
     # -----------------
     # Convertion to CIF
@@ -157,18 +162,18 @@ class SampleModel(Datablock):
             str: CIF string representation of the sample model.
         """
         # Data block header
-        cif_lines = [f"data_{self.name}"]
+        cif_lines = [f'data_{self.name}']
 
         # Space Group
-        cif_lines += ["", self.space_group.as_cif()]
+        cif_lines += ['', self.space_group.as_cif()]
 
         # Unit Cell
-        cif_lines += ["", self.cell.as_cif()]
+        cif_lines += ['', self.cell.as_cif()]
 
         # Atom Sites
-        cif_lines += ["", self.atom_sites.as_cif()]
+        cif_lines += ['', self.atom_sites.as_cif()]
 
-        return "\n".join(cif_lines)
+        return '\n'.join(cif_lines)
 
     # ------------
     # Show methods
@@ -184,14 +189,14 @@ class SampleModel(Datablock):
         """
 
         print(paragraph(f"Sample model 🧩 '{self.name}' structure view"))
-        print("Not implemented yet.")
+        print('Not implemented yet.')
 
     def show_params(self):
         """Display structural parameters (space group, unit cell, atomic sites)."""
-        print(f"\nSampleModel ID: {self.name}")
-        print(f"Space group: {self.space_group.name_h_m}")
-        print(f"Cell parameters: {self.cell.as_dict()}")
-        print("Atom sites:")
+        print(f'\nSampleModel ID: {self.name}')
+        print(f'Space group: {self.space_group.name_h_m}')
+        print(f'Cell parameters: {self.cell.as_dict()}')
+        print('Atom sites:')
         self.atom_sites.show()
 
     def show_as_cif(self) -> None:

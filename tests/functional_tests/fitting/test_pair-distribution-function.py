@@ -1,5 +1,6 @@
 import os
 import tempfile
+
 from numpy.testing import assert_almost_equal
 
 import easydiffraction as ed
@@ -16,31 +17,24 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     sample_model.space_group.name_h_m = 'F m -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
     sample_model.cell.length_a = 5.6018
-    sample_model.atom_sites.add(label='Na',
-                                type_symbol='Na',
-                                fract_x=0,
-                                fract_y=0,
-                                fract_z=0,
-                                wyckoff_letter='a',
-                                b_iso=1.1053)
-    sample_model.atom_sites.add(label='Cl',
-                                type_symbol='Cl',
-                                fract_x=0.5,
-                                fract_y=0.5,
-                                fract_z=0.5,
-                                wyckoff_letter='b',
-                                b_iso=0.5708)
+    sample_model.atom_sites.add(
+        label='Na', type_symbol='Na', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=1.1053
+    )
+    sample_model.atom_sites.add(
+        label='Cl', type_symbol='Cl', fract_x=0.5, fract_y=0.5, fract_z=0.5, wyckoff_letter='b', b_iso=0.5708
+    )
 
     # Set experiment
     data_file = 'NaCl.gr'
-    ed.download_from_repository(data_file,
-                                destination=TEMP_DIR)
-    project.experiments.add(name='xray_pdf',
-                            sample_form='powder',
-                            beam_mode='constant wavelength',
-                            radiation_probe='xray',
-                            scattering_type='total',
-                            data_path = os.path.join(TEMP_DIR, data_file))
+    ed.download_from_repository(data_file, destination=TEMP_DIR)
+    project.experiments.add(
+        name='xray_pdf',
+        sample_form='powder',
+        beam_mode='constant wavelength',
+        radiation_probe='xray',
+        scattering_type='total',
+        data_path=os.path.join(TEMP_DIR, data_file),
+    )
     experiment = project.experiments['xray_pdf']
     experiment.peak_profile_type = 'gaussian-damped-sinc'
     experiment.peak.damp_q = 0.0606
@@ -64,9 +58,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=1.48,
-                        decimal=2)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=1.48, decimal=2)
 
 
 def test_single_fit_pdf_neutron_pd_cw_ni():
@@ -78,24 +70,21 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     sample_model.space_group.name_h_m.value = 'F m -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
     sample_model.cell.length_a = 3.526
-    sample_model.atom_sites.add(label='Ni',
-                                type_symbol='Ni',
-                                fract_x=0,
-                                fract_y=0,
-                                fract_z=0,
-                                wyckoff_letter='a',
-                                b_iso=0.4281)
+    sample_model.atom_sites.add(
+        label='Ni', type_symbol='Ni', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=0.4281
+    )
 
     # Set experiment
     data_file = 'ni-q27r100-neutron_from-2.gr'
-    ed.download_from_repository(data_file,
-                                destination=TEMP_DIR)
-    project.experiments.add(name='pdf',
-                            sample_form='powder',
-                            beam_mode='constant wavelength',
-                            radiation_probe='neutron',
-                            scattering_type='total',
-                            data_path = os.path.join(TEMP_DIR, data_file))
+    ed.download_from_repository(data_file, destination=TEMP_DIR)
+    project.experiments.add(
+        name='pdf',
+        sample_form='powder',
+        beam_mode='constant wavelength',
+        radiation_probe='neutron',
+        scattering_type='total',
+        data_path=os.path.join(TEMP_DIR, data_file),
+    )
     experiment = project.experiments['pdf']
     experiment.peak.damp_q = 0
     experiment.peak.broad_q = 0.022
@@ -117,9 +106,7 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=207.1,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=207.1, decimal=1)
 
 
 def test_single_fit_pdf_neutron_pd_tof_si():
@@ -131,24 +118,19 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     sample_model.space_group.name_h_m.value = 'F d -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
     sample_model.cell.length_a = 5.4306
-    sample_model.atom_sites.add(label='Si',
-                                type_symbol='Si',
-                                fract_x=0,
-                                fract_y=0,
-                                fract_z=0,
-                                wyckoff_letter='a',
-                                b_iso=0.717)
+    sample_model.atom_sites.add(label='Si', type_symbol='Si', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=0.717)
 
     # Set experiment
     data_file = 'NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr'
-    ed.download_from_repository(data_file,
-                                destination=TEMP_DIR)
-    project.experiments.add(name='nomad',
-                            sample_form='powder',
-                            beam_mode='time-of-flight',
-                            radiation_probe='neutron',
-                            scattering_type='total',
-                            data_path = os.path.join(TEMP_DIR, data_file))
+    ed.download_from_repository(data_file, destination=TEMP_DIR)
+    project.experiments.add(
+        name='nomad',
+        sample_form='powder',
+        beam_mode='time-of-flight',
+        radiation_probe='neutron',
+        scattering_type='total',
+        data_path=os.path.join(TEMP_DIR, data_file),
+    )
     experiment = project.experiments['nomad']
     experiment.peak.damp_q = 0.0251
     experiment.peak.broad_q = 0.0183
@@ -172,9 +154,8 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=170.54,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=170.54, decimal=1)
+
 
 if __name__ == '__main__':
     test_single_fit_pdf_xray_pd_cw_nacl()

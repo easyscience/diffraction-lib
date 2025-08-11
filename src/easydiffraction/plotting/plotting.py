@@ -1,21 +1,19 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-License-Identifier: BSD-3-Clause
+
 from easydiffraction.core.constants import DEFAULT_AXES_LABELS
-from easydiffraction.utils.formatting import (
-    paragraph,
-    error
-)
-from easydiffraction.utils.utils import render_table
-from easydiffraction.plotting.plotters.plotter_base import (
-    DEFAULT_HEIGHT,
-    DEFAULT_ENGINE,
-    DEFAULT_MIN,
-    DEFAULT_MAX
-)
 from easydiffraction.plotting.plotters.plotter_ascii import AsciiPlotter
+from easydiffraction.plotting.plotters.plotter_base import DEFAULT_ENGINE
+from easydiffraction.plotting.plotters.plotter_base import DEFAULT_HEIGHT
+from easydiffraction.plotting.plotters.plotter_base import DEFAULT_MAX
+from easydiffraction.plotting.plotters.plotter_base import DEFAULT_MIN
 from easydiffraction.plotting.plotters.plotter_plotly import PlotlyPlotter
+from easydiffraction.utils.formatting import error
+from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.utils import render_table
 
 
-class Plotter():
-
+class Plotter:
     def __init__(self):
         # Plotting engine
         self._engine = DEFAULT_ENGINE
@@ -43,7 +41,7 @@ class Plotter():
             return
         self._engine = new_engine
         self._plotter = new_plotter
-        print(paragraph("Current plotter changed to"))
+        print(paragraph('Current plotter changed to'))
         print(self._engine)
 
     @property
@@ -89,61 +87,63 @@ class Plotter():
         """
         Displays the current configuration settings.
         """
-        columns_headers = ["Parameter", "Value"]
-        columns_alignment = ["left", "left"]
+        columns_headers = ['Parameter', 'Value']
+        columns_alignment = ['left', 'left']
         columns_data = [
-            ["Plotting engine", self.engine],
-            ["x-axis limits", f'[{self.x_min}, {self.x_max}]'],
-            ["Chart height", self.height]
+            ['Plotting engine', self.engine],
+            ['x-axis limits', f'[{self.x_min}, {self.x_max}]'],
+            ['Chart height', self.height],
         ]
 
-        print(paragraph("Current plotter configuration"))
-        render_table(columns_headers=columns_headers,
-                     columns_alignment=columns_alignment,
-                     columns_data=columns_data)
+        print(paragraph('Current plotter configuration'))
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )
 
     def show_supported_engines(self):
         """
         Displays the supported plotting engines.
         """
-        columns_headers = ["Engine", "Description"]
-        columns_alignment = ["left", "left"]
+        columns_headers = ['Engine', 'Description']
+        columns_alignment = ['left', 'left']
         columns_data = []
         for name, config in PlotterFactory._SUPPORTED_ENGINES_DICT.items():
             description = config.get('description', 'No description provided.')
             columns_data.append([name, description])
 
-        print(paragraph("Supported plotter engines"))
-        render_table(columns_headers=columns_headers,
-                     columns_alignment=columns_alignment,
-                     columns_data=columns_data)
+        print(paragraph('Supported plotter engines'))
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )
 
-    def plot_meas(self,
-                  pattern,
-                  expt_name,
-                  expt_type,
-                  x_min=None,
-                  x_max=None,
-                  d_spacing=False):
+    def plot_meas(self, pattern, expt_name, expt_type, x_min=None, x_max=None, d_spacing=False):
         if pattern.x is None:
-            error(f"No data available for experiment {expt_name}")
+            error(f'No data available for experiment {expt_name}')
             return
         if pattern.meas is None:
-            error(f"No measured data available for experiment {expt_name}")
+            error(f'No measured data available for experiment {expt_name}')
             return
 
         if d_spacing:
             x_array = pattern.d
         else:
             x_array = pattern.x
-        x = self._filtered_y_array(y_array=x_array,
-                                   x_array=x_array,
-                                   x_min=x_min,
-                                   x_max=x_max)
-        y_meas = self._filtered_y_array(y_array=pattern.meas,
-                                        x_array=x_array,
-                                        x_min=x_min,
-                                        x_max=x_max)
+        x = self._filtered_y_array(
+            y_array=x_array,
+            x_array=x_array,
+            x_min=x_min,
+            x_max=x_max,
+        )
+        y_meas = self._filtered_y_array(
+            y_array=pattern.meas,
+            x_array=x_array,
+            x_min=x_min,
+            x_max=x_max,
+        )
 
         y_series = [y_meas]
         y_labels = ['meas']
@@ -159,35 +159,41 @@ class Plotter():
             labels=y_labels,
             axes_labels=axes_labels,
             title=f"Measured data for experiment 🔬 '{expt_name}'",
-            height=self.height
+            height=self.height,
         )
 
-    def plot_calc(self,
-                  pattern,
-                  expt_name,
-                  expt_type,
-                  x_min=None,
-                  x_max=None,
-                  d_spacing=False):
+    def plot_calc(
+        self,
+        pattern,
+        expt_name,
+        expt_type,
+        x_min=None,
+        x_max=None,
+        d_spacing=False,
+    ):
         if pattern.x is None:
-            error(f"No data available for experiment {expt_name}")
+            error(f'No data available for experiment {expt_name}')
             return
         if pattern.calc is None:
-            print(f"No calculated data available for experiment {expt_name}")
+            print(f'No calculated data available for experiment {expt_name}')
             return
 
         if d_spacing:
             x_array = pattern.d
         else:
             x_array = pattern.x
-        x = self._filtered_y_array(y_array=x_array,
-                                   x_array=x_array,
-                                   x_min=x_min,
-                                   x_max=x_max)
-        y_calc = self._filtered_y_array(y_array=pattern.calc,
-                                        x_array=x_array,
-                                        x_min=x_min,
-                                        x_max=x_max)
+        x = self._filtered_y_array(
+            y_array=x_array,
+            x_array=x_array,
+            x_min=x_min,
+            x_max=x_max,
+        )
+        y_calc = self._filtered_y_array(
+            y_array=pattern.calc,
+            x_array=x_array,
+            x_min=x_min,
+            x_max=x_max,
+        )
 
         y_series = [y_calc]
         y_labels = ['calc']
@@ -203,43 +209,51 @@ class Plotter():
             labels=y_labels,
             axes_labels=axes_labels,
             title=f"Calculated data for experiment 🔬 '{expt_name}'",
-            height=self.height
+            height=self.height,
         )
 
-    def plot_meas_vs_calc(self,
-                          pattern,
-                          expt_name,
-                          expt_type,
-                          x_min=None,
-                          x_max=None,
-                          show_residual=False,
-                          d_spacing=False):
+    def plot_meas_vs_calc(
+        self,
+        pattern,
+        expt_name,
+        expt_type,
+        x_min=None,
+        x_max=None,
+        show_residual=False,
+        d_spacing=False,
+    ):
         if pattern.x is None:
-            print(error(f"No data available for experiment {expt_name}"))
+            print(error(f'No data available for experiment {expt_name}'))
             return
         if pattern.meas is None:
-            print(error(f"No measured data available for experiment {expt_name}"))
+            print(error(f'No measured data available for experiment {expt_name}'))
             return
         if pattern.calc is None:
-            print(error(f"No calculated data available for experiment {expt_name}"))
+            print(error(f'No calculated data available for experiment {expt_name}'))
             return
 
         if d_spacing:
             x_array = pattern.d
         else:
             x_array = pattern.x
-        x = self._filtered_y_array(y_array=x_array,
-                                   x_array=x_array,
-                                   x_min=x_min,
-                                   x_max=x_max)
-        y_meas = self._filtered_y_array(y_array=pattern.meas,
-                                        x_array=x_array,
-                                        x_min=x_min,
-                                        x_max=x_max)
-        y_calc = self._filtered_y_array(y_array=pattern.calc,
-                                        x_array=x_array,
-                                        x_min=x_min,
-                                        x_max=x_max)
+        x = self._filtered_y_array(
+            y_array=x_array,
+            x_array=x_array,
+            x_min=x_min,
+            x_max=x_max,
+        )
+        y_meas = self._filtered_y_array(
+            y_array=pattern.meas,
+            x_array=x_array,
+            x_min=x_min,
+            x_max=x_max,
+        )
+        y_calc = self._filtered_y_array(
+            y_array=pattern.calc,
+            x_array=x_array,
+            x_min=x_min,
+            x_max=x_max,
+        )
 
         y_series = [y_meas, y_calc]
         y_labels = ['meas', 'calc']
@@ -260,14 +274,16 @@ class Plotter():
             labels=y_labels,
             axes_labels=axes_labels,
             title=f"Measured vs Calculated data for experiment 🔬 '{expt_name}'",
-            height=self.height
+            height=self.height,
         )
 
-    def _filtered_y_array(self,
-                        y_array,
-                        x_array,
-                        x_min,
-                        x_max):
+    def _filtered_y_array(
+        self,
+        y_array,
+        x_array,
+        x_min,
+        x_max,
+    ):
         if x_min is None:
             x_min = self.x_min
         if x_max is None:
@@ -283,12 +299,12 @@ class PlotterFactory:
     _SUPPORTED_ENGINES_DICT = {
         'asciichartpy': {
             'description': 'Console ASCII line charts',
-            'class': AsciiPlotter
+            'class': AsciiPlotter,
         },
         'plotly': {
             'description': 'Interactive browser-based graphing library',
-            'class': PlotlyPlotter
-        }
+            'class': PlotlyPlotter,
+        },
     }
 
     @classmethod

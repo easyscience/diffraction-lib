@@ -19,6 +19,18 @@
 # %% [markdown]
 # ## Import Library
 
+# %% tags=["hide_in_docs"]
+# Check if the easydiffraction library is installed.
+# If not, install it including the 'visualization' extras.
+# This is needed, e.g., when running this as a notebook via Google Colab.
+import builtins
+import importlib.util
+
+if hasattr(builtins, '__IPYTHON__'):
+    if importlib.util.find_spec('easydiffraction') is None:
+        print('Installing the easydiffraction library...')
+        # !pip install 'easydiffraction[visualization]'
+
 # %%
 import easydiffraction as ed
 
@@ -54,16 +66,16 @@ sample_model.atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
 # ## Step 3: Define Experiment
 
 # %%
-ed.download_from_repository('hrpt_lbco.xye',
-                            branch='develop',
-                            destination='data')
+ed.download_from_repository('hrpt_lbco.xye', destination='data')
 
 # %%
-project.experiments.add(name='hrpt',
-                        sample_form='powder',
-                        beam_mode='constant wavelength',
-                        radiation_probe='neutron',
-                        data_path='data/hrpt_lbco.xye')
+project.experiments.add(
+    name='hrpt',
+    sample_form='powder',
+    beam_mode='constant wavelength',
+    radiation_probe='neutron',
+    data_path='data/hrpt_lbco.xye',
+)
 
 # %%
 experiment = project.experiments['hrpt']
@@ -123,5 +135,4 @@ experiment.linked_phases['lbco'].scale.free = True
 project.analysis.fit()
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)

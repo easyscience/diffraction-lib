@@ -10,6 +10,18 @@
 # %% [markdown]
 # ## Import Library
 
+# %% tags=["hide_in_docs"]
+# Check if the easydiffraction library is installed.
+# If not, install it including the 'visualization' extras.
+# This is needed, e.g., when running this as a notebook via Google Colab.
+import builtins
+import importlib.util
+
+if hasattr(builtins, '__IPYTHON__'):
+    if importlib.util.find_spec('easydiffraction') is None:
+        print('Installing the easydiffraction library...')
+        # !pip install 'easydiffraction[visualization]'
+
 # %%
 import easydiffraction as ed
 
@@ -37,35 +49,28 @@ project.sample_models.add(name='nacl')
 project.sample_models['nacl'].space_group.name_h_m = 'F m -3 m'
 project.sample_models['nacl'].space_group.it_coordinate_system_code = '1'
 project.sample_models['nacl'].cell.length_a = 5.62
-project.sample_models['nacl'].atom_sites.add(label='Na',
-                                             type_symbol='Na',
-                                             fract_x=0,
-                                             fract_y=0,
-                                             fract_z=0,
-                                             wyckoff_letter='a',
-                                             b_iso=1.0)
-project.sample_models['nacl'].atom_sites.add(label='Cl',
-                                             type_symbol='Cl',
-                                             fract_x=0.5,
-                                             fract_y=0.5,
-                                             fract_z=0.5,
-                                             wyckoff_letter='b',
-                                             b_iso=1.0)
+project.sample_models['nacl'].atom_sites.add(
+    label='Na', type_symbol='Na', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=1.0
+)
+project.sample_models['nacl'].atom_sites.add(
+    label='Cl', type_symbol='Cl', fract_x=0.5, fract_y=0.5, fract_z=0.5, wyckoff_letter='b', b_iso=1.0
+)
 
 # %% [markdown]
 # ## Add Experiment
 
 # %%
-ed.download_from_repository('NaCl.gr',
-                            destination='data')
+ed.download_from_repository('NaCl.gr', destination='data')
 
 # %%
-project.experiments.add(name='xray_pdf',
-                        sample_form='powder',
-                        beam_mode='constant wavelength',
-                        radiation_probe='xray',
-                        scattering_type='total',
-                        data_path = 'data/NaCl.gr')
+project.experiments.add(
+    name='xray_pdf',
+    sample_form='powder',
+    beam_mode='constant wavelength',
+    radiation_probe='xray',
+    scattering_type='total',
+    data_path='data/NaCl.gr',
+)
 
 # %%
 project.experiments['xray_pdf'].show_supported_peak_profile_types()

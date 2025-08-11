@@ -1,30 +1,27 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import darkdetect
 import plotly.graph_objects as go
 import plotly.io as pio
 
 try:
-    from IPython.display import (
-        display,
-        HTML
-    )
+    from IPython.display import HTML
+    from IPython.display import display
 except ImportError:
     display = None
     HTML = None
 
-from easydiffraction.utils.utils import (
-    is_notebook,
-    is_pycharm
-)
+from easydiffraction.utils.utils import is_notebook
+from easydiffraction.utils.utils import is_pycharm
 
-from .plotter_base import (
-    PlotterBase,
-    SERIES_CONFIG
-)
+from .plotter_base import SERIES_CONFIG
+from .plotter_base import PlotterBase
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',
     'calc': 'rgb(214, 39, 40)',
-    'resid': 'rgb(44, 160, 44)'
+    'resid': 'rgb(44, 160, 44)',
 }
 
 
@@ -47,14 +44,15 @@ class PlotlyPlotter(PlotterBase):
 
         return trace
 
-    def plot(self,
-             x,
-             y_series,
-             labels,
-             axes_labels,
-             title,
-             height=None):
-
+    def plot(
+        self,
+        x,
+        y_series,
+        labels,
+        axes_labels,
+        title,
+        height=None,
+    ):
         data = []
         for idx, y in enumerate(y_series):
             label = labels[idx]
@@ -66,22 +64,22 @@ class PlotlyPlotter(PlotterBase):
                 autoexpand=True,
                 r=30,
                 t=40,
-                b=45
+                b=45,
             ),
             title=dict(
-              text=title,
+                text=title,
             ),
             legend=dict(
                 xanchor='right',
                 x=1.0,
                 yanchor='top',
-                y=1.0
+                y=1.0,
             ),
             xaxis=dict(
                 title_text=axes_labels[0],
                 showline=True,
                 mirror=True,
-                zeroline=False
+                zeroline=False,
             ),
             yaxis=dict(
                 title_text=axes_labels[1],
@@ -91,13 +89,15 @@ class PlotlyPlotter(PlotterBase):
             ),
         )
 
-        config=dict(
+        config = dict(
             displaylogo=False,
-            modeBarButtonsToRemove=['select2d',
-                                    'lasso2d',
-                                    'zoomIn2d',
-                                    'zoomOut2d',
-                                    'autoScale2d'],
+            modeBarButtonsToRemove=[
+                'select2d',
+                'lasso2d',
+                'zoomIn2d',
+                'zoomOut2d',
+                'autoScale2d',
+            ],
         )
 
         fig = go.Figure(
@@ -116,10 +116,12 @@ class PlotlyPlotter(PlotterBase):
         # display it in the notebook.
         else:
             # Convert figure to HTML
-            html_fig = pio.to_html(fig,
-                                   include_plotlyjs="cdn",
-                                   full_html=False,
-                                   config=config)
+            html_fig = pio.to_html(
+                fig,
+                include_plotlyjs='cdn',
+                full_html=False,
+                config=config,
+            )
 
             # Display it in the notebook
             display(HTML(html_fig))

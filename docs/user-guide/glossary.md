@@ -1,7 +1,7 @@
 # Glossary
 
-Before guiding you through the use of EasyDiffraction, we define some
-common terms and abbreviations used throughout the documentation and tutorials.
+Before guiding you through the use of EasyDiffraction, we define some common
+terms and abbreviations used throughout the documentation and tutorials.
 
 ## Dictionary Type Labels
 
@@ -11,7 +11,7 @@ The following labels are used to identify different types of CIF dictionaries:
   [IUCr](https://www.iucr.org).
 - [pdCIF][2]{:.label-cif} – Powder CIF dictionary by the
   [IUCr](https://www.iucr.org).
-- [easydiffractionCIF][0]{:.label-cif} – Custom CIF dictionary developed for 
+- [easydiffractionCIF][0]{:.label-cif} – Custom CIF dictionary developed for
   EasyDiffraction.
 
 For more information about CIF, see the [Data Format](data-format.md) section.
@@ -23,8 +23,8 @@ parameters. The following labels identify the supported experiment types:
 
 ### Neutron Diffraction
 
-- [pd-neut-cwl][0]{:.label-experiment} – Powder neutron diffraction with constant
-  wavelength.
+- [pd-neut-cwl][0]{:.label-experiment} – Powder neutron diffraction with
+  constant wavelength.
 - [pd-neut-tof][0]{:.label-experiment} – Powder neutron diffraction with
   time-of-flight.
 - [sc-neut-cwl][0]{:.label-experiment} – Single-crystal neutron diffraction with

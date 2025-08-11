@@ -1,15 +1,13 @@
-import pytest
-import numpy as np
 from unittest.mock import Mock
 
-from easydiffraction.analysis.reliability_factors import (
-    calculate_r_factor,
-    calculate_weighted_r_factor,
-    calculate_rb_factor,
-    calculate_r_factor_squared,
-    calculate_reduced_chi_square,
-    get_reliability_inputs,
-)
+import numpy as np
+
+from easydiffraction.analysis.reliability_factors import calculate_r_factor
+from easydiffraction.analysis.reliability_factors import calculate_r_factor_squared
+from easydiffraction.analysis.reliability_factors import calculate_rb_factor
+from easydiffraction.analysis.reliability_factors import calculate_reduced_chi_square
+from easydiffraction.analysis.reliability_factors import calculate_weighted_r_factor
+from easydiffraction.analysis.reliability_factors import get_reliability_inputs
 
 
 def test_calculate_r_factor():
@@ -90,12 +88,12 @@ def test_get_reliability_inputs():
     calculator = Mock()
 
     experiments._items = {
-        "experiment1": Mock(
+        'experiment1': Mock(
             datastore=Mock(
                 pattern=Mock(
                     meas=np.array([10.0, 20.0, 30.0]),
                     meas_su=np.array([1.0, 1.0, 1.0]),
-                    excluded=np.array([False, False, False])
+                    excluded=np.array([False, False, False]),
                 )
             )
         )

@@ -10,13 +10,23 @@
 # %% [markdown]
 # ## Import Library
 
+# %% tags=["hide_in_docs"]
+# Check if the easydiffraction library is installed.
+# If not, install it including the 'visualization' extras.
+# This is needed, e.g., when running this as a notebook via Google Colab.
+import builtins
+import importlib.util
+
+if hasattr(builtins, '__IPYTHON__'):
+    if importlib.util.find_spec('easydiffraction') is None:
+        print('Installing the easydiffraction library...')
+        # !pip install 'easydiffraction[visualization]'
+
 # %%
-from easydiffraction import (
-    Project,
-    SampleModel,
-    Experiment,
-    download_from_repository
-)
+from easydiffraction import Experiment
+from easydiffraction import Project
+from easydiffraction import SampleModel
+from easydiffraction import download_from_repository
 
 # %% [markdown]
 # ## Define Sample Model
@@ -45,12 +55,12 @@ model.cell.length_a = 10.250256
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Ca', 'Ca', 0.4665, 0.0, 0.25, wyckoff_letter="b", b_iso=0.92)
-model.atom_sites.add('Al', 'Al', 0.2520, 0.2520, 0.2520, wyckoff_letter="a", b_iso=0.73)
-model.atom_sites.add('Na', 'Na', 0.0852, 0.0852, 0.0852, wyckoff_letter="a", b_iso=2.08)
-model.atom_sites.add('F1', 'F', 0.1376, 0.3055, 0.1196, wyckoff_letter="c", b_iso=0.90)
-model.atom_sites.add('F2', 'F', 0.3623, 0.3631, 0.1870, wyckoff_letter="c", b_iso=1.37)
-model.atom_sites.add('F3', 'F', 0.4611, 0.4611, 0.4611, wyckoff_letter="a", b_iso=0.88)
+model.atom_sites.add('Ca', 'Ca', 0.4663, 0.0, 0.25, wyckoff_letter='b', b_iso=0.92)
+model.atom_sites.add('Al', 'Al', 0.2521, 0.2521, 0.2521, wyckoff_letter='a', b_iso=0.73)
+model.atom_sites.add('Na', 'Na', 0.0851, 0.0851, 0.0851, wyckoff_letter='a', b_iso=2.08)
+model.atom_sites.add('F1', 'F', 0.1377, 0.3054, 0.1195, wyckoff_letter='c', b_iso=0.90)
+model.atom_sites.add('F2', 'F', 0.3625, 0.3633, 0.1867, wyckoff_letter='c', b_iso=1.37)
+model.atom_sites.add('F3', 'F', 0.4612, 0.4612, 0.4612, wyckoff_letter='a', b_iso=0.88)
 
 # %% [markdown]
 # ## Define Experiment
@@ -61,33 +71,47 @@ model.atom_sites.add('F3', 'F', 0.4611, 0.4611, 0.4611, wyckoff_letter="a", b_is
 # #### Download Measured Data
 
 # %%
-download_from_repository('wish_ncaf_5_6.xys', destination='data')
+download_from_repository(
+    'wish_ncaf_5_6.xys',
+    destination='data',
+)
 
 # %%
-download_from_repository('wish_ncaf_4_7.xys', destination='data')
+download_from_repository(
+    'wish_ncaf_4_7.xys',
+    destination='data',
+)
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt56 = Experiment('wish_5_6', beam_mode='time-of-flight', data_path='data/wish_ncaf_5_6.xys')
+expt56 = Experiment(
+    'wish_5_6',
+    beam_mode='time-of-flight',
+    data_path='data/wish_ncaf_5_6.xys',
+)
 
 # %%
-expt47 = Experiment('wish_4_7', beam_mode='time-of-flight', data_path='data/wish_ncaf_4_7.xys')
+expt47 = Experiment(
+    'wish_4_7',
+    beam_mode='time-of-flight',
+    data_path='data/wish_ncaf_4_7.xys',
+)
 
 # %% [markdown]
 # #### Set Instrument
 
 # %%
 expt56.instrument.setup_twotheta_bank = 152.827
-expt56.instrument.calib_d_to_tof_offset = -13.0
-expt56.instrument.calib_d_to_tof_linear = 20752.1
+expt56.instrument.calib_d_to_tof_offset = -13.5
+expt56.instrument.calib_d_to_tof_linear = 20773.0
 expt56.instrument.calib_d_to_tof_quad = -1.08308
 
 # %%
 expt47.instrument.setup_twotheta_bank = 121.660
 expt47.instrument.calib_d_to_tof_offset = -15.0
-expt47.instrument.calib_d_to_tof_linear = 18640.7
+expt47.instrument.calib_d_to_tof_linear = 18660.0
 expt47.instrument.calib_d_to_tof_quad = -0.47488
 
 # %% [markdown]
@@ -96,20 +120,20 @@ expt47.instrument.calib_d_to_tof_quad = -0.47488
 # %%
 expt56.peak.broad_gauss_sigma_0 = 0.0
 expt56.peak.broad_gauss_sigma_1 = 0.0
-expt56.peak.broad_gauss_sigma_2 = 15.0
-expt56.peak.broad_mix_beta_0 = 0.01
+expt56.peak.broad_gauss_sigma_2 = 15.5
+expt56.peak.broad_mix_beta_0 = 0.007
 expt56.peak.broad_mix_beta_1 = 0.01
-expt56.peak.asym_alpha_0 = -0.01
-expt56.peak.asym_alpha_1 = 0.10
+expt56.peak.asym_alpha_0 = -0.0094
+expt56.peak.asym_alpha_1 = 0.1
 
 # %%
 expt47.peak.broad_gauss_sigma_0 = 0.0
-expt47.peak.broad_gauss_sigma_1 = 30.0
-expt47.peak.broad_gauss_sigma_2 = 20.0
-expt47.peak.broad_mix_beta_0 = 0.01
-expt47.peak.broad_mix_beta_1 = 0.01
-expt47.peak.asym_alpha_0 = -0.01
-expt47.peak.asym_alpha_1 = 0.10
+expt47.peak.broad_gauss_sigma_1 = 29.8
+expt47.peak.broad_gauss_sigma_2 = 18.0
+expt47.peak.broad_mix_beta_0 = 0.006
+expt47.peak.broad_mix_beta_1 = 0.015
+expt47.peak.asym_alpha_0 = -0.0115
+expt47.peak.asym_alpha_1 = 0.1
 
 # %% [markdown]
 # #### Set Background
@@ -144,7 +168,7 @@ for x, y in [
     (74204, 262),
     (82103, 268),
     (91958, 268),
-    (102712, 262)
+    (102712, 262),
 ]:
     expt56.background.add(x, y)
 
@@ -177,7 +201,7 @@ for x, y in [
     (75002, 258),
     (83649, 257),
     (92770, 255),
-    (101524, 260)
+    (101524, 260),
 ]:
     expt47.background.add(x, y)
 
@@ -258,17 +282,6 @@ project.analysis.fit_mode = 'joint'
 # #### Set Free Parameters
 
 # %%
-model.atom_sites['Ca'].fract_x.free = True
-model.atom_sites['Al'].fract_x.free = True
-model.atom_sites['Na'].fract_x.free = True
-model.atom_sites['F1'].fract_x.free = True
-model.atom_sites['F1'].fract_y.free = True
-model.atom_sites['F1'].fract_z.free = True
-model.atom_sites['F2'].fract_x.free = True
-model.atom_sites['F2'].fract_y.free = True
-model.atom_sites['F2'].fract_z.free = True
-model.atom_sites['F3'].fract_x.free = True
-
 model.atom_sites['Ca'].b_iso.free = True
 model.atom_sites['Al'].b_iso.free = True
 model.atom_sites['Na'].b_iso.free = True
@@ -283,17 +296,14 @@ expt56.instrument.calib_d_to_tof_linear.free = True
 expt56.peak.broad_gauss_sigma_2.free = True
 expt56.peak.broad_mix_beta_0.free = True
 expt56.peak.broad_mix_beta_1.free = True
-expt56.peak.asym_alpha_0.free = True
 expt56.peak.asym_alpha_1.free = True
 
 expt47.linked_phases['ncaf'].scale.free = True
 expt47.instrument.calib_d_to_tof_linear.free = True
 expt47.instrument.calib_d_to_tof_offset.free = True
-expt47.peak.broad_gauss_sigma_1.free = True
 expt47.peak.broad_gauss_sigma_2.free = True
 expt47.peak.broad_mix_beta_0.free = True
 expt47.peak.broad_mix_beta_1.free = True
-expt47.peak.asym_alpha_0.free = True
 expt47.peak.asym_alpha_1.free = True
 
 # %% [markdown]

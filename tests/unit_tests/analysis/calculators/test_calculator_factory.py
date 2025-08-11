@@ -1,19 +1,21 @@
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import MagicMock, patch
-from easydiffraction.analysis.calculators.calculator_factory import CalculatorFactory
+
 from easydiffraction.analysis.calculators.calculator_crysfml import CrysfmlCalculator
 from easydiffraction.analysis.calculators.calculator_cryspy import CryspyCalculator
+from easydiffraction.analysis.calculators.calculator_factory import CalculatorFactory
 from easydiffraction.analysis.calculators.calculator_pdffit import PdffitCalculator
-from easydiffraction.utils.formatting import (
-    paragraph,
-    error
-)
+from easydiffraction.utils.formatting import paragraph
+
 
 @pytest.fixture
 def mock_calculators():
-    with patch.object(CrysfmlCalculator, 'engine_imported', True), \
-         patch.object(CryspyCalculator, 'engine_imported', True), \
-         patch.object(PdffitCalculator, 'engine_imported', False):
+    with (
+        patch.object(CrysfmlCalculator, 'engine_imported', True),
+        patch.object(CryspyCalculator, 'engine_imported', True),
+        patch.object(PdffitCalculator, 'engine_imported', False),
+    ):
         yield
 
 
@@ -35,14 +37,14 @@ def test_list_supported_calculators(mock_calculators):
     assert 'pdffit' not in supported_list  # Engine not imported
 
 
-@patch("builtins.print")
+@patch('builtins.print')
 def test_show_supported_calculators(mock_print, mock_calculators):
     CalculatorFactory.show_supported_calculators()
 
     # Assertions
-    mock_print.assert_any_call(paragraph("Supported calculators"))
-    assert any("CrysFML library for crystallographic calculations" in call.args[0] for call in mock_print.call_args_list)
-    assert any("CrysPy library for crystallographic calculations" in call.args[0] for call in mock_print.call_args_list)
+    mock_print.assert_any_call(paragraph('Supported calculators'))
+    assert any('CrysFML library for crystallographic calculations' in call.args[0] for call in mock_print.call_args_list)
+    assert any('CrysPy library for crystallographic calculations' in call.args[0] for call in mock_print.call_args_list)
 
 
 def test_create_calculator(mock_calculators):
@@ -67,11 +69,7 @@ def no_test_register_calculator():
     class MockCalculator:
         engine_imported = True
 
-    CalculatorFactory.register_calculator(
-        'mock_calculator',
-        MockCalculator,
-        description='Mock calculator for testing'
-    )
+    CalculatorFactory.register_calculator('mock_calculator', MockCalculator, description='Mock calculator for testing')
 
     supported = CalculatorFactory._supported_calculators()
 

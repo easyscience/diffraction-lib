@@ -1,18 +1,27 @@
-import numpy as np
-from typing import Tuple, Optional
-from easydiffraction.sample_models.sample_models import SampleModels
-from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-License-Identifier: BSD-3-Clause
 
-def calculate_r_factor(y_obs: np.ndarray,
-                       y_calc: np.ndarray) -> float:
+from typing import Optional
+from typing import Tuple
+
+import numpy as np
+
+from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
+from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.sample_models.sample_models import SampleModels
+
+
+def calculate_r_factor(
+    y_obs: np.ndarray,
+    y_calc: np.ndarray,
+) -> float:
     """
     Calculate the R-factor (reliability factor) between observed and calculated data.
-    
+
     Args:
         y_obs: Observed data points.
         y_calc: Calculated data points.
-        
+
     Returns:
         R-factor value.
     """
@@ -23,17 +32,19 @@ def calculate_r_factor(y_obs: np.ndarray,
     return numerator / denominator if denominator != 0 else np.nan
 
 
-def calculate_weighted_r_factor(y_obs: np.ndarray,
-                                y_calc: np.ndarray,
-                                weights: np.ndarray) -> float:
+def calculate_weighted_r_factor(
+    y_obs: np.ndarray,
+    y_calc: np.ndarray,
+    weights: np.ndarray,
+) -> float:
     """
     Calculate the weighted R-factor between observed and calculated data.
-    
+
     Args:
         y_obs: Observed data points.
         y_calc: Calculated data points.
         weights: Weights for each data point.
-        
+
     Returns:
         Weighted R-factor value.
     """
@@ -41,19 +52,21 @@ def calculate_weighted_r_factor(y_obs: np.ndarray,
     y_calc = np.asarray(y_calc)
     weights = np.asarray(weights)
     numerator = np.sum(weights * (y_obs - y_calc) ** 2)
-    denominator = np.sum(weights * y_obs ** 2)
+    denominator = np.sum(weights * y_obs**2)
     return np.sqrt(numerator / denominator) if denominator != 0 else np.nan
 
 
-def calculate_rb_factor(y_obs: np.ndarray,
-                        y_calc: np.ndarray) -> float:
+def calculate_rb_factor(
+    y_obs: np.ndarray,
+    y_calc: np.ndarray,
+) -> float:
     """
     Calculate the Bragg R-factor between observed and calculated data.
-    
+
     Args:
         y_obs: Observed data points.
         y_calc: Calculated data points.
-        
+
     Returns:
         Bragg R-factor value.
     """
@@ -64,39 +77,43 @@ def calculate_rb_factor(y_obs: np.ndarray,
     return numerator / denominator if denominator != 0 else np.nan
 
 
-def calculate_r_factor_squared(y_obs: np.ndarray,
-                               y_calc: np.ndarray) -> float:
+def calculate_r_factor_squared(
+    y_obs: np.ndarray,
+    y_calc: np.ndarray,
+) -> float:
     """
     Calculate the R-factor squared between observed and calculated data.
-    
+
     Args:
         y_obs: Observed data points.
         y_calc: Calculated data points.
-        
+
     Returns:
         R-factor squared value.
     """
     y_obs = np.asarray(y_obs)
     y_calc = np.asarray(y_calc)
     numerator = np.sum((y_obs - y_calc) ** 2)
-    denominator = np.sum(y_obs ** 2)
+    denominator = np.sum(y_obs**2)
     return np.sqrt(numerator / denominator) if denominator != 0 else np.nan
 
 
-def calculate_reduced_chi_square(residuals: np.ndarray,
-                                 num_parameters: int) -> float:
+def calculate_reduced_chi_square(
+    residuals: np.ndarray,
+    num_parameters: int,
+) -> float:
     """
     Calculate the reduced chi-square statistic.
-    
+
     Args:
         residuals: Residuals between observed and calculated data.
         num_parameters: Number of free parameters used in the model.
-        
+
     Returns:
         Reduced chi-square value.
     """
     residuals = np.asarray(residuals)
-    chi_square = np.sum(residuals ** 2)
+    chi_square = np.sum(residuals**2)
     n_points = len(residuals)
     dof = n_points - num_parameters
     if dof > 0:
@@ -105,17 +122,19 @@ def calculate_reduced_chi_square(residuals: np.ndarray,
         return np.nan
 
 
-def get_reliability_inputs(sample_models: SampleModels,
-                           experiments: Experiments,
-                           calculator: CalculatorBase) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
+def get_reliability_inputs(
+    sample_models: SampleModels,
+    experiments: Experiments,
+    calculator: CalculatorBase,
+) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
     """
     Collect observed and calculated data points for reliability calculations.
-    
+
     Args:
         sample_models: Collection of sample models.
         experiments: Collection of experiments.
         calculator: The calculator to use for pattern generation.
-        
+
     Returns:
         Tuple containing arrays of (observed values, calculated values, error values)
     """
@@ -139,5 +158,5 @@ def get_reliability_inputs(sample_models: SampleModels,
     return (
         np.array(y_obs_all),
         np.array(y_calc_all),
-        np.array(y_err_all) if y_err_all else None
+        np.array(y_err_all) if y_err_all else None,
     )

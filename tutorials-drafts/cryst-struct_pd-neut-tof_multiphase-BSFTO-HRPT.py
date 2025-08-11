@@ -8,12 +8,9 @@
 # ## Import Library
 
 # %%
-from easydiffraction import (
-    Project,
-    SampleModel,
-    Experiment,
-    download_from_repository
-)
+from easydiffraction import Experiment
+from easydiffraction import Project
+from easydiffraction import SampleModel
 
 # %% [markdown]
 # ## Define Sample Models

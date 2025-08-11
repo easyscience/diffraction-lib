@@ -1,8 +1,10 @@
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import patch, MagicMock
+
+from easydiffraction.analysis.minimizers.minimizer_dfols import DfolsMinimizer
 from easydiffraction.analysis.minimizers.minimizer_factory import MinimizerFactory
 from easydiffraction.analysis.minimizers.minimizer_lmfit import LmfitMinimizer
-from easydiffraction.analysis.minimizers.minimizer_dfols import DfolsMinimizer
 
 
 def test_list_available_minimizers():
@@ -14,16 +16,19 @@ def test_list_available_minimizers():
     assert 'dfols' in minimizers
 
 
-@patch("builtins.print")
+@patch('builtins.print')
 def test_show_available_minimizers(mock_print):
     MinimizerFactory.show_available_minimizers()
 
     # Assertions
-    #mock_print.assert_any_call("Available minimizers")
-    assert any("LMFIT library using the default Levenberg-Marquardt least squares method" in call.args[0]
-               for call in mock_print.call_args_list)
-    assert any("DFO-LS library for derivative-free least-squares optimization" in call.args[0]
-               for call in mock_print.call_args_list)
+    # mock_print.assert_any_call("Available minimizers")
+    assert any(
+        'LMFIT library using the default Levenberg-Marquardt least squares method' in call.args[0]
+        for call in mock_print.call_args_list
+    )
+    assert any(
+        'DFO-LS library for derivative-free least-squares optimization' in call.args[0] for call in mock_print.call_args_list
+    )
 
 
 def test_create_minimizer():
@@ -48,10 +53,7 @@ def test_register_minimizer():
             self.method = method
 
     MinimizerFactory.register_minimizer(
-        name='mock_minimizer',
-        minimizer_cls=MockMinimizer,
-        method='mock_method',
-        description='Mock minimizer for testing'
+        name='mock_minimizer', minimizer_cls=MockMinimizer, method='mock_method', description='Mock minimizer for testing'
     )
 
     # Assertions

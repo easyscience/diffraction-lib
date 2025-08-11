@@ -5,46 +5,50 @@ icon: material/calculator
 # :material-calculator: Analysis
 
 This section provides an overview of **diffraction data analysis** in
-EasyDiffraction, focusing on model-dependent analysis, calculation engines,
-and minimization techniques.
+EasyDiffraction, focusing on model-dependent analysis, calculation engines, and
+minimization techniques.
 
 In EasyDiffraction, we focus on **model-dependent analysis**, where a model is
-constructed based on prior knowledge of the studied system, and its parameters are
-optimized to achieve the best agreement between experimental and calculated
-diffraction data. Model-dependent analysis is widely used in neutron and X-ray scattering data.
+constructed based on prior knowledge of the studied system, and its parameters
+are optimized to achieve the best agreement between experimental and calculated
+diffraction data. Model-dependent analysis is widely used in neutron and X-ray
+scattering data.
 
 ## Calculation
 
 EasyDiffraction relies on third-party crystallographic libraries, referred to as
 **calculation engines** or just **calculators**, to perform the calculations.
 
-The calculation engines are used to calculate the diffraction pattern
-for the defined model of the studied sample using the instrumental and
-other required experiment-related parameters, such as the wavelength, resolution,
-etc.
+The calculation engines are used to calculate the diffraction pattern for the
+defined model of the studied sample using the instrumental and other required
+experiment-related parameters, such as the wavelength, resolution, etc.
 
 You do not necessarily need the measured data to perform the calculations, but
-you need a structural model and some details about the type of experiment you want to simulate.
+you need a structural model and some details about the type of experiment you
+want to simulate.
 
 EasyDiffraction is designed as a flexible and extensible tool that supports
-different **calculation engines** for diffraction pattern calculations. 
-Currently, we integrate CrysPy, CrysFML, and PDFfit2 libraries as calculation engines.
+different **calculation engines** for diffraction pattern calculations.
+Currently, we integrate CrysPy, CrysFML, and PDFfit2 libraries as calculation
+engines.
 
 ### CrysPy Calculator
 
-[CrysPy](https://www.cryspy.fr) is a Python library originally developed for analysing polarised neutron
-diffraction data. It is now evolving into a more general purpose library and
-covers powders and single crystals, nuclear and (commensurate) magnetic
-structures, unpolarised neutron and X-ray diffraction.
+[CrysPy](https://www.cryspy.fr) is a Python library originally developed for
+analysing polarised neutron diffraction data. It is now evolving into a more
+general purpose library and covers powders and single crystals, nuclear and
+(commensurate) magnetic structures, unpolarised neutron and X-ray diffraction.
 
 ### CrysFML Calculator
 
-[CrysFML](https://code.ill.fr/scientific-software/CrysFML2008) library is a collection of Fortran modules for crystallographic computations.
-It is used in the software package [FullProf](https://www.ill.eu/sites/fullprof/), and we are
+[CrysFML](https://code.ill.fr/scientific-software/CrysFML2008) library is a
+collection of Fortran modules for crystallographic computations. It is used in
+the software package [FullProf](https://www.ill.eu/sites/fullprof/), and we are
 currently working on its integration into EasyDiffraction.
 
 ### PDFfit2 Calculator
-[PDFfit2](https://github.com/diffpy/diffpy.pdffit2/) is a Python library for 
+
+[PDFfit2](https://github.com/diffpy/diffpy.pdffit2/) is a Python library for
 calculating the pair distribution function (PDF) from crystallographic models.
 
 ### Set Calculator
@@ -60,7 +64,7 @@ The example of the output is:
 Supported calculators
 
 | Calculator | Description                                                 |
-|------------|-------------------------------------------------------------|
+| ---------- | ----------------------------------------------------------- |
 | cryspy     | CrysPy library for crystallographic calculations            |
 | pdffit     | PDFfit2 library for pair distribution function calculations |
 
@@ -72,9 +76,9 @@ project.analysis.current_calculator = 'cryspy'
 
 ## Minimization / Optimization
 
-The process of refining model parameters involves iterating through 
-multiple steps until the calculated data sufficiently matches the 
-experimental data. This process is illustrated in the following diagram:
+The process of refining model parameters involves iterating through multiple
+steps until the calculated data sufficiently matches the experimental data. This
+process is illustrated in the following diagram:
 
 ```mermaid
 flowchart LR
@@ -90,9 +94,9 @@ flowchart LR
     d-- Threshold<br/>reached -->e
 ```
 
-Like the calculation engines, EasyDiffraction is designed to utilize
-various third-party libraries for model refinement and parameter optimization.
-These libraries provide robust curve fitting and uncertainty estimation tools.
+Like the calculation engines, EasyDiffraction is designed to utilize various
+third-party libraries for model refinement and parameter optimization. These
+libraries provide robust curve fitting and uncertainty estimation tools.
 
 ### Lmfit Minimizer
 
@@ -112,9 +116,9 @@ measured values.
 
 ### DFO-LS Minimizer
 
-[DFO-LS](https://github.com/numericalalgorithmsgroup/dfols) (Derivative-Free Optimizer for Least-Squares) is a Python library for solving 
-nonlinear least-squares minimization, without requiring derivatives of the objective.
-
+[DFO-LS](https://github.com/numericalalgorithmsgroup/dfols) (Derivative-Free
+Optimizer for Least-Squares) is a Python library for solving nonlinear
+least-squares minimization, without requiring derivatives of the objective.
 
 ### Set Minimizer
 
@@ -129,7 +133,7 @@ The example of the output is:
 Supported minimizers
 
 | Minimizer             | Description                                                              |
-|-----------------------|--------------------------------------------------------------------------|
+| --------------------- | ------------------------------------------------------------------------ |
 | lmfit                 | LMFIT library using the default Levenberg-Marquardt least squares method |
 | lmfit (leastsq)       | LMFIT library with Levenberg-Marquardt least squares method              |
 | lmfit (least_squares) | LMFIT library with SciPy’s trust region reflective algorithm             |
@@ -144,7 +148,7 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 ### Fit Mode
 
 In EasyDiffraction, you can set the **fit mode** to control how the refinement
-process is performed. The fit mode determines whether the refinement is 
+process is performed. The fit mode determines whether the refinement is
 performed independently for each experiment or jointly across all experiments.
 
 To show the supported fit modes:
@@ -158,7 +162,7 @@ An example of supported fit modes is:
 Supported fit modes
 
 | Strategy | Description                                                         |
-|----------|---------------------------------------------------------------------|
+| -------- | ------------------------------------------------------------------- |
 | single   | Independent fitting of each experiment; no shared parameters        |
 | joint    | Simultaneous fitting of all experiments; some parameters are shared |
 
@@ -177,10 +181,10 @@ project.analysis.show_current_fit_mode()
 
 ### Perform Fit
 
-Refining the sample model and experiment parameters against measured data is 
-usually divided into several steps, where each step involves adding or
-removing parameters to be refined, calculating the model data, and comparing it
-to the experimental data as shown in the diagram above.
+Refining the sample model and experiment parameters against measured data is
+usually divided into several steps, where each step involves adding or removing
+parameters to be refined, calculating the model data, and comparing it to the
+experimental data as shown in the diagram above.
 
 To select the parameters to be refined, you can set the attribute `free` of the
 parameters to `True`. This indicates that the parameter is free to be optimized
@@ -210,6 +214,7 @@ This method will iterate through the defined steps, adjusting the parameters
 until the calculated data sufficiently matches the experimental data.
 
 An example of the output after performing the fit is:
+
 ```console
 Using experiment 🔬 'hrpt' for 'single' fitting
 🚀 Starting fitting process with 'lmfit (leastsq)'...
@@ -236,8 +241,8 @@ Fit results
 📈 Fitted parameters:
 ```
 
-Now, you can inspect the fitted parameters to see how they have changed during the
-refinement process, select more parameters to be refined, and perform
+Now, you can inspect the fitted parameters to see how they have changed during
+the refinement process, select more parameters to be refined, and perform
 additional fits as needed.
 
 To plot the measured vs calculated data after the fit, you can use the
@@ -255,9 +260,9 @@ during the refinement process.
 
 ### Setting Aliases
 
-Before setting constraints, you need to set aliases for the parameters you
-want to constrain. This can be done using the `add` method of the `aliases`
-object. Aliases are used to reference parameters in a more readable way, making it
+Before setting constraints, you need to set aliases for the parameters you want
+to constrain. This can be done using the `add` method of the `aliases` object.
+Aliases are used to reference parameters in a more readable way, making it
 easier to manage constraints.
 
 An example of setting aliases for parameters in a sample model:
@@ -286,11 +291,11 @@ project.analysis.aliases.add(
 
 ### Setting Constraints
 
-Now that you have set the aliases, you can define constraints using the
-`add` method of the `constraints` object. Constraints are defined by specifying
-the **left-hand side (lhs) alias** and the **right-hand side (rhs) expression**. The rhs
-expression can be a simple alias or a more complex expression involving other
-aliases.
+Now that you have set the aliases, you can define constraints using the `add`
+method of the `constraints` object. Constraints are defined by specifying the
+**left-hand side (lhs) alias** and the **right-hand side (rhs) expression**. The
+rhs expression can be a simple alias or a more complex expression involving
+other aliases.
 
 An example of setting constraints for the aliases defined above:
 
@@ -307,10 +312,10 @@ project.analysis.constraints.add(
 ```
 
 These constraints ensure that the `biso_Ba` parameter is equal to `biso_La`, and
-the `occ_Ba` parameter is equal to `1 - occ_La`. This means that the occupancy of
-the Ba atom will always be adjusted based on the occupancy of the La atom, and
-the isotropic displacement parameter for Ba will be equal to that of La during
-the refinement process.
+the `occ_Ba` parameter is equal to `1 - occ_La`. This means that the occupancy
+of the Ba atom will always be adjusted based on the occupancy of the La atom,
+and the isotropic displacement parameter for Ba will be equal to that of La
+during the refinement process.
 
 ### Viewing Constraints
 
@@ -324,10 +329,10 @@ The example of the output is:
 
 User defined constraints
 
-| lhs_alias  | rhs_expr    | full expression     |
-|------------|-------------|---------------------|
-| biso_Ba    | biso_La	    | biso_Ba = biso_La   |
-| occ_Ba     | 1 - occ_La  | occ_Ba = 1 - occ_La |
+| lhs_alias | rhs_expr   | full expression     |
+| --------- | ---------- | ------------------- |
+| biso_Ba   | biso_La    | biso_Ba = biso_La   |
+| occ_Ba    | 1 - occ_La | occ_Ba = 1 - occ_La |
 
 ## Analysis as CIF
 
@@ -364,8 +369,8 @@ Example output:
 
 ## Saving an Analysis
 
-Saving the project, as described in the [Project](project.md) section,
-will also save the analysis settings to the `analysis.cif` inside the project directory.
+Saving the project, as described in the [Project](project.md) section, will also
+save the analysis settings to the `analysis.cif` inside the project directory.
 
 <br>
 

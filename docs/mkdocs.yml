@@ -16,13 +16,13 @@ copyright: © 2025 EasyDiffraction
 # Extra icons in the bottom right corner
 extra:
   social:
-    - icon: easydiffraction  # File: overrides/.icons/easydiffraction.svg
+    - icon: easydiffraction # File: overrides/.icons/easydiffraction.svg
       link: https://easydiffraction.org
       name: EasyDiffraction Main Webpage
-    - icon: app  # File: overrides/.icons/app.svg
+    - icon: app # File: overrides/.icons/app.svg
       link: https://docs.easydiffraction.org/app/
       name: EasyDiffraction Application Docs
-    - icon: fontawesome/brands/github  # Name as in Font Awesome
+    - icon: fontawesome/brands/github # Name as in Font Awesome
       link: https://github.com/easyscience/diffraction-lib
       name: EasyDiffraction Library Source Code on GitHub
 
@@ -55,12 +55,12 @@ nav:
       - Parameters: user-guide/parameters.md
       - First Steps: user-guide/first-steps.md
       - Analysis Workflow:
-        - Analysis Workflow: user-guide/analysis-workflow/index.md
-        - Project: user-guide/analysis-workflow/project.md
-        - Sample Model: user-guide/analysis-workflow/model.md
-        - Experiment: user-guide/analysis-workflow/experiment.md
-        - Analysis: user-guide/analysis-workflow/analysis.md
-        - Summary: user-guide/analysis-workflow/summary.md
+          - Analysis Workflow: user-guide/analysis-workflow/index.md
+          - Project: user-guide/analysis-workflow/project.md
+          - Sample Model: user-guide/analysis-workflow/model.md
+          - Experiment: user-guide/analysis-workflow/experiment.md
+          - Analysis: user-guide/analysis-workflow/analysis.md
+          - Summary: user-guide/analysis-workflow/summary.md
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:

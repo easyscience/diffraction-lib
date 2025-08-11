@@ -1,13 +1,12 @@
 import os
 import tempfile
+
 from numpy.testing import assert_almost_equal
 
-from easydiffraction import (
-    Project,
-    SampleModel,
-    Experiment,
-    download_from_repository
-)
+from easydiffraction import Experiment
+from easydiffraction import Project
+from easydiffraction import SampleModel
+from easydiffraction import download_from_repository
 
 TEMP_DIR = tempfile.gettempdir()
 
@@ -86,9 +85,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square,
-                        desired=2.87,
-                        decimal=1)
+    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=2.87, decimal=1)
 
 
 if __name__ == '__main__':

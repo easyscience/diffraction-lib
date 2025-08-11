@@ -13,13 +13,23 @@
 # %% [markdown]
 # ## Import Library
 
+# %% tags=["hide_in_docs"]
+# Check if the easydiffraction library is installed.
+# If not, install it including the 'visualization' extras.
+# This is needed, e.g., when running this as a notebook via Google Colab.
+import builtins
+import importlib.util
+
+if hasattr(builtins, '__IPYTHON__'):
+    if importlib.util.find_spec('easydiffraction') is None:
+        print('Installing the easydiffraction library...')
+        # !pip install 'easydiffraction[visualization]'
+
 # %%
-from easydiffraction import (
-    Project,
-    SampleModel,
-    Experiment,
-    download_from_repository
-)
+from easydiffraction import Experiment
+from easydiffraction import Project
+from easydiffraction import SampleModel
+from easydiffraction import download_from_repository
 
 # %% [markdown]
 # ## Define Sample Model
@@ -67,16 +77,13 @@ model.atom_sites.add('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
 # #### Download Data
 
 # %%
-download_from_repository('d1a_pbso4.dat',
-                         destination='data')
+download_from_repository('d1a_pbso4.dat', destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt1 = Experiment('npd',
-                   radiation_probe='neutron',
-                   data_path='data/d1a_pbso4.dat')
+expt1 = Experiment('npd', radiation_probe='neutron', data_path='data/d1a_pbso4.dat')
 
 # %% [markdown]
 # #### Set Instrument
@@ -132,16 +139,13 @@ expt1.linked_phases.add('pbso4', scale=1.5)
 # #### Download Data
 
 # %%
-download_from_repository('lab_pbso4.dat',
-                         destination='data')
+download_from_repository('lab_pbso4.dat', destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt2 = Experiment('xrd',
-                   radiation_probe='xray',
-                   data_path='data/lab_pbso4.dat')
+expt2 = Experiment('xrd', radiation_probe='xray', data_path='data/lab_pbso4.dat')
 
 # %% [markdown]
 # #### Set Instrument
@@ -280,11 +284,7 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='npd',
-                          x_min=35.5, x_max=38.3,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='npd', x_min=35.5, x_max=38.3, show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='xrd',
-                          x_min=29.0, x_max=30.4,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='xrd', x_min=29.0, x_max=30.4, show_residual=True)

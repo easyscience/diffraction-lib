@@ -1,6 +1,9 @@
-import pytest
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
 import numpy as np
-from unittest.mock import MagicMock, patch
+import pytest
+
 from easydiffraction.analysis.minimization import DiffractionMinimizer
 
 
@@ -8,8 +11,8 @@ from easydiffraction.analysis.minimization import DiffractionMinimizer
 def mock_sample_models():
     sample_models = MagicMock()
     sample_models.get_free_params.return_value = [
-        MagicMock(name="param1", value=1.0, start_value=None, min=0.0, max=2.0, free=True),
-        MagicMock(name="param2", value=2.0, start_value=None, min=1.0, max=3.0, free=True),
+        MagicMock(name='param1', value=1.0, start_value=None, min=0.0, max=2.0, free=True),
+        MagicMock(name='param2', value=2.0, start_value=None, min=1.0, max=3.0, free=True),
     ]
     return sample_models
 
@@ -18,15 +21,17 @@ def mock_sample_models():
 def mock_experiments():
     experiments = MagicMock()
     experiments.get_free_params.return_value = [
-        MagicMock(name="param3", value=3.0, start_value=None, min=2.0, max=4.0, free=True),
+        MagicMock(name='param3', value=3.0, start_value=None, min=2.0, max=4.0, free=True),
     ]
-    experiments.ids = ["experiment1"]
+    experiments.ids = ['experiment1']
     experiments._items = {
-        "experiment1": MagicMock(
+        'experiment1': MagicMock(
             datastore=MagicMock(
-                pattern=MagicMock(meas=np.array([10.0, 20.0, 30.0]),
-                                  meas_su=np.array([1.0, 1.0, 1.0]),
-                                  excluded=np.array([False, False, False]))
+                pattern=MagicMock(
+                    meas=np.array([10.0, 20.0, 30.0]),
+                    meas_su=np.array([1.0, 1.0, 1.0]),
+                    excluded=np.array([False, False, False]),
+                )
             )
         )
     }
@@ -51,8 +56,10 @@ def mock_minimizer():
 
 @pytest.fixture
 def diffraction_minimizer(mock_minimizer):
-    with patch("easydiffraction.analysis.minimizers.minimizer_factory.MinimizerFactory.create_minimizer", return_value=mock_minimizer):
-        return DiffractionMinimizer(selection="lmfit (leastsq)")
+    with patch(
+        'easydiffraction.analysis.minimizers.minimizer_factory.MinimizerFactory.create_minimizer', return_value=mock_minimizer
+    ):
+        return DiffractionMinimizer(selection='lmfit (leastsq)')
 
 
 def test_fit_no_params(diffraction_minimizer, mock_sample_models, mock_experiments, mock_calculator):
@@ -94,8 +101,13 @@ def test_residual_function(diffraction_minimizer, mock_sample_models, mock_exper
     assert diffraction_minimizer.minimizer._sync_result_to_parameters.called
 
 
-@patch("easydiffraction.analysis.reliability_factors.get_reliability_inputs", return_value=(np.array([10.0]), np.array([9.0]), np.array([1.0])))
-def test_process_fit_results(mock_get_reliability_inputs, diffraction_minimizer, mock_sample_models, mock_experiments, mock_calculator):
+@patch(
+    'easydiffraction.analysis.reliability_factors.get_reliability_inputs',
+    return_value=(np.array([10.0]), np.array([9.0]), np.array([1.0])),
+)
+def test_process_fit_results(
+    mock_get_reliability_inputs, diffraction_minimizer, mock_sample_models, mock_experiments, mock_calculator
+):
     diffraction_minimizer.results = MagicMock()
     diffraction_minimizer._process_fit_results(mock_sample_models, mock_experiments, mock_calculator)
 
@@ -106,10 +118,10 @@ def test_process_fit_results(mock_get_reliability_inputs, diffraction_minimizer,
     _, kwargs = diffraction_minimizer.results.display_results.call_args
 
     # Assertions for arrays
-    np.testing.assert_array_equal(kwargs['y_calc'], np.array([9., 19., 29.]))
-    np.testing.assert_array_equal(kwargs['y_err'], np.array([1., 1., 1.]))
-    np.testing.assert_array_equal(kwargs['y_obs'], np.array([10., 20., 30.]))
+    np.testing.assert_array_equal(kwargs['y_calc'], np.array([9.0, 19.0, 29.0]))
+    np.testing.assert_array_equal(kwargs['y_err'], np.array([1.0, 1.0, 1.0]))
+    np.testing.assert_array_equal(kwargs['y_obs'], np.array([10.0, 20.0, 30.0]))
 
     # Assertions for other arguments
-    assert kwargs["f_obs"] is None
-    assert kwargs["f_calc"] is None
+    assert kwargs['f_obs'] is None
+    assert kwargs['f_calc'] is None

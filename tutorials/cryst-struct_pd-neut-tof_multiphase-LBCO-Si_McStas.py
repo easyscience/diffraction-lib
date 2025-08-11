@@ -8,13 +8,23 @@
 # %% [markdown]
 # ## Import Library
 
+# %% tags=["hide_in_docs"]
+# Check if the easydiffraction library is installed.
+# If not, install it including the 'visualization' extras.
+# This is needed, e.g., when running this as a notebook via Google Colab.
+import builtins
+import importlib.util
+
+if hasattr(builtins, '__IPYTHON__'):
+    if importlib.util.find_spec('easydiffraction') is None:
+        print('Installing the easydiffraction library...')
+        # !pip install 'easydiffraction[visualization]'
+
 # %%
-from easydiffraction import (
-    Project,
-    SampleModel,
-    Experiment,
-    download_from_repository
-)
+from easydiffraction import Experiment
+from easydiffraction import Project
+from easydiffraction import SampleModel
+from easydiffraction import download_from_repository
 
 # %% [markdown]
 # ## Define Sample Models
@@ -43,10 +53,44 @@ model_1.cell.length_a = 3.8909
 # #### Set Atom Sites
 
 # %%
-model_1.atom_sites.add('La', 'La', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
-model_1.atom_sites.add('Ba', 'Ba', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
-model_1.atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, wyckoff_letter='b', b_iso=0.2567)
-model_1.atom_sites.add('O', 'O', 0, 0.5, 0.5, wyckoff_letter='c', b_iso=1.4041)
+model_1.atom_sites.add(
+    'La',
+    'La',
+    0,
+    0,
+    0,
+    wyckoff_letter='a',
+    b_iso=0.2,
+    occupancy=0.5,
+)
+model_1.atom_sites.add(
+    'Ba',
+    'Ba',
+    0,
+    0,
+    0,
+    wyckoff_letter='a',
+    b_iso=0.2,
+    occupancy=0.5,
+)
+model_1.atom_sites.add(
+    'Co',
+    'Co',
+    0.5,
+    0.5,
+    0.5,
+    wyckoff_letter='b',
+    b_iso=0.2567,
+)
+model_1.atom_sites.add(
+    'O',
+    'O',
+    0,
+    0.5,
+    0.5,
+    wyckoff_letter='c',
+    b_iso=1.4041,
+)
 
 # %% [markdown]
 # ### Create Sample Model 2: Si
@@ -71,7 +115,15 @@ model_2.cell.length_a = 5.43146
 # #### Set Atom Sites
 
 # %%
-model_2.atom_sites.add('Si', 'Si', 0.0, 0.0, 0.0, wyckoff_letter='a', b_iso=0.0)
+model_2.atom_sites.add(
+    'Si',
+    'Si',
+    0.0,
+    0.0,
+    0.0,
+    wyckoff_letter='a',
+    b_iso=0.0,
+)
 
 # %% [markdown]
 # ## Define Experiment
@@ -82,19 +134,20 @@ model_2.atom_sites.add('Si', 'Si', 0.0, 0.0, 0.0, wyckoff_letter='a', b_iso=0.0)
 # #### Download Data
 
 # %%
-download_from_repository('mcstas_lbco-si.xye',
-                         destination='data')
+download_from_repository('mcstas_lbco-si.xye', destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-experiment = Experiment('mcstas',
-                        sample_form='powder',
-                        beam_mode='time-of-flight',
-                        radiation_probe='neutron',
-                        scattering_type='bragg',
-                        data_path='data/mcstas_lbco-si.xye')
+experiment = Experiment(
+    'mcstas',
+    sample_form='powder',
+    beam_mode='time-of-flight',
+    radiation_probe='neutron',
+    scattering_type='bragg',
+    data_path='data/mcstas_lbco-si.xye',
+)
 
 # %% [markdown]
 # #### Set Instrument
@@ -109,7 +162,7 @@ experiment.instrument.calib_d_to_tof_quad = -0.00001
 # #### Set Peak Profile
 
 # %%
-#experiment.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+# experiment.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
 experiment.peak.broad_gauss_sigma_0 = 45137
 experiment.peak.broad_gauss_sigma_1 = -52394
 experiment.peak.broad_gauss_sigma_2 = 22998

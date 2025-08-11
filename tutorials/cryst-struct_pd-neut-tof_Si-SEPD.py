@@ -7,13 +7,23 @@
 # %% [markdown]
 # ## Import Library
 
+# %% tags=["hide_in_docs"]
+# Check if the easydiffraction library is installed.
+# If not, install it including the 'visualization' extras.
+# This is needed, e.g., when running this as a notebook via Google Colab.
+import builtins
+import importlib.util
+
+if hasattr(builtins, '__IPYTHON__'):
+    if importlib.util.find_spec('easydiffraction') is None:
+        print('Installing the easydiffraction library...')
+        # !pip install 'easydiffraction[visualization]'
+
 # %%
-from easydiffraction import (
-    Project,
-    SampleModel,
-    Experiment,
-    download_from_repository
-)
+from easydiffraction import Experiment
+from easydiffraction import Project
+from easydiffraction import SampleModel
+from easydiffraction import download_from_repository
 
 # %% [markdown]
 # ## Define Sample Model
@@ -53,16 +63,13 @@ model.atom_sites.add('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.5)
 # #### Download Measured Data
 
 # %%
-download_from_repository('sepd_si.xye',
-                         destination='data')
+download_from_repository('sepd_si.xye', destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt = Experiment('sepd',
-                  beam_mode='time-of-flight',
-                  data_path='data/sepd_si.xye')
+expt = Experiment('sepd', beam_mode='time-of-flight', data_path='data/sepd_si.xye')
 
 # %% [markdown]
 # #### Set Instrument
@@ -155,11 +162,8 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd',
-                          show_residual=True)
-project.plot_meas_vs_calc(expt_name='sepd',
-                          x_min=23200, x_max=23700,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
+project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 1/5
@@ -188,13 +192,10 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd',
-                          x_min=23200, x_max=23700,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 2/5
@@ -221,13 +222,10 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd',
-                          x_min=23200, x_max=23700,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 3/5
@@ -262,13 +260,10 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd',
-                          x_min=23200, x_max=23700,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 4/5
@@ -294,10 +289,7 @@ project.analysis.fit()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd',
-                          x_min=23200, x_max=23700,
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)

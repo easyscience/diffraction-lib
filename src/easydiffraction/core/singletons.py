@@ -1,7 +1,17 @@
-from typing import Dict, List, Tuple, Any, TypeVar, Type, Optional
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-License-Identifier: BSD-3-Clause
+
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Tuple
+from typing import Type
+from typing import TypeVar
+
 from asteval import Interpreter
 
 T = TypeVar('T', bound='BaseSingleton')
+
 
 class BaseSingleton:
     """Base class to implement Singleton pattern.

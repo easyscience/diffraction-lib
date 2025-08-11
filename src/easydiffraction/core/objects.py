@@ -1,38 +1,44 @@
-import random
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-License-Identifier: BSD-3-Clause
+
+import secrets
 import string
-from abc import (
-    ABC,
-    abstractmethod
-)
-from typing import Any, Dict, List, Optional, Union, Iterator, TypeVar
+from abc import ABC
+from abc import abstractmethod
+from typing import Any
+from typing import Dict
+from typing import Iterator
+from typing import List
+from typing import Optional
+from typing import TypeVar
+from typing import Union
 
 from easydiffraction.core.singletons import UidMapHandler
-from easydiffraction.utils.formatting import (
-    warning,
-    error
-)
+from easydiffraction.utils.formatting import error
+from easydiffraction.utils.formatting import warning
 
 T = TypeVar('T')
+
 
 class Descriptor:
     """
     Base class for descriptors (non-refinable attributes).
     """
 
-    def __init__(self,
-                 value: Any,  # Value of the parameter
-                 name: str,  # ED parameter name (to access it in the code)
-                 cif_name: str,  # CIF parameter name (to show it in the CIF)
-                 pretty_name: Optional[str] = None,  # Pretty name (to show it in the table)
-                 datablock_id: Optional[str] = None, # Parent datablock name
-                 category_key: Optional[str] = None,  # ED parent category name
-                 cif_category_key: Optional[str] = None,  # CIF parent category name
-                 collection_entry_id: Optional[str] = None, # Parent collection entry id
-                 units: Optional[str] = None,  # Units of the parameter
-                 description: Optional[str] = None,  # Description of the parameter
-                 editable: bool = True  # If false, the parameter can never be edited. It is calculated automatically
-                 ) -> None:
-
+    def __init__(
+        self,
+        value: Any,  # Value of the parameter
+        name: str,  # ED parameter name (to access it in the code)
+        cif_name: str,  # CIF parameter name (to show it in the CIF)
+        pretty_name: Optional[str] = None,  # Pretty name (to show it in the table)
+        datablock_id: Optional[str] = None,  # Parent datablock name
+        category_key: Optional[str] = None,  # ED parent category name
+        cif_category_key: Optional[str] = None,  # CIF parent category name
+        collection_entry_id: Optional[str] = None,  # Parent collection entry id
+        units: Optional[str] = None,  # Units of the parameter
+        description: Optional[str] = None,  # Description of the parameter
+        editable: bool = True,  # If false, the parameter can never be edited. It is calculated automatically
+    ) -> None:
         self._value = value
         self.name: str = name
         self.cif_name: str = cif_name
@@ -51,15 +57,15 @@ class Descriptor:
 
     def __str__(self):
         # Base value string
-        value_str = f"{self.__class__.__name__}: {self.uid} = {self.value}"
+        value_str = f'{self.__class__.__name__}: {self.uid} = {self.value}'
 
         # Append ± uncertainty if it exists and is nonzero
-        if hasattr(self, "uncertainty") and getattr(self, "uncertainty") != 0.0:
-            value_str += f" ± {self.uncertainty}"
+        if hasattr(self, 'uncertainty') and getattr(self, 'uncertainty') != 0.0:
+            value_str += f' ± {self.uncertainty}'
 
         # Append units if available
         if self.units:
-            value_str += f" {self.units}"
+            value_str += f' {self.units}'
 
         return value_str
 
@@ -72,7 +78,7 @@ class Descriptor:
         # used to create the alias for the parameter in the constraint
         # expression.
         length = 16
-        letters = random.choices(string.ascii_lowercase, k=length)
+        letters = [secrets.choice(string.ascii_lowercase) for _ in range(length)]
         uid = ''.join(letters)
         return uid
 
@@ -88,12 +94,12 @@ class Descriptor:
         # This need to be called after the parameter is created and all its
         # attributes are set.
         if self.datablock_id:
-            uid = f"{self.datablock_id}.{self.cif_category_key}"
+            uid = f'{self.datablock_id}.{self.cif_category_key}'
         else:
-            uid = f"{self.cif_category_key}"
+            uid = f'{self.cif_category_key}'
         if self.collection_entry_id:
-            uid += f".{self.collection_entry_id}"
-        uid += f".{self.cif_name}"
+            uid += f'.{self.collection_entry_id}'
+        uid += f'.{self.cif_name}'
         return uid
 
     @property
@@ -131,7 +137,7 @@ class Descriptor:
 
     @property
     def minimizer_uid(self):
-        return self.uid.replace(".", "__")
+        return self.uid.replace('.', '__')
 
     @property
     def value(self) -> Any:
@@ -142,8 +148,7 @@ class Descriptor:
         if self._editable:
             self._value = new_value
         else:
-            print(warning(f"The parameter '{self.cif_name}' it is calculated "
-                          f"automatically and cannot be changed manually."))
+            print(warning(f"The parameter '{self.cif_name}' it is calculated automatically and cannot be changed manually."))
 
     @property
     def description(self) -> Optional[str]:
@@ -159,35 +164,38 @@ class Parameter(Descriptor):
     A parameter with a value, uncertainty, units, and CIF representation.
     """
 
-    def __init__(self,
-                 value: Any,
-                 name: str,
-                 cif_name: str,
-                 pretty_name: Optional[str] = None,
-                 datablock_id: Optional[str] = None, # Parent datablock name
-                 category_key: Optional[str] = None,
-                 cif_category_key: Optional[str] = None,
-                 collection_entry_id: Optional[str] = None,
-                 units: Optional[str] = None,
-                 description: Optional[str] = None,
-                 editable: bool = True,
-                 uncertainty: float = 0.0,
-                 free: bool = False,
-                 constrained: bool = False,
-                 min_value: Optional[float] = None,
-                 max_value: Optional[float] = None,
-                 ) -> None:
-        super().__init__(value,
-                         name,
-                         cif_name,
-                         pretty_name,
-                         datablock_id,
-                         category_key,
-                         cif_category_key,
-                         collection_entry_id,
-                         units,
-                         description,
-                         editable)
+    def __init__(
+        self,
+        value: Any,
+        name: str,
+        cif_name: str,
+        pretty_name: Optional[str] = None,
+        datablock_id: Optional[str] = None,  # Parent datablock name
+        category_key: Optional[str] = None,
+        cif_category_key: Optional[str] = None,
+        collection_entry_id: Optional[str] = None,
+        units: Optional[str] = None,
+        description: Optional[str] = None,
+        editable: bool = True,
+        uncertainty: float = 0.0,
+        free: bool = False,
+        constrained: bool = False,
+        min_value: Optional[float] = None,
+        max_value: Optional[float] = None,
+    ) -> None:
+        super().__init__(
+            value,
+            name,
+            cif_name,
+            pretty_name,
+            datablock_id,
+            category_key,
+            cif_category_key,
+            collection_entry_id,
+            units,
+            description,
+            editable,
+        )
         self.uncertainty: float = uncertainty  # Standard uncertainty or estimated standard deviation
         self.free: bool = free  # If the parameter is free to be fitted during the optimization
         self.constrained: bool = constrained  # If symmetry constrains the parameter during the optimization
@@ -235,7 +243,7 @@ class Component(ABC):
         attr = self.__dict__.get(name, None)
         if isinstance(attr, (Descriptor, Parameter)):
             return attr.value
-        raise AttributeError(f"{name} not found in {self}")
+        raise AttributeError(f'{name} not found in {self}')
 
     def __setattr__(self, name: str, value: Any) -> None:
         """
@@ -243,7 +251,7 @@ class Component(ABC):
         If the attribute 'name' does not exist, add it.
         If the attribute 'name' exists and is a Parameter or Descriptor, set its value.
         """
-        if hasattr(self, "_locked") and self._locked:
+        if hasattr(self, '_locked') and self._locked:
             if not hasattr(self, name):
                 print(error(f"Cannot add new parameter '{name}'"))
                 return
@@ -318,7 +326,7 @@ class Component(ABC):
 
     def as_cif(self) -> str:
         if not self.cif_category_key:
-            raise ValueError("cif_category_key must be defined in the derived class.")
+            raise ValueError('cif_category_key must be defined in the derived class.')
 
         lines = []
 
@@ -330,19 +338,19 @@ class Component(ABC):
             if not isinstance(attr_obj, (Descriptor, Parameter)):
                 continue
 
-            key = f"_{self.cif_category_key}.{attr_obj.cif_name}"
+            key = f'_{self.cif_category_key}.{attr_obj.cif_name}'
             value = attr_obj.value
 
             if value is None:
                 continue
 
-            if isinstance(value, str) and " " in value:
+            if isinstance(value, str) and ' ' in value:
                 value = f'"{value}"'
 
-            line = f"{key}  {value}"
+            line = f'{key}  {value}'
             lines.append(line)
 
-        return "\n".join(lines)
+        return '\n'.join(lines)
 
 
 class Collection(ABC):
@@ -350,6 +358,7 @@ class Collection(ABC):
     Base class for collections like AtomSites, LinkedPhases, SampleModels,
     Experiments, etc.
     """
+
     @property
     @abstractmethod
     def _child_class(self):
@@ -382,14 +391,14 @@ class Collection(ABC):
         Component.
         """
         if self._child_class is None:
-            raise ValueError("Child class is not defined.")
+            raise ValueError('Child class is not defined.')
         child_obj = self._child_class(*args, **kwargs)
         child_obj.datablock_id = self.datablock_id  # Setting the datablock_id to update its child parameters
         child_obj.entry_id = child_obj.entry_id  # Forcing the entry_id to be reset to update its child parameters
         self._items[child_obj._entry_id] = child_obj
 
         # Call on_item_added if it exists, i.e. defined in the derived class
-        if hasattr(self, "on_item_added"):
+        if hasattr(self, 'on_item_added'):
             self.on_item_added(child_obj)
 
     def get_all_params(self):
@@ -412,7 +421,7 @@ class Collection(ABC):
                 for param in component.get_all_params():
                     params.append(param)
             else:
-                raise TypeError(f"Expected a Component or Datablock, got {type(item)}")
+                raise TypeError(f'Expected a Component or Datablock, got {type(item)}')
         return params
 
     def get_fittable_params(self) -> List[Parameter]:
@@ -433,7 +442,7 @@ class Collection(ABC):
 
     def as_cif(self) -> str:
         lines = []
-        if self._type == "category":
+        if self._type == 'category':
             for idx, item in enumerate(self._items.values()):
                 params = item.as_dict()
                 category_key = item.cif_category_key
@@ -443,23 +452,24 @@ class Collection(ABC):
                 values = []
                 for value in params.values():
                     value = f'{value}'
-                    if " " in value:
+                    if ' ' in value:
                         value = f'"{value}"'
                     values.append(value)
                 # Header is added only for the first item
                 if idx == 0:
-                    lines.append(f"loop_")
-                    header = "\n".join(keys)
+                    lines.append('loop_')
+                    header = '\n'.join(keys)
                     lines.append(header)
                 line = ' '.join(values)
                 lines.append(line)
-        return "\n".join(lines)
+        return '\n'.join(lines)
 
 
 class Datablock(ABC):
     """
     Base class for Sample Model and Experiment data blocks.
     """
+
     # TODO: Consider unifying with class Component?
 
     def __init__(self):
@@ -484,8 +494,7 @@ class Datablock(ABC):
             if attr_name.startswith('_'):
                 continue
             attr_obj = getattr(self, attr_name)
-            if isinstance(attr_obj, (Component,
-                                     Collection)):
+            if isinstance(attr_obj, (Component, Collection)):
                 attr_objs.append(attr_obj)
         return attr_objs
 

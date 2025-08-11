@@ -11,6 +11,18 @@
 # %% [markdown]
 # ## Import Library
 
+# %% tags=["hide_in_docs"]
+# Check if the easydiffraction library is installed.
+# If not, install it including the 'visualization' extras.
+# This is needed, e.g., when running this as a notebook via Google Colab.
+import builtins
+import importlib.util
+
+if hasattr(builtins, '__IPYTHON__'):
+    if importlib.util.find_spec('easydiffraction') is None:
+        print('Installing the easydiffraction library...')
+        # !pip install 'easydiffraction[visualization]'
+
 # %%
 import easydiffraction as ed
 
@@ -36,31 +48,28 @@ project.sample_models.add(name='ni')
 project.sample_models['ni'].space_group.name_h_m = 'F m -3 m'
 project.sample_models['ni'].space_group.it_coordinate_system_code = '1'
 project.sample_models['ni'].cell.length_a = 3.52387
-project.sample_models['ni'].atom_sites.add(label='Ni',
-                                           type_symbol='Ni',
-                                           fract_x=0.,
-                                           fract_y=0.,
-                                           fract_z=0.,
-                                           wyckoff_letter='a',
-                                           b_iso=0.5)
+project.sample_models['ni'].atom_sites.add(
+    label='Ni', type_symbol='Ni', fract_x=0.0, fract_y=0.0, fract_z=0.0, wyckoff_letter='a', b_iso=0.5
+)
 
 # %% [markdown]
 # ## Add Experiment
 
 # %%
-ed.download_from_repository('ni-q27r100-neutron_from-2.gr',
-                            destination='data')
+ed.download_from_repository('ni-q27r100-neutron_from-2.gr', destination='data')
 
 # %%
-project.experiments.add(name='pdf',
-                        sample_form='powder',
-                        beam_mode='constant wavelength',
-                        radiation_probe='neutron',
-                        scattering_type='total',
-                        data_path = 'data/ni-q27r100-neutron_from-2.gr')
+project.experiments.add(
+    name='pdf',
+    sample_form='powder',
+    beam_mode='constant wavelength',
+    radiation_probe='neutron',
+    scattering_type='total',
+    data_path='data/ni-q27r100-neutron_from-2.gr',
+)
 
 # %%
-project.experiments['pdf'].linked_phases.add(id='ni', scale=1.)
+project.experiments['pdf'].linked_phases.add(id='ni', scale=1.0)
 project.experiments['pdf'].peak.damp_q = 0
 project.experiments['pdf'].peak.broad_q = 0.03
 project.experiments['pdf'].peak.cutoff_q = 27.0
@@ -91,5 +100,4 @@ project.analysis.fit()
 # ## Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='pdf',
-                          show_residual=True)
+project.plot_meas_vs_calc(expt_name='pdf', show_residual=True)
