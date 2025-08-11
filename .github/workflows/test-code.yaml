@@ -80,7 +80,7 @@ jobs:
         # Install 'prettier-plugin-toml' plugin for formatting of TOML files
         shell: bash
         run: >
-          npm install --no-save --no-audit --no-fund  'prettier@>=3.3.3'
+          npm install --no-save --no-audit --no-fund 'prettier@>=3.3.3'
           'prettier-plugin-toml@>=0.13.0'
 
       # Check the validity of pyproject.toml
