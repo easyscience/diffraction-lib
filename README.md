@@ -1,42 +1,53 @@
-# easydiffraction
+<p>
+  <picture>
+    <!-- light mode logo -->
+    <source media='(prefers-color-scheme: light)' srcset='https://raw.githubusercontent.com/easyscience/assets-branding/refs/heads/master/easydiffraction/logos/light.svg'>
+    <!-- dark mode logo -->
+    <source media='(prefers-color-scheme: dark)' srcset='https://raw.githubusercontent.com/easyscience/assets-branding/refs/heads/master/easydiffraction/logos/dark.svg'>
+    <!-- default logo == light mode logo -->
+    <img src='https://raw.githubusercontent.com/easyscience/assets-branding/refs/heads/master/easydiffraction/logos/light.svg' alt='EasyDiffraction'>
+  </picture>
+</p>
 
-Development playground for the new EasyDiffraction API.
+**EasyDiffraction** is a Python package for calculating neutron powder
+diffraction patterns based on a structural model and refining its parameters
+against experimental data.
 
-## Installation & Setup
+**EasyDiffraction** is built upon the [EasyScience] framework, which provides
+essential tools for developing scientific libraries and applications.
 
-- Create a new virtual environment:
-  ```bash
-  python3 -m venv .venv
-  ```
-- Activate the environment:
-  ```bash
-  . .venv/bin/activate
-  ```
-- Install dependencies:
-  ```bash
-  pip install -r requirements.txt
-  ```
-- Install pycrysfml (pyenv python 3.12, macOS 14, Apple Silicon):
-  ```bash
-  pip install deps/pycrysfml-0.1.6-py312-none-macosx_14_0_arm64.whl
-  otool -L .venv/lib/python3.12/site-packages/pycrysfml/crysfml08lib.so
-  install_name_tool -change `python3-config --prefix`/Python `python3-config --prefix`/lib/libpython3.12.dylib .venv/lib/python3.12/site-packages/pycrysfml/crysfml08lib.so
-  otool -L .venv/lib/python3.12/site-packages/pycrysfml/crysfml08lib.so
-  ```
+## Useful Links
 
-## Testing
+- [Main Website] - Learn more about EasyDiffraction.
+- [Documentation] - Access the full documentation.
+- [Discussions] - Ask questions or share ideas.
+- [Issue Tracker] - Report bugs or request new features.
+- [Source Code] - Explore the source code repository.
 
-  ```bash
-  PYTHONPATH=$(pwd)/src python -m pytest tests/ --color=yes
-  ```
+## Contributing
 
-## Running examples
+We welcome contributions! Our vision is for **EasyDiffraction** to be a
+community-driven, open-source project supported by a diverse group of
+contributors.
 
-- Simplified API:
-  ```bash
-  PYTHONPATH=$(pwd)/src python examples/joint-fit_simple-api.py
-  ```
-- Advanced API:
-  ```bash
-  PYTHONPATH=$(pwd)/src python examples/joint-fit_advanced-api.py
-  ```
+The project is currently maintained by the [European Spallation Source (ESS)].
+
+If you'd like to contribute, please refer to our [Contributing Guidelines] for
+information about our code of conduct and instructions on submitting pull
+requests.
+
+## License
+
+**EasyDiffraction** is licensed under the [BSD 3-Clause License].
+
+<!-- prettier-ignore-start -->
+[BSD 3-Clause License]: https://github.com/easyscience/diffraction-lib/blob/master/LICENSE
+[Contributing Guidelines]: https://github.com/easyscience/diffraction-lib/blob/master/CONTRIBUTING.md
+[EasyScience]: https://easyscience.software
+[European Spallation Source (ESS)]: https://ess.eu
+[Main Website]: https://easydiffraction.org
+[Documentation]: https://docs.easydiffraction.org/lib
+[Discussions]: https://github.com/easyscience/diffraction-lib/discussions
+[Issue Tracker]: https://github.com/easyscience/diffraction-lib/issues
+[Source Code]: https://github.com/easyscience/diffraction-lib
+<!-- prettier-ignore-end -->
