@@ -31,7 +31,7 @@ if hasattr(builtins, '__IPYTHON__'):
 # This tutorial is self-contained and designed for hands-on learning.
 # However, if you're interested in exploring more advanced features or learning
 # about additional capabilities of the EasyDiffraction library, please refer to
-# the official documentation: https://easyscience.github.io/diffraction-lib
+# the official documentation: https://docs.easydiffraction.org/lib/tutorials/
 #
 # Depending on your requirements, you may choose to import only specific
 # classes. However, for the sake of simplicity in this tutorial, we will import
@@ -1121,4 +1121,4 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
 # To continue learning and exploring more features of
 # the EasyDiffraction library, you can visit the official tutorial page
 # and select one of the many available tutorials:
-# https://easyscience.github.io/diffraction-lib/tutorials/
+# https://docs.easydiffraction.org/lib/tutorials/
