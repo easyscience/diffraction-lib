@@ -1,4 +1,4 @@
-name: Testing tutorials on Colab
+name: Test tutorials on Colab
 
 on:
   # Trigger the workflow on push
@@ -49,8 +49,8 @@ jobs:
 
       - name: Install Python dependencies
         run:
-          python -m pip install 'easydiffraction[charts]' nbconvert nbmake
-          pytest pytest-xdist
+          python -m pip install 'easydiffraction[visualization]' nbconvert
+          nbmake pytest pytest-xdist
 
       - name: Check if Jupyter Notebooks run without errors
         run: >

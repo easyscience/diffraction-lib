@@ -4,7 +4,7 @@ on:
   # Trigger the workflow on push
   push:
     # Selected branches
-    branches: [develop, master, docs]
+    branches: [develop, master, docs, patch]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -104,7 +104,7 @@ jobs:
           cp ../assets-branding/easyscience-org/icons/eso-icon_bw.svg overrides/.icons/easyscience.svg
 
       # Convert python scripts in the notebooks directory to Jupyter notebooks
-      # Strip output from the notebooks and simpify cell ids
+      # Strip output from the notebooks, simpify cell ids and replace '# !pip' with '!pip'
       # The notebooks are used to generate the documentation
       - name:
           Convert ${{ env.NOTEBOOKS_DIR }}/*.py to docs/${{env.NOTEBOOKS_DIR
@@ -113,6 +113,7 @@ jobs:
           cp -R ${{ env.NOTEBOOKS_DIR }}/data docs/${{ env.NOTEBOOKS_DIR }}/
           jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --from py:percent --to ipynb
           nbstripout ${{ env.NOTEBOOKS_DIR }}/*.ipynb
+          python tools/nb_uncomment_pip.py ${{ env.NOTEBOOKS_DIR }}/
           mv ${{ env.NOTEBOOKS_DIR }}/*.ipynb docs/${{ env.NOTEBOOKS_DIR }}/
 
       # The following step is needed to avoid the following message during the build:
