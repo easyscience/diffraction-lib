@@ -18,6 +18,7 @@ try:
 except ImportError:
     IPython = None
 
+from easydiffraction.utils.formatting import warning
 
 # Single source of truth for the data repository branch.
 # This can be overridden in CI or development environments.
@@ -31,6 +32,7 @@ def download_from_repository(
     file_name: str,
     branch: str | None = None,
     destination: str = 'data',
+    overwrite: bool = False,
 ) -> None:
     """Download a data file from the EasyDiffraction repository on GitHub.
 
@@ -38,11 +40,21 @@ def download_from_repository(
         file_name: The file name to fetch (e.g., "NaCl.gr").
         branch: Branch to fetch from. If None, uses DATA_REPO_BRANCH.
         destination: Directory to save the file into (created if missing).
+        overwrite: Whether to overwrite the file if it already exists. Defaults to False.
     """
+    file_path = os.path.join(destination, file_name)
+    if os.path.exists(file_path):
+        if not overwrite:
+            print(warning(f"File '{file_path}' already exists and will not be overwritten."))
+            return
+        else:
+            print(warning(f"File '{file_path}' already exists and will be overwritten."))
+            os.remove(file_path)
+
     base = 'https://raw.githubusercontent.com'
     org = 'easyscience'
     repo = 'diffraction-lib'
-    branch = branch or DATA_REPO_BRANCH  # Use the global branch variable if not provided
+    branch = 'docs'  # branch or DATA_REPO_BRANCH  # Use the global branch variable if not provided
     path_in_repo = 'tutorials/data'
     url = f'{base}/{org}/{repo}/refs/heads/{branch}/{path_in_repo}/{file_name}'
 
@@ -130,7 +142,13 @@ def render_table(
         formatters = {col: make_formatter(align) for col, align in zip(columns_headers, columns_alignment)}
 
         # Convert DataFrame to HTML
-        html = df.to_html(escape=False, index=show_index, formatters=formatters, border=0, header=not skip_headers)
+        html = df.to_html(
+            escape=False,
+            index=show_index,
+            formatters=formatters,
+            border=0,
+            header=not skip_headers,
+        )
 
         # Add inline CSS to align the entire table to the left and show border
         html = html.replace(
