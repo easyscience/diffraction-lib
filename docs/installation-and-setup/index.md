@@ -83,9 +83,9 @@ installed using `pip`. We strongly recommend installing it within a virtual
 environment, as described in the [Environment Setup](#environment-setup)
 section.
 
-We recommend installing the latest release of EasyDiffraction with the 
-`visualization` extras, which include optional dependencies used for simplified 
-visualization of charts and tables. This can be especially useful for running 
+We recommend installing the latest release of EasyDiffraction with the
+`visualization` extras, which include optional dependencies used for simplified
+visualization of charts and tables. This can be especially useful for running
 the Jupyter Notebook examples. To do so, use the following command:
 
 ```console
