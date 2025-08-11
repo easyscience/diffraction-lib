@@ -12,7 +12,6 @@ except ImportError:
     display = None
     HTML = None
 
-from easydiffraction.utils.utils import is_notebook
 from easydiffraction.utils.utils import is_pycharm
 
 from .plotter_base import SERIES_CONFIG
@@ -107,21 +106,20 @@ class PlotlyPlotter(PlotterBase):
 
         # Show the figure
 
-        # This can lead to warnings in Jupyter notebooks:
-        # WARNING: skipping unknown output mime type: application/vnd.plotly.v1+json [mystnb.unknown_mime_type]
-        if is_notebook() or is_pycharm() or display is None or HTML is None:
-            fig.show(config=config)
+        # The standard `fig.show()` method method triggers the following
+        # warning during the DMSC Summer School 2025 book build process:
+        # WARNING: skipping unknown output mime type:
+        # application/vnd.plotly.v1+json [mystnb.unknown_mime_type]
+        # So, instead, we will use `pio.to_html()` to convert the figure
+        # to HTML and keep `fig.show()` in PyCharm only.
 
-        # If IPython is available, we can convert the figure to HTML and
-        # display it in the notebook.
+        if is_pycharm() or display is None or HTML is None:
+            fig.show(config=config)
         else:
-            # Convert figure to HTML
             html_fig = pio.to_html(
                 fig,
                 include_plotlyjs='cdn',
                 full_html=False,
                 config=config,
             )
-
-            # Display it in the notebook
             display(HTML(html_fig))
