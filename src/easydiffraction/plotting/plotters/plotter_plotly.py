@@ -12,7 +12,6 @@ except ImportError:
     display = None
     HTML = None
 
-from easydiffraction.utils.utils import is_notebook
 from easydiffraction.utils.utils import is_pycharm
 
 from .plotter_base import SERIES_CONFIG
