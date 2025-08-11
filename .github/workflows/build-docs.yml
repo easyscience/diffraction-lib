@@ -41,13 +41,13 @@ jobs:
       # Save the latest release version of easyscience/diffraction-lib to RELEASE_VERSION
       # RELEASE_VERSION is used in the mkdocs.yml file to set release_version.
       # The release_version is then needed to display the latest release version in the index.md file
-      - name: Get the latest release version of easydiffraction library
+      - name: Set RELEASE_VERSION env variable (latest easydiffraction release)
         run: |
           git fetch --tags --force
           echo "RELEASE_VERSION=$(git describe --tags --abbrev=0)" >> "$GITHUB_ENV"
 
       # Without this step, GITHUB_REPOSITORY is not accessible from mkdocs.yml
-      - name: Get GitHub repository
+      - name: Set GITHUB_REPOSITORY env variable
         run: echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY" >> "$GITHUB_ENV"
 
       # Activate dark mode to create documentation with Plotly charts in dark mode
