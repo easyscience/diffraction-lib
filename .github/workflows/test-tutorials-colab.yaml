@@ -1,4 +1,4 @@
-name: Testing tutorials on Colab
+name: Test tutorials on Colab
 
 on:
   # Trigger the workflow on push
