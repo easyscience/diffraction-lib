@@ -5,7 +5,23 @@
 # structures using simulated powder diffraction data. It consists of two parts:
 # - Introduction: A simple reference fit using silicon (Si) crystal structure.
 # - Exercise: A more complex fit using La₀.₅Ba₀.₅CoO₃ (LBCO) crystal structure.
-#
+
+# %% [markdown] tags=["hide_in_docs"]
+# ## Install Dependencies
+
+# %% tags=["hide_in_docs"]
+# Check if the easydiffraction library is installed.
+# If not, install it including the 'visualization' extras.
+# This is needed, e.g., when running this as a notebook via Google Colab.
+import builtins
+import importlib.util
+
+if hasattr(builtins, '__IPYTHON__'):
+    if importlib.util.find_spec('easydiffraction') is None:
+        print('Installing the easydiffraction library...')
+        # !pip install 'easydiffraction[visualization]'
+
+# %% [markdown]
 # ## 🛠️ Import Library
 #
 # We start by importing the necessary library for the analysis. In this
@@ -20,17 +36,6 @@
 # Depending on your requirements, you may choose to import only specific
 # classes. However, for the sake of simplicity in this tutorial, we will import
 # the entire library.
-
-# %%
-# Needed for the Google Colab environment.
-# Install the easydiffraction library if it is not already installed.
-import builtins
-import importlib.util
-
-if hasattr(builtins, '__IPYTHON__'):
-    if importlib.util.find_spec('easydiffraction') is None:
-        print('Installing the easydiffraction library...')
-        # !pip install git+https://github.com/easyscience/diffraction-lib@d-spacing
 
 # %%
 import easydiffraction as ed
@@ -81,15 +86,26 @@ project_1.info.description = 'Fitting simulated powder diffraction pattern of Si
 #
 # In this case, the experiment is defined as a powder diffraction measurement
 # using time-of-flight neutrons. The measured data is loaded from a file
-# containing the reduced diffraction pattern of Si from the data reduction tutorial.
+# containing the reduced diffraction pattern of Si from the data reduction
+# tutorial.
 
 # %%
-# To load the measured data from the EasyDiffraction repository, as
-# Google Colab does not have the data files needed for this tutorial.
-ed.download_from_repository('reduced_Si.xye', destination='data')
+si_xye_path = '../4-reduction/reduced_Si.xye'
+
+# %% [markdown]
+# Use the following cell if your data reduction failed and the reduced data
+# file is missing. In this case, you can download our pre-generated reduced
+# data file from the EasyDiffraction repository.
+#
+# The `download_from_repository` function will not overwrite an existing file
+# unless you set `overwrite=True`, so it's safe to run even if the file is
+# already present.
 
 # %%
-si_xye_path = 'data/reduced_Si.xye'
+ed.download_from_repository('reduced_Si.xye', destination='../4-reduction')
+
+# %% [markdown]
+# Now we can create the experiment and load the measured data.
 
 # %%
 project_1.experiments.add(
@@ -113,12 +129,6 @@ project_1.experiments.add(
 #
 # The `plot_meas` method of the project enables us to visualize the measured
 # diffraction pattern.
-#
-# Before plotting, we set the plotting engine to 'plotly', which provides
-# interactive visualizations.
-
-# %%
-project_1.plotter.engine = 'plotly'
 
 # %%
 project_1.plot_meas(expt_name='sim_si')
@@ -205,8 +215,8 @@ print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value)
 # of a standard sample. We consider this Si sample as a standard reference.
 # Therefore, we will set the initial values of the peak profile parameters based
 # on the values obtained from another simulation and refine them during the
-# fitting process. The refined parameters will be used as a starting point for the
-# more complex fit in the next part of the tutorial.
+# fitting process. The refined parameters will be used as a starting point for
+# the more complex fit in the next part of the tutorial.
 
 # %%
 project_1.experiments['sim_si'].peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
@@ -361,9 +371,10 @@ project_1.sample_models['si'].atom_sites.add(
 # %% [markdown]
 # ### 🔗 Assign Sample Model to Experiment
 #
-# Now we need to assign, or link, this sample model to the experiment created above.
-# This linked crystallographic phase will be used to calculate the expected diffraction
-# pattern based on the crystal structure defined in the sample model.
+# Now we need to assign, or link, this sample model to the experiment created
+# above. This linked crystallographic phase will be used to calculate the
+# expected diffraction pattern based on the crystal structure defined in the
+# sample model.
 
 # %%
 project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
@@ -527,12 +538,10 @@ project_2.info.description = 'Fitting simulated powder diffraction pattern of La
 # **Solution:**
 
 # %%
-# To load the measured data from the EasyDiffraction repository, as
-# Google Colab does not have the data files needed for this tutorial.
-ed.download_from_repository('reduced_LBCO.xye', destination='data')
+lbco_xye_path = '../4-reduction/reduced_LBCO.xye'
 
 # %%
-lbco_xye_path = 'data/reduced_LBCO.xye'
+ed.download_from_repository('reduced_LBCO.xye', destination='../4-reduction')
 
 # %%
 project_2.experiments.add(
@@ -558,7 +567,6 @@ project_2.experiments.add(
 # **Solution:**
 
 # %%
-project_2.plotter.engine = 'plotly'
 project_2.plot_meas(expt_name='sim_lbco')
 
 # %%
@@ -826,14 +834,16 @@ project_2.analysis.fit()
 # **Solution**:
 # 1. ❌ The conversion parameters from TOF to d-spacing were set based on the
 # data reduction step. While they are specific to each dataset and thus differ
-# from those used for the Si data,  the full reduction workflow has already been
-# validated with the Si fit. Therefore, they are not the cause of the misfit in this case.
+# from those used for the Si data, the full reduction workflow has already been
+# validated with the Si fit. Therefore, they are not the cause of the misfit in
+# this case.
 # 2. ✅ The lattice parameters of the LBCO phase were set based on the CIF data,
 # which is a good starting point, but they are not necessarily as accurate as
 # needed for the fit. The lattice parameters may need to be refined.
-# 3. ❌ The peak profile parameters do not change the position of the peaks, but
-# rather their shape.
-# 4. ❌ The background points affect the background level, but not the peak positions.
+# 3. ❌ The peak profile parameters do not change the position of the peaks,
+# but rather their shape.
+# 4. ❌ The background points affect the background level, but not the peak
+# positions.
 
 # %%
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
@@ -843,8 +853,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 #
 # To improve the fit, refine the lattice parameter of the LBCO phase.
 #
-# **Hint**: To achieve this, we will set the `free` attribute of the `length_a` parameter
-# of the LBCO cell to `True`.
+# **Hint**: To achieve this, we will set the `free` attribute of the `length_a`
+# parameter of the LBCO cell to `True`.
 #
 # **Solution**:
 
@@ -861,8 +871,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 # One of the main goals of this study was to refine the lattice parameter of
 # the LBCO phase. As shown in the updated fit results, the overall fit has
 # improved significantly, even though the change in cell length is less than
-# 1% of the initial value. This demonstrates how even a small adjustment to
-# the lattice parameter can have a substantial impact on the quality of the fit.
+# 1% of the initial value. This demonstrates how even a small adjustment to the
+# lattice parameter can have a substantial impact on the quality of the fit.
 
 # %% [markdown]
 # #### Exercise 5.5: Visualize the Fit Results in d-spacing
@@ -929,10 +939,11 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_
 # significantly improved, but inspect the diffraction pattern again. Are you noticing
 # anything undefined?
 #
-# **Hint**: While the fit is now significantly better, there are still some unexplained peaks
-# in the diffraction pattern. These peaks are not accounted for by the LBCO phase.
-# For example, if you zoom in on the region around 1.6 Å (or 95,000 μs), you will
-# notice that the rightmost peak is not explained by the LBCO phase at all.
+# **Hint**: While the fit is now significantly better, there are still some
+# unexplained peaks in the diffraction pattern. These peaks are not accounted
+# for by the LBCO phase. For example, if you zoom in on the region around
+# 1.6 Å (or 95,000 μs), you will notice that the rightmost peak is not
+# explained by the LBCO phase at all.
 #
 # **Solution**:
 
@@ -950,7 +961,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spaci
 #
 # **Solution**:
 # 1. ❌ In principle, this could be the case, as sometimes the presence of
-# extra peaks in the diffraction pattern can indicate a lower symmetry
+# extra peaks in the diffraction pattern can indicate lower symmetry
 # than the one used in the model, or that the model is not complete. However,
 # in this case, the LBCO phase is correctly modeled based on the CIF data.
 # 2. ✅ The unexplained peaks are due to the presence of an impurity phase
@@ -1074,8 +1085,9 @@ project_2.analysis.fit()
 # **Visualize Fit Results**
 #
 # Let's plot the measured diffraction pattern and the calculated diffraction
-# pattern both for the full range and for a zoomed-in region around the previously unexplained
-# peak near 95,000 μs. The calculated pattern will be the sum of the two phases.
+# pattern both for the full range and for a zoomed-in region around the previously
+# unexplained peak near 95,000 μs. The calculated pattern will be the sum of
+# the two phases.
 
 # %%
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
@@ -1085,8 +1097,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
 
 # %% [markdown]
 # All previously unexplained peaks are now accounted for in the pattern, and the
-# fit is improved.
-# Some discrepancies in the peak intensities remain, but
+# fit is improved. Some discrepancies in the peak intensities remain, but
 # further improvements would require more advanced data reduction and analysis,
 # which are beyond the scope of this tutorial.
 #
@@ -1096,8 +1107,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
 # to refine lattice parameters for a more complex crystal structure,
 # La₀.₅Ba₀.₅CoO₃ (LBCO). In real experiments, additional parameters, such as
 # atomic positions, occupancies, and atomic displacement factors, can also be
-# refined to further improve the fit. However, we will stop here, as the
-# purpose of this part of the tutorial is to demonstrate the practical use of
+# refined to further improve the fit. However, we will stop here, as the purpose
+# of this part of the tutorial is to demonstrate the practical use of
 # EasyDiffraction for fitting powder diffraction data.
 
 # %% [markdown]
