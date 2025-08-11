@@ -129,6 +129,12 @@ project_1.experiments.add(
 #
 # The `plot_meas` method of the project enables us to visualize the measured
 # diffraction pattern.
+#
+# Before plotting, we set the plotting engine to 'plotly', which provides
+# interactive visualizations.
+
+# %%
+project_1.plotter.engine = 'plotly'
 
 # %%
 project_1.plot_meas(expt_name='sim_si')
@@ -567,6 +573,7 @@ project_2.experiments.add(
 # **Solution:**
 
 # %%
+project_2.plotter.engine = 'plotly'
 project_2.plot_meas(expt_name='sim_lbco')
 
 # %%
