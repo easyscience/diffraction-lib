@@ -1,10 +1,16 @@
 """
-Uncomment `# !pip ...` lines in Jupyter notebooks so they become `!pip ...`.
+Uncomment `# !pip ...` and `# ed.download_from_repository ...` lines in Jupyter
+notebooks so they become `!pip ...` and `ed.download_from_repository ...` respectively.
 
 - Operates only on code cells (does not touch outputs/metadata/markdown).
-- Matches lines that start with optional whitespace, then `# !pip` (e.g., "  # !pip install ...").
-- Rewrites to keep the original indentation and replace the leading "# !pip" with "!pip".
-- Processes one or more paths (files or directories) given as CLI args, recursively for directories.
+- Matches lines that start with optional whitespace, then `# !pip`
+  (e.g., "  # !pip install ...").
+- Also matches lines that start with optional whitespace, then
+  `# ed.download_from_repository` (e.g., "  # ed.download_from_repository(...)").
+- Rewrites to keep the original indentation and replace the leading
+  "# !pip" with "!pip", and "# ed.download_from_repository" with "ed.download_from_repository".
+- Processes one or more paths (files or directories) given as CLI args,
+  recursively for directories.
 """
 
 from __future__ import annotations
@@ -17,27 +23,31 @@ from pathlib import Path
 import nbformat
 
 # Regex: beginning-of-line, capture leading whitespace, then "#", spaces, then "!pip"
-_PATTERN = re.compile(r'^(\s*)#\s*!pip\b')
+_PIP_PATTERN = re.compile(r'^(\s*)#\s*!pip\b')
+# Regex: beginning-of-line, capture leading whitespace, then "#", spaces, then "ed.download_from_repository"
+_ED_PATTERN = re.compile(r'^(\s*)#\s*ed\.download_from_repository\b')
 
 
 def fix_cell_source(src: str) -> tuple[str, int]:
     """
-    Replace lines starting with optional whitespace + '# !pip' with '!pip'.
+    Replace lines starting with optional whitespace + '# !pip' with '!pip',
+    and lines starting with optional whitespace + '# ed.download_from_repository'
+    with 'ed.download_from_repository'.
     Returns the updated source and number of replacements performed.
     """
     changed = 0
     new_lines: list[str] = []
     for line in src.splitlines(keepends=False):
-        m = _PATTERN.match(line)
-        if m:
-            # Replace only the first '# !pip' at the beginning, preserve the rest of the line
-            # e.g., "  # !pip install foo" -> "  !pip install foo"
-            new_line = _PATTERN.sub(r'\1!pip', line, count=1)
-            if new_line != line:
-                changed += 1
-            new_lines.append(new_line)
-        else:
-            new_lines.append(line)
+        orig_line = line
+        # Replace # !pip
+        if _PIP_PATTERN.match(line):
+            line = _PIP_PATTERN.sub(r'\1!pip', line, count=1)
+        # Replace # ed.download_from_repository
+        if _ED_PATTERN.match(line):
+            line = _ED_PATTERN.sub(r'\1ed.download_from_repository', line, count=1)
+        if line != orig_line:
+            changed += 1
+        new_lines.append(line)
     return ('\n'.join(new_lines), changed)
 
 
@@ -69,8 +79,16 @@ def iter_notebooks(paths: list[Path]):
 
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description="Uncomment '# !pip ...' to '!pip ...' in code cells of .ipynb notebooks.")
-    ap.add_argument('paths', nargs='+', help='Notebook files or directories to process')
-    ap.add_argument('--dry-run', action='store_true', help='Report changes without writing files')
+    ap.add_argument(
+        'paths',
+        nargs='+',
+        help='Notebook files or directories to process',
+    )
+    ap.add_argument(
+        '--dry-run',
+        action='store_true',
+        help='Report changes without writing files',
+    )
     args = ap.parse_args(argv)
 
     targets = list(iter_notebooks([Path(p) for p in args.paths]))
