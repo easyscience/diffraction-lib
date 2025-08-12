@@ -546,7 +546,6 @@ project_2.info.description = 'Fitting simulated powder diffraction pattern of La
 # %%
 lbco_xye_path = '../4-reduction/reduced_LBCO.xye'
 
-# %%
 ed.download_from_repository('reduced_LBCO.xye', destination='../4-reduction')
 
 # %%
@@ -576,11 +575,9 @@ project_2.experiments.add(
 project_2.plotter.engine = 'plotly'
 project_2.plot_meas(expt_name='sim_lbco')
 
-# %%
 project_2.experiments['sim_lbco'].excluded_regions.add(minimum=0, maximum=55000)
 project_2.experiments['sim_lbco'].excluded_regions.add(minimum=105500, maximum=200000)
 
-# %%
 project_2.plot_meas(expt_name='sim_lbco')
 
 # %% [markdown]
@@ -820,7 +817,6 @@ for line_segment in project_2.experiments['sim_lbco'].background:
 # %%
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
-# %%
 project_2.analysis.fit()
 
 # %% [markdown]
@@ -868,10 +864,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 # %%
 project_2.sample_models['lbco'].cell.length_a.free = True
 
-# %%
 project_2.analysis.fit()
 
-# %%
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %% [markdown]
@@ -933,10 +927,8 @@ project_2.experiments['sim_lbco'].peak.broad_mix_beta_1.free = True
 project_2.experiments['sim_lbco'].peak.asym_alpha_0.free = True
 project_2.experiments['sim_lbco'].peak.asym_alpha_1.free = True
 
-# %%
 project_2.analysis.fit()
 
-# %%
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_max=1.40)
 
 # %% [markdown]
@@ -1017,7 +1009,6 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1, x_max=1.7, d_spacing=
 # %%
 project_2.sample_models.add(name='si')
 
-# %%
 project_2.sample_models['si'].space_group.name_h_m = 'F d -3 m'
 project_2.sample_models['si'].space_group.it_coordinate_system_code = '2'
 
