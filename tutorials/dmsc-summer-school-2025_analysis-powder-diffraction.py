@@ -1101,22 +1101,21 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
 #
 # #### Final Remarks
 #
-# In this part of the tutorial, we have demonstrated how to use EasyDiffraction
-# to refine lattice parameters for a more complex crystal structure,
-# La₀.₅Ba₀.₅CoO₃ (LBCO). In real experiments, additional parameters, such as
-# atomic positions, occupancies, and atomic displacement factors, can also be
-# refined to further improve the fit. However, we will stop here, as the purpose
-# of this part of the tutorial is to demonstrate the practical use of
-# EasyDiffraction for fitting powder diffraction data.
+# In this part of the tutorial, you learned how to use EasyDiffraction
+# to refine lattice parameters of a more complex crystal structure,
+# La₀.₅Ba₀.₅CoO₃ (LBCO).
+# In real experiments, you might also refine additional parameters,
+# such as atomic positions, occupancies, and atomic displacement factors,
+# to achieve an even better fit.
+# For our purposes, we'll stop here, as the goal was to give you a
+# starting point for analyzing more complex crystal structures
+# with EasyDiffraction.
 
 # %% [markdown]
 # ## 🎁 Bonus
 #
-# You've now completed the analysis part of the DMSC Summer School workflow,
-# demonstrating the practical use of EasyDiffraction for refining simulated
-# powder diffraction data.
-#
-# To continue learning and exploring more features of
-# the EasyDiffraction library, you can visit the official tutorial page
-# and select one of the many available tutorials:
+# You've now completed the diffraction data analysis part of the
+# DMSC Summer School.
+# To keep learning and exploring more features of the EasyDiffraction library,
+# visit the official tutorials page, where you'll find more examples:
 # https://docs.easydiffraction.org/lib/tutorials/
