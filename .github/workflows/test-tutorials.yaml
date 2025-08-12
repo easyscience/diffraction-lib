@@ -151,7 +151,7 @@ jobs:
         run: |
           jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --from py:percent --to ipynb
           nbstripout ${{ env.NOTEBOOKS_DIR }}/*.ipynb
-          python tools/nb_prepare_notebooks.py ${{ env.NOTEBOOKS_DIR }}/
+          python tools/prepare_notebooks.py ${{ env.NOTEBOOKS_DIR }}/
 
       - name: Run tutorials as Jupyter Notebooks (using src/ as the source dir)
         shell: bash

@@ -7,7 +7,7 @@ Additionally, adjust cell metadata and tags according to DMSC Summer School rule
 - If a cell has the `dmsc-school-hint` or `solution` tag, add
   `{"jupyter": {"source_hidden": true}}` so it is collapsed by default.
 - If a cell has the `remove-cell` tag, replace it with `hide_in_docs`.
-- If a cell has the `dmsc-school-keep` tag, set `editable: false` in metadata.
+- If a cell has the `non-editable` tag, set `editable: false` in metadata.
 - Remove all tags except `hide_in_docs`.
 
 Notes:
@@ -66,7 +66,7 @@ def fix_cell_metadata(cell) -> int:
     Apply tag/metadata rules:
       - 'dmsc-school-hint' or 'solution' -> jupyter.source_hidden = True
       - 'remove-cell' -> rename to 'hide_in_docs'
-      - 'dmsc-school-keep' -> editable = False
+      - 'non-editable' -> editable = False
       - keep only 'hide_in_docs' tag, drop all others
     Returns the number of changes applied.
     """
@@ -99,8 +99,8 @@ def fix_cell_metadata(cell) -> int:
             md['jupyter'] = jup
             changed += 1
 
-    # 3) add editable: true for dmsc-school-keep
-    if 'dmsc-school-keep' in tags:
+    # 3) add editable: true for non-editable
+    if 'non-editable' in tags:
         if md.get('editable') is not False:
             md['editable'] = False
             changed += 1
@@ -160,7 +160,7 @@ def main(argv: list[str]) -> int:
         description=(
             "Uncomment '# !pip ...' and '# ed.download_from_repository ...' in code cells, "
             "and adjust cell metadata/tags (collapse hints/solutions, map 'remove-cell' "
-            "to 'hide_in_docs', keep only 'hide_in_docs', and mark 'dmsc-school-keep' cells as not editable)."
+            "to 'hide_in_docs', keep only 'hide_in_docs', and mark 'non-editable' cells as not editable)."
         )
     )
     ap.add_argument('paths', nargs='+', help='Notebook files or directories to process')
