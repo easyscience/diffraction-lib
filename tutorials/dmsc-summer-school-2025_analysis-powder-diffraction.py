@@ -1,15 +1,4 @@
-# %% [markdown] tags=["dmsc-school-keep"]
-# # Fitting Powder Diffraction data
-#
-# This tutorial guides you through the Rietveld refinement of crystal
-# structures using simulated powder diffraction data. It consists of two parts:
-# - Introduction: A simple reference fit using silicon (Si) crystal structure.
-# - Exercise: A more complex fit using La₀.₅Ba₀.₅CoO₃ (LBCO) crystal structure.
-
-# %% [markdown] tags=["remove-cell", "hide_in_docs"]
-# ## Install Dependencies
-
-# %% tags=["remove-cell", "hide_in_docs"]
+# %% tags=["remove-cell"]
 # Check if the easydiffraction library is installed.
 # If not, install it including the 'visualization' extras.
 # This is needed, e.g., when running this as a notebook via Google Colab.
@@ -22,6 +11,13 @@ if hasattr(builtins, '__IPYTHON__'):
         # !pip install 'easydiffraction[visualization]'
 
 # %% [markdown] tags=["dmsc-school-keep"]
+# # Fitting Powder Diffraction data
+#
+# This tutorial guides you through the Rietveld refinement of crystal
+# structures using simulated powder diffraction data. It consists of two parts:
+# - Introduction: A simple reference fit using silicon (Si) crystal structure.
+# - Exercise: A more complex fit using La₀.₅Ba₀.₅CoO₃ (LBCO) crystal structure.
+#
 # ## 🛠️ Import Library
 #
 # We start by importing the necessary library for the analysis. In this
@@ -524,14 +520,16 @@ project_1.plot_meas_vs_calc(expt_name='sim_si', d_spacing=True)
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # You can use the same approach as in the previous part of the
 # tutorial, but this time we will create a new project for the LBCO fit.
 
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2 = ed.Project(name='main')
 project_2.info.title = 'La0.5Ba0.5CoO3 Fit'
 project_2.info.description = 'Fitting simulated powder diffraction pattern of La0.5Ba0.5CoO3.'
@@ -547,14 +545,16 @@ project_2.info.description = 'Fitting simulated powder diffraction pattern of La
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # You can use the same approach as in the previous part of the
 # tutorial, but this time you need to use the data file for LBCO.
 
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 dir_path = '../4-reduction'
 file_name = 'reduced_LBCO.xye'
 lbco_xye_path = f'{dir_path}/{file_name}'
@@ -580,7 +580,8 @@ project_2.experiments.add(
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # You can use the `plot_meas` method of the project to visualize the
 # measured diffraction pattern. You can also use the `excluded_regions` attribute
 # of the experiment to exclude specific regions from the analysis as we did
@@ -589,7 +590,8 @@ project_2.experiments.add(
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.plotter.engine = 'plotly'
 project_2.plot_meas(expt_name='sim_lbco')
 
@@ -606,14 +608,16 @@ project_2.plot_meas(expt_name='sim_lbco')
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # Use the values from the data reduction process for the LBCO and
 # follow the same approach as in the previous part of the tutorial.
 
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.experiments['sim_lbco'].instrument.setup_twotheta_bank = ed.get_value_from_xye_header(lbco_xye_path, 'two_theta')
 project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.get_value_from_xye_header(lbco_xye_path, 'DIFC')
 
@@ -625,7 +629,8 @@ project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.get_valu
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # Use the values from the previous part of the tutorial. You can
 # either manually copy the values from the Si fit or use the `value` attribute of
 # the parameters from the Si experiment to set the initial values for the LBCO
@@ -634,7 +639,8 @@ project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.get_valu
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0 = project_1.experiments['sim_si'].peak.broad_gauss_sigma_0.value
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1 = project_1.experiments['sim_si'].peak.broad_gauss_sigma_1.value
@@ -653,7 +659,8 @@ project_2.experiments['sim_lbco'].peak.asym_alpha_1 = project_1.experiments['sim
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # Use the same approach as in the previous part of the tutorial, but
 # this time you need to set the background points for the LBCO experiment. You can
 # zoom in on the measured diffraction pattern to determine the approximate
@@ -662,7 +669,8 @@ project_2.experiments['sim_lbco'].peak.asym_alpha_1 = project_1.experiments['sim
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.experiments['sim_lbco'].background_type = 'line-segment'
 project_2.experiments['sim_lbco'].background.add(x=50000, y=0.2)
 project_2.experiments['sim_lbco'].background.add(x=60000, y=0.2)
@@ -722,7 +730,8 @@ project_2.experiments['sim_lbco'].background.add(x=110000, y=0.2)
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # You can use the same approach as in the previous part of the
 # tutorial, but this time you need to use the model name corresponding to the
 # LBCO structure, e.g. 'lbco'.
@@ -730,7 +739,8 @@ project_2.experiments['sim_lbco'].background.add(x=110000, y=0.2)
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.sample_models.add(name='lbco')
 
 # %% [markdown] tags=["dmsc-school-keep"]
@@ -741,13 +751,15 @@ project_2.sample_models.add(name='lbco')
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # Use the space group name and IT coordinate system code from the CIF data.
 
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.sample_models['lbco'].space_group.name_h_m = 'P m -3 m'
 project_2.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
 
@@ -759,13 +771,15 @@ project_2.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # Use the lattice parameters from the CIF data.
 
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.sample_models['lbco'].cell.length_a = 3.88
 
 # %% [markdown] tags=["dmsc-school-keep"]
@@ -776,14 +790,18 @@ project_2.sample_models['lbco'].cell.length_a = 3.88
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # Use the atom sites from the CIF data. You can use the `add` method of
 # the `atom_sites` attribute of the sample model to add the atom sites.
 # Note that the `occupancy` of the La and Ba atoms is 0.5 and those atoms
 # are located in the same position (0, 0, 0) in the unit cell. This means that
 # an extra attribute `occupancy` needs to be set for those atoms.
 
-# %%
+# %% [markdown] tags=["dmsc-school-keep"]
+# **Solution:**
+
+# %% tags=["solution"]
 project_2.sample_models['lbco'].atom_sites.add(
     label='La',
     type_symbol='La',
@@ -831,13 +849,15 @@ project_2.sample_models['lbco'].atom_sites.add(
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # Use the `linked_phases` attribute of the experiment to link the sample model.
 
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.experiments['sim_lbco'].linked_phases.add(id='lbco', scale=1.0)
 
 # %% [markdown] tags=["dmsc-school-keep"]
@@ -851,7 +871,8 @@ project_2.experiments['sim_lbco'].linked_phases.add(id='lbco', scale=1.0)
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # You can start with the scale factor and the background
 # points, as in the Si fit, but this time you will refine the LBCO
 # phase related parameters.
@@ -859,7 +880,8 @@ project_2.experiments['sim_lbco'].linked_phases.add(id='lbco', scale=1.0)
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.experiments['sim_lbco'].linked_phases['lbco'].scale.free = True
 
 for line_segment in project_2.experiments['sim_lbco'].background:
@@ -874,7 +896,8 @@ for line_segment in project_2.experiments['sim_lbco'].background:
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # Use the `plot_meas_vs_calc` method of the project to visualize the
 # measured and calculated diffraction patterns before fitting. Then, use the
 # `fit` method of the `analysis` object of the project to perform the fitting
@@ -883,7 +906,8 @@ for line_segment in project_2.experiments['sim_lbco'].background:
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 project_2.analysis.fit()
@@ -900,7 +924,8 @@ project_2.analysis.fit()
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # Consider the following options:
 # 1. The conversion parameters from TOF to d-spacing are not correct.
 # 2. The lattice parameters of the LBCO phase are not correct.
@@ -910,7 +935,8 @@ project_2.analysis.fit()
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% [markdown] tags=["dmsc-school-keep", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # 1. ❌ The conversion parameters from TOF to d-spacing were set based on the
 # data reduction step. While they are specific to each dataset and thus differ
 # from those used for the Si data, the full reduction workflow has already been
@@ -924,7 +950,8 @@ project_2.analysis.fit()
 # 4. ❌ The background points affect the background level, but not the peak
 # positions.
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %% [markdown] tags=["dmsc-school-keep"]
@@ -935,14 +962,16 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # To achieve this, we will set the `free` attribute of the `length_a`
 # parameter of the LBCO cell to `True`.
 
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.sample_models['lbco'].cell.length_a.free = True
 
 project_2.analysis.fit()
@@ -964,14 +993,16 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # Use the `plot_meas_vs_calc` method of the project and set the
 # `d_spacing` parameter to `True`.
 
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True)
 
 # %% [markdown] tags=["dmsc-school-keep"]
@@ -1000,7 +1031,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # You can set the `free` attribute of the peak profile parameters to `True`
 # to allow the fitting process to adjust them. You can use the same approach as in
 # the previous part of the tutorial, but this time you will refine the peak profile
@@ -1009,7 +1041,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0.free = True
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1.free = True
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2.free = True
@@ -1032,7 +1065,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # While the fit is now significantly better, there are still some
 # unexplained peaks in the diffraction pattern. These peaks are not accounted
 # for by the LBCO phase. For example, if you zoom in on the region around
@@ -1042,7 +1076,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spacing=True)
 
 # %% [markdown] tags=["dmsc-school-keep"]
@@ -1051,7 +1086,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spaci
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # Consider the following options:
 # 1. The LBCO phase is not correctly modeled.
 # 2. The LBCO phase is not the only phase present in the sample.
@@ -1061,7 +1097,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spaci
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% [markdown] tags=["dmsc-school-keep", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # 1. ❌ In principle, this could be the case, as sometimes the presence of
 # extra peaks in the diffraction pattern can indicate lower symmetry
 # than the one used in the model, or that the model is not complete. However,
@@ -1081,22 +1118,25 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spaci
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # Check the positions of the unexplained peaks in the diffraction pattern.
-# Compare them with the known diffraction patterns in the introduction section of the
-# tutorial.
+# Compare them with the known diffraction patterns in the introduction section
+# of the tutorial.
 
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% [markdown] tags=["dmsc-school-keep", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # The unexplained peaks are likely due to the presence of a small amount of
 # Si in the LBCO sample. In real experiments, it might happen, e.g., because the
 # sample holder was not cleaned properly after the Si experiment.
 #
 # You can visalize both the patterns of the Si and LBCO phases to confirm this hypothesis.
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 project_1.plot_meas_vs_calc(expt_name='sim_si', x_min=1, x_max=1.7, d_spacing=True)
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1, x_max=1.7, d_spacing=True)
 
@@ -1110,7 +1150,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1, x_max=1.7, d_spacing=
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Hint:**
 
-# %% [markdown] tags=["dmsc-school-hint", "hide-cell"]
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
+#
 # You can use the same approach as in the previous part of the
 # tutorial, but this time you need to create a sample model for Si and link it
 # to the LBCO experiment.
@@ -1118,7 +1159,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1, x_max=1.7, d_spacing=
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 # Set Space Group
 project_2.sample_models.add(name='si')
 project_2.sample_models['si'].space_group.name_h_m = 'F d -3 m'
@@ -1147,8 +1189,13 @@ project_2.experiments['sim_lbco'].linked_phases.add(id='si', scale=1.0)
 # Visualize the measured diffraction pattern and the calculated diffraction
 # pattern. Check if the Si phase is contributing to the calculated diffraction
 # pattern. Refine the scale factor of the Si phase to improve the fit.
+
+# %% [markdown] tags=["dmsc-school-keep"]
+# **Hint:**
+
+# %% [markdown] tags=["dmsc-school-hint", "dmsc-school-keep"]
 #
-# **Hint**: You can use the `plot_meas_vs_calc` method of the project to
+# You can use the `plot_meas_vs_calc` method of the project to
 # visualize the patterns. Then, set the `free` attribute of the `scale`
 # parameter of the Si phase to `True` to allow the fitting process to adjust
 # the scale factor.
@@ -1156,7 +1203,8 @@ project_2.experiments['sim_lbco'].linked_phases.add(id='si', scale=1.0)
 # %% [markdown] tags=["dmsc-school-keep"]
 # **Solution:**
 
-# %% tags=["solution", "hide-input"]
+# %% tags=["solution"]
+
 # Before optimizing the parameters, we can visualize the measured
 # diffraction pattern and the calculated diffraction pattern based on the
 # two phases: LBCO and Si.
