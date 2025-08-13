@@ -12,7 +12,7 @@ on:
       - patch
 
 jobs:
-  update-release-draft:
+  draft-release-notes:
     permissions:
       # write permission is required to create a github release
       contents: write
@@ -24,5 +24,6 @@ jobs:
         uses: release-drafter/release-drafter@v6
         with:
           disable-autolabeler: true
+          config-name: release-drafter-config.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
