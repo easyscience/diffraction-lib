@@ -101,15 +101,15 @@ def is_pycharm() -> bool:
     return os.environ.get('PYCHARM_HOSTED') == '1'
 
 
-def is_jupyter_book_build() -> bool:
+def is_github_ci() -> bool:
     """
-    Determines if the current process is running during a Jupyter Book build.
+    Determines if the current process is running in GitHub Actions CI.
 
     Returns:
-        bool: True if the environment variable ``MYST_NB_EXECUTE`` is set
-        (used by MyST-NB during Sphinx/Jupyter Book builds), False otherwise.
+        bool: True if the environment variable ``GITHUB_ACTIONS`` is set
+        (Always "true" on GitHub Actions), False otherwise.
     """
-    return os.environ.get('MYST_NB_EXECUTE') is not None
+    return os.environ.get('GITHUB_ACTIONS') is not None
 
 
 def render_table(

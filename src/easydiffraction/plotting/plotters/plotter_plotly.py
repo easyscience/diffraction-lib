@@ -6,12 +6,13 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 try:
+    from IPython.display import HTML
     from IPython.display import display
 except ImportError:
     display = None
+    HTML = None
 
-from easydiffraction.utils.utils import is_jupyter_book_build
-from easydiffraction.utils.utils import is_pycharm
+from easydiffraction.utils.utils import is_github_ci
 
 from .plotter_base import SERIES_CONFIG
 from .plotter_base import PlotterBase
@@ -98,27 +99,26 @@ class PlotlyPlotter(PlotterBase):
             ],
         )
 
+        fig = go.Figure(
+            data=data,
+            layout=layout,
+        )
+
         # Show the figure
 
-        # Jupyter Book/Sphinx build detection is done via `is_jupyter_book_build()`, which
-        # checks for the `MYST_NB_EXECUTE` environment variable set by MyST-NB during builds.
+        # In GitHub CI builds (e.g., during Jupyter Book generation), avoid
         #
-        # During Jupyter Book builds, avoid calling `fig.show()` because it can emit
-        # `application/vnd.plotly.v1+json` outputs that some toolchains warn about.
-        # Instead, use a FigureWidget and let IPython render its rich repr. In non-notebook
-        # environments (e.g. PyCharm), create a regular Figure and call `.show()`.
-
-        # Jupyter Book build detected (via MYST_NB_EXECUTE): prefer FigureWidget rich repr
-        if is_jupyter_book_build() and not is_pycharm():
-            fig_widget = go.FigureWidget(
-                data=data,
-                layout=layout,
-            )
-            display(fig_widget)
+        # calling `fig.show()`
+        # because it can emit `application/vnd.plotly.v1+json` outputs that some toolchains warn about.
+        # Instead, convert the figure to HTML and display it directly.
         # Use a regular Figure and show it
-        else:
-            fig = go.Figure(
-                data=data,
-                layout=layout,
-            )
+        if not is_github_ci() or display is None or HTML is None:
             fig.show(config=config)
+        else:
+            html_fig = pio.to_html(
+                fig,
+                include_plotlyjs='cdn',
+                full_html=False,
+                config=config,
+            )
+            display(HTML(html_fig))
