@@ -1121,6 +1121,10 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spaci
 
 # %% [markdown]
 # #### Exercise 5.8: Identify the Cause of the Unexplained Peaks
+#
+# Analyze the residual peaks that remain after refining the LBCO phase and the
+# peak-profile parameters. Based on their positions and characteristics, decide
+# which potential cause best explains the misfit.
 
 # %% [markdown]
 # **Hint:**
@@ -1156,7 +1160,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spaci
 # %% [markdown]
 # #### Exercise 5.9: Identify the impurity phase
 #
-# Identify the impurity phase.
+# Use the positions of the unexplained peaks to identify the most likely
+# secondary phase present in the sample.
 
 # %% [markdown]
 # **Hint:**
