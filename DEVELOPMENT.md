@@ -106,22 +106,31 @@ This is an example of a workflow that describes the development process.
   ```
 - Add extra files to build documentation (from `../assets-docs/` and
   `../assets-branding/` directories)
+
   ```bash
   cp -R ../assets-docs/docs/assets/ docs/assets/
   cp -R ../assets-docs/includes/ includes/
   cp -R ../assets-docs/overrides/ overrides/
+
   mkdir -p docs/assets/images/
-  cp ../assets-branding/EasyDiffraction/logos/ed-logo_dark.svg docs/assets/images/
-  cp ../assets-branding/EasyDiffraction/logos/ed-logo_light.svg docs/assets/images/
-  cp ../assets-branding/EasyDiffraction/logos/edl-logo_dark.svg docs/assets/images/logo_dark.svg
-  cp ../assets-branding/EasyDiffraction/logos/edl-logo_light.svg docs/assets/images/logo_light.svg
-  cp ../assets-branding/EasyDiffraction/icons/ed-icon_256x256.png docs/assets/images/favicon.png
+  cp ../assets-branding/easydiffraction/hero/dark.png docs/assets/images/hero_dark.png
+  cp ../assets-branding/easydiffraction/hero/light.png docs/assets/images/hero_light.png
+  cp ../assets-branding/easydiffraction/logos/dark.svg docs/assets/images/logo_dark.svg
+  cp ../assets-branding/easydiffraction/logos/light.svg docs/assets/images/logo_light.svg
+  cp ../assets-branding/easydiffraction/icons/color.png docs/assets/images/favicon.png
+
   mkdir -p overrides/.icons/
-  cp ../assets-branding/EasyDiffraction/icons/ed-icon_bw.svg overrides/.icons/easydiffraction.svg
-  cp ../assets-branding/EasyScienceOrg/icons/eso-icon_bw.svg overrides/.icons/easyscience.svg
-  cp -R examples/ docs/examples/
-  cat ../assets-docs/mkdocs.yml docs/mkdocs.yml > mkdocs.yml
+  cp ../assets-branding/easydiffraction/icons/bw.svg overrides/.icons/easydiffraction.svg
+  cp ../assets-branding/easyscience-org/icons/eso-icon_bw.svg overrides/.icons/easyscience.svg
+
+  jupytext tutorials/*.py --from py:percent --to ipynb
+  nbstripout tutorials/*.ipynb
+  cp tutorials/*.ipynb docs/tutorials/
+  cp -R tutorials/data docs/tutorials/
+
+  python tools/create_mkdocs-yml.py
   ```
+
 - Build documentation with MkDocs - static site generator
   ```bash
   export JUPYTER_PLATFORM_DIRS=1

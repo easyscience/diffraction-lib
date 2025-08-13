@@ -101,6 +101,17 @@ def is_pycharm() -> bool:
     return os.environ.get('PYCHARM_HOSTED') == '1'
 
 
+def is_github_ci() -> bool:
+    """
+    Determines if the current process is running in GitHub Actions CI.
+
+    Returns:
+        bool: True if the environment variable ``GITHUB_ACTIONS`` is set
+        (Always "true" on GitHub Actions), False otherwise.
+    """
+    return os.environ.get('GITHUB_ACTIONS') is not None
+
+
 def render_table(
     columns_data,
     columns_alignment,
