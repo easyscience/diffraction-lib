@@ -174,20 +174,6 @@ jobs:
           if-no-files-found: 'error'
           compression-level: 0
 
-      # Push content of the docs/tutorials/ to the tutorials branch.
-      # This is done to have the tutorials available as *.ipynb files,
-      # which can be used to download them from the documentation built
-      # with MkDocs Material (mkdocs-jupyter plugin).
-      - name:
-          Push content of the docs/${{ env.NOTEBOOKS_DIR }}/ to the tutorials
-          branch
-        uses: s0/git-publish-subdir-action@develop
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_API_PERSONAL_ACCSESS_TOKEN }}
-          REPO: self
-          BRANCH: tutorials
-          FOLDER: docs/${{ env.NOTEBOOKS_DIR }}
-
   # Job 2: Deploy the static files
   deploy-docs:
     needs: build-docs # previous job 'build-docs' need to be finished first
