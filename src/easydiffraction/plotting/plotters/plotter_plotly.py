@@ -10,7 +10,6 @@ try:
 except ImportError:
     display = None
 
-from easydiffraction.utils.utils import is_pycharm
 from easydiffraction.utils.utils import is_notebook
 
 from .plotter_base import SERIES_CONFIG
@@ -104,19 +103,17 @@ class PlotlyPlotter(PlotterBase):
         # In notebooks we display the FigureWidget's rich repr instead of calling `.show()`
         # to avoid the `application/vnd.plotly.v1+json` warning during book builds.
 
-        print('---------DEBUG:-----------\n is_pycharm:', is_pycharm(), '\n is_notebook:', is_notebook(), '\n display:', display, '\n-------------------------')
-
-        if is_pycharm() or display is None:
-            # PyCharm (or no IPython display available): use a regular Figure and show it
-            fig = go.Figure(
-                data=data,
-                layout=layout,
-            )
-            fig.show(config=config)
-        else:
+        if is_notebook():
             # Jupyter notebooks: use FigureWidget and let IPython render the repr
             fig_widget = go.FigureWidget(
                 data=data,
                 layout=layout,
             )
             display(fig_widget)
+        else:
+            # PyCharm (or no IPython display available): use a regular Figure and show it
+            fig = go.Figure(
+                data=data,
+                layout=layout,
+            )
+            fig.show(config=config)
