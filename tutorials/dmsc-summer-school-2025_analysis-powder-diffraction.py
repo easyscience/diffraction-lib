@@ -86,7 +86,7 @@ project_1.info.description = 'Fitting simulated powder diffraction pattern of Si
 # tutorial.
 
 # %%
-dir_path = '../4-reduction'
+dir_path = 'data'
 file_name = 'reduced_Si.xye'
 si_xye_path = f'{dir_path}/{file_name}'
 
@@ -99,7 +99,7 @@ si_xye_path = f'{dir_path}/{file_name}'
 # already present.
 
 # %%
-# ed.download_from_repository(file_name, destination=dir_path)
+ed.download_from_repository(file_name, destination=dir_path)
 
 # %% [markdown]
 # Now we can create the experiment and load the measured data.
@@ -551,12 +551,12 @@ project_2.info.description = 'Fitting simulated powder diffraction pattern of La
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-dir_path = '../4-reduction'
+dir_path = 'data'
 file_name = 'reduced_LBCO.xye'
 lbco_xye_path = f'{dir_path}/{file_name}'
 
 # Uncomment the following line if your data reduction failed and the reduced data file is missing.
-# ed.download_from_repository(file_name, destination=dir_path)
+ed.download_from_repository(file_name, destination=dir_path)
 
 project_2.experiments.add(
     name='sim_lbco',
