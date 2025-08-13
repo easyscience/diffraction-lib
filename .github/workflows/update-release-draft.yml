@@ -6,17 +6,28 @@ name: Update release draft
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: [master]
+    branches:
+      - main
+      - master
+      - patch
+
+permissions:
+  contents: write
 
 jobs:
   update-release-draft:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: release-drafter/release-drafter@v6
-        id: create-release
+      - name: Update Release Draft (with retry)
+        uses: Wandalen/wretry.action@master
         env:
+          # release-drafter reads this token
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check-out repository
-        uses: actions/checkout@v4
+        with:
+          action: release-drafter/release-drafter@v6.1
+          attempt_limit: 3        # retry up to 3 times on failure (e.g., 502)
+          attempt_delay: 20s      # wait 20 seconds between attempts
+          # inputs for the wrapped action go under this 'with' string
+          with: |
+            config-name: release-drafter.yml
