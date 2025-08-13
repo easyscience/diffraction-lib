@@ -6,11 +6,9 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 try:
-    from IPython.display import HTML
     from IPython.display import display
 except ImportError:
     display = None
-    HTML = None
 
 from easydiffraction.utils.utils import is_pycharm
 
@@ -99,27 +97,23 @@ class PlotlyPlotter(PlotterBase):
             ],
         )
 
-        fig = go.Figure(
-            data=data,
-            layout=layout,
-        )
-
         # Show the figure
 
-        # The standard `fig.show()` method method triggers the following
-        # warning during the DMSC Summer School 2025 book build process:
-        # WARNING: skipping unknown output mime type:
-        # application/vnd.plotly.v1+json [mystnb.unknown_mime_type]
-        # So, instead, we will use `pio.to_html()` to convert the figure
-        # to HTML and keep `fig.show()` in PyCharm only.
+        # Build a Figure for non-notebook environments and a FigureWidget for Jupyter.
+        # In notebooks we display the FigureWidget's rich repr instead of calling `.show()`
+        # to avoid the `application/vnd.plotly.v1+json` warning during book builds.
 
-        if is_pycharm() or display is None or HTML is None:
+        if is_pycharm() or display is None:
+            # PyCharm (or no IPython display available): use a regular Figure and show it
+            fig = go.Figure(
+                data=data,
+                layout=layout,
+            )
             fig.show(config=config)
         else:
-            html_fig = pio.to_html(
-                fig,
-                include_plotlyjs='cdn',
-                full_html=False,
-                config=config,
+            # Jupyter notebooks: use FigureWidget and let IPython render the repr
+            fig_widget = go.FigureWidget(
+                data=data,
+                layout=layout,
             )
-            display(HTML(html_fig))
+            display(fig_widget)
