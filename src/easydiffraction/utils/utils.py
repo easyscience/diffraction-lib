@@ -101,6 +101,17 @@ def is_pycharm() -> bool:
     return os.environ.get('PYCHARM_HOSTED') == '1'
 
 
+def is_jupyter_book_build() -> bool:
+    """
+    Determines if the current process is running during a Jupyter Book build.
+
+    Returns:
+        bool: True if the environment variable ``MYST_NB_EXECUTE`` is set
+        (used by MyST-NB during Sphinx/Jupyter Book builds), False otherwise.
+    """
+    return os.environ.get('MYST_NB_EXECUTE') is not None
+
+
 def render_table(
     columns_data,
     columns_alignment,

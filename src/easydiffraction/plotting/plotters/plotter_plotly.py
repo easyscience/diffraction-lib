@@ -10,7 +10,8 @@ try:
 except ImportError:
     display = None
 
-from easydiffraction.utils.utils import is_notebook
+from easydiffraction.utils.utils import is_jupyter_book_build
+from easydiffraction.utils.utils import is_pycharm
 
 from .plotter_base import SERIES_CONFIG
 from .plotter_base import PlotterBase
@@ -99,19 +100,23 @@ class PlotlyPlotter(PlotterBase):
 
         # Show the figure
 
-        # Build a Figure for non-notebook environments and a FigureWidget for Jupyter.
-        # In notebooks we display the FigureWidget's rich repr instead of calling `.show()`
-        # to avoid the `application/vnd.plotly.v1+json` warning during book builds.
+        # Jupyter Book/Sphinx build detection is done via `is_jupyter_book_build()`, which
+        # checks for the `MYST_NB_EXECUTE` environment variable set by MyST-NB during builds.
+        #
+        # During Jupyter Book builds, avoid calling `fig.show()` because it can emit
+        # `application/vnd.plotly.v1+json` outputs that some toolchains warn about.
+        # Instead, use a FigureWidget and let IPython render its rich repr. In non-notebook
+        # environments (e.g. PyCharm), create a regular Figure and call `.show()`.
 
-        if is_notebook():
-            # Jupyter notebooks: use FigureWidget and let IPython render the repr
+        # Jupyter Book build detected (via MYST_NB_EXECUTE): prefer FigureWidget rich repr
+        if is_jupyter_book_build() and not is_pycharm():
             fig_widget = go.FigureWidget(
                 data=data,
                 layout=layout,
             )
             display(fig_widget)
+        # Use a regular Figure and show it
         else:
-            # PyCharm (or no IPython display available): use a regular Figure and show it
             fig = go.Figure(
                 data=data,
                 layout=layout,
