@@ -16,7 +16,6 @@ classifiers = [
   'Operating System :: OS Independent',
   'Programming Language :: Python :: 3 :: Only',
   'Programming Language :: Python :: 3',
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -74,7 +73,7 @@ visualization = [
 
 [project.urls]
 homepage = 'https://easydiffraction.org'
-documentation = 'https://easyscience.github.io/diffraction-lib'
+documentation = 'https://docs.easydiffraction.org/lib'
 source = 'https://github.com/easyscience/diffraction-lib'
 tracker = 'https://github.com/easyscience/diffraction-lib/issues'
 
