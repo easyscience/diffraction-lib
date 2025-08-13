@@ -68,7 +68,6 @@ visualization = [
   'darkdetect',   # Detecting dark mode
   'pandas',       # Displaying tables in juptyer notebooks
   'plotly<6.1.0', # Interactive plots. 0.6.0 => Empty charts in Jupyter notebooks ...
-  'anywidget',    # Interactive widgets for Jupyter notebooks (e.g., for Plotly)
   'py3Dmol',      # Visualisation of crystal structures
 ]
 
