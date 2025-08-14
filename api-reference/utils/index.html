@@ -2513,7 +2513,7 @@
     <span class="n">base</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com&#39;</span>
     <span class="n">org</span> <span class="o">=</span> <span class="s1">&#39;easyscience&#39;</span>
     <span class="n">repo</span> <span class="o">=</span> <span class="s1">&#39;diffraction-lib&#39;</span>
-    <span class="n">branch</span> <span class="o">=</span> <span class="s1">&#39;docs&#39;</span>  <span class="c1"># branch or DATA_REPO_BRANCH  # Use the global branch variable if not provided</span>
+    <span class="n">branch</span> <span class="o">=</span> <span class="n">branch</span> <span class="ow">or</span> <span class="n">DATA_REPO_BRANCH</span>  <span class="c1"># Use the global branch variable if not provided</span>
     <span class="n">path_in_repo</span> <span class="o">=</span> <span class="s1">&#39;tutorials/data&#39;</span>
     <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">org</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">repo</span><span class="si">}</span><span class="s1">/refs/heads/</span><span class="si">{</span><span class="n">branch</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">path_in_repo</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s1">&#39;</span>
 
