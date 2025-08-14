@@ -18,6 +18,8 @@ on:
 
 jobs:
   draft-release-notes:
+    if: ${{ github.event_name == 'push' }}
+
     permissions:
       # write permission is required to create a github release
       contents: write
@@ -33,7 +35,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Test the Release Drafter config on PRs without modifying the real draft release
-  draft-release-notes-test:
+  draft-release-notes-dry-run:
     if: ${{ github.event_name == 'pull_request' }}
 
     permissions:
@@ -47,6 +49,6 @@ jobs:
         uses: release-drafter/release-drafter@v6
         with:
           disable-autolabeler: true
-          dry-run: true
+          disable-releaser: true   # prevents creating/updating the draft
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
