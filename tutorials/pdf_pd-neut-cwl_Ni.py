@@ -6,7 +6,7 @@
 # experiment.
 #
 # The dataset is taken from:
-# https://github.com/diffpy/cmi_exchange/blob/main/cmi_scripts/fitNiPDF
+# https://github.com/diffpy/cmi_exchange/tree/main/cmi_scripts/fitNiPDF
 
 # %% [markdown]
 # ## Import Library
