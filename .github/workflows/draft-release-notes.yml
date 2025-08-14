@@ -49,6 +49,6 @@ jobs:
         uses: release-drafter/release-drafter@v6
         with:
           disable-autolabeler: true
-          disable-releaser: true   # prevents creating/updating the draft
+          disable-releaser: true # prevents creating/updating the draft
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
