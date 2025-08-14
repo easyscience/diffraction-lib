@@ -4,14 +4,22 @@
 name: Update release draft
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on pushes targeting the default branch (updates the real draft release)
   push:
+    branches:
+      - main
+      - master
+
+  # Runs on PRs targeting the default branch (dry-run testing; does NOT update the real draft)
+  pull_request:
     branches:
       - main
       - master
 
 jobs:
   draft-release-notes:
+    if: ${{ github.event_name == 'push' }}
+
     permissions:
       # write permission is required to create a github release
       contents: write
@@ -23,5 +31,24 @@ jobs:
         uses: release-drafter/release-drafter@v6
         with:
           disable-autolabeler: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Test the Release Drafter config on PRs without modifying the real draft release
+  draft-release-notes-dry-run:
+    if: ${{ github.event_name == 'pull_request' }}
+
+    permissions:
+      contents: read
+      pull-requests: read
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Drafts the next Release notes (dry-run)
+        uses: release-drafter/release-drafter@v6
+        with:
+          disable-autolabeler: true
+          disable-releaser: true # prevents creating/updating the draft
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
