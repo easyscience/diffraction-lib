@@ -57,7 +57,7 @@ def download_from_repository(
     base = 'https://raw.githubusercontent.com'
     org = 'easyscience'
     repo = 'diffraction-lib'
-    branch = 'docs'  # branch or DATA_REPO_BRANCH  # Use the global branch variable if not provided
+    branch = branch or DATA_REPO_BRANCH  # Use the global branch variable if not provided
     path_in_repo = 'tutorials/data'
     url = f'{base}/{org}/{repo}/refs/heads/{branch}/{path_in_repo}/{file_name}'
 
