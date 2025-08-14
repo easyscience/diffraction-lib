@@ -3,20 +3,25 @@
 
 name-template: 'easydiffraction $RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
+
 categories:
   - title: 'Added'
-    labels: # Labels to use to categorize a pull request as a feature
+    labels:
       - '[scope] significant'
       - '[scope] enhancement'
-      - '[scope] documentation'
   - title: 'Fixed'
-    labels: # Labels to use to categorize a pull request as a bug fix
+    labels:
       - '[scope] bug'
   - title: 'Changed'
-    labels: # Labels to use to categorize a pull request as a maintenance task
+    labels:
       - '[scope] maintenance'
+  - title: 'Documentation'
+    labels:
+      - '[scope] documentation'
+
 change-template: '- $TITLE (#$NUMBER)'
-change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+change-title-escapes: '\<*_&'
+
 version-resolver:
   major:
     labels:
@@ -30,5 +35,6 @@ version-resolver:
       - '[scope] maintenance'
       - '[scope] documentation'
   default: patch
+
 template: |
   $CHANGES

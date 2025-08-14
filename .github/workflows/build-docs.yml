@@ -202,7 +202,6 @@ jobs:
       # To allow the deployment of the static files to GitHub Pages, no
       # restrictions on the branch name need to be set for desired branches on
       # https://github.com/easyscience/diffraction-lib/settings/environments
-      # Currently, only develop and master branches are allowed to deploy to GitHub Pages
       # Deployed pages are available at https://easyscience.github.io/diffraction-lib
       - name:
           Deploy to easyscience.github.io/${{ github.event.repository.name }}

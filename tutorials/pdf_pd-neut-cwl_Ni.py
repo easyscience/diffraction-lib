@@ -6,22 +6,10 @@
 # experiment.
 #
 # The dataset is taken from:
-# https://github.com/diffpy/cmi_exchange/blob/main/cmi_scripts/fitNiPDF
+# https://github.com/diffpy/cmi_exchange/tree/main/cmi_scripts/fitNiPDF
 
 # %% [markdown]
 # ## Import Library
-
-# %% tags=["hide_in_docs"]
-# Check if the easydiffraction library is installed.
-# If not, install it including the 'visualization' extras.
-# This is needed, e.g., when running this as a notebook via Google Colab.
-import builtins
-import importlib.util
-
-if hasattr(builtins, '__IPYTHON__'):
-    if importlib.util.find_spec('easydiffraction') is None:
-        print('Installing the easydiffraction library...')
-        # !pip install 'easydiffraction[visualization]'
 
 # %%
 import easydiffraction as ed
