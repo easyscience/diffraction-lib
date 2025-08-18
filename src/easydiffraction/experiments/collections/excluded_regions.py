@@ -21,23 +21,23 @@ class ExcludedRegion(Component):
     def cif_category_key(self) -> str:
         return 'excluded_region'
 
-    def __init__(self, minimum: float, maximum: float):
+    def __init__(self, start: float, end: float):
         super().__init__()
 
-        self.minimum = Descriptor(
-            value=minimum,
-            name='minimum',
-            cif_name='minimum',
+        self.start = Descriptor(
+            value=start,
+            name='start',
+            cif_name='start',
         )
-        self.maximum = Parameter(
-            value=maximum,
-            name='maximum',
-            cif_name='maximum',
+        self.end = Parameter(
+            value=end,
+            name='end',
+            cif_name='end',
         )
 
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_id = f'{minimum}-{maximum}'
+        self._entry_id = f'{start}-{end}'
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
@@ -65,7 +65,7 @@ class ExcludedRegions(Collection):
         pattern = experiment.datastore.pattern
 
         # Boolean mask for points within the new excluded region
-        in_region = (pattern.full_x >= item.minimum.value) & (pattern.full_x <= item.maximum.value)
+        in_region = (pattern.full_x >= item.start.value) & (pattern.full_x <= item.end.value)
 
         # Update the exclusion mask
         pattern.excluded[in_region] = True
@@ -79,13 +79,13 @@ class ExcludedRegions(Collection):
         # TODO: Consider moving this to the base class
         #  to avoid code duplication with implementations in Background, etc.
         #  Consider using parameter names as column headers
-        columns_headers: List[str] = ['minimum', 'maximum']
+        columns_headers: List[str] = ['start', 'end']
         columns_alignment = ['left', 'left']
         columns_data: List[List[float]] = []
         for region in self._items.values():
-            minimum = region.minimum.value
-            maximum = region.maximum.value
-            columns_data.append([minimum, maximum])
+            start = region.start.value
+            end = region.end.value
+            columns_data.append([start, end])
 
         print(paragraph('Excluded regions'))
         render_table(
