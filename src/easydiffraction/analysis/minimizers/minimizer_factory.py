@@ -55,9 +55,6 @@ class MinimizerFactory:
 
     @classmethod
     def show_available_minimizers(cls) -> None:
-        # TODO: Rename this method to `show_supported_minimizers` for
-        #  consistency with other methods in the library. E.g.
-        #  `show_supported_calculators`, etc.
         """
         Display a table of available minimizers and their descriptions.
         """

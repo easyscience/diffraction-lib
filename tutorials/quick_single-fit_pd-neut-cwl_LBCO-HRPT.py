@@ -86,8 +86,8 @@ experiment.background.add(x=110, y=170)
 experiment.background.add(x=165, y=170)
 
 # %%
-experiment.excluded_regions.add(start=0, end=5)
-experiment.excluded_regions.add(start=165, end=180)
+experiment.excluded_regions.add(minimum=0, maximum=5)
+experiment.excluded_regions.add(minimum=165, maximum=180)
 
 # %%
 experiment.linked_phases.add(id='lbco', scale=10.0)

@@ -83,10 +83,6 @@ def process_notebook(path: Path) -> int:
     if ensure_bootstrap(nb):
         changed += 1
 
-    for cell in nb.cells:
-        if 'tags' in cell.metadata:
-            cell.metadata.pop('tags')
-
     # Normalize to ensure cell ids exist and structure is valid
     if changed or any('id' not in c for c in nb.cells):
         normalize(nb)

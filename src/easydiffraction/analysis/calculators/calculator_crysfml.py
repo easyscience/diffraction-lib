@@ -20,8 +20,7 @@ try:
 
     print("✅ 'pycrysfml' calculation engine is successfully imported.")
 except ImportError:
-    # TODO: Add the following print to debug mode
-    # print("⚠️ 'pycrysfml' module not found. This calculation engine will not be available.")
+    print("⚠️ 'pycrysfml' module not found. This calculation engine will not be available.")
     cfml_py_utilities = None
 
 

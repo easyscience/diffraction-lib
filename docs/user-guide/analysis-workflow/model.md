@@ -79,21 +79,21 @@ to manage the model:
 3. **Atom Sites Category**: Describes the positions and properties of atoms
    within the unit cell.
 
-### 1. Space Group Category { #space-group-category }
+### 1. Space Group Category
 
 ```python
 # Set space group
 project.sample_models['nacl'].space_group.name_h_m = 'F m -3 m'
 ```
 
-### 2. Cell Category { #cell-category }
+### 2. Cell Category
 
 ```python
 # Define unit cell parameters
 project.sample_models['nacl'].cell.length_a = 5.691694
 ```
 
-### 3. Atom Sites Category { #atom-sites-category }
+### 3. Atom Sites Category
 
 ```python
 # Add atomic sites

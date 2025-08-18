@@ -19,8 +19,7 @@ try:
     redirect_stdout(open(os.path.devnull, 'w'))  # silence the C++ engine output
     print("✅ 'pdffit' calculation engine is successfully imported.")
 except ImportError:
-    # TODO: Add the following print to debug mode
-    # print("⚠️ 'pdffit' module not found. This calculation engine will not be available.")
+    print("⚠️ 'pdffit' module not found. This calculation engine will not be available.")
     pdffit = None
 
 

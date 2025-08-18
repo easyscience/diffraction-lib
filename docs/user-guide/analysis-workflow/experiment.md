@@ -132,7 +132,7 @@ which makes it easier to manage the experiment:
    depends on the experiment type, but generally includes columns for 2θ angle
    or TOF and intensity.
 
-### 1. Instrument Category { #instrument-category }
+### 1. Instrument Category
 
 ```python
 # Modify the default instrument parameters
@@ -140,15 +140,7 @@ project.experiments['hrpt'].instrument.setup_wavelength = 1.494
 project.experiments['hrpt'].instrument.calib_twotheta_offset = 0.6
 ```
 
-### 2. Excluded Regions Category { #excluded-regions-category }
-
-```python
-# Add excluded regions to the experiment
-project.experiments['hrpt'].excluded_regions.add(start=0, end=10)
-project.experiments['hrpt'].excluded_regions.add(start=160, end=180)
-```
-
-### 3. Peak Category { #peak-category }
+### 2. Peak Category
 
 ```python
 # Select the desired peak profile type
@@ -162,7 +154,7 @@ project.experiments['hrpt'].peak.broad_lorentz_x = 0
 project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
 ```
 
-### 4. Background Category { #background-category }
+### 3. Background Category
 
 ```python
 # Select the desired background type
@@ -176,14 +168,14 @@ project.experiments['hrpt'].background.add(x=110, y=170)
 project.experiments['hrpt'].background.add(x=165, y=170)
 ```
 
-### 5. Linked Phases Category { #linked-phases-category }
+### 4. Linked Phases Category
 
 ```python
 # Link the sample model defined in the previous step to the experiment
 project.experiments['hrpt'].linked_phases.add(id='lbco', scale=10.0)
 ```
 
-### 6. Measured Data Category { #measured-data-category }
+### 5. Measured Data Category
 
 If you do not have a CIF file for your experiment, you can load measured data
 from a file in a supported format. The measured data will be automatically

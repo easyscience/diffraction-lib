@@ -193,8 +193,8 @@ project.plot_meas(expt_name='hrpt')
 # Add excluded regions.
 
 # %%
-experiment.excluded_regions.add(start=0, end=10)
-experiment.excluded_regions.add(start=160, end=180)
+experiment.excluded_regions.add(minimum=0, maximum=10)
+experiment.excluded_regions.add(minimum=160, maximum=180)
 
 # %% [markdown]
 # Show excluded regions.
