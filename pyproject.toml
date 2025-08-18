@@ -104,6 +104,11 @@ allow-direct-references = true
 [tool.hatch.version]
 source = 'versioningit' # Use versioningit to manage the version
 
+# Override the version used specifically during build time (e.g., in CI)
+# - Ensures a consistent high version like 999.0.0 when not on a tagged commit
+[tool.hatch.build.hooks.versioningit-onbuild]
+version = "999.0.0"
+
 ################################
 # Configuration for versioningit
 ################################
@@ -124,11 +129,6 @@ distance-dirty = '{base_version}.post{distance}' # example: 1.2.3.post42
 method = 'git'
 match = ['v*']
 default-tag = 'v999.0.0'
-
-# Override the version used specifically during build time (e.g., in CI)
-# - Ensures a consistent high version like 999.0.0 when not on a tagged commit
-[tool.versioningit.onbuild]
-version = "999.0.0"
 
 ########################
 # Configuration for ruff
