@@ -24,7 +24,7 @@ jobs:
 
         with:
           config: |
-            title: 'drafterino $COMPUTED_VERSION'
+            title: 'easydiffraction $COMPUTED_VERSION'
             tag: 'v$COMPUTED_VERSION'
             note-template: '- $PR_TITLE (#$PR_NUMBER)'
 
