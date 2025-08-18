@@ -23,7 +23,7 @@
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/first-steps/#importing-easydiffraction)
-# for section-specific details about importing the EasyDiffraction library and
+# for more details about importing the EasyDiffraction library and
 # its components.
 
 # %%
@@ -53,7 +53,7 @@ import easydiffraction as ed
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/project/)
-# for section-specific details about creating a project and its purpose in the
+# for more details about creating a project and its purpose in the
 # analysis workflow.
 
 # %%
@@ -80,7 +80,7 @@ project_1.info.description = 'Fitting simulated powder diffraction pattern of Si
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/)
-# for section-specific details about creating an experiment and its components.
+# for more details about experiments and their purpose in the analysis workflow.
 
 # %%
 dir_path = 'data'
@@ -107,7 +107,7 @@ ed.download_from_repository(file_name, destination=dir_path)
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#defining-an-experiment-manually)
-# for section-specific details about different types of experiments.
+# for more details about different types of experiments.
 
 # %%
 project_1.experiments.add(
@@ -131,15 +131,15 @@ project_1.experiments.add(
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#measured-data-category)
-# for section-specific details about the measured data and its format.
+# for more details about the measured data and its format.
 
 # To visualize the measured data, we can use the `plot_meas` method of the
 # project. Before plotting, we need to set the plotting engine to 'plotly',
 # which provides interactive visualizations.
 
 # %% [markdown] tags=["doc-link"]
-# 📖 See [documentation](https://docs.easydiffraction.org/lib/tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT/#set-up-data-plotter)
-# for section-specific details about setting the plotting engine.
+# 📖 See [documentation](https://easyscience.github.io/diffraction-lib/user-guide/first-steps/#supported-plotters)
+# for more details about setting the plotting engine.
 
 # %%
 project_1.plotter.engine = 'plotly'
@@ -165,7 +165,7 @@ project_1.plot_meas(expt_name='sim_si')
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#excluded-regions-category)
-# for section-specific details about excluding regions from the measured data.
+# for more details about excluding regions from the measured data.
 
 # %%
 project_1.experiments['sim_si'].excluded_regions.add(start=0, end=55000)
@@ -198,7 +198,7 @@ project_1.plot_meas(expt_name='sim_si')
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#instrument-category)
-# for section-specific details about the instrument parameters.
+# for more details about the instrument parameters.
 
 # %%
 project_1.experiments['sim_si'].instrument.setup_twotheta_bank = ed.get_value_from_xye_header(si_xye_path, 'two_theta')
@@ -233,7 +233,7 @@ project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/parameters/)
-# for section-specific details about parameters and their attributes.
+# for more details about parameters in EasyDiffraction and their attributes.
 
 # %% [markdown]
 # #### Set Peak Profile Parameters
@@ -255,7 +255,7 @@ project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#peak-category)
-# for section-specific details about the peak profile types.
+# for more details about the peak profile types.
 
 # %%
 project_1.experiments['sim_si'].peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
@@ -297,7 +297,7 @@ project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0147
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#background-category)
-# for section-specific details about the background and its types.
+# for more details about the background and its types.
 
 # %%
 project_1.experiments['sim_si'].background_type = 'line-segment'
@@ -348,7 +348,7 @@ project_1.experiments['sim_si'].background.add(x=110000, y=0.01)
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/data-format/)
-# for section-specific details about the CIF format and its use in
+# for more details about the CIF format and its use in
 # EasyDiffraction.
 
 # %% [markdown]
@@ -383,13 +383,14 @@ project_1.experiments['sim_si'].background.add(x=110000, y=0.01)
 # As with adding the experiment in the
 # previous step, we will create a default sample model
 # and then modify its parameters to match the Si structure.
-#
-# #### Add Sample Model
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/model/)
-# for section-specific details about creating a sample model and its
-# components.
+# for more details about sample models and their purpose in the data
+# analysis workflow.
+
+# %% [markdown]
+# #### Add Sample Model
 
 # %%
 project_1.sample_models.add(name='si')
@@ -399,7 +400,7 @@ project_1.sample_models.add(name='si')
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/model/#space-group-category)
-# for section-specific details about the space group.
+# for more details about the space group.
 
 # %%
 project_1.sample_models['si'].space_group.name_h_m = 'F d -3 m'
@@ -410,7 +411,7 @@ project_1.sample_models['si'].space_group.it_coordinate_system_code = '2'
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/model/#cell-category)
-# for section-specific details about the lattice parameters.
+# for more details about the unit cell parameters.
 
 # %%
 project_1.sample_models['si'].cell.length_a = 5.43
@@ -420,7 +421,7 @@ project_1.sample_models['si'].cell.length_a = 5.43
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/model/#atom-sites-category)
-# for section-specific details about the atom sites.
+# for more details about the atom sites category.
 
 # %%
 project_1.sample_models['si'].atom_sites.add(
@@ -443,7 +444,7 @@ project_1.sample_models['si'].atom_sites.add(
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#linked-phases-category)
-# for section-specific details about linking a sample model to an experiment.
+# for more details about linking a sample model to an experiment.
 
 # %%
 project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
@@ -463,7 +464,7 @@ project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/analysis/#minimization-optimization)
-# for section-specific details about the fitting process.
+# for more details about the fitting process.
 
 # %% [markdown]
 # #### Set Fit Parameters
@@ -500,8 +501,8 @@ project_1.experiments['sim_si'].peak.asym_alpha_1.free = True
 # `show_free_params` method of the `analysis` object of the project.
 
 # %% [markdown] tags=["doc-link"]
-# 📖 See [documentation](https://docs.easydiffraction.org/lib/tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT/#show-parameters)
-# for section-specific details on how to
+# 📖 See [documentation](https://easyscience.github.io/diffraction-lib/user-guide/first-steps/#available-parameters)
+# for more details on how to
 # - show all parameters of the project,
 # - show all fittable parameters, and
 # - show only free parameters of the project.
@@ -530,7 +531,7 @@ project_1.plot_meas_vs_calc(expt_name='sim_si')
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/analysis/#perform-fit)
-# for section-specific details about the fitting process.
+# for more details about the fitting process.
 
 # %%
 project_1.analysis.fit()
