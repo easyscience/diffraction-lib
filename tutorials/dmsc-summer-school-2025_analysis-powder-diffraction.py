@@ -15,11 +15,16 @@
 # This tutorial is self-contained and designed for hands-on learning.
 # However, if you're interested in exploring more advanced features or learning
 # about additional capabilities of the EasyDiffraction library, please refer to
-# the official documentation: https://docs.easydiffraction.org/lib/tutorials/
+# the official documentation: https://docs.easydiffraction.org/lib
 #
 # Depending on your requirements, you may choose to import only specific
 # classes. However, for the sake of simplicity in this tutorial, we will import
 # the entire library.
+
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/first-steps/#importing-easydiffraction)
+# for section-specific details about importing the EasyDiffraction library and
+# its components.
 
 # %%
 import easydiffraction as ed
@@ -46,6 +51,11 @@ import easydiffraction as ed
 # us to visualize both the measured and calculated diffraction patterns, among
 # other things.
 
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/project/)
+# for section-specific details about creating a project and its purpose in the
+# analysis workflow.
+
 # %%
 project_1 = ed.Project(name='reference')
 
@@ -67,11 +77,10 @@ project_1.info.description = 'Fitting simulated powder diffraction pattern of Si
 # represents a specific diffraction measurement performed on a specific sample
 # using a particular instrument. It contains details about the measured data,
 # instrument parameters, and other relevant information.
-#
-# In this case, the experiment is defined as a powder diffraction measurement
-# using time-of-flight neutrons. The measured data is loaded from a file
-# containing the reduced diffraction pattern of Si from the data reduction
-# tutorial.
+
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/)
+# for section-specific details about creating an experiment and its components.
 
 # %%
 dir_path = 'data'
@@ -79,9 +88,9 @@ file_name = 'reduced_Si.xye'
 si_xye_path = f'{dir_path}/{file_name}'
 
 # %% [markdown]
-# Uncomment the following cell if your data reduction failed and the reduced data
-# file is missing. In this case, you can download our pre-generated reduced
-# data file from the EasyDiffraction repository.
+# Uncomment the following cell if your data reduction failed and the reduced
+# data file is missing. In this case, you can download our pre-generated
+# reduced data file from the EasyDiffraction repository.
 # The `download_from_repository` function will not overwrite an existing file
 # unless you set `overwrite=True`, so it's safe to run even if the file is
 # already present.
@@ -91,6 +100,14 @@ ed.download_from_repository(file_name, destination=dir_path)
 
 # %% [markdown]
 # Now we can create the experiment and load the measured data.
+# In this case, the experiment is defined as a powder diffraction measurement
+# using time-of-flight neutrons. The measured data is loaded from a file
+# containing the reduced diffraction pattern of Si from the data reduction
+# tutorial.
+
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#defining-an-experiment-manually)
+# for section-specific details about different types of experiments.
 
 # %%
 project_1.experiments.add(
@@ -111,12 +128,18 @@ project_1.experiments.add(
 #
 # The data is stored in XYE format, a simple text format containing three
 # columns: TOF, intensity, and intensity error (if available).
-#
-# The `plot_meas` method of the project enables us to visualize the measured
-# diffraction pattern.
-#
-# Before plotting, we set the plotting engine to 'plotly', which provides
-# interactive visualizations.
+
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#measured-data-category)
+# for section-specific details about the measured data and its format.
+
+# To visualize the measured data, we can use the `plot_meas` method of the
+# project. Before plotting, we need to set the plotting engine to 'plotly',
+# which provides interactive visualizations.
+
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT/#set-up-data-plotter)
+# for section-specific details about setting the plotting engine.
 
 # %%
 project_1.plotter.engine = 'plotly'
@@ -132,6 +155,17 @@ project_1.plot_meas(expt_name='sim_si')
 # advanced data reduction, which is beyond the scope of this tutorial.
 # Therefore, we will simply exclude both the low and high TOF regions from the
 # analysis by adding an excluded regions to the experiment.
+#
+# In real experiments, it is often necessary to exclude certain regions from
+# the measured data. For example, the direct beam can significantly increase
+# the background at very low angles, making those parts of the diffractogram
+# unreliable. Additionally, sample environment components may introduce
+# unwanted peaks. In such cases, excluding specific regions is often simpler
+# and more effective than modeling them with an additional sample phase.
+
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#excluded-regions-category)
+# for section-specific details about excluding regions from the measured data.
 
 # %%
 project_1.experiments['sim_si'].excluded_regions.add(minimum=0, maximum=55000)
@@ -148,7 +182,7 @@ project_1.plot_meas(expt_name='sim_si')
 # %% [markdown]
 # #### Set Instrument Parameters
 #
-# After the experiment is created and measured data are loaded, we need
+# After the experiment is created and measured data is loaded, we need
 # to set the instrument parameters.
 #
 # In this type of experiment, the instrument parameters define how the
@@ -162,52 +196,66 @@ project_1.plot_meas(expt_name='sim_si')
 # You can set them manually, but it is more convenient to use the
 # `get_value_from_xye_header` function from the EasyDiffraction library.
 
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#instrument-category)
+# for section-specific details about the instrument parameters.
+
 # %%
 project_1.experiments['sim_si'].instrument.setup_twotheta_bank = ed.get_value_from_xye_header(si_xye_path, 'two_theta')
 project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear = ed.get_value_from_xye_header(si_xye_path, 'DIFC')
 
 # %% [markdown]
-# Every parameters is an object, which has different attributes, such as
-# `value`, `free`, etc. To display the parameter of interest, you can simply
-# print the parameter object. For example, to display the linear conversion
-# factor from d-spacing to TOF, which is the `calib_d_to_tof_linear` parameter,
-# you can do the following:
+# Before proceeding, let's take a quick look at the concept of parameters in
+# EasyDiffraction. Every parameter is an object, which has different attributes,
+# such as `value`, `free`, etc. To display the parameter of interest, you can
+# simply print the parameter object. For example, to display the linear
+# conversion factor from d-spacing to TOF, which is the `calib_d_to_tof_linear`
+# parameter, you can do the following:
 
 # %%
 project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear
 
 # %% [markdown]
-# The `value` attribute represents the current value of the parameter as a float.
-# You can access it directly by using the `value` attribute of the parameter.
-# This is useful when you want to use the parameter value in calculations or
-# when you want to assign it to another parameter. For example, to get only the
-# value of the same parameter as floating point number, but not the whole object,
-# you can do the following:
+# The `value` attribute represents the current value of the parameter as a
+# float. You can access it directly by using the `value` attribute of the
+# parameter. This is useful when you want to use the parameter value in
+# calculations or when you want to assign it to another parameter. For example,
+# to get only the value of the same parameter as floating point number, but not
+# the whole object, you can do the following:
 
 # %%
 project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value
 
 # %% [markdown]
-# Note that to set the value of the parameter, you can simply assign a new value
-# to the parameter object without using the `value` attribute, as we did above.
+# Note that to set the value of the parameter, you can simply assign a new
+# value to the parameter object without using the `value` attribute, as we did
+# above.
+
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/parameters/)
+# for section-specific details about parameters and their attributes.
 
 # %% [markdown]
 # #### Set Peak Profile Parameters
 #
 # The next set of parameters is needed to define the peak profile used in the
-# fitting process. The peak profile describes the shape of the diffraction peaks.
-# They include parameters for the broadening and asymmetry of the peaks.
+# fitting process. The peak profile describes the shape of the diffraction
+# peaks. They include parameters for the broadening and asymmetry of the peaks.
 #
 # Here, we use a pseudo-Voigt peak profile function with Ikeda-Carpenter
 # asymmetry, which is a common choice for neutron powder diffraction data.
 #
 # The values are typically determined experimentally on the same instrument and
 # under the same configuration as the data being analyzed based on measurements
-# of a standard sample. We consider this Si sample as a standard reference.
-# Therefore, we will set the initial values of the peak profile parameters based
-# on the values obtained from another simulation and refine them during the
-# fitting process. The refined parameters will be used as a starting point for
-# the more complex fit in the next part of the tutorial.
+# of a standard sample. We consider the Si sample as a standard reference.
+# Therefore, we will set the initial values of the peak profile parameters
+# based on the values obtained from another simulation and refine them during
+# the fitting process. The refined parameters will be used as a starting point
+# for the more complex fit in the next part of the tutorial.
+
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#peak-category)
+# for section-specific details about the peak profile types.
 
 # %%
 project_1.experiments['sim_si'].peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
@@ -224,7 +272,7 @@ project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0147
 #
 # The background of the diffraction pattern represents the portion of the
 # pattern that is not related to the crystal structure of the sample. It's
-# rather representing the noise and other sources of scattering that can affect
+# rather represents noise and other sources of scattering that can affect
 # the measured intensities. This includes contributions from the instrument,
 # the sample holder, the sample environment, and other sources of incoherent
 # scattering.
@@ -244,8 +292,12 @@ project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0147
 # represents the intensity value at that TOF.
 #
 # Let's set all the background points at a constant value of 0.01, which can be
-# roughly determined by the eye, and we will refine them later during the fitting
-# process.
+# roughly estimated by the eye, and we will refine them later during the
+# fitting process.
+
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#background-category)
+# for section-specific details about the background and its types.
 
 # %%
 project_1.experiments['sim_si'].background_type = 'line-segment'
@@ -279,8 +331,8 @@ project_1.experiments['sim_si'].background.add(x=110000, y=0.01)
 # the single lattice parameter, which
 # is the length of the unit cell edge. The Si crystal structure has a
 # single atom in the unit cell, which is located at the origin (0, 0, 0) of
-# the unit cell. The symmetry of this site is defined by the Wyckoff letter 'a'.
-# The atomic displacement parameter defines the thermal vibrations of the
+# the unit cell. The symmetry of this site is defined by the Wyckoff letter
+# 'a'. The atomic displacement parameter defines the thermal vibrations of the
 # atoms in the unit cell and is presented as an isotropic parameter (B_iso).
 #
 # Sometimes, the initial crystal structure parameters can be obtained
@@ -293,6 +345,11 @@ project_1.experiments['sim_si'].background.add(x=110000, y=0.01)
 # format, which is a standard format for crystallographic data. An example
 # of a CIF file for silicon is shown below. The CIF file contains the
 # space group information, unit cell parameters, and atomic positions.
+
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/data-format/)
+# for section-specific details about the CIF format and its use in
+# EasyDiffraction.
 
 # %% [markdown]
 # ```
@@ -329,11 +386,20 @@ project_1.experiments['sim_si'].background.add(x=110000, y=0.01)
 #
 # #### Add Sample Model
 
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/model/)
+# for section-specific details about creating a sample model and its
+# components.
+
 # %%
 project_1.sample_models.add(name='si')
 
 # %% [markdown]
 # #### Set Space Group
+
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/model/#space-group-category)
+# for section-specific details about the space group.
 
 # %%
 project_1.sample_models['si'].space_group.name_h_m = 'F d -3 m'
@@ -342,11 +408,19 @@ project_1.sample_models['si'].space_group.it_coordinate_system_code = '2'
 # %% [markdown]
 # #### Set Lattice Parameters
 
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/model/#cell-category)
+# for section-specific details about the lattice parameters.
+
 # %%
 project_1.sample_models['si'].cell.length_a = 5.43
 
 # %% [markdown]
 # #### Set Atom Sites
+
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/model/#atom-sites-category)
+# for section-specific details about the atom sites.
 
 # %%
 project_1.sample_models['si'].atom_sites.add(
@@ -367,6 +441,10 @@ project_1.sample_models['si'].atom_sites.add(
 # expected diffraction pattern based on the crystal structure defined in the
 # sample model.
 
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#linked-phases-category)
+# for section-specific details about linking a sample model to an experiment.
+
 # %%
 project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
 
@@ -382,7 +460,12 @@ project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
 # the experiment to minimize the difference between the measured and calculated
 # diffraction patterns. This is done by refining the parameters of the sample
 # model and the instrument settings to achieve a better fit.
-#
+
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/analysis/#minimization-optimization)
+# for section-specific details about the fitting process.
+
+# %% [markdown]
 # #### Set Fit Parameters
 #
 # To perform the fit, we need to specify the refinement parameters. These
@@ -416,6 +499,13 @@ project_1.experiments['sim_si'].peak.asym_alpha_1.free = True
 # We can check which parameters are free to be refined by calling the
 # `show_free_params` method of the `analysis` object of the project.
 
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT/#show-parameters)
+# for section-specific details on how to
+# - show all parameters of the project,
+# - show all fittable parameters, and
+# - show only free parameters of the project.
+
 # %%
 project_1.analysis.show_free_params()
 
@@ -438,14 +528,18 @@ project_1.plot_meas_vs_calc(expt_name='sim_si')
 # We can now perform the fit using the `fit` method of the `analysis`
 # object of the project.
 
+# %% [markdown] tags=["doc-link"]
+# 📖 See [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/analysis/#perform-fit)
+# for section-specific details about the fitting process.
+
 # %%
 project_1.analysis.fit()
 
 # %% [markdown]
 # #### Check Fit Results
 # You can
-# see that the agreement between the measured and calculated diffraction patterns
-# is now much improved and that the intensities of the
+# see that the agreement between the measured and calculated diffraction
+# patterns is now much improved and that the intensities of the
 # calculated peaks align much better with the measured peaks. To check the
 # quality of the fit numerically, we can look at the goodness-of-fit
 # χ² value and the reliability R-factors. The χ² value is a measure of how well
@@ -483,13 +577,14 @@ project_1.plot_meas_vs_calc(expt_name='sim_si', d_spacing=True)
 
 # %% [markdown]
 # As you can see, the calculated diffraction pattern now matches the measured
-# pattern much more closely. Typically, additional parameters are included in the
-# refinement process to further improve the fit. However, we will stop here,
-# as the goal of this part of the tutorial is to demonstrate that the data reduction
-# and fitting process function correctly. The fit is not perfect, but it is
-# sufficient to show that the fitting process works and that the parameters
-# are being adjusted appropriately. The next part of the tutorial will be more advanced
-# and will involve fitting a more complex crystal structure: La₀.₅Ba₀.₅CoO₃ (LBCO).
+# pattern much more closely. Typically, additional parameters are included in
+# the refinement process to further improve the fit. However, we will stop
+# here, as the goal of this part of the tutorial is to demonstrate that the
+# data reduction and fitting process function correctly. The fit is not
+# perfect, but it is sufficient to show that the fitting process works and that
+# the parameters are being adjusted appropriately. The next part of the
+# tutorial will be more advanced and will involve fitting a more complex
+# crystal structure: La₀.₅Ba₀.₅CoO₃ (LBCO).
 #
 # ## 💪 Exercise: Complex Fit – LBCO
 #
@@ -498,8 +593,8 @@ project_1.plot_meas_vs_calc(expt_name='sim_si', d_spacing=True)
 # using simulated powder diffraction data from the previous tutorial.
 #
 # You can use the same approach as in the previous part of the tutorial, but
-# this time we will refine a more complex crystal structure LBCO with multiple atoms
-# in the unit cell.
+# this time we will refine a more complex crystal structure LBCO with multiple
+# atoms in the unit cell.
 #
 # ### 📦 Exercise 1: Create a Project
 #
@@ -566,9 +661,9 @@ project_2.experiments.add(
 
 # %% [markdown] tags=["dmsc-school-hint"]
 # You can use the `plot_meas` method of the project to visualize the
-# measured diffraction pattern. You can also use the `excluded_regions` attribute
-# of the experiment to exclude specific regions from the analysis as we did
-# in the previous part of the tutorial.
+# measured diffraction pattern. You can also use the `excluded_regions`
+# attribute of the experiment to exclude specific regions from the analysis
+# as we did in the previous part of the tutorial.
 
 # %% [markdown]
 # **Solution:**
@@ -611,9 +706,9 @@ project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.get_valu
 
 # %% [markdown] tags=["dmsc-school-hint"]
 # Use the values from the previous part of the tutorial. You can
-# either manually copy the values from the Si fit or use the `value` attribute of
-# the parameters from the Si experiment to set the initial values for the LBCO
-# experiment. This will help us to have a good starting point for the fit.
+# either manually copy the values from the Si fit or use the `value` attribute
+# of the parameters from the Si experiment to set the initial values for the
+# LBCO experiment. This will help us to have a good starting point for the fit.
 
 # %% [markdown]
 # **Solution:**
@@ -639,8 +734,8 @@ project_2.experiments['sim_lbco'].peak.asym_alpha_1 = project_1.experiments['sim
 
 # %% [markdown] tags=["dmsc-school-hint"]
 # Use the same approach as in the previous part of the tutorial, but
-# this time you need to set the background points for the LBCO experiment. You can
-# zoom in on the measured diffraction pattern to determine the approximate
+# this time you need to set the background points for the LBCO experiment. You
+# can zoom in on the measured diffraction pattern to determine the approximate
 # background level.
 
 # %% [markdown]
@@ -663,9 +758,9 @@ project_2.experiments['sim_lbco'].background.add(x=110000, y=0.2)
 # atoms in the unit cell. It is not in COD, so we give you the structural
 # parameters in CIF format to create the sample model.
 #
-# Note that those parameters are not necessarily the most accurate ones, but they
-# are a good starting point for the fit. The aim of the study is to refine the
-# LBCO lattice parameters.
+# Note that those parameters are not necessarily the most accurate ones, but
+# they are a good starting point for the fit. The aim of the study is to refine
+# the LBCO lattice parameters.
 
 # %% [markdown]
 # ```
@@ -879,8 +974,9 @@ project_2.analysis.fit()
 # #### Exercise 5.3: Find the Misfit in the Fit
 #
 # Visualize the measured and calculated diffraction patterns after the fit. As
-# you can see, the fit shows noticeable discrepancies. If you zoom in on different regions of the pattern,
-# you will observe that all the calculated peaks are shifted to the left.
+# you can see, the fit shows noticeable discrepancies. If you zoom in on
+# different regions of the pattern, you will observe that all the calculated
+# peaks are shifted to the left.
 #
 # What could be the reason for the misfit?
 
@@ -903,9 +999,10 @@ project_2.analysis.fit()
 # from those used for the Si data, the full reduction workflow has already been
 # validated with the Si fit. Therefore, they are not the cause of the misfit in
 # this case.
-# 2. ✅ The lattice parameters of the LBCO phase were set based on the CIF data,
-# which is a good starting point, but they are not necessarily as accurate as
-# needed for the fit. The lattice parameters may need to be refined.
+# 2. ✅ The lattice parameters of the LBCO phase were set based on the CIF
+# data, which is a good starting point, but they are not necessarily as
+# accurate as needed for the fit. The lattice parameters may need to be
+# refined.
 # 3. ❌ The peak profile parameters do not change the position of the peaks,
 # but rather their shape.
 # 4. ❌ The background points affect the background level, but not the peak
@@ -964,15 +1061,16 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True)
 # %% [markdown]
 # #### Exercise 5.6: Refine the Peak Profile Parameters
 #
-# As you can see, the fit is now relatively good and the peak positions are much
-# closer to the measured data.
+# As you can see, the fit is now relatively good and the peak positions are
+# much closer to the measured data.
 #
 # The peak profile parameters were not refined, and their starting values were
-# set based on the previous fit of the Si standard sample. Although these starting
-# values are reasonable and provide a good starting point for the fit, they are
-# not necessarily optimal for the LBCO phase. This can be seen while inspecting
-# the individual peaks in the diffraction pattern. For example, the calculated curve
-# does not perfectly describe the peak at about 1.38 Å, as can be seen below:
+# set based on the previous fit of the Si standard sample. Although these
+# starting values are reasonable and provide a good starting point for the fit,
+# they are not necessarily optimal for the LBCO phase. This can be seen while
+# inspecting the individual peaks in the diffraction pattern. For example, the
+# calculated curve does not perfectly describe the peak at about 1.38 Å, as can
+# be seen below:
 
 # %%
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_max=1.40)
@@ -980,7 +1078,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_
 # %% [markdown]
 # The peak profile parameters are determined based on both the instrument
 # and the sample characteristics, so they can vary when analyzing different
-# samples on the same instrument. Therefore, it is better to refine them as well.
+# samples on the same instrument. Therefore, it is better to refine them as
+# well.
 #
 # Select the peak profile parameters to be refined during the fitting process.
 
@@ -989,9 +1088,9 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_
 
 # %% [markdown] tags=["dmsc-school-hint"]
 # You can set the `free` attribute of the peak profile parameters to `True`
-# to allow the fitting process to adjust them. You can use the same approach as in
-# the previous part of the tutorial, but this time you will refine the peak profile
-# parameters of the LBCO phase.
+# to allow the fitting process to adjust them. You can use the same approach as
+# in the previous part of the tutorial, but this time you will refine the peak
+# profile parameters of the LBCO phase.
 
 # %% [markdown]
 # **Solution:**
@@ -1012,9 +1111,9 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_
 # %% [markdown]
 # #### Exercise 5.7: Find Undefined Features
 #
-# After refining the lattice parameter and the peak profile parameters, the fit is
-# significantly improved, but inspect the diffraction pattern again. Are you noticing
-# anything undefined?
+# After refining the lattice parameter and the peak profile parameters, the fit
+# is significantly improved, but inspect the diffraction pattern again. Are you
+# noticing anything undefined?
 
 # %% [markdown]
 # **Hint:**
@@ -1083,10 +1182,11 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spaci
 
 # %% [markdown] tags=["dmsc-school-hint"]
 # The unexplained peaks are likely due to the presence of a small amount of
-# Si in the LBCO sample. In real experiments, it might happen, e.g., because the
-# sample holder was not cleaned properly after the Si experiment.
+# Si in the LBCO sample. In real experiments, it might happen, e.g., because
+# the sample holder was not cleaned properly after the Si experiment.
 #
-# You can visalize both the patterns of the Si and LBCO phases to confirm this hypothesis.
+# You can visalize both the patterns of the Si and LBCO phases to confirm this
+# hypothesis.
 
 # %% tags=["solution", "hide-input"]
 project_1.plot_meas_vs_calc(expt_name='sim_si', x_min=1, x_max=1.7, d_spacing=True)
@@ -1159,26 +1259,41 @@ project_2.experiments['sim_lbco'].linked_phases.add(id='si', scale=1.0)
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # As you can see, the calculated pattern is now the sum of both phases,
-# and Si peaks are visible in the calculated pattern. However, their intensities
-# are much too high. Therefore, we need to refine the scale factor of the Si phase.
+# and Si peaks are visible in the calculated pattern. However, their
+# intensities are much too high. Therefore, we need to refine the scale factor
+# of the Si phase.
 project_2.experiments['sim_lbco'].linked_phases['si'].scale.free = True
 
 # Now we can perform the fit with both phases included.
 project_2.analysis.fit()
 
 # Let's plot the measured diffraction pattern and the calculated diffraction
-# pattern both for the full range and for a zoomed-in region around the previously
-# unexplained peak near 95,000 μs. The calculated pattern will be the sum of
-# the two phases.
+# pattern both for the full range and for a zoomed-in region around the
+# previously unexplained peak near 95,000 μs. The calculated pattern will be
+# the sum of the two phases.
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
 
 # %% [markdown]
-# All previously unexplained peaks are now accounted for in the pattern, and the
-# fit is improved. Some discrepancies in the peak intensities remain, but
+# All previously unexplained peaks are now accounted for in the pattern, and
+# the fit is improved. Some discrepancies in the peak intensities remain, but
 # further improvements would require more advanced data reduction and analysis,
 # which are beyond the scope of this tutorial.
 #
+# To review the analysis results, you can generate and print a summary
+# report using the `show_report()` method, as demonstrated in the cell below.
+# The report includes parameters related to the sample model and the
+# experiment, such as the refined unit cell parameter `a` of LBCO.
+#
+# Information about the crystal or magnetic structure, along with experimental
+# details, fitting quality, and other relevant data, is often submitted to
+# crystallographic journals as part of a scientific publication.
+# It can also be deposited in crystallographic databases when relevant.
+
+# %%
+project_2.summary.show_report()
+
+# %% [markdown]
 # #### Final Remarks
 #
 # In this part of the tutorial, you learned how to use EasyDiffraction
