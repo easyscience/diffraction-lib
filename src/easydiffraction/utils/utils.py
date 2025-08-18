@@ -5,7 +5,7 @@
 General utilities and helpers for easydiffraction.
 """
 
-import importlib.util
+import importlib
 import os
 import re
 from typing import List
@@ -114,7 +114,10 @@ def is_colab() -> bool:
     Returns:
         bool: True if running in Google Colab PyCharm, False otherwise.
     """
-    return importlib.util.find_spec('google.colab') is not None
+    try:
+        return importlib.util.find_spec('google.colab') is not None
+    except ModuleNotFoundError:
+        return False
 
 
 def is_github_ci() -> bool:
