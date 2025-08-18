@@ -79,13 +79,16 @@ def ensure_bootstrap(nb) -> bool:
 
 def process_notebook(path: Path) -> int:
     nb = nbformat.read(path, as_version=4)
-    changed = 0
-    if ensure_bootstrap(nb):
-        changed += 1
 
+    # Remove all 'tags' metadata from cells
     for cell in nb.cells:
         if 'tags' in cell.metadata:
             cell.metadata.pop('tags')
+
+    # Add the bootstrap cell if needed
+    changed = 0
+    if ensure_bootstrap(nb):
+        changed += 1
 
     # Normalize to ensure cell ids exist and structure is valid
     if changed or any('id' not in c for c in nb.cells):
