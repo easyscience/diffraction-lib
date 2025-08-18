@@ -168,8 +168,8 @@ project_1.plot_meas(expt_name='sim_si')
 # for section-specific details about excluding regions from the measured data.
 
 # %%
-project_1.experiments['sim_si'].excluded_regions.add(minimum=0, maximum=55000)
-project_1.experiments['sim_si'].excluded_regions.add(minimum=105500, maximum=200000)
+project_1.experiments['sim_si'].excluded_regions.add(start=0, end=55000)
+project_1.experiments['sim_si'].excluded_regions.add(start=105500, end=200000)
 
 # %% [markdown]
 # To visualize the effect of excluding the high TOF region, we can plot
@@ -672,8 +672,8 @@ project_2.experiments.add(
 project_2.plotter.engine = 'plotly'
 project_2.plot_meas(expt_name='sim_lbco')
 
-project_2.experiments['sim_lbco'].excluded_regions.add(minimum=0, maximum=55000)
-project_2.experiments['sim_lbco'].excluded_regions.add(minimum=105500, maximum=200000)
+project_2.experiments['sim_lbco'].excluded_regions.add(start=0, end=55000)
+project_2.experiments['sim_lbco'].excluded_regions.add(start=105500, end=200000)
 
 project_2.plot_meas(expt_name='sim_lbco')
 

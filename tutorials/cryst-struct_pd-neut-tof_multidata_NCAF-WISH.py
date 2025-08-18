@@ -206,12 +206,12 @@ expt47.linked_phases.add('ncaf', scale=2.0)
 # #### Set Excluded Regions
 
 # %%
-expt56.excluded_regions.add(minimum=0, maximum=10010)
-expt56.excluded_regions.add(minimum=100010, maximum=200000)
+expt56.excluded_regions.add(start=0, end=10010)
+expt56.excluded_regions.add(start=100010, end=200000)
 
 # %%
-expt47.excluded_regions.add(minimum=0, maximum=10006)
-expt47.excluded_regions.add(minimum=100004, maximum=200000)
+expt47.excluded_regions.add(start=0, end=10006)
+expt47.excluded_regions.add(start=100004, end=200000)
 
 # %% [markdown]
 # ## Define Project
