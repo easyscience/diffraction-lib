@@ -104,12 +104,6 @@ allow-direct-references = true
 [tool.hatch.version]
 source = 'versioningit' # Use versioningit to manage the version
 
-# Override the version used specifically during build time (e.g., in CI)
-# - Ensures a consistent high version like 999.0.0 when not on a tagged commit
-[tool.hatch.build.hooks.versioningit-onbuild]
-method = 'literal'
-version = '999.0.0'
-
 ################################
 # Configuration for versioningit
 ################################
