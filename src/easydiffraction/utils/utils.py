@@ -5,6 +5,7 @@
 General utilities and helpers for easydiffraction.
 """
 
+import importlib.util
 import os
 import re
 from typing import List
@@ -79,16 +80,16 @@ def is_notebook() -> bool:
     if IPython is None:
         return False
 
-    if is_pycharm(): # Running inside PyCharm
+    if is_pycharm():  # Running inside PyCharm
         return True
-    elif is_colab(): # Running inside Google Colab
+    elif is_colab():  # Running inside Google Colab
         return True
 
     try:
         shell = get_ipython().__class__.__name__  # noqa: F821
         if shell == 'ZMQInteractiveShell':  # Jupyter notebook or qtconsole
             return True
-        elif shell == 'TerminalInteractiveShell':   # Terminal running IPython
+        elif shell == 'TerminalInteractiveShell':  # Terminal running IPython
             return False
         else:  # Other type (unlikely)
             return False
@@ -113,11 +114,7 @@ def is_colab() -> bool:
     Returns:
         bool: True if running in Google Colab PyCharm, False otherwise.
     """
-    try:
-        import google.colab
-        return True
-    except ImportError:
-        return False
+    return importlib.util.find_spec('google.colab') is not None
 
 
 def is_github_ci() -> bool:
