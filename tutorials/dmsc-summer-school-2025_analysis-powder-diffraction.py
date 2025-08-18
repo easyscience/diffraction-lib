@@ -587,6 +587,12 @@ project_1.plot_meas_vs_calc(expt_name='sim_si', d_spacing=True)
 # tutorial will be more advanced and will involve fitting a more complex
 # crystal structure: La₀.₅Ba₀.₅CoO₃ (LBCO).
 #
+# Before we advance, we save the data to disk.
+
+# %%
+project_1.save_as('powder_diffraction_Si')
+
+# %% [markdown]
 # ## 💪 Exercise: Complex Fit – LBCO
 #
 # Now that you have a basic understanding of the fitting process, we will
@@ -1293,6 +1299,12 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
 
 # %%
 project_2.summary.show_report()
+
+# %% [markdown]
+# Finally, we save the project to disk.
+
+# %%
+project_2.save_as('powder_diffraction_LBCO_Si')
 
 # %% [markdown]
 # #### Final Remarks
