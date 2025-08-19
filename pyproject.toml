@@ -16,9 +16,9 @@ classifiers = [
   'Operating System :: OS Independent',
   'Programming Language :: Python :: 3 :: Only',
   'Programming Language :: Python :: 3',
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.13",
+  'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+  'Programming Language :: Python :: 3.13',
 ]
 requires-python = '>=3.11,<3.14'
 dependencies = [
@@ -117,6 +117,9 @@ distance = '{base_version}.post{distance}'       # example: 1.2.3.post42
 dirty = '{base_version}'                         # example: 1.2.3
 distance-dirty = '{base_version}.post{distance}' # example: 1.2.3.post42
 
+# Configure how versioningit detects versions from Git
+# - 'match' ensures it only considers tags starting with 'v'
+# - 'default-tag' is used as a fallback when no matching tag is found
 [tool.versioningit.vcs]
 method = 'git'
 match = ['v*']

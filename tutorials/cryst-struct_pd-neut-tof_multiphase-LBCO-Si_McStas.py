@@ -240,8 +240,8 @@ project.plot_meas(expt_name='mcstas')
 # Add excluded regions.
 
 # %%
-experiment.excluded_regions.add(minimum=0, maximum=40000)
-experiment.excluded_regions.add(minimum=108000, maximum=200000)
+experiment.excluded_regions.add(start=0, end=40000)
+experiment.excluded_regions.add(start=108000, end=200000)
 
 # %% [markdown]
 # Show excluded regions.
