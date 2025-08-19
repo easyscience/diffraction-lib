@@ -5,6 +5,7 @@
 General utilities and helpers for easydiffraction.
 """
 
+import importlib
 import os
 import re
 from typing import List
@@ -57,7 +58,7 @@ def download_from_repository(
     base = 'https://raw.githubusercontent.com'
     org = 'easyscience'
     repo = 'diffraction-lib'
-    branch = 'docs'  # branch or DATA_REPO_BRANCH  # Use the global branch variable if not provided
+    branch = branch or DATA_REPO_BRANCH  # Use the global branch variable if not provided
     path_in_repo = 'tutorials/data'
     url = f'{base}/{org}/{repo}/refs/heads/{branch}/{path_in_repo}/{file_name}'
 
@@ -79,14 +80,19 @@ def is_notebook() -> bool:
     if IPython is None:
         return False
 
+    if is_pycharm():  # Running inside PyCharm
+        return True
+    elif is_colab():  # Running inside Google Colab
+        return True
+
     try:
         shell = get_ipython().__class__.__name__  # noqa: F821
-        if shell == 'ZMQInteractiveShell':
-            return True  # Jupyter notebook or qtconsole
-        elif shell == 'TerminalInteractiveShell':
-            return False  # Terminal running IPython
-        else:
-            return False  # Other type (unlikely)
+        if shell == 'ZMQInteractiveShell':  # Jupyter notebook or qtconsole
+            return True
+        elif shell == 'TerminalInteractiveShell':  # Terminal running IPython
+            return False
+        else:  # Other type (unlikely)
+            return False
     except NameError:
         return False  # Probably standard Python interpreter
 
@@ -99,6 +105,19 @@ def is_pycharm() -> bool:
         bool: True if running inside PyCharm, False otherwise.
     """
     return os.environ.get('PYCHARM_HOSTED') == '1'
+
+
+def is_colab() -> bool:
+    """
+    Determines if the current environment is Google Colab.
+
+    Returns:
+        bool: True if running in Google Colab PyCharm, False otherwise.
+    """
+    try:
+        return importlib.util.find_spec('google.colab') is not None
+    except ModuleNotFoundError:
+        return False
 
 
 def is_github_ci() -> bool:

@@ -197,6 +197,19 @@ jobs:
           export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
           python -m pytest tests/functional_tests/ --color=yes -n auto
 
+      # Ensures a consistent high version like 999.0.0 when not on a tagged commit
+      # This is needed for testing the package in the next job, as its version
+      # must be higher than the PyPI version for pip to prefer the local version.
+      - name: Inject fallback version tag if not on a real tag
+        shell: bash
+        run: |
+          if ! git describe --tags --match "v*" --exact-match > /dev/null 2>&1; then
+            echo "Not on release tag — applying fallback 'v999.0.0'"
+            git tag v999.0.0
+          else
+            echo "On a valid tag"
+          fi
+
       - name: Create Python package for the next job
         shell: bash
         run: python -m build --wheel --outdir dist

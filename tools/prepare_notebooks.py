@@ -79,6 +79,13 @@ def ensure_bootstrap(nb) -> bool:
 
 def process_notebook(path: Path) -> int:
     nb = nbformat.read(path, as_version=4)
+
+    # Remove all 'tags' metadata from cells
+    for cell in nb.cells:
+        if 'tags' in cell.metadata:
+            cell.metadata.pop('tags')
+
+    # Add the bootstrap cell if needed
     changed = 0
     if ensure_bootstrap(nb):
         changed += 1

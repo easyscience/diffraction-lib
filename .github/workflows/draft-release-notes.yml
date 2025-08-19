@@ -10,16 +10,8 @@ on:
       - main
       - master
 
-  # Runs on PRs targeting the default branch (dry-run testing; does NOT update the real draft)
-  pull_request:
-    branches:
-      - main
-      - master
-
 jobs:
   draft-release-notes:
-    if: ${{ github.event_name == 'push' }}
-
     permissions:
       # write permission is required to create a github release
       contents: write
@@ -27,28 +19,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Drafts the next Release notes
-        uses: release-drafter/release-drafter@v6
+      - name: Drafts the next release notes
+        uses: enhantica/drafterino@v1
+
         with:
-          disable-autolabeler: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          config: |
+            title: 'easydiffraction $COMPUTED_VERSION'
+            tag: 'v$COMPUTED_VERSION'
+            note-template: '- $PR_TITLE (#$PR_NUMBER)'
 
-  # Test the Release Drafter config on PRs without modifying the real draft release
-  draft-release-notes-dry-run:
-    if: ${{ github.event_name == 'pull_request' }}
+            default-bump: post
 
-    permissions:
-      contents: read
-      pull-requests: read
+            major-bump-labels: ['[scope] significant']
+            minor-bump-labels: ['[scope] enhancement']
+            patch-bump-labels: ['[scope] bug', '[scope] maintenance']
+            post-bump-labels: ['[scope] documentation']
 
-    runs-on: ubuntu-latest
+            release-notes:
+              - title: 'Added'
+                labels: ['[scope] significant', '[scope] enhancement']
+              - title: 'Fixed'
+                labels: ['[scope] bug']
+              - title: 'Changed'
+                labels: ['[scope] maintenance', '[scope] documentation']
 
-    steps:
-      - name: Drafts the next Release notes (dry-run)
-        uses: release-drafter/release-drafter@v6
-        with:
-          disable-autolabeler: true
-          disable-releaser: true # prevents creating/updating the draft
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

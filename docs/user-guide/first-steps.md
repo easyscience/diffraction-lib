@@ -87,8 +87,11 @@ example datasets without having to manually download them.
 
 EasyDiffraction provides several helper methods to display supported engines for
 calculation, minimization, and plotting. These methods can be called on the
-`Project` instance to display the available options for each category. For
-example, you can use the `show_supported_calculators()` method to see which
+`Project` instance to display the available options for different categories.
+
+### Supported calculators
+
+For example, you can use the `show_supported_calculators()` method to see which
 calculation engines are available for use in your project:
 
 ```python
@@ -105,8 +108,19 @@ An example of the output for the `show_supported_calculators()` method is:
 | cryspy     | CrysPy library for crystallographic calculations            |
 | pdffit     | PDFfit2 library for pair distribution function calculations |
 
-Other helper methods include those for showing the available parameters grouped
-in different categories. For example, you can use:
+### Supported minimizers
+
+You can also check the available minimizers using the
+`show_available_minimizers()` method:
+
+```python
+project.show_available_minimizers()
+```
+
+### Available parameters
+
+EasyDiffraction provides several methods for showing the available parameters
+grouped in different categories. For example, you can use:
 
 - `project.analysis.show_all_params()` – to display all available parameters for
   the analysis step.
@@ -134,6 +148,22 @@ method is:
 | 59  | project.experiments['hrpt'].peak.broad_gauss_u         | hrpt.peak.broad_gauss_u          |
 | 60  | project.experiments['hrpt'].peak.broad_gauss_v         | hrpt.peak.broad_gauss_v          |
 | 61  | project.experiments['hrpt'].peak.broad_gauss_w         | hrpt.peak.broad_gauss_w          |
+
+### Supported plotters
+
+To see the available plotters, you can use the `show_available_plotters()`
+method on the `plotter` attribute of the `Project` instance:
+
+```python
+project.plotter.show_supported_engines()
+```
+
+An example of the output is:
+
+| Engine       | Description                                |
+| ------------ | ------------------------------------------ |
+| asciichartpy | Console ASCII line charts                  |
+| plotly       | Interactive browser-based graphing library |
 
 ## Data analysis workflow
 
