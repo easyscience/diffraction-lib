@@ -1,0 +1,119 @@
+[workspace]
+channels = ["conda-forge"] # Channels used to fetch the packages from
+platforms = [
+  "win-64",
+  "linux-64",
+  "osx-64",
+  "osx-arm64",
+] # Platforms supported for lock file (pixi.lock)
+
+##########
+# FEATURES
+##########
+
+# Default feature configuration
+
+[dependencies] # short for [feature.default.dependencies]
+libcblas = "*" # CBLAS library for linear algebra. Needed for pdffit2 on Windows
+
+# Extra features for different Python versions
+
+# Python 3.11
+[feature.py311.dependencies]
+python = "3.11.*"
+
+# Python 3.12
+[feature.py312.dependencies]
+python = "3.12.*"
+
+# Python 3.13
+[feature.py313.dependencies]
+python = "3.13.*"
+
+# Development
+[feature.dev.dependencies]
+nodejs = "*"
+
+[feature.dev.pypi-dependencies]
+easydiffraction = { path = ".", extras = [
+  "dev",
+  "visualization",
+] } # Uses the local source code
+
+# Production
+[feature.prod.pypi-dependencies]
+easydiffraction = { extras = [
+  "dev",
+  "visualization",
+] } # Uses the built package from dist directory
+
+#[feature.prod.pypi-options]
+#find-links = [{ path = "dist" }] # Local directory with built package
+
+##############
+# ENVIRONMENTS
+##############
+
+[environments]
+
+# The `default` environment is always included in the lock file, so there is no
+# need to specify it explicitly in the environments section.
+
+# The `default` environment is used for development and testing, so it includes
+# the latest Python version (3.13) and the `dev` feature.
+
+# The `py311`, `py312`, and `py313` environments are used for testing the package
+# on different Python versions. Each of them has a `dev` and `prod` variant
+# to test the package in development and production modes.
+
+# The solve groups are used to group the features for solving the dependencies
+# for each Python version. This ensures, for example, py313-dev and py313-prod
+# share the same versions for overlapping deps, while Python 3.12/3.11 get
+# their own solves.
+
+default = ["py313", "dev"]
+
+py311-dev = { features = ["py311", "dev"], solve-group = "py311" }
+py311-prod = { features = ["py311", "prod"], solve-group = "py311" }
+
+py312-dev = { features = ["py312", "dev"], solve-group = "py312" }
+py312-prod = { features = ["py312", "prod"], solve-group = "py312" }
+
+py313-dev = { features = ["py313", "dev"], solve-group = "py313" }
+py313-prod = { features = ["py313", "prod"], solve-group = "py313" }
+
+#######
+# TASKS
+#######
+
+[tasks]
+
+# Install tasks
+install-prettier = "npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml"
+
+# Update dependencies and lock file
+update-deps = "pixi update"
+
+# Testing tasks
+unit-tests = "python -m pytest tests/unit_tests/ --color=yes -v"
+func-tests = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
+
+# Code quality tasks
+check-pyproject = "python -m validate_pyproject pyproject.toml"
+lint-py = "python -m ruff check . --fix"
+format-py = "python -m ruff format ."
+format-non-py = "npx prettier . --write --config=prettierrc.toml"
+
+# Building tasks
+build = "python -m build --wheel --outdir dist"
+
+# Composed tasks
+setup = { depends-on = ["install-prettier"] }
+test = { depends-on = ["unit-tests", "func-tests"] }
+code-quality = { depends-on = [
+  "check-pyproject",
+  "lint-py",
+  "format-py",
+  "format-non-py",
+] }
+pre-commit = { depends-on = ["code-quality", "test"] }
