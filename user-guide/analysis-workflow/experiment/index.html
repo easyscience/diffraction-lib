@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
     
     
       
@@ -769,7 +769,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-instrument-category" class="md-nav__link">
+  <a href="#instrument-category" class="md-nav__link">
     <span class="md-ellipsis">
       1. Instrument Category
     </span>
@@ -778,36 +778,45 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-peak-category" class="md-nav__link">
+  <a href="#excluded-regions-category" class="md-nav__link">
     <span class="md-ellipsis">
-      2. Peak Category
+      2. Excluded Regions Category
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-background-category" class="md-nav__link">
+  <a href="#peak-category" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Background Category
+      3. Peak Category
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-linked-phases-category" class="md-nav__link">
+  <a href="#background-category" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Linked Phases Category
+      4. Background Category
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-measured-data-category" class="md-nav__link">
+  <a href="#linked-phases-category" class="md-nav__link">
     <span class="md-ellipsis">
-      5. Measured Data Category
+      5. Linked Phases Category
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#measured-data-category" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Measured Data Category
     </span>
   </a>
   
@@ -1847,7 +1856,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-instrument-category" class="md-nav__link">
+  <a href="#instrument-category" class="md-nav__link">
     <span class="md-ellipsis">
       1. Instrument Category
     </span>
@@ -1856,36 +1865,45 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-peak-category" class="md-nav__link">
+  <a href="#excluded-regions-category" class="md-nav__link">
     <span class="md-ellipsis">
-      2. Peak Category
+      2. Excluded Regions Category
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-background-category" class="md-nav__link">
+  <a href="#peak-category" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Background Category
+      3. Peak Category
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-linked-phases-category" class="md-nav__link">
+  <a href="#background-category" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Linked Phases Category
+      4. Background Category
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-measured-data-category" class="md-nav__link">
+  <a href="#linked-phases-category" class="md-nav__link">
     <span class="md-ellipsis">
-      5. Measured Data Category
+      5. Linked Phases Category
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#measured-data-category" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Measured Data Category
     </span>
   </a>
   
@@ -2089,12 +2107,17 @@ which makes it easier to manage the experiment:</p>
    depends on the experiment type, but generally includes columns for 2θ angle
    or TOF and intensity.</li>
 </ol>
-<h3 id="1-instrument-category">1. Instrument Category</h3>
+<h3 id="instrument-category">1. Instrument Category</h3>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Modify the default instrument parameters</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">setup_wavelength</span> <span class="o">=</span> <span class="mf">1.494</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">calib_twotheta_offset</span> <span class="o">=</span> <span class="mf">0.6</span>
 </code></pre></div>
-<h3 id="2-peak-category">2. Peak Category</h3>
+<h3 id="excluded-regions-category">2. Excluded Regions Category</h3>
+<div class="language-python highlight"><pre><span></span><code><span class="c1"># Add excluded regions to the experiment</span>
+<span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">excluded_regions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">excluded_regions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">160</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">180</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="peak-category">3. Peak Category</h3>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Select the desired peak profile type</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">peak_profile_type</span> <span class="o">=</span> <span class="s1">&#39;pseudo-voigt&#39;</span>
 
@@ -2105,7 +2128,7 @@ which makes it easier to manage the experiment:</p>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">broad_lorentz_x</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">broad_lorentz_y</span> <span class="o">=</span> <span class="mf">0.1</span>
 </code></pre></div>
-<h3 id="3-background-category">3. Background Category</h3>
+<h3 id="background-category">4. Background Category</h3>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Select the desired background type</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">background_type</span> <span class="o">=</span> <span class="s1">&#39;line-segment&#39;</span>
 
@@ -2116,11 +2139,11 @@ which makes it easier to manage the experiment:</p>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">background</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">110</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">170</span><span class="p">)</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">background</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">165</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">170</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="4-linked-phases-category">4. Linked Phases Category</h3>
+<h3 id="linked-phases-category">5. Linked Phases Category</h3>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Link the sample model defined in the previous step to the experiment</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">linked_phases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;lbco&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="5-measured-data-category">5. Measured Data Category</h3>
+<h3 id="measured-data-category">6. Measured Data Category</h3>
 <p>If you do not have a <abbr title="Crystallographic Information File.">CIF</abbr> file for your experiment, you can load measured data
 from a file in a supported format. The measured data will be automatically
 converted into <abbr title="Crystallographic Information File.">CIF</abbr> format and added to the experiment. The expected format
@@ -2619,10 +2642,10 @@ loop_
     
     
       
-      <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.50899def.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.92b07e13.min.js"></script>
       
         <script src="../../../assets/javascripts/extra.js"></script>
       

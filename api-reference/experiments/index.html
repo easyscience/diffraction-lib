@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
     
     
       
@@ -3327,7 +3327,7 @@ Stores x, measured intensities, uncertainties, background, and calculated intens
         <span class="n">pattern</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">datastore</span><span class="o">.</span><span class="n">pattern</span>
 
         <span class="c1"># Boolean mask for points within the new excluded region</span>
-        <span class="n">in_region</span> <span class="o">=</span> <span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">full_x</span> <span class="o">&gt;=</span> <span class="n">item</span><span class="o">.</span><span class="n">minimum</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">full_x</span> <span class="o">&lt;=</span> <span class="n">item</span><span class="o">.</span><span class="n">maximum</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">in_region</span> <span class="o">=</span> <span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">full_x</span> <span class="o">&gt;=</span> <span class="n">item</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">full_x</span> <span class="o">&lt;=</span> <span class="n">item</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
         <span class="c1"># Update the exclusion mask</span>
         <span class="n">pattern</span><span class="o">.</span><span class="n">excluded</span><span class="p">[</span><span class="n">in_region</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
@@ -3341,13 +3341,13 @@ Stores x, measured intensities, uncertainties, background, and calculated intens
         <span class="c1"># TODO: Consider moving this to the base class</span>
         <span class="c1">#  to avoid code duplication with implementations in Background, etc.</span>
         <span class="c1">#  Consider using parameter names as column headers</span>
-        <span class="n">columns_headers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;minimum&#39;</span><span class="p">,</span> <span class="s1">&#39;maximum&#39;</span><span class="p">]</span>
+        <span class="n">columns_headers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">]</span>
         <span class="n">columns_alignment</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">]</span>
         <span class="n">columns_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">minimum</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">minimum</span><span class="o">.</span><span class="n">value</span>
-            <span class="n">maximum</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">maximum</span><span class="o">.</span><span class="n">value</span>
-            <span class="n">columns_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">])</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">columns_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">])</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Excluded regions&#39;</span><span class="p">))</span>
         <span class="n">render_table</span><span class="p">(</span>
@@ -3407,7 +3407,7 @@ Stores x, measured intensities, uncertainties, background, and calculated intens
     <span class="n">pattern</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">datastore</span><span class="o">.</span><span class="n">pattern</span>
 
     <span class="c1"># Boolean mask for points within the new excluded region</span>
-    <span class="n">in_region</span> <span class="o">=</span> <span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">full_x</span> <span class="o">&gt;=</span> <span class="n">item</span><span class="o">.</span><span class="n">minimum</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">full_x</span> <span class="o">&lt;=</span> <span class="n">item</span><span class="o">.</span><span class="n">maximum</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">in_region</span> <span class="o">=</span> <span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">full_x</span> <span class="o">&gt;=</span> <span class="n">item</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">full_x</span> <span class="o">&lt;=</span> <span class="n">item</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="c1"># Update the exclusion mask</span>
     <span class="n">pattern</span><span class="o">.</span><span class="n">excluded</span><span class="p">[</span><span class="n">in_region</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
@@ -5455,10 +5455,10 @@ Wraps background, peak profile, and linked phases.</p>
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.50899def.min.js"></script>
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
       
         <script src="../../assets/javascripts/extra.js"></script>
       
