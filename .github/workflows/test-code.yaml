@@ -226,7 +226,6 @@ jobs:
           path: |
             dist/*.whl
             tests/
-            ${{ env.NOTEBOOKS_DIR }}/
             pixi.toml
           if-no-files-found: 'error'
           compression-level: 0
@@ -277,12 +276,19 @@ jobs:
           cache: false
           post-cleanup: false
 
+      # Remove easydiffraction from dev feature
+      # This is needed as we do neither have the source code in the
+      # downloaded artifact, nor the pyproject.toml file.
+      - name: Remove easydiffraction from dev feature
+        shell: bash
+        run: pixi remove --pypi --feature dev easydiffraction
+
       - name: Create pixi environments and install dependencies
         shell: bash
         run: |
+          pixi remove --pypi --feature dev easydiffraction
           for env in ${{ env.PIXI_PROD_ENVS }}; do
             echo "🧪 Current env: $env"
-            pixi remove --pypi --feature dev easydiffraction
             pixi install -e $env --verbose
             pixi run -e $env pip install --find-links=dist 'easydiffraction[dev,visualization]'
           done
