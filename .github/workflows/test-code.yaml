@@ -178,8 +178,8 @@ jobs:
           for env in ${{ env.PIXI_DEV_ENVS }}; do
             echo "🧪 Current env: $env"
             pixi install -e $env --locked
-            pixi run -e $env setup
           done
+          pixi run install-prettier
 
       - name: Run unit tests
         shell: bash
