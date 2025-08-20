@@ -47,7 +47,6 @@ env:
   # Set the NOTEBOOKS_DIR environment var to be the dir of Jupyter notebooks
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
   NOTEBOOKS_DIR: tutorials
-  PIXI_ENV_PREFIXES: 'py311 py312 py313'
   PIXI_DEV_ENVS: 'py311-dev py312-dev py313-dev'
   PIXI_PROD_ENVS: 'py311-prod py312-prod py313-prod'
 
