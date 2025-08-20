@@ -75,7 +75,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
             echo "🧪 Current env: $env"
-            pixi install -e $env --verbose
+            pixi install -e $env
             pixi run -e $env setup
           done
 
@@ -177,7 +177,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
             echo "🧪 Current env: $env"
-            pixi install -e $env --verbose
+            pixi install -e $env
             pixi run -e $env setup
           done
 
@@ -295,7 +295,9 @@ jobs:
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
             echo "🧪 Current env: $env"
-            pixi install -e $env --verbose
+            pixi install -e $env
+            echo "📦 Installed easydiffraction:"
+            pixi run -e $env python -m pip show easydiffraction | grep ^Version: | cut -d' ' -f2
           done
 
       - name: Run unit tests (using built package from previous job)
