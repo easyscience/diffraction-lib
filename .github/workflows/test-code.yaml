@@ -66,6 +66,7 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
+          run-install: false # Do not install the current project
           cache: false
           post-cleanup: false
 
@@ -74,7 +75,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
             echo "🧪 Current env: $env"
-            pixi install -e $env --locked
+            pixi install -e $env --locked --verbose
             pixi run -e $env setup
           done
 
@@ -167,6 +168,7 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
+          run-install: false # Do not install the current project
           cache: false
           post-cleanup: false
 
@@ -175,7 +177,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
             echo "🧪 Current env: $env"
-            pixi install -e $env --locked
+            pixi install -e $env --locked --verbose
             pixi run -e $env setup
           done
 
@@ -257,17 +259,16 @@ jobs:
       # prefer the local version. So, after a new release and a new tag,
       # remember to merge the master branch with the develop branch,
       # and then create a new feature branch from the develop branch.
-      - name: Install Python package from previous job with all extras
+      - name: Add local directory to pixi.toml to find the built package
         shell: bash
         run: |
-          echo ''
-          echo '# Adding local directory to find the built package'
           echo '[feature.prod.pypi-options]' >> pixi.toml
           echo 'find-links = [{ path = "dist" }]' >> pixi.toml
 
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
+          run-install: false # Do not install the current project
           cache: false
           post-cleanup: false
 
@@ -276,7 +277,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
             echo "🧪 Current env: $env"
-            pixi install -e $env
+            pixi install -e $env --verbose
           done
 
       - name: Run Python unit tests (using built package from previous job)
