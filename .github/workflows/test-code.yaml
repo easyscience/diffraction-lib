@@ -11,7 +11,7 @@
 #    - Create the Python package
 #    - Upload the Python package for the next job
 # 3. check-package:
-#    - Download the Python package from the previous job
+#    - Download the Python package (including extra files) from the previous job
 #    - Install the downloaded Python package
 #    - Test the code base against the installed package
 
@@ -49,7 +49,7 @@ env:
   NOTEBOOKS_DIR: tutorials
   PIXI_DEV_ENVS: 'py311-dev py312-dev py313-dev'
   PIXI_PROD_ENVS: 'py311-prod py312-prod py313-prod'
-  OS_MATRIX: "['ubuntu-24.04', 'windows-2022', 'macos-13', 'macos-14']"
+  PLATFORMS: "['ubuntu-24.04', 'windows-2022', 'macos-13', 'macos-14']"
 
 jobs:
   # Job 1: Check code quality and consistency
@@ -69,11 +69,13 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
           cache: false
+          post-cleanup: false
 
       - name: Create pixi environments and install dependencies
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
+            echo "🧪 Current env: $env"
             pixi install -e $env
             pixi run -e $env setup
           done
@@ -85,6 +87,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
+            echo "🧪 Current env: $env"
             pixi run -e $env check-pyproject
           done
 
@@ -95,6 +98,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
+            echo "🧪 Current env: $env"
             pixi run -e $env check-lint-py
           done
 
@@ -110,6 +114,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
+            echo "🧪 Current env: $env"
             pixi run -e $env check-format-py
           done
 
@@ -126,6 +131,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
+            echo "🧪 Current env: $env"
             pixi run -e $env check-format-non-py
           done
 
@@ -150,7 +156,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
+        os: ${{ fromJSON(env.PLATFORMS) }}
 
     runs-on: ${{ matrix.os }}
 
@@ -164,11 +170,13 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
           cache: false
+          post-cleanup: false
 
       - name: Create pixi environments and install dependencies
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
+            echo "🧪 Current env: $env"
             pixi install -e $env
             pixi run -e $env setup
           done
@@ -177,6 +185,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
+            echo "🧪 Current env: $env"
             pixi run -e $env unit-tests
           done
 
@@ -184,6 +193,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
+            echo "🧪 Current env: $env"
             pixi run -e $env func-tests
           done
 
@@ -204,6 +214,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
+            echo "🧪 Current env: $env"
             pixi run -e $env build
           done
 
@@ -216,6 +227,7 @@ jobs:
             tests/
             ${{ env.NOTEBOOKS_DIR }}/
             pixi.toml
+            pyproject.toml
           if-no-files-found: 'error'
           compression-level: 0
 
@@ -226,14 +238,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
+        os: ${{ fromJSON(env.PLATFORMS) }}
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name:
-          Download zipped Python package (with tests and ${{ env.NOTEBOOKS_DIR
-          }}) from previous job
+          Download zipped Python package (incl. extra files) from previous job
         uses: actions/download-artifact@v4
         with: # name or path are taken from the upload step of the previous job
           name: edl_${{ matrix.os }}_${{ runner.arch }}
@@ -259,24 +270,29 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
           cache: false
+          post-cleanup: false
 
       - name: Create pixi environments and install dependencies
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
+            echo "🧪 Current env: $env"
             pixi install -e $env
           done
 
-      - name: Run Python unit tests (using built package)
+      - name: Run Python unit tests (using built package from previous job)
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
+            echo "🧪 Current env: $env"
             pixi run -e $env unit-tests
           done
 
-      - name: Run Python functional tests (using built package)
+      - name:
+          Run Python functional tests (using built package from previous job)
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
+            echo "🧪 Current env: $env"
             pixi run -e $env func-tests
           done
