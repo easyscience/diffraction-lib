@@ -15,6 +15,7 @@ platforms = [
 
 [dependencies] # short for [feature.default.dependencies]
 libcblas = "*" # CBLAS library for linear algebra. Needed for pdffit2 on Windows
+pip = "*"
 
 # Extra features for different Python versions
 
@@ -36,18 +37,18 @@ nodejs = "*"
 
 [feature.dev.pypi-dependencies]
 easydiffraction = { path = ".", extras = [
-  "dev",
   "visualization",
+  "dev",
 ] } # Uses the local source code
 
 # Production
 [feature.prod.pypi-dependencies]
-easydiffraction = { extras = [
-  "dev",
-  "visualization",
-] } # Uses the built package from dist directory
+#easydiffraction = { version = "==0.5.8.post1+d15", extras = [
+#  "visualization",
+#  "dev",
+#] } # Uses the built package from dist directory
 
-#[feature.prod.pypi-options]
+[feature.prod.pypi-options]
 #find-links = [{ path = "dist" }] # Local directory with built package
 
 ##############
