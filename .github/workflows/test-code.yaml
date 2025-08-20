@@ -228,7 +228,6 @@ jobs:
             tests/
             ${{ env.NOTEBOOKS_DIR }}/
             pixi.toml
-            pyproject.toml
           if-no-files-found: 'error'
           compression-level: 0
 
@@ -262,8 +261,11 @@ jobs:
       - name: Add local directory to pixi.toml to find the built package
         shell: bash
         run: |
-          echo '[feature.prod.pypi-options]' >> pixi.toml
-          echo 'find-links = [{ path = "dist" }]' >> pixi.toml
+          echo ''
+
+
+      #echo '[feature.prod.pypi-options]' >> pixi.toml
+      #echo 'find-links = [{ path = "dist" }]' >> pixi.toml
 
       #pixi add -f prod --pypi 'easydiffraction[dev,visualization]'
       #pixi run pip install --find-links=dist 'easydiffraction[dev,visualization]'
@@ -281,7 +283,7 @@ jobs:
           for env in ${{ env.PIXI_PROD_ENVS }}; do
             echo "🧪 Current env: $env"
             pixi install -e $env --verbose
-            pixi run pip install --find-links=dist 'easydiffraction[dev,visualization]'
+            pixi run -e $env pip install --find-links=dist 'easydiffraction[dev,visualization]'
           done
 
       - name: Run Python unit tests (using built package from previous job)
