@@ -141,13 +141,13 @@ jobs:
         run:
           echo "In project root run 'pixi run format-non-py' and commit changes"
 
-      #- name: Force fail if any of the previous steps failed
-      #if: |
-      #steps.check_pyproject.outcome == 'failure' ||
-      #steps.check_code_linting.outcome == 'failure' ||
-      #steps.check_code_formatting.outcome == 'failure' ||
-      #steps.check_others_formatting.outcome == 'failure'
-      #run: exit 1
+      - name: Force fail if any of the previous steps failed
+        if: |
+          steps.check_pyproject.outcome == 'failure' ||
+          steps.check_code_linting.outcome == 'failure' ||
+          steps.check_code_formatting.outcome == 'failure' ||
+          steps.check_others_formatting.outcome == 'failure'
+        run: exit 1
 
   # Job 2: Test code and upload coverage to Codecov.
   run-tests:
@@ -156,7 +156,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-14] # [ubuntu-24.04, windows-2022, macos-13, macos-14]
+        os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
 
     runs-on: ${{ matrix.os }}
 
@@ -178,7 +178,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
             echo "🧪 Current env: $env"
-            pixi install -e $env
+            pixi install -e $env --locked
             pixi run -e $env setup
           done
 
@@ -191,7 +191,6 @@ jobs:
           done
 
       - name: Run functional tests
-        if: False
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
@@ -238,7 +237,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-14] # [ubuntu-24.04, windows-2022, macos-13, macos-14]
+        os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
 
     runs-on: ${{ matrix.os }}
 
@@ -290,7 +289,6 @@ jobs:
           done
 
       - name: Run functional tests (using built package from previous job)
-        if: False
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
