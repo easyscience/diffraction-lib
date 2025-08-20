@@ -181,7 +181,7 @@ jobs:
             pixi run -e $env setup
           done
 
-      - name: Run Python unit tests
+      - name: Run unit tests
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
@@ -189,7 +189,7 @@ jobs:
             pixi run -e $env unit-tests
           done
 
-      - name: Run Python functional tests
+      - name: Run functional tests
         if: False
         shell: bash
         run: |
@@ -286,14 +286,13 @@ jobs:
       - name: Create pixi environments and install dependencies
         shell: bash
         run: |
-          pixi remove --pypi --feature dev easydiffraction
           for env in ${{ env.PIXI_PROD_ENVS }}; do
             echo "🧪 Current env: $env"
             pixi install -e $env --verbose
             pixi run -e $env pip install --find-links=dist 'easydiffraction[dev,visualization]'
           done
 
-      - name: Run Python unit tests (using built package from previous job)
+      - name: Run unit tests (using built package from previous job)
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
@@ -301,8 +300,7 @@ jobs:
             pixi run -e $env unit-tests
           done
 
-      - name:
-          Run Python functional tests (using built package from previous job)
+      - name: Run functional tests (using built package from previous job)
         if: False
         shell: bash
         run: |
