@@ -116,7 +116,7 @@ func-tests = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
 check-pyproject = "python -m validate_pyproject pyproject.toml"
 check-lint-py = "python -m ruff check ."
 check-format-py = "python -m ruff format . --check"
-check-format-non-py = "npx prettier . --list-different --check --config=prettierrc.toml"
+check-format-non-py = "npx prettier . --list-different --config=prettierrc.toml"
 
 # Fix code quality tasks
 lint-py = "python -m ruff check . --fix"
@@ -127,7 +127,6 @@ format-non-py = "npx prettier . --list-different --write --config=prettierrc.tom
 build = "python -m build --wheel --outdir dist"
 
 # Composed tasks
-setup = { depends-on = ["install-prettier"] }
 test = { depends-on = ["unit-tests", "func-tests"] }
 code-quality = { depends-on = [
   "check-pyproject",

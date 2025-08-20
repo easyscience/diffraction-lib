@@ -76,8 +76,8 @@ jobs:
           for env in ${{ env.PIXI_DEV_ENVS }}; do
             echo "🧪 Current env: $env"
             pixi install -e $env --locked
-            pixi run -e $env setup
           done
+          pixi run install-prettier
 
       # Check the validity of pyproject.toml
       - name: Check validity of pyproject.toml
