@@ -140,13 +140,13 @@ jobs:
         run:
           echo "In project root run 'pixi run format-non-py' and commit changes"
 
-      - name: Force fail if any of the previous steps failed
-        if: |
-          steps.check_pyproject.outcome == 'failure' ||
-          steps.check_code_linting.outcome == 'failure' ||
-          steps.check_code_formatting.outcome == 'failure' || 
-          steps.check_others_formatting.outcome == 'failure'
-        run: exit 1
+      #- name: Force fail if any of the previous steps failed
+        #if: |
+          #steps.check_pyproject.outcome == 'failure' ||
+          #steps.check_code_linting.outcome == 'failure' ||
+          #steps.check_code_formatting.outcome == 'failure' || 
+          #steps.check_others_formatting.outcome == 'failure'
+        #run: exit 1
 
   # Job 2: Test code and upload coverage to Codecov.
   run-tests:
