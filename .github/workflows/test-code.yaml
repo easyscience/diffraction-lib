@@ -66,8 +66,8 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          run-install: false # Do not install the current project
-          cache: false
+          run-install: false # Do not install the current project at this step
+          cache: true
           post-cleanup: false
 
       - name: Create pixi environments and install dependencies
@@ -168,8 +168,8 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          run-install: false # Do not install the current project
-          cache: false
+          run-install: false # Do not install the current project at this step
+          cache: true
           post-cleanup: false
 
       - name: Create pixi environments and install dependencies
@@ -252,7 +252,7 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
           run-install: false # Do not install the current project
-          cache: false
+          cache: true
           post-cleanup: false
 
       # 1. Remove easydiffraction from dev feature

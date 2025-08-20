@@ -5519,7 +5519,7 @@ packages:
   requires_python: '>=3.8'
 - pypi: ./
   name: easydiffraction
-  version: 0.5.8.post1+d26
+  version: 0.5.8.post1+d32
   sha256: 2400ddad6d78840d71d2e81acfc800b0a4a0715c85e0d72982b23a4f13acc0e3
   requires_dist:
   - asciichartpy
