@@ -43,12 +43,13 @@ easydiffraction = { path = ".", extras = [
 
 # Production
 [feature.prod.pypi-dependencies]
+easydiffraction = { version = "*", extras = ["dev", "visualization"] }
 #easydiffraction = { version = "==0.5.8.post1+d15", extras = [
 #  "visualization",
 #  "dev",
 #] } # Uses the built package from dist directory
 
-[feature.prod.pypi-options]
+#[feature.prod.pypi-options]
 #find-links = [{ path = "dist" }] # Local directory with built package
 
 ##############
@@ -123,3 +124,8 @@ code-quality = { depends-on = [
   "format-non-py",
 ] }
 pre-commit = { depends-on = ["code-quality", "test"] }
+
+#[pypi-dependencies]
+#easydiffraction = { version = "*", extras = ["dev", "visualization"] }
+#[feature.prod.pypi-options]
+#find-links = [{ path = "dist" }]

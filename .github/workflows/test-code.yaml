@@ -75,7 +75,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
             echo "🧪 Current env: $env"
-            pixi install -e $env --locked --verbose
+            pixi install -e $env --verbose
             pixi run -e $env setup
           done
 
@@ -177,7 +177,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
             echo "🧪 Current env: $env"
-            pixi install -e $env --locked --verbose
+            pixi install -e $env --verbose
             pixi run -e $env setup
           done
 
@@ -264,7 +264,9 @@ jobs:
         run: |
           echo '[feature.prod.pypi-options]' >> pixi.toml
           echo 'find-links = [{ path = "dist" }]' >> pixi.toml
-          pixi run pip install --find-links=dist 'easydiffraction[dev,visualization]'
+          pixi add -f prod --pypi 'easydiffraction[dev,visualization]'
+
+      #pixi run pip install --find-links=dist 'easydiffraction[dev,visualization]'
 
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
