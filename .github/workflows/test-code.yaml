@@ -68,8 +68,7 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          cache: false #true
-          #cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+          cache: false
 
       - name: Create pixi environments and install dependencies
         shell: bash
@@ -96,15 +95,13 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            pixi run -e $env lint-py
+            pixi run -e $env check-lint-py
           done
 
       - name: Suggestion to fix code linting issues (*.py files)
         if: steps.check_code_linting.outcome == 'failure'
         shell: bash
-        run: >
-          echo "In project root run 'ruff check . --fix' and commit changes to
-          fix issues."
+        run: echo "In project root run 'pixi run lint-py' and commit changes"
 
       # Check code formatting with Ruff in the project root
       - name: Check code formatting
@@ -113,15 +110,13 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            pixi run -e $env format-py
+            pixi run -e $env check-format-py
           done
 
       - name: Suggestion to fix code formatting issues (*.py files)
         if: steps.check_code_formatting.outcome == 'failure'
         shell: bash
-        run: >
-          echo "In project root run 'ruff format .' and commit changes to fix
-          issues."
+        run: echo "In project root run 'pixi run format-py' and commit changes"
 
       # Check formatting of Markdown, YAML, TOML, etc. files with Prettier in
       # the project root
@@ -131,15 +126,14 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            pixi run -e $env format-non-py
+            pixi run -e $env check-format-non-py
           done
 
       - name: Suggestion to fix non-code formatting issues (*.md, *.yml, etc.)
         if: steps.check_others_formatting.outcome == 'failure'
         shell: bash
-        run: >
-          echo "In project root run 'npx prettier . --write
-          --config=prettierrc.toml' and commit changes to fix issues."
+        run:
+          echo "In project root run 'pixi run format-non-py' and commit changes"
 
       - name: Force fail if any of the previous steps failed
         if: |
@@ -169,7 +163,7 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          cache: false #true
+          cache: false
 
       - name: Create pixi environments and install dependencies
         shell: bash
@@ -221,6 +215,7 @@ jobs:
             dist/*.whl
             tests/
             ${{ env.NOTEBOOKS_DIR }}/
+            pixi.toml
           if-no-files-found: 'error'
           compression-level: 0
 
@@ -236,11 +231,6 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Set up pixi
-        uses: prefix-dev/setup-pixi@v0.9.0
-        with:
-          cache: false #true
-
       - name:
           Download zipped Python package (with tests and ${{ env.NOTEBOOKS_DIR
           }}) from previous job
@@ -263,8 +253,12 @@ jobs:
           echo ''
           echo '# Adding local directory to find the built package'
           echo '[feature.prod.pypi-options]' >> pixi.toml
-          echo 'find-links = [{ path = "dist" }]' >> pixi.toml 
-          pixi run update-deps
+          echo 'find-links = [{ path = "dist" }]' >> pixi.toml
+
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.9.0
+        with:
+          cache: false
 
       - name: Create pixi environments and install dependencies
         shell: bash

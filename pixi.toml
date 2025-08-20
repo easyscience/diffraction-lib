@@ -98,8 +98,13 @@ update-deps = "pixi update"
 unit-tests = "python -m pytest tests/unit_tests/ --color=yes -v"
 func-tests = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
 
-# Code quality tasks
+# Check code quality tasks
 check-pyproject = "python -m validate_pyproject pyproject.toml"
+check-lint-py = "python -m ruff check ."
+check-format-py = "python -m ruff format . --check"
+check-format-non-py = "npx prettier . --check --config=prettierrc.toml"
+
+# Fix code quality tasks
 lint-py = "python -m ruff check . --fix"
 format-py = "python -m ruff format ."
 format-non-py = "npx prettier . --write --config=prettierrc.toml"
