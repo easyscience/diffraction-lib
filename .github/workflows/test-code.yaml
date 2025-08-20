@@ -276,12 +276,19 @@ jobs:
           cache: false
           post-cleanup: false
 
-      # Remove easydiffraction from dev feature
-      # This is needed as we do neither have the source code in the
-      # downloaded artifact, nor the pyproject.toml file.
+      # 1. Remove easydiffraction from dev feature
+      # This is needed for pixi to work correctly, as otherwise it will try to
+      # solve easydiffraction as a dependency in the dev feature, which will
+      # fail as we do not have the pyproject.toml file in the downloaded
+      # artifact.
+      # 2. Replaces "." with "dist" in pixi.toml to find the built package
+      # This is needed as "dist" directory is only created in the previous job
+      # and then downloaded in this job.
       - name: Remove easydiffraction from dev feature
         shell: bash
-        run: pixi remove --pypi --feature dev easydiffraction
+        run: |
+          pixi remove --pypi --feature dev easydiffraction
+          pixi run fix-find-links
 
       - name: Create pixi environments and install dependencies
         shell: bash
@@ -289,7 +296,6 @@ jobs:
           for env in ${{ env.PIXI_PROD_ENVS }}; do
             echo "🧪 Current env: $env"
             pixi install -e $env --verbose
-            pixi run -e $env pip install --find-links=dist 'easydiffraction[dev,visualization]'
           done
 
       - name: Run unit tests (using built package from previous job)

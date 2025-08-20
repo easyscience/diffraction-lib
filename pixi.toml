@@ -33,24 +33,24 @@ python = "3.13.*"
 
 # Development
 [feature.dev.dependencies]
-nodejs = "*"
+nodejs = "*" # Needed for prettier
 
 [feature.dev.pypi-dependencies]
 easydiffraction = { path = ".", extras = [
   "visualization",
   "dev",
-] } # Uses the local source code
+] } # Uses the local source code based on pyproject.toml
 
 # Production
 [feature.prod.pypi-dependencies]
-#easydiffraction = { version = "*", extras = ["dev", "visualization"] }
-#easydiffraction = { version = "==0.5.8.post1+d15", extras = [
-#  "visualization",
-#  "dev",
-#] } # Uses the built package from dist directory
+easydiffraction = { version = "*", extras = [
+  "dev",
+  "visualization"
+] } # Uses the package based on [feature.prod.pypi-options]
 
-#[feature.prod.pypi-options]
-#find-links = [{ path = "dist" }] # Local directory with built package
+[feature.prod.pypi-options]
+find-links = [{ path = "." }] # {"." will be replaced with "dist" in CI} First look in your local dist directory
+index-url = "https://pypi.org/simple" # Then fall back to PyPI for any missing dependencies
 
 ##############
 # ENVIRONMENTS
@@ -90,8 +90,14 @@ py313-prod = { features = ["py313", "prod"], solve-group = "py313" }
 
 [tasks]
 
+# Setup tasks
+fix-find-links = '''python -c "p = 'pixi.toml'; t = open(p).read(); t = t.replace('find-links = [{ path = \\".\\" }]', 'find-links = [{ path = \\"dist\\" }]'); open(p, 'w').write(t)"'''
+
 # Install tasks
 install-prettier = "npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml"
+
+# Remove tasks
+remove-ed-dev = "pixi remove --pypi --feature dev easydiffraction"
 
 # Update dependencies and lock file
 update-deps = "pixi update"
@@ -124,8 +130,3 @@ code-quality = { depends-on = [
   "format-non-py",
 ] }
 pre-commit = { depends-on = ["code-quality", "test"] }
-
-#[pypi-dependencies]
-#easydiffraction = { version = "*", extras = ["dev", "visualization"] }
-#[feature.prod.pypi-options]
-#find-links = [{ path = "dist" }]
