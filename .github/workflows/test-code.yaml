@@ -282,6 +282,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
             echo "🧪 Current env: $env"
+            pixi remove -e $env --pypi --feature dev easydiffraction
             pixi install -e $env --verbose
             pixi run -e $env pip install --find-links=dist 'easydiffraction[dev,visualization]'
           done
