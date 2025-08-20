@@ -52,11 +52,6 @@ env:
   OS_MATRIX: "['ubuntu-24.04', 'windows-2022', 'macos-13', 'macos-14']"
 
 jobs:
-  define-os-matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      os: ${{ steps.set-os-matrix.outputs.os }}
-
   # Job 1: Check code quality and consistency
   code-quality:
     strategy:
@@ -264,7 +259,7 @@ jobs:
       # and then create a new feature branch from the develop branch.
       - name: Install Python package from previous job with all extras
         shell: bash
-        run: >
+        run: |
           echo ''
           echo '# Adding local directory to find the built package'
           echo '[feature.prod.pypi-options]' >> pixi.toml
