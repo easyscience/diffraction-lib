@@ -1,9 +1,11 @@
 [workspace]
-channels = ["conda-forge"] # Channels used to fetch the packages from
+# Channels used to fetch the packages from
+channels = ["conda-forge"]
 platforms = [
   "win-64",
   "linux-64",
   "osx-64",
+  "osx-arm64",
   "osx-arm64",
 ] # Platforms supported for lock file (pixi.lock)
 
@@ -14,7 +16,8 @@ platforms = [
 # Default feature configuration
 
 [dependencies] # short for [feature.default.dependencies]
-libcblas = "*" # CBLAS library for linear algebra. Needed for pdffit2 on Windows
+# CBLAS library for linear algebra. Needed for pdffit2 on Windows
+libcblas = "*"
 pip = "*"
 
 # Extra features for different Python versions
@@ -45,12 +48,15 @@ easydiffraction = { path = ".", extras = [
 [feature.prod.pypi-dependencies]
 easydiffraction = { version = "*", extras = [
   "dev",
-  "visualization"
+  "visualization",
 ] } # Uses the package based on [feature.prod.pypi-options]
 
 [feature.prod.pypi-options]
-find-links = [{ path = "." }] # {"." will be replaced with "dist" in CI} First look in your local dist directory
-index-url = "https://pypi.org/simple" # Then fall back to PyPI for any missing dependencies
+# "." will be replaced with "dist" in CI
+# First look in your local dist directory
+find-links = [{ path = "." }]
+# Then fall back to PyPI for any missing dependencies
+index-url = "https://pypi.org/simple"
 
 ##############
 # ENVIRONMENTS
@@ -110,12 +116,12 @@ func-tests = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
 check-pyproject = "python -m validate_pyproject pyproject.toml"
 check-lint-py = "python -m ruff check ."
 check-format-py = "python -m ruff format . --check"
-check-format-non-py = "npx prettier . --check --config=prettierrc.toml"
+check-format-non-py = "npx prettier . --list-different --check --config=prettierrc.toml"
 
 # Fix code quality tasks
 lint-py = "python -m ruff check . --fix"
 format-py = "python -m ruff format ."
-format-non-py = "npx prettier . --write --config=prettierrc.toml"
+format-non-py = "npx prettier . --list-different --write --config=prettierrc.toml"
 
 # Building tasks
 build = "python -m build --wheel --outdir dist"
