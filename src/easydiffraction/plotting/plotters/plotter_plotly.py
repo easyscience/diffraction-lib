@@ -104,6 +104,11 @@ class PlotlyPlotter(PlotterBase):
             layout=layout,
         )
 
+        # Format the axes ticks
+        # Keeps decimals for small numbers; groups thousands for large ones
+        fig.update_xaxes(tickformat=',.6~g', separatethousands=True)
+        fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
+
         # Show the figure
 
         # In GitHub CI builds (e.g., during Jupyter Book generation), avoid
