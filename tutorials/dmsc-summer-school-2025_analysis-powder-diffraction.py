@@ -864,6 +864,33 @@ project_2.experiments['sim_lbco'].background.add(x=110000, y=0.2)
 # ```
 
 # %% [markdown]
+# Note that the `occupancy` of the La and Ba atoms is 0.5 and those atoms
+# are located in the same position (0, 0, 0) in the unit cell. This means that
+# an extra attribute `occupancy` needs to be set for those atoms later in the
+# sample model.
+#
+# We model the La/Ba site using the virtual crystal approximation.
+# In this approach, the scattering is taken as a weighted average of La and Ba.
+# This reproduces the average diffraction pattern well but does not capture
+# certain real-world effects.
+#
+# The edge cases are:
+# - **Random distribution**.
+#    La and Ba atoms are placed randomly. The Bragg peaks still match the
+#    average structure, but the pattern also shows extra background
+#    (diffuse scattering) between the peaks, but this is usually neglected
+#    in the analysis.
+# - **Perfect ordering**.
+#    La and Ba arrange themselves in a regular pattern, creating a larger
+#    repeating unit. This gives rise to extra peaks
+#    ("superlattice reflections") and changes the intensity of some existing
+#    peaks.
+# - **Virtual crystal approximation (our model)**.
+#    We replace the site with a single "virtual atom" that averages La and Ba.
+#    This gives the correct average Bragg peaks but leaves out the extra
+#    background of the random case and the extra peaks of the ordered case.
+
+# %% [markdown]
 # #### Exercise 3.1: Create Sample Model
 #
 # Add a sample model for LBCO to the project. The sample model parameters
@@ -929,31 +956,6 @@ project_2.sample_models['lbco'].cell.length_a = 3.88
 # %% [markdown] tags=["dmsc-school-hint"]
 # Use the atom sites from the CIF data. You can use the `add` method of
 # the `atom_sites` attribute of the sample model to add the atom sites.
-#
-# Note that the `occupancy` of the La and Ba atoms is 0.5 and those atoms
-# are located in the same position (0, 0, 0) in the unit cell. This means that
-# an extra attribute `occupancy` needs to be set for those atoms.
-#
-# We model the La/Ba site using the virtual crystal approximation.
-# In this approach, the scattering is taken as a weighted average of La and Ba.
-# This reproduces the average diffraction pattern well but does not capture
-# certain real-world effects.
-#
-# The edge cases are:
-# - **Random distribution**.
-#    La and Ba atoms are placed randomly. The Bragg peaks still match the
-#    average structure, but the pattern also shows extra background
-#    (diffuse scattering) between the peaks, but this is usually neglected
-#    in the analysis.
-# - **Perfect ordering**.
-#    La and Ba arrange themselves in a regular pattern, creating a larger
-#    repeating unit. This gives rise to extra peaks
-#    ("superlattice reflections") and changes the intensity of some existing
-#    peaks.
-# - **Virtual crystal approximation (our model)**.
-#    We replace the site with a single "virtual atom" that averages La and Ba.
-#    This gives the correct average Bragg peaks but leaves out the extra
-#    background of the random case and the extra peaks of the ordered case.
 
 # %% [markdown]
 # **Solution:**
