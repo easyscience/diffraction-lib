@@ -73,7 +73,7 @@ project_1.info.description = 'Fitting simulated powder diffraction pattern of Si
 # %% [markdown]
 # ### 🔬 Create an Experiment
 #
-# Now we will create an experiment within the project. An experiment
+# An experiment
 # represents a specific diffraction measurement performed on a specific sample
 # using a particular instrument. It contains details about the measured data,
 # instrument parameters, and other relevant information.
@@ -250,18 +250,18 @@ project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value
 # There are several commonly used peak profile functions:
 # - **Gaussian**: Describes peaks with a symmetric bell-shaped curve, often
 #   used when instrumental broadening dominates.
-#   [Click here for more details](https://mantidproject.github.io/docs-versioned/v6.1.0/fitting/fitfunctions/Gaussian.html)
+#   [Click for more details.](https://mantidproject.github.io/docs-versioned/v6.1.0/fitting/fitfunctions/Gaussian.html)
 # - **Lorentzian**: Produces narrower central peaks with longer tails,
 #   frequently used to model size broadening effects.
-#   [Click here for more details](https://mantidproject.github.io/docs-versioned/v6.1.0/fitting/fitfunctions/Lorentzian.html)
+#   [Click for more details.](https://mantidproject.github.io/docs-versioned/v6.1.0/fitting/fitfunctions/Lorentzian.html)
 # - **Pseudo-Voigt**: A linear combination of Gaussian and Lorentzian
 #   components, providing flexibility to represent real diffraction peaks.
-#   [Click here for more details](https://mantidproject.github.io/docs-versioned/v6.1.0/fitting/fitfunctions/PseudoVoigt.html)
+#   [Click for more details.](https://mantidproject.github.io/docs-versioned/v6.1.0/fitting/fitfunctions/PseudoVoigt.html)
 # - **Pseudo-Voigt convoluted with Ikeda-Carpenter**: Incorporates the
 #   asymmetry introduced by the neutron pulse shape in time-of-flight
 #   instruments. This is a common choice for TOF neutron powder diffraction
 #   data.
-#   [Click here for more details](https://docs.mantidproject.org/v6.1.0/fitting/fitfunctions/IkedaCarpenterPV.html)
+#   [Click for more details.](https://docs.mantidproject.org/v6.1.0/fitting/fitfunctions/IkedaCarpenterPV.html)
 #
 # Here, we use a pseudo-Voigt peak profile function with Ikeda-Carpenter
 # asymmetry.
@@ -933,17 +933,18 @@ project_2.sample_models['lbco'].cell.length_a = 3.88
 # This reproduces the average diffraction pattern well but does not capture
 # certain real-world effects.
 #
-# The main possibilities are:
-# - **Random distribution**
+# The edge cases are:
+# - **Random distribution**.
 #    La and Ba atoms are placed randomly. The Bragg peaks still match the
 #    average structure, but the pattern also shows extra background
-#    (diffuse scattering) between the peaks.
-# - **Perfect ordering**
+#    (diffuse scattering) between the peaks, but this is usually neglected
+#    in the analysis.
+# - **Perfect ordering**.
 #    La and Ba arrange themselves in a regular pattern, creating a larger
 #    repeating unit. This gives rise to extra peaks
 #    ("superlattice reflections") and changes the intensity of some existing
 #    peaks.
-# - **Virtual crystal approximation (our model)**
+# - **Virtual crystal approximation (our model)**.
 #    We replace the site with a single "virtual atom" that averages La and Ba.
 #    This gives the correct average Bragg peaks but leaves out the extra
 #    background of the random case and the extra peaks of the ordered case.
@@ -1406,22 +1407,22 @@ project_2.save_as(dir_path='powder_diffraction_LBCO_Si')
 # %% [markdown]
 # ## 🎁 Bonus
 #
-# Congratulations — you’ve now completed the diffraction data analysis part of
+# Congratulations — you've now completed the diffraction data analysis part of
 # the DMSC Summer School!
 #
-# If you’d like to keep exploring, the EasyDiffraction library offers many
+# If you'd like to keep exploring, the EasyDiffraction library offers many
 # additional tutorials and examples on the official documentation site:
 # 👉 https://docs.easydiffraction.org/lib/tutorials/
 #
 # Besides the Python package, EasyDiffraction also comes with a graphical
 # user interface (GUI) that lets you perform similar analyses without writing
-# code. (To be fair, it’s not *quite* feature-complete compared to the Python
-# library yet — but we’re working on it! 🚧)
+# code. To be fair, it's not *quite* feature-complete compared to the Python
+# library yet — but we're working on it! 🚧
 #
 # If you prefer a point-and-click interface over coding, the GUI provides a
 # user-friendly way to analyze diffraction data. You can download it as a
 # standalone application here:
 # 👉 https://easydiffraction.org
 #
-# We’d love to hear your feedback on EasyDiffraction — both the library and
+# We'd love to hear your feedback on EasyDiffraction — both the library and
 # the GUI! 💬
