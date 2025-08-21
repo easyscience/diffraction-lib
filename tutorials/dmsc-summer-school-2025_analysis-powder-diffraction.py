@@ -9,9 +9,15 @@
 # ## 🛠️ Import Library
 #
 # We start by importing the necessary library for the analysis. In this
-# notebook, we use the EasyDiffraction library, which offers tools for
-# analyzing and refining powder diffraction data.
+# notebook, we use the EasyDiffraction library. As mentioned in the
+# introduction to EasyScience, EasyDiffraction is built on that framework and
+# offers a high-level interface focused specifically for diffraction analysis.
 #
+# This notebook is self-contained and designed for hands-on learning.
+# For more advanced features and additional capabilities of the EasyDiffraction
+# library, please see the official documentation:
+# https://docs.easydiffraction.org/lib
+
 # This notebook is self-contained and designed for hands-on learning.
 # However, if you're interested in exploring more advanced features or learning
 # about additional capabilities of the EasyDiffraction library, please refer to
@@ -476,9 +482,9 @@ project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
 # After setting up the experiment and sample model, we can now analyze the
 # measured diffraction pattern and perform the fit. Building on the analogies
 # from the EasyScience library and the previous notebooks, we can say that all
-# the parameters we introduced earlier—those defining the sample model (crystal
+# the parameters we introduced earlier — those defining the sample model (crystal
 # structure parameters) and the experiment (instrument, background, and peak
-# profile parameters)—together form the complete set of parameters that can be
+# profile parameters) — together form the complete set of parameters that can be
 # refined during the fitting process.
 #
 # Unlike in the previous analysis notebooks, we will not create a **math_model**

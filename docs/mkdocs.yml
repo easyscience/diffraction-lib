@@ -33,6 +33,7 @@ plugins:
         - 'quick*.ipynb'
         - 'basic*.ipynb'
         - 'advanced*.ipynb'
+        - 'cryst*.ipynb'
         - 'pdf*.ipynb'
 #        - '*emcee*.ipynb' # Ignore notebooks with 'emcee' in the name from execution
 
