@@ -136,7 +136,6 @@ code-quality = { depends-on = [
 ] }
 pre-commit = { depends-on = ["code-quality", "test"] }
 
-
 convert-notebooks = 'jupytext tutorials/*.py --from py:percent --to ipynb'
 stripout-notebooks = 'nbstripout tutorials/*.ipynb'
 
