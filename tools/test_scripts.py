@@ -10,7 +10,6 @@ from pathlib import Path
 
 import pytest
 
-# Discover all Python scripts under the 'tutorials' directory recursively
 TUTORIALS = list(Path('tutorials').rglob('*.py'))
 
 
@@ -20,15 +19,6 @@ def test_script_runs(script_path: Path):
 
     Each script is run in the context of __main__ to mimic standalone execution.
     """
-    # Ensure the script path refers to an actual file
-    assert script_path.is_file(), f'Expected file does not exist: {script_path}'
-
-    # Ensure the script is located inside the 'tutorials' directory
-    assert script_path.resolve().is_relative_to(Path('tutorials').resolve()), (
-        f"Script is outside the 'tutorials' directory: {script_path}"
-    )
-
-    # Attempt to run the script using runpy
     try:
         runpy.run_path(str(script_path), run_name='__main__')
     except Exception as e:
