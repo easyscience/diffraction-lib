@@ -27,15 +27,14 @@ extra:
       name: EasyDiffraction Library Source Code on GitHub
 
 # Jupyter notebooks
-plugins:
-  - mkdocs-jupyter:
-      execute_ignore:
-        - 'quick*.ipynb'
-        - 'basic*.ipynb'
-        - 'advanced*.ipynb'
-        - 'cryst*.ipynb'
-        - 'pdf*.ipynb'
-#        - '*emcee*.ipynb' # Ignore notebooks with 'emcee' in the name from execution
+#plugins:
+#  - mkdocs-jupyter:
+#      execute_ignore:
+#        - 'quick*.ipynb'
+#        - 'basic*.ipynb'
+#        - 'advanced*.ipynb'
+#        - 'cryst*.ipynb'
+#        - 'pdf*.ipynb'
 
 ##################
 # Add new settings
