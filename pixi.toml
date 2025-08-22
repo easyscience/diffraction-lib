@@ -97,7 +97,7 @@ py313-prod = { features = ["py313", "prod"], solve-group = "py313" }
 [tasks]
 
 # Setup tasks
-fix-find-links = "python ./tools/fix_find_links.py"
+fix-find-links = "python tools/fix_find_links.py"
 
 # Install tasks
 install-prettier = "npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml"
