@@ -117,13 +117,21 @@ class PlotlyPlotter(PlotterBase):
         # because it can emit `application/vnd.plotly.v1+json` outputs that some toolchains warn about.
         # Instead, convert the figure to HTML and display it directly.
         # Use a regular Figure and show it
-        if not is_github_ci() or display is None or HTML is None:
-            fig.show(config=config)
-        else:
-            html_fig = pio.to_html(
-                fig,
-                include_plotlyjs='cdn',
-                full_html=False,
-                config=config,
-            )
-            display(HTML(html_fig))
+        #if not is_github_ci() or display is None or HTML is None:
+        #    fig.show(config=config)
+        #else:
+        #    html_fig = pio.to_html(
+        #        fig,
+        #        include_plotlyjs='cdn',
+        #        full_html=False,
+        #        config=config,
+        #    )
+        #    display(HTML(html_fig))
+
+        html_fig = pio.to_html(
+            fig,
+            include_plotlyjs='cdn',
+            full_html=False,
+            config=config,
+        )
+        display(HTML(html_fig))
