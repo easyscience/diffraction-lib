@@ -12,7 +12,7 @@ except ImportError:
     display = None
     HTML = None
 
-from easydiffraction.utils.utils import is_github_ci
+from easydiffraction.utils.utils import is_pycharm
 
 from .plotter_base import SERIES_CONFIG
 from .plotter_base import PlotterBase
@@ -111,13 +111,7 @@ class PlotlyPlotter(PlotterBase):
 
         # Show the figure
 
-        # In GitHub CI builds (e.g., during Jupyter Book generation), avoid
-        #
-        # calling `fig.show()`
-        # because it can emit `application/vnd.plotly.v1+json` outputs that some toolchains warn about.
-        # Instead, convert the figure to HTML and display it directly.
-        # Use a regular Figure and show it
-        if not is_github_ci() or display is None or HTML is None:
+        if is_pycharm() or display is None or HTML is None:
             fig.show(config=config)
         else:
             html_fig = pio.to_html(

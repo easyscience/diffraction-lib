@@ -14,11 +14,6 @@
 # offers a high-level interface focused specifically for diffraction analysis.
 #
 # This notebook is self-contained and designed for hands-on learning.
-# For more advanced features and additional capabilities of the EasyDiffraction
-# library, please see the official documentation:
-# https://docs.easydiffraction.org/lib
-
-# This notebook is self-contained and designed for hands-on learning.
 # However, if you're interested in exploring more advanced features or learning
 # about additional capabilities of the EasyDiffraction library, please refer to
 # the official documentation: https://docs.easydiffraction.org/lib
