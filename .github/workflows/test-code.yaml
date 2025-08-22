@@ -79,6 +79,16 @@ jobs:
           done
           pixi run install-prettier
 
+
+      - name: Debug current dir
+        run: |
+          pwd
+          ls -la
+          ls -la tools
+          
+
+
+
       # Check the validity of pyproject.toml
       - name: Check validity of pyproject.toml
         id: check_pyproject
