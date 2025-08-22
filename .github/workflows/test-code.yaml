@@ -85,6 +85,7 @@ jobs:
           pwd
           ls -la
           ls -la tools
+          pixi run fix-find-links default
           
 
 
