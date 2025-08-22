@@ -182,7 +182,6 @@ jobs:
           pixi run install-prettier
 
       - name: Run unit tests
-        if: False
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
@@ -191,7 +190,6 @@ jobs:
           done
 
       - name: Run functional tests
-        if: False
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
@@ -253,14 +251,6 @@ jobs:
         with: # name or path are taken from the upload step of the previous job
           name: edl_${{ matrix.os }}_${{ runner.arch }}
           path: . # directory to extract downloaded zipped artifacts
-
-      - name: Debug current dir
-        run: |
-          pwd
-          ls -la
-          ls -la tools
-          ls -la dist
-          ls -la dist/py313
 
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
