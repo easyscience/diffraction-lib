@@ -254,6 +254,14 @@ jobs:
           name: edl_${{ matrix.os }}_${{ runner.arch }}
           path: . # directory to extract downloaded zipped artifacts
 
+      - name: Debug current dir
+        run: |
+          pwd
+          ls -la
+          ls -la tools
+          ls -la dist
+          ls -la dist/py313
+
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
