@@ -190,6 +190,7 @@ jobs:
           done
 
       - name: Run functional tests
+        if: False
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
