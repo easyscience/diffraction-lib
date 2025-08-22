@@ -216,6 +216,8 @@ jobs:
           for env in ${{ env.PIXI_DEV_ENVS }}; do
             echo "🧪 Current env: $env"
             pixi run build
+            mkdir -p dist/$env
+            mv dist/*.whl dist/$env/
           done
 
       - name: Upload Python package built
@@ -223,7 +225,7 @@ jobs:
         with:
           name: edl_${{ matrix.os }}_${{ runner.arch }}
           path: |
-            dist/*.whl
+            dist/
             tests/
             pixi.toml
           if-no-files-found: 'error'
@@ -265,15 +267,14 @@ jobs:
       # and then downloaded in this job.
       - name: Remove easydiffraction from dev feature
         shell: bash
-        run: |
-          pixi remove --pypi --feature dev easydiffraction
-          pixi run fix-find-links
+        run: pixi remove --pypi --feature dev easydiffraction
 
       - name: Create pixi environments and install dependencies
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
             echo "🧪 Current env: $env"
+            pixi run fix-find-links $env
             pixi install -e $env
             echo "📦 Installed easydiffraction:"
             pixi run -e $env python -m pip show easydiffraction | grep ^Version:
