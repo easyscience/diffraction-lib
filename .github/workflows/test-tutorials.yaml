@@ -14,9 +14,10 @@ on:
   pull_request:
     branches:
       - '**'
-  # Trigger the workflow on a schedule (every day at midnight)
-  schedule:
-    - cron: '0 0 * * *'
+  # Trigger the workflow on workflow_call (to be called from other workflows)
+  # Needed, as standard schedule triggers the master branch only, but we want
+  # to run this workflow on develop branch.
+  workflow_call:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
