@@ -113,7 +113,7 @@ jobs:
           pixi run convert-notebooks
           pixi run stripout-notebooks
           pixi run python tools/prepare_notebooks.py ${{ env.NOTEBOOKS_DIR }}/
-          pixi run test-notebooks
+          pixi run run-notebooks
           mv ${{ env.NOTEBOOKS_DIR }}/*.ipynb docs/${{ env.NOTEBOOKS_DIR }}/
 
       # The following step is needed to avoid the following message during the build:
@@ -148,9 +148,7 @@ jobs:
       # This artifact is named github-pages and is a single gzip archive containing a single tar file
       # The artifact is then used in the next job by actions/deploy-pages to deploy the static files to GitHub Pages
       # Unfortunately, the artifact is not available for download, so extra steps below are needed to do similar things
-      - name:
-          Upload built site as artifact for easyscience.github.io/${{
-          github.event.repository.name }} (all branches)
+      - name: Upload built site as artifact for DEV deployment (all branches)
         uses: actions/upload-pages-artifact@v3
         with:
           path: site/
@@ -158,7 +156,7 @@ jobs:
       # Upload the static files from the site/ directory to be used in the next job
       # This artifact is only uploaded on tagged releases (tags starting with 'v', e.g., v1.0.3)
       # and is used to push content to gh_pages for custom domain deployment.
-      - name: Upload built site as artifact for gh_pages (tagged release)
+      - name: Upload built site as artifact for PROD deployment (tagged release)
         if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v4
         with:
@@ -196,14 +194,12 @@ jobs:
       # restrictions on the branch name need to be set for desired branches on
       # https://github.com/easyscience/diffraction-lib/settings/environments
       # Deployed pages are available at https://easyscience.github.io/diffraction-lib
-      - name:
-          Deploy to easyscience.github.io/${{ github.event.repository.name }}
-          (all branches) - DEV
+      - name: DEV deployment (all branches)
         uses: actions/deploy-pages@v4
 
-      - name: Show deployment link (all branches) - DEV
+      - name: Show DEV deployment link
         run: |
-          echo "::notice title=Deployed to GitHub Pages::🔗 https://easyscience.github.io/${{ github.event.repository.name }}"
+          echo "### 🔗 [DEV deployment link](https://easyscience.github.io/${{ github.event.repository.name }})" >> $GITHUB_STEP_SUMMARY
 
       # Download built site as artifact from a previous job for gh_pages (tagged release)
       # This artifact is only downloaded on tagged releases (tags starting with 'v', e.g., v1.0.3)
@@ -225,9 +221,7 @@ jobs:
       # Then the gh_pages branch is used to deploy the site to the custom domain.
       # Deploying is done with a webhook added via:
       # https://github.com/easyscience/diffraction-lib/settings/hooks
-      - name:
-          Deploy to gh_pages branch to trigger deployment to custom domain
-          (tagged release) - PROD
+      - name: PROD deployment to gh_pages for custom domain (tagged release)
         if: startsWith(github.ref, 'refs/tags/v')
         uses: s0/git-publish-subdir-action@develop
         env:
@@ -236,7 +230,6 @@ jobs:
           BRANCH: gh_pages
           FOLDER: site
 
-      - name: Show deployment link (tagged release) - PROD
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Show PROD deployment link
         run: |
-          echo "::notice title=Deployed to::🔗 https://docs.easydiffraction.org/lib"
+          echo "### 🔗 [PROD Deployment link](https://docs.easydiffraction.org/lib)" >> $GITHUB_STEP_SUMMARY

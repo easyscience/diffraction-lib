@@ -147,6 +147,7 @@ stripout-notebooks = 'nbstripout tutorials/*.ipynb'
 check-format-notebooks = 'nbqa ruff tutorials/'
 fix-format-notebooks = 'nbqa ruff tutorials/ --fix'
 
+run-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --overwrite --color=yes -n auto -v'
 test-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
 
 test-scripts = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
