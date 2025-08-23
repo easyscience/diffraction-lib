@@ -66,40 +66,28 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          run-install: false # Do not install the current project at this step
+          run-install: true
+          locked: true
           cache: false
           post-cleanup: false
 
-      - name: Create pixi environments and install dependencies
+      - name: Install extra tools (Prettier)
         shell: bash
-        run: |
-          for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🧪 Current env: $env"
-            pixi install -e $env --locked
-          done
-          pixi run install-prettier
+        run: pixi run install-prettier
 
       # Check the validity of pyproject.toml
       - name: Check validity of pyproject.toml
         id: check_pyproject
         continue-on-error: true
         shell: bash
-        run: |
-          for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🧪 Current env: $env"
-            pixi run -e $env check-pyproject
-          done
+        run: pixi run check-pyproject
 
       # Check code linting with Ruff in the project root
       - name: Check code linting
         id: check_code_linting
         continue-on-error: true
         shell: bash
-        run: |
-          for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🧪 Current env: $env"
-            pixi run -e $env check-lint-py
-          done
+        run: pixi run check-lint-py
 
       - name: Suggestion to fix code linting issues (*.py files)
         if: steps.check_code_linting.outcome == 'failure'
@@ -111,11 +99,7 @@ jobs:
         id: check_code_formatting
         continue-on-error: true
         shell: bash
-        run: |
-          for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🧪 Current env: $env"
-            pixi run -e $env check-format-py
-          done
+        run: pixi run check-format-py
 
       - name: Suggestion to fix code formatting issues (*.py files)
         if: steps.check_code_formatting.outcome == 'failure'
@@ -128,11 +112,7 @@ jobs:
         id: check_others_formatting
         continue-on-error: true
         shell: bash
-        run: |
-          for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🧪 Current env: $env"
-            pixi run -e $env check-format-non-py
-          done
+        run: pixi run check-format-non-py
 
       - name: Suggestion to fix non-code formatting issues (*.md, *.yml, etc.)
         if: steps.check_others_formatting.outcome == 'failure'
@@ -211,12 +191,11 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            pixi run echo "🧪 Current env: $env"
+            echo "🧪 Current env: $env"
             pixi run build
             env_prefix="${env%%-*}"
             pixi run mkdir -p dist/$env_prefix
             pixi run mv dist/*.whl dist/$env_prefix/
-            echo "pixi run sleep 1"
           done
 
       - name: Upload Python package built
@@ -278,9 +257,8 @@ jobs:
             pixi run fix-find-links $env_prefix
             pixi install -e $env
             echo "📦 Installed easydiffraction:"
-            pixi run sleep 1
-            pixi run -e $env python -m pip show easydiffraction | grep ^Version:
             echo "pixi run sleep 1"
+            pixi run -e $env python -m pip show easydiffraction | grep ^Version:
           done
 
       - name: Run unit tests (using built package from previous job)
