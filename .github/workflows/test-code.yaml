@@ -191,7 +191,7 @@ jobs:
         if: startsWith(github.ref , 'refs/tags/v') != true
         run: git tag --delete $(git tag)
 
-      - name: Create Python package for the next job
+      - name: Create Python package
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
@@ -205,7 +205,7 @@ jobs:
             pixi run mv dist/*.whl dist/$env_prefix/
           done
 
-      - name: Upload Python package built
+      - name: Upload Python package for the next job
         uses: actions/upload-artifact@v4
         with:
           name: edl_${{ matrix.os }}_${{ runner.arch }}
