@@ -214,11 +214,12 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🧪 Current env: $env"
+            pixi run echo "🧪 Current env: $env"
             pixi run build
             env_prefix="${env%%-*}"
-            mkdir -p dist/$env_prefix
-            mv dist/*.whl dist/$env_prefix/
+            pixi run mkdir -p dist/$env_prefix
+            pixi run mv dist/*.whl dist/$env_prefix/
+            pixi run sleep 1
           done
 
       - name: Upload Python package built
@@ -280,7 +281,9 @@ jobs:
             pixi run fix-find-links $env_prefix
             pixi install -e $env
             echo "📦 Installed easydiffraction:"
+            pixi run sleep 1
             pixi run -e $env python -m pip show easydiffraction | grep ^Version:
+            pixi run sleep 1
           done
 
       - name: Run unit tests (using built package from previous job)
