@@ -197,18 +197,13 @@ jobs:
             pixi run -e $env func-tests
           done
 
-      # Ensures a consistent high version like 999.0.0 when not on a tagged commit
+      # Delete all local tags when not on a tagged commit to force versioningit
+      # to fall back to the configured default-tag, which is '999.0.0' in our case.
       # This is needed for testing the package in the next job, as its version
       # must be higher than the PyPI version for pip to prefer the local version.
-      - name: Inject fallback version tag if not on a real tag
-        shell: bash
-        run: |
-          if ! git describe --tags --match "v*" --exact-match > /dev/null 2>&1; then
-            echo "Not on release tag — applying fallback 'v999.0.0'"
-            git tag v999.0.0
-          else
-            echo "On a valid tag"
-          fi
+      - name: Force using versioningit default tag (non tagged release)
+        if: !startsWith(github.ref, 'refs/tags/v')
+        run: git tag --delete $(git tag)
 
       - name: Create Python package for the next job
         shell: bash
@@ -219,7 +214,7 @@ jobs:
             env_prefix="${env%%-*}"
             pixi run mkdir -p dist/$env_prefix
             pixi run mv dist/*.whl dist/$env_prefix/
-            pixi run sleep 1
+            echo "pixi run sleep 1"
           done
 
       - name: Upload Python package built
