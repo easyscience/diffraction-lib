@@ -156,7 +156,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo ""
+            echo
             echo "🧪 Current env: $env"
             pixi install -e $env --locked
           done
@@ -166,7 +166,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo ""
+            echo
             echo "🧪 Current env: $env"
             pixi run -e $env unit-tests
           done
@@ -175,7 +175,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo ""
+            echo
             echo "🧪 Current env: $env"
             pixi run -e $env func-tests
           done
@@ -192,7 +192,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo ""
+            echo
             echo "🧪 Current env: $env"
             pixi run build
             echo "📦 Moving built wheel to dist/$env_prefix/"
@@ -255,7 +255,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
-            echo ""
+            echo
             echo "🧪 Current env: $env"
             env_prefix="${env%%-*}"
             pixi run fix-find-links $env_prefix
@@ -269,7 +269,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
-            echo ""
+            echo
             echo "🧪 Current env: $env"
             pixi run -e $env unit-tests
           done
@@ -278,7 +278,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
-            echo ""
+            echo
             echo "🧪 Current env: $env"
             pixi run -e $env func-tests
           done
