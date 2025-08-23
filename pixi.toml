@@ -58,6 +58,10 @@ find-links = [{ path = "." }]
 # Then fall back to PyPI for any missing dependencies
 index-url = "https://pypi.org/simple"
 
+# Documentation
+[feature.docs.pypi-dependencies]
+easydiffraction = { version = "*", extras = ["dev", "visualization", "docs"] }
+
 ##############
 # ENVIRONMENTS
 ##############
@@ -89,6 +93,7 @@ py312-prod = { features = ["py312", "prod"], solve-group = "py312" }
 
 py313-dev = { features = ["py313", "dev"], solve-group = "py313" }
 py313-prod = { features = ["py313", "prod"], solve-group = "py313" }
+py313-docs = { features = ["py313", "docs"], solve-group = "py313" }
 
 #######
 # TASKS

@@ -27,9 +27,10 @@ extra:
       name: EasyDiffraction Library Source Code on GitHub
 
 # Jupyter notebooks
-#plugins:
-#  - mkdocs-jupyter:
-#      execute_ignore:
+plugins:
+  - mkdocs-jupyter:
+      execute_ignore:
+        - '*.ipynb' # Do not execute any notebooks
 #        - 'quick*.ipynb'
 #        - 'basic*.ipynb'
 #        - 'advanced*.ipynb'
