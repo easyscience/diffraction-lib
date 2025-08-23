@@ -202,7 +202,8 @@ jobs:
       # This is needed for testing the package in the next job, as its version
       # must be higher than the PyPI version for pip to prefer the local version.
       - name: Force using versioningit default tag (non tagged release)
-        if: !startsWith(github.ref, 'refs/tags/v')
+        if: >-
+          !startsWith(github.ref , 'refs/tags/v')
         run: git tag --delete $(git tag)
 
       - name: Create Python package for the next job
@@ -278,7 +279,7 @@ jobs:
             echo "📦 Installed easydiffraction:"
             pixi run sleep 1
             pixi run -e $env python -m pip show easydiffraction | grep ^Version:
-            pixi run sleep 1
+            echo "pixi run sleep 1"
           done
 
       - name: Run unit tests (using built package from previous job)
