@@ -203,7 +203,6 @@ dependency management and virtual environment handling.
 
 - Install Pixi by following the instructions on the
   [Pixi Installation Guide](https://pixi.sh/latest/installation).
-
 - Create a dedicated directory for the EasyDiffraction and navigate into it:
   ```bash
   mkdid easydiffraction
@@ -218,26 +217,20 @@ dependency management and virtual environment handling.
   pixi add python==3.13 jupyterlab pixi-kernel
   ```
 - Add EasyDiffraction with visualization extras as a PyPI dependency:
-
   ```bash
   pixi add --pypi 'easydiffraction[visualization]'
   ```
-
 - Add a task to download the latest EasyDiffraction tutorials from GitHub:
-
   ```bash
   pixi task add fetch-tutorials 'curl --location --remote-name https://github.com/easyscience/diffraction-lib/releases/latest/download/tutorials.zip && unzip tutorials.zip && rm tutorials.zip'
   ```
-
 - Run the above task to fetch and unzip the tutorials:
   ```bash
   pixi task run fetch-tutorials
   ```
 - Start JupyterLab in the `tutorials/` directory to access the notebooks:
-
   ```bash
   pixi jupyter lab tutorials/
   ```
-
 - Your web browser should open automatically. Click on one of the `*.ipynb`
   files and select the `Python (Pixi)` kernel to get started.
