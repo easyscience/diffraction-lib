@@ -42,9 +42,11 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Set the environment vars to be used in all jobs defined in this workflow
-  # Set the CI_BRANCH environment var to be the branch name
-  # Set the NOTEBOOKS_DIR environment var to be the dir of Jupyter notebooks
+  # Set the environment variables to be used in all jobs defined in this workflow
+  # CI_BRANCH - the branch name (used in mkdocs.yml)
+  # NOTEBOOKS_DIR - the directory containing the Jupyter notebooks (used in mkdocs.yml)
+  # PIXI_DEV_ENVS - the pixi development environments to be used in the run-tests job
+  # PIXI_PROD_ENVS - the pixi production environments to be used in the test-package job
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
   NOTEBOOKS_DIR: tutorials
   PIXI_DEV_ENVS: 'py311-dev py312-dev py313-dev'
@@ -156,9 +158,8 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
+            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             echo "🧪 Current env: $env"
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             pixi install -e $env --locked
           done
           pixi run install-prettier
@@ -167,9 +168,8 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
+            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             echo "🧪 Current env: $env"
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             pixi run -e $env unit-tests
           done
 
@@ -177,9 +177,8 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
+            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             echo "🧪 Current env: $env"
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             pixi run -e $env func-tests
           done
 
@@ -195,9 +194,8 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
+            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             echo "🧪 Current env: $env"
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             pixi run build
             env_prefix="${env%%-*}"
             echo "📦 Moving built wheel to dist/$env_prefix/"
@@ -259,9 +257,8 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
+            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             echo "🧪 Current env: $env"
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             env_prefix="${env%%-*}"
             pixi run fix-find-links $env_prefix
             pixi install -e $env
@@ -274,9 +271,8 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
+            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             echo "🧪 Current env: $env"
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             pixi run -e $env unit-tests
           done
 
@@ -284,8 +280,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
+            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             echo "🧪 Current env: $env"
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
             pixi run -e $env func-tests
           done

@@ -20,9 +20,11 @@ concurrency:
 
 env:
   # Set the environment variables to be used in all jobs defined in this workflow
-  # Set the CI_BRANCH environment variable to be the branch name
-  # Set the NOTEBOOKS_DIR environment variable to be the directory containing the Jupyter notebooks
+  # CI_BRANCH - the branch name (used in mkdocs.yml)
+  # GITHUB_REPOSITORY - the repository name (used in mkdocs.yml)
+  # NOTEBOOKS_DIR - the directory containing the Jupyter notebooks (used in mkdocs.yml)
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
+  GITHUB_REPOSITORY: ${{ github.repository }}
   NOTEBOOKS_DIR: tutorials
 
 jobs:
@@ -47,10 +49,6 @@ jobs:
         run: |
           git fetch --tags --force
           echo "RELEASE_VERSION=$(git describe --tags --abbrev=0)" >> "$GITHUB_ENV"
-
-      # Without this step, GITHUB_REPOSITORY is not accessible from mkdocs.yml
-      - name: Set GITHUB_REPOSITORY env variable
-        run: echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY" >> "$GITHUB_ENV"
 
       # Activate dark mode to create documentation with Plotly charts in dark mode
       # Need a better solution to automatically switch the chart colour theme based on the mkdocs material switcher

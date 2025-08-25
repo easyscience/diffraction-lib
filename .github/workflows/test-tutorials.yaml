@@ -30,9 +30,9 @@ concurrency:
 
 env:
   # Set the environment variables to be used in all jobs defined in this workflow
-  # Set the CI_BRANCH environment variable to be the branch name
-  # Set the NOTEBOOKS_DIR environment var to be the dir of Jupyter notebooks
-  # Set PYTHONIOENCODING to utf-8 to avoid encoding issues on Windows
+  # CI_BRANCH - the branch name (used in mkdocs.yml)
+  # NOTEBOOKS_DIR - the directory containing the Jupyter notebooks (used in mkdocs.yml)
+  # PYTHONIOENCODING - set to utf-8 to avoid encoding issues on Windows
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
   NOTEBOOKS_DIR: tutorials
   PYTHONIOENCODING: utf-8

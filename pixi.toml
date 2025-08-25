@@ -128,6 +128,9 @@ lint-py = "python -m ruff check . --fix"
 format-py = "python -m ruff format ."
 format-non-py = "npx prettier . --list-different --write --config=prettierrc.toml"
 
+# Development tasks
+update-spdx = "python tools/update_spdx.py"
+
 # Building tasks
 build = "python -m build --wheel --outdir dist"
 
