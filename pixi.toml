@@ -16,9 +16,10 @@ platforms = [
 # Default feature configuration
 
 [dependencies] # short for [feature.default.dependencies]
-# CBLAS library for linear algebra. Needed for pdffit2 on Windows
-libcblas = "*"
-pip = "*"
+libcblas = "*"    # CBLAS library for linear algebra. Needed for pdffit2 on Windows
+pip = "*"         # Needed to install from PyPI
+jupyterlab = "*"  # JupyterLab for notebooks
+pixi-kernel = "*" # IPython kernel for Jupyter
 
 # Extra features for different Python versions
 
@@ -133,6 +134,9 @@ update-spdx = "python tools/update_spdx.py"
 
 # Building tasks
 build = "python -m build --wheel --outdir dist"
+
+# Downloading tasks
+fetch-tutorials = "curl --location --remote-name https://github.com/easyscience/diffraction-lib/releases/latest/download/tutorials.zip && unzip tutorials.zip && rm tutorials.zip"
 
 # Composed tasks
 test = { depends-on = ["unit-tests", "func-tests"] }
