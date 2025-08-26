@@ -58,11 +58,8 @@ jobs:
       - name: Fetch and unzip the EasyDiffraction tutorials
         run: pixi run fetch-tutorials
 
-      # JPY_SESSION_NAME is set to fake_name.ipynb to avoid Jupyter warnings:
-      # [NbConvertApp] ERROR | Failed to get notebook path from JPY_SESSION_NAME variable.
       - name: Test execution of one of the tutorial notebooks
         run: |
-          export JPY_SESSION_NAME="fake_name.ipynb"
           pixi run jupyter nbconvert \
           --to notebook \
           --execute tutorials/quick_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb \
