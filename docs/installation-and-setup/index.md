@@ -216,9 +216,9 @@ Pixi:
   ```bash
   pixi init
   ```
-- Add Python 3.13, JupyterLab, and the Pixi kernel as dependencies:
+- Add Python 3.13, JupyterLab, Pixi kernel and CBLAS (windows) as dependencies:
   ```bash
-  pixi add python==3.13 jupyterlab pixi-kernel
+  pixi add python==3.13 jupyterlab pixi-kernel libcblas
   ```
 - Add EasyDiffraction with visualization extras as a PyPI dependency:
   ```bash

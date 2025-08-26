@@ -44,7 +44,7 @@ jobs:
         run: pixi init
 
       - name: Add Conda dependencies
-        run: pixi add python==3.13 jupyterlab pixi-kernel
+        run: pixi add python==3.13 jupyterlab pixi-kernel libcblas
 
       - name: Add PyPI dependencies
         run: pixi add --pypi 'easydiffraction[visualization]'
