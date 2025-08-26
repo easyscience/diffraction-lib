@@ -159,9 +159,13 @@ them interactively in two ways:
 To run tutorials locally, install **Jupyter Notebook** or **JupyterLab**. Here
 are the steps to follow in the case of **Jupyter Notebook**:
 
-- Install Jupyter Notebook:
+- Install Jupyter Notebook and IPython kernel:
   ```bash
-  pip install notebook
+  pip install notebook ipykernel
+  ```
+- Add the virtual environment as a Jupyter kernel
+  ```bash
+  python -m ipykernel install --user --name=venv --display-name "EasyDiffraction Python kernel"
   ```
 - Download the latest EasyDiffraction tutorial examples from GitHub, e.g., using
   curl:
@@ -180,7 +184,8 @@ are the steps to follow in the case of **Jupyter Notebook**:
   ```bash
   http://localhost:8888/
   ```
-- Open one of the `*.ipynb` files.
+- Open one of the `*.ipynb` files and select the `EasyDiffraction Python kernel`
+  to get started.
 
 ### Run Tutorials via Google Colab
 
