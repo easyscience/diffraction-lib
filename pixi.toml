@@ -40,7 +40,7 @@ python = "3.13.*"
 nodejs = "*" # Needed for prettier
 
 [feature.dev.pypi-dependencies]
-easydiffraction = { path = ".", extras = [
+easydiffraction = { path = ".", editable = true, extras = [
   "visualization",
   "dev",
 ] } # Uses the local source code based on pyproject.toml
@@ -158,3 +158,5 @@ run-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --ove
 test-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
 
 test-scripts = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
+
+easydiffraction = "python -m easydiffraction"
