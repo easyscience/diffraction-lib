@@ -196,14 +196,14 @@ To use Google Colab:
 This is the fastest way to start experimenting with EasyDiffraction, without
 setting up Python on your system.
 
-## Installing with Pixi <small>alternative</small> { #from-pypi data-toc-label="Installing with Pixi" }
+## Installing with Pixi <small>alternative</small> { #installing-with-pixi data-toc-label="Installing with Pixi" }
 
 [Pixi](https://pixi.sh) is a modern package and environment manager for Python
 and Conda-compatible packages. It simplifies dependency management, environment
 isolation, and reproducibility.
 
-The following steps will guide you through setting up EasyDiffraction using
-Pixi:
+The following steps provide an alternative setup method for EasyDiffraction
+using Pixi, replacing the traditional virtual environment approach.
 
 - Install Pixi by following the instructions on the
   [official Pixi Installation Guide](https://pixi.sh/latest/installation).
