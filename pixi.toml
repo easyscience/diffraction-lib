@@ -35,15 +35,25 @@ python = "3.12.*"
 [feature.py313.dependencies]
 python = "3.13.*"
 
-# Development
+# Development (local)
+[feature.dev-local.dependencies]
+nodejs = "*" # Needed for prettier
+
+[feature.dev-local.pypi-dependencies]
+easydiffraction = { path = ".", editable = true, extras = [
+  "visualization",
+  "dev",
+] } # Uses the local source code based on pyproject.toml. Do not install ED.
+
+# Development (CI)
 [feature.dev.dependencies]
 nodejs = "*" # Needed for prettier
 
 [feature.dev.pypi-dependencies]
-easydiffraction = { path = ".", editable = true, extras = [
+easydiffraction = { path = ".", extras = [
   "visualization",
   "dev",
-] } # Uses the local source code based on pyproject.toml
+] } # Uses the local source code based on pyproject.toml. Install ED from src/
 
 # Production
 [feature.prod.pypi-dependencies]
@@ -84,8 +94,6 @@ easydiffraction = { version = "*", extras = ["dev", "visualization", "docs"] }
 # share the same versions for overlapping deps, while Python 3.12/3.11 get
 # their own solves.
 
-default = ["py313", "dev"]
-
 py311-dev = { features = ["py311", "dev"], solve-group = "py311" }
 py311-prod = { features = ["py311", "prod"], solve-group = "py311" }
 
@@ -95,6 +103,8 @@ py312-prod = { features = ["py312", "prod"], solve-group = "py312" }
 py313-dev = { features = ["py313", "dev"], solve-group = "py313" }
 py313-prod = { features = ["py313", "prod"], solve-group = "py313" }
 py313-docs = { features = ["py313", "docs"], solve-group = "py313" }
+
+default = ["py313", "dev-local"]
 
 #######
 # TASKS
