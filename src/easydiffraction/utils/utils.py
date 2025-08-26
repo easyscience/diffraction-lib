@@ -6,9 +6,12 @@ General utilities and helpers for easydiffraction.
 """
 
 import importlib
+import io
 import os
 import re
+import zipfile
 from typing import List
+from urllib.parse import urlparse
 
 import numpy as np
 import pandas as pd
@@ -23,6 +26,21 @@ except ImportError:
     IPython = None
 
 from easydiffraction.utils.formatting import warning
+
+
+def _validate_url(url: str) -> None:
+    """Validate that a URL uses only safe HTTP/HTTPS schemes.
+
+    Args:
+        url: The URL to validate.
+
+    Raises:
+        ValueError: If the URL scheme is not HTTP or HTTPS.
+    """
+    parsed = urlparse(url)
+    if parsed.scheme not in ('http', 'https'):
+        raise ValueError(f"Unsafe URL scheme '{parsed.scheme}'. Only HTTP and HTTPS are allowed.")
+
 
 # Single source of truth for the data repository branch.
 # This can be overridden in CI or development environments.
@@ -68,6 +86,82 @@ def download_from_repository(
         fname=file_name,
         path=destination,
     )
+
+
+def fetch_tutorials() -> None:
+    """
+    Download and extract the latest tutorials ZIP archive from GitHub releases.
+
+    Downloads from:
+        https://github.com/easyscience/diffraction-lib/releases/latest/download/tutorials.zip
+
+    The archive is extracted into the current working directory and then removed.
+    """
+    import os
+    import urllib.request
+    import zipfile
+
+    file_url = 'https://github.com/easyscience/diffraction-lib/releases/latest/download/tutorials.zip'
+    file_name = 'tutorials.zip'
+
+    # Validate URL for security
+    _validate_url(file_url)
+
+    print('📥 Downloading tutorial notebooks...')
+    urllib.request.urlretrieve(file_url, file_name)  # noqa: S310
+
+    print('📦 Extracting tutorials...')
+    with zipfile.ZipFile(file_name, 'r') as zip_ref:
+        zip_ref.extractall()
+
+    print('🧹 Cleaning up...')
+    os.remove(file_name)
+
+    print('✅ Tutorials fetched successfully.')
+
+
+def list_tutorials() -> list[str]:
+    """
+    List available tutorial file names from the latest GitHub release.
+
+    Returns:
+        list[str]: A list of tutorial file names (without directories) found in the tutorials.zip archive.
+    """
+    import json
+    import urllib.request
+
+    api_url = 'https://api.github.com/repos/easyscience/diffraction-lib/releases/latest'
+    try:
+        # Validate URL for security
+        _validate_url(api_url)
+        with urllib.request.urlopen(api_url) as response:  # noqa: S310
+            release_info = json.load(response)
+    except Exception as e:
+        print(f'⚠️ Failed to fetch release info: {e}')
+        return []
+
+    assets = release_info.get('assets', [])
+    tutorial_asset = next((a for a in assets if a['name'] == 'tutorials.zip'), None)
+    if not tutorial_asset:
+        print("⚠️ 'tutorials.zip' not found in the latest release.")
+        return []
+
+    try:
+        # Validate URL for security
+        download_url = tutorial_asset['browser_download_url']
+        _validate_url(download_url)
+        with urllib.request.urlopen(download_url) as response:  # noqa: S310
+            with zipfile.ZipFile(io.BytesIO(response.read())) as zip_file:
+                return sorted(
+                    [
+                        os.path.basename(name)
+                        for name in zip_file.namelist()
+                        if name.endswith('.ipynb') and not name.endswith('/')
+                    ]
+                )
+    except Exception as e:
+        print(f"⚠️ Failed to download or parse 'tutorials.zip': {e}")
+        return []
 
 
 def is_notebook() -> bool:
