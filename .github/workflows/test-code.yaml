@@ -73,9 +73,11 @@ jobs:
           cache: false
           post-cleanup: false
 
-      - name: Install extra tools (Prettier)
+      - name: Install extra tools (Prettier via GitHub npm mirror)
         shell: bash
-        run: pixi run install-prettier
+        run: | 
+          pixi run npm config set registry https://registry.npmjs.org/
+          pixi run install-prettier
 
       # Check the validity of pyproject.toml
       - name: Check validity of pyproject.toml
