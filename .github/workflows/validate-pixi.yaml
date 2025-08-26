@@ -60,6 +60,9 @@ jobs:
       - name: Add a task to run EasyDiffraction from the command line
         run: pixi task add easydiffraction "python -m easydiffraction"
 
+      - name: List the available EasyDiffraction tutorials
+        run: pixi run easydiffraction list-tutorials
+
       - name: Fetch the EasyDiffraction tutorials
         run: pixi run easydiffraction fetch-tutorials
 
