@@ -161,7 +161,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi install -e $env --locked
+            pixi install -e $env
           done
           pixi run install-prettier
 
