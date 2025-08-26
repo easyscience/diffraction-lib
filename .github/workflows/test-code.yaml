@@ -160,8 +160,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
-            echo "🧪 Current env: $env"
+            echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi install -e $env --locked
           done
           pixi run install-prettier
@@ -170,8 +169,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
-            echo "🧪 Current env: $env"
+            echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run -e $env unit-tests
           done
 
@@ -179,8 +177,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
-            echo "🧪 Current env: $env"
+            echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run -e $env func-tests
           done
 
@@ -196,8 +193,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
-            echo "🧪 Current env: $env"
+            echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run build
             env_prefix="${env%%-*}"
             echo "📦 Moving built wheel to dist/$env_prefix/"
@@ -259,8 +255,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
-            echo "🧪 Current env: $env"
+            echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             env_prefix="${env%%-*}"
             pixi run fix-find-links $env_prefix
             pixi install -e $env
@@ -273,8 +268,7 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
-            echo "🧪 Current env: $env"
+            echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run -e $env unit-tests
           done
 
@@ -282,7 +276,6 @@ jobs:
         shell: bash
         run: |
           for env in ${{ env.PIXI_PROD_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸🔹🔸"
-            echo "🧪 Current env: $env"
+            echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run -e $env func-tests
           done
