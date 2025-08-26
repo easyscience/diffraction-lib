@@ -69,7 +69,7 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
           run-install: true
-          locked: false
+          locked: true
           cache: false
           post-cleanup: false
 
@@ -161,7 +161,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_DEV_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi install -e $env
+            pixi install -e $env --locked
           done
           pixi run install-prettier
 
