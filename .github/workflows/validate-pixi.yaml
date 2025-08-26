@@ -52,7 +52,7 @@ jobs:
           git+https://github.com/easyscience/diffraction-lib@pixi"
 
       - name: Add a task to run EasyDiffraction from the command line
-        run: pixi task add easydiffraction python -m easydiffraction
+        run: pixi task add easydiffraction "python -m easydiffraction"
 
       - name: Fetch the EasyDiffraction tutorials
         run: pixi run easydiffraction fetch-tutorials

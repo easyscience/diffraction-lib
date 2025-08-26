@@ -231,7 +231,7 @@ using Pixi, replacing the traditional virtual environment approach.
   ```
 - Add a task to run EasyDiffraction from the command line:
   ```bash
-  pixi task add easydiffraction python -m easydiffraction
+  pixi task add easydiffraction "python -m easydiffraction"
   ```
 - Fetch the EasyDiffraction tutorials:
   ```bash
