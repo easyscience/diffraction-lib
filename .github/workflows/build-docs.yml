@@ -18,8 +18,8 @@ concurrency:
     ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Set the environment variables to be used in all jobs defined in this workflow
 env:
-  # Set the environment variables to be used in all jobs defined in this workflow
   # CI_BRANCH - the branch name (used in mkdocs.yml)
   # GITHUB_REPOSITORY - the repository name (used in mkdocs.yml)
   # NOTEBOOKS_DIR - the directory containing the Jupyter notebooks (used in mkdocs.yml)

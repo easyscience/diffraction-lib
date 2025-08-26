@@ -24,6 +24,11 @@ concurrency:
     ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Set the environment variables to be used in all jobs defined in this workflow
+env:
+  # CI_BRANCH - the branch name (used in mkdocs.yml)
+  CI_BRANCH: ${{ github.head_ref || github.ref_name }}
+
 jobs:
   validate-pixi:
     strategy:
@@ -49,7 +54,7 @@ jobs:
       - name: Add PyPI dependencies
         run: >
           pixi add --pypi "easydiffraction[visualization] @
-          git+https://github.com/easyscience/diffraction-lib@pixi"
+          git+https://github.com/easyscience/diffraction-lib@${{env.CI_BRANCH}}"
 
       - name: Add a task to run EasyDiffraction from the command line
         run: pixi task add easydiffraction "python -m easydiffraction"
