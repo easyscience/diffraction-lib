@@ -26,6 +26,8 @@ dependencies = [
   'tabulate',       # Pretty-print tabular data for terminal output
   'asciichartpy',   # ASCII charts for terminal output
   'pooch',          # Data downloader
+  'typer',          # Command-line interface creation
+  'rich',           # Rich text and beautiful formatting in the terminal
   'varname',        # Variable name introspection
   'asteval',        # An expression evaluator for Python
   'scipy',          # Scientific computing library

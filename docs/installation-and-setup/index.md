@@ -229,17 +229,17 @@ using Pixi, replacing the traditional virtual environment approach.
   ```bash
   pixi add --pypi 'easydiffraction[visualization]'
   ```
-- Add a task to download the latest EasyDiffraction tutorials from GitHub:
+- Add a task to run EasyDiffraction from the command line:
   ```bash
-  pixi task add fetch-tutorials "python -c \"import urllib.request, zipfile, os; f='tutorials.zip'; urllib.request.urlretrieve('https://github.com/easyscience/diffraction-lib/releases/latest/download/tutorials.zip', f); zipfile.ZipFile(f).extractall(); os.remove(f)\""
+  pixi task add easydiffraction python -m easydiffraction
   ```
-- Run the above task to fetch and unzip the tutorials:
+- Fetch the EasyDiffraction tutorials:
   ```bash
-  pixi run fetch-tutorials
+  pixi run easydiffraction fetch-tutorials
   ```
 - Start JupyterLab in the `tutorials/` directory to access the notebooks:
   ```bash
-  pixi jupyter lab tutorials/
+  pixi run jupyter lab tutorials
   ```
 - Your web browser should open automatically. Click on one of the `*.ipynb`
   files and select the `Python (Pixi)` kernel to get started.

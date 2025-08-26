@@ -47,17 +47,15 @@ jobs:
         run: pixi add python==3.13 jupyterlab pixi-kernel libcblas
 
       - name: Add PyPI dependencies
-        run: pixi add --pypi 'easydiffraction[visualization]'
-
-      - name: Add a task to fetch the EasyDiffraction tutorials
         run: >
-          pixi task add fetch-tutorials "python -c \"import urllib.request,
-          zipfile, os; f='tutorials.zip';
-          urllib.request.urlretrieve('https://github.com/easyscience/diffraction-lib/releases/latest/download/tutorials.zip',
-          f); zipfile.ZipFile(f).extractall(); os.remove(f)\""
+          pixi add --pypi "easydiffraction[visualization] @
+          git+https://github.com/easyscience/diffraction-lib@pixi"
 
-      - name: Fetch and unzip the EasyDiffraction tutorials
-        run: pixi run fetch-tutorials
+      - name: Add a task to run EasyDiffraction from the command line
+        run: pixi task add easydiffraction python -m easydiffraction
+
+      - name: Fetch the EasyDiffraction tutorials
+        run: pixi run easydiffraction fetch-tutorials
 
       - name: Test execution of one of the tutorial notebooks
         shell: bash
