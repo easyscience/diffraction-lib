@@ -33,9 +33,6 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
