@@ -71,7 +71,7 @@ jobs:
             py313-docs
           activate-environment: py313-docs
           run-install: true
-          locked: true
+          locked: false
           cache: false
           post-cleanup: false
 

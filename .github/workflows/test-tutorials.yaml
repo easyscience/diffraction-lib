@@ -54,6 +54,7 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
           run-install: true
+          locked: false
           cache: false
           post-cleanup: false
 
