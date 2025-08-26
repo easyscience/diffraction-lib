@@ -40,7 +40,7 @@ python = "3.13.*"
 nodejs = "*" # Needed for prettier
 
 [feature.dev-local.pypi-dependencies]
-easydiffraction = { path = ".", editable = true, extras = [
+easydiffraction = { path = ".", editable = false, extras = [
   "visualization",
   "dev",
 ] } # Uses the local source code based on pyproject.toml. Do not install ED.
