@@ -1,3 +1,10 @@
+import sys
+
+# Ensure UTF-8 output on all platforms (e.g. Windows with cp1252)
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+
 import typer
 from rich.console import Console
 from rich.table import Table
