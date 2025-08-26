@@ -59,10 +59,8 @@ jobs:
         run: pixi run fetch-tutorials
 
       - name: Test execution of one of the tutorial notebooks
-        run: |
-          pixi run jupyter nbconvert \
-          --to notebook \
-          --execute tutorials/quick_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb \
-          --inplace \
-          --ExecutePreprocessor.kernel_name=pixi-kernel-python3 \
-          --log-level=WARN
+        shell: bash
+        run: >
+          pixi run jupyter nbconvert --to notebook --execute
+          tutorials/quick_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb --inplace
+          --ExecutePreprocessor.kernel_name=pixi-kernel-python3 --log-level=WARN
