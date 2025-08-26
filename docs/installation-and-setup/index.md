@@ -231,7 +231,7 @@ using Pixi, replacing the traditional virtual environment approach.
   ```
 - Add a task to download the latest EasyDiffraction tutorials from GitHub:
   ```bash
-  pixi task add fetch-tutorials 'curl --location --remote-name https://github.com/easyscience/diffraction-lib/releases/latest/download/tutorials.zip && unzip tutorials.zip && rm tutorials.zip'
+  pixi task add fetch-tutorials "python -c \"import urllib.request, zipfile, os; f='tutorials.zip'; urllib.request.urlretrieve('https://github.com/easyscience/diffraction-lib/releases/latest/download/tutorials.zip', f); zipfile.ZipFile(f).extractall(); os.remove(f)\""
   ```
 - Run the above task to fetch and unzip the tutorials:
   ```bash

@@ -50,10 +50,11 @@ jobs:
         run: pixi add --pypi 'easydiffraction[visualization]'
 
       - name: Add a task to fetch the EasyDiffraction tutorials
-        run:
-          pixi task add fetch-tutorials 'curl --location --remote-name
-          https://github.com/easyscience/diffraction-lib/releases/latest/download/tutorials.zip
-          && unzip tutorials.zip && rm tutorials.zip'
+        run: >
+          pixi task add fetch-tutorials "python -c \"import urllib.request,
+          zipfile, os; f='tutorials.zip';
+          urllib.request.urlretrieve('https://github.com/easyscience/diffraction-lib/releases/latest/download/tutorials.zip',
+          f); zipfile.ZipFile(f).extractall(); os.remove(f)\""
 
       - name: Fetch and unzip the EasyDiffraction tutorials
         run: pixi run fetch-tutorials
