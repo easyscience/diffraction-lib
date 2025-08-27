@@ -209,6 +209,7 @@ jobs:
           name: edl_${{ matrix.os }}_${{ runner.arch }}
           path: |
             dist/
+            LICENSE
           if-no-files-found: 'error'
           compression-level: 0
 
