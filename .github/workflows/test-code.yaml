@@ -72,7 +72,7 @@ jobs:
             py313-dev
           activate-environment: py313-dev
           run-install: true
-          locked: true
+          frozen: true
           cache: false
           post-cleanup: false
 
