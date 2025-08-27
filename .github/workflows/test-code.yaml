@@ -79,9 +79,9 @@ jobs:
           cache: false
           post-cleanup: false
 
-
   # Job 1: Check code quality and consistency
   code-quality:
+    needs: qwe # previous job needs to be finished first
     strategy:
       matrix:
         os: [ubuntu-latest]
