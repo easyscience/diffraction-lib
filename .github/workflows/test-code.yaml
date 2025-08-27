@@ -207,6 +207,7 @@ jobs:
             dist/
             tools/
             pixi.toml
+            pyproject.toml
           if-no-files-found: 'error'
           compression-level: 0
 
