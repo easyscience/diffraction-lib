@@ -205,9 +205,6 @@ jobs:
           name: edl_${{ matrix.os }}_${{ runner.arch }}
           path: |
             dist/
-            src/
-            pixi.toml
-            pyproject.toml
           if-no-files-found: 'error'
           compression-level: 0
 
@@ -226,6 +223,9 @@ jobs:
       PIXI_ENVS: 'py311-wheel py312-wheel py313-wheel'
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name:
           Download zipped Python package (incl. extra files) from previous job
         uses: actions/download-artifact@v4
@@ -236,7 +236,8 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          run-install: false
+          run-install: true
+          frozen: true
           cache: false
           post-cleanup: false
 
@@ -250,8 +251,6 @@ jobs:
             whl_path="$(python3 -c "import pathlib; w = sorted(pathlib.Path('dist/${env_prefix}').glob('*.whl')); print(w[0].resolve().as_uri())")"
             echo "📦 Adding easydiffraction from: $whl_path"
             pixi add --feature $env --pypi "easydiffraction[dev,visualization] @ $whl_path"
-            echo "🔧Installing dependencies for $env"
-            pixi install -e $env
             echo "📦 Installed easydiffraction:"
             pixi run sleep 1 # Needed to get the correct version in the next line
             pixi run -e $env python -m pip show easydiffraction | grep ^Version:
