@@ -60,7 +60,7 @@ easydiffraction = { path = ".", extras = ["dev", "visualization"] }
 # This feature is used for development in CI, where the easydiffraction package
 # is installed from a built wheel file. The path to the wheel file will be
 # added dynamically in CI.
-[feature.dev-wheel.pypi-dependencies]
+#[feature.dev-wheel.pypi-dependencies]
 
 # Production
 # This feature is used for production, where the package is installed from
@@ -106,9 +106,13 @@ py311-dev = { features = ["py311", "dev", "prettier"], solve-group = "py311" }
 py312-dev = { features = ["py312", "dev", "prettier"], solve-group = "py312" }
 py313-dev = { features = ["py313", "dev", "prettier"], solve-group = "py313" }
 
-py311-dev-wheel = { features = ["py311", "dev-wheel"] }
-py312-dev-wheel = { features = ["py312", "dev-wheel"] }
-py313-dev-wheel = { features = ["py313", "dev-wheel"] }
+#py311-dev-wheel = { features = ["py311", "dev-wheel"] }
+#py312-dev-wheel = { features = ["py312", "dev-wheel"] }
+#py313-dev-wheel = { features = ["py313", "dev-wheel"] }
+
+py311-dev-wheel = { features = ["py311"] }
+py312-dev-wheel = { features = ["py312"] }
+py313-dev-wheel = { features = ["py313"] }
 
 py313-docs = { features = ["py313", "docs"], solve-group = "py313" }
 

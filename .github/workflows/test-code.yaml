@@ -49,8 +49,8 @@ env:
   # PIXI_DEV_WHEEL_ENVS - the pixi production environments to be used in the test-package job
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
   NOTEBOOKS_DIR: tutorials
-  PIXI_DEV_ENVS: 'py311-dev py312-dev py313-dev'
-  PIXI_DEV_WHEEL_ENVS: 'py311-dev-wheel py312-dev-wheel py313-dev-wheel'
+  #PIXI_DEV_ENVS: 'py311-dev py312-dev py313-dev'
+  #PIXI_DEV_WHEEL_ENVS: 'py311-dev-wheel py312-dev-wheel py313-dev-wheel'
 
 jobs:
   # Job 1: Check code quality and consistency
@@ -248,11 +248,12 @@ jobs:
       - name: Add easydiffraction package from the built wheel
         shell: bash
         run: |
-          for env in ${{ env.PIXI_DEV_WHEEL_ENVS }}; do
+          for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            env_prefix="${env%%-*}" 
+            env_prefix="${env%%-*}"
             whl_path="$(python3 -c "import pathlib; w = sorted(pathlib.Path('dist/${env_prefix}').glob('*.whl')); print(w[0].resolve().as_uri())")"
-            pixi add --pypi "easydiffraction[dev,visualization] @ $whl_path" --feature $env_prefix
+            pixi remove --pypi --feature $env_prefix easydiffraction
+            pixi add --pypi --feature $env_prefix "easydiffraction[dev,visualization] @ $whl_path"
             echo "📦 Installed easydiffraction:"
             pixi run sleep 1 # Needed to get the correct version in the next line
             pixi run -e $env python -m pip show easydiffraction | grep ^Version:
@@ -262,7 +263,7 @@ jobs:
         if: false # Temporarily disable
         shell: bash
         run: |
-          for env in ${{ env.PIXI_DEV_WHEEL_ENVS }}; do
+          for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi install -e $env --frozen
             echo "📦 Installed easydiffraction:"
@@ -273,7 +274,7 @@ jobs:
       - name: Run unit tests (using built package from previous job)
         shell: bash
         run: |
-          for env in ${{ env.PIXI_DEV_WHEEL_ENVS }}; do
+          for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run -e $env unit-tests
           done
@@ -281,7 +282,7 @@ jobs:
       - name: Run functional tests (using built package from previous job)
         shell: bash
         run: |
-          for env in ${{ env.PIXI_DEV_WHEEL_ENVS }}; do
+          for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run -e $env func-tests
           done
