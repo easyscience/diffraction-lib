@@ -102,9 +102,9 @@ nodejs = "*" # Needed for prettier
 # share the same versions for overlapping deps, while Python 3.12/3.11 get
 # their own solves.
 
-py311-dev = { features = ["py311", "dev", "prettier"], solve-group = "py311" }
-py312-dev = { features = ["py312", "dev", "prettier"], solve-group = "py312" }
-py313-dev = { features = ["py313", "dev", "prettier"], solve-group = "py313" }
+py311-dev = { features = ["py311", "dev", "prettier"] }
+py312-dev = { features = ["py312", "dev", "prettier"] }
+py313-dev = { features = ["py313", "dev", "prettier"] }
 
 #py311-dev-wheel = { features = ["py311", "dev-wheel"] }
 #py312-dev-wheel = { features = ["py312", "dev-wheel"] }
@@ -114,11 +114,11 @@ py311-dev-wheel = { features = ["py311"] }
 py312-dev-wheel = { features = ["py312"] }
 py313-dev-wheel = { features = ["py313"] }
 
-py313-docs = { features = ["py313", "docs"], solve-group = "py313" }
+py313-docs = { features = ["py313", "docs"] }
 
-py313-prod = { features = ["py313", "prod"], solve-group = "py313" }
+py313-prod = { features = ["py313", "prod"] }
 
-default = ["py313", "dev-editable"]
+default = { features = ["py313", "dev-editable"] }
 
 #######
 # TASKS
