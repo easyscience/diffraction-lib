@@ -226,13 +226,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name:
-          Download zipped Python package (incl. extra files) from previous job
-        uses: actions/download-artifact@v4
-        with: # name or path are taken from the upload step of the previous job
-          name: edl_${{ matrix.os }}_${{ runner.arch }}
-          path: . # directory to extract downloaded zipped artifacts
-
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
@@ -242,12 +235,21 @@ jobs:
           cache: false
           post-cleanup: false
 
+      - name:
+          Download zipped Python package (incl. extra files) from previous job
+        uses: actions/download-artifact@v4
+        with: # name or path are taken from the upload step of the previous job
+          name: edl_${{ matrix.os }}_${{ runner.arch }}
+          path: . # directory to extract downloaded zipped artifacts
+
       - name: Add easydiffraction package from the built wheel
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             env_prefix="${env%%-*}"
+            ls -l dist/
+            ls -l dist/$env_prefix/
             echo "📦 Looking for wheel in dist/$env_prefix/"
             whl_path="$(python3 -c "import pathlib; w = sorted(pathlib.Path('dist/${env_prefix}').glob('*.whl')); print(w[0].resolve().as_uri())")"
             echo "📦 Adding easydiffraction from: $whl_path"
