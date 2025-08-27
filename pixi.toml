@@ -42,7 +42,7 @@ python = "3.13.*"
 # reflected immediately without needing to reinstall the package.
 # This feature should be deleted in CI, because otherwise the pixi lock file
 # created locally will be considered as outdated in CI.
-[feature.dev-editable.pypi-dependencies]
+[feature.ed-local-editable.pypi-dependencies]
 easydiffraction = { editable = true, path = ".", extras = [
   "dev",
   "visualization",
@@ -53,7 +53,7 @@ easydiffraction = { editable = true, path = ".", extras = [
 # is installed from the local source code defined in the pyproject.toml, but
 # not in editable mode. This ensures that the lock file update locally will
 # work in CI.
-[feature.dev.pypi-dependencies]
+[feature.ed-local.pypi-dependencies]
 easydiffraction = { path = ".", extras = ["dev", "visualization"] }
 
 # Development (wheel)
@@ -65,20 +65,20 @@ easydiffraction = { path = ".", extras = ["dev", "visualization"] }
 # Production
 # This feature is used for production, where the package is installed from
 # PyPI.
-[feature.prod.pypi-dependencies]
+[feature.ed-pypi.pypi-dependencies]
 easydiffraction = { version = "*", extras = ["dev", "visualization"] }
 
 # Documentation
 # This feature is used to build the documentation, where the package is
 # installed from PyPI with the additional dependencies needed for building
 # the docs.
-[feature.docs.pypi-dependencies]
+[feature.ed-pypi-with-docs.pypi-dependencies]
 easydiffraction = { version = "*", extras = ["dev", "visualization", "docs"] }
 
 # Prettier
 # This feature is used to install Node.js and Prettier for formatting
 # non-Python files.
-[feature.prettier.dependencies]
+[feature.nodejs.dependencies]
 nodejs = "*" # Needed for prettier
 
 ##############
@@ -102,9 +102,9 @@ nodejs = "*" # Needed for prettier
 # share the same versions for overlapping deps, while Python 3.12/3.11 get
 # their own solves.
 
-py311-dev = { features = ["py311", "dev", "prettier"] }
-py312-dev = { features = ["py312", "dev", "prettier"] }
-py313-dev = { features = ["py313", "dev", "prettier"] }
+py311-dev = { features = ["py311", "ed-local", "nodejs"] }
+py312-dev = { features = ["py312", "ed-local", "nodejs"] }
+py313-dev = { features = ["py313", "ed-local", "nodejs"] }
 
 #py311-dev-wheel = { features = ["py311", "dev-wheel"] }
 #py312-dev-wheel = { features = ["py312", "dev-wheel"] }
@@ -114,11 +114,13 @@ py311-dev-wheel = { features = ["py311"] }
 py312-dev-wheel = { features = ["py312"] }
 py313-dev-wheel = { features = ["py313"] }
 
-py313-docs = { features = ["py313", "docs"] }
+py313-docs = { features = ["py313", "ed-pypi-with-docs"] }
 
-py313-prod = { features = ["py313", "prod"] }
+py313-prod = { features = ["py313", "ed-pypi"] }
 
-default = { features = ["py313", "dev-editable"] }
+dev = { features = ["py313", "ed-local-editable"] }
+
+default = { features = ["py313"] }
 
 #######
 # TASKS
