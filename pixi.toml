@@ -135,8 +135,10 @@ remove-ed-dev = "pixi remove --pypi --feature dev easydiffraction"
 update-deps = "pixi update"
 
 # Testing tasks
-unit-tests = "python -m pytest tests/unit_tests/ --color=yes -v"
-func-tests = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
+unit-tests-dev = "python -m pytest tests/unit_tests/ --color=yes -v"
+func-tests-dev = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
+unit-tests = "python -m pytest --color=yes --pyargs easydiffraction.tests.unit_tests"
+func-tests = "python -m pytest --color=yes -n auto --pyargs easydiffraction.tests.functional_tests"
 
 # Check code quality tasks
 check-pyproject = "python -m validate_pyproject pyproject.toml"
