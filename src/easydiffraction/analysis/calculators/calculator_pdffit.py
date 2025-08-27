@@ -17,7 +17,8 @@ try:
     from diffpy.structure.parsers.p_cif import P_cif as pdffit_cif_parser
 
     redirect_stdout(open(os.path.devnull, 'w'))  # silence the C++ engine output
-    print("✅ 'pdffit' calculation engine is successfully imported.")
+    # TODO: Add the following print to debug mode
+    # print("✅ 'pdffit' calculation engine is successfully imported.")
 except ImportError:
     # TODO: Add the following print to debug mode
     # print("⚠️ 'pdffit' module not found. This calculation engine will not be available.")
