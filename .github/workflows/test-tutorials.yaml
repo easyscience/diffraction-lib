@@ -35,7 +35,7 @@ env:
   # PYTHONIOENCODING - set to utf-8 to avoid encoding issues on Windows
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
   NOTEBOOKS_DIR: tutorials
-  PYTHONIOENCODING: utf-8
+  #PYTHONIOENCODING: utf-8
 
 jobs:
   # Job 1: Check code quality and consistency
@@ -53,8 +53,11 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
+          environments: >-
+            py313-dev
+          activate-environment: py313-dev
           run-install: true
-          locked: true
+          frozen: true
           cache: false
           post-cleanup: false
 
@@ -97,8 +100,11 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
+          environments: >-
+            py313-dev
+          activate-environment: py313-dev
           run-install: true
-          locked: true
+          frozen: true
           cache: false
           post-cleanup: false
 
