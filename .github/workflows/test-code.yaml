@@ -236,6 +236,7 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
+          environments: ${{ env.PIXI_ENVS }}
           run-install: true
           frozen: true
           cache: false
