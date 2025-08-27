@@ -238,6 +238,7 @@ jobs:
             dist/
             tools/
             pixi.toml
+            pixi.lock
           if-no-files-found: 'error'
           compression-level: 0
 
