@@ -35,43 +35,48 @@ python = "3.12.*"
 [feature.py313.dependencies]
 python = "3.13.*"
 
-# Development (local)
-[feature.dev-local.dependencies]
-nodejs = "*" # Needed for prettier
+# Development (editable)
+# This feature is used for local development with editable installation of
+# easydiffraction. Effectively, the source code defined in the pyproject.toml
+# will be used directly without installing the package. The changes are
+# reflected immediately without needing to reinstall the package.
+# This feature should be deleted in CI, because otherwise the pixi lock file
+# created locally will be considered as outdated in CI.
+[feature.dev-editable.pypi-dependencies]
+easydiffraction = { editable = true, path = ".", extras = ["dev", "visualization"] }
 
-[feature.dev-local.pypi-dependencies]
-easydiffraction = { path = ".", editable = false, extras = [
-  "visualization",
-  "dev",
-] } # Uses the local source code based on pyproject.toml. Do not install ED.
-
-# Development (CI)
-[feature.dev.dependencies]
-nodejs = "*" # Needed for prettier
-
+# Development (non-editable)
+# This feature is used for development in CI, where the easydiffraction
+# is installed from the local source code defined in the pyproject.toml, but
+# not in editable mode. This ensures that the lock file update locally will
+# work in CI.
 [feature.dev.pypi-dependencies]
-easydiffraction = { path = ".", extras = [
-  "visualization",
-  "dev",
-] } # Uses the local source code based on pyproject.toml. Install ED from src/
+easydiffraction = { path = ".", extras = ["dev", "visualization"] }
+
+# Development (wheel)
+# This feature is used for development in CI, where the easydiffraction package
+# is installed from a built wheel file. The path to the wheel file will be
+# added dynamically in CI.
+[feature.dev-wheel.pypi-dependencies]
 
 # Production
+# This feature is used for production, where the package is installed from
+# PyPI.
 [feature.prod.pypi-dependencies]
-easydiffraction = { version = "*", extras = [
-  "dev",
-  "visualization",
-] } # Uses the package based on [feature.prod.pypi-options]
-
-[feature.prod.pypi-options]
-# "." will be replaced with "dist" in CI
-# First look in your local dist directory
-find-links = [{ path = "." }]
-# Then fall back to PyPI for any missing dependencies
-index-url = "https://pypi.org/simple"
+easydiffraction = { version = "*", extras = ["dev", "visualization"] }
 
 # Documentation
+# This feature is used to build the documentation, where the package is
+# installed from PyPI with the additional dependencies needed for building
+# the docs.
 [feature.docs.pypi-dependencies]
 easydiffraction = { version = "*", extras = ["dev", "visualization", "docs"] }
+
+# Prettier
+# This feature is used to install Node.js and Prettier for formatting
+# non-Python files.
+[feature.prettier.dependencies]
+nodejs = "*" # Needed for prettier
 
 ##############
 # ENVIRONMENTS
@@ -94,17 +99,18 @@ easydiffraction = { version = "*", extras = ["dev", "visualization", "docs"] }
 # share the same versions for overlapping deps, while Python 3.12/3.11 get
 # their own solves.
 
-py311-dev = { features = ["py311", "dev"], solve-group = "py311" }
-py311-prod = { features = ["py311", "prod"], solve-group = "py311" }
+py311-dev = { features = ["py311", "dev", "prettier"], solve-group = "py311" }
+py311-dev-wheel = { features = ["py311", "dev-wheel"], solve-group = "py311" }
 
-py312-dev = { features = ["py312", "dev"], solve-group = "py312" }
-py312-prod = { features = ["py312", "prod"], solve-group = "py312" }
+py312-dev = { features = ["py312", "dev", "prettier"], solve-group = "py312" }
+py312-dev-wheel = { features = ["py312", "dev-wheel"], solve-group = "py312" }
 
-py313-dev = { features = ["py313", "dev"], solve-group = "py313" }
-py313-prod = { features = ["py313", "prod"], solve-group = "py313" }
+py313-dev = { features = ["py313", "dev", "prettier"], solve-group = "py313" }
+py313-dev-wheel = { features = ["py313", "dev-wheel"], solve-group = "py313" }
 py313-docs = { features = ["py313", "docs"], solve-group = "py313" }
+py313-prod = { features = ["py313", "prod"], solve-group = "py313" }
 
-default = ["py313", "dev-local"]
+default = ["py313", "dev-editable"]
 
 #######
 # TASKS
@@ -170,3 +176,4 @@ test-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --co
 test-scripts = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
 
 easydiffraction = "python -m easydiffraction"
+

@@ -46,11 +46,11 @@ env:
   # CI_BRANCH - the branch name (used in mkdocs.yml)
   # NOTEBOOKS_DIR - the directory containing the Jupyter notebooks (used in mkdocs.yml)
   # PIXI_DEV_ENVS - the pixi development environments to be used in the run-tests job
-  # PIXI_PROD_ENVS - the pixi production environments to be used in the test-package job
+  # PIXI_DEV_WHEEL_ENVS - the pixi production environments to be used in the test-package job
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
   NOTEBOOKS_DIR: tutorials
   PIXI_DEV_ENVS: 'py311-dev py312-dev py313-dev'
-  PIXI_PROD_ENVS: 'py311-prod py312-prod py313-prod'
+  PIXI_DEV_WHEEL_ENVS: 'py311-dev-wheel py312-dev-wheel py313-dev-wheel'
 
 jobs:
   # Job 1: Check code quality and consistency
@@ -68,6 +68,9 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
+          environments: >-
+            py313-dev
+          activate-environment: py313-dev
           run-install: true
           locked: true
           cache: false
@@ -143,6 +146,9 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    env:
+      PIXI_ENVS: 'py311-dev py312-dev py313-dev'
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -152,7 +158,8 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          run-install: false # Do not install the current project at this step
+          environments: ${{ env.PIXI_ENVS }}
+          run-install: true
           cache: false
           post-cleanup: false
 
@@ -254,7 +261,7 @@ jobs:
       - name: Create pixi environments and install dependencies
         shell: bash
         run: |
-          for env in ${{ env.PIXI_PROD_ENVS }}; do
+          for env in ${{ env.PIXI_DEV_WHEEL_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             env_prefix="${env%%-*}"
             pixi run fix-find-links $env_prefix
@@ -267,7 +274,7 @@ jobs:
       - name: Run unit tests (using built package from previous job)
         shell: bash
         run: |
-          for env in ${{ env.PIXI_PROD_ENVS }}; do
+          for env in ${{ env.PIXI_DEV_WHEEL_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run -e $env unit-tests
           done
@@ -275,7 +282,7 @@ jobs:
       - name: Run functional tests (using built package from previous job)
         shell: bash
         run: |
-          for env in ${{ env.PIXI_PROD_ENVS }}; do
+          for env in ${{ env.PIXI_DEV_WHEEL_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run -e $env func-tests
           done
