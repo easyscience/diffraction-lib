@@ -15,7 +15,7 @@ platforms = [
 
 # Default feature configuration
 
-[dependencies] # short for [feature.default.dependencies]
+[feature.base.dependencies]
 libcblas = "*"    # CBLAS library for linear algebra. Needed for pdffit2 on Windows
 pip = "*"         # Needed to install from PyPI
 jupyterlab = "*"  # JupyterLab for notebooks
@@ -60,7 +60,7 @@ easydiffraction = { path = ".", extras = ["dev", "visualization"] }
 # This feature is used for development in CI, where the easydiffraction package
 # is installed from a built wheel file. The path to the wheel file will be
 # added dynamically in CI.
-#[feature.dev-wheel.pypi-dependencies]
+#[feature.ed-wheel.pypi-dependencies]
 
 # Production
 # This feature is used for production, where the package is installed from
@@ -102,25 +102,25 @@ nodejs = "*" # Needed for prettier
 # share the same versions for overlapping deps, while Python 3.12/3.11 get
 # their own solves.
 
-py311-dev = { features = ["py311", "ed-local", "nodejs"] }
-py312-dev = { features = ["py312", "ed-local", "nodejs"] }
-py313-dev = { features = ["py313", "ed-local", "nodejs"] }
+py311-dev = { features = ["base", "py311", "ed-local", "nodejs"] }
+py312-dev = { features = ["base", "py312", "ed-local", "nodejs"] }
+py313-dev = { features = ["base", "py313", "ed-local", "nodejs"] }
 
 #py311-dev-wheel = { features = ["py311", "dev-wheel"] }
 #py312-dev-wheel = { features = ["py312", "dev-wheel"] }
 #py313-dev-wheel = { features = ["py313", "dev-wheel"] }
 
-py311-dev-wheel = { features = ["py311"] }
-py312-dev-wheel = { features = ["py312"] }
-py313-dev-wheel = { features = ["py313"] }
+py311-dev-wheel = { features = ["base", "py311"] }
+py312-dev-wheel = { features = ["base", "py312"] }
+py313-dev-wheel = { features = ["base", "py313"] }
 
-py313-docs = { features = ["py313", "ed-pypi-with-docs"] }
+py313-docs = { features = ["base", "py313", "ed-pypi-with-docs"] }
 
-py313-prod = { features = ["py313", "ed-pypi"] }
+py313-prod = { features = ["base", "py313", "ed-pypi"] }
 
-dev = { features = ["py313", "ed-local-editable"] }
+dev = { features = ["base", "py313", "ed-local-editable"] }
 
-default = { features = ["py313"] }
+default = { features = ["base", "py313"] }
 
 #######
 # TASKS
