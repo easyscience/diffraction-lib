@@ -279,8 +279,10 @@ jobs:
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             env_prefix="${env%%-*}"
+            echo "📦 Looking for wheel in dist/$env_prefix/"
             whl_path="$(python3 -c "import pathlib; w = sorted(pathlib.Path('dist/${env_prefix}').glob('*.whl')); print(w[0].resolve().as_uri())")"
-            pixi add --pypi --feature $env_prefix "easydiffraction[dev,visualization] @ $whl_path"
+            echo "📦 Installing easydiffraction from wheel: $whl_path"
+            pixi add --pypi --feature $env_prefix "easydiffraction[dev,visualization] @ ${whl_path}"
             echo "📦 Installed easydiffraction:"
             pixi run sleep 1 # Needed to get the correct version in the next line
             pixi run -e $env python -m pip show easydiffraction | grep ^Version:
