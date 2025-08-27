@@ -205,7 +205,7 @@ jobs:
           name: edl_${{ matrix.os }}_${{ runner.arch }}
           path: |
             dist/
-            tools/
+            src/
             pixi.toml
             pyproject.toml
           if-no-files-found: 'error'
