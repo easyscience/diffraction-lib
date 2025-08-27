@@ -43,7 +43,10 @@ python = "3.13.*"
 # This feature should be deleted in CI, because otherwise the pixi lock file
 # created locally will be considered as outdated in CI.
 [feature.dev-editable.pypi-dependencies]
-easydiffraction = { editable = true, path = ".", extras = ["dev", "visualization"] }
+easydiffraction = { editable = true, path = ".", extras = [
+  "dev",
+  "visualization",
+] }
 
 # Development (non-editable)
 # This feature is used for development in CI, where the easydiffraction
@@ -177,4 +180,3 @@ test-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --co
 test-scripts = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
 
 easydiffraction = "python -m easydiffraction"
-
