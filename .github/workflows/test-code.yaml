@@ -197,6 +197,10 @@ jobs:
             echo "📦 Moving built wheel to dist/$env_prefix/"
             pixi run mkdir -p dist/$env_prefix
             pixi run mv dist/*.whl dist/$env_prefix/
+          
+            ls -l
+            ls -l dist/
+            ls -l dist/$env_prefix/
           done
 
       - name: Upload Python package for the next job
@@ -248,6 +252,7 @@ jobs:
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             env_prefix="${env%%-*}"
+            ls -l
             ls -l dist/
             ls -l dist/$env_prefix/
             echo "📦 Looking for wheel in dist/$env_prefix/"
