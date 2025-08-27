@@ -139,7 +139,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
+        os: [ubuntu-24.04] #, windows-2022, macos-13, macos-14]
 
     runs-on: ${{ matrix.os }}
 
@@ -218,7 +218,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
+        os: [ubuntu-24.04] #, windows-2022, macos-13, macos-14]
 
     runs-on: ${{ matrix.os }}
 
@@ -237,7 +237,7 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
           environments: ${{ env.PIXI_ENVS }}
-          run-install: true
+          run-install: false
           cache: false
           post-cleanup: false
 
@@ -251,6 +251,8 @@ jobs:
             whl_path="$(python3 -c "import pathlib; w = sorted(pathlib.Path('dist/${env_prefix}').glob('*.whl')); print(w[0].resolve().as_uri())")"
             echo "📦 Adding easydiffraction from: $whl_path"
             pixi add --feature $env --pypi "easydiffraction[dev,visualization] @ $whl_path"
+            echo "🔧Installing dependencies for $env"
+            pixi install -e $env
             echo "📦 Installed easydiffraction:"
             pixi run sleep 1 # Needed to get the correct version in the next line
             pixi run -e $env python -m pip show easydiffraction | grep ^Version:
