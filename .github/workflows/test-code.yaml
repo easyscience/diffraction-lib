@@ -53,6 +53,33 @@ env:
   #PIXI_DEV_WHEEL_ENVS: 'py311-dev-wheel py312-dev-wheel py313-dev-wheel'
 
 jobs:
+  qwe:
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-24.04]
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      PIXI_ENVS: 'py311-dev py311-dev-wheel'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: '0' # full history with tags to get the version number by versioningit
+
+      - name: Set up pixi (incl. environments and dependencies)
+        uses: prefix-dev/setup-pixi@v0.9.0
+        with:
+          environments: ${{ env.PIXI_ENVS }}
+          run-install: true
+          frozen: true
+          cache: false
+          post-cleanup: false
+
+
   # Job 1: Check code quality and consistency
   code-quality:
     strategy:
