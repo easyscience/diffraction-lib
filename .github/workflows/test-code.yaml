@@ -65,7 +65,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up pixi
+      - name: Set up pixi (incl. environments and dependencies)
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
           environments: >-
@@ -155,27 +155,19 @@ jobs:
         with:
           fetch-depth: '0' # full history with tags to get the version number by versioningit
 
-      - name: Set up pixi
+      - name: Set up pixi (incl. environments and dependencies)
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
           environments: ${{ env.PIXI_ENVS }}
           run-install: true
+          frozen: true
           cache: false
           post-cleanup: false
-
-      - name: Create pixi environments and install dependencies
-        shell: bash
-        run: |
-          for env in ${{ env.PIXI_DEV_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi install -e $env --locked
-          done
-          pixi run install-prettier
 
       - name: Run unit tests
         shell: bash
         run: |
-          for env in ${{ env.PIXI_DEV_ENVS }}; do
+          for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run -e $env unit-tests
           done
@@ -183,7 +175,7 @@ jobs:
       - name: Run functional tests
         shell: bash
         run: |
-          for env in ${{ env.PIXI_DEV_ENVS }}; do
+          for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run -e $env func-tests
           done
@@ -199,7 +191,7 @@ jobs:
       - name: Create Python package
         shell: bash
         run: |
-          for env in ${{ env.PIXI_DEV_ENVS }}; do
+          for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run build
             env_prefix="${env%%-*}"
@@ -231,6 +223,9 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    env:
+      PIXI_ENVS: 'py311-dev-wheel py312-dev-wheel py313-dev-wheel'
+
     steps:
       - name:
           Download zipped Python package (incl. extra files) from previous job
@@ -242,30 +237,24 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          run-install: false # Do not install the current project at this step
+          environments: ${{ env.PIXI_ENVS }}
+          run-install: false
+          frozen: true
           cache: false
           post-cleanup: false
-
-      # 1. Remove easydiffraction from dev feature
-      # This is needed for pixi to work correctly, as otherwise it will try to
-      # solve easydiffraction as a dependency in the dev feature, which will
-      # fail as we do not have the pyproject.toml file in the downloaded
-      # artifact.
-      # 2. Replaces "." with "dist" in pixi.toml to find the built package
-      # This is needed as "dist" directory is only created in the previous job
-      # and then downloaded in this job.
-      - name: Remove easydiffraction from dev feature
-        shell: bash
-        run: pixi remove --pypi --feature dev easydiffraction
 
       - name: Create pixi environments and install dependencies
         shell: bash
         run: |
           for env in ${{ env.PIXI_DEV_WHEEL_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            env_prefix="${env%%-*}"
-            pixi run fix-find-links $env_prefix
-            pixi install -e $env
+            env_prefix="${env%%-*}" 
+            whl_path="$(python3 -c "import pathlib; w = sorted(pathlib.Path('dist/${env_prefix}').glob('*.whl')); print(w[0].resolve().as_uri())")"
+            pixi add --pypi "easydiffraction[dev,visualization] @ ${whl_path}" --feature ${env}
+          done          
+          for env in ${{ env.PIXI_DEV_WHEEL_ENVS }}; do
+            echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
+            pixi install -e ${env}
             echo "📦 Installed easydiffraction:"
             pixi run sleep 1 # Needed to get the correct version in the next line
             pixi run -e $env python -m pip show easydiffraction | grep ^Version:
