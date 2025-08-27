@@ -120,7 +120,7 @@ py313-prod = { features = ["base", "py313", "ed-pypi"] }
 
 dev = { features = ["base", "py313", "ed-local-editable"] }
 
-default = { features = ["base", "py313"] }
+default = { features = [] }
 
 #######
 # TASKS
