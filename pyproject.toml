@@ -100,10 +100,6 @@ requires = ['hatchling', 'versioningit']
 [tool.hatch.build.targets.wheel]
 packages = ['src/easydiffraction']
 
-[tool.hatch.build]
-#include = ["tests/**/*", "tutorials/**/*", "docs/**/*"]
-include = ["tests/**/*"]
-
 [tool.hatch.metadata]
 allow-direct-references = true
 

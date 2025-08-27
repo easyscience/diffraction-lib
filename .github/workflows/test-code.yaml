@@ -187,6 +187,10 @@ jobs:
         if: startsWith(github.ref , 'refs/tags/v') != true
         run: git tag --delete $(git tag)
 
+      - name: Move tests inside the package
+        shell: bash
+        run: mv tests/ src/easydiffraction/tests/
+
       - name: Create Python package
         shell: bash
         run: |
@@ -197,10 +201,6 @@ jobs:
             echo "📦 Moving built wheel to dist/$env_prefix/"
             pixi run mkdir -p dist/$env_prefix
             pixi run mv dist/*.whl dist/$env_prefix/
-
-            ls -l
-            ls -l dist/
-            ls -l dist/$env_prefix/
           done
 
       - name: Upload Python package for the next job
@@ -253,9 +253,6 @@ jobs:
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             env_prefix="${env%%-*}"
-            ls -l
-            ls -l dist/
-            ls -l dist/$env_prefix/
             echo "📦 Looking for wheel in dist/$env_prefix/"
             whl_path="$(python3 -c "import pathlib; w = sorted(pathlib.Path('dist/${env_prefix}').glob('*.whl')); print(w[0].resolve().as_uri())")"
             echo "📦 Adding easydiffraction from: $whl_path"
