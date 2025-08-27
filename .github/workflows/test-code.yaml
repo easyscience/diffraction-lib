@@ -139,7 +139,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04] #, windows-2022, macos-13, macos-14]
+        os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
 
     runs-on: ${{ matrix.os }}
 
@@ -167,7 +167,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run -e $env unit-tests-dev
+            pixi run -e $env unit-tests
           done
 
       - name: Run functional tests
@@ -176,7 +176,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run -e $env func-tests-dev
+            pixi run -e $env func-tests
           done
 
       # Delete all local tags when not on a tagged commit to force versioningit
@@ -203,6 +203,8 @@ jobs:
             pixi run mv dist/*.whl dist/$env_prefix/
           done
 
+      # LICENSE file (or any other extra files) is only added to preserve the
+      # structure of the dist/ directory, not only its contents.
       - name: Upload Python package for the next job
         uses: actions/upload-artifact@v4
         with:
@@ -220,7 +222,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04] #, windows-2022, macos-13, macos-14]
+        os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
 
     runs-on: ${{ matrix.os }}
 
@@ -262,24 +264,12 @@ jobs:
             pixi run -e $env python -m pip show easydiffraction | grep ^Version:
           done
 
-      - name: Create pixi environments and install dependencies
-        if: false # Temporarily disable
-        shell: bash
-        run: |
-          for env in ${{ env.PIXI_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi install -e $env --frozen
-            echo "📦 Installed easydiffraction:"
-            pixi run sleep 1 # Needed to get the correct version in the next line
-            pixi run -e $env python -m pip show easydiffraction | grep ^Version:
-          done
-
       - name: Run unit tests (using built package from previous job)
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run -e $env unit-tests
+            pixi run -e $env unit-tests-package
           done
 
       - name: Run functional tests (using built package from previous job)
@@ -287,5 +277,5 @@ jobs:
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run -e $env func-tests
+            pixi run -e $env func-tests-package
           done
