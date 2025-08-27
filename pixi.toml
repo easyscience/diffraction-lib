@@ -15,7 +15,7 @@ platforms = [
 
 # Default feature configuration
 
-[feature.base.dependencies]
+[dependencies] # == [feature.default.dependencies]
 libcblas = "*"    # CBLAS library for linear algebra. Needed for pdffit2 on Windows
 pip = "*"         # Needed to install from PyPI
 jupyterlab = "*"  # JupyterLab for notebooks
@@ -23,61 +23,66 @@ pixi-kernel = "*" # IPython kernel for Jupyter
 
 # Extra features for different Python versions
 
-# Python 3.11
+# These features are used to specify the Python version for the environment.
+# Each feature corresponds to a specific Python version.
+
 [feature.py311.dependencies]
 python = "3.11.*"
 
-# Python 3.12
 [feature.py312.dependencies]
 python = "3.12.*"
 
-# Python 3.13
 [feature.py313.dependencies]
 python = "3.13.*"
 
-# Development (editable)
+# These features are used to install the easydiffraction package from a wheel
+# file. The path to the wheel file will be added dynamically in CI.
+
+[feature.py311-wheel.dependencies]
+python = "3.11.*"
+
+[feature.py312-wheel.dependencies]
+python = "3.12.*"
+
+[feature.py313-wheel.dependencies]
+python = "3.13.*"
+
 # This feature is used for local development with editable installation of
 # easydiffraction. Effectively, the source code defined in the pyproject.toml
 # will be used directly without installing the package. The changes are
 # reflected immediately without needing to reinstall the package.
 # This feature should be deleted in CI, because otherwise the pixi lock file
 # created locally will be considered as outdated in CI.
+
 [feature.ed-local-editable.pypi-dependencies]
 easydiffraction = { editable = true, path = ".", extras = [
   "dev",
   "visualization",
 ] }
 
-# Development (non-editable)
 # This feature is used for development in CI, where the easydiffraction
 # is installed from the local source code defined in the pyproject.toml, but
 # not in editable mode. This ensures that the lock file update locally will
 # work in CI.
+
 [feature.ed-local.pypi-dependencies]
 easydiffraction = { path = ".", extras = ["dev", "visualization"] }
 
-# Development (wheel)
-# This feature is used for development in CI, where the easydiffraction package
-# is installed from a built wheel file. The path to the wheel file will be
-# added dynamically in CI.
-#[feature.ed-wheel.pypi-dependencies]
-
-# Production
-# This feature is used for production, where the package is installed from
-# PyPI.
-[feature.ed-pypi.pypi-dependencies]
-easydiffraction = { version = "*", extras = ["dev", "visualization"] }
-
-# Documentation
 # This feature is used to build the documentation, where the package is
 # installed from PyPI with the additional dependencies needed for building
 # the docs.
-[feature.ed-pypi-with-docs.pypi-dependencies]
-easydiffraction = { version = "*", extras = ["dev", "visualization", "docs"] }
 
-# Prettier
+[feature.ed-local-with-docs.pypi-dependencies]
+easydiffraction = { path = ".", extras = ["dev", "visualization", "docs"] }
+
+# This feature is used when the easydiffraction package is installed from PyPI.
+
+[feature.ed-pypi.pypi-dependencies]
+easydiffraction = { version = "*", extras = ["dev", "visualization"] }
+
 # This feature is used to install Node.js and Prettier for formatting
 # non-Python files.
+
 [feature.nodejs.dependencies]
 nodejs = "*" # Needed for prettier
 
@@ -90,37 +95,19 @@ nodejs = "*" # Needed for prettier
 # The `default` environment is always included in the lock file, so there is no
 # need to specify it explicitly in the environments section.
 
-# The `default` environment is used for development and testing, so it includes
-# the latest Python version (3.13) and the `dev` feature.
+py311-wheel = { features = ["py311-wheel"] }
+py312-wheel = { features = ["py312-wheel"] }
+py313-wheel = { features = ["py313-wheel"] }
 
-# The `py311`, `py312`, and `py313` environments are used for testing the package
-# on different Python versions. Each of them has a `dev` and `prod` variant
-# to test the package in development and production modes.
+py311-dev = { features = ["py311", "ed-local", "nodejs"] }
+py312-dev = { features = ["py312", "ed-local", "nodejs"] }
+py313-dev = { features = ["py313", "ed-local", "nodejs"] }
 
-# The solve groups are used to group the features for solving the dependencies
-# for each Python version. This ensures, for example, py313-dev and py313-prod
-# share the same versions for overlapping deps, while Python 3.12/3.11 get
-# their own solves.
+py313-docs = { features = ["py313", "ed-local-with-docs"] }
 
-py311-dev = { features = ["base", "py311", "ed-local", "nodejs"] }
-py312-dev = { features = ["base", "py312", "ed-local", "nodejs"] }
-py313-dev = { features = ["base", "py313", "ed-local", "nodejs"] }
+py313-prod = { features = ["py313", "ed-pypi"] }
 
-#py311-dev-wheel = { features = ["py311", "dev-wheel"] }
-#py312-dev-wheel = { features = ["py312", "dev-wheel"] }
-#py313-dev-wheel = { features = ["py313", "dev-wheel"] }
-
-py311-dev-wheel = { features = ["base", "py311"] }
-py312-dev-wheel = { features = ["base", "py312"] }
-py313-dev-wheel = { features = ["base", "py313"] }
-
-py313-docs = { features = ["base", "py313", "ed-pypi-with-docs"] }
-
-py313-prod = { features = ["base", "py313", "ed-pypi"] }
-
-dev = { features = ["base", "py313", "ed-local-editable"] }
-
-default = { features = [] }
+default = { features = ["py313", "ed-local-editable"] }
 
 #######
 # TASKS
