@@ -211,6 +211,8 @@ The following simple steps provide an alternative setup method for
 EasyDiffraction using Pixi, replacing the traditional virtual environment
 approach.
 
+<!-- prettier-ignore-start -->
+
 - Install Pixi by following the instructions on the
   [official Pixi Installation Guide](https://pixi.sh/latest/installation).
 - Create a dedicated directory for the EasyDiffraction and navigate into it:
@@ -219,9 +221,6 @@ approach.
   cd easydiffraction
   ```
 - Download the pixi configuration file for EasyDiffraction:
-
-<!-- prettier-ignore-start -->
-
       === "curl"
           ```bash
           curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
@@ -230,9 +229,6 @@ approach.
           ```bash
           wget https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
           ```
-
-<!-- prettier-ignore-end -->
-
 - Create the environment defined in `pixi.toml` and install all necessary
   dependencies:
   ```bash
@@ -248,3 +244,5 @@ approach.
   ```
 - Your web browser should open automatically. Click on one of the `*.ipynb`
   files and select the `Python (Pixi)` kernel to get started.
+
+<!-- prettier-ignore-end -->

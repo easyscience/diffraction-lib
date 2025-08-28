@@ -45,6 +45,7 @@ python = "3.13.*"
 easydiffraction = { editable = true, path = ".", extras = [
   "dev",
   "visualization",
+  "docs",
 ] }
 
 # This feature is used for development in CI, where the easydiffraction
@@ -130,6 +131,9 @@ code-quality = { depends-on = [
 convert-notebooks = 'jupytext tutorials/*.py --from py:percent --to ipynb'
 stripout-notebooks = 'nbstripout tutorials/*.ipynb'
 run-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --overwrite --color=yes -n auto -v'
+
+# Documentation tasks
+serve-docs = "python -m mkdocs serve"
 
 # Other tasks
 pre-commit = { depends-on = ["code-quality", "test"] }

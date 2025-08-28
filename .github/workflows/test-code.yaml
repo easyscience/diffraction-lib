@@ -238,10 +238,13 @@ jobs:
           name: edl_${{ matrix.os }}_${{ runner.arch }}
           path: . # directory to extract downloaded zipped artifacts
 
+      - name: Move pixi/wheel/pixi.toml to project root
+        shell: bash
+        run: mv pixi/wheel/pixi.toml .
+
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          #manifest-path: {{ env.PIXI_PROJECT_MANIFEST }}
           environments: ${{ env.PIXI_ENVS }}
           run-install: true
           cache: false
