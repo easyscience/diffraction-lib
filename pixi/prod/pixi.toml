@@ -11,7 +11,10 @@ pixi-kernel = "*" # IPython kernel for Jupyter
 
 [pypi-dependencies]
 #easydiffraction = { version = "*", extras = ["dev", "visualization"] }
-easydiffraction = { git = "https://github.com/easyscience/diffraction-lib.git", branch = "pixi", extras = ["dev", "visualization"] }
+easydiffraction = { git = "https://github.com/easyscience/diffraction-lib.git", branch = "pixi", extras = [
+  "dev",
+  "visualization",
+] }
 
 [tasks]
 #unit-tests = "python -m pytest --pyargs easydiffraction.tests.unit_tests --color=yes -v"
