@@ -6,22 +6,22 @@ if hasattr(sys.stdout, 'reconfigure'):
     sys.stderr.reconfigure(encoding='utf-8')
 
 import typer
-from rich.console import Console
-from rich.table import Table
 
 import easydiffraction as ed
 
-console = Console()
-app = typer.Typer()
+app = typer.Typer(add_completion=False)
+
+
+@app.command('version')
+def version():
+    """Show easydiffraction version."""
+    ed.show_version()
 
 
 @app.command('list-tutorials')
 def list_tutorials():
     """List available tutorial notebooks."""
-    table = Table('No.', 'Notebook')
-    for idx, tutorial in enumerate(ed.list_tutorials()):
-        table.add_row(str(idx + 1), tutorial)
-    console.print(table)
+    ed.list_tutorials()
 
 
 @app.command('fetch-tutorials')

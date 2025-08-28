@@ -33,6 +33,7 @@ if TYPE_CHECKING:
     from easydiffraction.utils.utils import fetch_tutorials
     from easydiffraction.utils.utils import get_value_from_xye_header
     from easydiffraction.utils.utils import list_tutorials
+    from easydiffraction.utils.utils import show_version
 
 
 # Lazy loading of submodules and classes
@@ -99,6 +100,10 @@ def __getattr__(name):
         from easydiffraction.utils.utils import get_value_from_xye_header
 
         return get_value_from_xye_header
+    elif name == 'show_version':
+        from easydiffraction.utils.utils import show_version
+
+        return show_version
     raise AttributeError(f"module 'easydiffraction' has no attribute {name}")
 
 
@@ -119,4 +124,5 @@ __all__ = [
     'fetch_tutorials',
     'list_tutorials',
     'get_value_from_xye_header',
+    'show_version',
 ]
