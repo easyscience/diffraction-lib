@@ -218,19 +218,17 @@ approach.
   mkdir easydiffraction
   cd easydiffraction
   ```
-
-<!-- prettier-ignore-start -->
-
 - Download the pixi configuration file for EasyDiffraction:
+  <!-- prettier-ignore-start -->
 
-    === "curl"
-        ```bash
-        curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
-        ```
-    === "wget"
-        ```bash
-        wget https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
-        ```
+      === "curl"
+          ```bash
+          curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
+          ```
+      === "wget"
+          ```bash
+          wget https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
+          ```
 
 <!-- prettier-ignore-end -->
 
