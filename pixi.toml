@@ -133,7 +133,12 @@ stripout-notebooks = 'nbstripout tutorials/*.ipynb'
 run-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --overwrite --color=yes -n auto -v'
 
 # Documentation tasks
-serve-docs = "python -m mkdocs serve"
+create-mkdocs-yml = "python tools/create_mkdocs_yml.py"
+prepare-docs = "tools/prepare_docs.sh"
+serve-docs = "JUPYTER_PLATFORM_DIRS=1 python -m mkdocs serve"
+build-docs = "JUPYTER_PLATFORM_DIRS=1 python -m mkdocs build"
+cleanup-docs = "tools/cleanup_docs.sh"
+docs = { depends-on = ["create-mkdocs-yml", "prepare-docs", "serve-docs"] }
 
 # Other tasks
 pre-commit = { depends-on = ["code-quality", "test"] }

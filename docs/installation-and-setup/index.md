@@ -221,6 +221,7 @@ approach.
   cd easydiffraction
   ```
 - Download the pixi configuration file for EasyDiffraction:
+
       === "curl"
           ```bash
           curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
