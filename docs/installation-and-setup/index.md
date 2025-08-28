@@ -213,27 +213,46 @@ approach.
 
 - Install Pixi by following the instructions on the
   [official Pixi Installation Guide](https://pixi.sh/latest/installation).
+
 - Create a dedicated directory for the EasyDiffraction and navigate into it:
   ```bash
   mkdir easydiffraction
   cd easydiffraction
   ```
+
+<!-- prettier-ignore-start -->
+
 - Download the pixi configuration file for EasyDiffraction:
-  ```bash
-  curl --location --remote-name https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
-  ```
+
+    === "curl"
+        ```bash
+        curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
+        ```
+    === "wget"
+        ```bash
+        wget https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
+        ```
+
+<!-- prettier-ignore-end -->
+
 - Create the environment defined in `pixi.toml` and install all necessary
   dependencies:
+
   ```bash
   pixi install
   ```
+
 - Fetch the EasyDiffraction tutorials to the `tutorials/` directory:
+
   ```bash
   pixi run easydiffraction fetch-tutorials
   ```
+
 - Start JupyterLab in the `tutorials/` directory to access the notebooks:
+
   ```bash
   pixi run jupyter lab tutorials
   ```
+
 - Your web browser should open automatically. Click on one of the `*.ipynb`
   files and select the `Python (Pixi)` kernel to get started.
