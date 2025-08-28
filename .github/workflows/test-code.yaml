@@ -211,7 +211,7 @@ jobs:
           name: edl_${{ matrix.os }}_${{ runner.arch }}
           path: |
             dist/
-            pixi-wheel.yaml
+            pixi-wheel.toml
           if-no-files-found: 'error'
           compression-level: 0
 
