@@ -157,11 +157,11 @@ def _get_release_info(tag: str | None) -> dict | None:
     try:
         _validate_url(api_url)
         headers = {}
-        token = os.environ.get("GITHUB_TOKEN")
+        token = os.environ.get('GITHUB_TOKEN')
         if token:
-            headers["Authorization"] = f"token {token}"
+            headers['Authorization'] = f'token {token}'
 
-        request = urllib.request.Request(api_url, headers=headers)
+        request = urllib.request.Request(api_url, headers=headers)  # noqa: S310
         with urllib.request.urlopen(request) as response:  # noqa: S310
             return json.load(response)
     except Exception as e:
