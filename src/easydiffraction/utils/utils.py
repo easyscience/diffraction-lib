@@ -140,7 +140,9 @@ def stripped_package_version(package_name: str) -> str | None:
 
 def _get_release_info(tag: str | None) -> dict | None:
     """
-    Fetch release info from GitHub for the given tag, or latest if tag is None.
+    Fetch release info from GitHub for the given tag (or latest if None).
+    Uses unauthenticated API by default, but includes GITHUB_TOKEN from the environment
+    if available to avoid rate limiting.
 
     Args:
         tag (str | None): The tag of the release to fetch, or None for latest.
@@ -154,7 +156,13 @@ def _get_release_info(tag: str | None) -> dict | None:
         api_url = 'https://api.github.com/repos/easyscience/diffraction-lib/releases/latest'
     try:
         _validate_url(api_url)
-        with urllib.request.urlopen(api_url) as response:  # noqa: S310
+        headers = {}
+        token = os.environ.get("GITHUB_TOKEN")
+        if token:
+            headers["Authorization"] = f"token {token}"
+
+        request = urllib.request.Request(api_url, headers=headers)
+        with urllib.request.urlopen(request) as response:  # noqa: S310
             return json.load(response)
     except Exception as e:
         if tag is not None:
