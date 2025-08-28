@@ -85,14 +85,14 @@ jobs:
           git clone https://github.com/easyscience/assets-branding.git
 
       # Add the extra files from the easyscience/assets-docs repository
-      - name: Add files from easyscience/assets-docs files
+      - name: Add files from ../assets-docs
         run: |
           cp -R ../assets-docs/docs/assets/ docs/assets/
           cp -R ../assets-docs/includes/ includes/
           cp -R ../assets-docs/overrides/ overrides/
 
       # Add the extra files from the easyscience/assets-branding repository
-      - name: Add files from easyscience/assets-branding files
+      - name: Add files from ../assets-branding
         run: |
           mkdir -p docs/assets/images/
           cp ../assets-branding/easydiffraction/hero/dark.png docs/assets/images/hero_dark.png
@@ -119,8 +119,8 @@ jobs:
 
       # The following step is needed to avoid the following message during the build:
       # "Matplotlib is building the font cache; this may take a moment"
-      - name: Pre-build site step
-        run: pixi run python -c "import easydiffraction"
+      #- name: Pre-build site step
+      #  run: pixi run python -c "import easydiffraction"
 
       # Create the mkdocs.yml configuration file
       # The file is created by merging two files:

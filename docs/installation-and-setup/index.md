@@ -19,13 +19,12 @@ and recreate the environment.
 
 #### Creating and Activating a Virtual Environment:
 
+<!-- prettier-ignore-start -->
+
 - Create a new virtual environment:
   ```bash
   python3 -m venv venv
   ```
-
-<!-- prettier-ignore-start -->
-
 - Activate the environment:
 
     === ":material-apple: macOS"
@@ -43,20 +42,19 @@ and recreate the environment.
         .\venv\Scripts\activate.ps1  # Windows with PowerShell
         ```
 
-<!-- prettier-ignore-end -->
-
 - The terminal should now show `(venv)`, indicating that the virtual environment
   is active.
 
+<!-- prettier-ignore-end -->
+
 #### Deactivating and Removing the Virtual Environment:
+
+<!-- prettier-ignore-start -->
 
 - Exit the environment:
   ```bash
   deactivate
   ```
-
-<!-- prettier-ignore-start -->
-
 - If this environment is no longer needed, delete it:
 
     === ":material-apple: macOS"
@@ -221,15 +219,16 @@ approach.
   cd easydiffraction
   ```
 - Download the pixi configuration file for EasyDiffraction:
+    
+    === "curl"
+        ```bash
+        curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
+        ```
+    === "wget"
+        ```bash
+        wget https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
+        ```
 
-      === "curl"
-          ```bash
-          curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
-          ```
-      === "wget"
-          ```bash
-          wget https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
-          ```
 - Create the environment defined in `pixi.toml` and install all necessary
   dependencies:
   ```bash
