@@ -1,0 +1,21 @@
+[workspace]
+channels = ["conda-forge"]
+platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
+
+[dependencies] # == [feature.default.dependencies]
+python = "3.13.*" # Python version
+libcblas = "*"    # CBLAS library for linear algebra. Needed for pdffit2 on Windows
+pip = "*"         # Needed to install from PyPI
+jupyterlab = "*"  # JupyterLab for notebooks
+pixi-kernel = "*" # IPython kernel for Jupyter
+
+[pypi-dependencies]
+#easydiffraction = { version = "*", extras = ["dev", "visualization"] }
+easydiffraction = { git = "https://github.com/easyscience/diffraction-lib.git", branch = "pixi", extras = ["dev", "visualization"] }
+
+[tasks]
+#unit-tests = "python -m pytest --pyargs easydiffraction.tests.unit_tests --color=yes -v"
+#func-tests = "python -m pytest --pyargs easydiffraction.tests.functional_tests --color=yes -n auto -v"
+#list-tutorials = "python -m easydiffraction list-tutorials"
+#fetch-tutorials = "python -m easydiffraction fetch-tutorials"
+easydiffraction = "python -m easydiffraction"
