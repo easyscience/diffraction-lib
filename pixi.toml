@@ -34,18 +34,6 @@ python = "3.12.*"
 [feature.py313.dependencies]
 python = "3.13.*"
 
-# These features are used to install the easydiffraction package from a wheel
-# file. The path to the wheel file will be added dynamically in CI.
-
-[feature.py311-wheel.dependencies]
-python = "3.11.*"
-
-[feature.py312-wheel.dependencies]
-python = "3.12.*"
-
-[feature.py313-wheel.dependencies]
-python = "3.13.*"
-
 # This feature is used for local development with editable installation of
 # easydiffraction. Effectively, the source code defined in the pyproject.toml
 # will be used directly without installing the package. The changes are
@@ -93,10 +81,6 @@ nodejs = "*" # Needed for prettier
 
 # The `default` environment is always included in the lock file, so there is no
 # need to specify it explicitly in the environments section.
-
-py311-wheel = { features = ["py311-wheel"] }
-py312-wheel = { features = ["py312-wheel"] }
-py313-wheel = { features = ["py313-wheel"] }
 
 py311-dev = { features = ["py311", "ed-local", "nodejs"] }
 py312-dev = { features = ["py312", "ed-local", "nodejs"] }

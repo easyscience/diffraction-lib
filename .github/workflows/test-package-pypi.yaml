@@ -39,5 +39,12 @@ jobs:
       - name: Add PyPI dependencies
         run: pixi add --pypi "easydiffraction[dev,visualization]"
 
-      - name: Run tests to verify the installation
-        run: pixi run python -m pytest --pyargs easydiffraction.tests
+      - name: Run unit tests to verify the installation
+        run:
+          pixi run python -m pytest --pyargs easydiffraction.tests.unit_tests
+          --color=yes -v
+
+      - name: Run functional tests to verify the installation
+        run:
+          pixi run python -m pytest --pyargs
+          easydiffraction.tests.functional_tests --color=yes -n auto -v
