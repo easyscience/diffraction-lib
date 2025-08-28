@@ -227,7 +227,6 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      PIXI_MANIFEST_PATH: 'pixi/prod/pixi.toml'
       PIXI_ENVS: 'py311-wheel py312-wheel py313-wheel'
 
     steps:
@@ -241,7 +240,7 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          manifest-path: ${{ env.PIXI_MANIFEST_PATH }}
+          manifest-path: 'pixi/wheel/pixi.toml'
           environments: ${{ env.PIXI_ENVS }}
           run-install: true
           cache: false
