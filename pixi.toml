@@ -98,63 +98,43 @@ default = { features = ["py313", "ed-local-editable"] }
 
 [tasks]
 
-# Setup tasks
-fix-find-links = "python tools/fix_find_links.py"
-
-# Install tasks
-install-prettier = "npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml"
-
-# Remove tasks
-remove-ed-dev = "pixi remove --pypi --feature dev easydiffraction"
-
-# Update dependencies and lock file
-update-deps = "pixi update"
-
 # Testing tasks
 unit-tests = "python -m pytest tests/unit_tests/ --color=yes -v"
 func-tests = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
 unit-tests-package = "python -m pytest --pyargs easydiffraction.tests.unit_tests --color=yes -v"
 func-tests-package = "python -m pytest --pyargs easydiffraction.tests.functional_tests --color=yes -n auto -v"
+test-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
+test-scripts = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
+test = { depends-on = ["unit-tests", "func-tests"] }
 
 # Check code quality tasks
 check-pyproject = "python -m validate_pyproject pyproject.toml"
 check-lint-py = "python -m ruff check ."
 check-format-py = "python -m ruff format . --check"
 check-format-non-py = "npx prettier . --list-different --config=prettierrc.toml"
+check-format-notebooks = 'nbqa ruff tutorials/'
 
 # Fix code quality tasks
 lint-py = "python -m ruff check . --fix"
 format-py = "python -m ruff format ."
 format-non-py = "npx prettier . --list-different --write --config=prettierrc.toml"
-
-# Development tasks
-update-spdx = "python tools/update_spdx.py"
-
-# Building tasks
-build = "python -m build --wheel --outdir dist"
-
-# Downloading tasks
-fetch-tutorials = "python -c \"import urllib.request, zipfile, os; f='tutorials.zip'; urllib.request.urlretrieve('https://github.com/easyscience/diffraction-lib/releases/latest/download/tutorials.zip', f); zipfile.ZipFile(f).extractall(); os.remove(f)\""
-
-# Composed tasks
-test = { depends-on = ["unit-tests", "func-tests"] }
+fix-format-notebooks = 'nbqa ruff tutorials/ --fix'
 code-quality = { depends-on = [
   "check-pyproject",
   "lint-py",
   "format-py",
   "format-non-py",
 ] }
-pre-commit = { depends-on = ["code-quality", "test"] }
 
+# Other development tasks
+pre-commit = { depends-on = ["code-quality", "test"] }
+build = "python -m build --wheel --outdir dist"
+update-spdx = "python tools/update_spdx.py"
+
+# Notebook management tasks
 convert-notebooks = 'jupytext tutorials/*.py --from py:percent --to ipynb'
 stripout-notebooks = 'nbstripout tutorials/*.ipynb'
-
-check-format-notebooks = 'nbqa ruff tutorials/'
-fix-format-notebooks = 'nbqa ruff tutorials/ --fix'
-
 run-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --overwrite --color=yes -n auto -v'
-test-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
 
-test-scripts = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
-
+# Shortcuts
 easydiffraction = "python -m easydiffraction"
