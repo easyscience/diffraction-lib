@@ -207,8 +207,9 @@ setting up Python on your system.
 and Conda-compatible packages. It simplifies dependency management, environment
 isolation, and reproducibility.
 
-The following steps provide an alternative setup method for EasyDiffraction
-using Pixi, replacing the traditional virtual environment approach.
+The following simple steps provide an alternative setup method for
+EasyDiffraction using Pixi, replacing the traditional virtual environment
+approach.
 
 - Install Pixi by following the instructions on the
   [official Pixi Installation Guide](https://pixi.sh/latest/installation).
@@ -221,7 +222,7 @@ using Pixi, replacing the traditional virtual environment approach.
   ```bash
   curl --location --remote-name https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
   ```
-- Install the environment defined in `pixi.toml` with all necessary
+- Create the environment defined in `pixi.toml` and install all necessary
   dependencies:
   ```bash
   pixi install
