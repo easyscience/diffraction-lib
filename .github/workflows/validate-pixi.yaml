@@ -27,7 +27,9 @@ concurrency:
 # Set the environment variables to be used in all jobs defined in this workflow
 env:
   # CI_BRANCH - the branch name (used in mkdocs.yml)
+  # GITHUB_TOKEN - to authenticate on GitHub (e.g. increase API rate limit)
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   validate-pixi:
