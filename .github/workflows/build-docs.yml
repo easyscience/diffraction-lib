@@ -75,34 +75,14 @@ jobs:
           cache: false
           post-cleanup: false
 
-      # Clone assets extra from:
-      # - easyscience/assets-docs
-      # - easyscience/assets-branding
       - name: Clone easyscience/assets-docs and easyscience/assets-branding
         run: |
           cd ..
           git clone https://github.com/easyscience/assets-docs.git
           git clone https://github.com/easyscience/assets-branding.git
 
-      # Add the extra files from the easyscience/assets-docs repository
-      - name: Add files from ../assets-docs
-        run: |
-          cp -R ../assets-docs/docs/assets/ docs/assets/
-          cp -R ../assets-docs/includes/ includes/
-          cp -R ../assets-docs/overrides/ overrides/
-
-      # Add the extra files from the easyscience/assets-branding repository
-      - name: Add files from ../assets-branding
-        run: |
-          mkdir -p docs/assets/images/
-          cp ../assets-branding/easydiffraction/hero/dark.png docs/assets/images/hero_dark.png
-          cp ../assets-branding/easydiffraction/hero/light.png docs/assets/images/hero_light.png
-          cp ../assets-branding/easydiffraction/logos/dark.svg docs/assets/images/logo_dark.svg
-          cp ../assets-branding/easydiffraction/logos/light.svg docs/assets/images/logo_light.svg
-          cp ../assets-branding/easydiffraction/icons/color.png docs/assets/images/favicon.png
-          mkdir -p overrides/.icons/
-          cp ../assets-branding/easydiffraction/icons/bw.svg overrides/.icons/easydiffraction.svg
-          cp ../assets-branding/easyscience-org/icons/eso-icon_bw.svg overrides/.icons/easyscience.svg
+      - name: Add files from cloned repositories
+        run: pixi run add-docs-assets
 
       # Convert python scripts in the notebooks directory to Jupyter notebooks
       # Strip output from the notebooks
@@ -113,9 +93,9 @@ jobs:
         run: |
           pixi run convert-notebooks
           pixi run stripout-notebooks
-          pixi run python tools/prepare_notebooks.py ${{ env.NOTEBOOKS_DIR }}/
+          pixi run prepare-notebooks
           pixi run run-notebooks
-          mv ${{ env.NOTEBOOKS_DIR }}/*.ipynb docs/${{ env.NOTEBOOKS_DIR }}/
+          pixi run move-docs-notebooks
 
       # The following step is needed to avoid the following message during the build:
       # "Matplotlib is building the font cache; this may take a moment"
@@ -127,16 +107,13 @@ jobs:
       # - assets-docs/mkdocs.yml - the common configuration (theme, plugins, etc.)
       # - docs/mkdocs.yml - the project-specific configuration (project name, TOC, etc.)
       - name: Create mkdocs.yml file
-        run: pixi run python tools/create_mkdocs-yml.py
+        run: pixi run create-mkdocs-yml
 
       # Build the static files
       # Input: docs/ directory containing the Markdown files
       # Output: site/ directory containing the generated HTML files
       - name: Build site with MkDocs
-        run: |
-          export JUPYTER_PLATFORM_DIRS=1
-          export PYTHONWARNINGS="ignore::RuntimeWarning"
-          pixi run mkdocs build
+        run: pixi run build-docs
 
       # Set up the Pages action to configure the static files to be deployed
       # NOTE: The repository must have GitHub Pages enabled and configured to build using GitHub Actions

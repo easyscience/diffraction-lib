@@ -128,7 +128,7 @@ This is an example of a workflow that describes the development process.
   cp tutorials/*.ipynb docs/tutorials/
   cp -R tutorials/data docs/tutorials/
 
-  python tools/create_mkdocs-yml.py
+  python tools/create_mkdocs_yml.py
   ```
 
 - Build documentation with MkDocs - static site generator
