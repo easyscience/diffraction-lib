@@ -94,8 +94,12 @@ jobs:
           pixi run convert-notebooks
           pixi run stripout-notebooks
           pixi run prepare-notebooks
-          pixi run run-notebooks
-          pixi run move-docs-notebooks
+
+      - name: Run notebooks
+        run: pixi run run-notebooks
+
+      - name: Move notebooks to docs/tutorials
+        run: pixi run move-docs-notebooks
 
       # The following step is needed to avoid the following message during the build:
       # "Matplotlib is building the font cache; this may take a moment"

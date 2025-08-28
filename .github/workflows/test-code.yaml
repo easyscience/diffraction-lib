@@ -260,6 +260,7 @@ jobs:
             whl_path="$(python3 -c "import pathlib; w = sorted(pathlib.Path('dist/${env_prefix}').glob('*.whl')); print(w[0].resolve().as_uri())")"
             echo "📦 Adding easydiffraction from: $whl_path"
             pixi add --feature $env_prefix --pypi "easydiffraction[dev,visualization] @ $whl_path"
+            pixi sleep 1
             pixi run easydiffraction version
           done
 
