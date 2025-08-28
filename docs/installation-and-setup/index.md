@@ -217,23 +217,16 @@ using Pixi, replacing the traditional virtual environment approach.
   mkdir easydiffraction
   cd easydiffraction
   ```
-- Initialize a new Pixi project for EasyDiffraction:
+- Download the pixi configuration file for EasyDiffraction:
   ```bash
-  pixi init
+  curl --location --remote-name https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
   ```
-- Add Python 3.13, JupyterLab, Pixi kernel and CBLAS (windows) as dependencies:
+- Install the environment defined in `pixi.toml` with all necessary
+  dependencies:
   ```bash
-  pixi add python==3.13 jupyterlab pixi-kernel libcblas
+  pixi install
   ```
-- Add EasyDiffraction with visualization extras as a PyPI dependency:
-  ```bash
-  pixi add --pypi 'easydiffraction[visualization]'
-  ```
-- Add a task to run EasyDiffraction from the command line:
-  ```bash
-  pixi task add easydiffraction "python -m easydiffraction"
-  ```
-- Fetch the EasyDiffraction tutorials:
+- Fetch the EasyDiffraction tutorials to the `tutorials/` directory:
   ```bash
   pixi run easydiffraction fetch-tutorials
   ```
