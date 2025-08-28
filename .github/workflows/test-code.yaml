@@ -227,7 +227,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      PIXI_MANIFEST: 'pixi-wheel.yaml'
+      PIXI_MANIFEST: 'pixi-wheel.toml'
       PIXI_ENVS: 'py311-wheel py312-wheel py313-wheel'
 
     steps:
