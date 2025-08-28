@@ -219,7 +219,8 @@ approach.
   cd easydiffraction
   ```
 - Download the pixi configuration file for EasyDiffraction:
-  <!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-start -->
 
       === "curl"
           ```bash
