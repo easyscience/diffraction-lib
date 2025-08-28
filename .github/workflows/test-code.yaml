@@ -227,12 +227,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
+      PIXI_MANIFEST_PATH: 'pixi/prod/pixi.toml'
       PIXI_ENVS: 'py311-wheel py312-wheel py313-wheel'
 
     steps:
-      #- name: Checkout repository
-      #  uses: actions/checkout@v4
-
       - name:
           Download zipped Python package (incl. extra files) from previous job
         uses: actions/download-artifact@v4
@@ -246,6 +244,7 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
+          manifest-path: ${{ env.PIXI_MANIFEST_PATH }}
           environments: ${{ env.PIXI_ENVS }}
           run-install: true
           cache: false
