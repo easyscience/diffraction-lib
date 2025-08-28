@@ -216,7 +216,10 @@ class Analysis:
 
         print(paragraph('Free parameters for both sample models (🧩 data blocks) and experiments (🔬 data blocks)'))
         render_table(
-            columns_headers=columns_headers, columns_alignment=columns_alignment, columns_data=dataframe, show_index=True
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=dataframe,
+            show_index=True,
         )
 
     def how_to_access_parameters(self) -> None:
@@ -264,7 +267,10 @@ class Analysis:
 
         print(paragraph('How to access parameters'))
         render_table(
-            columns_headers=columns_headers, columns_alignment=columns_alignment, columns_data=columns_data, show_index=True
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+            show_index=True,
         )
 
     def show_current_calculator(self) -> None:
@@ -346,7 +352,11 @@ class Analysis:
             columns_data.append([strategy, description])
 
         print(paragraph('Available fit modes'))
-        render_table(columns_headers=columns_headers, columns_alignment=columns_alignment, columns_data=columns_data)
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )
 
     def show_current_fit_mode(self) -> None:
         print(paragraph('Current fit mode'))
@@ -388,7 +398,11 @@ class Analysis:
         rows = [[row[header] for header in headers] for row in rows]
 
         print(paragraph('User defined constraints'))
-        render_table(columns_headers=headers, columns_alignment=alignments, columns_data=rows)
+        render_table(
+            columns_headers=headers,
+            columns_alignment=alignments,
+            columns_data=rows,
+        )
 
     def apply_constraints(self):
         if not self.constraints._items:
