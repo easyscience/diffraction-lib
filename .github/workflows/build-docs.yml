@@ -4,7 +4,7 @@ on:
   # Trigger the workflow on push
   push:
     # Selected branches
-    branches: [develop, master, docs, patch, pixi]
+    branches: [master, develop, docs, patch]
     # Runs on creating a new tag starting with 'v', e.g. 'v1.0.3'
     tags:
       - 'v*'
@@ -97,11 +97,6 @@ jobs:
 
       - name: Move notebooks to docs/tutorials
         run: pixi run move-notebooks-to-docs
-
-      # The following step is needed to avoid the following message during the build:
-      # "Matplotlib is building the font cache; this may take a moment"
-      #- name: Pre-build site step
-      #  run: pixi run python -c "import easydiffraction"
 
       # Create the mkdocs.yml configuration file
       # The file is created by merging two files:
