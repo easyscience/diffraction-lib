@@ -55,8 +55,9 @@ jobs:
 
       - name: Add PyPI dependencies
         run: >
-          pixi add --pypi "easydiffraction[visualization] @
-          git+https://github.com/easyscience/diffraction-lib@${{env.CI_BRANCH}}"
+          pixi add --pypi 'easydiffraction[dev, visualization]' --git
+          https://github.com/easyscience/diffraction-lib.git --branch ${{
+          env.CI_BRANCH }}
 
       - name: Add a task to run EasyDiffraction from the command line
         run: pixi task add easydiffraction "python -m easydiffraction"
