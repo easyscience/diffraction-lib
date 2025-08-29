@@ -165,14 +165,9 @@ are the steps to follow in the case of **Jupyter Notebook**:
   ```bash
   python -m ipykernel install --user --name=venv --display-name "EasyDiffraction Python kernel"
   ```
-- Download the latest EasyDiffraction tutorial examples from GitHub, e.g., using
-  curl:
+- Download the EasyDiffraction tutorials from GitHub Releases:
   ```bash
-  curl --location --remote-name https://github.com/easyscience/diffraction-lib/releases/latest/download/tutorials.zip
-  ```
-- Unzip the archive:
-  ```bash
-  unzip tutorials.zip
+  python -m easydiffraction fetch-tutorials
   ```
 - Launch the Jupyter Notebook server in the `examples/` directory:
   ```bash
@@ -236,11 +231,11 @@ approach.
   ```
 - Fetch the EasyDiffraction tutorials to the `tutorials/` directory:
   ```bash
-  pixi run fetch-tutorials
+  pixi run easydiffraction fetch-tutorials
   ```
 - Start JupyterLab in the `tutorials/` directory to access the notebooks:
   ```bash
-  pixi run jupyter lab tutorials
+  pixi run jupyter lab tutorials/
   ```
 - Your web browser should open automatically. Click on one of the `*.ipynb`
   files and select the `Python (Pixi)` kernel to get started.
