@@ -236,7 +236,7 @@ approach.
   ```
 - Fetch the EasyDiffraction tutorials to the `tutorials/` directory:
   ```bash
-  pixi run easydiffraction fetch-tutorials
+  pixi run fetch-tutorials
   ```
 - Start JupyterLab in the `tutorials/` directory to access the notebooks:
   ```bash

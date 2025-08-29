@@ -139,7 +139,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04] #, windows-2022, macos-13, macos-14]
+        os: [ubuntu-24.04, macos-13, macos-14, windows-2022]
 
     runs-on: ${{ matrix.os }}
 
@@ -162,7 +162,6 @@ jobs:
           post-cleanup: false
 
       - name: Run unit tests
-        if: false # Temporarily disable unit tests to speed up the workflow
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
@@ -171,7 +170,6 @@ jobs:
           done
 
       - name: Run functional tests
-        if: false # Temporarily disable functional tests to speed up the workflow
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
@@ -222,7 +220,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04] #, windows-2022, macos-13, macos-14]
+        os: [ubuntu-24.04, macos-13, macos-14, windows-2022]
 
     runs-on: ${{ matrix.os }}
 
