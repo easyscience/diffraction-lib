@@ -28,15 +28,6 @@ concurrency:
     ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-# Set the environment variables to be used in all jobs defined in this workflow
-env:
-  # CI_BRANCH - the branch name (used in mkdocs.yml)
-  # NOTEBOOKS_DIR - the directory containing the Jupyter notebooks (used in mkdocs.yml)
-  # PYTHONIOENCODING - set to utf-8 to avoid encoding issues on Windows
-  CI_BRANCH: ${{ github.head_ref || github.ref_name }}
-  NOTEBOOKS_DIR: tutorials
-  #PYTHONIOENCODING: utf-8
-
 jobs:
   # Job 1: Check code quality and consistency
   code-quality:
@@ -63,9 +54,7 @@ jobs:
 
       - name: Convert tutorial scripts to notebooks
         shell: bash
-        run: |
-          pixi run convert-notebooks
-          pixi run stripout-notebooks
+        run: pixi run make-notebooks
 
       - name: Check notebooks formatting
         id: check_formatting
@@ -73,14 +62,12 @@ jobs:
         shell: bash
         run: pixi run check-format-notebooks
 
-      - name: Suggestion to fix notebook formatting issues (*.ipynb)
+      - name: Suggestion to fix notebook formatting
         if: steps.check_formatting.outcome == 'failure'
         shell: bash
-        run: echo "Run 'pixi run fix-format-notebooks' and commit changes."
-
-      - name: Force fail if the previous step failed
-        if: steps.check_formatting.outcome == 'failure'
-        run: exit 1
+        run: |
+          echo "Run 'pixi run fix-format-notebooks' and commit changes."
+          exit 1
 
   # Job 2: Test tutorials as Python scripts and Jupyter Notebooks
   test-tutorials:
@@ -114,9 +101,7 @@ jobs:
 
       - name: Convert tutorial scripts to notebooks
         shell: bash
-        run: |
-          pixi run convert-notebooks
-          pixi run stripout-notebooks
+        run: pixi run make-notebooks
 
       - name: Test tutorials as notebooks
         shell: bash

@@ -17,8 +17,9 @@ easydiffraction = { git = "https://github.com/easyscience/diffraction-lib.git", 
 ] }
 
 [tasks]
-#unit-tests = "python -m pytest --pyargs easydiffraction.tests.unit_tests --color=yes -v"
-#func-tests = "python -m pytest --pyargs easydiffraction.tests.functional_tests --color=yes -n auto -v"
-#list-tutorials = "python -m easydiffraction list-tutorials"
-#fetch-tutorials = "python -m easydiffraction fetch-tutorials"
+unit-tests = "python -m pytest --pyargs easydiffraction.tests.unit_tests --color=yes -v"
+func-tests = "python -m pytest --pyargs easydiffraction.tests.functional_tests --color=yes -n auto -v"
+test-notebooks = "python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v"
 easydiffraction = "python -m easydiffraction"
+list-tutorials = "python -m easydiffraction list-tutorials"
+fetch-tutorials = "python -m easydiffraction fetch-tutorials"

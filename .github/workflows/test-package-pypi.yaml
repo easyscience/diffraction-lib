@@ -30,21 +30,25 @@ jobs:
           cache: false
           post-cleanup: false
 
-      - name: Initialize a new Pixi project for EasyDiffraction
-        run: pixi init
+      - name: Download the pixi configuration file for EasyDiffraction
+        run:
+          curl -LO
+          https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
 
-      - name: Add Conda dependencies
-        run: pixi add python==3.13 libcblas
-
-      - name: Add PyPI dependencies
-        run: pixi add --pypi "easydiffraction[dev,visualization]"
+      - name: Create the environment and install dependencies
+        run: pixi install
 
       - name: Run unit tests to verify the installation
-        run:
-          pixi run python -m pytest --pyargs easydiffraction.tests.unit_tests
-          --color=yes -v
+        run: pixi run unit-tests
 
       - name: Run functional tests to verify the installation
-        run:
-          pixi run python -m pytest --pyargs
-          easydiffraction.tests.functional_tests --color=yes -n auto -v
+        run: pixi run func-tests
+
+      - name: List the available EasyDiffraction tutorials
+        run: pixi run list-tutorials
+
+      - name: Fetch the EasyDiffraction tutorials
+        run: pixi run fetch-tutorials
+
+      - name: Test tutorials as notebooks
+        run: pixi run test-notebooks

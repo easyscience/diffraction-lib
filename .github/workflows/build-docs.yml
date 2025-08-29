@@ -82,24 +82,21 @@ jobs:
           git clone https://github.com/easyscience/assets-branding.git
 
       - name: Add files from cloned repositories
-        run: pixi run add-docs-assets
+        run: pixi run add-assets-to-docs
 
       # Convert python scripts in the notebooks directory to Jupyter notebooks
       # Strip output from the notebooks
       # Prepare the notebooks for documentation (add colab cell, etc.)
       # Run the notebooks to generate the output cells using multiple cores
       # The notebooks are then used to build the documentation site
-      - name: Convert tutorial scripts to notebooks and run them
-        run: |
-          pixi run convert-notebooks
-          pixi run stripout-notebooks
-          pixi run prepare-notebooks
+      - name: Convert tutorial scripts to notebooks
+        run: pixi run make-notebooks
 
       - name: Run notebooks
         run: pixi run run-notebooks
 
       - name: Move notebooks to docs/tutorials
-        run: pixi run move-docs-notebooks
+        run: pixi run move-notebooks-to-docs
 
       # The following step is needed to avoid the following message during the build:
       # "Matplotlib is building the font cache; this may take a moment"

@@ -128,25 +128,29 @@ code-quality = { depends-on = [
 ] }
 
 # Notebook management tasks
-convert-notebooks = 'jupytext tutorials/*.py --from py:percent --to ipynb'
+scripts-to-notebooks = 'jupytext tutorials/*.py --from py:percent --to ipynb'
 stripout-notebooks = 'nbstripout tutorials/*.ipynb'
-prepare-notebooks = 'python tools/prepare_notebooks.py tutorials/'
+tweak-notebooks = 'python tools/tweak_notebooks.py tutorials/'
+make-notebooks = { depends-on = [
+  "scripts-to-notebooks",
+  "stripout-notebooks",
+  "tweak-notebooks",
+] }
+remove-notebooks = 'rm -f tutorials/*.ipynb'
 run-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --overwrite --color=yes -n auto -v'
 
 # Documentation tasks
-add-docs-assets = "tools/add_docs_assets.sh"
-move-docs-notebooks = "mv tutorials/*.ipynb docs/tutorials/"
+add-assets-to-docs = "tools/add_assets_to_docs.sh"
+move-notebooks-to-docs = "mv tutorials/*.ipynb docs/tutorials/"
 create-mkdocs-yml = "python tools/create_mkdocs_yml.py"
 serve-docs = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs serve --dirty'
 build-docs = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs build'
 cleanup-docs = "tools/cleanup_docs.sh"
 setup-docs = { depends-on = [
-  "add-docs-assets",
-  "convert-notebooks",
-  "stripout-notebooks",
-  "prepare-notebooks",
-  "move-docs-notebooks",
   "create-mkdocs-yml",
+  "add-assets-to-docs",
+  "make-notebooks",
+  "move-notebooks-to-docs",
 ] }
 
 # Other tasks
@@ -157,3 +161,5 @@ install-prettier = "npm install --no-save --no-audit --no-fund prettier prettier
 
 # Shortcuts
 easydiffraction = "python -m easydiffraction"
+list-tutorials = "python -m easydiffraction list-tutorials"
+fetch-tutorials = "python -m easydiffraction fetch-tutorials"
