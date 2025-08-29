@@ -1,10 +1,10 @@
-echo "\033[0;33m:::::: Clean up after building documentation\033[0m"
+echo "🧹 Clean up after building documentation"
 rm -rf site/
-rm -rf docs/assets/
+rm -rf docs/assets/javascripts
+rm -rf docs/assets/stylesheets
+rm -rf docs/assets/images/*.png
+rm -rf docs/assets/images/*.svg
 rm -rf includes/
 rm -rf overrides/
-rm -rf docs/examples/
-rm -rf node_modules/
+rm -rf docs/tutorials/*.ipynb
 rm mkdocs.yml
-rm package-lock.json
-rm package.json

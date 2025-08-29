@@ -14,9 +14,10 @@ on:
   pull_request:
     branches:
       - '**'
-  # Trigger the workflow on a schedule (every day at midnight)
-  schedule:
-    - cron: '0 0 * * *'
+  # Trigger the workflow on workflow_call (to be called from other workflows)
+  # Needed, as standard schedule triggers the master branch only, but we want
+  # to run this workflow on develop branch.
+  workflow_call:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -27,22 +28,12 @@ concurrency:
     ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-env:
-  # Set the environment variables to be used in all jobs defined in this workflow
-  # Set the CI_BRANCH environment variable to be the branch name
-  # Set the NOTEBOOKS_DIR environment var to be the dir of Jupyter notebooks
-  # Set PYTHONIOENCODING to utf-8 to avoid encoding issues on Windows
-  CI_BRANCH: ${{ github.head_ref || github.ref_name }}
-  NOTEBOOKS_DIR: tutorials
-  PYTHONIOENCODING: utf-8
-
 jobs:
   # Job 1: Check code quality and consistency
   code-quality:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ['3.13']
 
     runs-on: ${{ matrix.os }}
 
@@ -50,43 +41,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          python-version: ${{ matrix.python-version }}
+          environments: >-
+            py313-dev
+          activate-environment: py313-dev
+          run-install: true
+          frozen: true
+          cache: false
+          post-cleanup: false
 
-      - name: Upgrade package installer for Python
+      - name: Convert tutorial scripts to notebooks
         shell: bash
-        run: python -m pip install --upgrade pip
+        run: pixi run make-notebooks
 
-      - name: Install Python dependencies
-        shell: bash
-        run: python -m pip install .'[dev]'
-
-      # Check Jupyter notebooks with nbQA in the tutorials directory
-      - name: Convert ${{ env.NOTEBOOKS_DIR }}/*.py to *.ipynb
-        shell: bash
-        run: |
-          jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --from py:percent --to ipynb
-          nbstripout ${{ env.NOTEBOOKS_DIR }}/*.ipynb
-          python tools/prepare_notebooks.py ${{ env.NOTEBOOKS_DIR }}/
-
-      - name: Check Jupyter notebooks formatting
-        id: check_notebooks
+      - name: Check notebooks formatting
+        id: check_formatting
         continue-on-error: true
         shell: bash
-        run: nbqa ruff ${{ env.NOTEBOOKS_DIR }}/
+        run: pixi run check-format-notebooks
 
-      - name: Suggestion to fix notebook formatting issues (*.ipynb files)
-        if: steps.check_notebooks.outcome == 'failure'
+      - name: Suggestion to fix notebook formatting
+        if: steps.check_formatting.outcome == 'failure'
         shell: bash
-        run: >
-          echo "In project root run 'nbqa ruff ${{ env.NOTEBOOKS_DIR }}/ --fix'
-          and commit changes to fix issues."
-
-      - name: Force fail if the previous step failed
-        if: steps.check_notebooks.outcome == 'failure'
-        run: exit 1
+        run: |
+          echo "Run 'pixi run fix-format-notebooks' and commit changes."
+          exit 1
 
   # Job 2: Test tutorials as Python scripts and Jupyter Notebooks
   test-tutorials:
@@ -95,8 +76,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
-        python-version: ['3.13']
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -104,58 +84,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          python-version: ${{ matrix.python-version }}
+          environments: >-
+            py313-dev
+          activate-environment: py313-dev
+          run-install: true
+          frozen: true
+          cache: false
+          post-cleanup: false
 
-      - name: Upgrade package installer for Python
+      - name: Test tutorials as python scripts
         shell: bash
-        run: python -m pip install --upgrade pip
+        run: pixi run test-scripts
 
-      - name: Set up conda (Windows only)
-        if: runner.os == 'Windows'
-        uses: s-weigand/setup-conda@v1
-        with:
-          update-conda: true
-          python-version: ${{ matrix.python-version }}
-          conda-channels: conda-forge
-
-      - name: Install libcblas for pdffit (Windows only)
-        if: runner.os == 'Windows'
+      - name: Convert tutorial scripts to notebooks
         shell: bash
-        run: conda install -y -c conda-forge libcblas
+        run: pixi run make-notebooks
 
-      - name: Install Python dependencies
+      - name: Test tutorials as notebooks
         shell: bash
-        run: python -m pip install .'[dev,visualization]'
-
-      # Check if tutorials as python scripts run without errors
-      # Run all Python scripts in the folder tutorials/ in parallel
-      # -n 1: run one script per Python invocation
-      #	-P 0: run as many in parallel as you have cores (auto mode)
-      - name: Run tutorials as python scripts
-        shell: bash
-        run: |
-          export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
-          find ${{ env.NOTEBOOKS_DIR }}/ -name "*.py" | xargs -n 1 -P 0 python
-
-      # Check if tutorials as Jupyter Notebooks run without errors
-      # Convert all Python scripts in the folder tutorials/ to Jupyter Notebooks
-      # Strip output from Jupyter Notebooks and rename cell ids
-      # Replace '# !pip' with '!pip' in Jupyter Notebooks
-      # Run all Jupyter Notebooks in the folder tutorials/ in parallel
-      # -n auto: run as many in parallel as you have cores (auto mode)
-      # --nbmake-timeout=600: set timeout to 600 seconds
-      - name: Convert ${{ env.NOTEBOOKS_DIR }}/*.py to *.ipynb
-        shell: bash
-        run: |
-          jupytext ${{ env.NOTEBOOKS_DIR }}/*.py --from py:percent --to ipynb
-          nbstripout ${{ env.NOTEBOOKS_DIR }}/*.ipynb
-          python tools/prepare_notebooks.py ${{ env.NOTEBOOKS_DIR }}/
-
-      - name: Run tutorials as Jupyter Notebooks (using src/ as the source dir)
-        shell: bash
-        run: |
-          export PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
-          python -m pytest --nbmake ${{ env.NOTEBOOKS_DIR }}/ --nbmake-timeout=600 --color=yes -n auto
+        run: pixi run test-notebooks

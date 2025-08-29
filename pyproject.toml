@@ -26,6 +26,8 @@ dependencies = [
   'tabulate',       # Pretty-print tabular data for terminal output
   'asciichartpy',   # ASCII charts for terminal output
   'pooch',          # Data downloader
+  'typer',          # Command-line interface creation
+  'rich',           # Rich text and beautiful formatting in the terminal
   'varname',        # Variable name introspection
   'asteval',        # An expression evaluator for Python
   'scipy',          # Scientific computing library
@@ -53,6 +55,7 @@ dev = [
   'validate-pyproject[all]', # Validate pyproject.toml
   'versioningit',            # Automatic versioning from git tags
   'jupytext',                # Jupyter notebook text format support
+  'jupyterquiz',             # Quizzes in Jupyter notebooks
 ]
 docs = [
   'mkdocs',                          # Static site generator
@@ -115,7 +118,7 @@ source = 'versioningit' # Use versioningit to manage the version
 [tool.versioningit.format]
 distance = '{base_version}+d{distance}'       # example: 0.5.8+d3, 1.2.3.post4+d2
 dirty = '{base_version}'                      # example: 0.5.8, 1.2.3.post4
-distance-dirty = '{base_version}+d{distance}' # see 1st example
+distance-dirty = '{base_version}+d{distance}' # example: as in distance
 
 # Configure how versioningit detects versions from Git
 # - 'match' ensures it only considers tags starting with 'v'
