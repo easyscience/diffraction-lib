@@ -97,7 +97,7 @@ jobs:
 
       - name: Test tutorials as python scripts
         shell: bash
-        run: pixi run test-scripts
+        run: pixi run script-tests
 
       - name: Convert tutorial scripts to notebooks
         shell: bash
@@ -105,4 +105,4 @@ jobs:
 
       - name: Test tutorials as notebooks
         shell: bash
-        run: pixi run test-notebooks
+        run: pixi run notebook-tests

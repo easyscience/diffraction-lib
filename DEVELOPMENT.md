@@ -61,7 +61,7 @@ This is an example of a workflow that describes the development process.
   ```
 - Test tutorials as python scripts
   ```bash
-  pixi run test-scripts
+  pixi run script-tests
   ```
 - Convert tutorial scripts to notebooks
   ```bash
@@ -69,7 +69,7 @@ This is an example of a workflow that describes the development process.
   ```
 - Test tutorials as notebooks
   ```bash
-  pixi run test-notebooks
+  pixi run notebook-tests
   ```
 
 ## Building and checking documentation with MkDocs

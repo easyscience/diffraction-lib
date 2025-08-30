@@ -103,25 +103,28 @@ default = { features = ["py313", "ed-local-editable", "nodejs"] }
 
 [tasks]
 
-# Testing tasks
+# 🧪 Testing Tasks
 unit-tests = "python -m pytest tests/unit_tests/ --color=yes -v"
 func-tests = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
-test-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
-test-scripts = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
-test = { depends-on = ["unit-tests", "func-tests"] }
+notebook-tests = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
+script-tests = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
+tests = { depends-on = ["unit-tests", "func-tests"] }
 
-# Check code quality tasks
+# 🧹 Code Quality
+
+## ✔️ Checks
 check-pyproject = "python -m validate_pyproject pyproject.toml"
 check-lint-py = "python -m ruff check ."
 check-format-py = "python -m ruff format . --check"
 check-format-non-py = "npx prettier . --list-different --config=prettierrc.toml"
 check-format-notebooks = 'nbqa ruff tutorials/'
 
-# Fix code quality tasks
+## 🛠️ Fixes
 lint-py = "python -m ruff check . --fix"
 format-py = "python -m ruff format ."
 format-non-py = "npx prettier . --list-different --write --config=prettierrc.toml"
 fix-format-notebooks = 'nbqa ruff tutorials/ --fix'
+
 code-quality = { depends-on = [
   "check-pyproject",
   "lint-py",
@@ -129,7 +132,7 @@ code-quality = { depends-on = [
   "format-non-py",
 ] }
 
-# Notebook management tasks
+# 📓 Notebook Management
 scripts-to-notebooks = 'jupytext tutorials/*.py --from py:percent --to ipynb'
 stripout-notebooks = 'nbstripout tutorials/*.ipynb'
 tweak-notebooks = 'python tools/tweak_notebooks.py tutorials/'
@@ -141,7 +144,7 @@ make-notebooks = { depends-on = [
 remove-notebooks = 'rm -f tutorials/*.ipynb'
 run-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --overwrite --color=yes -n auto -v'
 
-# Documentation tasks
+# 📚 Documentation Tasks
 add-assets-to-docs = "tools/add_assets_to_docs.sh"
 move-notebooks-to-docs = "mv tutorials/*.ipynb docs/tutorials/"
 create-mkdocs-yml = "python tools/create_mkdocs_yml.py"
@@ -155,13 +158,13 @@ setup-docs = { depends-on = [
   "move-notebooks-to-docs",
 ] }
 
-# Other tasks
-pre-commit = { depends-on = ["code-quality", "test"] }
+# 🚀 Development & Build Tasks
+pre-commit = { depends-on = ["code-quality", "tests"] }
 build = "python -m build --wheel --outdir dist"
 update-spdx = "python tools/update_spdx.py"
 install-prettier = "npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml"
 
-# Shortcuts
+# 🔗 Shortcuts
 easydiffraction = "python -m easydiffraction"
 list-tutorials = "python -m easydiffraction list-tutorials"
 fetch-tutorials = "python -m easydiffraction fetch-tutorials"
