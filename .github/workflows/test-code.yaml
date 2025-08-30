@@ -76,38 +76,40 @@ jobs:
         shell: bash
         run: |
           pixi run npm config set registry https://registry.npmjs.org/
-          pixi run install-prettier
+          pixi run prettier-install
 
       # Check the validity of pyproject.toml
       - name: Check validity of pyproject.toml
         id: check_pyproject
         continue-on-error: true
         shell: bash
-        run: pixi run check-pyproject
+        run: pixi run pyproject-check
 
       # Check code linting with Ruff in the project root
       - name: Check code linting
         id: check_code_linting
         continue-on-error: true
         shell: bash
-        run: pixi run check-lint-py
+        run: pixi run py-lint-check
 
       - name: Suggestion to fix code linting issues (*.py files)
         if: steps.check_code_linting.outcome == 'failure'
         shell: bash
-        run: echo "In project root run 'pixi run lint-py' and commit changes"
+        run:
+          echo "In project root run 'pixi run py-lint-fix' and commit changes"
 
       # Check code formatting with Ruff in the project root
       - name: Check code formatting
         id: check_code_formatting
         continue-on-error: true
         shell: bash
-        run: pixi run check-format-py
+        run: pixi run py-format-check
 
       - name: Suggestion to fix code formatting issues (*.py files)
         if: steps.check_code_formatting.outcome == 'failure'
         shell: bash
-        run: echo "In project root run 'pixi run format-py' and commit changes"
+        run:
+          echo "In project root run 'pixi run py-format-fix' and commit changes"
 
       # Check formatting of Markdown, YAML, TOML, etc. files with Prettier in
       # the project root
@@ -115,13 +117,14 @@ jobs:
         id: check_others_formatting
         continue-on-error: true
         shell: bash
-        run: pixi run check-format-non-py
+        run: pixi run nonpy-format-check
 
       - name: Suggestion to fix non-code formatting issues (*.md, *.yml, etc.)
         if: steps.check_others_formatting.outcome == 'failure'
         shell: bash
         run:
-          echo "In project root run 'pixi run format-non-py' and commit changes"
+          echo "In project root run 'pixi run nonpy-format-fix' and commit
+          changes"
 
       - name: Force fail if any of the previous steps failed
         if: |
@@ -185,16 +188,12 @@ jobs:
         if: startsWith(github.ref , 'refs/tags/v') != true
         run: git tag --delete $(git tag)
 
-      - name: Move tests inside the package
-        shell: bash
-        run: mv tests/ src/easydiffraction/tests/
-
       - name: Create Python package
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run -e $env build
+            pixi run -e $env dist-build
             env_prefix="${env%%-*}"
             echo "📦 Moving built wheel to dist/$env_prefix/"
             pixi run mkdir -p dist/$env_prefix
@@ -209,6 +208,7 @@ jobs:
           name: edl_${{ matrix.os }}_${{ runner.arch }}
           path: |
             dist/
+            tests/
             pixi/wheel/pixi.toml
           if-no-files-found: 'error'
           compression-level: 0
@@ -225,7 +225,6 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      PIXI_PROJECT_MANIFEST: 'pixi/wheel/pixi.toml'
       PIXI_ENVS: 'py311-wheel py312-wheel py313-wheel'
 
     steps:

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import sys
 
 # Ensure UTF-8 output on all platforms (e.g. Windows with cp1252)

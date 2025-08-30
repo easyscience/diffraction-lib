@@ -26,7 +26,7 @@ This is an example of a workflow that describes the development process.
   ```
 - Install Prettier for non-Python files formatting
   ```bash
-  pixi run install-prettier
+  pixi run prettier-install
   ```
 
 ## Making changes
@@ -61,35 +61,35 @@ This is an example of a workflow that describes the development process.
   ```
 - Test tutorials as python scripts
   ```bash
-  pixi run test-scripts
+  pixi run script-tests
   ```
 - Convert tutorial scripts to notebooks
   ```bash
-  pixi run make-notebooks
+  pixi run notebook-prepare
   ```
 - Test tutorials as notebooks
   ```bash
-  pixi run test-notebooks
+  pixi run notebook-tests
   ```
 
 ## Building and checking documentation with MkDocs
 
 - Move notebooks to docs/tutorials
   ```bash
-  pixi run move-notebooks-to-docs
+  pixi run docs-notebooks
   ```
 - Add extra files to build documentation (from `../assets-docs/` and
   `../assets-branding/` directories)
   ```bash
-  pixi run add-assets-to-docs
+  pixi run docs-assets
   ```
 - Create mkdocs.yml file
   ```bash
-  pixi run create-mkdocs-yml
+  pixi run docs-config
   ```
 - Build documentation
   ```bash
-  pixi run build-docs
+  pixi run docs-build
   ```
 - Test the documentation locally (built in the `site/` directory). E.g., on
   macOS, open the site in the default browser via the terminal
@@ -98,7 +98,7 @@ This is an example of a workflow that describes the development process.
   ```
 - Clean up after checking documentation
   ```bash
-  pixi run cleanup-docs
+  pixi run docs-clean
   ```
 
 ## Committing and pushing changes

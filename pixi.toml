@@ -1,12 +1,9 @@
 [workspace]
+# Platforms supported for lock file (pixi.lock)
+platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
+
 # Channels used to fetch the packages from
 channels = ["conda-forge"]
-platforms = [
-  "win-64",
-  "linux-64",
-  "osx-64",
-  "osx-arm64",
-] # Platforms supported for lock file (pixi.lock)
 
 ##########
 # FEATURES
@@ -15,10 +12,14 @@ platforms = [
 # Default feature configuration
 
 [dependencies] # == [feature.default.dependencies]
-libcblas = "*"    # CBLAS library for linear algebra. Needed for pdffit2 on Windows
-pip = "*"         # Needed to install from PyPI
-jupyterlab = "*"  # JupyterLab for notebooks
-pixi-kernel = "*" # IPython kernel for Jupyter
+pip = "*"        # Needed to install from PyPI
+jupyterlab = "*" # JupyterLab for notebooks
+
+[target.win-64.dependencies]
+libcblas = "*" # CBLAS library for linear algebra. Needed for pdffit2 on Windows
+
+[pypi-dependencies] # == [feature.default.pypi-dependencies]
+pixi-kernel = "*" # Pixi Jupyter kernel integration
 
 # Extra features for different Python versions
 
@@ -72,7 +73,7 @@ easydiffraction = { version = "*", extras = ["dev", "visualization"] }
 # non-Python files.
 
 [feature.nodejs.dependencies]
-nodejs = "*" # Needed for prettier
+nodejs = ">=20,<21" # Needed for prettier; pin to a stable LTS
 
 ##############
 # ENVIRONMENTS
@@ -83,6 +84,8 @@ nodejs = "*" # Needed for prettier
 # The `default` environment is always included in the lock file, so there is no
 # need to specify it explicitly in the environments section.
 
+default = { features = ["py313", "ed-local-editable", "nodejs"] }
+
 py311-dev = { features = ["py311", "ed-local", "nodejs"] }
 py312-dev = { features = ["py312", "ed-local", "nodejs"] }
 py313-dev = { features = ["py313", "ed-local", "nodejs"] }
@@ -91,75 +94,77 @@ py313-docs = { features = ["py313", "ed-local-with-docs"] }
 
 py313-prod = { features = ["py313", "ed-pypi"] }
 
-default = { features = ["py313", "ed-local-editable"] }
-
 #######
 # TASKS
 #######
 
 [tasks]
 
-# Testing tasks
+# 🧪 Testing Tasks
 unit-tests = "python -m pytest tests/unit_tests/ --color=yes -v"
 func-tests = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
-unit-tests-package = "python -m pytest --pyargs easydiffraction.tests.unit_tests --color=yes -v"
-func-tests-package = "python -m pytest --pyargs easydiffraction.tests.functional_tests --color=yes -n auto -v"
-test-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
-test-scripts = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
-test = { depends-on = ["unit-tests", "func-tests"] }
+notebook-tests = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
+script-tests = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
 
-# Check code quality tasks
-check-pyproject = "python -m validate_pyproject pyproject.toml"
-check-lint-py = "python -m ruff check ."
-check-format-py = "python -m ruff format . --check"
-check-format-non-py = "npx prettier . --list-different --config=prettierrc.toml"
-check-format-notebooks = 'nbqa ruff tutorials/'
+tests = { depends-on = ["unit-tests", "func-tests"] }
 
-# Fix code quality tasks
-lint-py = "python -m ruff check . --fix"
-format-py = "python -m ruff format ."
-format-non-py = "npx prettier . --list-different --write --config=prettierrc.toml"
-fix-format-notebooks = 'nbqa ruff tutorials/ --fix'
+# 🧹 Code Quality
+
+## ✔️ Checks
+pyproject-check = "python -m validate_pyproject pyproject.toml"
+py-lint-check = "python -m ruff check ."
+py-format-check = "python -m ruff format . --check"
+nonpy-format-check = "npx prettier . --list-different --config=prettierrc.toml"
+notebook-format-check = 'nbqa ruff tutorials/'
+
+## 🛠️ Fixes
+py-lint-fix = "python -m ruff check . --fix"
+py-format-fix = "python -m ruff format ."
+nonpy-format-fix = "npx prettier . --list-different --write --config=prettierrc.toml"
+notebook-format-fix = 'nbqa ruff tutorials/ --fix'
+
 code-quality = { depends-on = [
-  "check-pyproject",
-  "lint-py",
-  "format-py",
-  "format-non-py",
+  "pyproject-check",
+  "py-lint-fix",
+  "py-format-fix",
+  "nonpy-format-fix",
+  "notebook-format-fix",
 ] }
 
-# Notebook management tasks
-scripts-to-notebooks = 'jupytext tutorials/*.py --from py:percent --to ipynb'
-stripout-notebooks = 'nbstripout tutorials/*.ipynb'
-tweak-notebooks = 'python tools/tweak_notebooks.py tutorials/'
-make-notebooks = { depends-on = [
-  "scripts-to-notebooks",
-  "stripout-notebooks",
-  "tweak-notebooks",
-] }
-remove-notebooks = 'rm -f tutorials/*.ipynb'
-run-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --overwrite --color=yes -n auto -v'
+# 📓 Notebook Management
+notebook-convert = 'jupytext tutorials/*.py --from py:percent --to ipynb'
+notebook-strip = 'nbstripout tutorials/*.ipynb'
+notebook-tweak = 'python tools/tweak_notebooks.py tutorials/'
+notebook-clean = 'rm -f tutorials/*.ipynb'
+notebook-exec = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --overwrite --color=yes -n auto -v'
 
-# Documentation tasks
-add-assets-to-docs = "tools/add_assets_to_docs.sh"
-move-notebooks-to-docs = "mv tutorials/*.ipynb docs/tutorials/"
-create-mkdocs-yml = "python tools/create_mkdocs_yml.py"
-serve-docs = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs serve --dirty'
-build-docs = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs build'
-cleanup-docs = "tools/cleanup_docs.sh"
-setup-docs = { depends-on = [
-  "create-mkdocs-yml",
-  "add-assets-to-docs",
-  "make-notebooks",
-  "move-notebooks-to-docs",
+notebook-prepare = { depends-on = [
+  "notebook-convert",
+  "notebook-strip",
+  "notebook-tweak",
 ] }
 
-# Other tasks
-pre-commit = { depends-on = ["code-quality", "test"] }
-build = "python -m build --wheel --outdir dist"
-update-spdx = "python tools/update_spdx.py"
-install-prettier = "npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml"
+# 📚 Documentation Tasks
+docs-assets = "tools/add_assets_to_docs.sh"
+docs-notebooks = "mv tutorials/*.ipynb docs/tutorials/"
+docs-config = "python tools/create_mkdocs_yml.py"
+docs-serve = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs serve --dirty'
+docs-build = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs build'
+docs-clean = "tools/cleanup_docs.sh"
+docs-setup = { depends-on = [
+  "docs-config",
+  "docs-assets",
+  "notebook-prepare",
+  "docs-notebooks",
+] }
 
-# Shortcuts
+# 🚀 Development & Build Tasks
+pre-commit = { depends-on = ["code-quality", "tests"] }
+dist-build = "python -m build --wheel --outdir dist"
+spdx-update = "python tools/update_spdx.py"
+prettier-install = "npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml"
+
+# 🔗 Shortcuts
 easydiffraction = "python -m easydiffraction"
-list-tutorials = "python -m easydiffraction list-tutorials"
-fetch-tutorials = "python -m easydiffraction fetch-tutorials"
+tutorials-list = "python -m easydiffraction list-tutorials"
+tutorials-fetch = "python -m easydiffraction fetch-tutorials"

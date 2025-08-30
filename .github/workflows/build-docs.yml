@@ -4,7 +4,7 @@ on:
   # Trigger the workflow on push
   push:
     # Selected branches
-    branches: [develop, master, docs, patch, pixi]
+    branches: [master, develop, docs, patch]
     # Runs on creating a new tag starting with 'v', e.g. 'v1.0.3'
     tags:
       - 'v*'
@@ -82,7 +82,7 @@ jobs:
           git clone https://github.com/easyscience/assets-branding.git
 
       - name: Add files from cloned repositories
-        run: pixi run add-assets-to-docs
+        run: pixi run docs-assets
 
       # Convert python scripts in the notebooks directory to Jupyter notebooks
       # Strip output from the notebooks
@@ -90,31 +90,26 @@ jobs:
       # Run the notebooks to generate the output cells using multiple cores
       # The notebooks are then used to build the documentation site
       - name: Convert tutorial scripts to notebooks
-        run: pixi run make-notebooks
+        run: pixi run notebook-prepare
 
       - name: Run notebooks
-        run: pixi run run-notebooks
+        run: pixi run notebook-exec
 
       - name: Move notebooks to docs/tutorials
-        run: pixi run move-notebooks-to-docs
-
-      # The following step is needed to avoid the following message during the build:
-      # "Matplotlib is building the font cache; this may take a moment"
-      #- name: Pre-build site step
-      #  run: pixi run python -c "import easydiffraction"
+        run: pixi run docs-notebooks
 
       # Create the mkdocs.yml configuration file
       # The file is created by merging two files:
       # - assets-docs/mkdocs.yml - the common configuration (theme, plugins, etc.)
       # - docs/mkdocs.yml - the project-specific configuration (project name, TOC, etc.)
       - name: Create mkdocs.yml file
-        run: pixi run create-mkdocs-yml
+        run: pixi run docs-config
 
       # Build the static files
       # Input: docs/ directory containing the Markdown files
       # Output: site/ directory containing the generated HTML files
       - name: Build site with MkDocs
-        run: pixi run build-docs
+        run: pixi run docs-build
 
       # Set up the Pages action to configure the static files to be deployed
       # NOTE: The repository must have GitHub Pages enabled and configured to build using GitHub Actions
