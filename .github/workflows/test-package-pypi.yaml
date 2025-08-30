@@ -51,10 +51,10 @@ jobs:
         run: pixi run func-tests
 
       - name: List the available EasyDiffraction tutorials
-        run: pixi run list-tutorials
+        run: pixi run tutorials-list
 
       - name: Fetch the EasyDiffraction tutorials
-        run: pixi run fetch-tutorials
+        run: pixi run tutorials-fetch
 
       - name: Test tutorials as notebooks
         run: pixi run notebook-tests

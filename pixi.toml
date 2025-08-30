@@ -108,63 +108,67 @@ unit-tests = "python -m pytest tests/unit_tests/ --color=yes -v"
 func-tests = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
 notebook-tests = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
 script-tests = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
+
 tests = { depends-on = ["unit-tests", "func-tests"] }
 
 # 🧹 Code Quality
 
 ## ✔️ Checks
-check-pyproject = "python -m validate_pyproject pyproject.toml"
-check-lint-py = "python -m ruff check ."
-check-format-py = "python -m ruff format . --check"
-check-format-non-py = "npx prettier . --list-different --config=prettierrc.toml"
-check-format-notebooks = 'nbqa ruff tutorials/'
+pyproject-check = "python -m validate_pyproject pyproject.toml"
+py-lint-check = "python -m ruff check ."
+py-format-check = "python -m ruff format . --check"
+nonpy-format-check = "npx prettier . --list-different --config=prettierrc.toml"
+notebook-format-check = 'nbqa ruff tutorials/'
 
 ## 🛠️ Fixes
-lint-py = "python -m ruff check . --fix"
-format-py = "python -m ruff format ."
-format-non-py = "npx prettier . --list-different --write --config=prettierrc.toml"
-fix-format-notebooks = 'nbqa ruff tutorials/ --fix'
+py-lint-fix = "python -m ruff check . --fix"
+py-format-fix = "python -m ruff format ."
+nonpy-format-fix = "npx prettier . --list-different --write --config=prettierrc.toml"
+notebook-format-fix = 'nbqa ruff tutorials/ --fix'
 
 code-quality = { depends-on = [
-  "check-pyproject",
-  "lint-py",
-  "format-py",
-  "format-non-py",
+  "pyproject-check",
+  "py-lint-fix",
+  "py-format-fix",
+  "nonpy-format-fix",
+  "notebook-format-fix",
 ] }
 
 # 📓 Notebook Management
-scripts-to-notebooks = 'jupytext tutorials/*.py --from py:percent --to ipynb'
-stripout-notebooks = 'nbstripout tutorials/*.ipynb'
-tweak-notebooks = 'python tools/tweak_notebooks.py tutorials/'
-make-notebooks = { depends-on = [
-  "scripts-to-notebooks",
-  "stripout-notebooks",
-  "tweak-notebooks",
+notebook-convert = 'jupytext tutorials/*.py --from py:percent --to ipynb'
+notebook-strip = 'nbstripout tutorials/*.ipynb'
+notebook-tweak = 'python tools/tweak_notebooks.py tutorials/'
+notebook-clean = 'rm -f tutorials/*.ipynb'
+notebook-exec = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --overwrite --color=yes -n auto -v'
+
+notebook-prepare = { depends-on = [
+  "notebook-convert",
+  "notebook-strip",
+  "notebook-tweak",
 ] }
-remove-notebooks = 'rm -f tutorials/*.ipynb'
-run-notebooks = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --overwrite --color=yes -n auto -v'
+
 
 # 📚 Documentation Tasks
-add-assets-to-docs = "tools/add_assets_to_docs.sh"
-move-notebooks-to-docs = "mv tutorials/*.ipynb docs/tutorials/"
-create-mkdocs-yml = "python tools/create_mkdocs_yml.py"
-serve-docs = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs serve --dirty'
-build-docs = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs build'
-cleanup-docs = "tools/cleanup_docs.sh"
-setup-docs = { depends-on = [
-  "create-mkdocs-yml",
-  "add-assets-to-docs",
-  "make-notebooks",
-  "move-notebooks-to-docs",
+docs-assets = "tools/add_assets_to_docs.sh"
+docs-notebooks = "mv tutorials/*.ipynb docs/tutorials/"
+docs-config = "python tools/create_mkdocs_yml.py"
+docs-serve = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs serve --dirty'
+docs-build = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs build'
+docs-clean = "tools/cleanup_docs.sh"
+docs-setup = { depends-on = [
+  "docs-config",
+  "docs-assets",
+  "notebook-prepare",
+  "docs-notebooks",
 ] }
 
 # 🚀 Development & Build Tasks
 pre-commit = { depends-on = ["code-quality", "tests"] }
-build = "python -m build --wheel --outdir dist"
-update-spdx = "python tools/update_spdx.py"
-install-prettier = "npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml"
+dist-build = "python -m build --wheel --outdir dist"
+spdx-update = "python tools/update_spdx.py"
+prettier-install = "npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml"
 
 # 🔗 Shortcuts
 easydiffraction = "python -m easydiffraction"
-list-tutorials = "python -m easydiffraction list-tutorials"
-fetch-tutorials = "python -m easydiffraction fetch-tutorials"
+tutorials-list = "python -m easydiffraction list-tutorials"
+tutorials-fetch = "python -m easydiffraction fetch-tutorials"

@@ -54,19 +54,19 @@ jobs:
 
       - name: Convert tutorial scripts to notebooks
         shell: bash
-        run: pixi run make-notebooks
+        run: pixi run notebook-prepare
 
       - name: Check notebooks formatting
         id: check_formatting
         continue-on-error: true
         shell: bash
-        run: pixi run check-format-notebooks
+        run: pixi run notebook-format-check
 
       - name: Suggestion to fix notebook formatting
         if: steps.check_formatting.outcome == 'failure'
         shell: bash
         run: |
-          echo "Run 'pixi run fix-format-notebooks' and commit changes."
+          echo "Run 'pixi run notebook-format-fix' and commit changes."
           exit 1
 
   # Job 2: Test tutorials as Python scripts and Jupyter Notebooks
@@ -101,7 +101,7 @@ jobs:
 
       - name: Convert tutorial scripts to notebooks
         shell: bash
-        run: pixi run make-notebooks
+        run: pixi run notebook-prepare
 
       - name: Test tutorials as notebooks
         shell: bash
