@@ -17,10 +17,12 @@ platforms = [
 [dependencies] # == [feature.default.dependencies]
 pip = "*"         # Needed to install from PyPI
 jupyterlab = "*"  # JupyterLab for notebooks
-pixi-kernel = "*" # Pixi Jupyter kernel integration
 
 [target.win-64.dependencies]
 libcblas = "*"    # CBLAS library for linear algebra. Needed for pdffit2 on Windows
+
+[pypi-dependencies] # == [feature.default.pypi-dependencies]
+pixi-kernel = "*" # Pixi Jupyter kernel integration
 
 # Extra features for different Python versions
 
