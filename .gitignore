@@ -4,6 +4,9 @@ __pycache__
 .coverage
 .pyc
 
+# Pixi
+.pixi
+
 # Jupyter Notebooks
 .ipynb_checkpoints
 

@@ -6,13 +6,21 @@ General utilities and helpers for easydiffraction.
 """
 
 import importlib
+import io
+import json
 import os
 import re
+import urllib.request
+import zipfile
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version
 from typing import List
+from urllib.parse import urlparse
 
 import numpy as np
 import pandas as pd
 import pooch
+from packaging.version import Version
 from tabulate import tabulate
 
 try:
@@ -22,7 +30,24 @@ try:
 except ImportError:
     IPython = None
 
+from easydiffraction.utils.formatting import error
+from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
+
+
+def _validate_url(url: str) -> None:
+    """Validate that a URL uses only safe HTTP/HTTPS schemes.
+
+    Args:
+        url: The URL to validate.
+
+    Raises:
+        ValueError: If the URL scheme is not HTTP or HTTPS.
+    """
+    parsed = urlparse(url)
+    if parsed.scheme not in ('http', 'https'):
+        raise ValueError(f"Unsafe URL scheme '{parsed.scheme}'. Only HTTP and HTTPS are allowed.")
+
 
 # Single source of truth for the data repository branch.
 # This can be overridden in CI or development environments.
@@ -45,6 +70,9 @@ def download_from_repository(
         branch: Branch to fetch from. If None, uses DATA_REPO_BRANCH.
         destination: Directory to save the file into (created if missing).
         overwrite: Whether to overwrite the file if it already exists. Defaults to False.
+
+    Returns:
+        None
     """
     file_path = os.path.join(destination, file_name)
     if os.path.exists(file_path):
@@ -68,6 +96,257 @@ def download_from_repository(
         fname=file_name,
         path=destination,
     )
+
+
+def package_version(package_name: str) -> str | None:
+    """
+    Get the installed version string of the specified package.
+
+    Args:
+        package_name (str): The name of the package to query.
+
+    Returns:
+        str | None: The raw version string (may include local part, e.g., '1.2.3+abc123'),
+        or None if the package is not installed.
+    """
+    try:
+        return version(package_name)
+    except PackageNotFoundError:
+        return None
+
+
+def stripped_package_version(package_name: str) -> str | None:
+    """
+    Get the installed version of the specified package, stripped of any local version part.
+
+    Returns only the public version segment (e.g., '1.2.3' or '1.2.3.post4'),
+    omitting any local segment (e.g., '+d136').
+
+    Args:
+        package_name (str): The name of the package to query.
+
+    Returns:
+        str | None: The public version string, or None if the package is not installed.
+    """
+    v_str = package_version(package_name)
+    if v_str is None:
+        return None
+    try:
+        v = Version(v_str)
+        return str(v.public)
+    except Exception:
+        return v_str
+
+
+def _get_release_info(tag: str | None) -> dict | None:
+    """
+    Fetch release info from GitHub for the given tag (or latest if None).
+    Uses unauthenticated API by default, but includes GITHUB_TOKEN from the environment
+    if available to avoid rate limiting.
+
+    Args:
+        tag (str | None): The tag of the release to fetch, or None for latest.
+
+    Returns:
+        dict | None: The release info dictionary if retrievable, None otherwise.
+    """
+    if tag is not None:
+        api_url = f'https://api.github.com/repos/easyscience/diffraction-lib/releases/tags/{tag}'
+    else:
+        api_url = 'https://api.github.com/repos/easyscience/diffraction-lib/releases/latest'
+    try:
+        _validate_url(api_url)
+        headers = {}
+        token = os.environ.get('GITHUB_TOKEN')
+        if token:
+            headers['Authorization'] = f'token {token}'
+
+        request = urllib.request.Request(api_url, headers=headers)  # noqa: S310
+        with urllib.request.urlopen(request) as response:  # noqa: S310
+            return json.load(response)
+    except Exception as e:
+        if tag is not None:
+            print(error(f'Failed to fetch release info for tag {tag}: {e}'))
+        else:
+            print(error(f'Failed to fetch latest release info: {e}'))
+        return None
+
+
+def _get_tutorial_asset(release_info: dict) -> dict | None:
+    """
+    Given a release_info dict, return the 'tutorials.zip' asset dict, or None.
+
+    Args:
+        release_info (dict): The release info dictionary.
+
+    Returns:
+        dict | None: The asset dictionary for 'tutorials.zip' if found, None otherwise.
+    """
+    assets = release_info.get('assets', [])
+    for asset in assets:
+        if asset.get('name') == 'tutorials.zip':
+            return asset
+    return None
+
+
+def _sort_notebooks(notebooks: list[str]) -> list[str]:
+    """
+    Sorts the list of notebook filenames.
+
+    Args:
+        notebooks (list[str]): List of notebook filenames.
+
+    Returns:
+        list[str]: Sorted list of notebook filenames.
+    """
+    return sorted(notebooks)
+
+
+def _extract_notebooks_from_asset(download_url: str) -> list[str]:
+    """
+    Download the tutorials.zip from download_url and return a sorted list of .ipynb file names.
+
+    Args:
+        download_url (str): URL to download the tutorials.zip asset.
+
+    Returns:
+        list[str]: Sorted list of .ipynb filenames found in the archive.
+    """
+    try:
+        _validate_url(download_url)
+        with urllib.request.urlopen(download_url) as response:  # noqa: S310
+            with zipfile.ZipFile(io.BytesIO(response.read())) as zip_file:
+                notebooks = [
+                    os.path.basename(name)
+                    for name in zip_file.namelist()
+                    if name.endswith('.ipynb') and not name.endswith('/')
+                ]
+                return _sort_notebooks(notebooks)
+    except Exception as e:
+        print(error(f"Failed to download or parse 'tutorials.zip': {e}"))
+        return []
+
+
+def fetch_tutorial_list() -> list[str]:
+    """
+    Return a list of available tutorial notebook filenames from the GitHub release
+    that matches the installed version of `easydiffraction`, if possible. If the
+    version-specific release is unavailable, falls back to the latest release.
+
+    This function does not fetch or display the tutorials themselves; it only lists
+    the notebook filenames (e.g., '01-intro.ipynb', ...) found inside the
+    'tutorials.zip' asset of the appropriate GitHub release.
+
+    Returns:
+        list[str]: A sorted list of tutorial notebook filenames (without directories)
+        extracted from the corresponding release's tutorials.zip, or an empty list
+        if unavailable.
+    """
+    version_str = stripped_package_version('easydiffraction')
+    tag = f'v{version_str}' if version_str is not None else None
+    release_info = _get_release_info(tag)
+    # Fallback to latest if tag fetch failed and tag was attempted
+    if release_info is None and tag is not None:
+        print(error('Falling back to latest release info...'))
+        release_info = _get_release_info(None)
+    if release_info is None:
+        return []
+    tutorial_asset = _get_tutorial_asset(release_info)
+    if not tutorial_asset:
+        print(error("'tutorials.zip' not found in the release."))
+        return []
+    download_url = tutorial_asset.get('browser_download_url')
+    if not download_url:
+        print(error("'browser_download_url' not found for tutorials.zip."))
+        return []
+    return _extract_notebooks_from_asset(download_url)
+
+
+def list_tutorials():
+    """
+    List available tutorial notebooks.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+    tutorials = fetch_tutorial_list()
+    columns_data = [[t] for t in tutorials]
+    columns_alignment = ['left']
+
+    released_ed_version = stripped_package_version('easydiffraction')
+
+    print(paragraph(f'📘 Tutorials available for easydiffraction v{released_ed_version}:'))
+    render_table(
+        columns_data=columns_data,
+        columns_alignment=columns_alignment,
+        show_index=True,
+    )
+
+
+def fetch_tutorials() -> None:
+    """
+    Download and extract the tutorials ZIP archive from the GitHub release matching the
+    installed version of `easydiffraction`, if available. If the version-specific release
+    is unavailable, falls back to the latest release.
+
+    The archive is extracted into the current working directory and then removed.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+    version_str = stripped_package_version('easydiffraction')
+    tag = f'v{version_str}' if version_str is not None else None
+    release_info = _get_release_info(tag)
+    # Fallback to latest if tag fetch failed and tag was attempted
+    if release_info is None and tag is not None:
+        print(error('Falling back to latest release info...'))
+        release_info = _get_release_info(None)
+    if release_info is None:
+        print(error('Unable to fetch release info.'))
+        return
+    tutorial_asset = _get_tutorial_asset(release_info)
+    if not tutorial_asset:
+        print(error("'tutorials.zip' not found in the release."))
+        return
+    file_url = tutorial_asset.get('browser_download_url')
+    if not file_url:
+        print(error("'browser_download_url' not found for tutorials.zip."))
+        return
+    file_name = 'tutorials.zip'
+    # Validate URL for security
+    _validate_url(file_url)
+
+    print('📥 Downloading tutorial notebooks...')
+    urllib.request.urlretrieve(file_url, file_name)  # noqa: S310
+
+    print('📦 Extracting tutorials to "tutorials/"...')
+    with zipfile.ZipFile(file_name, 'r') as zip_ref:
+        zip_ref.extractall()
+
+    print('🧹 Cleaning up...')
+    os.remove(file_name)
+
+    print('✅ Tutorials fetched successfully.')
+
+
+def show_version() -> None:
+    """
+    Print the installed version of the easydiffraction package.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+    current_ed_version = package_version('easydiffraction')
+    print(paragraph(f'📘 Current easydiffraction v{current_ed_version}'))
 
 
 def is_notebook() -> bool:
@@ -147,6 +426,10 @@ def render_table(
         columns_alignment (list): Corresponding text alignment for each column (e.g., 'left', 'center', 'right').
         columns_headers (list): List of column headers.
         show_index (bool): Whether to show the index column.
+        display_handle: Optional display handle for updating in Jupyter.
+
+    Returns:
+        None
     """
 
     # Use pandas DataFrame for Jupyter Notebook rendering
@@ -232,6 +515,13 @@ def render_table(
 def render_cif(cif_text, paragraph_title) -> None:
     """
     Display the CIF text as a formatted table in Jupyter Notebook or terminal.
+
+    Args:
+        cif_text: The CIF text to display.
+        paragraph_title: The title to print above the table.
+
+    Returns:
+        None
     """
     # Split into lines and replace empty ones with a '&nbsp;'
     # (non-breaking space) to force empty lines to be rendered in
@@ -248,7 +538,10 @@ def render_cif(cif_text, paragraph_title) -> None:
     print(paragraph_title)
 
     # Render the table using left alignment and no headers
-    render_table(columns_data=columns, columns_alignment=['left'])
+    render_table(
+        columns_data=columns,
+        columns_alignment=['left'],
+    )
 
 
 def tof_to_d(

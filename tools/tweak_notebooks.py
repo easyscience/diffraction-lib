@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
 """
 Add a single bootstrap code cell as the very first cell to every .ipynb file
 found under the given path(s).
 
 Usage:
-    python tools/prepare_notebooks.py tutorials/ [more_paths ...]
+    python tools/tweak_notebooks.py tutorials/ [more_paths ...]
 
 What it does:
 - Inserts a new *code* cell at index 0 that checks whether the `easydiffraction`
@@ -99,7 +98,7 @@ def process_notebook(path: Path) -> int:
 
 def main(argv: list[str]) -> int:
     if not argv:
-        print('Usage: python tools/prepare_notebooks.py <paths...>', file=sys.stderr)
+        print('Usage: python tools/tweak_notebooks.py <paths...>', file=sys.stderr)
         return 2
 
     targets = list(iter_notebooks([Path(p) for p in argv]))

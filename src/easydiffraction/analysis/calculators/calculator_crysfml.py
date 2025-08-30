@@ -18,7 +18,8 @@ from .calculator_base import CalculatorBase
 try:
     from pycrysfml import cfml_py_utilities
 
-    print("✅ 'pycrysfml' calculation engine is successfully imported.")
+    # TODO: Add the following print to debug mode
+    # print("✅ 'pycrysfml' calculation engine is successfully imported.")
 except ImportError:
     # TODO: Add the following print to debug mode
     # print("⚠️ 'pycrysfml' module not found. This calculation engine will not be available.")
