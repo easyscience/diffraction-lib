@@ -1736,6 +1736,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#installing-with-pixi" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installing with Pixi
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1760,8 +1769,8 @@
 
 <h1 id="installation-setup"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.25 12c0 .23-.02.46-.05.68l1.48 1.16c.13.11.17.29.08.45l-1.4 2.42c-.09.15-.27.21-.43.15l-1.74-.7c-.36.28-.76.51-1.19.69l-.25 1.85c-.03.17-.18.3-.35.3h-2.8c-.17 0-.32-.13-.35-.3L10 16.85c-.44-.18-.83-.41-1.19-.69l-1.74.7c-.16.06-.34 0-.43-.15l-1.4-2.42a.35.35 0 0 1 .08-.45l1.48-1.16c-.03-.22-.05-.45-.05-.68s.02-.46.05-.68l-1.48-1.16a.35.35 0 0 1-.08-.45l1.4-2.42c.09-.16.27-.22.43-.16l1.74.71c.36-.28.75-.52 1.19-.69l.25-1.86c.03-.16.18-.29.35-.29h2.8c.17 0 .32.13.35.29L14 7.15c.43.17.83.41 1.19.69l1.74-.71c.16-.06.34 0 .43.16l1.4 2.42c.09.15.05.34-.08.45l-1.48 1.16c.03.22.05.45.05.68M19 3H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m-7 7c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg></span> Installation &amp; Setup</h1>
 <h2 id="requirements">Requirements</h2>
-<p>EasyDiffraction is a cross-platform Python library compatible with <strong>Python 3.10
-through 3.12</strong>.<br />
+<p>EasyDiffraction is a cross-platform Python library compatible with <strong>Python 3.11
+through 3.13</strong>.<br />
 Make sure Python is installed on your system before proceeding with the
 installation.</p>
 <h2 id="environment-setup">Environment Setup <small>optional</small></h2>
@@ -1769,65 +1778,61 @@ installation.</p>
 conflicts with system-wide packages. If any issues arise, you can simply delete
 and recreate the environment.</p>
 <h4 id="creating-and-activating-a-virtual-environment">Creating and Activating a Virtual Environment:</h4>
-<ul>
-<li>Create a new virtual environment:
-  <div class="language-console highlight"><pre><span></span><code><span class="go">python3 -m venv venv</span>
-</code></pre></div></li>
-</ul>
 <!-- prettier-ignore-start -->
 
 <ul>
+<li>Create a new virtual environment:
+  <div class="language-bash highlight"><pre><span></span><code>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+</code></pre></div></li>
 <li>
 <p>Activate the environment:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></svg></span> macOS</label><label for="__tabbed_1_2"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.62 8.35c-.42.28-1.75 1.04-1.95 1.19-.39.31-.75.29-1.14-.01-.2-.16-1.53-.92-1.95-1.19-.48-.31-.45-.7.08-.92 1.64-.69 3.28-.64 4.91.03.49.21.51.6.05.9m7.22 7.28c-.93-2.09-2.2-3.99-3.84-5.66a4.3 4.3 0 0 1-1.06-1.88c-.1-.33-.17-.67-.24-1.01-.2-.88-.29-1.78-.7-2.61-.73-1.58-2-2.4-3.84-2.47-1.81.05-3.16.81-3.95 2.4-.21.43-.36.88-.46 1.34-.17.76-.32 1.55-.5 2.32-.15.65-.45 1.21-.96 1.71-1.61 1.57-2.9 3.37-3.88 5.35-.14.29-.28.58-.37.88-.19.66.29 1.12.99.96.44-.09.88-.18 1.3-.31.41-.15.57-.05.67.35.65 2.15 2.07 3.66 4.24 4.5 4.12 1.56 8.93-.66 9.97-4.58.07-.27.17-.37.47-.27.46.14.93.24 1.4.35.49.09.85-.16.92-.64.03-.26-.06-.49-.16-.73"/></svg></span> Linux</label><label for="__tabbed_1_3"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="m0 93.7 183.6-25.3v177.4H0zm0 324.6 183.6 25.3V268.4H0zm203.8 28L448 480V268.4H203.8zm0-380.6v180.1H448V32z"/></svg></span> Windows</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-console highlight"><pre><span></span><code><span class="go">. venv/bin/activate</span>
+<div class="language-bash highlight"><pre><span></span><code>.<span class="w"> </span>venv/bin/activate
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-console highlight"><pre><span></span><code><span class="go">. venv/bin/activate</span>
+<div class="language-bash highlight"><pre><span></span><code>.<span class="w"> </span>venv/bin/activate
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-console highlight"><pre><span></span><code><span class="go">. venv/Scripts/activate      # Windows with Unix-like shells</span>
-<span class="go">.\venv\Scripts\activate.bat  # Windows with CMD</span>
-<span class="go">.\venv\Scripts\activate.ps1  # Windows with PowerShell</span>
+<div class="language-bash highlight"><pre><span></span><code>.<span class="w"> </span>venv/Scripts/activate<span class="w">      </span><span class="c1"># Windows with Unix-like shells</span>
+.<span class="se">\v</span>env<span class="se">\S</span>cripts<span class="se">\a</span>ctivate.bat<span class="w">  </span><span class="c1"># Windows with CMD</span>
+.<span class="se">\v</span>env<span class="se">\S</span>cripts<span class="se">\a</span>ctivate.ps1<span class="w">  </span><span class="c1"># Windows with PowerShell</span>
 </code></pre></div>
 </div>
 </div>
 </div>
 </li>
+<li>
+<p>The terminal should now show <code>(venv)</code>, indicating that the virtual environment
+  is active.</p>
+</li>
 </ul>
 <!-- prettier-ignore-end -->
 
-<ul>
-<li>The terminal should now show <code>(venv)</code>, indicating that the virtual environment
-  is active.</li>
-</ul>
 <h4 id="deactivating-and-removing-the-virtual-environment">Deactivating and Removing the Virtual Environment:</h4>
-<ul>
-<li>Exit the environment:
-  <div class="language-console highlight"><pre><span></span><code><span class="go">deactivate</span>
-</code></pre></div></li>
-</ul>
 <!-- prettier-ignore-start -->
 
 <ul>
+<li>Exit the environment:
+  <div class="language-bash highlight"><pre><span></span><code>deactivate
+</code></pre></div></li>
 <li>
 <p>If this environment is no longer needed, delete it:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></svg></span> macOS</label><label for="__tabbed_2_2"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.62 8.35c-.42.28-1.75 1.04-1.95 1.19-.39.31-.75.29-1.14-.01-.2-.16-1.53-.92-1.95-1.19-.48-.31-.45-.7.08-.92 1.64-.69 3.28-.64 4.91.03.49.21.51.6.05.9m7.22 7.28c-.93-2.09-2.2-3.99-3.84-5.66a4.3 4.3 0 0 1-1.06-1.88c-.1-.33-.17-.67-.24-1.01-.2-.88-.29-1.78-.7-2.61-.73-1.58-2-2.4-3.84-2.47-1.81.05-3.16.81-3.95 2.4-.21.43-.36.88-.46 1.34-.17.76-.32 1.55-.5 2.32-.15.65-.45 1.21-.96 1.71-1.61 1.57-2.9 3.37-3.88 5.35-.14.29-.28.58-.37.88-.19.66.29 1.12.99.96.44-.09.88-.18 1.3-.31.41-.15.57-.05.67.35.65 2.15 2.07 3.66 4.24 4.5 4.12 1.56 8.93-.66 9.97-4.58.07-.27.17-.37.47-.27.46.14.93.24 1.4.35.49.09.85-.16.92-.64.03-.26-.06-.49-.16-.73"/></svg></span> Linux</label><label for="__tabbed_2_3"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="m0 93.7 183.6-25.3v177.4H0zm0 324.6 183.6 25.3V268.4H0zm203.8 28L448 480V268.4H203.8zm0-380.6v180.1H448V32z"/></svg></span> Windows</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-console highlight"><pre><span></span><code><span class="go">rm -rf venv</span>
+<div class="language-bash highlight"><pre><span></span><code>rm<span class="w"> </span>-rf<span class="w"> </span>venv
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-console highlight"><pre><span></span><code><span class="go">rm -rf venv</span>
+<div class="language-bash highlight"><pre><span></span><code>rm<span class="w"> </span>-rf<span class="w"> </span>venv
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-console highlight"><pre><span></span><code><span class="go">rmdir /s /q venv</span>
+<div class="language-bash highlight"><pre><span></span><code>rmdir<span class="w"> </span>/s<span class="w"> </span>/q<span class="w"> </span>venv
 </code></pre></div>
 </div>
 </div>
@@ -1846,29 +1851,29 @@ section.</p>
 <code>visualization</code> extras, which include optional dependencies used for simplified
 visualization of charts and tables. This can be especially useful for running
 the <abbr title="An open-source web application that allows you to create and share documents that contain live code, equations, visualizations, and narrative text.">Jupyter Notebook</abbr> examples. To do so, use the following command:</p>
-<div class="language-console highlight"><pre><span></span><code><span class="go">pip install &#39;easydiffraction[visualization]&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;easydiffraction[visualization]&#39;</span>
 </code></pre></div>
 <p>If only the core functionality is needed, the library can be installed simply
 with:</p>
-<div class="language-console highlight"><pre><span></span><code><span class="go">pip install easydiffraction</span>
+<div class="language-bash highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>easydiffraction
 </code></pre></div>
 <p>To install a specific version of EasyDiffraction, e.g., 1.0.3:</p>
-<div class="language-console highlight"><pre><span></span><code><span class="go">pip install &#39;easydiffraction==1.0.3&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;easydiffraction==1.0.3&#39;</span>
 </code></pre></div>
 <p>To upgrade to the latest version:</p>
-<div class="language-console highlight"><pre><span></span><code><span class="go">pip install --upgrade --force-reinstall easydiffraction</span>
+<div class="language-bash highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>--force-reinstall<span class="w"> </span>easydiffraction
 </code></pre></div>
 <p>To check the installed version:</p>
-<div class="language-console highlight"><pre><span></span><code><span class="go">pip show easydiffraction</span>
+<div class="language-bash highlight"><pre><span></span><code>pip<span class="w"> </span>show<span class="w"> </span>easydiffraction
 </code></pre></div>
 <h3 id="installing-from-github">Installing from <abbr title="A web-based platform for version control and collaboration.">GitHub</abbr></h3>
 <p>Installing unreleased versions is generally not recommended but may be useful
 for testing.</p>
 <p>To install EasyDiffraction from, e.g., the <code>develop</code> branch of <abbr title="A web-based platform for version control and collaboration.">GitHub</abbr>:</p>
-<div class="language-console highlight"><pre><span></span><code><span class="go">pip install git+https://github.com/easyscience/diffraction-lib@develop</span>
+<div class="language-bash highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/easyscience/diffraction-lib@develop
 </code></pre></div>
 <p>To include extra dependencies (e.g., visualization):</p>
-<div class="language-console highlight"><pre><span></span><code><span class="go">pip install &#39;easydiffraction[visualization] @ git+https://github.com/easyscience/diffraction-lib@develop&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;easydiffraction[visualization] @ git+https://github.com/easyscience/diffraction-lib@develop&#39;</span>
 </code></pre></div>
 <h2 id="how-to-run-tutorials">How to Run Tutorials</h2>
 <p>EasyDiffraction includes a collection of <strong><abbr title="An open-source web application that allows you to create and share documents that contain live code, equations, visualizations, and narrative text.">Jupyter Notebook</abbr> examples</strong> that
@@ -1899,23 +1904,23 @@ them interactively in two ways:</p>
 <p>To run tutorials locally, install <strong><abbr title="An open-source web application that allows you to create and share documents that contain live code, equations, visualizations, and narrative text.">Jupyter Notebook</abbr></strong> or <strong><abbr title="Web-based interactive development environment for notebooks, code, and data.">JupyterLab</abbr></strong>. Here
 are the steps to follow in the case of <strong><abbr title="An open-source web application that allows you to create and share documents that contain live code, equations, visualizations, and narrative text.">Jupyter Notebook</abbr></strong>:</p>
 <ul>
-<li>Install <abbr title="An open-source web application that allows you to create and share documents that contain live code, equations, visualizations, and narrative text.">Jupyter Notebook</abbr>:
-  <div class="language-console highlight"><pre><span></span><code><span class="go">pip install notebook</span>
+<li>Install <abbr title="An open-source web application that allows you to create and share documents that contain live code, equations, visualizations, and narrative text.">Jupyter Notebook</abbr> and IPython kernel:
+  <div class="language-bash highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>notebook<span class="w"> </span>ipykernel
 </code></pre></div></li>
-<li>Download the latest EasyDiffraction tutorial examples from <abbr title="A web-based platform for version control and collaboration.">GitHub</abbr>, e.g., using
-  <abbr title="Command-line tool for transferring data with URLs.">curl</abbr>:
-  <div class="language-console highlight"><pre><span></span><code><span class="go">curl --location --remote-name https://github.com/easyscience/diffraction-lib/releases/latest/download/examples.zip</span>
+<li>Add the virtual environment as a Jupyter kernel
+  <div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>ipykernel<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>--name<span class="o">=</span>venv<span class="w"> </span>--display-name<span class="w"> </span><span class="s2">&quot;EasyDiffraction Python kernel&quot;</span>
 </code></pre></div></li>
-<li>Unzip the archive:
-  <div class="language-console highlight"><pre><span></span><code><span class="go">unzip examples.zip</span>
+<li>Download the EasyDiffraction tutorials from <abbr title="A web-based platform for version control and collaboration.">GitHub</abbr> Releases:
+  <div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>fetch-tutorials
 </code></pre></div></li>
 <li>Launch the <abbr title="An open-source web application that allows you to create and share documents that contain live code, equations, visualizations, and narrative text.">Jupyter Notebook</abbr> server in the <code>examples/</code> directory:
-  <div class="language-console highlight"><pre><span></span><code><span class="go">jupyter notebook examples/</span>
+  <div class="language-bash highlight"><pre><span></span><code>jupyter<span class="w"> </span>notebook<span class="w"> </span>tutorials/
 </code></pre></div></li>
 <li>In your web browser, go to:
-  <div class="language-console highlight"><pre><span></span><code><span class="go">http://localhost:8888/</span>
+  <div class="language-bash highlight"><pre><span></span><code>http://localhost:8888/
 </code></pre></div></li>
-<li>Open one of the <code>*.ipynb</code> files.</li>
+<li>Open one of the <code>*.ipynb</code> files and select the <code>EasyDiffraction Python kernel</code>
+  to get started.</li>
 </ul>
 <h3 id="run-tutorials-via-google-colab">Run Tutorials via <abbr title="Cloud service that allows you to run Jupyter Notebooks in the cloud.">Google Colab</abbr></h3>
 <p><strong><abbr title="Cloud service that allows you to run Jupyter Notebooks in the cloud.">Google Colab</abbr></strong> lets you run Jupyter Notebooks in the cloud without any local
@@ -1935,6 +1940,53 @@ installation.</p>
 </ul>
 <p>This is the fastest way to start experimenting with EasyDiffraction, without
 setting up Python on your system.</p>
+<h2 id="installing-with-pixi">Installing with Pixi <small>alternative</small></h2>
+<p><a href="https://pixi.sh">Pixi</a> is a modern package and environment manager for Python
+and Conda-compatible packages. It simplifies dependency management, environment
+isolation, and reproducibility.</p>
+<p>The following simple steps provide an alternative setup method for
+EasyDiffraction using Pixi, replacing the traditional virtual environment
+approach.</p>
+<!-- prettier-ignore-start -->
+
+<ul>
+<li>Install Pixi by following the instructions on the
+  <a href="https://pixi.sh/latest/installation">official Pixi Installation Guide</a>.</li>
+<li>Create a dedicated directory for the EasyDiffraction and navigate into it:
+  <div class="language-bash highlight"><pre><span></span><code>mkdir<span class="w"> </span>easydiffraction
+<span class="nb">cd</span><span class="w"> </span>easydiffraction
+</code></pre></div></li>
+<li>
+<p>Download the pixi configuration file for EasyDiffraction:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1"><abbr title="Command-line tool for transferring data with URLs.">curl</abbr></label><label for="__tabbed_3_2">wget</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code>curl<span class="w"> </span>-LO<span class="w"> </span>https://raw.githubusercontent.com/easyscience/diffraction-lib/master/pixi/prod/pixi.toml
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code>wget<span class="w"> </span>https://raw.githubusercontent.com/easyscience/diffraction-lib/master/pixi/prod/pixi.toml
+</code></pre></div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Create the environment defined in <code>pixi.toml</code> and install all necessary
+  dependencies:
+  <div class="language-bash highlight"><pre><span></span><code>pixi<span class="w"> </span>install
+</code></pre></div></p>
+</li>
+<li>Fetch the EasyDiffraction tutorials to the <code>tutorials/</code> directory:
+  <div class="language-bash highlight"><pre><span></span><code>pixi<span class="w"> </span>run<span class="w"> </span>easydiffraction<span class="w"> </span>fetch-tutorials
+</code></pre></div></li>
+<li>Start <abbr title="Web-based interactive development environment for notebooks, code, and data.">JupyterLab</abbr> in the <code>tutorials/</code> directory to access the notebooks:
+  <div class="language-bash highlight"><pre><span></span><code>pixi<span class="w"> </span>run<span class="w"> </span>jupyter<span class="w"> </span>lab<span class="w"> </span>tutorials/
+</code></pre></div></li>
+<li>Your web browser should open automatically. Click on one of the <code>*.ipynb</code>
+  files and select the <code>Python (Pixi)</code> kernel to get started.</li>
+</ul>
+<!-- prettier-ignore-end -->
 
 
 
