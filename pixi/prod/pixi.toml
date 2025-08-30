@@ -8,7 +8,7 @@ pip = "*"         # Needed to install from PyPI
 jupyterlab = "*"  # JupyterLab for notebooks
 
 [target.win-64.dependencies]
-libcblas = "*"    # CBLAS library for linear algebra. Needed for pdffit2 on Windows
+libcblas = "*" # CBLAS library for linear algebra. Needed for pdffit2 on Windows
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
 pixi-kernel = "*" # Pixi Jupyter kernel integration
