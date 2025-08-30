@@ -185,10 +185,6 @@ jobs:
         if: startsWith(github.ref , 'refs/tags/v') != true
         run: git tag --delete $(git tag)
 
-      - name: Move tests inside the package
-        shell: bash
-        run: mv tests/ src/easydiffraction/tests/
-
       - name: Create Python package
         shell: bash
         run: |
