@@ -22,5 +22,5 @@ py313-wheel = { features = ["py313"] } # = ["default", "py313"]
 
 [tasks]
 easydiffraction = "python -m easydiffraction"
-unit-tests = "python -m pytest --pyargs easydiffraction.tests.unit_tests --color=yes -v"
-func-tests = "python -m pytest --pyargs easydiffraction.tests.functional_tests --color=yes -n auto -v"
+unit-tests = "python -m pytest tests/unit_tests/ --color=yes -v"
+func-tests = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
