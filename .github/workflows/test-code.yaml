@@ -209,6 +209,7 @@ jobs:
           name: edl_${{ matrix.os }}_${{ runner.arch }}
           path: |
             dist/
+            tests/
             pixi/wheel/pixi.toml
           if-no-files-found: 'error'
           compression-level: 0
@@ -225,7 +226,6 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      PIXI_PROJECT_MANIFEST: 'pixi/wheel/pixi.toml'
       PIXI_ENVS: 'py311-wheel py312-wheel py313-wheel'
 
     steps:
