@@ -1,6 +1,6 @@
 [workspace]
-channels = ["conda-forge"]
 platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
+channels = ["conda-forge"]
 
 [dependencies] # = [feature.default.dependencies]
 pip = "*"
@@ -26,6 +26,6 @@ py312-wheel = { features = ["py312"] } # = ["default", "py312"]
 py313-wheel = { features = ["py313"] } # = ["default", "py313"]
 
 [tasks]
-easydiffraction = "python -m easydiffraction"
 unit-tests = "python -m pytest tests/unit_tests/ --color=yes -v"
 func-tests = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
+easydiffraction = "python -m easydiffraction"

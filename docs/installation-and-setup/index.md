@@ -217,11 +217,11 @@ approach.
     
     === "curl"
         ```bash
-        curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
+        curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/master/pixi/prod/pixi.toml
         ```
     === "wget"
         ```bash
-        wget https://raw.githubusercontent.com/easyscience/diffraction-lib/pixi/pixi/prod/pixi.toml
+        wget https://raw.githubusercontent.com/easyscience/diffraction-lib/master/pixi/prod/pixi.toml
         ```
 
 - Create the environment defined in `pixi.toml` and install all necessary

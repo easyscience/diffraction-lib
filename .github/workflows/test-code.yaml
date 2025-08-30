@@ -95,7 +95,8 @@ jobs:
       - name: Suggestion to fix code linting issues (*.py files)
         if: steps.check_code_linting.outcome == 'failure'
         shell: bash
-        run: echo "In project root run 'pixi run py-lint-fix' and commit changes"
+        run:
+          echo "In project root run 'pixi run py-lint-fix' and commit changes"
 
       # Check code formatting with Ruff in the project root
       - name: Check code formatting
@@ -107,7 +108,8 @@ jobs:
       - name: Suggestion to fix code formatting issues (*.py files)
         if: steps.check_code_formatting.outcome == 'failure'
         shell: bash
-        run: echo "In project root run 'pixi run py-format-fix' and commit changes"
+        run:
+          echo "In project root run 'pixi run py-format-fix' and commit changes"
 
       # Check formatting of Markdown, YAML, TOML, etc. files with Prettier in
       # the project root
@@ -121,7 +123,8 @@ jobs:
         if: steps.check_others_formatting.outcome == 'failure'
         shell: bash
         run:
-          echo "In project root run 'pixi run nonpy-format-fix' and commit changes"
+          echo "In project root run 'pixi run nonpy-format-fix' and commit
+          changes"
 
       - name: Force fail if any of the previous steps failed
         if: |

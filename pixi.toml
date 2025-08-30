@@ -1,12 +1,9 @@
 [workspace]
+# Platforms supported for lock file (pixi.lock)
+platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
+
 # Channels used to fetch the packages from
 channels = ["conda-forge"]
-platforms = [
-  "win-64",
-  "linux-64",
-  "osx-64",
-  "osx-arm64",
-] # Platforms supported for lock file (pixi.lock)
 
 ##########
 # FEATURES
@@ -87,6 +84,8 @@ nodejs = ">=20,<21" # Needed for prettier; pin to a stable LTS
 # The `default` environment is always included in the lock file, so there is no
 # need to specify it explicitly in the environments section.
 
+default = { features = ["py313", "ed-local-editable", "nodejs"] }
+
 py311-dev = { features = ["py311", "ed-local", "nodejs"] }
 py312-dev = { features = ["py312", "ed-local", "nodejs"] }
 py313-dev = { features = ["py313", "ed-local", "nodejs"] }
@@ -94,8 +93,6 @@ py313-dev = { features = ["py313", "ed-local", "nodejs"] }
 py313-docs = { features = ["py313", "ed-local-with-docs"] }
 
 py313-prod = { features = ["py313", "ed-pypi"] }
-
-default = { features = ["py313", "ed-local-editable", "nodejs"] }
 
 #######
 # TASKS
@@ -146,7 +143,6 @@ notebook-prepare = { depends-on = [
   "notebook-strip",
   "notebook-tweak",
 ] }
-
 
 # 📚 Documentation Tasks
 docs-assets = "tools/add_assets_to_docs.sh"
