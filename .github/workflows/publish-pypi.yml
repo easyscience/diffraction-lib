@@ -32,9 +32,6 @@ jobs:
       - name: Install build tool
         run: pip install --upgrade build
 
-      - name: Move tests inside the package
-        run: mv tests/ src/easydiffraction/tests/
-
       - name: Create Python package
         run: python -m build
 
