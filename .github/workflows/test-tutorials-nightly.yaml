@@ -3,6 +3,7 @@ name: Test tutorials nightly (develop)
 on:
   schedule:
     - cron: '0 0 * * *' # Every midnight UTC
+  workflow_dispatch:
 
 jobs:
   call-tutorials:
