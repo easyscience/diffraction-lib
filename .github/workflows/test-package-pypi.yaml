@@ -1,11 +1,6 @@
 name: Test unpinned package from PyPI
 
 on:
-  # Trigger the workflow on push
-  push:
-    # Every branch
-    branches:
-      - '**'
   # Run daily, at 00:00.
   schedule:
     - cron: '0 0 * * *'
