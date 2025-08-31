@@ -36,7 +36,6 @@ jobs:
           post-cleanup: false
 
       - name: Download the pixi configuration file from the master branch
-        shell: bash
         run: |
           curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/master/pixi/prod/pixi.toml
 
@@ -45,12 +44,9 @@ jobs:
         run: |
           curl -LO https://github.com/easyscience/diffraction-lib/archive/refs/heads/master.zip
           unzip master.zip -d .
-          ls -l diffraction-lib-master/
-          ls -l diffraction-lib-master/tests/
           mkdir -p tests
           cp -r diffraction-lib-master/tests/* tests/
           rm -rf master.zip diffraction-lib-master
-          ls -l tests/unit_tests/
 
       - name: Create the environment and install dependencies
         run: pixi install
