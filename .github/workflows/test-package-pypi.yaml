@@ -44,7 +44,7 @@ jobs:
         shell: bash
         run: |
           curl -LO https://github.com/easyscience/diffraction-lib/archive/refs/heads/master.zip
-          unzip master.zip "diffraction-lib-master/tests/*" -d .
+          unzip master.zip -d .
           ls -l diffraction-lib-master/
           ls -l diffraction-lib-master/tests/
           mkdir -p tests
