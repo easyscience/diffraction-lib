@@ -1,6 +1,11 @@
 name: Test unpinned package from PyPI
 
 on:
+  # Trigger the workflow on push
+  push:
+    # Every branch
+    branches:
+      - '**'
   # Run daily, at 00:00.
   schedule:
     - cron: '0 0 * * *'
@@ -39,9 +44,13 @@ jobs:
         shell: bash
         run: |
           curl -LO https://github.com/easyscience/diffraction-lib/archive/refs/heads/master.zip
-          unzip master.zip "diffraction-lib-master/tests/*" -d . 
-          mv diffraction-lib-master/tests ./tests 
+          unzip master.zip "diffraction-lib-master/tests/*" -d .
+          ls -l diffraction-lib-master/
+          ls -l diffraction-lib-master/tests/
+          mkdir -p tests
+          cp -r diffraction-lib-master/tests/* tests/
           rm -rf master.zip diffraction-lib-master
+          ls -l tests/unit_tests/
 
       - name: Create the environment and install dependencies
         run: pixi install
