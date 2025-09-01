@@ -6,7 +6,7 @@ name: Update release draft
 on:
   # Runs on pushes targeting the default branch (updates the real draft release)
   push:
-    branches: [master]
+    branches: [master, 20-refactor-the-experiment-add-method]
 
 jobs:
   draft-release-notes:
@@ -17,9 +17,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.9.0
+        with:
+          environments: >-
+            default
+          activate-environment: default
+          run-install: true
+          frozen: true
+          cache: false
+          post-cleanup: false
+
+      - name: Convert tutorial scripts to notebooks
+        run: pixi run notebook-prepare
+
+      - name: Clean up unnecessary script files
+        run: rm -rf tutorials/*.py
+
+      - name: Zip the tutorials directory
+        run: zip -r tutorials.zip tutorials
+
+      - name: Debug
+        run: ls -l
+
       - name: Drafts the next release notes
         uses: enhantica/drafterino@v1
-
         with:
           config: |
             title: 'easydiffraction $COMPUTED_VERSION'
@@ -40,6 +65,9 @@ jobs:
                 labels: ['[scope] bug']
               - title: 'Changed'
                 labels: ['[scope] maintenance', '[scope] documentation']
+          files: |
+            LICENSE
+            ${{ github.workspace }}/tutorials.zip
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
