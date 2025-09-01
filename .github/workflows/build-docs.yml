@@ -92,6 +92,12 @@ jobs:
       - name: Convert tutorial scripts to notebooks
         run: pixi run notebook-prepare
 
+      # The following step is needed to avoid the following message during the build:
+      # "Matplotlib is building the font cache; this may take a moment"
+      - name: Pre-build site step
+        run: pixi run python -c "import easydiffraction"
+
+      # Run the notebooks to generate the output cells using multiple cores
       - name: Run notebooks
         run: pixi run notebook-exec
 
