@@ -25,7 +25,7 @@ EasyDiffraction. It is assumed that you have already created a `project` object,
 as described in the [Project](project.md) section as well as defined its
 `sample_models`, as described in the [Sample Model](model.md) section.
 
-### Adding an Experiment from CIF
+### Adding from CIF
 
 This is the most straightforward way to define an experiment in EasyDiffraction.
 If you have a crystallographic information file (CIF) for your experiment, that
@@ -44,7 +44,9 @@ You can also pass the content of the CIF file as a string using the
 
 ```python
 # Add an experiment from a CIF string
-cif_string = "... content of the CIF file ..."
+cif_string = """
+... content of the CIF file ...
+"""
 project.experiments.add_from_cif_str(cif_string)
 ```
 
@@ -73,7 +75,7 @@ you can access it in the code as follows:
 project.experiments['hrpt']
 ```
 
-### Defining an Experiment Manually
+### Defining Manually
 
 If you do not have a CIF file or prefer to define the experiment manually, you
 can use the `add_from_data_path` method of the `experiments` object of the
@@ -98,12 +100,11 @@ supported options for each parameter:
     these parameters. If you need to change them, you must create a new experiment
     or redefine the existing one.
 
-Here is an example of how to add an experiment with all components needed to
-define the experiment explicitly set:
+Here is an example of how to add an experiment with all relevant components
+explicitly defined:
 
 ```python
 # Add an experiment with default parameters, based on the specified type.
-# The experiment name is used to reference it later.
 project.experiments.add_from_data_path(name='hrpt',
                                        data_path='data/hrpt_lbco.xye',
                                        sample_form='powder',
@@ -116,7 +117,6 @@ To add an experiment of default type, you can simply do:
 
 ```python
 # Add an experiment of default type
-# The experiment name is used to reference it later.
 project.experiments.add_from_data_path(name='hrpt',
                                        data_path='data/hrpt_lbco.xye')
 ```
@@ -147,7 +147,7 @@ experiment = Experiment(name='hrpt',
 project.experiments.add(experiment)
 ```
 
-## Modifying Experiment Parameters
+## Modifying Parameters
 
 When an experiment is added, it is created with a set of default parameters that
 you can modify to match your specific experimental setup. All parameters are
