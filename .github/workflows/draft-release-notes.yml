@@ -6,7 +6,7 @@ name: Update release draft
 on:
   # Runs on pushes targeting the default branch (updates the real draft release)
   push:
-    branches: [master, 20-refactor-the-experiment-add-method]
+    branches: [master]
 
 jobs:
   draft-release-notes:
