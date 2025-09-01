@@ -1,4 +1,4 @@
-name: Test unpinned package from PyPI
+name: Test unpinned PyPI package
 
 on:
   # Run daily, at 00:00.
