@@ -3,11 +3,8 @@ name: Test tutorials
 on:
   # Trigger the workflow on push
   push:
-    # Every branch
-    branches: ['**']
-    # But do not run this workflow on creating a new tag starting with
-    # 'v', e.g. 'v1.0.3' (see publish-pypi.yml)
-    tags-ignore: ['v*']
+    # Selected branches
+    branches: [master, develop]
   # Trigger the workflow on pull request
   pull_request:
     branches: ['**']
