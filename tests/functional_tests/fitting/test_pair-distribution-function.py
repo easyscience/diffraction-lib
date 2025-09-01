@@ -29,11 +29,11 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     ed.download_from_repository(data_file, destination=TEMP_DIR)
     project.experiments.add(
         name='xray_pdf',
+        data_path=os.path.join(TEMP_DIR, data_file),
         sample_form='powder',
         beam_mode='constant wavelength',
         radiation_probe='xray',
         scattering_type='total',
-        data_path=os.path.join(TEMP_DIR, data_file),
     )
     experiment = project.experiments['xray_pdf']
     experiment.peak_profile_type = 'gaussian-damped-sinc'
@@ -79,11 +79,11 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     ed.download_from_repository(data_file, destination=TEMP_DIR)
     project.experiments.add(
         name='pdf',
+        data_path=os.path.join(TEMP_DIR, data_file),
         sample_form='powder',
         beam_mode='constant wavelength',
         radiation_probe='neutron',
         scattering_type='total',
-        data_path=os.path.join(TEMP_DIR, data_file),
     )
     experiment = project.experiments['pdf']
     experiment.peak.damp_q = 0
@@ -125,11 +125,11 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     ed.download_from_repository(data_file, destination=TEMP_DIR)
     project.experiments.add(
         name='nomad',
+        data_path=os.path.join(TEMP_DIR, data_file),
         sample_form='powder',
         beam_mode='time-of-flight',
         radiation_probe='neutron',
         scattering_type='total',
-        data_path=os.path.join(TEMP_DIR, data_file),
     )
     experiment = project.experiments['nomad']
     experiment.peak.damp_q = 0.0251
