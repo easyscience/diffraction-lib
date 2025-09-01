@@ -1,8 +1,6 @@
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-import pytest
-
 from easydiffraction.experiments.experiment import BaseExperiment
 from easydiffraction.experiments.experiments import Experiments
 
