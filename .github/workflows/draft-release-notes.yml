@@ -43,6 +43,7 @@ jobs:
         run: zip -9 -r tutorials.zip tutorials
 
       - name: Drafts the next release notes
+        id: draft
         uses: enhantica/drafterino@v2
         with:
           config: |
