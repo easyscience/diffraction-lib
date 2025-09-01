@@ -4,16 +4,13 @@ on:
   # Trigger the workflow on push
   push:
     # Every branch
-    branches:
-      - '**'
+    branches: ['**']
     # But do not run this workflow on creating a new tag starting with
     # 'v', e.g. 'v1.0.3' (see publish-pypi.yml)
-    tags-ignore:
-      - 'v*'
+    tags-ignore: ['v*']
   # Trigger the workflow on pull request
   pull_request:
-    branches:
-      - '**'
+    branches: ['**']
   # Trigger the workflow on workflow_call (to be called from other workflows)
   # Needed, as standard schedule triggers the master branch only, but we want
   # to run this workflow on develop branch.
