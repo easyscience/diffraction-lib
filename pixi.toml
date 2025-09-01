@@ -128,7 +128,6 @@ code-quality = { depends-on = [
   "py-lint-fix",
   "py-format-fix",
   "nonpy-format-fix",
-  "notebook-format-fix",
 ] }
 
 # 📓 Notebook Management
