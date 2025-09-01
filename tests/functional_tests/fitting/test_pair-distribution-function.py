@@ -27,7 +27,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     # Set experiment
     data_file = 'NaCl.gr'
     ed.download_from_repository(data_file, destination=TEMP_DIR)
-    project.experiments.add(
+    project.experiments.add_from_data_path(
         name='xray_pdf',
         data_path=os.path.join(TEMP_DIR, data_file),
         sample_form='powder',
@@ -77,7 +77,7 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     # Set experiment
     data_file = 'ni-q27r100-neutron_from-2.gr'
     ed.download_from_repository(data_file, destination=TEMP_DIR)
-    project.experiments.add(
+    project.experiments.add_from_data_path(
         name='pdf',
         data_path=os.path.join(TEMP_DIR, data_file),
         sample_form='powder',
@@ -123,7 +123,7 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     # Set experiment
     data_file = 'NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr'
     ed.download_from_repository(data_file, destination=TEMP_DIR)
-    project.experiments.add(
+    project.experiments.add_from_data_path(
         name='nomad',
         data_path=os.path.join(TEMP_DIR, data_file),
         sample_form='powder',

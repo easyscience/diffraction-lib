@@ -51,7 +51,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
 
     data_file = 'd1a_pbso4_second-half.dat'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt2 = Experiment('npd2', data_path=os.path.join(TEMP_DIR, data_file))
+    expt2 = Experiment(name='npd2', data_path=os.path.join(TEMP_DIR, data_file))
     expt2.instrument.setup_wavelength = 1.91
     expt2.instrument.calib_twotheta_offset = -0.1406
     expt2.peak.broad_gauss_u = 0.139
