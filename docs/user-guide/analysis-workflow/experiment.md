@@ -4,10 +4,12 @@ icon: material/microscope
 
 # :material-microscope: Experiment
 
-The **Experiment** in EasyDiffraction includes both the measured diffraction
-data and all the other relevant parameters that describe the experimental setup
-and related conditions. This can include information about the instrumental
+An **Experiment** in EasyDiffraction includes the measured diffraction data
+along with all relevant parameters that describe the experimental setup and
+associated conditions. This can include information about the instrumental
 resolution, peak shape, background, etc.
+
+## Defining an Experiment
 
 EasyDiffraction allows you to:
 
@@ -28,19 +30,28 @@ as described in the [Project](project.md) section as well as defined its
 This is the most straightforward way to define an experiment in EasyDiffraction.
 If you have a crystallographic information file (CIF) for your experiment, that
 contains both the necessary information (metadata) about the experiment as well
-as the measured data, you can add it to your project using the
-`add_experiment_from_cif` method of the `project` instance. In this case, the
-name of the experiment will be taken from CIF.
+as the measured data, you can add it to your `project.experiments` collection
+using the `add_from_cif_path` method. In this case, the name of the experiment
+will be taken from CIF.
 
 ```python
 # Load an experiment from a CIF file
-project.add_experiment_from_cif('data/hrpt_300K.cif')
+project.experiments.add_from_cif_path('data/hrpt_300K.cif')
 ```
 
-Accessing the experiment after loading it will be done through the `experiments`
-object of the `project` instance. The name of the model will be the same as the
-data block id in the CIF file. For example, if the CIF file contains a data
-block with the id `hrpt`,
+You can also pass the content of the CIF file as a string using the
+`add_from_cif_str` method:
+
+```python
+# Add an experiment from a CIF string
+cif_string = "... content of the CIF file ..."
+project.experiments.add_from_cif_str(cif_string)
+```
+
+Accessing the experiment after adding it will also be done through the
+`experiments` object of the `project` instance. The name of the experiment will
+be the same as the data block id in the CIF file. For example, if the CIF file
+contains a data block with the id `hrpt`,
 
 <!-- prettier-ignore-start -->
 
@@ -62,14 +73,19 @@ you can access it in the code as follows:
 project.experiments['hrpt']
 ```
 
-## Defining an Experiment Manually
+### Defining an Experiment Manually
 
 If you do not have a CIF file or prefer to define the experiment manually, you
-can use the `add` method of the `experiments` object of the `project` instance.
-In this case, you will need to specify the name of the experiment, which will be
-used to reference it later. Along with the name, you need to provide the
-following parameters, essential for defining the experiment, which define the
-**type of experiment**:
+can use the `add_from_data_path` method of the `experiments` object of the
+`project` instance. In this case, you will need to specify the **name** of the
+experiment, which will be used to reference it later, as well as **data_path**
+to the measured data file (e.g., `.xye`, `.xy`). Supported formats are described
+in the [Measured Data Category](#5-measured-data-category) section.
+
+Optionally, you can also specify the additional parameters that define the
+**type of experiment** you want to create. If you do not specify any of these
+parameters, the default values will be used, which are the first in the list of
+supported options for each parameter:
 
 - **sample_form**: The form of the sample (powder, single crystal).
 - **beam_mode**: The mode of the beam (constant wavelength, time-of-flight).
@@ -82,24 +98,18 @@ following parameters, essential for defining the experiment, which define the
     these parameters. If you need to change them, you must create a new experiment
     or redefine the existing one.
 
-If you have a measured data file, you can also specify:
-
-- **data_path**: The path to the measured data file (e.g., `.xye`, `.xy`).
-  Supported formats are described in the
-  [Measured Data Category](#5-measured-data-category) section.
-
 Here is an example of how to add an experiment with all components needed to
 define the experiment explicitly set:
 
 ```python
 # Add an experiment with default parameters, based on the specified type.
 # The experiment name is used to reference it later.
-project.experiments.add(name='hrpt',
-                        sample_form='powder',
-                        beam_mode='constant wavelength',
-                        radiation_probe='neutron',
-                        scattering_type='bragg',
-                        data_path='data/hrpt_lbco.xye')
+project.experiments.add_from_data_path(name='hrpt',
+                                       data_path='data/hrpt_lbco.xye',
+                                       sample_form='powder',
+                                       beam_mode='constant wavelength',
+                                       radiation_probe='neutron',
+                                       scattering_type='bragg')
 ```
 
 To add an experiment of default type, you can simply do:
@@ -107,17 +117,42 @@ To add an experiment of default type, you can simply do:
 ```python
 # Add an experiment of default type
 # The experiment name is used to reference it later.
-project.experiments.add(name='hrpt',
-                        data_path='data/hrpt_lbco.xye')
+project.experiments.add_from_data_path(name='hrpt',
+                                       data_path='data/hrpt_lbco.xye')
 ```
 
-You can now change the default parameters of the experiment, categorized into
-the groups based on the type of experiment.
+If you do not have measured data for fitting and only want to view the simulated
+pattern, you can define an experiment without measured data using the
+`add_without_data` method:
 
-The `add` method creates a new experiment of the specified type with default
-parameters. You can then modify its parameters to match your specific
-experimental setup. All parameters are grouped into the following categories,
-which makes it easier to manage the experiment:
+```python
+# Add an experiment without measured data
+project.experiments.add_without_data(name='hrpt',
+                                     sample_form='powder',
+                                     beam_mode='constant wavelength',
+                                     radiation_probe='x-ray')
+```
+
+Finally, you can also add an experiment by passing the experiment object
+directly using the `add` method:
+
+```python
+# Add an experiment by passing the experiment object directly
+from easydiffraction import Experiment
+experiment = Experiment(name='hrpt',
+                        sample_form='powder',
+                        beam_mode='constant wavelength',
+                        radiation_probe='neutron',
+                        scattering_type='bragg')
+project.experiments.add(experiment)
+```
+
+## Modifying Experiment Parameters
+
+When an experiment is added, it is created with a set of default parameters that
+you can modify to match your specific experimental setup. All parameters are
+grouped into categories based on their function, making it easier to manage and
+understand the different aspects of the experiment:
 
 1. **Instrument Category**: Defines the instrument configuration, including
    wavelength, two-theta offset, and resolution parameters.
@@ -349,14 +384,13 @@ Experiment 🔬 'hrpt' as cif
 
 ## Saving an Experiment
 
-Saving the project, as described in the [Project](project.md) section, 
-will also save the experiment. Each experiment is saved as a separate
-CIF file in the `experiments` subdirectory of the project directory. The project file contains 
-references to these files.
+Saving the project, as described in the [Project](project.md) section, will 
+also save the experiment. Each experiment is saved as a separate CIF file in 
+the `experiments` subdirectory of the project directory. The project file 
+contains references to these files.
 
-EasyDiffraction supports different types of experiments, and each experiment is saved in a 
-dedicated CIF file with 
-experiment-specific parameters. 
+EasyDiffraction supports different types of experiments, and each experiment 
+is saved in a dedicated CIF file with experiment-specific parameters. 
 
 Below are examples of how different experiments are saved in CIF format.
 
