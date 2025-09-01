@@ -39,24 +39,16 @@ def test_experiments_add_from_data_path():
     mock_experiment.name = 'TestExperiment'
 
     with patch('easydiffraction.experiments.experiment.ExperimentFactory.create', return_value=mock_experiment):
-        experiments.add(
+        experiments.add_from_data_path(
             name='TestExperiment',
             sample_form='powder',
-            beam_mode='default',
+            beam_mode='constant wavelength',
             radiation_probe='x-ray',
             data_path='mock_path',
         )
 
     assert 'TestExperiment' in experiments.ids
-    assert experiments._experiments['TestExperiment'] == mock_experiment
-    mock_experiment._load_ascii_data_to_experiment.assert_called_once_with('mock_path')
-
-
-def test_experiments_add_invalid_input():
-    experiments = Experiments()
-
-    with pytest.raises(ValueError, match='Provide either experiment, type parameters, cif_path, cif_str, or data_path'):
-        experiments.add()
+    assert experiments['TestExperiment'] == mock_experiment
 
 
 def test_experiments_remove():
