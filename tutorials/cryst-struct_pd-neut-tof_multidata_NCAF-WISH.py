@@ -75,16 +75,16 @@ download_from_repository(
 
 # %%
 expt56 = Experiment(
-    'wish_5_6',
-    beam_mode='time-of-flight',
+    name='wish_5_6',
     data_path='data/wish_ncaf_5_6.xys',
+    beam_mode='time-of-flight',
 )
 
 # %%
 expt47 = Experiment(
-    'wish_4_7',
-    beam_mode='time-of-flight',
+    name='wish_4_7',
     data_path='data/wish_ncaf_4_7.xys',
+    beam_mode='time-of-flight',
 )
 
 # %% [markdown]
