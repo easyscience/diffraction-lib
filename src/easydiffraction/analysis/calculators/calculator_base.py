@@ -57,7 +57,7 @@ class CalculatorBase(ABC):
         Returns:
             The calculated diffraction pattern as a NumPy array.
         """
-        x_data = experiment.datastore.pattern.x
+        x_data = experiment.datastore.x
         y_calc_zeros = np.zeros_like(x_data)
 
         valid_linked_phases = self._get_valid_linked_phases(sample_models, experiment)
@@ -89,11 +89,11 @@ class CalculatorBase(ABC):
         y_bkg = np.zeros_like(x_data)
         if hasattr(experiment, 'background'):
             y_bkg = experiment.background.calculate(x_data)
-        experiment.datastore.pattern.bkg = y_bkg
+        experiment.datastore.bkg = y_bkg
 
         # Calculate total pattern
         y_calc_total = y_calc_scaled + y_bkg
-        experiment.datastore.pattern.calc = y_calc_total
+        experiment.datastore.calc = y_calc_total
 
         return y_calc_total
 

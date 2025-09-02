@@ -4,10 +4,10 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from easydiffraction.experiments.collections.datastore import Datastore
-from easydiffraction.experiments.collections.datastore import DatastoreFactory
-from easydiffraction.experiments.collections.datastore import Pattern
-from easydiffraction.experiments.collections.datastore import PowderPattern
+from easydiffraction.experiments.datastore import Datastore
+from easydiffraction.experiments.datastore import DatastoreFactory
+from easydiffraction.experiments.datastore import Pattern
+from easydiffraction.experiments.datastore import PowderPattern
 
 
 def test_pattern_initialization():
@@ -95,36 +95,6 @@ def test_datastore_load_measured_data_invalid_file():
 
     with patch('numpy.loadtxt', side_effect=Exception('File not found')):
         datastore.load_measured_data('invalid_path')
-
-
-def test_datastore_show_measured_data(capsys):
-    mock_experiment = MagicMock()
-    datastore = Datastore(sample_form='powder', experiment=mock_experiment)
-
-    datastore.pattern.x = [1.0, 2.0, 3.0]
-    datastore.pattern.meas = [10.0, 20.0, 30.0]
-    datastore.pattern.meas_su = [0.1, 0.2, 0.3]
-
-    datastore.show_measured_data()
-    captured = capsys.readouterr()
-
-    assert 'Measured data (powder):' in captured.out
-    assert 'x: [1.0, 2.0, 3.0]' in captured.out
-    assert 'meas: [10.0, 20.0, 30.0]' in captured.out
-    assert 'meas_su: [0.1, 0.2, 0.3]' in captured.out
-
-
-def test_datastore_show_calculated_data(capsys):
-    mock_experiment = MagicMock()
-    datastore = Datastore(sample_form='powder', experiment=mock_experiment)
-
-    datastore.pattern.calc = [100.0, 200.0, 300.0]
-
-    datastore.show_calculated_data()
-    captured = capsys.readouterr()
-
-    assert 'Calculated data (powder):' in captured.out
-    assert 'calc: [100.0, 200.0, 300.0]' in captured.out
 
 
 def test_datastore_factory_create_powder():
