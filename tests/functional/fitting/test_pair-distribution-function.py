@@ -1,6 +1,7 @@
 import os
 import tempfile
 
+import pytest
 from numpy.testing import assert_almost_equal
 
 import easydiffraction as ed
@@ -27,13 +28,13 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     # Set experiment
     data_file = 'NaCl.gr'
     ed.download_from_repository(data_file, destination=TEMP_DIR)
-    project.experiments.add(
+    project.experiments.add_from_data_path(
         name='xray_pdf',
+        data_path=os.path.join(TEMP_DIR, data_file),
         sample_form='powder',
         beam_mode='constant wavelength',
         radiation_probe='xray',
         scattering_type='total',
-        data_path=os.path.join(TEMP_DIR, data_file),
     )
     experiment = project.experiments['xray_pdf']
     experiment.peak_profile_type = 'gaussian-damped-sinc'
@@ -61,6 +62,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=1.48, decimal=2)
 
 
+@pytest.mark.fast
 def test_single_fit_pdf_neutron_pd_cw_ni():
     project = ed.Project()
 
@@ -77,13 +79,13 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     # Set experiment
     data_file = 'ni-q27r100-neutron_from-2.gr'
     ed.download_from_repository(data_file, destination=TEMP_DIR)
-    project.experiments.add(
+    project.experiments.add_from_data_path(
         name='pdf',
+        data_path=os.path.join(TEMP_DIR, data_file),
         sample_form='powder',
         beam_mode='constant wavelength',
         radiation_probe='neutron',
         scattering_type='total',
-        data_path=os.path.join(TEMP_DIR, data_file),
     )
     experiment = project.experiments['pdf']
     experiment.peak.damp_q = 0
@@ -123,13 +125,13 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     # Set experiment
     data_file = 'NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr'
     ed.download_from_repository(data_file, destination=TEMP_DIR)
-    project.experiments.add(
+    project.experiments.add_from_data_path(
         name='nomad',
+        data_path=os.path.join(TEMP_DIR, data_file),
         sample_form='powder',
         beam_mode='time-of-flight',
         radiation_probe='neutron',
         scattering_type='total',
-        data_path=os.path.join(TEMP_DIR, data_file),
     )
     experiment = project.experiments['nomad']
     experiment.peak.damp_q = 0.0251

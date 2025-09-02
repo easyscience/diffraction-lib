@@ -6,7 +6,7 @@
 #    - Check code linting
 #    - Check code formatting
 #    - Check formatting of Markdown, YAML, TOML, etc. files
-# 2. run-tests:
+# 2. test-source:
 #    - Test the code base against the latest code in the repository
 #    - Create the Python package
 #    - Upload the Python package for the next job
@@ -21,16 +21,13 @@ on:
   # Trigger the workflow on push
   push:
     # Every branch
-    branches:
-      - '**'
+    branches: ['**']
     # But do not run this workflow on creating a new tag starting with
     # 'v', e.g. 'v1.0.3' (see publish-pypi.yml)
-    tags-ignore:
-      - 'v*'
+    tags-ignore: ['v*']
   # Trigger the workflow on pull request
   pull_request:
-    branches:
-      - '**'
+    branches: ['**']
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -57,9 +54,21 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    outputs:
+      pytest-marks: ${{ steps.set-mark.outputs.pytest_marks }}
+
     steps:
+      - name: Set mark for functional tests
+        id: set-mark
+        run: |
+          if [[ "${{ env.CI_BRANCH }}" != "master" && "${{ env.CI_BRANCH }}" != "develop" ]]; then
+            echo "pytest_marks=-m 'fast'" >> $GITHUB_OUTPUT
+          else
+            echo "pytest_marks=" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up pixi (incl. environments and dependencies)
         uses: prefix-dev/setup-pixi@v0.9.0
@@ -136,7 +145,7 @@ jobs:
 
   # Job 2: Test code
   # TODO: Add coverage reporting with upload to Codecov?
-  run-tests:
+  test-source:
     needs: code-quality # previous job needs to be finished first
 
     strategy:
@@ -151,7 +160,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: '0' # full history with tags to get the version number by versioningit
 
@@ -172,12 +181,13 @@ jobs:
             pixi run -e $env unit-tests
           done
 
-      - name: Run functional tests
+      - name:
+          Run functional tests ${{ needs.code-quality.outputs.pytest-marks }}
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run -e $env func-tests
+            pixi run -e $env func-tests "${{ needs.code-quality.outputs.pytest-marks }}"
           done
 
       # Delete all local tags when not on a tagged commit to force versioningit
@@ -215,7 +225,7 @@ jobs:
 
   # Job 3: Test the package
   test-package:
-    needs: run-tests # the previous job needs to be finished first
+    needs: test-source # the previous job needs to be finished first
 
     strategy:
       fail-fast: false
@@ -260,7 +270,7 @@ jobs:
             pixi run -e $env easydiffraction version
           done
 
-      - name: Run unit tests (using built package from previous job)
+      - name: Run unit tests
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
@@ -268,10 +278,11 @@ jobs:
             pixi run -e $env unit-tests
           done
 
-      - name: Run functional tests (using built package from previous job)
+      - name:
+          Run functional tests ${{ needs.code-quality.outputs.pytest-marks }}
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run -e $env func-tests
+            pixi run -e $env func-tests "${{ needs.code-quality.outputs.pytest-marks }}"
           done

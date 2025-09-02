@@ -57,7 +57,7 @@ download_from_repository('sepd_si.xye', destination='data')
 # #### Create Experiment
 
 # %%
-expt = Experiment('sepd', beam_mode='time-of-flight', data_path='data/sepd_si.xye')
+expt = Experiment(name='sepd', data_path='data/sepd_si.xye', beam_mode='time-of-flight')
 
 # %% [markdown]
 # #### Set Instrument

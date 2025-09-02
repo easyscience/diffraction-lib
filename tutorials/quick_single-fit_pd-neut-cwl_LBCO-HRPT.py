@@ -57,12 +57,12 @@ sample_model.atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
 ed.download_from_repository('hrpt_lbco.xye', destination='data')
 
 # %%
-project.experiments.add(
+project.experiments.add_from_data_path(
     name='hrpt',
+    data_path='data/hrpt_lbco.xye',
     sample_form='powder',
     beam_mode='constant wavelength',
     radiation_probe='neutron',
-    data_path='data/hrpt_lbco.xye',
 )
 
 # %%

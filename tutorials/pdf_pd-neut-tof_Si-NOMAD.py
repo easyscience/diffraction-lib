@@ -44,13 +44,13 @@ sample_model.atom_sites.add(label='Si', type_symbol='Si', fract_x=0, fract_y=0, 
 ed.download_from_repository('NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr', destination='data')
 
 # %%
-project.experiments.add(
+project.experiments.add_from_data_path(
     name='nomad',
+    data_path='data/NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr',
     sample_form='powder',
     beam_mode='time-of-flight',
     radiation_probe='neutron',
     scattering_type='total',
-    data_path='data/NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr',
 )
 
 # %%

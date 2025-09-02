@@ -71,7 +71,11 @@ download_from_repository('d1a_pbso4.dat', destination='data')
 # #### Create Experiment
 
 # %%
-expt1 = Experiment('npd', radiation_probe='neutron', data_path='data/d1a_pbso4.dat')
+expt1 = Experiment(
+    name='npd',
+    data_path='data/d1a_pbso4.dat',
+    radiation_probe='neutron',
+)
 
 # %% [markdown]
 # #### Set Instrument
@@ -133,7 +137,11 @@ download_from_repository('lab_pbso4.dat', destination='data')
 # #### Create Experiment
 
 # %%
-expt2 = Experiment('xrd', radiation_probe='xray', data_path='data/lab_pbso4.dat')
+expt2 = Experiment(
+    name='xrd',
+    data_path='data/lab_pbso4.dat',
+    radiation_probe='xray',
+)
 
 # %% [markdown]
 # #### Set Instrument

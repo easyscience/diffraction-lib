@@ -1,4 +1,4 @@
-name: Test tutorials nightly (develop)
+name: Trigger scheduled test tutorials
 
 on:
   # Run daily, at 00:00.
@@ -8,12 +8,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  call-tutorials:
+  trigger-test-tutorials:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout develop branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: develop
 

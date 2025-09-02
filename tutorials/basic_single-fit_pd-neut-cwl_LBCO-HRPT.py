@@ -209,12 +209,12 @@ ed.download_from_repository('hrpt_lbco.xye', destination='data')
 # #### Add Diffraction Experiment
 
 # %%
-project.experiments.add(
+project.experiments.add_from_data_path(
     name='hrpt',
+    data_path='data/hrpt_lbco.xye',
     sample_form='powder',
     beam_mode='constant wavelength',
     radiation_probe='neutron',
-    data_path='data/hrpt_lbco.xye',
 )
 
 # %% [markdown]

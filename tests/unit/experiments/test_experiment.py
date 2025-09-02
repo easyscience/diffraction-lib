@@ -120,3 +120,32 @@ def test_experiment_method():
     assert np.array_equal(experiment.datastore.pattern.x, mock_data[:, 0])
     assert np.array_equal(experiment.datastore.pattern.meas, mock_data[:, 1])
     assert np.array_equal(experiment.datastore.pattern.meas_su, mock_data[:, 2])
+
+
+def test_experiment_factory_invalid_args_missing_required():
+    # Missing required 'name'
+    with pytest.raises(ValueError, match='Invalid argument combination'):
+        ExperimentFactory.create(
+            sample_form='powder',
+            beam_mode=DEFAULT_BEAM_MODE,
+            radiation_probe=DEFAULT_RADIATION_PROBE,
+            scattering_type=DEFAULT_SCATTERING_TYPE,
+        )
+
+
+def test_experiment_factory_conflicting_args_cif_and_name():
+    # Conflicting: 'cif_path' with 'name'
+    with pytest.raises(ValueError, match='Invalid argument combination'):
+        ExperimentFactory.create(name='ConflictTest', cif_path='path/to/file.cif')
+
+
+def test_experiment_factory_conflicting_args_data_and_cif():
+    # Conflicting: multiple conflicting input sources
+    with pytest.raises(ValueError, match='Invalid argument combination'):
+        ExperimentFactory.create(name='ConflictTest', data_path='mock_path', cif_str='cif content')
+
+
+def test_experiment_factory_invalid_args_unsupported_key():
+    # Unsupported keyword
+    with pytest.raises(ValueError, match='Invalid argument combination'):
+        ExperimentFactory.create(foo='bar')

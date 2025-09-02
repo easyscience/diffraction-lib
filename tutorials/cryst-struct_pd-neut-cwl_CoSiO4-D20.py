@@ -84,7 +84,7 @@ download_from_repository('co2sio4_d20.xye', destination='data')
 # #### Create Experiment
 
 # %%
-expt = Experiment('d20', data_path='data/co2sio4_d20.xye')
+expt = Experiment(name='d20', data_path='data/co2sio4_d20.xye')
 
 # %% [markdown]
 # #### Set Instrument

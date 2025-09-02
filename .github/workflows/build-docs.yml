@@ -6,8 +6,7 @@ on:
     # Selected branches
     branches: [master, develop, docs, patch]
     # Runs on creating a new tag starting with 'v', e.g. 'v1.0.3'
-    tags:
-      - 'v*'
+    tags: ['v*']
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -41,7 +40,7 @@ jobs:
 
     steps:
       - name: Check-out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0 # full history + tags. needed to get the latest release version
 
@@ -92,6 +91,12 @@ jobs:
       - name: Convert tutorial scripts to notebooks
         run: pixi run notebook-prepare
 
+      # The following step is needed to avoid the following message during the build:
+      # "Matplotlib is building the font cache; this may take a moment"
+      - name: Pre-build site step
+        run: pixi run python -c "import easydiffraction"
+
+      # Run the notebooks to generate the output cells using multiple cores
       - name: Run notebooks
         run: pixi run notebook-exec
 
