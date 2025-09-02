@@ -1,10 +1,6 @@
 name: Test unpinned PyPI package
 
 on:
-  # Trigger the workflow on push
-  push:
-    # Selected branches
-    branches: ['20-refactor-the-experiment-add-method']
   # Run daily, at 00:00.
   schedule:
     - cron: '0 0 * * *'
