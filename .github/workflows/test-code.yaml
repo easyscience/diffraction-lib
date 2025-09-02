@@ -6,7 +6,7 @@
 #    - Check code linting
 #    - Check code formatting
 #    - Check formatting of Markdown, YAML, TOML, etc. files
-# 2. run-tests:
+# 2. test-source:
 #    - Test the code base against the latest code in the repository
 #    - Create the Python package
 #    - Upload the Python package for the next job
@@ -46,6 +46,7 @@ env:
   NOTEBOOKS_DIR: tutorials
 
 jobs:
+
   # Job 1: Check code quality and consistency
   code-quality:
     strategy:
@@ -54,7 +55,19 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    outputs:
+      pytest-marks: ${{ steps.set-mark.outputs.pytest_marks }}
+
     steps:
+      - name: Set mark for functional tests
+        id: set-mark
+        run: |
+          if [[ "${{ env.CI_BRANCH }}" != "master" && "${{ env.CI_BRANCH }}" != "20-refactor-the-experiment-add-method" ]]; then
+            echo "pytest_marks=-m 'fast'" >> $GITHUB_OUTPUT
+          else
+            echo "pytest_marks=" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v5
 
@@ -133,7 +146,7 @@ jobs:
 
   # Job 2: Test code
   # TODO: Add coverage reporting with upload to Codecov?
-  run-tests:
+  test-source:
     needs: code-quality # previous job needs to be finished first
 
     strategy:
@@ -174,7 +187,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run -e $env func-tests
+            pixi run -e $env func-tests "${{ needs.code-quality.outputs.pytest-marks }}"
           done
 
       # Delete all local tags when not on a tagged commit to force versioningit
@@ -212,7 +225,7 @@ jobs:
 
   # Job 3: Test the package
   test-package:
-    needs: run-tests # the previous job needs to be finished first
+    needs: test-source # the previous job needs to be finished first
 
     strategy:
       fail-fast: false
@@ -257,7 +270,7 @@ jobs:
             pixi run -e $env easydiffraction version
           done
 
-      - name: Run unit tests (using built package from previous job)
+      - name: Run unit tests
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
@@ -265,10 +278,10 @@ jobs:
             pixi run -e $env unit-tests
           done
 
-      - name: Run functional tests (using built package from previous job)
+      - name: Run functional tests (fast only)
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run -e $env func-tests
+            pixi run -e $env func-tests "${{ needs.code-quality.outputs.pytest-marks }}"
           done

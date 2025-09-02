@@ -101,8 +101,8 @@ py313-prod = { features = ["py313", "ed-pypi"] }
 [tasks]
 
 # 🧪 Testing Tasks
-unit-tests = "python -m pytest tests/unit_tests/ --color=yes -v"
-func-tests = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
+unit-tests = "python -m pytest tests/unit/ --color=yes -v"
+func-tests = "python -m pytest tests/functional/ --color=yes -n auto -v"
 notebook-tests = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
 script-tests = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
 

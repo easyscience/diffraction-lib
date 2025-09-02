@@ -1,6 +1,7 @@
 import os
 import tempfile
 
+import pytest
 from numpy.testing import assert_almost_equal
 
 from easydiffraction import Experiment
@@ -89,6 +90,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=1.3, decimal=1)
 
 
+@pytest.mark.fast
 def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Set sample model
     model = SampleModel('lbco')

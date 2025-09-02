@@ -1,6 +1,7 @@
 import os
 import tempfile
 
+import pytest
 from numpy.testing import assert_almost_equal
 
 from easydiffraction import Experiment
@@ -11,6 +12,7 @@ from easydiffraction import download_from_repository
 TEMP_DIR = tempfile.gettempdir()
 
 
+@pytest.mark.fast
 def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     # Set sample model
     model = SampleModel('pbso4')
@@ -96,6 +98,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=4.66, decimal=1)
 
 
+@pytest.mark.fast
 def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Set sample model
     model = SampleModel('pbso4')
