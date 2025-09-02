@@ -15,13 +15,13 @@ from easydiffraction.core.constants import DEFAULT_SAMPLE_FORM
 from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.core.objects import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
-from easydiffraction.experiments.datastore import DatastoreFactory
 from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
 from easydiffraction.experiments.components.experiment_type import ExperimentType
 from easydiffraction.experiments.components.instrument import InstrumentBase
 from easydiffraction.experiments.components.instrument import InstrumentFactory
 from easydiffraction.experiments.components.peak import PeakFactory
+from easydiffraction.experiments.datastore import DatastoreFactory
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
@@ -62,6 +62,7 @@ class BaseExperiment(Datablock):
         self.type = type
         self.datastore = DatastoreFactory.create(
             sample_form=self.type.sample_form.value,
+            beam_mode=self.type.beam_mode.value,
         )
 
     # ---------------------------

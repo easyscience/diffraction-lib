@@ -19,7 +19,10 @@ from easydiffraction.experiments.experiment import SingleCrystalExperiment
 @pytest.fixture
 def expt_type():
     return ExperimentType(
-        sample_form=DEFAULT_SAMPLE_FORM, beam_mode=DEFAULT_BEAM_MODE, radiation_probe='xray', scattering_type='bragg'
+        sample_form=DEFAULT_SAMPLE_FORM,
+        beam_mode=DEFAULT_BEAM_MODE,
+        radiation_probe='xray',
+        scattering_type='bragg',
     )
 
 

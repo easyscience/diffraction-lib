@@ -2,12 +2,13 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
-from abc import abstractmethod
 
+from abc import abstractmethod
 from typing import Optional
 
 import numpy as np
 
+from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.constants import DEFAULT_SAMPLE_FORM
 
 
@@ -31,48 +32,73 @@ class BaseDatastore:
         self._calc = values
 
     @abstractmethod
-    def as_cif(self):
+    def _cif_mapping(self) -> dict[str, str]:
         """
-        Must be implemented in subclasses to return the CIF representation.
+        Must be implemented in subclasses to return a mapping from attribute names to CIF tags.
         """
         pass
+
+    def as_cif(self, max_points: Optional[int] = None):
+        mapping = self._cif_mapping()
+        cif_lines = ['loop_']
+        for cif_tag in mapping.values():
+            cif_lines.append(cif_tag)
+
+        # Collect data arrays according to mapping keys
+        arrays = []
+        for attr_name in mapping.keys():
+            attr_value = getattr(self, attr_name, None)
+            if attr_value is None:
+                arrays.append([])
+            else:
+                arrays.append(attr_value)
+
+        # Determine number of points
+        length = len(arrays[0]) if arrays and arrays[0] is not None else 0
+
+        if max_points is not None and length > 2 * max_points:
+            for i in range(max_points):
+                line_values = [arrays[j][i] for j in range(len(arrays))]
+                cif_lines.append(' '.join(str(v) for v in line_values))
+            cif_lines.append('...')
+            for i in range(-max_points, 0):
+                line_values = [arrays[j][i] for j in range(len(arrays))]
+                cif_lines.append(' '.join(str(v) for v in line_values))
+        else:
+            for i in range(length):
+                line_values = [arrays[j][i] for j in range(len(arrays))]
+                cif_lines.append(' '.join(str(v) for v in line_values))
+
+        cif_str = '\n'.join(cif_lines)
+
+        return cif_str
 
 
 class PowderDatastore(BaseDatastore):
     """Class for powder diffraction data"""
 
-    def __init__(self) -> None:
+    def __init__(self, beam_mode=DEFAULT_BEAM_MODE) -> None:
         super().__init__()
         self.x: Optional[np.ndarray] = None
         self.d: Optional[np.ndarray] = None
         self.bkg: Optional[np.ndarray] = None
+        self.beam_mode = beam_mode
 
-    def as_cif(self, max_points: Optional[int] = None):
-        cif_lines = []
-        cif_lines.append('loop_')
-        category = '_pd_meas'  # TODO: Add category to pattern component
-        attributes = ('2theta_scan', 'intensity_total', 'intensity_total_su')
-        for attribute in attributes:
-            cif_lines.append(f'{category}.{attribute}')
-        if max_points is not None and len(self.x) > 2 * max_points:
-            for i in range(max_points):
-                x = self.x[i]
-                meas = self.meas[i]
-                meas_su = self.meas_su[i]
-                cif_lines.append(f'{x} {meas} {meas_su}')
-            cif_lines.append('...')
-            for i in range(-max_points, 0):
-                x = self.x[i]
-                meas = self.meas[i]
-                meas_su = self.meas_su[i]
-                cif_lines.append(f'{x} {meas} {meas_su}')
-        else:
-            for x, meas, meas_su in zip(self.x, self.meas, self.meas_su):
-                cif_lines.append(f'{x} {meas} {meas_su}')
-
-        cif_str = '\n'.join(cif_lines)
-
-        return cif_str
+    def _cif_mapping(self) -> dict[str, str]:
+        # TODO: Decide where to have validation for beam_mode,
+        #  here or in Experiment class or somewhere else.
+        return {
+            'time-of-flight': {
+                'x': '_pd_meas.time_of_flight',
+                'meas': '_pd_meas.intensity_total',
+                'meas_su': '_pd_meas.intensity_total_su',
+            },
+            'constant wavelength': {
+                'x': '_pd_meas.2theta_scan',
+                'meas': '_pd_meas.intensity_total',
+                'meas_su': '_pd_meas.intensity_total_su',
+            },
+        }[self.beam_mode]
 
 
 class SingleCrystalDatastore(BaseDatastore):
@@ -85,8 +111,14 @@ class SingleCrystalDatastore(BaseDatastore):
         self.k: Optional[np.ndarray] = None
         self.l: Optional[np.ndarray] = None
 
-    def as_cif(self):
-        pass
+    def _cif_mapping(self) -> dict[str, str]:
+        return {
+            'h': '_refln.index_h',
+            'k': '_refln.index_k',
+            'l': '_refln.index_l',
+            'meas': '_refln.intensity_meas',
+            'meas_su': '_refln.intensity_meas_su',
+        }
 
 
 class DatastoreFactory:
@@ -96,16 +128,19 @@ class DatastoreFactory:
     }
 
     @classmethod
-    def create(cls, sample_form=DEFAULT_SAMPLE_FORM):
+    def create(cls, sample_form=DEFAULT_SAMPLE_FORM, beam_mode=DEFAULT_BEAM_MODE):
         """
         Create and return a datastore object for the given sample form.
         Raises ValueError if the sample form is not supported.
         """
         supported_sample_forms = list(cls._supported.keys())
         if sample_form not in supported_sample_forms:
-            raise ValueError(f"Unsupported sample form: '{sample_form}'.\n Supported sample forms: {supported_sample_forms}")
+            raise ValueError(f"Unsupported sample form: '{sample_form}'.\nSupported sample forms: {supported_sample_forms}")
 
         datastore_class = cls._supported[sample_form]
-        datastore_obj = datastore_class()
+        if sample_form == 'powder':
+            datastore_obj = datastore_class(beam_mode=beam_mode)
+        else:
+            datastore_obj = datastore_class()
 
         return datastore_obj
