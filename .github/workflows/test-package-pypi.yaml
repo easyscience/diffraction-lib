@@ -1,6 +1,10 @@
 name: Test unpinned PyPI package
 
 on:
+  # Trigger the workflow on push
+  push:
+    # Selected branches
+    branches: ['20-refactor-the-experiment-add-method']
   # Run daily, at 00:00.
   schedule:
     - cron: '0 0 * * *'
@@ -52,11 +56,13 @@ jobs:
       - name: Run functional tests to verify the installation
         run: pixi run func-tests
 
-      - name: List the available EasyDiffraction tutorials
-        run: pixi run tutorials-list
-
-      - name: Fetch the EasyDiffraction tutorials
-        run: pixi run tutorials-fetch
+      # Github token to avoid hitting the unauthenticated API rate limit
+      - name: List and fetch the EasyDiffraction tutorials
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pixi run tutorials-list
+          pixi run tutorials-fetch
 
       - name: Test tutorials as notebooks
         run: pixi run notebook-tests

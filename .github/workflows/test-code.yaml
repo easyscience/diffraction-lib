@@ -46,7 +46,6 @@ env:
   NOTEBOOKS_DIR: tutorials
 
 jobs:
-
   # Job 1: Check code quality and consistency
   code-quality:
     strategy:
