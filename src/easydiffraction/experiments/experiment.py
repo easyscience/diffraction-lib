@@ -7,7 +7,6 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
 from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.constants import DEFAULT_PEAK_PROFILE_TYPE
 from easydiffraction.core.constants import DEFAULT_RADIATION_PROBE
@@ -15,6 +14,7 @@ from easydiffraction.core.constants import DEFAULT_SAMPLE_FORM
 from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.core.objects import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
+from easydiffraction.experiments.collections.background import BackgroundType
 from easydiffraction.experiments.collections.datastore import DatastoreFactory
 from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
@@ -248,7 +248,7 @@ class PowderExperiment(
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self._background_type: str = DEFAULT_BACKGROUND_TYPE
+        self._background_type: BackgroundType = BackgroundType.default()
         self.background = BackgroundFactory.create(background_type=self.background_type)
 
     # -------------
@@ -331,12 +331,15 @@ class PowderExperiment(
         columns_headers = ['Background type', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
-        for name, config in BackgroundFactory._supported.items():
-            description = getattr(config, '_description', 'No description provided.')
-            columns_data.append([name, description])
+        for bt, cls in BackgroundFactory._supported.items():
+            columns_data.append([bt.value, bt.description()])
 
         print(paragraph('Supported background types'))
-        render_table(columns_headers=columns_headers, columns_alignment=columns_alignment, columns_data=columns_data)
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )
 
     def show_current_background_type(self):
         print(paragraph('Current background type'))

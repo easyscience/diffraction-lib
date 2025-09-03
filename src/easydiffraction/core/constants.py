@@ -5,7 +5,6 @@
 DEFAULT_SAMPLE_FORM = 'powder'
 DEFAULT_BEAM_MODE = 'constant wavelength'
 DEFAULT_RADIATION_PROBE = 'neutron'
-DEFAULT_BACKGROUND_TYPE = 'line-segment'
 DEFAULT_SCATTERING_TYPE = 'bragg'
 DEFAULT_PEAK_PROFILE_TYPE = {
     'bragg': {
