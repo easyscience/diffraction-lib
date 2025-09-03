@@ -10,6 +10,7 @@ import numpy as np
 
 from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.constants import DEFAULT_SAMPLE_FORM
+from easydiffraction.utils.decorators import enforce_type
 
 
 class BaseDatastore:
@@ -44,6 +45,7 @@ class BaseDatastore:
         return self._calc
 
     @calc.setter
+    @enforce_type
     def calc(self, values: np.ndarray) -> None:
         """Set calculated intensities (from Analysis.calculate_pattern()).
 
@@ -234,6 +236,10 @@ class DatastoreFactory:
         supported_sample_forms = list(cls._supported.keys())
         if sample_form not in supported_sample_forms:
             raise ValueError(f"Unsupported sample form: '{sample_form}'.\nSupported sample forms: {supported_sample_forms}")
+
+        supported_beam_modes = ['time-of-flight', 'constant wavelength']
+        if beam_mode not in supported_beam_modes:
+            raise ValueError(f"Unsupported beam mode: '{beam_mode}'.\nSupported beam modes: {supported_beam_modes}")
 
         datastore_class = cls._supported[sample_form]
         if sample_form == 'powder':
