@@ -64,14 +64,12 @@ class Datastore:
         sample_form: str,
         experiment: Experiment,
     ) -> None:
-        self.sample_form: str = sample_form
+        self.sample_form: SampleFormEnum = SampleFormEnum(sample_form)
 
-        if sample_form == SampleFormEnum.POWDER.value:
+        if sample_form == SampleFormEnum.POWDER:
             self.pattern: Pattern = PowderPattern(experiment)
-        elif sample_form == SampleFormEnum.SINGLE_CRYSTAL.value:
+        elif sample_form == SampleFormEnum.SINGLE_CRYSTAL:
             self.pattern: Pattern = Pattern(experiment)  # TODO: Find better name for single crystal pattern
-        else:
-            raise ValueError(f"Unknown sample form '{sample_form}'")
 
     def load_measured_data(self, file_path: str) -> None:
         """Load measured data from an ASCII file."""

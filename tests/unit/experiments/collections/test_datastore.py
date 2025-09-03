@@ -8,6 +8,7 @@ from easydiffraction.experiments.collections.datastore import Datastore
 from easydiffraction.experiments.collections.datastore import DatastoreFactory
 from easydiffraction.experiments.collections.datastore import Pattern
 from easydiffraction.experiments.collections.datastore import PowderPattern
+from easydiffraction.experiments.components.experiment_type import SampleFormEnum
 
 
 def test_pattern_initialization():
@@ -41,30 +42,42 @@ def test_powder_pattern_initialization():
 
 def test_datastore_initialization_powder():
     mock_experiment = MagicMock()
-    datastore = Datastore(sample_form='powder', experiment=mock_experiment)
+    datastore = Datastore(
+        sample_form=SampleFormEnum.POWDER,
+        experiment=mock_experiment,
+    )
 
-    assert datastore.sample_form == 'powder'
+    assert datastore.sample_form == SampleFormEnum.POWDER
     assert isinstance(datastore.pattern, PowderPattern)
 
 
 def test_datastore_initialization_single_crystal():
     mock_experiment = MagicMock()
-    datastore = Datastore(sample_form='single crystal', experiment=mock_experiment)
+    datastore = Datastore(
+        sample_form=SampleFormEnum.SINGLE_CRYSTAL,
+        experiment=mock_experiment,
+    )
 
-    assert datastore.sample_form == 'single crystal'
+    assert datastore.sample_form == SampleFormEnum.SINGLE_CRYSTAL
     assert isinstance(datastore.pattern, Pattern)
 
 
 def test_datastore_initialization_invalid_sample_form():
     mock_experiment = MagicMock()
-    with pytest.raises(ValueError, match="Unknown sample form 'invalid'"):
-        Datastore(sample_form='invalid', experiment=mock_experiment)
+    with pytest.raises(ValueError, match="'invalid' is not a valid SampleFormEnum"):
+        Datastore(
+            sample_form='invalid',
+            experiment=mock_experiment,
+        )
 
 
 def test_datastore_load_measured_data_valid():
     mock_experiment = MagicMock()
     mock_experiment.name = 'TestExperiment'
-    datastore = Datastore(sample_form='powder', experiment=mock_experiment)
+    datastore = Datastore(
+        sample_form=SampleFormEnum.POWDER,
+        experiment=mock_experiment,
+    )
 
     mock_data = np.array([[1.0, 2.0, 0.1], [2.0, 3.0, 0.2]])
     with patch('numpy.loadtxt', return_value=mock_data):
@@ -78,7 +91,10 @@ def test_datastore_load_measured_data_valid():
 def test_datastore_load_measured_data_no_uncertainty():
     mock_experiment = MagicMock()
     mock_experiment.name = 'TestExperiment'
-    datastore = Datastore(sample_form='powder', experiment=mock_experiment)
+    datastore = Datastore(
+        sample_form=SampleFormEnum.POWDER,
+        experiment=mock_experiment,
+    )
 
     mock_data = np.array([[1.0, 2.0], [2.0, 3.0]])
     with patch('numpy.loadtxt', return_value=mock_data):
@@ -91,7 +107,10 @@ def test_datastore_load_measured_data_no_uncertainty():
 
 def test_datastore_load_measured_data_invalid_file():
     mock_experiment = MagicMock()
-    datastore = Datastore(sample_form='powder', experiment=mock_experiment)
+    datastore = Datastore(
+        sample_form=SampleFormEnum.POWDER,
+        experiment=mock_experiment,
+    )
 
     with patch('numpy.loadtxt', side_effect=Exception('File not found')):
         datastore.load_measured_data('invalid_path')
@@ -99,7 +118,10 @@ def test_datastore_load_measured_data_invalid_file():
 
 def test_datastore_show_measured_data(capsys):
     mock_experiment = MagicMock()
-    datastore = Datastore(sample_form='powder', experiment=mock_experiment)
+    datastore = Datastore(
+        sample_form=SampleFormEnum.POWDER,
+        experiment=mock_experiment,
+    )
 
     datastore.pattern.x = [1.0, 2.0, 3.0]
     datastore.pattern.meas = [10.0, 20.0, 30.0]
@@ -108,7 +130,7 @@ def test_datastore_show_measured_data(capsys):
     datastore.show_measured_data()
     captured = capsys.readouterr()
 
-    assert 'Measured data (powder):' in captured.out
+    assert 'Measured data (SampleFormEnum.POWDER):' in captured.out
     assert 'x: [1.0, 2.0, 3.0]' in captured.out
     assert 'meas: [10.0, 20.0, 30.0]' in captured.out
     assert 'meas_su: [0.1, 0.2, 0.3]' in captured.out
@@ -116,36 +138,48 @@ def test_datastore_show_measured_data(capsys):
 
 def test_datastore_show_calculated_data(capsys):
     mock_experiment = MagicMock()
-    datastore = Datastore(sample_form='powder', experiment=mock_experiment)
+    datastore = Datastore(
+        sample_form=SampleFormEnum.POWDER,
+        experiment=mock_experiment,
+    )
 
     datastore.pattern.calc = [100.0, 200.0, 300.0]
 
     datastore.show_calculated_data()
     captured = capsys.readouterr()
 
-    assert 'Calculated data (powder):' in captured.out
+    assert 'Calculated data (SampleFormEnum.POWDER):' in captured.out
     assert 'calc: [100.0, 200.0, 300.0]' in captured.out
 
 
 def test_datastore_factory_create_powder():
     mock_experiment = MagicMock()
-    datastore = DatastoreFactory.create(sample_form='powder', experiment=mock_experiment)
+    datastore = DatastoreFactory.create(
+        sample_form=SampleFormEnum.POWDER,
+        experiment=mock_experiment,
+    )
 
     assert isinstance(datastore, Datastore)
-    assert datastore.sample_form == 'powder'
+    assert datastore.sample_form == SampleFormEnum.POWDER
     assert isinstance(datastore.pattern, PowderPattern)
 
 
 def test_datastore_factory_create_single_crystal():
     mock_experiment = MagicMock()
-    datastore = DatastoreFactory.create(sample_form='single crystal', experiment=mock_experiment)
+    datastore = DatastoreFactory.create(
+        sample_form=SampleFormEnum.SINGLE_CRYSTAL,
+        experiment=mock_experiment,
+    )
 
     assert isinstance(datastore, Datastore)
-    assert datastore.sample_form == 'single crystal'
+    assert datastore.sample_form == SampleFormEnum.SINGLE_CRYSTAL
     assert isinstance(datastore.pattern, Pattern)
 
 
 def test_datastore_factory_create_invalid_sample_form():
     mock_experiment = MagicMock()
-    with pytest.raises(ValueError, match="Unknown sample form 'invalid'"):
-        DatastoreFactory.create(sample_form='invalid', experiment=mock_experiment)
+    with pytest.raises(ValueError, match="'invalid' is not a valid SampleFormEnum"):
+        DatastoreFactory.create(
+            sample_form='invalid',
+            experiment=mock_experiment,
+        )

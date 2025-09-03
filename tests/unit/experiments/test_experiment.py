@@ -19,7 +19,7 @@ from easydiffraction.experiments.experiment import SingleCrystalExperiment
 @pytest.fixture
 def expt_type():
     return ExperimentType(
-        sample_form=SampleFormEnum.default().value,
+        sample_form=SampleFormEnum.default(),
         beam_mode=DEFAULT_BEAM_MODE,
         radiation_probe='xray',
         scattering_type='bragg',
@@ -87,10 +87,10 @@ def test_single_crystal_experiment_show_meas_chart(expt_type):
 def test_experiment_factory_create_powder():
     experiment = ExperimentFactory.create(
         name='PowderTest',
-        sample_form='powder',
+        sample_form=SampleFormEnum.POWDER,
         beam_mode=DEFAULT_BEAM_MODE,
         radiation_probe=DEFAULT_RADIATION_PROBE,
-        scattering_type=DEFAULT_SCATTERING_TYPE,
+        scattering_type=ScatteringTypeEnum.default(),
     )
     assert isinstance(experiment, PowderExperiment)
     assert experiment.name == 'PowderTest'
@@ -100,7 +100,7 @@ def test_experiment_factory_create_powder():
 def no_test_experiment_factory_create_single_crystal():
     experiment = ExperimentFactory.create(
         name='SingleCrystalTest',
-        sample_form=SampleFormEnum.SINGLE_CRYSTAL.value,
+        sample_form=SampleFormEnum.SINGLE_CRYSTAL,
         beam_mode=DEFAULT_BEAM_MODE,
         radiation_probe=DEFAULT_RADIATION_PROBE,
     )
@@ -129,10 +129,10 @@ def test_experiment_factory_invalid_args_missing_required():
     # Missing required 'name'
     with pytest.raises(ValueError, match='Invalid argument combination'):
         ExperimentFactory.create(
-            sample_form='powder',
+            sample_form=SampleFormEnum.POWDER,
             beam_mode=DEFAULT_BEAM_MODE,
             radiation_probe=DEFAULT_RADIATION_PROBE,
-            scattering_type=DEFAULT_SCATTERING_TYPE,
+            scattering_type=ScatteringTypeEnum.default(),
         )
 
 

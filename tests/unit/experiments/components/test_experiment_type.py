@@ -3,7 +3,12 @@ from easydiffraction.experiments.components.experiment_type import ExperimentTyp
 
 
 def test_experiment_type_initialization():
-    experiment_type = ExperimentType(sample_form='powder', beam_mode='CW', radiation_probe='neutron', scattering_type='bragg')
+    experiment_type = ExperimentType(
+        sample_form='powder',
+        beam_mode='constant wavelength',
+        radiation_probe='neutron',
+        scattering_type='bragg',
+    )
 
     assert isinstance(experiment_type.sample_form, Descriptor)
     assert experiment_type.sample_form.value == 'powder'
@@ -11,7 +16,7 @@ def test_experiment_type_initialization():
     assert experiment_type.sample_form.cif_name == 'sample_form'
 
     assert isinstance(experiment_type.beam_mode, Descriptor)
-    assert experiment_type.beam_mode.value == 'CW'
+    assert experiment_type.beam_mode.value == 'constant wavelength'
     assert experiment_type.beam_mode.name == 'beam_mode'
     assert experiment_type.beam_mode.cif_name == 'beam_mode'
 
@@ -38,7 +43,12 @@ def test_experiment_type_properties():
 
 def no_test_experiment_type_locking_attributes():
     # TODO: hmm this doesn't work as expected.
-    experiment_type = ExperimentType(sample_form='powder', beam_mode='CW', radiation_probe='neutron', scattering_type='bragg')
+    experiment_type = ExperimentType(
+        sample_form='powder',
+        beam_mode='constant wavelength',
+        radiation_probe='neutron',
+        scattering_type='bragg',
+    )
     experiment_type._locked = True  # Disallow adding new attributes
     experiment_type.new_attribute = 'value'
     assert not hasattr(experiment_type, 'new_attribute')
