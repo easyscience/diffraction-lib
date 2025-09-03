@@ -5,8 +5,6 @@ from typing import Any
 from typing import List
 from typing import Optional
 
-import numpy as np
-
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModels

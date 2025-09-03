@@ -41,8 +41,10 @@ def mock_experiments():
 @pytest.fixture
 def mock_calculator():
     calculator = MagicMock()
+
     def mock_calculate_pattern(sample_models, experiment, **kwargs):
         experiment.datastore.pattern.calc = np.array([9.0, 19.0, 29.0])
+
     calculator.calculate_pattern.side_effect = mock_calculate_pattern
     return calculator
 

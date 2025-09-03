@@ -96,7 +96,6 @@ class CalculatorBase(ABC):
         y_calc_total = y_calc_scaled + y_bkg
         experiment.datastore.pattern.calc = y_calc_total
 
-
     @abstractmethod
     def _calculate_single_model_pattern(
         self,
