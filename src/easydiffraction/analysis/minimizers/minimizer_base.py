@@ -18,7 +18,7 @@ from ..reliability_factors import calculate_r_factor
 from ..reliability_factors import calculate_r_factor_squared
 from ..reliability_factors import calculate_rb_factor
 from ..reliability_factors import calculate_weighted_r_factor
-from .fitting_progress_tracker import FittingProgressTracker
+from ..fitting.progress_tracker import FittingProgressTracker
 
 
 class FitResults:

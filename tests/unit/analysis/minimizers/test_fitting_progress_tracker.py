@@ -3,8 +3,8 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from easydiffraction.analysis.minimizers.fitting_progress_tracker import FittingProgressTracker
-from easydiffraction.analysis.minimizers.fitting_progress_tracker import format_cell
+from easydiffraction.analysis.fitting.progress_tracker import FittingProgressTracker
+from easydiffraction.analysis.fitting.progress_tracker import format_cell
 
 
 def test_format_cell():
