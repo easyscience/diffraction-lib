@@ -102,7 +102,7 @@ def test_residual_function(diffraction_minimizer, mock_sample_models, mock_exper
 
 
 @patch(
-    'easydiffraction.analysis.reliability_factors.get_reliability_inputs',
+    'easydiffraction.analysis.fitting.metrics.get_reliability_inputs',
     return_value=(np.array([10.0]), np.array([9.0]), np.array([1.0])),
 )
 def test_process_fit_results(

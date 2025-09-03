@@ -3,10 +3,10 @@ from typing import List
 from typing import Optional
 
 from easydiffraction import paragraph
-from easydiffraction.analysis.reliability_factors import calculate_r_factor
-from easydiffraction.analysis.reliability_factors import calculate_r_factor_squared
-from easydiffraction.analysis.reliability_factors import calculate_rb_factor
-from easydiffraction.analysis.reliability_factors import calculate_weighted_r_factor
+from easydiffraction.analysis.fitting.metrics import calculate_r_factor
+from easydiffraction.analysis.fitting.metrics import calculate_r_factor_squared
+from easydiffraction.analysis.fitting.metrics import calculate_rb_factor
+from easydiffraction.analysis.fitting.metrics import calculate_weighted_r_factor
 from easydiffraction.utils.utils import render_table
 
 

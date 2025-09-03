@@ -68,7 +68,7 @@ def test_reset(tracker):
     assert tracker._previous_chi2 is None
 
 
-@patch('easydiffraction.analysis.reliability_factors.calculate_reduced_chi_square', return_value=1.23)
+@patch('easydiffraction.analysis.fitting.metrics.calculate_reduced_chi_square', return_value=1.23)
 @patch('builtins.print')
 def test_track(mock_print, mock_calculate_chi2, tracker):
     residuals = np.array([1.1, 2.1, 3.1, 4.1, 5.1])
