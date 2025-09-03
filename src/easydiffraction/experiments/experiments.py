@@ -8,7 +8,7 @@ from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.constants import DEFAULT_RADIATION_PROBE
 from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.core.objects import Collection
-from easydiffraction.experiments.components.experiment_type import SampleForm
+from easydiffraction.experiments.components.experiment_type import SampleFormEnum
 from easydiffraction.experiments.experiment import BaseExperiment
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.utils.decorators import enforce_type
@@ -52,7 +52,7 @@ class Experiments(Collection):
         self,
         name: str,
         data_path: str,
-        sample_form: SampleForm = SampleForm.default(),
+        sample_form: SampleFormEnum = SampleFormEnum.default(),
         beam_mode: str = DEFAULT_BEAM_MODE,
         radiation_probe: str = DEFAULT_RADIATION_PROBE,
         scattering_type: str = DEFAULT_SCATTERING_TYPE,
@@ -73,7 +73,7 @@ class Experiments(Collection):
     def add_without_data(
         self,
         name: str,
-        sample_form: SampleForm = SampleForm.default(),
+        sample_form: SampleFormEnum = SampleFormEnum.default(),
         beam_mode: str = DEFAULT_BEAM_MODE,
         radiation_probe: str = DEFAULT_RADIATION_PROBE,
         scattering_type: str = DEFAULT_SCATTERING_TYPE,

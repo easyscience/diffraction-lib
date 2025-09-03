@@ -190,31 +190,31 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         )
 
 
-class BackgroundType(str, Enum):
+class BackgroundTypeEnum(str, Enum):
     LINE_SEGMENT = 'line-segment'
     CHEBYSHEV = 'chebyshev polynomial'
 
     @classmethod
-    def default(cls) -> 'BackgroundType':
+    def default(cls) -> 'BackgroundTypeEnum':
         return cls.LINE_SEGMENT
 
     def description(self) -> str:
-        if self is BackgroundType.LINE_SEGMENT:
+        if self is BackgroundTypeEnum.LINE_SEGMENT:
             return 'Linear interpolation between points'
-        elif self is BackgroundType.CHEBYSHEV:
+        elif self is BackgroundTypeEnum.CHEBYSHEV:
             return 'Chebyshev polynomial background'
 
 
 class BackgroundFactory:
-    _supported: Dict[BackgroundType, Type[BackgroundBase]] = {
-        BackgroundType.LINE_SEGMENT: LineSegmentBackground,
-        BackgroundType.CHEBYSHEV: ChebyshevPolynomialBackground,
+    _supported: Dict[BackgroundTypeEnum, Type[BackgroundBase]] = {
+        BackgroundTypeEnum.LINE_SEGMENT: LineSegmentBackground,
+        BackgroundTypeEnum.CHEBYSHEV: ChebyshevPolynomialBackground,
     }
 
     @classmethod
     def create(
         cls,
-        background_type: BackgroundType = BackgroundType.default(),
+        background_type: BackgroundTypeEnum = BackgroundTypeEnum.default(),
     ) -> BackgroundBase:
         if background_type not in cls._supported:
             supported_types = list(cls._supported.keys())

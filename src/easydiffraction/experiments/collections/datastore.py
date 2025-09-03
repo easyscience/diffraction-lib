@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 import numpy as np
 
-from easydiffraction.experiments.components.experiment_type import SampleForm
+from easydiffraction.experiments.components.experiment_type import SampleFormEnum
 
 
 class Pattern:
@@ -66,9 +66,9 @@ class Datastore:
     ) -> None:
         self.sample_form: str = sample_form
 
-        if sample_form == SampleForm.POWDER.value:
+        if sample_form == SampleFormEnum.POWDER.value:
             self.pattern: Pattern = PowderPattern(experiment)
-        elif sample_form == SampleForm.SINGLE_CRYSTAL.value:
+        elif sample_form == SampleFormEnum.SINGLE_CRYSTAL.value:
             self.pattern: Pattern = Pattern(experiment)  # TODO: Find better name for single crystal pattern
         else:
             raise ValueError(f"Unknown sample form '{sample_form}'")

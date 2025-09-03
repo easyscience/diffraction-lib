@@ -7,18 +7,18 @@ from easydiffraction.core.objects import Component
 from easydiffraction.core.objects import Descriptor
 
 
-class SampleForm(str, Enum):
+class SampleFormEnum(str, Enum):
     POWDER = 'powder'
     SINGLE_CRYSTAL = 'single crystal'
 
     @classmethod
-    def default(cls) -> 'SampleForm':
+    def default(cls) -> 'SampleFormEnum':
         return cls.POWDER
 
     def description(self) -> str:
-        if self is SampleForm.POWDER:
+        if self is SampleFormEnum.POWDER:
             return 'Powdered or polycrystalline sample.'
-        elif self is SampleForm.SINGLE_CRYSTAL:
+        elif self is SampleFormEnum.SINGLE_CRYSTAL:
             return 'Single crystal sample.'
 
 

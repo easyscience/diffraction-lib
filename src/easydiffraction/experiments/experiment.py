@@ -13,12 +13,12 @@ from easydiffraction.core.constants import DEFAULT_RADIATION_PROBE
 from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.core.objects import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
-from easydiffraction.experiments.collections.background import BackgroundType
+from easydiffraction.experiments.collections.background import BackgroundTypeEnum
 from easydiffraction.experiments.collections.datastore import DatastoreFactory
 from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
 from easydiffraction.experiments.components.experiment_type import ExperimentType
-from easydiffraction.experiments.components.experiment_type import SampleForm
+from easydiffraction.experiments.components.experiment_type import SampleFormEnum
 from easydiffraction.experiments.components.instrument import InstrumentBase
 from easydiffraction.experiments.components.instrument import InstrumentFactory
 from easydiffraction.experiments.components.peak import PeakFactory
@@ -248,7 +248,7 @@ class PowderExperiment(
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self._background_type: BackgroundType = BackgroundType.default()
+        self._background_type: BackgroundTypeEnum = BackgroundTypeEnum.default()
         self.background = BackgroundFactory.create(background_type=self.background_type)
 
     # -------------
@@ -455,11 +455,11 @@ class ExperimentFactory:
 
     _supported = {
         'bragg': {
-            SampleForm.POWDER: PowderExperiment,
-            SampleForm.SINGLE_CRYSTAL: SingleCrystalExperiment,
+            SampleFormEnum.POWDER: PowderExperiment,
+            SampleFormEnum.SINGLE_CRYSTAL: SingleCrystalExperiment,
         },
         'total': {
-            SampleForm.POWDER: PairDistributionFunctionExperiment,
+            SampleFormEnum.POWDER: PairDistributionFunctionExperiment,
         },
     }
 
@@ -538,7 +538,7 @@ class ExperimentFactory:
         Helper to construct an ExperimentType from keyword arguments, using defaults as needed.
         """
         return ExperimentType(
-            sample_form=kwargs.get('sample_form', SampleForm.default()),
+            sample_form=kwargs.get('sample_form', SampleFormEnum.default()),
             beam_mode=kwargs.get('beam_mode', DEFAULT_BEAM_MODE),
             radiation_probe=kwargs.get('radiation_probe', DEFAULT_RADIATION_PROBE),
             scattering_type=kwargs.get('scattering_type', DEFAULT_SCATTERING_TYPE),
