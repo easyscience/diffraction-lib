@@ -52,7 +52,8 @@ def test_calculate_pattern(mock_constraints_handler, mock_sample_models, mock_ex
     mock_constraints_handler.return_value.apply = MagicMock()
 
     calculator = MockCalculator()
-    result = calculator.calculate_pattern(mock_sample_models, mock_experiment)
+    calculator.calculate_pattern(mock_sample_models, mock_experiment)
+    result = mock_experiment.datastore.pattern.calc
 
     # Assertions
     assert np.allclose(result, np.array([3.6, 7.2, 10.8]))
