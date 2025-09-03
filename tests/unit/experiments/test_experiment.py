@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 
 from easydiffraction.core.constants import DEFAULT_BEAM_MODE
-from easydiffraction.core.constants import DEFAULT_RADIATION_PROBE
 from easydiffraction.experiments.components.experiment_type import ExperimentType
+from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
 from easydiffraction.experiments.components.experiment_type import SampleFormEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 from easydiffraction.experiments.experiment import BaseExperiment
@@ -89,7 +89,7 @@ def test_experiment_factory_create_powder():
         name='PowderTest',
         sample_form=SampleFormEnum.POWDER,
         beam_mode=DEFAULT_BEAM_MODE,
-        radiation_probe=DEFAULT_RADIATION_PROBE,
+        radiation_probe=RadiationProbeEnum.default(),
         scattering_type=ScatteringTypeEnum.default(),
     )
     assert isinstance(experiment, PowderExperiment)
@@ -102,7 +102,7 @@ def no_test_experiment_factory_create_single_crystal():
         name='SingleCrystalTest',
         sample_form=SampleFormEnum.SINGLE_CRYSTAL,
         beam_mode=DEFAULT_BEAM_MODE,
-        radiation_probe=DEFAULT_RADIATION_PROBE,
+        radiation_probe=RadiationProbeEnum.default(),
     )
     assert isinstance(experiment, SingleCrystalExperiment)
     assert experiment.name == 'SingleCrystalTest'
@@ -115,7 +115,7 @@ def test_experiment_method():
             name='ExperimentTest',
             sample_form='powder',
             beam_mode=DEFAULT_BEAM_MODE,
-            radiation_probe=DEFAULT_RADIATION_PROBE,
+            radiation_probe=RadiationProbeEnum.default(),
             data_path='mock_path',
         )
     assert isinstance(experiment, PowderExperiment)
@@ -131,7 +131,7 @@ def test_experiment_factory_invalid_args_missing_required():
         ExperimentFactory.create(
             sample_form=SampleFormEnum.POWDER,
             beam_mode=DEFAULT_BEAM_MODE,
-            radiation_probe=DEFAULT_RADIATION_PROBE,
+            radiation_probe=RadiationProbeEnum.default(),
             scattering_type=ScatteringTypeEnum.default(),
         )
 

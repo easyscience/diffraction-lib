@@ -9,7 +9,6 @@ import numpy as np
 
 from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.constants import DEFAULT_PEAK_PROFILE_TYPE
-from easydiffraction.core.constants import DEFAULT_RADIATION_PROBE
 from easydiffraction.core.objects import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
 from easydiffraction.experiments.collections.background import BackgroundTypeEnum
@@ -17,6 +16,7 @@ from easydiffraction.experiments.collections.datastore import DatastoreFactory
 from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
 from easydiffraction.experiments.components.experiment_type import ExperimentType
+from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
 from easydiffraction.experiments.components.experiment_type import SampleFormEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 from easydiffraction.experiments.components.instrument import InstrumentBase
@@ -540,7 +540,7 @@ class ExperimentFactory:
         return ExperimentType(
             sample_form=kwargs.get('sample_form', SampleFormEnum.default()),
             beam_mode=kwargs.get('beam_mode', DEFAULT_BEAM_MODE),
-            radiation_probe=kwargs.get('radiation_probe', DEFAULT_RADIATION_PROBE),
+            radiation_probe=kwargs.get('radiation_probe', RadiationProbeEnum.default()),
             scattering_type=kwargs.get('scattering_type', ScatteringTypeEnum.default()),
         )
 

@@ -37,6 +37,21 @@ class ScatteringTypeEnum(str, Enum):
             return 'Total scattering for pair distribution function analysis (PDF).'
 
 
+class RadiationProbeEnum(str, Enum):
+    NEUTRON = 'neutron'
+    XRAY = 'x-ray'
+
+    @classmethod
+    def default(cls) -> 'RadiationProbeEnum':
+        return cls.NEUTRON
+
+    def description(self) -> str:
+        if self is RadiationProbeEnum.NEUTRON:
+            return 'Neutron diffraction.'
+        elif self is RadiationProbeEnum.XRAY:
+            return 'X-ray diffraction.'
+
+
 class ExperimentType(Component):
     @property
     def cif_category_key(self) -> str:
