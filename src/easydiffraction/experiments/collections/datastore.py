@@ -11,6 +11,8 @@ if TYPE_CHECKING:
 
 import numpy as np
 
+from easydiffraction.experiments.components.experiment_type import SampleForm
+
 
 class Pattern:
     """
@@ -57,12 +59,16 @@ class Datastore:
     Stores pattern data (measured and calculated) for an experiment.
     """
 
-    def __init__(self, sample_form: str, experiment: Experiment) -> None:
+    def __init__(
+        self,
+        sample_form: str,
+        experiment: Experiment,
+    ) -> None:
         self.sample_form: str = sample_form
 
-        if sample_form == 'powder':
+        if sample_form == SampleForm.POWDER.value:
             self.pattern: Pattern = PowderPattern(experiment)
-        elif sample_form == 'single_crystal':
+        elif sample_form == SampleForm.SINGLE_CRYSTAL.value:
             self.pattern: Pattern = Pattern(experiment)  # TODO: Find better name for single crystal pattern
         else:
             raise ValueError(f"Unknown sample form '{sample_form}'")

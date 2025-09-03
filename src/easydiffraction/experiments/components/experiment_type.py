@@ -1,8 +1,25 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from enum import Enum
+
 from easydiffraction.core.objects import Component
 from easydiffraction.core.objects import Descriptor
+
+
+class SampleForm(str, Enum):
+    POWDER = 'powder'
+    SINGLE_CRYSTAL = 'single crystal'
+
+    @classmethod
+    def default(cls) -> 'SampleForm':
+        return cls.POWDER
+
+    def description(self) -> str:
+        if self is SampleForm.POWDER:
+            return 'Powdered or polycrystalline sample.'
+        elif self is SampleForm.SINGLE_CRYSTAL:
+            return 'Single crystal sample.'
 
 
 class ExperimentType(Component):

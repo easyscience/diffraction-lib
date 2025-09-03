@@ -49,9 +49,9 @@ def test_datastore_initialization_powder():
 
 def test_datastore_initialization_single_crystal():
     mock_experiment = MagicMock()
-    datastore = Datastore(sample_form='single_crystal', experiment=mock_experiment)
+    datastore = Datastore(sample_form='single crystal', experiment=mock_experiment)
 
-    assert datastore.sample_form == 'single_crystal'
+    assert datastore.sample_form == 'single crystal'
     assert isinstance(datastore.pattern, Pattern)
 
 
@@ -138,10 +138,10 @@ def test_datastore_factory_create_powder():
 
 def test_datastore_factory_create_single_crystal():
     mock_experiment = MagicMock()
-    datastore = DatastoreFactory.create(sample_form='single_crystal', experiment=mock_experiment)
+    datastore = DatastoreFactory.create(sample_form='single crystal', experiment=mock_experiment)
 
     assert isinstance(datastore, Datastore)
-    assert datastore.sample_form == 'single_crystal'
+    assert datastore.sample_form == 'single crystal'
     assert isinstance(datastore.pattern, Pattern)
 
 

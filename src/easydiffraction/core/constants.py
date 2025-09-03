@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 # TODO: Change to use enum for these constants
-DEFAULT_SAMPLE_FORM = 'powder'
 DEFAULT_BEAM_MODE = 'constant wavelength'
 DEFAULT_RADIATION_PROBE = 'neutron'
 DEFAULT_SCATTERING_TYPE = 'bragg'

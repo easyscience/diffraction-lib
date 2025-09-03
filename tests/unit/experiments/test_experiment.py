@@ -6,9 +6,9 @@ import pytest
 
 from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.constants import DEFAULT_RADIATION_PROBE
-from easydiffraction.core.constants import DEFAULT_SAMPLE_FORM
 from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.experiments.components.experiment_type import ExperimentType
+from easydiffraction.experiments.components.experiment_type import SampleForm
 from easydiffraction.experiments.experiment import BaseExperiment
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.experiments.experiment import ExperimentFactory
@@ -19,7 +19,10 @@ from easydiffraction.experiments.experiment import SingleCrystalExperiment
 @pytest.fixture
 def expt_type():
     return ExperimentType(
-        sample_form=DEFAULT_SAMPLE_FORM, beam_mode=DEFAULT_BEAM_MODE, radiation_probe='xray', scattering_type='bragg'
+        sample_form=SampleForm.default().value,
+        beam_mode=DEFAULT_BEAM_MODE,
+        radiation_probe='xray',
+        scattering_type='bragg',
     )
 
 
@@ -97,7 +100,7 @@ def test_experiment_factory_create_powder():
 def no_test_experiment_factory_create_single_crystal():
     experiment = ExperimentFactory.create(
         name='SingleCrystalTest',
-        sample_form='single crystal',
+        sample_form=SampleForm.SINGLE_CRYSTAL.value,
         beam_mode=DEFAULT_BEAM_MODE,
         radiation_probe=DEFAULT_RADIATION_PROBE,
     )

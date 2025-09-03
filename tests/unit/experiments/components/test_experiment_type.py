@@ -23,7 +23,10 @@ def test_experiment_type_initialization():
 
 def test_experiment_type_properties():
     experiment_type = ExperimentType(
-        sample_form='single_crystal', beam_mode='TOF', radiation_probe='x-ray', scattering_type='bragg'
+        sample_form='single crystal',
+        beam_mode='time-of-flight',
+        radiation_probe='x-ray',
+        scattering_type='bragg',
     )
 
     assert experiment_type.category_key == 'expt_type'
