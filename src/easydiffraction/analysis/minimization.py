@@ -14,7 +14,7 @@ from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModels
 
 from ..analysis.reliability_factors import get_reliability_inputs
-from .minimizers.minimizer_base import FitResults
+from .fitting.results import FitResults
 from .minimizers.minimizer_factory import MinimizerFactory
 
 
