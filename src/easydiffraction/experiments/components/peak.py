@@ -3,9 +3,9 @@
 
 from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.constants import DEFAULT_PEAK_PROFILE_TYPE
-from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.core.objects import Component
 from easydiffraction.core.objects import Parameter
+from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 
 
 # --- Mixins ---
@@ -353,7 +353,7 @@ class PairDistributionFunctionGaussianDampedSinc(
 # --- Peak factory ---
 class PeakFactory:
     _supported = {
-        'bragg': {
+        ScatteringTypeEnum.BRAGG: {
             'constant wavelength': {
                 'pseudo-voigt': ConstantWavelengthPseudoVoigt,
                 'split pseudo-voigt': ConstantWavelengthSplitPseudoVoigt,
@@ -365,7 +365,7 @@ class PeakFactory:
                 'pseudo-voigt * back-to-back': TimeOfFlightPseudoVoigtBackToBackExponential,
             },
         },
-        'total': {
+        ScatteringTypeEnum.TOTAL: {
             'constant wavelength': {
                 'gaussian-damped-sinc': PairDistributionFunctionGaussianDampedSinc,
             },
@@ -378,9 +378,9 @@ class PeakFactory:
     @classmethod
     def create(
         cls,
-        scattering_type=DEFAULT_SCATTERING_TYPE,
+        scattering_type=ScatteringTypeEnum.default(),
         beam_mode=DEFAULT_BEAM_MODE,
-        profile_type=DEFAULT_PEAK_PROFILE_TYPE[DEFAULT_SCATTERING_TYPE][DEFAULT_BEAM_MODE],
+        profile_type=DEFAULT_PEAK_PROFILE_TYPE[ScatteringTypeEnum.default()][DEFAULT_BEAM_MODE],
     ):
         supported_scattering_types = list(cls._supported.keys())
         if scattering_type not in supported_scattering_types:

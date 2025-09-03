@@ -10,7 +10,6 @@ import numpy as np
 from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.constants import DEFAULT_PEAK_PROFILE_TYPE
 from easydiffraction.core.constants import DEFAULT_RADIATION_PROBE
-from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.core.objects import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
 from easydiffraction.experiments.collections.background import BackgroundTypeEnum
@@ -19,6 +18,7 @@ from easydiffraction.experiments.collections.excluded_regions import ExcludedReg
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
 from easydiffraction.experiments.components.experiment_type import ExperimentType
 from easydiffraction.experiments.components.experiment_type import SampleFormEnum
+from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 from easydiffraction.experiments.components.instrument import InstrumentBase
 from easydiffraction.experiments.components.instrument import InstrumentFactory
 from easydiffraction.experiments.components.peak import PeakFactory
@@ -454,11 +454,11 @@ class ExperimentFactory:
     ]
 
     _supported = {
-        'bragg': {
+        ScatteringTypeEnum.BRAGG: {
             SampleFormEnum.POWDER: PowderExperiment,
             SampleFormEnum.SINGLE_CRYSTAL: SingleCrystalExperiment,
         },
-        'total': {
+        ScatteringTypeEnum.TOTAL: {
             SampleFormEnum.POWDER: PairDistributionFunctionExperiment,
         },
     }
@@ -541,7 +541,7 @@ class ExperimentFactory:
             sample_form=kwargs.get('sample_form', SampleFormEnum.default()),
             beam_mode=kwargs.get('beam_mode', DEFAULT_BEAM_MODE),
             radiation_probe=kwargs.get('radiation_probe', DEFAULT_RADIATION_PROBE),
-            scattering_type=kwargs.get('scattering_type', DEFAULT_SCATTERING_TYPE),
+            scattering_type=kwargs.get('scattering_type', ScatteringTypeEnum.default()),
         )
 
     @staticmethod

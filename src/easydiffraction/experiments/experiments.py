@@ -6,9 +6,9 @@ from typing import List
 
 from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.constants import DEFAULT_RADIATION_PROBE
-from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.core.objects import Collection
 from easydiffraction.experiments.components.experiment_type import SampleFormEnum
+from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 from easydiffraction.experiments.experiment import BaseExperiment
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.utils.decorators import enforce_type
@@ -55,7 +55,7 @@ class Experiments(Collection):
         sample_form: SampleFormEnum = SampleFormEnum.default(),
         beam_mode: str = DEFAULT_BEAM_MODE,
         radiation_probe: str = DEFAULT_RADIATION_PROBE,
-        scattering_type: str = DEFAULT_SCATTERING_TYPE,
+        scattering_type: ScatteringTypeEnum = ScatteringTypeEnum.default(),
     ):
         """
         Add a new experiment from a data file path.
@@ -76,7 +76,7 @@ class Experiments(Collection):
         sample_form: SampleFormEnum = SampleFormEnum.default(),
         beam_mode: str = DEFAULT_BEAM_MODE,
         radiation_probe: str = DEFAULT_RADIATION_PROBE,
-        scattering_type: str = DEFAULT_SCATTERING_TYPE,
+        scattering_type: ScatteringTypeEnum = ScatteringTypeEnum.default(),
     ):
         """
         Add a new experiment without any data file.

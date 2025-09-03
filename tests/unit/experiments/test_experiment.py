@@ -6,9 +6,9 @@ import pytest
 
 from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.constants import DEFAULT_RADIATION_PROBE
-from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.experiments.components.experiment_type import ExperimentType
 from easydiffraction.experiments.components.experiment_type import SampleFormEnum
+from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 from easydiffraction.experiments.experiment import BaseExperiment
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.experiments.experiment import ExperimentFactory

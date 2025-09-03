@@ -22,6 +22,21 @@ class SampleFormEnum(str, Enum):
             return 'Single crystal sample.'
 
 
+class ScatteringTypeEnum(str, Enum):
+    BRAGG = 'bragg'
+    TOTAL = 'total'
+
+    @classmethod
+    def default(cls) -> 'ScatteringTypeEnum':
+        return cls.BRAGG
+
+    def description(self) -> str:
+        if self is ScatteringTypeEnum.BRAGG:
+            return 'Bragg diffraction for conventional structure refinement.'
+        elif self is ScatteringTypeEnum.TOTAL:
+            return 'Total scattering for pair distribution function analysis (PDF).'
+
+
 class ExperimentType(Component):
     @property
     def cif_category_key(self) -> str:
