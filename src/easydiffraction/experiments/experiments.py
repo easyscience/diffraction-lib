@@ -4,8 +4,8 @@
 from typing import Dict
 from typing import List
 
-from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.objects import Collection
+from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
 from easydiffraction.experiments.components.experiment_type import SampleFormEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
@@ -53,7 +53,7 @@ class Experiments(Collection):
         name: str,
         data_path: str,
         sample_form: str = SampleFormEnum.default().value,
-        beam_mode: str = DEFAULT_BEAM_MODE,
+        beam_mode: str = BeamModeEnum.default().value,
         radiation_probe: str = RadiationProbeEnum.default().value,
         scattering_type: str = ScatteringTypeEnum.default().value,
     ):
@@ -73,10 +73,10 @@ class Experiments(Collection):
     def add_without_data(
         self,
         name: str,
-        sample_form: SampleFormEnum = SampleFormEnum.default(),
-        beam_mode: str = DEFAULT_BEAM_MODE,
-        radiation_probe: RadiationProbeEnum = RadiationProbeEnum.default(),
-        scattering_type: ScatteringTypeEnum = ScatteringTypeEnum.default(),
+        sample_form: str = SampleFormEnum.default().value,
+        beam_mode: str = BeamModeEnum.default().value,
+        radiation_probe: str = RadiationProbeEnum.default().value,
+        scattering_type: str = ScatteringTypeEnum.default().value,
     ):
         """
         Add a new experiment without any data file.

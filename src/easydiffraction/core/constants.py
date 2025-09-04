@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 # TODO: Change to use enum for these constants
-DEFAULT_BEAM_MODE = 'constant wavelength'
 DEFAULT_PEAK_PROFILE_TYPE = {
     'bragg': {
         'constant wavelength': 'pseudo-voigt',

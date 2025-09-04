@@ -1,10 +1,10 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.constants import DEFAULT_PEAK_PROFILE_TYPE
 from easydiffraction.core.objects import Component
 from easydiffraction.core.objects import Parameter
+from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 
 
@@ -354,22 +354,22 @@ class PairDistributionFunctionGaussianDampedSinc(
 class PeakFactory:
     _supported = {
         ScatteringTypeEnum.BRAGG: {
-            'constant wavelength': {
+            BeamModeEnum.CONSTANT_WAVELENGTH: {
                 'pseudo-voigt': ConstantWavelengthPseudoVoigt,
                 'split pseudo-voigt': ConstantWavelengthSplitPseudoVoigt,
                 'thompson-cox-hastings': ConstantWavelengthThompsonCoxHastings,
             },
-            'time-of-flight': {
+            BeamModeEnum.TIME_OF_FLIGHT: {
                 'pseudo-voigt': TimeOfFlightPseudoVoigt,
                 'pseudo-voigt * ikeda-carpenter': TimeOfFlightPseudoVoigtIkedaCarpenter,
                 'pseudo-voigt * back-to-back': TimeOfFlightPseudoVoigtBackToBackExponential,
             },
         },
         ScatteringTypeEnum.TOTAL: {
-            'constant wavelength': {
+            BeamModeEnum.CONSTANT_WAVELENGTH: {
                 'gaussian-damped-sinc': PairDistributionFunctionGaussianDampedSinc,
             },
-            'time-of-flight': {
+            BeamModeEnum.TIME_OF_FLIGHT: {
                 'gaussian-damped-sinc': PairDistributionFunctionGaussianDampedSinc,
             },
         },
@@ -379,8 +379,8 @@ class PeakFactory:
     def create(
         cls,
         scattering_type=ScatteringTypeEnum.default(),
-        beam_mode=DEFAULT_BEAM_MODE,
-        profile_type=DEFAULT_PEAK_PROFILE_TYPE[ScatteringTypeEnum.default()][DEFAULT_BEAM_MODE],
+        beam_mode=BeamModeEnum.default(),
+        profile_type=DEFAULT_PEAK_PROFILE_TYPE[ScatteringTypeEnum.default()][BeamModeEnum.default()],
     ):
         supported_scattering_types = list(cls._supported.keys())
         if scattering_type not in supported_scattering_types:

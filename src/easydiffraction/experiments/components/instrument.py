@@ -1,9 +1,9 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.objects import Component
 from easydiffraction.core.objects import Parameter
+from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 
 
@@ -100,8 +100,8 @@ class TimeOfFlightInstrument(InstrumentBase):
 class InstrumentFactory:
     _supported = {
         ScatteringTypeEnum.BRAGG: {
-            'constant wavelength': ConstantWavelengthInstrument,
-            'time-of-flight': TimeOfFlightInstrument,
+            BeamModeEnum.CONSTANT_WAVELENGTH: ConstantWavelengthInstrument,
+            BeamModeEnum.TIME_OF_FLIGHT: TimeOfFlightInstrument,
         }
     }
 
@@ -109,7 +109,7 @@ class InstrumentFactory:
     def create(
         cls,
         scattering_type=ScatteringTypeEnum.default(),
-        beam_mode=DEFAULT_BEAM_MODE,
+        beam_mode=BeamModeEnum.default(),
     ):
         supported_scattering_types = list(cls._supported.keys())
         if scattering_type not in supported_scattering_types:

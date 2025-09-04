@@ -7,7 +7,6 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction.core.constants import DEFAULT_BEAM_MODE
 from easydiffraction.core.constants import DEFAULT_PEAK_PROFILE_TYPE
 from easydiffraction.core.objects import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
@@ -15,6 +14,7 @@ from easydiffraction.experiments.collections.background import BackgroundTypeEnu
 from easydiffraction.experiments.collections.datastore import DatastoreFactory
 from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
+from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ExperimentType
 from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
 from easydiffraction.experiments.components.experiment_type import SampleFormEnum
@@ -470,10 +470,22 @@ class ExperimentFactory:
         Validates argument combinations and dispatches to the appropriate creation method.
         Raises ValueError if arguments are invalid or no valid dispatch is found.
         """
+        # Check for valid argument combinations
         user_args = [k for k, v in kwargs.items() if v is not None]
         if not cls.is_valid_args(user_args):
             raise ValueError(f'Invalid argument combination: {user_args}')
 
+        # Validate enum arguments if provided
+        if 'sample_form' in kwargs:
+            SampleFormEnum(kwargs['sample_form'])
+        if 'beam_mode' in kwargs:
+            BeamModeEnum(kwargs['beam_mode'])
+        if 'radiation_probe' in kwargs:
+            RadiationProbeEnum(kwargs['radiation_probe'])
+        if 'scattering_type' in kwargs:
+            ScatteringTypeEnum(kwargs['scattering_type'])
+
+        # Dispatch to the appropriate creation method
         if 'cif_path' in kwargs:
             return cls._create_from_cif_path(kwargs)
         elif 'cif_str' in kwargs:
@@ -482,7 +494,6 @@ class ExperimentFactory:
             return cls._create_from_data_path(kwargs)
         elif 'name' in kwargs:
             return cls._create_without_data(kwargs)
-        raise ValueError('No valid argument combination found for experiment creation.')
 
     @staticmethod
     def _create_from_cif_path(cif_path):
@@ -539,7 +550,7 @@ class ExperimentFactory:
         """
         return ExperimentType(
             sample_form=kwargs.get('sample_form', SampleFormEnum.default()),
-            beam_mode=kwargs.get('beam_mode', DEFAULT_BEAM_MODE),
+            beam_mode=kwargs.get('beam_mode', BeamModeEnum.default()),
             radiation_probe=kwargs.get('radiation_probe', RadiationProbeEnum.default()),
             scattering_type=kwargs.get('scattering_type', ScatteringTypeEnum.default()),
         )

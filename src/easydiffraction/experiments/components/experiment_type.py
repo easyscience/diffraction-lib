@@ -39,7 +39,7 @@ class ScatteringTypeEnum(str, Enum):
 
 class RadiationProbeEnum(str, Enum):
     NEUTRON = 'neutron'
-    XRAY = 'x-ray'
+    XRAY = 'xray'
 
     @classmethod
     def default(cls) -> 'RadiationProbeEnum':
@@ -50,6 +50,21 @@ class RadiationProbeEnum(str, Enum):
             return 'Neutron diffraction.'
         elif self is RadiationProbeEnum.XRAY:
             return 'X-ray diffraction.'
+
+
+class BeamModeEnum(str, Enum):
+    CONSTANT_WAVELENGTH = 'constant wavelength'
+    TIME_OF_FLIGHT = 'time-of-flight'
+
+    @classmethod
+    def default(cls) -> 'BeamModeEnum':
+        return cls.CONSTANT_WAVELENGTH
+
+    def description(self) -> str:
+        if self is BeamModeEnum.CONSTANT_WAVELENGTH:
+            return 'Constant wavelength (CW) diffraction.'
+        elif self is BeamModeEnum.TIME_OF_FLIGHT:
+            return 'Time-of-flight (TOF) diffraction.'
 
 
 class ExperimentType(Component):

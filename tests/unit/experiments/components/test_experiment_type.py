@@ -30,7 +30,7 @@ def test_experiment_type_properties():
     experiment_type = ExperimentType(
         sample_form='single crystal',
         beam_mode='time-of-flight',
-        radiation_probe='x-ray',
+        radiation_probe='xray',
         scattering_type='bragg',
     )
 
