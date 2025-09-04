@@ -213,7 +213,9 @@ class BasePowderExperiment(BaseExperiment):
             print("For more information, use 'show_supported_peak_profile_types()'")
             return
         self.peak = PeakFactory.create(
-            scattering_type=self.type.scattering_type.value, beam_mode=self.type.beam_mode.value, profile_type=new_type
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            profile_type=new_type,
         )
         self._peak_profile_type = new_type
         print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
@@ -223,12 +225,19 @@ class BasePowderExperiment(BaseExperiment):
         columns_headers = ['Peak profile type', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
-        for name, config in PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].items():
-            description = getattr(config, '_description', 'No description provided.')
-            columns_data.append([name, description])
+
+        scattering_type = self.type.scattering_type.value
+        beam_mode = self.type.beam_mode.value
+
+        for profile_type in PeakFactory._supported[scattering_type][beam_mode].keys():
+            columns_data.append([profile_type.value, profile_type.description()])
 
         print(paragraph('Supported peak profile types'))
-        render_table(columns_headers=columns_headers, columns_alignment=columns_alignment, columns_data=columns_data)
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )
 
     def show_current_peak_profile_type(self):
         print(paragraph('Current peak profile type'))

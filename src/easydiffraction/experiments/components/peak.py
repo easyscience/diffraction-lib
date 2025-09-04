@@ -36,7 +36,7 @@ class PeakProfileTypeEnum(str, Enum):
 
     def description(self) -> str:
         if self is PeakProfileTypeEnum.PSEUDO_VOIGT:
-            return 'Pseudo-Voigt profile.'
+            return 'Pseudo-Voigt profile'
         elif self is PeakProfileTypeEnum.SPLIT_PSEUDO_VOIGT:
             return 'Split pseudo-Voigt profile with empirical asymmetry correction.'
         elif self is PeakProfileTypeEnum.THOMPSON_COX_HASTINGS:
@@ -279,8 +279,6 @@ class ConstantWavelengthPseudoVoigt(
     PeakBase,
     ConstantWavelengthBroadeningMixin,
 ):
-    _description: str = 'Pseudo-Voigt profile'
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -296,8 +294,6 @@ class ConstantWavelengthSplitPseudoVoigt(
     ConstantWavelengthBroadeningMixin,
     EmpiricalAsymmetryMixin,
 ):
-    _description: str = 'Split pseudo-Voigt profile'
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -314,8 +310,6 @@ class ConstantWavelengthThompsonCoxHastings(
     ConstantWavelengthBroadeningMixin,
     FcjAsymmetryMixin,
 ):
-    _description: str = 'Thompson-Cox-Hastings profile'
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -331,8 +325,6 @@ class TimeOfFlightPseudoVoigt(
     PeakBase,
     TimeOfFlightBroadeningMixin,
 ):
-    _description: str = 'Pseudo-Voigt profile'
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -348,8 +340,6 @@ class TimeOfFlightPseudoVoigtIkedaCarpenter(
     TimeOfFlightBroadeningMixin,
     IkedaCarpenterAsymmetryMixin,
 ):
-    _description: str = 'Pseudo-Voigt * Ikeda-Carpenter profile'
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -366,8 +356,6 @@ class TimeOfFlightPseudoVoigtBackToBackExponential(
     TimeOfFlightBroadeningMixin,
     IkedaCarpenterAsymmetryMixin,
 ):
-    _description: str = 'Pseudo-Voigt * Back-to-Back Exponential profile'
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -383,8 +371,6 @@ class PairDistributionFunctionGaussianDampedSinc(
     PeakBase,
     PairDistributionFunctionBroadeningMixin,
 ):
-    _description = 'Gaussian-damped sinc PDF profile'
-
     def __init__(self):
         super().__init__()
         self._add_pair_distribution_function_broadening()
@@ -426,7 +412,7 @@ class PeakFactory:
         supported_scattering_types = list(cls._supported.keys())
         if scattering_type not in supported_scattering_types:
             raise ValueError(
-                f"Unsupported scattering type: '{scattering_type}'.\n Supported scattering types: {supported_scattering_types}"
+                f"Unsupported scattering type: '{scattering_type}'.\nSupported scattering types: {supported_scattering_types}"
             )
 
         supported_beam_modes = list(cls._supported[scattering_type].keys())
