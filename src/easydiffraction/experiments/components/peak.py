@@ -1,11 +1,52 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
 # SPDX-License-Identifier: BSD-3-Clause
+from enum import Enum
 
-from easydiffraction.core.constants import DEFAULT_PEAK_PROFILE_TYPE
 from easydiffraction.core.objects import Component
 from easydiffraction.core.objects import Parameter
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
+
+
+class PeakProfileTypeEnum(str, Enum):
+    PSEUDO_VOIGT = 'pseudo-voigt'
+    SPLIT_PSEUDO_VOIGT = 'split pseudo-voigt'
+    THOMPSON_COX_HASTINGS = 'thompson-cox-hastings'
+    PSEUDO_VOIGT_IKEDA_CARPENTER = 'pseudo-voigt * ikeda-carpenter'
+    PSEUDO_VOIGT_BACK_TO_BACK = 'pseudo-voigt * back-to-back'
+    GAUSSIAN_DAMPED_SINC = 'gaussian-damped-sinc'
+
+    @classmethod
+    def default(
+        cls,
+        scattering_type: ScatteringTypeEnum | None = None,
+        beam_mode: BeamModeEnum | None = None,
+    ) -> 'PeakProfileTypeEnum':
+        if scattering_type is None:
+            scattering_type = ScatteringTypeEnum.default()
+        if beam_mode is None:
+            beam_mode = BeamModeEnum.default()
+
+        return {
+            (ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH): cls.PSEUDO_VOIGT,
+            (ScatteringTypeEnum.BRAGG, BeamModeEnum.TIME_OF_FLIGHT): cls.PSEUDO_VOIGT_IKEDA_CARPENTER,
+            (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): cls.GAUSSIAN_DAMPED_SINC,
+            (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): cls.GAUSSIAN_DAMPED_SINC,
+        }[(scattering_type, beam_mode)]
+
+    def description(self) -> str:
+        if self is PeakProfileTypeEnum.PSEUDO_VOIGT:
+            return 'Pseudo-Voigt profile.'
+        elif self is PeakProfileTypeEnum.SPLIT_PSEUDO_VOIGT:
+            return 'Split pseudo-Voigt profile with empirical asymmetry correction.'
+        elif self is PeakProfileTypeEnum.THOMPSON_COX_HASTINGS:
+            return 'Thompson-Cox-Hastings profile with FCJ asymmetry correction.'
+        elif self is PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER:
+            return 'Pseudo-Voigt profile with Ikeda-Carpenter asymmetry correction.'
+        elif self is PeakProfileTypeEnum.PSEUDO_VOIGT_BACK_TO_BACK:
+            return 'Pseudo-Voigt profile with Back-to-Back Exponential asymmetry correction.'
+        elif self is PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC:
+            return 'Gaussian-damped sinc profile for pair distribution function (PDF) analysis.'
 
 
 # --- Mixins ---
@@ -355,22 +396,22 @@ class PeakFactory:
     _supported = {
         ScatteringTypeEnum.BRAGG: {
             BeamModeEnum.CONSTANT_WAVELENGTH: {
-                'pseudo-voigt': ConstantWavelengthPseudoVoigt,
-                'split pseudo-voigt': ConstantWavelengthSplitPseudoVoigt,
-                'thompson-cox-hastings': ConstantWavelengthThompsonCoxHastings,
+                PeakProfileTypeEnum.PSEUDO_VOIGT: ConstantWavelengthPseudoVoigt,
+                PeakProfileTypeEnum.SPLIT_PSEUDO_VOIGT: ConstantWavelengthSplitPseudoVoigt,
+                PeakProfileTypeEnum.THOMPSON_COX_HASTINGS: ConstantWavelengthThompsonCoxHastings,
             },
             BeamModeEnum.TIME_OF_FLIGHT: {
-                'pseudo-voigt': TimeOfFlightPseudoVoigt,
-                'pseudo-voigt * ikeda-carpenter': TimeOfFlightPseudoVoigtIkedaCarpenter,
-                'pseudo-voigt * back-to-back': TimeOfFlightPseudoVoigtBackToBackExponential,
+                PeakProfileTypeEnum.PSEUDO_VOIGT: TimeOfFlightPseudoVoigt,
+                PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER: TimeOfFlightPseudoVoigtIkedaCarpenter,
+                PeakProfileTypeEnum.PSEUDO_VOIGT_BACK_TO_BACK: TimeOfFlightPseudoVoigtBackToBackExponential,
             },
         },
         ScatteringTypeEnum.TOTAL: {
             BeamModeEnum.CONSTANT_WAVELENGTH: {
-                'gaussian-damped-sinc': PairDistributionFunctionGaussianDampedSinc,
+                PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC: PairDistributionFunctionGaussianDampedSinc,
             },
             BeamModeEnum.TIME_OF_FLIGHT: {
-                'gaussian-damped-sinc': PairDistributionFunctionGaussianDampedSinc,
+                PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC: PairDistributionFunctionGaussianDampedSinc,
             },
         },
     }
@@ -380,7 +421,7 @@ class PeakFactory:
         cls,
         scattering_type=ScatteringTypeEnum.default(),
         beam_mode=BeamModeEnum.default(),
-        profile_type=DEFAULT_PEAK_PROFILE_TYPE[ScatteringTypeEnum.default()][BeamModeEnum.default()],
+        profile_type=PeakProfileTypeEnum.default(ScatteringTypeEnum.default(), BeamModeEnum.default()),
     ):
         supported_scattering_types = list(cls._supported.keys())
         if scattering_type not in supported_scattering_types:

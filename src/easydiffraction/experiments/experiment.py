@@ -7,7 +7,6 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction.core.constants import DEFAULT_PEAK_PROFILE_TYPE
 from easydiffraction.core.objects import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
 from easydiffraction.experiments.collections.background import BackgroundTypeEnum
@@ -22,6 +21,7 @@ from easydiffraction.experiments.components.experiment_type import ScatteringTyp
 from easydiffraction.experiments.components.instrument import InstrumentBase
 from easydiffraction.experiments.components.instrument import InstrumentFactory
 from easydiffraction.experiments.components.peak import PeakFactory
+from easydiffraction.experiments.components.peak import PeakProfileTypeEnum
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
@@ -183,7 +183,10 @@ class BasePowderExperiment(BaseExperiment):
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self._peak_profile_type: str = DEFAULT_PEAK_PROFILE_TYPE[self.type.scattering_type.value][self.type.beam_mode.value]
+        self._peak_profile_type: str = PeakProfileTypeEnum.default(
+            self.type.scattering_type.value,
+            self.type.beam_mode.value,
+        ).value
         self.peak = PeakFactory.create(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,

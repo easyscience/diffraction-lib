@@ -2,16 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 # TODO: Change to use enum for these constants
-DEFAULT_PEAK_PROFILE_TYPE = {
-    'bragg': {
-        'constant wavelength': 'pseudo-voigt',
-        'time-of-flight': 'pseudo-voigt * ikeda-carpenter',
-    },
-    'total': {
-        'constant wavelength': 'gaussian-damped-sinc',
-        'time-of-flight': 'gaussian-damped-sinc',
-    },
-}
 DEFAULT_AXES_LABELS = {
     'bragg': {
         'constant wavelength': ['2θ (degree)', 'Intensity (arb. units)'],
