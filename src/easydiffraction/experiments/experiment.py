@@ -15,13 +15,13 @@ from easydiffraction.core.constants import DEFAULT_SAMPLE_FORM
 from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.core.objects import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
-from easydiffraction.experiments.collections.datastore import DatastoreFactory
 from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
 from easydiffraction.experiments.components.experiment_type import ExperimentType
 from easydiffraction.experiments.components.instrument import InstrumentBase
 from easydiffraction.experiments.components.instrument import InstrumentFactory
 from easydiffraction.experiments.components.peak import PeakFactory
+from easydiffraction.experiments.datastore import DatastoreFactory
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
@@ -62,7 +62,7 @@ class BaseExperiment(Datablock):
         self.type = type
         self.datastore = DatastoreFactory.create(
             sample_form=self.type.sample_form.value,
-            experiment=self,
+            beam_mode=self.type.beam_mode.value,
         )
 
     # ---------------------------
@@ -135,29 +135,8 @@ class BaseExperiment(Datablock):
             cif_lines += ['', self.excluded_regions.as_cif()]
 
         # Measured data
-        if hasattr(self, 'datastore') and hasattr(self.datastore, 'pattern'):
-            cif_lines.append('')
-            cif_lines.append('loop_')
-            category = '_pd_meas'  # TODO: Add category to pattern component
-            attributes = ('2theta_scan', 'intensity_total', 'intensity_total_su')
-            for attribute in attributes:
-                cif_lines.append(f'{category}.{attribute}')
-            pattern = self.datastore.pattern
-            if max_points is not None and len(pattern.x) > 2 * max_points:
-                for i in range(max_points):
-                    x = pattern.x[i]
-                    meas = pattern.meas[i]
-                    meas_su = pattern.meas_su[i]
-                    cif_lines.append(f'{x} {meas} {meas_su}')
-                cif_lines.append('...')
-                for i in range(-max_points, 0):
-                    x = pattern.x[i]
-                    meas = pattern.meas[i]
-                    meas_su = pattern.meas_su[i]
-                    cif_lines.append(f'{x} {meas} {meas_su}')
-            else:
-                for x, meas, meas_su in zip(pattern.x, pattern.meas, pattern.meas_su):
-                    cif_lines.append(f'{x} {meas} {meas_su}')
+        if hasattr(self, 'datastore'):
+            cif_lines += ['', self.datastore.as_cif(max_points=max_points)]
 
         return '\n'.join(cif_lines)
 
@@ -293,19 +272,19 @@ class PowderExperiment(
         # Attach the data to the experiment's datastore
 
         # The full pattern data
-        self.datastore.pattern.full_x = x
-        self.datastore.pattern.full_meas = y
-        self.datastore.pattern.full_meas_su = sy
+        self.datastore.full_x = x
+        self.datastore.full_meas = y
+        self.datastore.full_meas_su = sy
 
         # The pattern data used for fitting (without excluded points)
         # This is the same as full_x, full_meas, full_meas_su by default
-        self.datastore.pattern.x = x
-        self.datastore.pattern.meas = y
-        self.datastore.pattern.meas_su = sy
+        self.datastore.x = x
+        self.datastore.meas = y
+        self.datastore.meas_su = sy
 
         # Excluded mask
         # No excluded points by default
-        self.datastore.pattern.excluded = np.full(x.shape, fill_value=False, dtype=bool)
+        self.datastore.excluded = np.full(x.shape, fill_value=False, dtype=bool)
 
         print(paragraph('Data loaded successfully'))
         print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
@@ -392,9 +371,9 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
         sy = data[:, 2] if data.shape[1] > 2 else np.full_like(y, fill_value=default_sy)
 
         # Attach the data to the experiment's datastore
-        self.datastore.pattern.x = x
-        self.datastore.pattern.meas = y
-        self.datastore.pattern.meas_su = sy
+        self.datastore.x = x
+        self.datastore.meas = y
+        self.datastore.meas_su = sy
 
         print(paragraph('Data loaded successfully'))
         print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")

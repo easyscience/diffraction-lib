@@ -36,9 +36,9 @@ def mock_sample_models():
 @pytest.fixture
 def mock_experiment():
     experiment = MagicMock()
-    experiment.datastore.pattern.x = np.array([1.0, 2.0, 3.0])
-    experiment.datastore.pattern.bkg = None
-    experiment.datastore.pattern.calc = None
+    experiment.datastore.x = np.array([1.0, 2.0, 3.0])
+    experiment.datastore.bkg = None
+    experiment.datastore.calc = None
     experiment.linked_phases = [
         MagicMock(_entry_id='phase1', scale=MagicMock(value=2.0)),
         MagicMock(_entry_id='phase2', scale=MagicMock(value=1.5)),
@@ -53,13 +53,13 @@ def test_calculate_pattern(mock_constraints_handler, mock_sample_models, mock_ex
 
     calculator = MockCalculator()
     calculator.calculate_pattern(mock_sample_models, mock_experiment)
-    result = mock_experiment.datastore.pattern.calc
+    result = mock_experiment.datastore.calc
 
     # Assertions
     assert np.allclose(result, np.array([3.6, 7.2, 10.8]))
     mock_constraints_handler.return_value.apply.assert_called_once_with()
-    assert mock_experiment.datastore.pattern.bkg is not None
-    assert mock_experiment.datastore.pattern.calc is not None
+    assert mock_experiment.datastore.bkg is not None
+    assert mock_experiment.datastore.calc is not None
 
 
 def test_get_valid_linked_phases(mock_sample_models, mock_experiment):

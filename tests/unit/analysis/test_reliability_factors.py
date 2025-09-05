@@ -90,17 +90,15 @@ def test_get_reliability_inputs():
     experiments._items = {
         'experiment1': Mock(
             datastore=Mock(
-                pattern=Mock(
-                    meas=np.array([10.0, 20.0, 30.0]),
-                    meas_su=np.array([1.0, 1.0, 1.0]),
-                    excluded=np.array([False, False, False]),
-                )
+                meas=np.array([10.0, 20.0, 30.0]),
+                meas_su=np.array([1.0, 1.0, 1.0]),
+                excluded=np.array([False, False, False]),
             )
         )
     }
 
     def mock_calculate_pattern(sample_models, experiment, **kwargs):
-        experiment.datastore.pattern.calc = np.array([9.0, 19.0, 29.0])
+        experiment.datastore.calc = np.array([9.0, 19.0, 29.0])
 
     calculator.calculate_pattern.side_effect = mock_calculate_pattern
 
