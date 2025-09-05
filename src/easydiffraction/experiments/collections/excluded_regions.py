@@ -61,19 +61,18 @@ class ExcludedRegions(Collection):
         """
         Mark excluded points in the experiment pattern when a new region is added.
         """
-        experiment = self._parent
-        pattern = experiment.datastore.pattern
+        datastore = self._parent.datastore
 
         # Boolean mask for points within the new excluded region
-        in_region = (pattern.full_x >= item.start.value) & (pattern.full_x <= item.end.value)
+        in_region = (datastore.full_x >= item.start.value) & (datastore.full_x <= item.end.value)
 
         # Update the exclusion mask
-        pattern.excluded[in_region] = True
+        datastore.excluded[in_region] = True
 
         # Update the excluded points in the datastore
-        pattern.x = pattern.full_x[~pattern.excluded]
-        pattern.meas = pattern.full_meas[~pattern.excluded]
-        pattern.meas_su = pattern.full_meas_su[~pattern.excluded]
+        datastore.x = datastore.full_x[~datastore.excluded]
+        datastore.meas = datastore.full_meas[~datastore.excluded]
+        datastore.meas_su = datastore.full_meas_su[~datastore.excluded]
 
     def show(self) -> None:
         # TODO: Consider moving this to the base class

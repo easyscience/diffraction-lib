@@ -358,10 +358,9 @@ def is_notebook() -> bool:
     """
     if IPython is None:
         return False
-
     if is_pycharm():  # Running inside PyCharm
-        return True
-    elif is_colab():  # Running inside Google Colab
+        return False
+    if is_colab():  # Running inside Google Colab
         return True
 
     try:
