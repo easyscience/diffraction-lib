@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -71,30 +70,3 @@ class CalculatorFactory:
             return None
 
         return config['class']()
-
-    @classmethod
-    def register_calculator(
-        cls,
-        calculator_type: str,
-        calculator_cls: Type[CalculatorBase],
-        description: str = 'No description provided.',
-    ) -> None:
-        cls._potential_calculators[calculator_type] = {
-            'class': calculator_cls,
-            'description': description,
-        }
-
-    @classmethod
-    def register_minimizer(
-        cls,
-        name: str,
-        minimizer_cls: Type[Any],
-        method: Optional[str] = None,
-        description: str = 'No description provided.',
-    ) -> None:
-        cls._available_minimizers[name] = {
-            'engine': name,
-            'method': method,
-            'description': description,
-            'class': minimizer_cls,
-        }

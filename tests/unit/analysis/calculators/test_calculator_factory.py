@@ -63,17 +63,3 @@ def test_create_calculator_unknown(mock_calculators):
 
     # Assertions
     assert unknown_calculator is None
-
-
-def no_test_register_calculator():
-    class MockCalculator:
-        engine_imported = True
-
-    CalculatorFactory.register_calculator('mock_calculator', MockCalculator, description='Mock calculator for testing')
-
-    supported = CalculatorFactory._supported_calculators()
-
-    # Assertions
-    assert 'mock_calculator' in CalculatorFactory._potential_calculators
-    assert supported['mock_calculator']['description'] == 'Mock calculator for testing'
-    assert supported['mock_calculator']['class'] == MockCalculator

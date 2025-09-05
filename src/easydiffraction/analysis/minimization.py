@@ -171,11 +171,12 @@ class DiffractionMinimizer:
 
         for (expt_id, experiment), weight in zip(experiments._items.items(), _weights):
             # Calculate the difference between measured and calculated patterns
-            y_calc: np.ndarray = calculator.calculate_pattern(
+            calculator.calculate_pattern(
                 sample_models,
                 experiment,
                 called_by_minimizer=True,
             )
+            y_calc: np.ndarray = experiment.datastore.calc
             y_meas: np.ndarray = experiment.datastore.meas
             y_meas_su: np.ndarray = experiment.datastore.meas_su
             diff = (y_meas - y_calc) / y_meas_su

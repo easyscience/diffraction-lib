@@ -58,13 +58,15 @@ jobs:
       pytest-marks: ${{ steps.set-mark.outputs.pytest_marks }}
 
     steps:
+      # Determine if functional tests should be run fully or only the fast ones
+      # (to save time on branches other than master and develop)
       - name: Set mark for functional tests
         id: set-mark
         run: |
-          if [[ "${{ env.CI_BRANCH }}" != "master" && "${{ env.CI_BRANCH }}" != "develop" ]]; then
-            echo "pytest_marks=-m 'fast'" >> $GITHUB_OUTPUT
-          else
+          if [[ "${{ env.CI_BRANCH }}" == "master" || "${{ env.CI_BRANCH }}" == "develop" ]]; then
             echo "pytest_marks=" >> $GITHUB_OUTPUT
+          else
+            echo "pytest_marks=-m 'fast'" >> $GITHUB_OUTPUT
           fi
 
       - name: Checkout repository
@@ -225,7 +227,7 @@ jobs:
 
   # Job 3: Test the package
   test-package:
-    needs: test-source # the previous job needs to be finished first
+    needs: [code-quality, test-source] # depend on both previous jobs
 
     strategy:
       fail-fast: false
