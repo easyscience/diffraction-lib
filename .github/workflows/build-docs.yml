@@ -194,7 +194,7 @@ jobs:
           echo "🔗 DEV deployment url [${{ env.DEV_DEPLOYMENT_URL }}](${{
           env.DEV_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
 
-  # Job 3: Deploy the built static files to GitHub Pages (DEV deployment)
+  # Job 3: Deploy the built static files to GitHub Pages (PROD deployment)
   deploy-prod:
     needs: deploy-dev # previous job 'deploy-dev' need to be finished first
 
