@@ -196,7 +196,7 @@ jobs:
 
   # Job 3: Deploy the built static files to GitHub Pages (PROD deployment)
   deploy-prod:
-    needs: deploy-dev # previous job 'deploy-dev' need to be finished first
+    needs: deploy-dev # previous job 'deploy-dev' needs to be finished first
 
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
