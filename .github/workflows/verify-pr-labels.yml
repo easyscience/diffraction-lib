@@ -19,6 +19,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           valid-labels:
             '[scope] bug, [scope] documentation, [scope] enhancement, [scope]
-            maintenance, [scope] significant'
+            maintenance, [scope] significant, [maintainer] release'
           pull-request-number: ${{ github.event.pull_request.number }}
           disable-reviews: false
