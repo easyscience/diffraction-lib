@@ -7,7 +7,7 @@ from typing import List
 
 import lmfit
 
-from .minimizer_base import MinimizerBase
+from easydiffraction.analysis.minimizers.minimizer_base import MinimizerBase
 
 DEFAULT_METHOD = 'leastsq'
 DEFAULT_MAX_ITERATIONS = 1000
