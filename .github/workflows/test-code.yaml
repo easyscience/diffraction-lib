@@ -227,7 +227,7 @@ jobs:
 
   # Job 3: Test the package
   test-package:
-    needs: [ code-quality, test-source ] # depend on both previous jobs
+    needs: [code-quality, test-source] # depend on both previous jobs
 
     strategy:
       fail-fast: false
