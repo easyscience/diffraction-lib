@@ -12,10 +12,9 @@ except ImportError:
     display = None
     HTML = None
 
+from easydiffraction.plotting.plotters.plotter_base import SERIES_CONFIG
+from easydiffraction.plotting.plotters.plotter_base import PlotterBase
 from easydiffraction.utils.utils import is_pycharm
-
-from .plotter_base import SERIES_CONFIG
-from .plotter_base import PlotterBase
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',

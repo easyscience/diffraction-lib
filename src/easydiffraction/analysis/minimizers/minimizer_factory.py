@@ -7,12 +7,11 @@ from typing import List
 from typing import Optional
 from typing import Type
 
+from easydiffraction.analysis.minimizers.minimizer_base import MinimizerBase
+from easydiffraction.analysis.minimizers.minimizer_dfols import DfolsMinimizer
+from easydiffraction.analysis.minimizers.minimizer_lmfit import LmfitMinimizer
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_table
-
-from .minimizer_base import MinimizerBase
-from .minimizer_dfols import DfolsMinimizer
-from .minimizer_lmfit import LmfitMinimizer
 
 
 class MinimizerFactory:

@@ -8,12 +8,11 @@ from typing import Union
 
 import numpy as np
 
+from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModel
 from easydiffraction.sample_models.sample_models import SampleModels
-
-from .calculator_base import CalculatorBase
 
 try:
     from pycrysfml import cfml_py_utilities

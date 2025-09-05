@@ -8,7 +8,7 @@ from typing import List
 import numpy as np
 from dfols import solve
 
-from .minimizer_base import MinimizerBase
+from easydiffraction.analysis.minimizers.minimizer_base import MinimizerBase
 
 DEFAULT_MAX_ITERATIONS = 1000
 

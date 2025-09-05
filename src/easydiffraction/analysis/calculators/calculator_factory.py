@@ -7,14 +7,13 @@ from typing import Optional
 from typing import Type
 from typing import Union
 
+from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
+from easydiffraction.analysis.calculators.calculator_crysfml import CrysfmlCalculator
+from easydiffraction.analysis.calculators.calculator_cryspy import CryspyCalculator
+from easydiffraction.analysis.calculators.calculator_pdffit import PdffitCalculator
 from easydiffraction.utils.formatting import error
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_table
-
-from .calculator_base import CalculatorBase
-from .calculator_crysfml import CrysfmlCalculator
-from .calculator_cryspy import CryspyCalculator
-from .calculator_pdffit import PdffitCalculator
 
 
 class CalculatorFactory:
