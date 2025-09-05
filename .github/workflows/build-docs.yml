@@ -178,7 +178,8 @@ jobs:
 
     # Triggered on pull request, push to develop or master branch only
     if: >
-      github.event_name == 'pull_request' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
+      github.event_name == 'pull_request' || github.ref == 'refs/heads/develop'
+      || github.ref == 'refs/heads/master'
 
     steps:
       # Deploy the static files created in the previous job to GitHub Pages
