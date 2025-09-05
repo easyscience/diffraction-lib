@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from abc import abstractmethod
+from enum import Enum
 from typing import Dict
 from typing import List
 from typing import Type
@@ -11,7 +12,6 @@ import numpy as np
 from numpy.polynomial.chebyshev import chebval
 from scipy.interpolate import interp1d
 
-from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
 from easydiffraction.core.objects import Collection
 from easydiffraction.core.objects import Component
 from easydiffraction.core.objects import Descriptor
@@ -190,22 +190,38 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         )
 
 
+class BackgroundTypeEnum(str, Enum):
+    LINE_SEGMENT = 'line-segment'
+    CHEBYSHEV = 'chebyshev polynomial'
+
+    @classmethod
+    def default(cls) -> 'BackgroundTypeEnum':
+        return cls.LINE_SEGMENT
+
+    def description(self) -> str:
+        if self is BackgroundTypeEnum.LINE_SEGMENT:
+            return 'Linear interpolation between points'
+        elif self is BackgroundTypeEnum.CHEBYSHEV:
+            return 'Chebyshev polynomial background'
+
+
 class BackgroundFactory:
-    _supported: Dict[str, Type[BackgroundBase]] = {
-        'line-segment': LineSegmentBackground,
-        'chebyshev polynomial': ChebyshevPolynomialBackground,
+    _supported: Dict[BackgroundTypeEnum, Type[BackgroundBase]] = {
+        BackgroundTypeEnum.LINE_SEGMENT: LineSegmentBackground,
+        BackgroundTypeEnum.CHEBYSHEV: ChebyshevPolynomialBackground,
     }
 
     @classmethod
     def create(
         cls,
-        background_type: str = DEFAULT_BACKGROUND_TYPE,
+        background_type: BackgroundTypeEnum = BackgroundTypeEnum.default(),
     ) -> BackgroundBase:
         if background_type not in cls._supported:
             supported_types = list(cls._supported.keys())
 
             raise ValueError(
-                f"Unsupported background type: '{background_type}'.\n Supported background types: {supported_types}"
+                f"Unsupported background type: '{background_type}'.\n"
+                f' Supported background types: {[bt.value for bt in supported_types]}'
             )
 
         background_class = cls._supported[background_type]

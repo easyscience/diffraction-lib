@@ -10,6 +10,7 @@ from typing import List
 from varname import varname
 
 from easydiffraction.analysis.analysis import Analysis
+from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.plotting.plotting import Plotter
 from easydiffraction.sample_models.sample_models import SampleModels
@@ -344,14 +345,17 @@ class Project:
         expt_type = experiment.type
         beam_mode = expt_type.beam_mode.value
 
-        if beam_mode == 'time-of-flight':
+        if beam_mode == BeamModeEnum.TIME_OF_FLIGHT:
             datastore.d = tof_to_d(
                 datastore.x,
                 experiment.instrument.calib_d_to_tof_offset.value,
                 experiment.instrument.calib_d_to_tof_linear.value,
                 experiment.instrument.calib_d_to_tof_quad.value,
             )
-        elif beam_mode == 'constant wavelength':
-            datastore.d = twotheta_to_d(datastore.x, experiment.instrument.setup_wavelength.value)
+        elif beam_mode == BeamModeEnum.CONSTANT_WAVELENGTH:
+            datastore.d = twotheta_to_d(
+                datastore.x,
+                experiment.instrument.setup_wavelength.value,
+            )
         else:
             print(error(f'Unsupported beam mode: {beam_mode} for d-spacing update.'))

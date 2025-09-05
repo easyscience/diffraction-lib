@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
 from typing import List
@@ -14,7 +15,9 @@ from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModels
 
 from ..analysis.reliability_factors import get_reliability_inputs
-from .minimizers.minimizer_base import FitResults
+
+if TYPE_CHECKING:
+    from .minimizers.minimizer_base import FitResults
 from .minimizers.minimizer_factory import MinimizerFactory
 
 

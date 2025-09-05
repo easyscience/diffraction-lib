@@ -83,6 +83,9 @@ class CalculatorBase(ABC):
                 called_by_minimizer=called_by_minimizer,
             )
 
+            # if not sample_model_y_calc:
+            #    return np.ndarray([])
+
             sample_model_y_calc_scaled = sample_model_scale * sample_model_y_calc
             y_calc_scaled += sample_model_y_calc_scaled
 

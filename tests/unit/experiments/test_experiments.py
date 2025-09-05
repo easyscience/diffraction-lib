@@ -41,7 +41,7 @@ def test_experiments_add_from_data_path():
             name='TestExperiment',
             sample_form='powder',
             beam_mode='constant wavelength',
-            radiation_probe='x-ray',
+            radiation_probe='xray',
             data_path='mock_path',
         )
 
