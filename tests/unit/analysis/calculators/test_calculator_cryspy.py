@@ -34,9 +34,9 @@ def mock_experiment():
     experiment = MagicMock()
     experiment.name = 'experiment1'
     experiment.type.beam_mode.value = 'constant wavelength'
-    experiment.datastore.pattern.x = np.array([1.0, 2.0, 3.0])
-    experiment.datastore.pattern.meas = np.array([10.0, 20.0, 30.0])
-    experiment.datastore.pattern.meas_su = np.array([0.1, 0.2, 0.3])
+    experiment.datastore.x = np.array([1.0, 2.0, 3.0])
+    experiment.datastore.meas = np.array([10.0, 20.0, 30.0])
+    experiment.datastore.meas_su = np.array([0.1, 0.2, 0.3])
     experiment.instrument.calib_twotheta_offset.value = 0.0
     experiment.instrument.setup_wavelength.value = 1.54
     experiment.peak.broad_gauss_u.value = 0.1

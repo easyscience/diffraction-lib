@@ -173,8 +173,8 @@ class DiffractionMinimizer:
                 experiment,
                 called_by_minimizer=True,
             )
-            y_meas: np.ndarray = experiment.datastore.pattern.meas
-            y_meas_su: np.ndarray = experiment.datastore.pattern.meas_su
+            y_meas: np.ndarray = experiment.datastore.meas
+            y_meas_su: np.ndarray = experiment.datastore.meas_su
             diff = (y_meas - y_calc) / y_meas_su
 
             # Residuals are squared before going into reduced chi-squared
