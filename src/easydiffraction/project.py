@@ -252,7 +252,7 @@ class Project:
         d_spacing=False,
     ):
         experiment = self.experiments[expt_name]
-        pattern = experiment.datastore.pattern
+        datastore = experiment.datastore
         expt_type = experiment.type
 
         # Update d-spacing if necessary
@@ -265,7 +265,7 @@ class Project:
 
         # Plot measured pattern
         self.plotter.plot_meas(
-            pattern,
+            datastore,
             expt_name,
             expt_type,
             x_min=x_min,
@@ -282,7 +282,7 @@ class Project:
     ):
         self.analysis.calculate_pattern(expt_name)  # Recalculate pattern
         experiment = self.experiments[expt_name]
-        pattern = experiment.datastore.pattern
+        datastore = experiment.datastore
         expt_type = experiment.type
 
         # Update d-spacing if necessary
@@ -295,7 +295,7 @@ class Project:
 
         # Plot calculated pattern
         self.plotter.plot_calc(
-            pattern,
+            datastore,
             expt_name,
             expt_type,
             x_min=x_min,
@@ -313,7 +313,7 @@ class Project:
     ):
         self.analysis.calculate_pattern(expt_name)  # Recalculate pattern
         experiment = self.experiments[expt_name]
-        pattern = experiment.datastore.pattern
+        datastore = experiment.datastore
         expt_type = experiment.type
 
         # Update d-spacing if necessary
@@ -326,7 +326,7 @@ class Project:
 
         # Plot measured vs calculated
         self.plotter.plot_meas_vs_calc(
-            pattern,
+            datastore,
             expt_name,
             expt_type,
             x_min=x_min,
@@ -340,18 +340,18 @@ class Project:
         Update the pattern's d-spacing based on the experiment's beam mode.
         """
         experiment = self.experiments[expt_name]
-        pattern = experiment.datastore.pattern
+        datastore = experiment.datastore
         expt_type = experiment.type
         beam_mode = expt_type.beam_mode.value
 
         if beam_mode == 'time-of-flight':
-            pattern.d = tof_to_d(
-                pattern.x,
+            datastore.d = tof_to_d(
+                datastore.x,
                 experiment.instrument.calib_d_to_tof_offset.value,
                 experiment.instrument.calib_d_to_tof_linear.value,
                 experiment.instrument.calib_d_to_tof_quad.value,
             )
         elif beam_mode == 'constant wavelength':
-            pattern.d = twotheta_to_d(pattern.x, experiment.instrument.setup_wavelength.value)
+            datastore.d = twotheta_to_d(datastore.x, experiment.instrument.setup_wavelength.value)
         else:
             print(error(f'Unsupported beam mode: {beam_mode} for d-spacing update.'))

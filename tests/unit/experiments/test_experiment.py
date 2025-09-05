@@ -19,7 +19,10 @@ from easydiffraction.experiments.experiment import SingleCrystalExperiment
 @pytest.fixture
 def expt_type():
     return ExperimentType(
-        sample_form=DEFAULT_SAMPLE_FORM, beam_mode=DEFAULT_BEAM_MODE, radiation_probe='xray', scattering_type='bragg'
+        sample_form=DEFAULT_SAMPLE_FORM,
+        beam_mode=DEFAULT_BEAM_MODE,
+        radiation_probe='xray',
+        scattering_type='bragg',
     )
 
 
@@ -58,13 +61,12 @@ def test_powder_experiment_initialization(expt_type):
 def test_powder_experiment_load_ascii_data(expt_type):
     experiment = PowderExperiment(name='PowderTest', type=expt_type)
     experiment.datastore = MagicMock()
-    experiment.datastore.pattern = MagicMock()
     mock_data = np.array([[1.0, 2.0, 0.1], [2.0, 3.0, 0.2]])
     with patch('numpy.loadtxt', return_value=mock_data):
         experiment._load_ascii_data_to_experiment('mock_path')
-    assert np.array_equal(experiment.datastore.pattern.x, mock_data[:, 0])
-    assert np.array_equal(experiment.datastore.pattern.meas, mock_data[:, 1])
-    assert np.array_equal(experiment.datastore.pattern.meas_su, mock_data[:, 2])
+    assert np.array_equal(experiment.datastore.x, mock_data[:, 0])
+    assert np.array_equal(experiment.datastore.meas, mock_data[:, 1])
+    assert np.array_equal(experiment.datastore.meas_su, mock_data[:, 2])
 
 
 def test_single_crystal_experiment_initialization(expt_type):
@@ -117,9 +119,9 @@ def test_experiment_method():
         )
     assert isinstance(experiment, PowderExperiment)
     assert experiment.name == 'ExperimentTest'
-    assert np.array_equal(experiment.datastore.pattern.x, mock_data[:, 0])
-    assert np.array_equal(experiment.datastore.pattern.meas, mock_data[:, 1])
-    assert np.array_equal(experiment.datastore.pattern.meas_su, mock_data[:, 2])
+    assert np.array_equal(experiment.datastore.x, mock_data[:, 0])
+    assert np.array_equal(experiment.datastore.meas, mock_data[:, 1])
+    assert np.array_equal(experiment.datastore.meas_su, mock_data[:, 2])
 
 
 def test_experiment_factory_invalid_args_missing_required():
