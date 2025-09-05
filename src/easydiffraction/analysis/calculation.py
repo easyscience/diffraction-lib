@@ -5,8 +5,6 @@ from typing import Any
 from typing import List
 from typing import Optional
 
-import numpy as np
-
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModels
@@ -61,15 +59,16 @@ class DiffractionCalculator:
         self,
         sample_models: SampleModels,
         experiment: Experiment,
-    ) -> np.ndarray:
+    ) -> None:
         """
         Calculate diffraction pattern based on sample models and experiment.
+        The calculated pattern is stored within the experiment's datastore.
 
         Args:
             sample_models: Collection of sample models.
             experiment: A single experiment object.
 
         Returns:
-            Diffraction pattern calculated by the backend calculator.
+            None.
         """
-        return self._calculator.calculate_pattern(sample_models, experiment)
+        self._calculator.calculate_pattern(sample_models, experiment)

@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from easydiffraction.core.constants import DEFAULT_AXES_LABELS
 from easydiffraction.plotting.plotters.plotter_ascii import AsciiPlotter
+from easydiffraction.plotting.plotters.plotter_base import DEFAULT_AXES_LABELS
 from easydiffraction.plotting.plotters.plotter_base import DEFAULT_ENGINE
 from easydiffraction.plotting.plotters.plotter_base import DEFAULT_HEIGHT
 from easydiffraction.plotting.plotters.plotter_base import DEFAULT_MAX
@@ -120,7 +120,15 @@ class Plotter:
             columns_data=columns_data,
         )
 
-    def plot_meas(self, pattern, expt_name, expt_type, x_min=None, x_max=None, d_spacing=False):
+    def plot_meas(
+        self,
+        pattern,
+        expt_name,
+        expt_type,
+        x_min=None,
+        x_max=None,
+        d_spacing=False,
+    ):
         if pattern.x is None:
             error(f'No data available for experiment {expt_name}')
             return
@@ -149,9 +157,19 @@ class Plotter:
         y_labels = ['meas']
 
         if d_spacing:
-            axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value]['d-spacing']
+            axes_labels = DEFAULT_AXES_LABELS[
+                (
+                    expt_type.scattering_type.value,
+                    'd-spacing',
+                )
+            ]
         else:
-            axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value][expt_type.beam_mode.value]
+            axes_labels = DEFAULT_AXES_LABELS[
+                (
+                    expt_type.scattering_type.value,
+                    expt_type.beam_mode.value,
+                )
+            ]
 
         self._plotter.plot(
             x=x,
@@ -199,9 +217,19 @@ class Plotter:
         y_labels = ['calc']
 
         if d_spacing:
-            axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value]['d-spacing']
+            axes_labels = DEFAULT_AXES_LABELS[
+                (
+                    expt_type.scattering_type.value,
+                    'd-spacing',
+                )
+            ]
         else:
-            axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value][expt_type.beam_mode.value]
+            axes_labels = DEFAULT_AXES_LABELS[
+                (
+                    expt_type.scattering_type.value,
+                    expt_type.beam_mode.value,
+                )
+            ]
 
         self._plotter.plot(
             x=x,
@@ -259,9 +287,19 @@ class Plotter:
         y_labels = ['meas', 'calc']
 
         if d_spacing:
-            axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value]['d-spacing']
+            axes_labels = DEFAULT_AXES_LABELS[
+                (
+                    expt_type.scattering_type.value,
+                    'd-spacing',
+                )
+            ]
         else:
-            axes_labels = DEFAULT_AXES_LABELS[expt_type.scattering_type.value][expt_type.beam_mode.value]
+            axes_labels = DEFAULT_AXES_LABELS[
+                (
+                    expt_type.scattering_type.value,
+                    expt_type.beam_mode.value,
+                )
+            ]
 
         if show_residual:
             y_resid = y_meas - y_calc

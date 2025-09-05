@@ -7,20 +7,20 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
-from easydiffraction.core.constants import DEFAULT_BEAM_MODE
-from easydiffraction.core.constants import DEFAULT_PEAK_PROFILE_TYPE
-from easydiffraction.core.constants import DEFAULT_RADIATION_PROBE
-from easydiffraction.core.constants import DEFAULT_SAMPLE_FORM
-from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.core.objects import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
+from easydiffraction.experiments.collections.background import BackgroundTypeEnum
 from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
+from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ExperimentType
+from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
+from easydiffraction.experiments.components.experiment_type import SampleFormEnum
+from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 from easydiffraction.experiments.components.instrument import InstrumentBase
 from easydiffraction.experiments.components.instrument import InstrumentFactory
 from easydiffraction.experiments.components.peak import PeakFactory
+from easydiffraction.experiments.components.peak import PeakProfileTypeEnum
 from easydiffraction.experiments.datastore import DatastoreFactory
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
@@ -162,7 +162,10 @@ class BasePowderExperiment(BaseExperiment):
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self._peak_profile_type: str = DEFAULT_PEAK_PROFILE_TYPE[self.type.scattering_type.value][self.type.beam_mode.value]
+        self._peak_profile_type: str = PeakProfileTypeEnum.default(
+            self.type.scattering_type.value,
+            self.type.beam_mode.value,
+        ).value
         self.peak = PeakFactory.create(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
@@ -189,7 +192,9 @@ class BasePowderExperiment(BaseExperiment):
             print("For more information, use 'show_supported_peak_profile_types()'")
             return
         self.peak = PeakFactory.create(
-            scattering_type=self.type.scattering_type.value, beam_mode=self.type.beam_mode.value, profile_type=new_type
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            profile_type=new_type,
         )
         self._peak_profile_type = new_type
         print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
@@ -199,12 +204,19 @@ class BasePowderExperiment(BaseExperiment):
         columns_headers = ['Peak profile type', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
-        for name, config in PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].items():
-            description = getattr(config, '_description', 'No description provided.')
-            columns_data.append([name, description])
+
+        scattering_type = self.type.scattering_type.value
+        beam_mode = self.type.beam_mode.value
+
+        for profile_type in PeakFactory._supported[scattering_type][beam_mode].keys():
+            columns_data.append([profile_type.value, profile_type.description()])
 
         print(paragraph('Supported peak profile types'))
-        render_table(columns_headers=columns_headers, columns_alignment=columns_alignment, columns_data=columns_data)
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )
 
     def show_current_peak_profile_type(self):
         print(paragraph('Current peak profile type'))
@@ -227,7 +239,7 @@ class PowderExperiment(
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self._background_type: str = DEFAULT_BACKGROUND_TYPE
+        self._background_type: BackgroundTypeEnum = BackgroundTypeEnum.default()
         self.background = BackgroundFactory.create(background_type=self.background_type)
 
     # -------------
@@ -310,12 +322,15 @@ class PowderExperiment(
         columns_headers = ['Background type', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
-        for name, config in BackgroundFactory._supported.items():
-            description = getattr(config, '_description', 'No description provided.')
-            columns_data.append([name, description])
+        for bt, cls in BackgroundFactory._supported.items():
+            columns_data.append([bt.value, bt.description()])
 
         print(paragraph('Supported background types'))
-        render_table(columns_headers=columns_headers, columns_alignment=columns_alignment, columns_data=columns_data)
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )
 
     def show_current_background_type(self):
         print(paragraph('Current background type'))
@@ -430,12 +445,12 @@ class ExperimentFactory:
     ]
 
     _supported = {
-        'bragg': {
-            'powder': PowderExperiment,
-            'single crystal': SingleCrystalExperiment,
+        ScatteringTypeEnum.BRAGG: {
+            SampleFormEnum.POWDER: PowderExperiment,
+            SampleFormEnum.SINGLE_CRYSTAL: SingleCrystalExperiment,
         },
-        'total': {
-            'powder': PairDistributionFunctionExperiment,
+        ScatteringTypeEnum.TOTAL: {
+            SampleFormEnum.POWDER: PairDistributionFunctionExperiment,
         },
     }
 
@@ -446,10 +461,22 @@ class ExperimentFactory:
         Validates argument combinations and dispatches to the appropriate creation method.
         Raises ValueError if arguments are invalid or no valid dispatch is found.
         """
+        # Check for valid argument combinations
         user_args = [k for k, v in kwargs.items() if v is not None]
         if not cls.is_valid_args(user_args):
             raise ValueError(f'Invalid argument combination: {user_args}')
 
+        # Validate enum arguments if provided
+        if 'sample_form' in kwargs:
+            SampleFormEnum(kwargs['sample_form'])
+        if 'beam_mode' in kwargs:
+            BeamModeEnum(kwargs['beam_mode'])
+        if 'radiation_probe' in kwargs:
+            RadiationProbeEnum(kwargs['radiation_probe'])
+        if 'scattering_type' in kwargs:
+            ScatteringTypeEnum(kwargs['scattering_type'])
+
+        # Dispatch to the appropriate creation method
         if 'cif_path' in kwargs:
             return cls._create_from_cif_path(kwargs)
         elif 'cif_str' in kwargs:
@@ -458,7 +485,6 @@ class ExperimentFactory:
             return cls._create_from_data_path(kwargs)
         elif 'name' in kwargs:
             return cls._create_without_data(kwargs)
-        raise ValueError('No valid argument combination found for experiment creation.')
 
     @staticmethod
     def _create_from_cif_path(cif_path):
@@ -514,10 +540,10 @@ class ExperimentFactory:
         Helper to construct an ExperimentType from keyword arguments, using defaults as needed.
         """
         return ExperimentType(
-            sample_form=kwargs.get('sample_form', DEFAULT_SAMPLE_FORM),
-            beam_mode=kwargs.get('beam_mode', DEFAULT_BEAM_MODE),
-            radiation_probe=kwargs.get('radiation_probe', DEFAULT_RADIATION_PROBE),
-            scattering_type=kwargs.get('scattering_type', DEFAULT_SCATTERING_TYPE),
+            sample_form=kwargs.get('sample_form', SampleFormEnum.default()),
+            beam_mode=kwargs.get('beam_mode', BeamModeEnum.default()),
+            radiation_probe=kwargs.get('radiation_probe', RadiationProbeEnum.default()),
+            scattering_type=kwargs.get('scattering_type', ScatteringTypeEnum.default()),
         )
 
     @staticmethod

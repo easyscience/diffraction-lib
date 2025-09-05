@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
 from typing import List
@@ -14,7 +15,10 @@ from easydiffraction.core.objects import Parameter
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModels
 
-from .fitting.results import FitResults
+from ..analysis.reliability_factors import get_reliability_inputs
+
+if TYPE_CHECKING:
+    from .fitting.results import FitResults
 from .minimizers.minimizer_factory import MinimizerFactory
 
 
@@ -168,11 +172,12 @@ class DiffractionMinimizer:
 
         for (expt_id, experiment), weight in zip(experiments._items.items(), _weights):
             # Calculate the difference between measured and calculated patterns
-            y_calc: np.ndarray = calculator.calculate_pattern(
+            calculator.calculate_pattern(
                 sample_models,
                 experiment,
                 called_by_minimizer=True,
             )
+            y_calc: np.ndarray = experiment.datastore.calc
             y_meas: np.ndarray = experiment.datastore.meas
             y_meas_su: np.ndarray = experiment.datastore.meas_su
             diff = (y_meas - y_calc) / y_meas_su

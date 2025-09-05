@@ -8,8 +8,8 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction.core.constants import DEFAULT_BEAM_MODE
-from easydiffraction.core.constants import DEFAULT_SAMPLE_FORM
+from easydiffraction.experiments.components.experiment_type import BeamModeEnum
+from easydiffraction.experiments.components.experiment_type import SampleFormEnum
 from easydiffraction.utils.decorators import enforce_type
 
 
@@ -134,7 +134,7 @@ class PowderDatastore(BaseDatastore):
         Background values.
     """
 
-    def __init__(self, beam_mode: str = DEFAULT_BEAM_MODE) -> None:
+    def __init__(self, beam_mode: BeamModeEnum = BeamModeEnum.default()) -> None:
         """
         Initialize PowderDatastore.
 
@@ -220,8 +220,8 @@ class DatastoreFactory:
     @classmethod
     def create(
         cls,
-        sample_form: str = DEFAULT_SAMPLE_FORM,
-        beam_mode: str = DEFAULT_BEAM_MODE,
+        sample_form: str = SampleFormEnum.default(),
+        beam_mode: str = BeamModeEnum.default(),
     ) -> BaseDatastore:
         """
         Create and return a datastore object for the given sample form.

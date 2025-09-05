@@ -96,7 +96,11 @@ def test_get_reliability_inputs():
             )
         )
     }
-    calculator.calculate_pattern.return_value = np.array([9.0, 19.0, 29.0])
+
+    def mock_calculate_pattern(sample_models, experiment, **kwargs):
+        experiment.datastore.calc = np.array([9.0, 19.0, 29.0])
+
+    calculator.calculate_pattern.side_effect = mock_calculate_pattern
 
     y_obs, y_calc, y_err = get_reliability_inputs(sample_models, experiments, calculator)
 
