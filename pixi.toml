@@ -114,13 +114,14 @@ notebook-format-check = 'nbqa ruff tutorials/'
 py-lint-fix = "python -m ruff check . --fix"
 py-format-fix = "python -m ruff format ."
 nonpy-format-fix = "npx prettier . --list-different --write --config=prettierrc.toml"
+nonpy-format-fix-modified = "npx prettier $(git diff --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || true) --list-different --write --config=prettierrc.toml"
 notebook-format-fix = 'nbqa ruff tutorials/ --fix'
 
 code-quality = { depends-on = [
   "pyproject-check",
   "py-lint-fix",
   "py-format-fix",
-  "nonpy-format-fix",
+  "nonpy-format-fix-modified",
 ] }
 
 # 📓 Notebook Management
