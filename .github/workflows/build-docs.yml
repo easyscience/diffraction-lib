@@ -178,7 +178,7 @@ jobs:
 
     # Triggered on push to develop or master branch only
     if: ${{ github.ref_name == 'develop' || github.ref_name == 'master' }}
-    
+
     steps:
       # Deploy the static files created in the previous job to GitHub Pages
       # To allow the deployment of the static files to GitHub Pages, no
