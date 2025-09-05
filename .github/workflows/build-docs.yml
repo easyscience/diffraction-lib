@@ -5,7 +5,7 @@
 #   - Builds documentation (including running Jupyter notebooks to generate output cells).
 #   - Uploads the built site as a Pages artifact.
 #  Job 2: deploy-dev
-#   - Deploys the built site to GitHub Pages for development (PRs, pushes to develop/master).
+#   - Deploys the built site to GitHub Pages for development (pushes to develop/master).
 #  Job 3: deploy-prod
 #   - Deploys the built site to gh_pages branch for production (release tags starting with v*).
 #   - This triggers deployment to a custom domain via webhook.
@@ -176,10 +176,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # Triggered on pull request, push to develop or master branch only
-    if: >
-      github.event_name == 'pull_request' || github.ref == 'refs/heads/develop'
-      || github.ref == 'refs/heads/master'
+    # Triggered on push to develop or master branch only
+    if: env.CI_BRANCH == 'develop' || env.CI_BRANCH == 'master'
 
     steps:
       # Deploy the static files created in the previous job to GitHub Pages
