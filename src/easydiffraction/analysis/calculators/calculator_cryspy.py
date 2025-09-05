@@ -332,7 +332,7 @@ class CryspyCalculator(CalculatorBase):
                     attr_value = getattr(peak, local_attr_name).value
                     cif_lines.append(f'{engine_key_name} {attr_value}')
 
-        x_data = experiment.datastore.pattern.x
+        x_data = experiment.datastore.x
         twotheta_min = float(x_data.min())
         twotheta_max = float(x_data.max())
         cif_lines.append('')
@@ -377,8 +377,8 @@ class CryspyCalculator(CalculatorBase):
             cif_lines.append('_tof_meas_intensity')
             cif_lines.append('_tof_meas_intensity_sigma')
 
-        y_data = experiment.datastore.pattern.meas
-        sy_data = experiment.datastore.pattern.meas_su
+        y_data = experiment.datastore.meas
+        sy_data = experiment.datastore.meas_su
         for x_val, y_val, sy_val in zip(x_data, y_data, sy_data):
             cif_lines.append(f'  {x_val:.5f}   {y_val:.5f}   {sy_val:.5f}')
 
