@@ -24,7 +24,7 @@ on:
   # Trigger the workflow on push
   push:
     # Selected branches
-    branches: [master, develop, "**"]
+    branches: [master, develop]
     # Runs on creating a new tag starting with 'v', e.g. 'v1.0.3'
     tags: ['v*']
   # Allows you to run this workflow manually from the Actions tab
@@ -153,10 +153,6 @@ jobs:
         with:
           path: site/
 
-      - name: Show built artifact link
-        run: |
-          echo "📦 Docs artifact [github-pages](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
-
   # Job 2: Deploy the built static files to GitHub Pages (DEV deployment)
   deploy-dev:
     needs: build-docs # previous job 'build-docs' need to be finished first
@@ -181,7 +177,9 @@ jobs:
     runs-on: ubuntu-latest
 
     # Triggered on pull request, push to develop or master branch only
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
+    if:
+      github.event_name == 'pull_request' || github.ref == 'refs/heads/develop'
+      || github.ref == 'refs/heads/master'
 
     steps:
       # Deploy the static files created in the previous job to GitHub Pages
