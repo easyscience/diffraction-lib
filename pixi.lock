@@ -7731,8 +7731,8 @@ packages:
   requires_python: '>=3.11,<3.14'
 - pypi: ./
   name: easydiffraction
-  version: 0.7.1+d16
-  sha256: d90638afd66acf6463904cab6b63a081786ef93672553c1055b569e92188f0d1
+  version: 0.7.1+d15
+  sha256: d8b9e41b221fb60b18f3a1f6a7a553b16c255795865702a7718bb4b93f5b16b2
   requires_dist:
   - asciichartpy
   - asteval
@@ -9491,6 +9491,7 @@ packages:
   - libcblas   3.9.0   35*_mkl
   - liblapacke 3.9.0   35*_mkl
   license: BSD-3-Clause
+  license_family: BSD
   purls: []
   size: 66044
   timestamp: 1757003486248
@@ -9505,6 +9506,7 @@ packages:
   - liblapack  3.9.0   35*_mkl
   - liblapacke 3.9.0   35*_mkl
   license: BSD-3-Clause
+  license_family: BSD
   purls: []
   size: 66398
   timestamp: 1757003514529
@@ -9669,6 +9671,7 @@ packages:
   - libgomp 15.1.0 h767d61c_5
   - libgcc-ng ==15.1.0=*_5
   license: GPL-3.0-only WITH GCC-exception-3.1
+  license_family: GPL
   purls: []
   size: 824191
   timestamp: 1757042543820
@@ -9678,6 +9681,7 @@ packages:
   depends:
   - libgcc 15.1.0 h767d61c_5
   license: GPL-3.0-only WITH GCC-exception-3.1
+  license_family: GPL
   purls: []
   size: 29187
   timestamp: 1757042549554
@@ -9687,6 +9691,7 @@ packages:
   depends:
   - __glibc >=2.17,<3.0.a0
   license: GPL-3.0-only WITH GCC-exception-3.1
+  license_family: GPL
   purls: []
   size: 447215
   timestamp: 1757042483384
@@ -9904,6 +9909,7 @@ packages:
   - __glibc >=2.17,<3.0.a0
   - libgcc 15.1.0 h767d61c_5
   license: GPL-3.0-only WITH GCC-exception-3.1
+  license_family: GPL
   purls: []
   size: 3896432
   timestamp: 1757042571458
@@ -9913,6 +9919,7 @@ packages:
   depends:
   - libstdcxx 15.1.0 h8f9b012_5
   license: GPL-3.0-only WITH GCC-exception-3.1
+  license_family: GPL
   purls: []
   size: 29233
   timestamp: 1757042603319
@@ -17057,6 +17064,7 @@ packages:
   - krb5 >=1.21.3,<1.22.0a0
   - libsodium >=1.0.20,<1.0.21.0a0
   license: MPL-2.0
+  license_family: MOZILLA
   purls: []
   size: 309341
   timestamp: 1757042827773
@@ -17069,6 +17077,7 @@ packages:
   - libsodium >=1.0.20,<1.0.21.0a0
   - krb5 >=1.21.3,<1.22.0a0
   license: MPL-2.0
+  license_family: MOZILLA
   purls: []
   size: 257825
   timestamp: 1757042903029
@@ -17081,6 +17090,7 @@ packages:
   - krb5 >=1.21.3,<1.22.0a0
   - libsodium >=1.0.20,<1.0.21.0a0
   license: MPL-2.0
+  license_family: MOZILLA
   purls: []
   size: 243880
   timestamp: 1757042936223
@@ -17097,6 +17107,7 @@ packages:
   - krb5 >=1.21.3,<1.22.0a0
   - libsodium >=1.0.20,<1.0.21.0a0
   license: MPL-2.0
+  license_family: MOZILLA
   purls: []
   size: 263697
   timestamp: 1757042820528
