@@ -13,7 +13,7 @@ from sympy import simplify
 from sympy import symbols
 from sympy import sympify
 
-from easydiffraction.crystallography.space_group_lookup_table import SPACE_GROUP_LOOKUP_DICT
+from easydiffraction.crystallography.space_group_lookup_table import SPACE_GROUPS
 
 
 def apply_cell_symmetry_constraints(
@@ -113,7 +113,7 @@ def apply_atom_site_symmetry_constraints(
         print(error_msg)
         return atom_site
 
-    space_group_entry = SPACE_GROUP_LOOKUP_DICT[(it_number, it_coordinate_system_code)]
+    space_group_entry = SPACE_GROUPS[(it_number, it_coordinate_system_code)]
     wyckoff_positions = space_group_entry['Wyckoff_positions'][wyckoff_letter]
     coords_xyz = wyckoff_positions['coords_xyz']
 

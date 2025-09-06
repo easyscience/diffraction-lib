@@ -1,13 +1,13 @@
 import numpy as np
 import pytest
 
-from easydiffraction.crystallography.space_group_lookup_table import SPACE_GROUP_LOOKUP_DICT
+from easydiffraction.crystallography.space_group_lookup_table import SPACE_GROUPS
 
 
 def test_lookup_table_consistency():
     # Ensure that the space group numbers and system codes in the
     # key are the same as in the actual entries.
-    for (it_number, it_code), entry in SPACE_GROUP_LOOKUP_DICT.items():
+    for (it_number, it_code), entry in SPACE_GROUPS.items():
         assert entry['IT_number'] == it_number
         assert entry['IT_coordinate_system_code'] == it_code
 
@@ -107,7 +107,7 @@ def test_lookup_table_consistency():
 )
 def test_space_group_lookup_table_yields_expected(key, expected):
     """Check the lookup table for a few keys and check that the output matches the expected"""
-    entry = SPACE_GROUP_LOOKUP_DICT[key]
+    entry = SPACE_GROUPS[key]
 
     # Check that the keys are the same
     assert set(entry.keys()) == set(expected.keys())
