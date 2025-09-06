@@ -14,9 +14,7 @@ DEFAULT_MAX_ITERATIONS = 1000
 
 
 class LmfitMinimizer(MinimizerBase):
-    """
-    Minimizer using the lmfit package.
-    """
+    """Minimizer using the lmfit package."""
 
     def __init__(
         self,

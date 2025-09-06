@@ -51,6 +51,7 @@ class InstrumentMixin:
 class BaseExperiment(Datablock):
     """
     Base class for all experiments with only core attributes.
+
     Wraps experiment type, instrument and datastore.
     """
 
@@ -101,6 +102,7 @@ class BaseExperiment(Datablock):
     ) -> str:
         """
         Export the sample model to CIF format.
+
         Returns:
             str: CIF string representation of the experiment.
         """
@@ -151,9 +153,7 @@ class BaseExperiment(Datablock):
 
 
 class BasePowderExperiment(BaseExperiment):
-    """
-    Base class for all powder experiments.
-    """
+    """Base class for all powder experiments."""
 
     def __init__(
         self,
@@ -229,6 +229,7 @@ class PowderExperiment(
 ):
     """
     Powder experiment class with specific attributes.
+
     Wraps background, peak profile, and linked phases.
     """
 
@@ -248,7 +249,8 @@ class PowderExperiment(
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """
-        Loads x, y, sy values from an ASCII data file into the experiment.
+        Loads x, y, sy values from an ASCII data file into the
+        experiment.
 
         The file must be structured as:
             x  y  sy
@@ -352,7 +354,8 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
 
     def _load_ascii_data_to_experiment(self, data_path):
         """
-        Loads x, y, sy values from an ASCII data file into the experiment.
+        Loads x, y, sy values from an ASCII data file into the
+        experiment.
 
         The file must be structured as:
             x  y  sy
@@ -458,8 +461,10 @@ class ExperimentFactory:
     def create(cls, **kwargs):
         """
         Main factory method for creating an experiment instance.
-        Validates argument combinations and dispatches to the appropriate creation method.
-        Raises ValueError if arguments are invalid or no valid dispatch is found.
+
+        Validates argument combinations and dispatches to the
+        appropriate creation method. Raises ValueError if arguments are
+        invalid or no valid dispatch is found.
         """
         # Check for valid argument combinations
         user_args = [k for k, v in kwargs.items() if v is not None]
@@ -490,6 +495,7 @@ class ExperimentFactory:
     def _create_from_cif_path(cif_path):
         """
         Create an experiment from a CIF file path.
+
         Not yet implemented.
         """
         # TODO: Implement CIF file loading logic
@@ -499,6 +505,7 @@ class ExperimentFactory:
     def _create_from_cif_str(cif_str):
         """
         Create an experiment from a CIF string.
+
         Not yet implemented.
         """
         # TODO: Implement CIF string loading logic
@@ -508,7 +515,9 @@ class ExperimentFactory:
     def _create_from_data_path(cls, kwargs):
         """
         Create an experiment from a raw data ASCII file.
-        Loads the experiment and attaches measured data from the specified file.
+
+        Loads the experiment and attaches measured data from the
+        specified file.
         """
         expt_type = cls._make_experiment_type(kwargs)
         scattering_type = expt_type.scattering_type.value
@@ -524,7 +533,9 @@ class ExperimentFactory:
     def _create_without_data(cls, kwargs):
         """
         Create an experiment without measured data.
-        Returns an experiment instance with only metadata and configuration.
+
+        Returns an experiment instance with only metadata and
+        configuration.
         """
         expt_type = cls._make_experiment_type(kwargs)
         scattering_type = expt_type.scattering_type.value
@@ -536,9 +547,8 @@ class ExperimentFactory:
 
     @classmethod
     def _make_experiment_type(cls, kwargs):
-        """
-        Helper to construct an ExperimentType from keyword arguments, using defaults as needed.
-        """
+        """Helper to construct an ExperimentType from keyword arguments,
+        using defaults as needed."""
         return ExperimentType(
             sample_form=kwargs.get('sample_form', SampleFormEnum.default()),
             beam_mode=kwargs.get('beam_mode', BeamModeEnum.default()),
@@ -550,7 +560,9 @@ class ExperimentFactory:
     def is_valid_args(user_args):
         """
         Validate user argument set against allowed combinations.
-        Returns True if the argument set matches any valid combination, else False.
+
+        Returns True if the argument set matches any valid combination,
+        else False.
         """
         user_arg_set = set(user_args)
         for arg_set in ExperimentFactory._valid_arg_sets:
@@ -564,7 +576,9 @@ class ExperimentFactory:
 
 def Experiment(**kwargs):
     """
-    User-facing API for creating an experiment. Accepts keyword arguments and delegates
-    validation and creation to ExperimentFactory.
+    User-facing API for creating an experiment.
+
+    Accepts keyword arguments and delegates validation and creation to
+    ExperimentFactory.
     """
     return ExperimentFactory.create(**kwargs)

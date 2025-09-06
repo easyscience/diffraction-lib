@@ -13,8 +13,8 @@ class Summary:
     """
     Generates reports and exports results from the project.
 
-    This class collects and presents all relevant information
-    about the fitted model, experiments, and analysis results.
+    This class collects and presents all relevant information about the
+    fitted model, experiments, and analysis results.
     """
 
     def __init__(self, project) -> None:
@@ -37,9 +37,7 @@ class Summary:
         self.show_fitting_details()
 
     def show_project_info(self) -> None:
-        """
-        Print the project title and description.
-        """
+        """Print the project title and description."""
         print(section('Project info'))
 
         print(paragraph('Title'))
@@ -50,10 +48,8 @@ class Summary:
             print('\n'.join(wrap(self.project.info.description, width=60)))
 
     def show_crystallographic_data(self) -> None:
-        """
-        Print crystallographic data including phase datablocks,
-        space groups, cell parameters, and atom sites.
-        """
+        """Print crystallographic data including phase datablocks, space
+        groups, cell parameters, and atom sites."""
         print(section('Crystallographic data'))
 
         for model in self.project.sample_models._models.values():
@@ -110,10 +106,8 @@ class Summary:
             )
 
     def show_experimental_data(self) -> None:
-        """
-        Print experimental data including experiment datablocks,
-        types, instrument settings, and peak profile information.
-        """
+        """Print experimental data including experiment datablocks,
+        types, instrument settings, and peak profile information."""
         print(section('Experiments'))
 
         for expt in self.project.experiments._experiments.values():
@@ -161,10 +155,8 @@ class Summary:
                     )
 
     def show_fitting_details(self) -> None:
-        """
-        Print fitting details including calculation and minimization engines,
-        and fit quality metrics.
-        """
+        """Print fitting details including calculation and minimization
+        engines, and fit quality metrics."""
         print(section('Fitting'))
 
         print(paragraph('Calculation engine'))
@@ -191,7 +183,6 @@ class Summary:
     # ------------------------------------------
 
     def as_cif(self) -> str:
-        """
-        Export the final fitted data and analysis results as CIF format.
-        """
+        """Export the final fitted data and analysis results as CIF
+        format."""
         return 'To be added...'

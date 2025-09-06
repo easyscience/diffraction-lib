@@ -26,9 +26,7 @@ except ImportError:
 
 
 class CrysfmlCalculator(CalculatorBase):
-    """
-    Wrapper for Crysfml library.
-    """
+    """Wrapper for Crysfml library."""
 
     engine_imported: bool = cfml_py_utilities is not None
 
@@ -57,7 +55,8 @@ class CrysfmlCalculator(CalculatorBase):
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
         """
-        Calculates the diffraction pattern using Crysfml for the given sample model and experiment.
+        Calculates the diffraction pattern using Crysfml for the given
+        sample model and experiment.
 
         Args:
             sample_model: The sample model to calculate the pattern for.
@@ -102,7 +101,8 @@ class CrysfmlCalculator(CalculatorBase):
         experiment: Experiment,
     ) -> Dict[str, Union[Experiment, SampleModel]]:
         """
-        Converts the sample model and experiment into a dictionary format for Crysfml.
+        Converts the sample model and experiment into a dictionary
+        format for Crysfml.
 
         Args:
             sample_model: The sample model to convert.

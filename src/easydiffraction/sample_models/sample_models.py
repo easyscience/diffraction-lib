@@ -11,9 +11,7 @@ from easydiffraction.utils.formatting import paragraph
 
 
 class SampleModels(Collection):
-    """
-    Collection manager for multiple SampleModel instances.
-    """
+    """Collection manager for multiple SampleModel instances."""
 
     @property
     def _child_class(self):

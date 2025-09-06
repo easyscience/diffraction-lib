@@ -42,9 +42,7 @@ class LinkedPhase(Component):
 
 
 class LinkedPhases(Collection):
-    """
-    Collection of LinkedPhase instances.
-    """
+    """Collection of LinkedPhase instances."""
 
     @property
     def _type(self) -> str:

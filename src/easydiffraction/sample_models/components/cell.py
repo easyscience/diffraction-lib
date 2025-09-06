@@ -6,9 +6,7 @@ from easydiffraction.core.objects import Parameter
 
 
 class Cell(Component):
-    """
-    Represents the unit cell parameters of a sample model.
-    """
+    """Represents the unit cell parameters of a sample model."""
 
     @property
     def category_key(self) -> str:

@@ -41,10 +41,8 @@ class JointFitExperiment(Component):
 
 
 class JointFitExperiments(Collection):
-    """
-    Collection manager for experiments that are fitted together
-    in a `joint` fit.
-    """
+    """Collection manager for experiments that are fitted together in a
+    `joint` fit."""
 
     @property
     def _type(self) -> str:

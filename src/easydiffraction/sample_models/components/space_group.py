@@ -8,9 +8,7 @@ from easydiffraction.core.objects import Descriptor
 
 
 class SpaceGroup(Component):
-    """
-    Represents the space group of a sample model.
-    """
+    """Represents the space group of a sample model."""
 
     @property
     def category_key(self) -> str:

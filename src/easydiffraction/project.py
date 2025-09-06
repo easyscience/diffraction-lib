@@ -23,10 +23,8 @@ from easydiffraction.utils.utils import twotheta_to_d
 
 
 class ProjectInfo:
-    """
-    Stores metadata about the project, such as name, title, description,
-    and file paths.
-    """
+    """Stores metadata about the project, such as name, title,
+    description, and file paths."""
 
     def __init__(self) -> None:
         self._name: str = 'untitled_project'
@@ -122,7 +120,9 @@ class ProjectInfo:
 class Project:
     """
     Central API for managing a diffraction data analysis project.
-    Provides access to sample models, experiments, analysis, and summary.
+
+    Provides access to sample models, experiments, analysis, and
+    summary.
     """
 
     def __init__(
@@ -145,7 +145,8 @@ class Project:
 
     @property
     def name(self) -> str:
-        """Convenience property to access the project's name directly."""
+        """Convenience property to access the project's name
+        directly."""
         return self.info.name
 
     # ------------------------------------------
@@ -155,6 +156,7 @@ class Project:
     def load(self, dir_path: str) -> None:
         """
         Load a project from a given directory.
+
         Loads project info, sample models, experiments, etc.
         """
         print(paragraph(f'Loading project 📦 from {dir_path}'))
@@ -169,9 +171,7 @@ class Project:
         dir_path: str,
         temporary: bool = False,
     ) -> None:
-        """
-        Save the project into a new directory.
-        """
+        """Save the project into a new directory."""
         if temporary:
             tmp: str = tempfile.gettempdir()
             dir_path = os.path.join(tmp, dir_path)
@@ -179,9 +179,7 @@ class Project:
         self.save()
 
     def save(self) -> None:
-        """
-        Save the project into the existing project directory.
-        """
+        """Save the project into the existing project directory."""
         if not self.info.path:
             print(error('Project path not specified. Use save_as() to define the path first.'))
             return
@@ -337,9 +335,8 @@ class Project:
         )
 
     def update_pattern_d_spacing(self, expt_name: str) -> None:
-        """
-        Update the pattern's d-spacing based on the experiment's beam mode.
-        """
+        """Update the pattern's d-spacing based on the experiment's beam
+        mode."""
         experiment = self.experiments[expt_name]
         datastore = experiment.datastore
         expt_type = experiment.type

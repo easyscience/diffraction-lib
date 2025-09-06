@@ -42,9 +42,8 @@ def format_cell(
 
 
 class FittingProgressTracker:
-    """
-    Tracks and reports the reduced chi-square during the optimization process.
-    """
+    """Tracks and reports the reduced chi-square during the optimization
+    process."""
 
     def __init__(self) -> None:
         self._iteration: int = 0

@@ -45,9 +45,7 @@ class ExcludedRegion(Component):
 
 
 class ExcludedRegions(Collection):
-    """
-    Collection of ExcludedRegion instances.
-    """
+    """Collection of ExcludedRegion instances."""
 
     @property
     def _type(self) -> str:
@@ -58,9 +56,8 @@ class ExcludedRegions(Collection):
         return ExcludedRegion
 
     def on_item_added(self, item: ExcludedRegion) -> None:
-        """
-        Mark excluded points in the experiment pattern when a new region is added.
-        """
+        """Mark excluded points in the experiment pattern when a new
+        region is added."""
         datastore = self._parent.datastore
 
         # Boolean mask for points within the new excluded region

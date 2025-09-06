@@ -18,6 +18,7 @@ from easydiffraction.analysis.fitting.results import FitResults
 class MinimizerBase(ABC):
     """
     Abstract base class for minimizer implementations.
+
     Provides shared logic and structure for concrete minimizers.
     """
 
@@ -49,9 +50,8 @@ class MinimizerBase(ABC):
 
     @abstractmethod
     def _prepare_solver_args(self, parameters: List[Any]) -> Dict[str, Any]:
-        """
-        Prepare the solver arguments directly from the list of free parameters.
-        """
+        """Prepare the solver arguments directly from the list of free
+        parameters."""
         pass
 
     @abstractmethod
@@ -91,6 +91,7 @@ class MinimizerBase(ABC):
     def _check_success(self, raw_result: Any) -> bool:
         """
         Determine whether the fit was successful.
+
         This must be implemented by concrete minimizers.
         """
         pass

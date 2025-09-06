@@ -25,9 +25,7 @@ except ImportError:
 
 
 class PdffitCalculator(CalculatorBase):
-    """
-    Wrapper for Pdffit library.
-    """
+    """Wrapper for Pdffit library."""
 
     engine_imported: bool = pdffit is not None
 

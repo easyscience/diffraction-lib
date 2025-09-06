@@ -37,7 +37,9 @@ class BaseDatastore:
 
     @property
     def calc(self) -> Optional[np.ndarray]:
-        """Access calculated intensities. Should be updated via external calculation.
+        """
+        Access calculated intensities. Should be updated via external
+        calculation.
 
         Returns:
             Optional[np.ndarray]: Calculated intensities array or None if not set.
@@ -47,7 +49,8 @@ class BaseDatastore:
     @calc.setter
     @enforce_type
     def calc(self, values: np.ndarray) -> None:
-        """Set calculated intensities (from Analysis.calculate_pattern()).
+        """
+        Set calculated intensities (from Analysis.calculate_pattern()).
 
         Args:
             values (np.ndarray): Array of calculated intensities.
@@ -57,8 +60,8 @@ class BaseDatastore:
     @abstractmethod
     def _cif_mapping(self) -> dict[str, str]:
         """
-        Must be implemented in subclasses to return a mapping from attribute
-        names to CIF tags.
+        Must be implemented in subclasses to return a mapping from
+        attribute names to CIF tags.
 
         Returns:
             dict[str, str]: Mapping from attribute names to CIF tags.
@@ -122,7 +125,8 @@ class BaseDatastore:
 
 
 class PowderDatastore(BaseDatastore):
-    """Class for powder diffraction data.
+    """
+    Class for powder diffraction data.
 
     Attributes
     ----------
@@ -149,7 +153,8 @@ class PowderDatastore(BaseDatastore):
 
     def _cif_mapping(self) -> dict[str, str]:
         """
-        Return mapping from attribute names to CIF tags based on beam mode.
+        Return mapping from attribute names to CIF tags based on beam
+        mode.
 
         Returns:
             dict[str, str]: Mapping dictionary.
@@ -171,7 +176,8 @@ class PowderDatastore(BaseDatastore):
 
 
 class SingleCrystalDatastore(BaseDatastore):
-    """Class for single crystal diffraction data.
+    """
+    Class for single crystal diffraction data.
 
     Attributes
     ----------
@@ -186,9 +192,7 @@ class SingleCrystalDatastore(BaseDatastore):
     """
 
     def __init__(self) -> None:
-        """
-        Initialize SingleCrystalDatastore.
-        """
+        """Initialize SingleCrystalDatastore."""
         super().__init__()
         self.sin_theta_over_lambda: Optional[np.ndarray] = None
         self.index_h: Optional[np.ndarray] = None
@@ -197,7 +201,8 @@ class SingleCrystalDatastore(BaseDatastore):
 
     def _cif_mapping(self) -> dict[str, str]:
         """
-        Return mapping from attribute names to CIF tags for single crystal data.
+        Return mapping from attribute names to CIF tags for single
+        crystal data.
 
         Returns:
             dict[str, str]: Mapping dictionary.

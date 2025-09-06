@@ -362,8 +362,8 @@ class Analysis:
 
     def calculate_pattern(self, expt_name: str) -> None:
         """
-        Calculate the diffraction pattern for a given experiment.
-        The calculated pattern is stored within the experiment's datastore.
+        Calculate the diffraction pattern for a given experiment. The
+        calculated pattern is stored within the experiment's datastore.
 
         Args:
             expt_name: The name of the experiment.

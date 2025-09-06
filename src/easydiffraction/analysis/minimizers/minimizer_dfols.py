@@ -14,9 +14,8 @@ DEFAULT_MAX_ITERATIONS = 1000
 
 
 class DfolsMinimizer(MinimizerBase):
-    """
-    Minimizer using the DFO-LS package (Derivative-Free Optimization for Least-Squares).
-    """
+    """Minimizer using the DFO-LS package (Derivative-Free Optimization
+    for Least-Squares)."""
 
     def __init__(
         self,

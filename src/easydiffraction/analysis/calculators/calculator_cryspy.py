@@ -32,7 +32,9 @@ except ImportError:
 class CryspyCalculator(CalculatorBase):
     """
     Cryspy-based diffraction calculator.
-    Converts EasyDiffraction models into Cryspy objects and computes patterns.
+
+    Converts EasyDiffraction models into Cryspy objects and computes
+    patterns.
     """
 
     engine_imported: bool = cryspy is not None
@@ -51,7 +53,8 @@ class CryspyCalculator(CalculatorBase):
         experiment: Experiment,
     ) -> None:
         """
-        Raises a NotImplementedError as HKL calculation is not implemented.
+        Raises a NotImplementedError as HKL calculation is not
+        implemented.
 
         Args:
             sample_model: The sample model to calculate structure factors for.
@@ -66,7 +69,9 @@ class CryspyCalculator(CalculatorBase):
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
         """
-        Calculates the diffraction pattern using Cryspy for the given sample model and experiment.
+        Calculates the diffraction pattern using Cryspy for the given
+        sample model and experiment.
+
         We only recreate the cryspy_obj if this method is
          - NOT called by the minimizer, or
          - the cryspy_dict is NOT yet created.
@@ -138,7 +143,8 @@ class CryspyCalculator(CalculatorBase):
         experiment: Experiment,
     ) -> Dict[str, Any]:
         """
-        Recreates the Cryspy dictionary for the given sample model and experiment.
+        Recreates the Cryspy dictionary for the given sample model and
+        experiment.
 
         Args:
             sample_model: The sample model to update.
@@ -224,7 +230,8 @@ class CryspyCalculator(CalculatorBase):
         experiment: Experiment,
     ) -> Any:
         """
-        Recreates the Cryspy object for the given sample model and experiment.
+        Recreates the Cryspy object for the given sample model and
+        experiment.
 
         Args:
             sample_model: The sample model to recreate.

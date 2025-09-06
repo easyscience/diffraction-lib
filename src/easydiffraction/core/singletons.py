@@ -14,10 +14,11 @@ T = TypeVar('T', bound='BaseSingleton')
 
 
 class BaseSingleton:
-    """Base class to implement Singleton pattern.
+    """
+    Base class to implement Singleton pattern.
 
-    Ensures only one shared instance of a class is ever created.
-    Useful for managing shared state across the library.
+    Ensures only one shared instance of a class is ever created. Useful
+    for managing shared state across the library.
     """
 
     _instance = None  # Class-level shared instance
@@ -46,10 +47,11 @@ class UidMapHandler(BaseSingleton):
         self._uid_map[parameter.uid] = parameter
 
     def replace_uid(self, old_uid, new_uid):
-        """Replaces an existing UID key in the UID map with a new UID.
+        """
+        Replaces an existing UID key in the UID map with a new UID.
 
-        Moves the associated parameter from old_uid to new_uid.
-        Raises a KeyError if the old_uid doesn't exist.
+        Moves the associated parameter from old_uid to new_uid. Raises a
+        KeyError if the old_uid doesn't exist.
         """
         if old_uid in self._uid_map:
             self._uid_map[new_uid] = self._uid_map.pop(old_uid)
@@ -62,7 +64,9 @@ class UidMapHandler(BaseSingleton):
 # TODO: Implement changing atrr '.constrained' back to False
 #  when removing constraints
 class ConstraintsHandler(BaseSingleton):
-    """Manages user-defined parameter constraints using aliases and expressions.
+    """
+    Manages user-defined parameter constraints using aliases and
+    expressions.
 
     Uses the asteval interpreter for safe evaluation of mathematical expressions.
     Constraints are defined as: lhs_alias = expression(rhs_aliases).
@@ -82,6 +86,7 @@ class ConstraintsHandler(BaseSingleton):
     def set_aliases(self, aliases):
         """
         Sets the alias map (name → parameter wrapper).
+
         Called when user registers parameter aliases like:
             alias='biso_La', param=model.atom_sites['La'].b_iso
         """
@@ -90,6 +95,7 @@ class ConstraintsHandler(BaseSingleton):
     def set_constraints(self, constraints):
         """
         Sets the constraints and triggers parsing into internal format.
+
         Called when user registers expressions like:
             lhs_alias='occ_Ba', rhs_expr='1 - occ_La'
         """
@@ -97,10 +103,9 @@ class ConstraintsHandler(BaseSingleton):
         self._parse_constraints()
 
     def _parse_constraints(self) -> None:
-        """
-        Converts raw expression input into a normalized internal list of
-        (lhs_alias, rhs_expr) pairs, stripping whitespace and skipping invalid entries.
-        """
+        """Converts raw expression input into a normalized internal list
+        of (lhs_alias, rhs_expr) pairs, stripping whitespace and
+        skipping invalid entries."""
         self._parsed_constraints = []
 
         for expr_obj in self._constraints.values():
@@ -112,7 +117,8 @@ class ConstraintsHandler(BaseSingleton):
                 self._parsed_constraints.append(constraint)
 
     def apply(self) -> None:
-        """Evaluates constraints and applies them to dependent parameters.
+        """
+        Evaluates constraints and applies them to dependent parameters.
 
         For each constraint:
         - Evaluate RHS using current values of aliases

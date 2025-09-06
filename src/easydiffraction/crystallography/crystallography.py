@@ -21,7 +21,8 @@ def apply_cell_symmetry_constraints(
     name_hm: str,
 ) -> Dict[str, float]:
     """
-    Apply symmetry constraints to unit cell parameters based on space group.
+    Apply symmetry constraints to unit cell parameters based on space
+    group.
 
     Args:
         cell: Dictionary containing lattice parameters.
@@ -90,7 +91,8 @@ def apply_atom_site_symmetry_constraints(
     wyckoff_letter: str,
 ) -> Dict[str, Any]:
     """
-    Apply symmetry constraints to atomic coordinates based on site symmetry.
+    Apply symmetry constraints to atomic coordinates based on site
+    symmetry.
 
     Args:
         atom_site: Dictionary containing atom position data.

@@ -57,9 +57,8 @@ class MinimizerFactory:
         # TODO: Rename this method to `show_supported_minimizers` for
         #  consistency with other methods in the library. E.g.
         #  `show_supported_calculators`, etc.
-        """
-        Display a table of available minimizers and their descriptions.
-        """
+        """Display a table of available minimizers and their
+        descriptions."""
         columns_headers: List[str] = ['Minimizer', 'Description']
         columns_alignment = ['left', 'left']
         columns_data: List[List[str]] = []

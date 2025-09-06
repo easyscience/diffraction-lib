@@ -8,9 +8,7 @@ from easydiffraction.core.objects import Parameter
 
 
 class AtomSite(Component):
-    """
-    Represents a single atom site within the crystal structure.
-    """
+    """Represents a single atom site within the crystal structure."""
 
     @property
     def category_key(self):
@@ -90,9 +88,7 @@ class AtomSite(Component):
 
 
 class AtomSites(Collection):
-    """
-    Collection of AtomSite instances.
-    """
+    """Collection of AtomSite instances."""
 
     # TODO: Check, if we can get rid of this property
     #  We could use class name instead

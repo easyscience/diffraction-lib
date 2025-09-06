@@ -21,9 +21,7 @@ T = TypeVar('T')
 
 
 class Descriptor:
-    """
-    Base class for descriptors (non-refinable attributes).
-    """
+    """Base class for descriptors (non-refinable attributes)."""
 
     def __init__(
         self,
@@ -160,9 +158,8 @@ class Descriptor:
 
 
 class Parameter(Descriptor):
-    """
-    A parameter with a value, uncertainty, units, and CIF representation.
-    """
+    """A parameter with a value, uncertainty, units, and CIF
+    representation."""
 
     def __init__(
         self,
@@ -205,15 +202,15 @@ class Parameter(Descriptor):
 
 
 class Component(ABC):
-    """
-    Base class for standard components, like Cell, Peak, etc.
-    """
+    """Base class for standard components, like Cell, Peak, etc."""
 
     @property
     @abstractmethod
     def category_key(self):
         """
-        Must be implemented in subclasses to return the ED category name.
+        Must be implemented in subclasses to return the ED category
+        name.
+
         Can differ from cif_category_key.
         """
         pass
@@ -221,9 +218,8 @@ class Component(ABC):
     @property
     @abstractmethod
     def cif_category_key(self):
-        """
-        Must be implemented in subclasses to return the CIF category name.
-        """
+        """Must be implemented in subclasses to return the CIF category
+        name."""
         pass
 
     def __init__(self):
@@ -237,9 +233,8 @@ class Component(ABC):
         self._ordered_attrs: List[str] = []
 
     def __getattr__(self, name: str) -> Any:
-        """
-        If the attribute is a Parameter or Descriptor, return its value by default
-        """
+        """If the attribute is a Parameter or Descriptor, return its
+        value by default."""
         attr = self.__dict__.get(name, None)
         if isinstance(attr, (Descriptor, Parameter)):
             return attr.value
@@ -247,9 +242,11 @@ class Component(ABC):
 
     def __setattr__(self, name: str, value: Any) -> None:
         """
-        If an object is locked for adding new attributes, raise an error.
-        If the attribute 'name' does not exist, add it.
-        If the attribute 'name' exists and is a Parameter or Descriptor, set its value.
+        If an object is locked for adding new attributes, raise an
+        error.
+
+        If the attribute 'name' does not exist, add it. If the attribute
+        'name' exists and is a Parameter or Descriptor, set its value.
         """
         if hasattr(self, '_locked') and self._locked:
             if not hasattr(self, name):
@@ -354,10 +351,8 @@ class Component(ABC):
 
 
 class Collection(ABC):
-    """
-    Base class for collections like AtomSites, LinkedPhases, SampleModels,
-    Experiments, etc.
-    """
+    """Base class for collections like AtomSites, LinkedPhases,
+    SampleModels, Experiments, etc."""
 
     @property
     @abstractmethod
@@ -387,8 +382,9 @@ class Collection(ABC):
 
     def add(self, *args, **kwargs):
         """
-        Add a new item to the collection. The item must be a subclass of
-        Component.
+        Add a new item to the collection.
+
+        The item must be a subclass of Component.
         """
         if self._child_class is None:
             raise ValueError('Child class is not defined.')
@@ -466,9 +462,7 @@ class Collection(ABC):
 
 
 class Datablock(ABC):
-    """
-    Base class for Sample Model and Experiment data blocks.
-    """
+    """Base class for Sample Model and Experiment data blocks."""
 
     # TODO: Consider unifying with class Component?
 
@@ -485,10 +479,8 @@ class Datablock(ABC):
         super().__setattr__(name, value)
 
     def items(self):
-        """
-        Returns a list of both components and collections in the
-        data block.
-        """
+        """Returns a list of both components and collections in the data
+        block."""
         attr_objs = []
         for attr_name in dir(self):
             if attr_name.startswith('_'):

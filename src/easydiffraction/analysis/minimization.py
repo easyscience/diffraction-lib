@@ -21,9 +21,7 @@ if TYPE_CHECKING:
 
 
 class DiffractionMinimizer:
-    """
-    Handles the fitting workflow using a pluggable minimizer.
-    """
+    """Handles the fitting workflow using a pluggable minimizer."""
 
     def __init__(self, selection: str = 'lmfit (leastsq)') -> None:
         self.selection: str = selection
@@ -46,7 +44,6 @@ class DiffractionMinimizer:
             experiments: Collection of experiments.
             calculator: The calculator to use for pattern generation.
             weights: Optional weights for joint fitting.
-
         """
         params = sample_models.get_free_params() + experiments.get_free_params()
 
@@ -133,8 +130,9 @@ class DiffractionMinimizer:
         weights: Optional[np.array] = None,
     ) -> np.ndarray:
         """
-        Residual function computes the difference between measured and calculated patterns.
-        It updates the parameter values according to the optimizer-provided engine_params.
+        Residual function computes the difference between measured and
+        calculated patterns. It updates the parameter values according
+        to the optimizer-provided engine_params.
 
         Args:
             engine_params: Engine-specific parameter dict.

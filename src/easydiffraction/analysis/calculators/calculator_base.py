@@ -15,9 +15,7 @@ from easydiffraction.sample_models.sample_models import SampleModels
 
 
 class CalculatorBase(ABC):
-    """
-    Base API for diffraction calculation engines.
-    """
+    """Base API for diffraction calculation engines."""
 
     @property
     @abstractmethod
@@ -35,9 +33,8 @@ class CalculatorBase(ABC):
         sample_model: SampleModel,
         experiment: Experiment,
     ) -> None:
-        """
-        Calculate structure factors for a single sample model and experiment.
-        """
+        """Calculate structure factors for a single sample model and
+        experiment."""
         pass
 
     def calculate_pattern(
@@ -47,8 +44,9 @@ class CalculatorBase(ABC):
         called_by_minimizer: bool = False,
     ) -> None:
         """
-        Calculate the diffraction pattern for multiple sample models and a single experiment.
-        The calculated pattern is stored within the experiment's datastore.
+        Calculate the diffraction pattern for multiple sample models and
+        a single experiment. The calculated pattern is stored within the
+        experiment's datastore.
 
         Args:
             sample_models: Collection of sample models.
@@ -107,7 +105,8 @@ class CalculatorBase(ABC):
         called_by_minimizer: bool,
     ) -> np.ndarray:
         """
-        Calculate the diffraction pattern for a single sample model and experiment.
+        Calculate the diffraction pattern for a single sample model and
+        experiment.
 
         Args:
             sample_model: The sample model object.

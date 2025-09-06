@@ -16,9 +16,7 @@ from easydiffraction.utils.formatting import paragraph
 
 
 class Experiments(Collection):
-    """
-    Collection manager for multiple Experiment instances.
-    """
+    """Collection manager for multiple Experiment instances."""
 
     @property
     def _child_class(self):
@@ -29,22 +27,16 @@ class Experiments(Collection):
         self._experiments: Dict[str, BaseExperiment] = self._items  # Alias for legacy support
 
     def add(self, experiment: BaseExperiment):
-        """
-        Add a pre-built experiment instance.
-        """
+        """Add a pre-built experiment instance."""
         self._add_prebuilt_experiment(experiment)
 
     def add_from_cif_path(self, cif_path: str):
-        """
-        Add a new experiment from a CIF file path.
-        """
+        """Add a new experiment from a CIF file path."""
         experiment = Experiment(cif_path=cif_path)
         self._add_prebuilt_experiment(experiment)
 
     def add_from_cif_str(self, cif_str: str):
-        """
-        Add a new experiment from CIF file content (string).
-        """
+        """Add a new experiment from CIF file content (string)."""
         experiment = Experiment(cif_str=cif_str)
         self._add_prebuilt_experiment(experiment)
 
@@ -57,9 +49,7 @@ class Experiments(Collection):
         radiation_probe: str = RadiationProbeEnum.default().value,
         scattering_type: str = ScatteringTypeEnum.default().value,
     ):
-        """
-        Add a new experiment from a data file path.
-        """
+        """Add a new experiment from a data file path."""
         experiment = Experiment(
             name=name,
             data_path=data_path,
@@ -78,9 +68,7 @@ class Experiments(Collection):
         radiation_probe: str = RadiationProbeEnum.default().value,
         scattering_type: str = ScatteringTypeEnum.default().value,
     ):
-        """
-        Add a new experiment without any data file.
-        """
+        """Add a new experiment without any data file."""
         experiment = Experiment(
             name=name,
             sample_form=sample_form,

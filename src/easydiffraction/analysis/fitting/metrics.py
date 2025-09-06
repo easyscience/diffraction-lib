@@ -16,7 +16,8 @@ def calculate_r_factor(
     y_calc: np.ndarray,
 ) -> float:
     """
-    Calculate the R-factor (reliability factor) between observed and calculated data.
+    Calculate the R-factor (reliability factor) between observed and
+    calculated data.
 
     Args:
         y_obs: Observed data points.
@@ -38,7 +39,8 @@ def calculate_weighted_r_factor(
     weights: np.ndarray,
 ) -> float:
     """
-    Calculate the weighted R-factor between observed and calculated data.
+    Calculate the weighted R-factor between observed and calculated
+    data.
 
     Args:
         y_obs: Observed data points.
@@ -128,7 +130,8 @@ def get_reliability_inputs(
     calculator: CalculatorBase,
 ) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
     """
-    Collect observed and calculated data points for reliability calculations.
+    Collect observed and calculated data points for reliability
+    calculations.
 
     Args:
         sample_models: Collection of sample models.

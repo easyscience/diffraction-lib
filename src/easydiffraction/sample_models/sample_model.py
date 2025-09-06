@@ -14,6 +14,7 @@ from easydiffraction.utils.utils import render_cif
 class SampleModel(Datablock):
     """
     Represents an individual structural model of a sample.
+
     Wraps crystallographic information including space group, cell, and
     atomic sites.
     """
@@ -158,6 +159,7 @@ class SampleModel(Datablock):
     def as_cif(self) -> str:
         """
         Export the sample model to CIF format.
+
         Returns:
             str: CIF string representation of the sample model.
         """
@@ -192,7 +194,8 @@ class SampleModel(Datablock):
         print('Not implemented yet.')
 
     def show_params(self):
-        """Display structural parameters (space group, unit cell, atomic sites)."""
+        """Display structural parameters (space group, unit cell, atomic
+        sites)."""
         print(f'\nSampleModel ID: {self.name}')
         print(f'Space group: {self.space_group.name_h_m}')
         print(f'Cell parameters: {self.cell.as_dict()}')
