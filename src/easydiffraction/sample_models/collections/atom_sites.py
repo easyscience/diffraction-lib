@@ -38,47 +38,56 @@ class AtomSite(Component):
             value=label,
             name='label',
             cif_name='label',
+            description='Unique identifier for the atom site.',
         )
         self.type_symbol = Descriptor(
             value=type_symbol,
             name='type_symbol',
             cif_name='type_symbol',
+            description='Chemical symbol of the atom at this site.',
         )
         self.adp_type = Descriptor(
             value=adp_type,
             name='adp_type',
             cif_name='ADP_type',
+            description='Type of atomic displacement parameter (ADP) used (e.g., Biso, Uiso, Uani, Bani).',
         )
         self.wyckoff_letter = Descriptor(
             value=wyckoff_letter,
             name='wyckoff_letter',
             cif_name='Wyckoff_letter',
+            description='Wyckoff letter indicating the symmetry of the atom site within the space group.',
         )
         self.fract_x = Parameter(
             value=fract_x,
             name='fract_x',
             cif_name='fract_x',
+            description='Fractional x-coordinate of the atom site within the unit cell.',
         )
         self.fract_y = Parameter(
             value=fract_y,
             name='fract_y',
             cif_name='fract_y',
+            description='Fractional y-coordinate of the atom site within the unit cell.',
         )
         self.fract_z = Parameter(
             value=fract_z,
             name='fract_z',
             cif_name='fract_z',
+            description='Fractional z-coordinate of the atom site within the unit cell.',
         )
         self.occupancy = Parameter(
             value=occupancy,
             name='occupancy',
             cif_name='occupancy',
+            description='Occupancy of the atom site, representing the fraction of the site occupied by the atom type.',
         )
         self.b_iso = Parameter(
             value=b_iso,
             name='b_iso',
             units='Å²',
             cif_name='B_iso_or_equiv',
+            description='Isotropic atomic displacement parameter (ADP) for the atom site.',
         )
         # Select which of the input parameters is used for the
         # as ID for the whole object
