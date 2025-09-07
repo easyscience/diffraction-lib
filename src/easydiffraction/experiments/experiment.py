@@ -185,8 +185,17 @@ class BasePowderExperiment(BaseExperiment):
 
     @peak_profile_type.setter
     def peak_profile_type(self, new_type: str):
-        if new_type not in PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value]:
-            supported_types = list(PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].keys())
+        if (
+            new_type
+            not in PeakFactory._supported[self.type.scattering_type.value][
+                self.type.beam_mode.value
+            ]
+        ):
+            supported_types = list(
+                PeakFactory._supported[self.type.scattering_type.value][
+                    self.type.beam_mode.value
+                ].keys()
+            )
             print(warning(f"Unsupported peak profile '{new_type}'"))
             print(f'Supported peak profiles: {supported_types}')
             print("For more information, use 'show_supported_peak_profile_types()'")
@@ -271,16 +280,16 @@ class PowderExperiment(
         y: np.ndarray = data[:, 1]
 
         # Round x to 4 decimal places
-        # TODO: This is needed for CrysPy, as otherwise it fails to match
-        #  the size of the data arrays.
+        # TODO: This is needed for CrysPy, as otherwise it fails to
+        #  match the size of the data arrays.
         x = np.round(x, 4)
 
         # Determine sy from column 3 if available, otherwise use sqrt(y)
         sy: np.ndarray = data[:, 2] if data.shape[1] > 2 else np.sqrt(y)
 
         # Replace values smaller than 0.0001 with 1.0
-        # TODO: This is needed for minimization algorithms that fail with
-        #  very small or zero uncertainties.
+        # TODO: This is needed for minimization algorithms that fail
+        #  with very small or zero uncertainties.
         sy = np.where(sy < 0.0001, 1.0, sy)
 
         # Attach the data to the experiment's datastore
@@ -340,8 +349,8 @@ class PowderExperiment(
 
 
 # TODO: Refactor this class to reuse PowderExperiment
-# TODO: This is not a specific experiment, but rather processed data from
-#  PowderExperiment. So, we should think of a better design.
+# TODO: This is not a specific experiment, but rather processed data
+#  from PowderExperiment. So, we should think of a better design.
 class PairDistributionFunctionExperiment(BasePowderExperiment):
     """PDF experiment class with specific attributes."""
 
@@ -378,13 +387,14 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
 
         # Extract x, y, and sy data
         x = data[:, 0]
-        # We should also add sx = data[:, 2] to capture the e.s.d. of x. It
-        # might be useful in future.
+        # We should also add sx = data[:, 2] to capture the e.s.d. of x.
+        # It might be useful in future.
         y = data[:, 1]
-        # Using sqrt isn’t appropriate here, as the y-scale isn’t raw counts
-        # and includes both positive and negative values. For now, set the
-        # e.s.d. to a fixed value of 0.03 if it’s not included in the measured
-        # data file. We should improve this later.
+        # Using sqrt isn’t appropriate here, as the y-scale isn’t raw
+        # counts and includes both positive and negative values. For
+        # now, set the e.s.d. to a fixed value of 0.03 if it’s not
+        # included in the measured data file. We should improve this
+        # later.
         # sy = data[:, 3] if data.shape[1] > 2 else np.sqrt(y)
         sy = data[:, 2] if data.shape[1] > 2 else np.full_like(y, fill_value=default_sy)
 

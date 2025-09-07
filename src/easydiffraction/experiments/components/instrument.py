@@ -114,13 +114,15 @@ class InstrumentFactory:
         supported_scattering_types = list(cls._supported.keys())
         if scattering_type not in supported_scattering_types:
             raise ValueError(
-                f"Unsupported scattering type: '{scattering_type}'.\n Supported scattering types: {supported_scattering_types}"
+                f"Unsupported scattering type: '{scattering_type}'.\n "
+                f'Supported scattering types: {supported_scattering_types}'
             )
 
         supported_beam_modes = list(cls._supported[scattering_type].keys())
         if beam_mode not in supported_beam_modes:
             raise ValueError(
-                f"Unsupported beam mode: '{beam_mode}' for scattering type: '{scattering_type}'.\n "
+                f"Unsupported beam mode: '{beam_mode}' for scattering type: "
+                f"'{scattering_type}'.\n "
                 f'Supported beam modes: {supported_beam_modes}'
             )
 

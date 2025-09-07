@@ -180,8 +180,8 @@ def _get_release_info(tag: str | None) -> dict | None:
 
 def _get_tutorial_asset(release_info: dict) -> dict | None:
     """
-    Given a release_info dict, return the 'tutorials.zip' asset dict,
-    or None.
+    Given a release_info dict, return the 'tutorials.zip' asset dict, or
+    None.
 
     Args:
         release_info (dict): The release info dictionary.
@@ -431,8 +431,8 @@ def render_table(
     display_handle=None,
 ):
     """
-    Renders a table either as an HTML (in Jupyter Notebook) or ASCII
-    (in terminal), with aligned columns.
+    Renders a table either as an HTML (in Jupyter Notebook) or ASCII (in
+    terminal), with aligned columns.
 
     Args:
         columns_data (list): List of lists, where each inner list
@@ -466,11 +466,14 @@ def render_table(
         # Replace None/NaN values with empty strings
         df.fillna('', inplace=True)
 
-        # Formatters for data cell alignment and replacing None with empty string
+        # Formatters for data cell alignment and replacing None with
+        # empty string
         def make_formatter(align):
             return lambda x: f'<div style="text-align: {align};">{x}</div>'
 
-        formatters = {col: make_formatter(align) for col, align in zip(columns_headers, columns_alignment)}
+        formatters = {
+            col: make_formatter(align) for col, align in zip(columns_headers, columns_alignment)
+        }
 
         # Convert DataFrame to HTML
         html = df.to_html(
@@ -481,7 +484,7 @@ def render_table(
             header=not skip_headers,
         )
 
-        # Add inline CSS to align the entire table to the left and show border
+        # Add CSS to align the entire table to the left and show border
         html = html.replace(
             '<table class="dataframe">',
             '<table class="dataframe" '
@@ -601,7 +604,12 @@ def tof_to_d(
     # Type checks
     if not isinstance(tof, np.ndarray):
         raise TypeError(f"'tof' must be a NumPy array, got {type(tof).__name__}")
-    for name, val in (('offset', offset), ('linear', linear), ('quad', quad), ('quad_eps', quad_eps)):
+    for name, val in (
+        ('offset', offset),
+        ('linear', linear),
+        ('quad', quad),
+        ('quad_eps', quad_eps),
+    ):
         if not isinstance(val, (int, float, np.integer, np.floating)):
             raise TypeError(f"'{name}' must be a real number, got {type(val).__name__}")
 
@@ -633,9 +641,12 @@ def tof_to_d(
         root_2 = (-linear - sqrt_discr) / (2 * quad)
 
         # Pick smallest positive, finite root per element
-        roots = np.stack((root_1, root_2), axis=0)  # Stack roots for comparison
-        roots = np.where(np.isfinite(roots) & (roots > 0), roots, np.nan)  # Replace non-finite or negative roots with NaN
-        chosen = np.nanmin(roots, axis=0)  # Choose the smallest positive root or NaN if none are valid
+        # Stack roots for comparison
+        roots = np.stack((root_1, root_2), axis=0)
+        # Replace non-finite or negative roots with NaN
+        roots = np.where(np.isfinite(roots) & (roots > 0), roots, np.nan)
+        # Choose the smallest positive root or NaN if none are valid
+        chosen = np.nanmin(roots, axis=0)
 
         d_out[has_real_roots] = chosen
 

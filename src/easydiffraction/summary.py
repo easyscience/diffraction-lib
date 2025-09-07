@@ -61,7 +61,10 @@ class Summary:
 
             print(paragraph('Cell parameters'))
             columns_alignment: List[str] = ['left', 'right']
-            cell_data = [[k.replace('length_', '').replace('angle_', ''), f'{v:.5f}'] for k, v in model.cell.as_dict().items()]
+            cell_data = [
+                [k.replace('length_', '').replace('angle_', ''), f'{v:.5f}']
+                for k, v in model.cell.as_dict().items()
+            ]
             render_table(
                 columns_alignment=columns_alignment,
                 columns_data=cell_data,
@@ -115,7 +118,11 @@ class Summary:
             print(f'🔬 {expt.name}')
 
             print(paragraph('Experiment type'))
-            print(f'{expt.type.sample_form.value}, {expt.type.radiation_probe.value}, {expt.type.beam_mode.value}')
+            print(
+                f'{expt.type.sample_form.value}, '
+                f'{expt.type.radiation_probe.value}, '
+                f'{expt.type.beam_mode.value}'
+            )
 
             if hasattr(expt, 'instrument'):
                 if hasattr(expt.instrument, 'setup_wavelength'):

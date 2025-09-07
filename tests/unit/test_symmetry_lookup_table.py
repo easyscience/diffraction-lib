@@ -106,7 +106,8 @@ def test_lookup_table_consistency():
     ],
 )
 def test_space_group_lookup_table_yields_expected(key, expected):
-    """Check the lookup table for a few keys and check that the output matches the expected"""
+    """Check the lookup table for a few keys and check that the output
+    matches the expected."""
     entry = SPACE_GROUPS[key]
 
     # Check that the keys are the same

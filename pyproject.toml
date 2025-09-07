@@ -56,6 +56,7 @@ dev = [
   'versioningit',            # Automatic versioning from git tags
   'jupytext',                # Jupyter notebook text format support
   'jupyterquiz',             # Quizzes in Jupyter notebooks
+  'docformatter',            # Code formatter for docstrings
 ]
 docs = [
   'mkdocs',                          # Static site generator
@@ -128,6 +129,19 @@ method = 'git'
 match = ['v*']
 default-tag = 'v999.0.0'
 
+################################
+# Configuration for docformatter
+################################
+
+# 'docformatter' -- Code formatter for docstrings
+# https://docformatter.readthedocs.io/en/latest/
+
+[tool.docformatter]
+recursive = true
+wrap-summaries = 72
+wrap-descriptions = 72
+pre-summary-newline = true
+
 ########################
 # Configuration for ruff
 ########################
@@ -136,9 +150,9 @@ default-tag = 'v999.0.0'
 # https://docs.astral.sh/ruff/rules/
 
 [tool.ruff]
-exclude = ['tutorials-drafts']
+exclude = ['tests', 'tools', 'tutorials', 'tutorials-drafts']
 indent-width = 4
-line-length = 127
+line-length = 99
 
 [tool.ruff.lint]
 select = [
@@ -162,15 +176,15 @@ ban-relative-imports = 'all'
 force-single-line = true
 
 [tool.ruff.lint.per-file-ignores]
-# allow asserts in test files
-'*test_*.py' = ['S101']
+'*test_*.py' = ['S101'] # allow asserts in test files
 
-#[tool.ruff.lint.pycodestyle]
-#max-line-length = 88 # https://peps.python.org/pep-0008/#maximum-line-length
-#max-doc-length = 72  # https://peps.python.org/pep-0008/#maximum-line-length
+[tool.ruff.lint.pycodestyle]
+max-line-length = 99 # https://peps.python.org/pep-0008/#maximum-line-length
+max-doc-length = 72  # https://peps.python.org/pep-0008/#maximum-line-length
 
 [tool.ruff.format]
-docstring-code-format = true # Whether to format code snippets in docstrings
-indent-style = 'space'       # PEP 8 recommends using spaces over tabs
-line-ending = 'lf'           # Line endings will be converted to \n
-quote-style = 'single'       # But double quotes in docstrings (PEP 8, PEP 257)
+docstring-code-format = true    # Whether to format code snippets in docstrings
+docstring-code-line-length = 72 # Line length for code snippets in docstrings
+indent-style = 'space'          # PEP 8 recommends using spaces over tabs
+line-ending = 'lf'              # Line endings will be converted to \n
+quote-style = 'single'          # But double quotes in docstrings (PEP 8, PEP 257)

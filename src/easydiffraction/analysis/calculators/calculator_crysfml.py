@@ -18,10 +18,12 @@ try:
     from pycrysfml import cfml_py_utilities
 
     # TODO: Add the following print to debug mode
-    # print("✅ 'pycrysfml' calculation engine is successfully imported.")
+    # print("✅ 'pycrysfml' calculation engine is successfully
+    # imported.")
 except ImportError:
     # TODO: Add the following print to debug mode
-    # print("⚠️ 'pycrysfml' module not found. This calculation engine will not be available.")
+    # print("⚠️ 'pycrysfml' module not found. This calculation engine
+    # will not be available.")
     cfml_py_utilities = None
 
 
@@ -43,8 +45,10 @@ class CrysfmlCalculator(CalculatorBase):
         Call Crysfml to calculate structure factors.
 
         Args:
-            sample_models: The sample models to calculate structure factors for.
-            experiments: The experiments associated with the sample models.
+            sample_models: The sample models to calculate structure
+                factors for.
+            experiments: The experiments associated with the sample
+                models.
         """
         raise NotImplementedError('HKL calculation is not implemented for CrysfmlCalculator.')
 
@@ -61,10 +65,12 @@ class CrysfmlCalculator(CalculatorBase):
         Args:
             sample_model: The sample model to calculate the pattern for.
             experiment: The experiment associated with the sample model.
-            called_by_minimizer: Whether the calculation is called by a minimizer.
+            called_by_minimizer: Whether the calculation is called by a
+            minimizer.
 
         Returns:
-            The calculated diffraction pattern as a NumPy array or a list of floats.
+            The calculated diffraction pattern as a NumPy array or a
+                list of floats.
         """
         crysfml_dict = self._crysfml_dict(sample_model, experiment)
         try:
@@ -90,7 +96,8 @@ class CrysfmlCalculator(CalculatorBase):
         Returns:
             The adjusted pattern.
         """
-        # TODO: Check the origin of this discrepancy coming from PyCrysFML
+        # TODO: Check the origin of this discrepancy coming from
+        #  PyCrysFML
         if len(pattern) > target_length:
             return pattern[:target_length]
         return pattern
@@ -109,7 +116,8 @@ class CrysfmlCalculator(CalculatorBase):
             experiment: The experiment to convert.
 
         Returns:
-            A dictionary representation of the sample model and experiment.
+            A dictionary representation of the sample model and
+                experiment.
         """
         sample_model_dict = self._convert_sample_model_to_dict(sample_model)
         experiment_dict = self._convert_experiment_to_dict(experiment)
@@ -182,16 +190,22 @@ class CrysfmlCalculator(CalculatorBase):
 
         exp_dict = {
             'NPD': {
-                '_diffrn_radiation_probe': expt_type.radiation_probe.value if expt_type else 'neutron',
-                '_diffrn_radiation_wavelength': instrument.setup_wavelength.value if instrument else 1.0,
+                '_diffrn_radiation_probe': expt_type.radiation_probe.value
+                if expt_type
+                else 'neutron',
+                '_diffrn_radiation_wavelength': instrument.setup_wavelength.value
+                if instrument
+                else 1.0,
                 '_pd_instr_resolution_u': peak.broad_gauss_u.value if peak else 0.0,
                 '_pd_instr_resolution_v': peak.broad_gauss_v.value if peak else 0.0,
                 '_pd_instr_resolution_w': peak.broad_gauss_w.value if peak else 0.0,
                 '_pd_instr_resolution_x': peak.broad_lorentz_x.value if peak else 0.0,
                 '_pd_instr_resolution_y': peak.broad_lorentz_y.value if peak else 0.0,
-                # "_pd_instr_reflex_s_l": peak_asymm.s_l.value if peak_asymm else 0.0,
-                # "_pd_instr_reflex_d_l": peak_asymm.d_l.value if peak_asymm else 0.0,
-                '_pd_meas_2theta_offset': instrument.calib_twotheta_offset.value if instrument else 0.0,
+                # "_pd_instr_reflex_s_l": peak_asymm.s_l.value if ...
+                # "_pd_instr_reflex_d_l": peak_asymm.d_l.value if ...
+                '_pd_meas_2theta_offset': instrument.calib_twotheta_offset.value
+                if instrument
+                else 0.0,
                 '_pd_meas_2theta_range_min': twotheta_min,
                 '_pd_meas_2theta_range_max': twotheta_max,
                 '_pd_meas_2theta_range_inc': (twotheta_max - twotheta_min) / len(x_data),

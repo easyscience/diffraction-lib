@@ -51,7 +51,8 @@ class CalculatorBase(ABC):
         Args:
             sample_models: Collection of sample models.
             experiment: The experiment object.
-            called_by_minimizer: Whether the calculation is called by a minimizer.
+            called_by_minimizer: Whether the calculation is called by a
+                minimizer.
 
         Returns:
             None.
@@ -111,7 +112,8 @@ class CalculatorBase(ABC):
         Args:
             sample_model: The sample model object.
             experiment: The experiment object.
-            called_by_minimizer: Whether the calculation is called by a minimizer.
+            called_by_minimizer: Whether the calculation is called by a
+                minimizer.
 
         Returns:
             The calculated diffraction pattern as a NumPy array.
@@ -140,11 +142,17 @@ class CalculatorBase(ABC):
         valid_linked_phases = []
         for linked_phase in experiment.linked_phases:
             if linked_phase._entry_id not in sample_models.get_ids():
-                print(f"Warning: Linked phase '{linked_phase.id.value}' not found in Sample Models {sample_models.get_ids()}")
+                print(
+                    f"Warning: Linked phase '{linked_phase.id.value}' not "
+                    f'found in Sample Models {sample_models.get_ids()}'
+                )
                 continue
             valid_linked_phases.append(linked_phase)
 
         if not valid_linked_phases:
-            print('Warning: None of the linked phases found in Sample Models. Returning empty pattern.')
+            print(
+                'Warning: None of the linked phases found in Sample '
+                'Models. Returning empty pattern.'
+            )
 
         return valid_linked_phases

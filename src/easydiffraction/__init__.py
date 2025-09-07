@@ -3,9 +3,9 @@
 
 from typing import TYPE_CHECKING
 
-# This is needed for static type checkers like mypy and IDEs to recognize the imports
-# without actually importing them at runtime, which helps avoid circular dependencies
-# and reduces initial load time.
+# This is needed for static type checkers like mypy and IDEs to
+# recognize the imports without actually importing them at runtime,
+# which helps avoid circular dependencies and reduces initial load time.
 if TYPE_CHECKING:
     # Analysis
     from easydiffraction.analysis.analysis import Analysis

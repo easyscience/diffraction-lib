@@ -61,7 +61,8 @@ class DfolsMinimizer(MinimizerBase):
 
         for i, param in enumerate(parameters):
             param.value = result_values[i]
-            # DFO-LS doesn't provide uncertainties; set to None or calculate later if needed
+            # DFO-LS doesn't provide uncertainties; set to None or
+            # calculate later if needed
             param.uncertainty = None
 
     def _check_success(self, raw_result: Any) -> bool:

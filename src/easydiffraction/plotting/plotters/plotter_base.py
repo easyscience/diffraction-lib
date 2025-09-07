@@ -16,8 +16,14 @@ DEFAULT_MIN = -np.inf
 DEFAULT_MAX = np.inf
 
 DEFAULT_AXES_LABELS = {
-    (ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH): ['2θ (degree)', 'Intensity (arb. units)'],
-    (ScatteringTypeEnum.BRAGG, BeamModeEnum.TIME_OF_FLIGHT): ['TOF (µs)', 'Intensity (arb. units)'],
+    (ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH): [
+        '2θ (degree)',
+        'Intensity (arb. units)',
+    ],
+    (ScatteringTypeEnum.BRAGG, BeamModeEnum.TIME_OF_FLIGHT): [
+        'TOF (µs)',
+        'Intensity (arb. units)',
+    ],
     (ScatteringTypeEnum.BRAGG, 'd-spacing'): ['d (Å)', 'Intensity (arb. units)'],
     (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): ['r (Å)', 'G(r) (Å)'],
     (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): ['r (Å)', 'G(r) (Å)'],

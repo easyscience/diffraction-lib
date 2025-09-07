@@ -19,7 +19,8 @@ class MinimizerFactory:
         'lmfit': {
             'engine': 'lmfit',
             'method': 'leastsq',
-            'description': 'LMFIT library using the default Levenberg-Marquardt least squares method',
+            'description': 'LMFIT library using the default Levenberg-Marquardt '
+            'least squares method',
             'class': LmfitMinimizer,
         },
         'lmfit (leastsq)': {
@@ -89,7 +90,10 @@ class MinimizerFactory:
         """
         config = cls._available_minimizers.get(selection)
         if not config:
-            raise ValueError(f"Unknown minimizer '{selection}'. Use one of {cls.list_available_minimizers()}")
+            raise ValueError(
+                f"Unknown minimizer '{selection}'. Use one of "
+                f"{cls.list_available_minimizers()}"
+            )
 
         minimizer_class: Type[MinimizerBase] = config.get('class')
         method: Optional[str] = config.get('method')

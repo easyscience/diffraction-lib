@@ -1,6 +1,6 @@
 """
-Add a single bootstrap code cell as the very first cell to every .ipynb file
-found under the given path(s).
+Add a single bootstrap code cell as the very first cell to every .ipynb
+file found under the given path(s).
 
 Usage:
     python tools/tweak_notebooks.py tutorials/ [more_paths ...]
@@ -48,7 +48,8 @@ def iter_notebooks(paths: list[Path]):
 
 
 def has_bootstrap_first_cell(nb) -> bool:
-    """Return True if the first cell exactly matches our bootstrap cell."""
+    """Return True if the first cell exactly matches our bootstrap
+    cell."""
     if not nb.cells:
         return False
     first = nb.cells[0]
@@ -63,6 +64,7 @@ def has_bootstrap_first_cell(nb) -> bool:
 def ensure_bootstrap(nb) -> bool:
     """
     Ensure the bootstrap cell exists as the very first cell.
+
     Returns True if a modification was made.
     """
     if has_bootstrap_first_cell(nb):

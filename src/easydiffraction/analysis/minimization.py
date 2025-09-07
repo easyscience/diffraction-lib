@@ -117,7 +117,9 @@ class DiffractionMinimizer:
         Returns:
             List of free parameters.
         """
-        free_params: List[Parameter] = sample_models.get_free_params() + experiments.get_free_params()
+        free_params: List[Parameter] = (
+            sample_models.get_free_params() + experiments.get_free_params()
+        )
         return free_params
 
     def _residual_function(
@@ -160,14 +162,16 @@ class DiffractionMinimizer:
             _weights = np.array(_weights_list, dtype=np.float64)
 
         # Normalize weights so they sum to num_expts
-        # We should obtain the same reduced chi_squared when a single dataset is split into
-        # two parts and fit together. If weights sum to one, then reduced chi_squared
-        # will be half as large as expected.
+        # We should obtain the same reduced chi_squared when a single
+        # dataset is split into two parts and fit together. If weights
+        # sum to one, then reduced chi_squared will be half as large as
+        # expected.
         _weights *= num_expts / np.sum(_weights)
         residuals: List[float] = []
 
         for (expt_id, experiment), weight in zip(experiments._items.items(), _weights):
-            # Calculate the difference between measured and calculated patterns
+            # Calculate the difference between measured and calculated
+            # patterns
             calculator.calculate_pattern(
                 sample_models,
                 experiment,
@@ -178,7 +182,8 @@ class DiffractionMinimizer:
             y_meas_su: np.ndarray = experiment.datastore.meas_su
             diff = (y_meas - y_calc) / y_meas_su
 
-            # Residuals are squared before going into reduced chi-squared
+            # Residuals are squared before going into reduced
+            # chi-squared
             diff *= np.sqrt(weight)
 
             # Append the residuals for this experiment

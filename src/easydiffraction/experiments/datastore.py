@@ -42,7 +42,8 @@ class BaseDatastore:
         calculation.
 
         Returns:
-            Optional[np.ndarray]: Calculated intensities array or None if not set.
+            Optional[np.ndarray]: Calculated intensities array or None
+                if not set.
         """
         return self._calc
 
@@ -73,13 +74,14 @@ class BaseDatastore:
         Generate a CIF-formatted string representing the datastore data.
 
         Args:
-            max_points (Optional[int]): Maximum number of points to include
-            from start and end.
-            If the total points exceed twice this number, data in the middle
-            is truncated with '...'.
+            max_points (Optional[int]): Maximum number of points to
+                include from start and end. If the total points exceed
+                twice this number, data in the middle is truncated with
+                '...'.
 
         Returns:
-            str: CIF-formatted string of the data. Empty string if no data available.
+            str: CIF-formatted string of the data. Empty string if no
+                data available.
         """
         cif_lines = ['loop_']
 
@@ -143,7 +145,8 @@ class PowderDatastore(BaseDatastore):
         Initialize PowderDatastore.
 
         Args:
-            beam_mode (str): Beam mode, e.g. 'time-of-flight' or 'constant wavelength'.
+            beam_mode (str): Beam mode, e.g. 'time-of-flight' or
+                'constant wavelength'.
         """
         super().__init__()
         self.beam_mode = beam_mode
@@ -232,19 +235,27 @@ class DatastoreFactory:
         Create and return a datastore object for the given sample form.
 
         Args:
-            sample_form (str): Sample form type, e.g. 'powder' or 'single crystal'.
+            sample_form (str): Sample form type, e.g. 'powder' or
+                'single crystal'.
             beam_mode (str): Beam mode for powder sample form.
 
         Returns:
-            BaseDatastore: Instance of a datastore class corresponding to sample form.
+            BaseDatastore: Instance of a datastore class corresponding
+            to sample form.
         """
         supported_sample_forms = list(cls._supported.keys())
         if sample_form not in supported_sample_forms:
-            raise ValueError(f"Unsupported sample form: '{sample_form}'.\nSupported sample forms: {supported_sample_forms}")
+            raise ValueError(
+                f"Unsupported sample form: '{sample_form}'.\n"
+                f'Supported sample forms: {supported_sample_forms}'
+            )
 
         supported_beam_modes = ['time-of-flight', 'constant wavelength']
         if beam_mode not in supported_beam_modes:
-            raise ValueError(f"Unsupported beam mode: '{beam_mode}'.\nSupported beam modes: {supported_beam_modes}")
+            raise ValueError(
+                f"Unsupported beam mode: '{beam_mode}'.\n"
+                f'Supported beam modes: {supported_beam_modes}'
+            )
 
         datastore_class = cls._supported[sample_form]
         if sample_form == 'powder':

@@ -28,10 +28,22 @@ class PeakProfileTypeEnum(str, Enum):
             beam_mode = BeamModeEnum.default()
 
         return {
-            (ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH): cls.PSEUDO_VOIGT,
-            (ScatteringTypeEnum.BRAGG, BeamModeEnum.TIME_OF_FLIGHT): cls.PSEUDO_VOIGT_IKEDA_CARPENTER,
-            (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): cls.GAUSSIAN_DAMPED_SINC,
-            (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): cls.GAUSSIAN_DAMPED_SINC,
+            (
+                ScatteringTypeEnum.BRAGG,
+                BeamModeEnum.CONSTANT_WAVELENGTH,
+            ): cls.PSEUDO_VOIGT,
+            (
+                ScatteringTypeEnum.BRAGG,
+                BeamModeEnum.TIME_OF_FLIGHT,
+            ): cls.PSEUDO_VOIGT_IKEDA_CARPENTER,
+            (
+                ScatteringTypeEnum.TOTAL,
+                BeamModeEnum.CONSTANT_WAVELENGTH,
+            ): cls.GAUSSIAN_DAMPED_SINC,
+            (
+                ScatteringTypeEnum.TOTAL,
+                BeamModeEnum.TIME_OF_FLIGHT,
+            ): cls.GAUSSIAN_DAMPED_SINC,
         }[(scattering_type, beam_mode)]
 
     def description(self) -> str:
@@ -57,7 +69,8 @@ class ConstantWavelengthBroadeningMixin:
             name='broad_gauss_u',
             cif_name='broad_gauss_u',
             units='deg²',
-            description='Gaussian broadening coefficient (dependent on sample size and instrument resolution)',
+            description='Gaussian broadening coefficient (dependent on '
+            'sample size and instrument resolution)',
         )
         self.broad_gauss_v: Parameter = Parameter(
             value=-0.01,
@@ -85,7 +98,8 @@ class ConstantWavelengthBroadeningMixin:
             name='broad_lorentz_y',
             cif_name='broad_lorentz_y',
             units='deg',
-            description='Lorentzian broadening coefficient (dependent on microstructural defects and strain)',
+            description='Lorentzian broadening coefficient (dependent on '
+            'microstructural defects and strain)',
         )
 
 
@@ -138,14 +152,16 @@ class TimeOfFlightBroadeningMixin:
             name='mix_beta_0',
             cif_name='mix_beta_0',
             units='deg',
-            description='Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles',
+            description='Mixing parameter. Defines the ratio of Gaussian '
+            'to Lorentzian contributions in TOF profiles',
         )
         self.broad_mix_beta_1: Parameter = Parameter(
             value=0.0,
             name='mix_beta_1',
             cif_name='mix_beta_1',
             units='deg',
-            description='Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles',
+            description='Mixing parameter. Defines the ratio of Gaussian '
+            'to Lorentzian contributions in TOF profiles',
         )
 
 
@@ -224,21 +240,24 @@ class PairDistributionFunctionBroadeningMixin:
             name='damp_q',
             cif_name='damp_q',
             units='Å⁻¹',
-            description='Instrumental Q-resolution damping factor (affects high-r PDF peak amplitude)',
+            description='Instrumental Q-resolution damping factor '
+            '(affects high-r PDF peak amplitude)',
         )
         self.broad_q = Parameter(
             value=0.0,
             name='broad_q',
             cif_name='broad_q',
             units='Å⁻²',
-            description='Quadratic PDF peak broadening coefficient (thermal and model uncertainty contribution)',
+            description='Quadratic PDF peak broadening coefficient '
+            '(thermal and model uncertainty contribution)',
         )
         self.cutoff_q = Parameter(
             value=25.0,
             name='cutoff_q',
             cif_name='cutoff_q',
             units='Å⁻¹',
-            description='Q-value cutoff applied to model PDF for Fourier transform (controls real-space resolution)',
+            description='Q-value cutoff applied to model PDF for Fourier '
+            'transform (controls real-space resolution)',
         )
         self.sharp_delta_1 = Parameter(
             value=0.0,
@@ -407,19 +426,22 @@ class PeakFactory:
         cls,
         scattering_type=ScatteringTypeEnum.default(),
         beam_mode=BeamModeEnum.default(),
-        profile_type=PeakProfileTypeEnum.default(ScatteringTypeEnum.default(), BeamModeEnum.default()),
+        profile_type=PeakProfileTypeEnum.default(
+            ScatteringTypeEnum.default(), BeamModeEnum.default()
+        ),
     ):
         supported_scattering_types = list(cls._supported.keys())
         if scattering_type not in supported_scattering_types:
             raise ValueError(
-                f"Unsupported scattering type: '{scattering_type}'.\nSupported scattering types: {supported_scattering_types}"
+                f"Unsupported scattering type: '{scattering_type}'.\n"
+                f'Supported scattering types: {supported_scattering_types}'
             )
 
         supported_beam_modes = list(cls._supported[scattering_type].keys())
         if beam_mode not in supported_beam_modes:
             raise ValueError(
-                f"Unsupported beam mode: '{beam_mode}' for scattering type: '{scattering_type}'.\n "
-                f'Supported beam modes: {supported_beam_modes}'
+                f"Unsupported beam mode: '{beam_mode}' for scattering type: "
+                f"'{scattering_type}'.\n Supported beam modes: '{supported_beam_modes}'"
             )
 
         supported_profile_types = list(cls._supported[scattering_type][beam_mode].keys())

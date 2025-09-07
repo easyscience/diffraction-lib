@@ -68,12 +68,14 @@ class ConstraintsHandler(BaseSingleton):
     Manages user-defined parameter constraints using aliases and
     expressions.
 
-    Uses the asteval interpreter for safe evaluation of mathematical expressions.
-    Constraints are defined as: lhs_alias = expression(rhs_aliases).
+    Uses the asteval interpreter for safe evaluation of mathematical
+    expressions. Constraints are defined as: lhs_alias =
+    expression(rhs_aliases).
     """
 
     def __init__(self) -> None:
-        # Maps alias names (like 'biso_La') → ConstraintAlias(param=Parameter)
+        # Maps alias names
+        # (like 'biso_La') → ConstraintAlias(param=Parameter)
         self._alias_to_param: Dict[str, Any] = {}
 
         # Stores raw user-defined constraints indexed by lhs_alias

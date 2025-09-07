@@ -25,7 +25,8 @@ try:
     # print("✅ 'cryspy' calculation engine is successfully imported.")
 except ImportError:
     # TODO: Add the following print to debug mode
-    # print("⚠️ 'cryspy' module not found. This calculation engine will not be available.")
+    # print("⚠️ 'cryspy' module not found. This calculation engine will
+    # not be available.")
     cryspy = None
 
 
@@ -57,8 +58,10 @@ class CryspyCalculator(CalculatorBase):
         implemented.
 
         Args:
-            sample_model: The sample model to calculate structure factors for.
-            experiment: The experiment associated with the sample models.
+            sample_model: The sample model to calculate structure
+                factors for.
+            experiment: The experiment associated with the sample
+                models.
         """
         raise NotImplementedError('HKL calculation is not implemented for CryspyCalculator.')
 
@@ -81,10 +84,12 @@ class CryspyCalculator(CalculatorBase):
         Args:
             sample_model: The sample model to calculate the pattern for.
             experiment: The experiment associated with the sample model.
-            called_by_minimizer: Whether the calculation is called by a minimizer.
+            called_by_minimizer: Whether the calculation is called by a
+            minimizer.
 
         Returns:
-            The calculated diffraction pattern as a NumPy array or a list of floats.
+            The calculated diffraction pattern as a NumPy array or a
+                list of floats.
         """
         combined_name = f'{sample_model.name}_{experiment.name}'
 
@@ -190,7 +195,9 @@ class CryspyCalculator(CalculatorBase):
             cryspy_expt_name = f'pd_{experiment.name}'
             cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
             # Instrument
-            cryspy_expt_dict['offset_ttheta'][0] = np.deg2rad(experiment.instrument.calib_twotheta_offset.value)
+            cryspy_expt_dict['offset_ttheta'][0] = np.deg2rad(
+                experiment.instrument.calib_twotheta_offset.value
+            )
             cryspy_expt_dict['wavelength'][0] = experiment.instrument.setup_wavelength.value
             # Peak
             cryspy_resolution = cryspy_expt_dict['resolution_parameters']
@@ -207,7 +214,9 @@ class CryspyCalculator(CalculatorBase):
             cryspy_expt_dict['zero'][0] = experiment.instrument.calib_d_to_tof_offset.value
             cryspy_expt_dict['dtt1'][0] = experiment.instrument.calib_d_to_tof_linear.value
             cryspy_expt_dict['dtt2'][0] = experiment.instrument.calib_d_to_tof_quad.value
-            cryspy_expt_dict['ttheta_bank'] = np.deg2rad(experiment.instrument.setup_twotheta_bank.value)
+            cryspy_expt_dict['ttheta_bank'] = np.deg2rad(
+                experiment.instrument.setup_twotheta_bank.value
+            )
             # Peak
             cryspy_sigma = cryspy_expt_dict['profile_sigmas']
             cryspy_sigma[0] = experiment.peak.broad_gauss_sigma_0.value
@@ -282,7 +291,8 @@ class CryspyCalculator(CalculatorBase):
 
         Args:
             experiment: The experiment to convert.
-            linked_phase: The linked phase associated with the experiment.
+            linked_phase: The linked phase associated with the
+                experiment.
 
         Returns:
             The Cryspy CIF string representation of the experiment.

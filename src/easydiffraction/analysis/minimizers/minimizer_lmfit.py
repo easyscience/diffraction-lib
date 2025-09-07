@@ -39,7 +39,8 @@ class LmfitMinimizer(MinimizerBase):
             parameters: List of parameters to be optimized.
 
         Returns:
-            A dictionary containing the prepared lmfit.Parameters object.
+            A dictionary containing the prepared lmfit. Parameters
+                object.
         """
         engine_parameters = lmfit.Parameters()
         for param in parameters:

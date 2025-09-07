@@ -33,7 +33,9 @@ class CalculatorFactory:
     }
 
     @classmethod
-    def _supported_calculators(cls) -> Dict[str, Dict[str, Union[str, Type[CalculatorBase]]]]:
+    def _supported_calculators(
+        cls,
+    ) -> Dict[str, Dict[str, Union[str, Type[CalculatorBase]]]]:
         return {
             name: cfg
             for name, cfg in cls._potential_calculators.items()

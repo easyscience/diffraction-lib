@@ -104,7 +104,8 @@ class PlotlyPlotter(PlotterBase):
         )
 
         # Format the axes ticks
-        # Keeps decimals for small numbers; groups thousands for large ones
+        # Keeps decimals for small numbers;
+        # groups thousands for large ones
         fig.update_xaxes(tickformat=',.6~g', separatethousands=True)
         fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
 

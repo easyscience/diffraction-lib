@@ -257,8 +257,8 @@ class Project:
         # Update d-spacing if necessary
         # TODO: This is done before every plot, and not when parameters
         #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting process.
-        #  Need to find a better way to handle this.
+        #  to minimize the performance impact during the fitting
+        #  process. Need to find a better way to handle this.
         if d_spacing:
             self.update_pattern_d_spacing(expt_name)
 
@@ -287,8 +287,8 @@ class Project:
         # Update d-spacing if necessary
         # TODO: This is done before every plot, and not when parameters
         #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting process.
-        #  Need to find a better way to handle this.
+        #  to minimize the performance impact during the fitting
+        #  process. Need to find a better way to handle this.
         if d_spacing:
             self.update_pattern_d_spacing(expt_name)
 
@@ -318,8 +318,8 @@ class Project:
         # Update d-spacing if necessary
         # TODO: This is done before every plot, and not when parameters
         #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting process.
-        #  Need to find a better way to handle this.
+        #  to minimize the performance impact during the fitting
+        #  process. Need to find a better way to handle this.
         if d_spacing:
             self.update_pattern_d_spacing(expt_name)
 

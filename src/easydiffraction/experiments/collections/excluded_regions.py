@@ -73,8 +73,8 @@ class ExcludedRegions(Collection):
 
     def show(self) -> None:
         # TODO: Consider moving this to the base class
-        #  to avoid code duplication with implementations in Background, etc.
-        #  Consider using parameter names as column headers
+        #  to avoid code duplication with implementations in Background,
+        #  etc. Consider using parameter names as column headers
         columns_headers: List[str] = ['start', 'end']
         columns_alignment = ['left', 'left']
         columns_data: List[List[float]] = []

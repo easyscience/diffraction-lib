@@ -19,8 +19,14 @@ class SampleModel(Datablock):
     atomic sites.
     """
 
-    # TODO: Move cif_path and cif_str out of __init__ and into separate methods
-    def __init__(self, name: str, cif_path: str = None, cif_str: str = None):
+    # TODO: Move cif_path and cif_str out of __init__ and into separate
+    #  methods
+    def __init__(
+        self,
+        name: str,
+        cif_path: str = None,
+        cif_str: str = None,
+    ):
         super().__init__()
         self._name = name
         self.space_group = SpaceGroup()
@@ -117,7 +123,12 @@ class SampleModel(Datablock):
             }
             wl = atom.wyckoff_letter.value
             if not wl:
-                # raise ValueError("Wyckoff letter is not defined for atom.")
+                # TODO: Decide how to handle this case
+                #  For now, we just skip applying constraints if wyckoff
+                #  letter is not set. Alternatively, could raise an
+                #  error or warning
+                #  print(f"Warning: Wyckoff letter is not ...")
+                #  raise ValueError("Wyckoff letter is not ...")
                 continue
             ecr.apply_atom_site_symmetry_constraints(
                 atom_site=dummy_atom,

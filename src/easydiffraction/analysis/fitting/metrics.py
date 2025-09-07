@@ -139,7 +139,8 @@ def get_reliability_inputs(
         calculator: The calculator to use for pattern generation.
 
     Returns:
-        Tuple containing arrays of (observed values, calculated values, error values)
+        Tuple containing arrays of (observed values, calculated values,
+            error values)
     """
     y_obs_all = []
     y_calc_all = []

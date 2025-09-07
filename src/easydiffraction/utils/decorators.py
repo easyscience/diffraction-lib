@@ -24,21 +24,35 @@ def enforce_type(func):
                 args_types = typing.get_args(expected_type)
                 valid_types = tuple(t for t in args_types if isinstance(t, type))
                 if not any(isinstance(value, t) for t in valid_types):
-                    raise TypeError(f"Parameter '{name}': expected {expected_type}, got {type(value).__name__}.")
+                    raise TypeError(
+                        f"Parameter '{name}': expected {expected_type}, "
+                        f'got {type(value).__name__}.'
+                    )
             else:
                 if isinstance(expected_type, type):
                     if not isinstance(value, expected_type):
-                        raise TypeError(f"Parameter '{name}': expected {expected_type.__name__}, got {type(value).__name__}.")
+                        raise TypeError(
+                            f"Parameter '{name}': expected {expected_type.__name__}, "
+                            f'got {type(value).__name__}.'
+                        )
                 elif isinstance(expected_type, str) and expected_type == 'np.ndarray':
                     if not isinstance(value, np.ndarray):
-                        raise TypeError(f"Parameter '{name}': expected np.ndarray, got {type(value).__name__}.")
+                        raise TypeError(
+                            f"Parameter '{name}': expected np.ndarray, got {type(value).__name__}."
+                        )
                 else:
                     if hasattr(expected_type, '__name__'):
                         if type(value).__name__ != expected_type.__name__:
-                            raise TypeError(f"Parameter '{name}': expected {expected_type}, got {type(value).__name__}.")
+                            raise TypeError(
+                                f"Parameter '{name}': expected {expected_type}, "
+                                f'got {type(value).__name__}.'
+                            )
                     else:
                         if type(value).__name__ != str(expected_type):
-                            raise TypeError(f"Parameter '{name}': expected {expected_type}, got {type(value).__name__}.")
+                            raise TypeError(
+                                f"Parameter '{name}': expected {expected_type}, "
+                                f'got {type(value).__name__}.'
+                            )
 
         return func(self, *args, **kwargs)
 

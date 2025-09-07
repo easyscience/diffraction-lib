@@ -30,7 +30,8 @@ class SampleModels(Collection):
     ) -> None:
         """
         Add a new sample model to the collection.
-        Dispatches based on input type: pre-built model or parameters for new creation.
+        Dispatches based on input type: pre-built model or parameters
+        for new creation.
 
         Args:
             model: An existing SampleModel instance.
@@ -114,7 +115,8 @@ class SampleModels(Collection):
             cif_str: CIF content as string.
 
         Raises:
-            ValueError: If neither name, cif_path, nor cif_str is provided.
+            ValueError: If neither name, cif_path, nor cif_str is
+            provided.
         """
         if cif_path:
             model = SampleModel(cif_path=cif_path)

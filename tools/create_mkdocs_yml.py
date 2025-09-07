@@ -19,7 +19,8 @@ import pymdownx.superfences  # noqa: F401  # isort: skip
 
 def load_yaml_with_env_variables(file_path: str) -> Dict[str, Any]:
     """
-    Load a YAML file while resolving environment variables defined using !ENV ${VAR_NAME}.
+    Load a YAML file while resolving environment variables defined using
+    !ENV ${VAR_NAME}.
 
     Args:
         file_path (str): Path to the YAML file.
@@ -31,7 +32,8 @@ def load_yaml_with_env_variables(file_path: str) -> Dict[str, Any]:
     pattern = re.compile(r'.*?\${([A-Z0-9_]+)}.*?')
 
     def constructor_env_variables(loader, node):
-        """Replace !ENV ${VAR_NAME} with the actual environment variable values."""
+        """Replace !ENV ${VAR_NAME} with the actual environment variable
+        values."""
         value = loader.construct_scalar(node)
         for var in pattern.findall(value):
             value = value.replace(f'${{{var}}}', os.environ.get(var, var))
@@ -47,7 +49,8 @@ def load_yaml_with_env_variables(file_path: str) -> Dict[str, Any]:
 
 def merge_yaml(base_config: Dict[str, Any], override_config: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Recursively merges two YAML dictionaries. The override_config values replace or extend base_config.
+    Recursively merges two YAML dictionaries. The override_config values
+    replace or extend base_config.
 
     Args:
         base_config (dict): The base YAML configuration.
@@ -78,8 +81,8 @@ def merge_yaml(base_config: Dict[str, Any], override_config: Dict[str, Any]) -> 
 
 def merge_lists(base_list: List[Any], override_list: List[Any]) -> List[Any]:
     """
-    Merges two lists while ensuring dictionaries with the same key are merged
-    and other values are appended without duplication.
+    Merges two lists while ensuring dictionaries with the same key are
+    merged and other values are appended without duplication.
 
     - If an item in the list is a dictionary with a single key, and a matching dictionary exists,
       they are merged instead of duplicated.
@@ -114,7 +117,8 @@ def merge_lists(base_list: List[Any], override_list: List[Any]) -> List[Any]:
 
 def save_yaml(data: Dict[str, Any], output_file: str) -> None:
     """
-    Save a YAML dictionary to a file, ensuring proper Unicode handling and preserving !!python/name tags.
+    Save a YAML dictionary to a file, ensuring proper Unicode handling
+    and preserving !!python/name tags.
 
     Args:
         data (dict): YAML data to be saved.
@@ -122,7 +126,8 @@ def save_yaml(data: Dict[str, Any], output_file: str) -> None:
     """
 
     class CustomDumper(yaml.Dumper):
-        """Custom YAML dumper to prevent adding empty quotes for !!python/name."""
+        """Custom YAML dumper to prevent adding empty quotes for
+        !!python/name."""
 
         def ignore_aliases(self, data):
             return True  # Prevents unnecessary YAML processing on certain tags
@@ -146,9 +151,7 @@ def save_yaml(data: Dict[str, Any], output_file: str) -> None:
 
 
 def main() -> None:
-    """
-    Main function to read, merge, and save YAML configurations.
-    """
+    """Main function to read, merge, and save YAML configurations."""
     generic_config_path = '../assets-docs/mkdocs.yml'
     specific_config_path = 'docs/mkdocs.yml'
     output_path = 'mkdocs.yml'
