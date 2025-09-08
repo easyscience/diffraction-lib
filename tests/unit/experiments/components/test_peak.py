@@ -12,7 +12,7 @@ from easydiffraction.experiments.components.peak import PeakBase
 from easydiffraction.experiments.components.peak import PeakFactory
 from easydiffraction.experiments.components.peak import TimeOfFlightBroadeningMixin
 from easydiffraction.experiments.components.peak import TimeOfFlightPseudoVoigt
-from easydiffraction.experiments.components.peak import TimeOfFlightPseudoVoigtBackToBackExponential
+from easydiffraction.experiments.components.peak import TimeOfFlightPseudoVoigtBackToBack
 from easydiffraction.experiments.components.peak import TimeOfFlightPseudoVoigtIkedaCarpenter
 
 
@@ -124,7 +124,7 @@ def test_time_of_flight_pseudo_voigt_ikeda_carpenter_initialization():
 
 
 def test_time_of_flight_pseudo_voigt_back_to_back_exponential_initialization():
-    peak = TimeOfFlightPseudoVoigtBackToBackExponential()
+    peak = TimeOfFlightPseudoVoigtBackToBack()
     assert isinstance(peak.broad_gauss_sigma_0, Parameter)
     assert isinstance(peak.asym_alpha_0, Parameter)
 

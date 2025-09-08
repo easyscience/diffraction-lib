@@ -121,9 +121,9 @@ docs-format-fix = "docformatter --in-place --recursive src tests tools tutorials
 
 code-quality = { depends-on = [
   "pyproject-check",
+  "py-format-fix",
   "docs-format-fix",
   "py-lint-fix",
-  "py-format-fix",
   "nonpy-format-fix-modified",
 ] }
 

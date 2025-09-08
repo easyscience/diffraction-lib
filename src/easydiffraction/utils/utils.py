@@ -446,7 +446,6 @@ def render_table(
     Returns:
         None
     """
-
     # Use pandas DataFrame for Jupyter Notebook rendering
     if is_notebook():
         # Create DataFrame

@@ -200,7 +200,6 @@ class SampleModel(Datablock):
             plane (str): 'xy', 'xz', or 'yz' plane to project.
             grid_size (int): Size of the ASCII grid (default is 20).
         """
-
         print(paragraph(f"Sample model 🧩 '{self.name}' structure view"))
         print('Not implemented yet.')
 

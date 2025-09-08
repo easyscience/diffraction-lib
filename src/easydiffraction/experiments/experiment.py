@@ -351,7 +351,7 @@ class PowderExperiment(
 # TODO: Refactor this class to reuse PowderExperiment
 # TODO: This is not a specific experiment, but rather processed data
 #  from PowderExperiment. So, we should think of a better design.
-class PairDistributionFunctionExperiment(BasePowderExperiment):
+class PairDistrFuncExperiment(BasePowderExperiment):
     """PDF experiment class with specific attributes."""
 
     def __init__(
@@ -463,7 +463,7 @@ class ExperimentFactory:
             SampleFormEnum.SINGLE_CRYSTAL: SingleCrystalExperiment,
         },
         ScatteringTypeEnum.TOTAL: {
-            SampleFormEnum.POWDER: PairDistributionFunctionExperiment,
+            SampleFormEnum.POWDER: PairDistrFuncExperiment,
         },
     }
 

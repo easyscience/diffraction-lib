@@ -156,6 +156,7 @@ line-length = 99
 
 [tool.ruff.lint]
 select = [
+  #'D',      # Docstring-related issues (e.g., missing docstrings, incorrect formatting)
   'E',      # General PEP 8 style errors
   'E9',     # Runtime errors (e.g., syntax errors, undefined names)
   'F',      # Pyflakes-specific checks (e.g., unused variables, imports)
@@ -167,6 +168,10 @@ select = [
   'W',      # General PEP 8 warnings (e.g., lines too long, trailing whitespace)
   'TCH',    # Type checking issues (e.g., incompatible types, missing type annotations)
   'TID252', # Enforces absolute imports over relative imports
+]
+ignore = [
+  #'D205', # Ignore: 1 blank line required between summary and description
+  #'D212', # Ignore: Multi-line docstring summary should start at the first line
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]
@@ -181,6 +186,9 @@ force-single-line = true
 [tool.ruff.lint.pycodestyle]
 max-line-length = 99 # https://peps.python.org/pep-0008/#maximum-line-length
 max-doc-length = 72  # https://peps.python.org/pep-0008/#maximum-line-length
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.ruff.format]
 docstring-code-format = true    # Whether to format code snippets in docstrings

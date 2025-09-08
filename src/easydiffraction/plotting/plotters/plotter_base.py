@@ -24,9 +24,18 @@ DEFAULT_AXES_LABELS = {
         'TOF (µs)',
         'Intensity (arb. units)',
     ],
-    (ScatteringTypeEnum.BRAGG, 'd-spacing'): ['d (Å)', 'Intensity (arb. units)'],
-    (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): ['r (Å)', 'G(r) (Å)'],
-    (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): ['r (Å)', 'G(r) (Å)'],
+    (ScatteringTypeEnum.BRAGG, 'd-spacing'): [
+        'd (Å)',
+        'Intensity (arb. units)',
+    ],
+    (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): [
+        'r (Å)',
+        'G(r) (Å)',
+    ],
+    (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): [
+        'r (Å)',
+        'G(r) (Å)',
+    ],
 }
 
 SERIES_CONFIG = dict(

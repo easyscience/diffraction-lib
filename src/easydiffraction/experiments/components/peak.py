@@ -233,7 +233,7 @@ class IkedaCarpenterAsymmetryMixin:
         )
 
 
-class PairDistributionFunctionBroadeningMixin:
+class PairDistrFuncBroadeningMixin:
     def _add_pair_distribution_function_broadening(self):
         self.damp_q = Parameter(
             value=0.05,
@@ -370,7 +370,7 @@ class TimeOfFlightPseudoVoigtIkedaCarpenter(
         self._locked: bool = True
 
 
-class TimeOfFlightPseudoVoigtBackToBackExponential(
+class TimeOfFlightPseudoVoigtBackToBack(
     PeakBase,
     TimeOfFlightBroadeningMixin,
     IkedaCarpenterAsymmetryMixin,
@@ -386,9 +386,9 @@ class TimeOfFlightPseudoVoigtBackToBackExponential(
         self._locked: bool = True
 
 
-class PairDistributionFunctionGaussianDampedSinc(
+class PairDistrFuncGaussianDampedSinc(
     PeakBase,
-    PairDistributionFunctionBroadeningMixin,
+    PairDistrFuncBroadeningMixin,
 ):
     def __init__(self):
         super().__init__()
@@ -398,25 +398,28 @@ class PairDistributionFunctionGaussianDampedSinc(
 
 # --- Peak factory ---
 class PeakFactory:
+    ST = ScatteringTypeEnum
+    BM = BeamModeEnum
+    PPT = PeakProfileTypeEnum
     _supported = {
-        ScatteringTypeEnum.BRAGG: {
-            BeamModeEnum.CONSTANT_WAVELENGTH: {
-                PeakProfileTypeEnum.PSEUDO_VOIGT: ConstantWavelengthPseudoVoigt,
-                PeakProfileTypeEnum.SPLIT_PSEUDO_VOIGT: ConstantWavelengthSplitPseudoVoigt,
-                PeakProfileTypeEnum.THOMPSON_COX_HASTINGS: ConstantWavelengthThompsonCoxHastings,
+        ST.BRAGG: {
+            BM.CONSTANT_WAVELENGTH: {
+                PPT.PSEUDO_VOIGT: ConstantWavelengthPseudoVoigt,
+                PPT.SPLIT_PSEUDO_VOIGT: ConstantWavelengthSplitPseudoVoigt,
+                PPT.THOMPSON_COX_HASTINGS: ConstantWavelengthThompsonCoxHastings,
             },
-            BeamModeEnum.TIME_OF_FLIGHT: {
-                PeakProfileTypeEnum.PSEUDO_VOIGT: TimeOfFlightPseudoVoigt,
-                PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER: TimeOfFlightPseudoVoigtIkedaCarpenter,
-                PeakProfileTypeEnum.PSEUDO_VOIGT_BACK_TO_BACK: TimeOfFlightPseudoVoigtBackToBackExponential,
+            BM.TIME_OF_FLIGHT: {
+                PPT.PSEUDO_VOIGT: TimeOfFlightPseudoVoigt,
+                PPT.PSEUDO_VOIGT_IKEDA_CARPENTER: TimeOfFlightPseudoVoigtIkedaCarpenter,
+                PPT.PSEUDO_VOIGT_BACK_TO_BACK: TimeOfFlightPseudoVoigtBackToBack,
             },
         },
-        ScatteringTypeEnum.TOTAL: {
-            BeamModeEnum.CONSTANT_WAVELENGTH: {
-                PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC: PairDistributionFunctionGaussianDampedSinc,
+        ST.TOTAL: {
+            BM.CONSTANT_WAVELENGTH: {
+                PPT.GAUSSIAN_DAMPED_SINC: PairDistrFuncGaussianDampedSinc,
             },
-            BeamModeEnum.TIME_OF_FLIGHT: {
-                PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC: PairDistributionFunctionGaussianDampedSinc,
+            BM.TIME_OF_FLIGHT: {
+                PPT.GAUSSIAN_DAMPED_SINC: PairDistrFuncGaussianDampedSinc,
             },
         },
     }

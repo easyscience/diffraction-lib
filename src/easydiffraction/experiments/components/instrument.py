@@ -98,10 +98,12 @@ class TimeOfFlightInstrument(InstrumentBase):
 
 
 class InstrumentFactory:
+    ST = ScatteringTypeEnum
+    BM = BeamModeEnum
     _supported = {
-        ScatteringTypeEnum.BRAGG: {
-            BeamModeEnum.CONSTANT_WAVELENGTH: ConstantWavelengthInstrument,
-            BeamModeEnum.TIME_OF_FLIGHT: TimeOfFlightInstrument,
+        ST.BRAGG: {
+            BM.CONSTANT_WAVELENGTH: ConstantWavelengthInstrument,
+            BM.TIME_OF_FLIGHT: TimeOfFlightInstrument,
         }
     }
 

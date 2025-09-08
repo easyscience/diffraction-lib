@@ -17,16 +17,12 @@ class BaseDatastore:
     """
     Base class for all data stores.
 
-    Attributes
-    ----------
-    meas : Optional[np.ndarray]
-        Measured intensities.
-    meas_su : Optional[np.ndarray]
-        Standard uncertainties of measured intensities.
-    excluded : Optional[np.ndarray]
-        Flags for excluded points.
-    _calc : Optional[np.ndarray]
-        Stored calculated intensities.
+    Attributes:
+        meas (Optional[np.ndarray]): Measured intensities.
+        meas_su (Optional[np.ndarray]): Standard uncertainties of
+            measured intensities.
+        excluded (Optional[np.ndarray]): Flags for excluded points.
+        _calc (Optional[np.ndarray]): Stored calculated intensities.
     """
 
     def __init__(self) -> None:
@@ -130,14 +126,11 @@ class PowderDatastore(BaseDatastore):
     """
     Class for powder diffraction data.
 
-    Attributes
-    ----------
-    x : Optional[np.ndarray]
-        Scan variable (e.g. 2θ or time-of-flight values).
-    d : Optional[np.ndarray]
-        d-spacing values.
-    bkg : Optional[np.ndarray]
-        Background values.
+    Attributes:
+        x (Optional[np.ndarray]): Scan variable (e.g. 2θ or
+            time-of-flight values).
+        d (Optional[np.ndarray]): d-spacing values.
+        bkg (Optional[np.ndarray]): Background values.
     """
 
     def __init__(self, beam_mode: BeamModeEnum = BeamModeEnum.default()) -> None:
@@ -182,16 +175,11 @@ class SingleCrystalDatastore(BaseDatastore):
     """
     Class for single crystal diffraction data.
 
-    Attributes
-    ----------
-    sin_theta_over_lambda : Optional[np.ndarray]
-        sin(θ)/λ values.
-    index_h : Optional[np.ndarray]
-        Miller index h.
-    index_k : Optional[np.ndarray]
-        Miller index k.
-    index_l : Optional[np.ndarray]
-        Miller index l.
+    Attributes:
+        sin_theta_over_lambda (Optional[np.ndarray]): sin(θ)/λ values.
+        index_h (Optional[np.ndarray]): Miller index h.
+        index_k (Optional[np.ndarray]): Miller index k.
+        index_l (Optional[np.ndarray]): Miller index l.
     """
 
     def __init__(self) -> None:
@@ -241,7 +229,11 @@ class DatastoreFactory:
 
         Returns:
             BaseDatastore: Instance of a datastore class corresponding
-            to sample form.
+                to sample form.
+
+        Raises:
+            ValueError: If the sample_form or beam_mode is not
+                supported.
         """
         supported_sample_forms = list(cls._supported.keys())
         if sample_form not in supported_sample_forms:

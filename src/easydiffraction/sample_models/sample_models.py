@@ -28,8 +28,7 @@ class SampleModels(Collection):
         cif_path: Optional[str] = None,
         cif_str: Optional[str] = None,
     ) -> None:
-        """
-        Add a new sample model to the collection.
+        """Add a new sample model to the collection.
         Dispatches based on input type: pre-built model or parameters
         for new creation.
 

@@ -206,9 +206,10 @@ class BackgroundTypeEnum(str, Enum):
 
 
 class BackgroundFactory:
-    _supported: Dict[BackgroundTypeEnum, Type[BackgroundBase]] = {
-        BackgroundTypeEnum.LINE_SEGMENT: LineSegmentBackground,
-        BackgroundTypeEnum.CHEBYSHEV: ChebyshevPolynomialBackground,
+    BT = BackgroundTypeEnum
+    _supported: Dict[BT, Type[BackgroundBase]] = {
+        BT.LINE_SEGMENT: LineSegmentBackground,
+        BT.CHEBYSHEV: ChebyshevPolynomialBackground,
     }
 
     @classmethod
