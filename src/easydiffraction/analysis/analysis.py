@@ -40,8 +40,7 @@ class Analysis:
         self,
         params: List[Union[Descriptor, Parameter]],
     ) -> pd.DataFrame:
-        """
-        Convert a list of parameters to a DataFrame.
+        """Convert a list of parameters to a DataFrame.
 
         Args:
             params: List of Descriptor or Parameter objects.
@@ -381,8 +380,7 @@ class Analysis:
         print(self.fit_mode)
 
     def calculate_pattern(self, expt_name: str) -> None:
-        """
-        Calculate the diffraction pattern for a given experiment. The
+        """Calculate the diffraction pattern for a given experiment. The
         calculated pattern is stored within the experiment's datastore.
 
         Args:

@@ -36,8 +36,7 @@ class DiffractionMinimizer:
         calculator: Any,
         weights: Optional[np.array] = None,
     ) -> None:
-        """
-        Run the fitting process.
+        """Run the fitting process.
 
         Args:
             sample_models: Collection of sample models.
@@ -76,8 +75,7 @@ class DiffractionMinimizer:
         experiments: Experiments,
         calculator: CalculatorBase,
     ) -> None:
-        """
-        Collect reliability inputs and display results after fitting.
+        """Collect reliability inputs and display results after fitting.
 
         Args:
             sample_models: Collection of sample models.
@@ -107,8 +105,7 @@ class DiffractionMinimizer:
         sample_models: SampleModels,
         experiments: Experiments,
     ) -> List[Parameter]:
-        """
-        Collect free parameters from sample models and experiments.
+        """Collect free parameters from sample models and experiments.
 
         Args:
             sample_models: Collection of sample models.
@@ -131,10 +128,9 @@ class DiffractionMinimizer:
         calculator: CalculatorBase,
         weights: Optional[np.array] = None,
     ) -> np.ndarray:
-        """
-        Residual function computes the difference between measured and
-        calculated patterns. It updates the parameter values according
-        to the optimizer-provided engine_params.
+        """Residual function computes the difference between measured
+        and calculated patterns. It updates the parameter values
+        according to the optimizer-provided engine_params.
 
         Args:
             engine_params: Engine-specific parameter dict.

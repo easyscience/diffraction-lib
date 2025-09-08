@@ -45,8 +45,7 @@ class MinimizerFactory:
 
     @classmethod
     def list_available_minimizers(cls) -> List[str]:
-        """
-        List all available minimizers.
+        """List all available minimizers.
 
         Returns:
             A list of minimizer names.
@@ -59,7 +58,8 @@ class MinimizerFactory:
         #  consistency with other methods in the library. E.g.
         #  `show_supported_calculators`, etc.
         """Display a table of available minimizers and their
-        descriptions."""
+        descriptions.
+        """
         columns_headers: List[str] = ['Minimizer', 'Description']
         columns_alignment = ['left', 'left']
         columns_data: List[List[str]] = []
@@ -76,8 +76,7 @@ class MinimizerFactory:
 
     @classmethod
     def create_minimizer(cls, selection: str) -> MinimizerBase:
-        """
-        Create a minimizer instance based on the selection.
+        """Create a minimizer instance based on the selection.
 
         Args:
             selection: The name of the minimizer to create.
@@ -111,8 +110,7 @@ class MinimizerFactory:
         method: Optional[str] = None,
         description: str = 'No description provided.',
     ) -> None:
-        """
-        Register a new minimizer.
+        """Register a new minimizer.
 
         Args:
             name: The name of the minimizer.

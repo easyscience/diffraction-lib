@@ -180,7 +180,8 @@ class Descriptor:
 
 class Parameter(Descriptor):
     """A parameter with a value, uncertainty, units, and CIF
-    representation."""
+    representation.
+    """
 
     def __init__(
         self,
@@ -232,8 +233,7 @@ class Component(ABC):
     @property
     @abstractmethod
     def category_key(self):
-        """
-        Must be implemented in subclasses to return the ED category
+        """Must be implemented in subclasses to return the ED category
         name.
 
         Can differ from cif_category_key.
@@ -244,7 +244,8 @@ class Component(ABC):
     @abstractmethod
     def cif_category_key(self):
         """Must be implemented in subclasses to return the CIF category
-        name."""
+        name.
+        """
         pass
 
     def __init__(self):
@@ -259,15 +260,15 @@ class Component(ABC):
 
     def __getattr__(self, name: str) -> Any:
         """If the attribute is a Parameter or Descriptor, return its
-        value by default."""
+        value by default.
+        """
         attr = self.__dict__.get(name, None)
         if isinstance(attr, (Descriptor, Parameter)):
             return attr.value
         raise AttributeError(f'{name} not found in {self}')
 
     def __setattr__(self, name: str, value: Any) -> None:
-        """
-        If an object is locked for adding new attributes, raise an
+        """If an object is locked for adding new attributes, raise an
         error.
 
         If the attribute 'name' does not exist, add it. If the attribute
@@ -378,7 +379,8 @@ class Component(ABC):
 
 class Collection(ABC):
     """Base class for collections like AtomSites, LinkedPhases,
-    SampleModels, Experiments, etc."""
+    SampleModels, Experiments, etc.
+    """
 
     @property
     @abstractmethod
@@ -407,8 +409,7 @@ class Collection(ABC):
             param.datablock_id = new_id
 
     def add(self, *args, **kwargs):
-        """
-        Add a new item to the collection.
+        """Add a new item to the collection.
 
         The item must be a subclass of Component.
         """
@@ -511,7 +512,8 @@ class Datablock(ABC):
 
     def items(self):
         """Returns a list of both components and collections in the data
-        block."""
+        block.
+        """
         attr_objs = []
         for attr_name in dir(self):
             if attr_name.startswith('_'):

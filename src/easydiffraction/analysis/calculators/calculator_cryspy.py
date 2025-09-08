@@ -31,8 +31,7 @@ except ImportError:
 
 
 class CryspyCalculator(CalculatorBase):
-    """
-    Cryspy-based diffraction calculator.
+    """Cryspy-based diffraction calculator.
 
     Converts EasyDiffraction models into Cryspy objects and computes
     patterns.
@@ -53,8 +52,7 @@ class CryspyCalculator(CalculatorBase):
         sample_model: SampleModel,
         experiment: Experiment,
     ) -> None:
-        """
-        Raises a NotImplementedError as HKL calculation is not
+        """Raises a NotImplementedError as HKL calculation is not
         implemented.
 
         Args:
@@ -71,8 +69,7 @@ class CryspyCalculator(CalculatorBase):
         experiment: Experiment,
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
-        """
-        Calculates the diffraction pattern using Cryspy for the given
+        """Calculates the diffraction pattern using Cryspy for the given
         sample model and experiment.
 
         We only recreate the cryspy_obj if this method is
@@ -147,9 +144,8 @@ class CryspyCalculator(CalculatorBase):
         sample_model: SampleModel,
         experiment: Experiment,
     ) -> Dict[str, Any]:
-        """
-        Recreates the Cryspy dictionary for the given sample model and
-        experiment.
+        """Recreates the Cryspy dictionary for the given sample model
+        and experiment.
 
         Args:
             sample_model: The sample model to update.
@@ -238,8 +234,7 @@ class CryspyCalculator(CalculatorBase):
         sample_model: SampleModel,
         experiment: Experiment,
     ) -> Any:
-        """
-        Recreates the Cryspy object for the given sample model and
+        """Recreates the Cryspy object for the given sample model and
         experiment.
 
         Args:
@@ -270,8 +265,7 @@ class CryspyCalculator(CalculatorBase):
         self,
         sample_model: SampleModel,
     ) -> str:
-        """
-        Converts a sample model to a Cryspy CIF string.
+        """Converts a sample model to a Cryspy CIF string.
 
         Args:
             sample_model: The sample model to convert.
@@ -286,8 +280,7 @@ class CryspyCalculator(CalculatorBase):
         experiment: Experiment,
         linked_phase: Any,
     ) -> str:
-        """
-        Converts an experiment to a Cryspy CIF string.
+        """Converts an experiment to a Cryspy CIF string.
 
         Args:
             experiment: The experiment to convert.

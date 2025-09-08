@@ -15,8 +15,7 @@ class DiffractionCalculator:
     """Invokes calculation engines for pattern generation."""
 
     def __init__(self, engine: str = 'cryspy') -> None:
-        """
-        Initialize the DiffractionCalculator with a specified backend
+        """Initialize the DiffractionCalculator with a specified backend
         engine.
 
         Args:
@@ -28,8 +27,7 @@ class DiffractionCalculator:
         self._calculator = self.calculator_factory.create_calculator(engine)
 
     def set_calculator(self, engine: str) -> None:
-        """
-        Switch to a different calculator engine at runtime.
+        """Switch to a different calculator engine at runtime.
 
         Args:
             engine: New calculation engine type to use.
@@ -41,9 +39,8 @@ class DiffractionCalculator:
         sample_models: SampleModels,
         experiments: Experiments,
     ) -> Optional[List[Any]]:
-        """
-        Calculate HKL intensities (structure factors) for sample models
-        and experiments.
+        """Calculate HKL intensities (structure factors) for sample
+        models and experiments.
 
         Args:
             sample_models: Collection of sample models.
@@ -59,8 +56,7 @@ class DiffractionCalculator:
         sample_models: SampleModels,
         experiment: Experiment,
     ) -> None:
-        """
-        Calculate diffraction pattern based on sample models and
+        """Calculate diffraction pattern based on sample models and
         experiment. The calculated pattern is stored within the
         experiment's datastore.
 

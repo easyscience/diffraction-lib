@@ -14,8 +14,7 @@ from easydiffraction.utils.decorators import enforce_type
 
 
 class BaseDatastore:
-    """
-    Base class for all data stores.
+    """Base class for all data stores.
 
     Attributes:
         meas (Optional[np.ndarray]): Measured intensities.
@@ -33,8 +32,7 @@ class BaseDatastore:
 
     @property
     def calc(self) -> Optional[np.ndarray]:
-        """
-        Access calculated intensities. Should be updated via external
+        """Access calculated intensities. Should be updated via external
         calculation.
 
         Returns:
@@ -46,8 +44,8 @@ class BaseDatastore:
     @calc.setter
     @enforce_type
     def calc(self, values: np.ndarray) -> None:
-        """
-        Set calculated intensities (from Analysis.calculate_pattern()).
+        """Set calculated intensities (from
+        Analysis.calculate_pattern()).
 
         Args:
             values (np.ndarray): Array of calculated intensities.
@@ -56,8 +54,7 @@ class BaseDatastore:
 
     @abstractmethod
     def _cif_mapping(self) -> dict[str, str]:
-        """
-        Must be implemented in subclasses to return a mapping from
+        """Must be implemented in subclasses to return a mapping from
         attribute names to CIF tags.
 
         Returns:
@@ -66,8 +63,8 @@ class BaseDatastore:
         pass
 
     def as_cif(self, max_points: Optional[int] = None) -> str:
-        """
-        Generate a CIF-formatted string representing the datastore data.
+        """Generate a CIF-formatted string representing the datastore
+        data.
 
         Args:
             max_points (Optional[int]): Maximum number of points to
@@ -123,8 +120,7 @@ class BaseDatastore:
 
 
 class PowderDatastore(BaseDatastore):
-    """
-    Class for powder diffraction data.
+    """Class for powder diffraction data.
 
     Attributes:
         x (Optional[np.ndarray]): Scan variable (e.g. 2θ or
@@ -134,8 +130,7 @@ class PowderDatastore(BaseDatastore):
     """
 
     def __init__(self, beam_mode: BeamModeEnum = BeamModeEnum.default()) -> None:
-        """
-        Initialize PowderDatastore.
+        """Initialize PowderDatastore.
 
         Args:
             beam_mode (str): Beam mode, e.g. 'time-of-flight' or
@@ -148,8 +143,7 @@ class PowderDatastore(BaseDatastore):
         self.bkg: Optional[np.ndarray] = None
 
     def _cif_mapping(self) -> dict[str, str]:
-        """
-        Return mapping from attribute names to CIF tags based on beam
+        """Return mapping from attribute names to CIF tags based on beam
         mode.
 
         Returns:
@@ -172,8 +166,7 @@ class PowderDatastore(BaseDatastore):
 
 
 class SingleCrystalDatastore(BaseDatastore):
-    """
-    Class for single crystal diffraction data.
+    """Class for single crystal diffraction data.
 
     Attributes:
         sin_theta_over_lambda (Optional[np.ndarray]): sin(θ)/λ values.
@@ -191,8 +184,7 @@ class SingleCrystalDatastore(BaseDatastore):
         self.index_l: Optional[np.ndarray] = None
 
     def _cif_mapping(self) -> dict[str, str]:
-        """
-        Return mapping from attribute names to CIF tags for single
+        """Return mapping from attribute names to CIF tags for single
         crystal data.
 
         Returns:
@@ -219,8 +211,8 @@ class DatastoreFactory:
         sample_form: str = SampleFormEnum.default(),
         beam_mode: str = BeamModeEnum.default(),
     ) -> BaseDatastore:
-        """
-        Create and return a datastore object for the given sample form.
+        """Create and return a datastore object for the given sample
+        form.
 
         Args:
             sample_form (str): Sample form type, e.g. 'powder' or

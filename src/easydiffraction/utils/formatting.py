@@ -12,7 +12,8 @@ SYMBOL = '═'
 
 def chapter(title: str) -> str:
     """Formats a chapter header with bold magenta text, uppercase, and
-    padding."""
+    padding.
+    """
     full_title = f' {title.upper()} '
     pad_len = (WIDTH - len(full_title)) // 2
     padding = SYMBOL * pad_len
@@ -30,7 +31,8 @@ def section(title: str) -> str:
 
 def paragraph(title: str) -> str:
     """Formats a subsection header with bold blue text while keeping
-    quoted text unformatted."""
+    quoted text unformatted.
+    """
     parts = re.split(r"('.*?')", title)
     formatted = f'{Fore.LIGHTBLUE_EX + Style.BRIGHT}'
     for part in parts:

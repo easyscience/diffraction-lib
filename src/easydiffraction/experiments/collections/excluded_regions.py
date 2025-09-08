@@ -57,7 +57,8 @@ class ExcludedRegions(Collection):
 
     def on_item_added(self, item: ExcludedRegion) -> None:
         """Mark excluded points in the experiment pattern when a new
-        region is added."""
+        region is added.
+        """
         datastore = self._parent.datastore
 
         # Boolean mask for points within the new excluded region

@@ -15,8 +15,7 @@ def calculate_r_factor(
     y_obs: np.ndarray,
     y_calc: np.ndarray,
 ) -> float:
-    """
-    Calculate the R-factor (reliability factor) between observed and
+    """Calculate the R-factor (reliability factor) between observed and
     calculated data.
 
     Args:
@@ -38,8 +37,7 @@ def calculate_weighted_r_factor(
     y_calc: np.ndarray,
     weights: np.ndarray,
 ) -> float:
-    """
-    Calculate the weighted R-factor between observed and calculated
+    """Calculate the weighted R-factor between observed and calculated
     data.
 
     Args:
@@ -62,8 +60,8 @@ def calculate_rb_factor(
     y_obs: np.ndarray,
     y_calc: np.ndarray,
 ) -> float:
-    """
-    Calculate the Bragg R-factor between observed and calculated data.
+    """Calculate the Bragg R-factor between observed and calculated
+    data.
 
     Args:
         y_obs: Observed data points.
@@ -83,8 +81,8 @@ def calculate_r_factor_squared(
     y_obs: np.ndarray,
     y_calc: np.ndarray,
 ) -> float:
-    """
-    Calculate the R-factor squared between observed and calculated data.
+    """Calculate the R-factor squared between observed and calculated
+    data.
 
     Args:
         y_obs: Observed data points.
@@ -104,8 +102,7 @@ def calculate_reduced_chi_square(
     residuals: np.ndarray,
     num_parameters: int,
 ) -> float:
-    """
-    Calculate the reduced chi-square statistic.
+    """Calculate the reduced chi-square statistic.
 
     Args:
         residuals: Residuals between observed and calculated data.
@@ -129,8 +126,7 @@ def get_reliability_inputs(
     experiments: Experiments,
     calculator: CalculatorBase,
 ) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
-    """
-    Collect observed and calculated data points for reliability
+    """Collect observed and calculated data points for reliability
     calculations.
 
     Args:

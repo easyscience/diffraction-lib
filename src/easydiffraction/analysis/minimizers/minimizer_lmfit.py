@@ -32,8 +32,7 @@ class LmfitMinimizer(MinimizerBase):
         self,
         parameters: List[Any],
     ) -> Dict[str, Any]:
-        """
-        Prepares the solver arguments for the lmfit minimizer.
+        """Prepares the solver arguments for the lmfit minimizer.
 
         Args:
             parameters: List of parameters to be optimized.
@@ -54,8 +53,7 @@ class LmfitMinimizer(MinimizerBase):
         return {'engine_parameters': engine_parameters}
 
     def _run_solver(self, objective_function: Any, **kwargs: Any) -> Any:
-        """
-        Runs the lmfit solver.
+        """Runs the lmfit solver.
 
         Args:
             objective_function: The objective function to minimize.
@@ -79,8 +77,7 @@ class LmfitMinimizer(MinimizerBase):
         parameters: List[Any],
         raw_result: Any,
     ) -> None:
-        """
-        Synchronizes the result from the solver to the parameters.
+        """Synchronizes the result from the solver to the parameters.
 
         Args:
             parameters: List of parameters being optimized.
@@ -98,8 +95,7 @@ class LmfitMinimizer(MinimizerBase):
                 param.uncertainty = getattr(param_result, 'stderr', None)
 
     def _check_success(self, raw_result: Any) -> bool:
-        """
-        Determines success from lmfit MinimizerResult.
+        """Determines success from lmfit MinimizerResult.
 
         Args:
             raw_result: The result object returned by the solver.
@@ -117,8 +113,7 @@ class LmfitMinimizer(MinimizerBase):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        """
-        Callback function for each iteration of the minimizer.
+        """Callback function for each iteration of the minimizer.
 
         Args:
             params: The current parameters.

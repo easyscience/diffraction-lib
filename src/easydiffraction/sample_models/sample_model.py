@@ -12,8 +12,7 @@ from easydiffraction.utils.utils import render_cif
 
 
 class SampleModel(Datablock):
-    """
-    Represents an individual structural model of a sample.
+    """Represents an individual structural model of a sample.
 
     Wraps crystallographic information including space group, cell, and
     atomic sites.
@@ -168,8 +167,7 @@ class SampleModel(Datablock):
     # -----------------
 
     def as_cif(self) -> str:
-        """
-        Export the sample model to CIF format.
+        """Export the sample model to CIF format.
 
         Returns:
             str: CIF string representation of the sample model.
@@ -193,8 +191,7 @@ class SampleModel(Datablock):
     # ------------
 
     def show_structure(self, plane='xy', grid_size=20):
-        """
-        Show an ASCII projection of the structure on a 2D plane.
+        """Show an ASCII projection of the structure on a 2D plane.
 
         Args:
             plane (str): 'xy', 'xz', or 'yz' plane to project.
@@ -205,7 +202,8 @@ class SampleModel(Datablock):
 
     def show_params(self):
         """Display structural parameters (space group, unit cell, atomic
-        sites)."""
+        sites).
+        """
         print(f'\nSampleModel ID: {self.name}')
         print(f'Space group: {self.space_group.name_h_m}')
         print(f'Cell parameters: {self.cell.as_dict()}')

@@ -36,7 +36,8 @@ class Plotter:
     @engine.setter
     def engine(self, new_engine):
         """Sets the current plotting engine name and updates the plotter
-        instance."""
+        instance.
+        """
         new_plotter = PlotterFactory.create_plotter(new_engine)
         if new_plotter is None:
             return

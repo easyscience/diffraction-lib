@@ -20,8 +20,7 @@ def apply_cell_symmetry_constraints(
     cell: Dict[str, float],
     name_hm: str,
 ) -> Dict[str, float]:
-    """
-    Apply symmetry constraints to unit cell parameters based on space
+    """Apply symmetry constraints to unit cell parameters based on space
     group.
 
     Args:
@@ -90,8 +89,7 @@ def apply_atom_site_symmetry_constraints(
     coord_code: int,
     wyckoff_letter: str,
 ) -> Dict[str, Any]:
-    """
-    Apply symmetry constraints to atomic coordinates based on site
+    """Apply symmetry constraints to atomic coordinates based on site
     symmetry.
 
     Args:

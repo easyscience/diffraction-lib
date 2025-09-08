@@ -34,7 +34,8 @@ class CalculatorBase(ABC):
         experiment: Experiment,
     ) -> None:
         """Calculate structure factors for a single sample model and
-        experiment."""
+        experiment.
+        """
         pass
 
     def calculate_pattern(
@@ -43,10 +44,9 @@ class CalculatorBase(ABC):
         experiment: Experiment,
         called_by_minimizer: bool = False,
     ) -> None:
-        """
-        Calculate the diffraction pattern for multiple sample models and
-        a single experiment. The calculated pattern is stored within the
-        experiment's datastore.
+        """Calculate the diffraction pattern for multiple sample models
+        and a single experiment. The calculated pattern is stored within
+        the experiment's datastore.
 
         Args:
             sample_models: Collection of sample models.
@@ -105,9 +105,8 @@ class CalculatorBase(ABC):
         experiment: Experiment,
         called_by_minimizer: bool,
     ) -> np.ndarray:
-        """
-        Calculate the diffraction pattern for a single sample model and
-        experiment.
+        """Calculate the diffraction pattern for a single sample model
+        and experiment.
 
         Args:
             sample_model: The sample model object.
@@ -125,8 +124,7 @@ class CalculatorBase(ABC):
         sample_models: SampleModels,
         experiment: Experiment,
     ) -> List[Any]:
-        """
-        Get valid linked phases from the experiment.
+        """Get valid linked phases from the experiment.
 
         Args:
             sample_models: Collection of sample models.

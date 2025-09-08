@@ -15,7 +15,8 @@ DEFAULT_MAX_ITERATIONS = 1000
 
 class DfolsMinimizer(MinimizerBase):
     """Minimizer using the DFO-LS package (Derivative-Free Optimization
-    for Least-Squares)."""
+    for Least-Squares).
+    """
 
     def __init__(
         self,
@@ -46,8 +47,7 @@ class DfolsMinimizer(MinimizerBase):
         parameters: List[Any],
         raw_result: Any,
     ) -> None:
-        """
-        Synchronizes the result from the solver to the parameters.
+        """Synchronizes the result from the solver to the parameters.
 
         Args:
             parameters: List of parameters being optimized.
@@ -66,8 +66,7 @@ class DfolsMinimizer(MinimizerBase):
             param.uncertainty = None
 
     def _check_success(self, raw_result: Any) -> bool:
-        """
-        Determines success from DFO-LS result dictionary.
+        """Determines success from DFO-LS result dictionary.
 
         Args:
             raw_result: The result object returned by the solver.

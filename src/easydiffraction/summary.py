@@ -10,16 +10,14 @@ from easydiffraction.utils.utils import render_table
 
 
 class Summary:
-    """
-    Generates reports and exports results from the project.
+    """Generates reports and exports results from the project.
 
     This class collects and presents all relevant information about the
     fitted model, experiments, and analysis results.
     """
 
     def __init__(self, project) -> None:
-        """
-        Initialize the summary with a reference to the project.
+        """Initialize the summary with a reference to the project.
 
         Args:
             project: The Project instance this summary belongs to.
@@ -49,7 +47,8 @@ class Summary:
 
     def show_crystallographic_data(self) -> None:
         """Print crystallographic data including phase datablocks, space
-        groups, cell parameters, and atom sites."""
+        groups, cell parameters, and atom sites.
+        """
         print(section('Crystallographic data'))
 
         for model in self.project.sample_models._models.values():
@@ -110,7 +109,8 @@ class Summary:
 
     def show_experimental_data(self) -> None:
         """Print experimental data including experiment datablocks,
-        types, instrument settings, and peak profile information."""
+        types, instrument settings, and peak profile information.
+        """
         print(section('Experiments'))
 
         for expt in self.project.experiments._experiments.values():
@@ -163,7 +163,8 @@ class Summary:
 
     def show_fitting_details(self) -> None:
         """Print fitting details including calculation and minimization
-        engines, and fit quality metrics."""
+        engines, and fit quality metrics.
+        """
         print(section('Fitting'))
 
         print(paragraph('Calculation engine'))
@@ -191,5 +192,6 @@ class Summary:
 
     def as_cif(self) -> str:
         """Export the final fitted data and analysis results as CIF
-        format."""
+        format.
+        """
         return 'To be added...'

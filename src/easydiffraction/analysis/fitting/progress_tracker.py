@@ -43,7 +43,8 @@ def format_cell(
 
 class FittingProgressTracker:
     """Tracks and reports the reduced chi-square during the optimization
-    process."""
+    process.
+    """
 
     def __init__(self) -> None:
         self._iteration: int = 0
@@ -71,8 +72,7 @@ class FittingProgressTracker:
         residuals: np.ndarray,
         parameters: List[float],
     ) -> np.ndarray:
-        """
-        Track chi-square progress during the optimization process.
+        """Track chi-square progress during the optimization process.
 
         Parameters:
             residuals (np.ndarray): Array of residuals between measured

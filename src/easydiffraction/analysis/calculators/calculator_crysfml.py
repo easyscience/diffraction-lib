@@ -41,8 +41,7 @@ class CrysfmlCalculator(CalculatorBase):
         sample_models: SampleModels,
         experiments: Experiments,
     ) -> None:
-        """
-        Call Crysfml to calculate structure factors.
+        """Call Crysfml to calculate structure factors.
 
         Args:
             sample_models: The sample models to calculate structure
@@ -58,9 +57,8 @@ class CrysfmlCalculator(CalculatorBase):
         experiment: Experiment,
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
-        """
-        Calculates the diffraction pattern using Crysfml for the given
-        sample model and experiment.
+        """Calculates the diffraction pattern using Crysfml for the
+        given sample model and experiment.
 
         Args:
             sample_model: The sample model to calculate the pattern for.
@@ -86,8 +84,7 @@ class CrysfmlCalculator(CalculatorBase):
         pattern: List[float],
         target_length: int,
     ) -> List[float]:
-        """
-        Adjusts the length of the pattern to match the target length.
+        """Adjusts the length of the pattern to match the target length.
 
         Args:
             pattern: The pattern to adjust.
@@ -107,8 +104,7 @@ class CrysfmlCalculator(CalculatorBase):
         sample_model: SampleModels,
         experiment: Experiment,
     ) -> Dict[str, Union[Experiment, SampleModel]]:
-        """
-        Converts the sample model and experiment into a dictionary
+        """Converts the sample model and experiment into a dictionary
         format for Crysfml.
 
         Args:
@@ -130,8 +126,7 @@ class CrysfmlCalculator(CalculatorBase):
         self,
         sample_model: SampleModel,
     ) -> Dict[str, Any]:
-        """
-        Converts a sample model into a dictionary format.
+        """Converts a sample model into a dictionary format.
 
         Args:
             sample_model: The sample model to convert.
@@ -171,8 +166,7 @@ class CrysfmlCalculator(CalculatorBase):
         self,
         experiment: Experiment,
     ) -> Dict[str, Any]:
-        """
-        Converts an experiment into a dictionary format.
+        """Converts an experiment into a dictionary format.
 
         Args:
             experiment: The experiment to convert.

@@ -24,7 +24,8 @@ from easydiffraction.utils.utils import twotheta_to_d
 
 class ProjectInfo:
     """Stores metadata about the project, such as name, title,
-    description, and file paths."""
+    description, and file paths.
+    """
 
     def __init__(self) -> None:
         self._name: str = 'untitled_project'
@@ -118,8 +119,7 @@ class ProjectInfo:
 
 
 class Project:
-    """
-    Central API for managing a diffraction data analysis project.
+    """Central API for managing a diffraction data analysis project.
 
     Provides access to sample models, experiments, analysis, and
     summary.
@@ -146,7 +146,8 @@ class Project:
     @property
     def name(self) -> str:
         """Convenience property to access the project's name
-        directly."""
+        directly.
+        """
         return self.info.name
 
     # ------------------------------------------
@@ -154,8 +155,7 @@ class Project:
     # ------------------------------------------
 
     def load(self, dir_path: str) -> None:
-        """
-        Load a project from a given directory.
+        """Load a project from a given directory.
 
         Loads project info, sample models, experiments, etc.
         """
@@ -336,7 +336,8 @@ class Project:
 
     def update_pattern_d_spacing(self, expt_name: str) -> None:
         """Update the pattern's d-spacing based on the experiment's beam
-        mode."""
+        mode.
+        """
         experiment = self.experiments[expt_name]
         datastore = experiment.datastore
         expt_type = experiment.type
