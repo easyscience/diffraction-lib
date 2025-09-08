@@ -128,8 +128,8 @@ code-quality = { depends-on = [
 ] }
 
 # 📊 Coverage
-unit-tests-coverage = "python -m pytest --cov=src/easydiffraction --cov-report=term-missing tests/unit/ --color=yes -v"
-func-tests-coverage = "python -m pytest --cov=src/easydiffraction --cov-report=term-missing tests/functional/ --color=yes -n auto -v"
+unit-tests-coverage = "pixi run unit-tests --cov=src/easydiffraction --cov-report=term-missing"
+func-tests-coverage = "pixi run func-tests --cov=src/easydiffraction --cov-report=term-missing"
 docstring-coverage = "interrogate -c pyproject.toml src/"
 
 # 📓 Notebook Management
