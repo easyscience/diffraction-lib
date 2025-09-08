@@ -168,7 +168,7 @@ line-length = 99
 
 [tool.ruff.lint]
 select = [
-  #'D',      # Docstring-related issues (e.g., missing docstrings, incorrect formatting)
+  'D',      # Docstring-related issues (e.g., missing docstrings, incorrect formatting)
   'E',      # General PEP 8 style errors
   'E9',     # Runtime errors (e.g., syntax errors, undefined names)
   'F',      # Pyflakes-specific checks (e.g., unused variables, imports)
@@ -182,8 +182,14 @@ select = [
   'TID252', # Enforces absolute imports over relative imports
 ]
 ignore = [
-  #'D205', # Ignore: 1 blank line required between summary and description
-  #'D212', # Ignore: Multi-line docstring summary should start at the first line
+  'D100', # Ignore: Missing docstring in public module
+  'D101', # Ignore: Missing docstring in class
+  'D102', # Ignore: Missing docstring in public method
+  'D103', # Ignore: Missing docstring in public function
+  'D104', # Ignore: Missing docstring in public package
+  'D105', # Ignore: Missing docstring in magic method
+  'D107', # Ignore: Missing docstring in __init__
+  'D205', # Ignore: 1 blank line required between summary and description
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]
