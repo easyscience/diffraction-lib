@@ -57,6 +57,7 @@ dev = [
   'jupytext',                # Jupyter notebook text format support
   'jupyterquiz',             # Quizzes in Jupyter notebooks
   'docformatter',            # Code formatter for docstrings
+  'interrogate',             # Check for missing docstrings
 ]
 docs = [
   'mkdocs',                          # Static site generator
@@ -140,7 +141,18 @@ default-tag = 'v999.0.0'
 recursive = true
 wrap-summaries = 72
 wrap-descriptions = 72
-pre-summary-newline = true
+close-quotes-on-newline = true
+
+################################
+# Configuration for interrogate
+################################
+
+# 'interrogate' -- Check for missing docstrings
+# https://interrogate.readthedocs.io/en/latest/
+
+[tool.interrogate]
+fail-under = 80
+verbose = 1
 
 ########################
 # Configuration for ruff

@@ -110,6 +110,7 @@ py-format-check = "python -m ruff format . --check"
 nonpy-format-check = "npx prettier . --list-different --config=prettierrc.toml"
 notebook-format-check = 'nbqa ruff tutorials/'
 docs-format-check = "docformatter --check --recursive src tutorials"
+docstring-coverage-check = "interrogate -c pyproject.toml src/"
 
 ## 🛠️ Fixes
 py-lint-fix = "python -m ruff check . --fix"
