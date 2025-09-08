@@ -110,7 +110,6 @@ py-format-check = "python -m ruff format . --check"
 nonpy-format-check = "npx prettier . --list-different --config=prettierrc.toml"
 notebook-format-check = 'nbqa ruff tutorials/'
 docs-format-check = "docformatter --check src/ tools/ tutorials/"
-docstring-coverage-check = "interrogate -c pyproject.toml src/"
 
 ## 🛠️ Fixes
 py-lint-fix = "python -m ruff check . --fix"
@@ -127,6 +126,11 @@ code-quality = { depends-on = [
   "py-lint-fix",
   "nonpy-format-fix-modified",
 ] }
+
+# 📊 Coverage
+unit-tests-coverage = "python -m pytest --cov=src/easydiffraction --cov-report=term-missing tests/unit/ --color=yes -v"
+func-tests-coverage = "python -m pytest --cov=src/easydiffraction --cov-report=term-missing tests/functional/ --color=yes -n auto -v"
+docstring-coverage = "interrogate -c pyproject.toml src/"
 
 # 📓 Notebook Management
 notebook-convert = 'jupytext tutorials/*.py --from py:percent --to ipynb'

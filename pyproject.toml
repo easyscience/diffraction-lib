@@ -154,6 +154,19 @@ close-quotes-on-newline = true
 fail-under = 80
 verbose = 1
 
+#######################################
+# Configuration for coverage/pytest-cov
+#######################################
+
+[tool.coverage.run]
+branch = true                    # Measure branch coverage as well
+source = ["src/easydiffraction"] # Limit coverage to the source code directory
+
+[tool.coverage.report]
+show_missing = true # Show missing lines
+skip_covered = true # Skip files with 100% coverage in the report
+fail_under = 80     # Minimum coverage percentage to pass
+
 ########################
 # Configuration for ruff
 ########################
