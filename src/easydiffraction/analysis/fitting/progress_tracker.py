@@ -85,7 +85,6 @@ class FittingProgressTracker:
         self._iteration += 1
 
         reduced_chi2 = calculate_reduced_chi_square(residuals, len(parameters))
-        change = (self._previous_chi2 - reduced_chi2) / self._previous_chi2
 
         row: List[str] = []
 
@@ -101,17 +100,21 @@ class FittingProgressTracker:
                 '',
             ]
 
-        # Improvement check
-        elif change > SIGNIFICANT_CHANGE_THRESHOLD:
-            change_in_percent = change * 100
+        # Subsequent iterations, check for significant changes
+        else:
+            change = (self._previous_chi2 - reduced_chi2) / self._previous_chi2
 
-            row = [
-                str(self._iteration),
-                f'{reduced_chi2:.2f}',
-                f'{change_in_percent:.1f}% ↓',
-            ]
+            # Improvement check
+            if change > SIGNIFICANT_CHANGE_THRESHOLD:
+                change_in_percent = change * 100
 
-            self._previous_chi2 = reduced_chi2
+                row = [
+                    str(self._iteration),
+                    f'{reduced_chi2:.2f}',
+                    f'{change_in_percent:.1f}% ↓',
+                ]
+
+                self._previous_chi2 = reduced_chi2
 
         # Output if there is something new to display
         if row:
