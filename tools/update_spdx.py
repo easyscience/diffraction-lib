@@ -11,8 +11,8 @@ from pathlib import Path
 
 CURRENT_YEAR = datetime.datetime.now().year
 COPYRIGHT_TEXT = (
-    f'# SPDX-FileCopyrightText: 2021-{CURRENT_YEAR} EasyDiffraction Python Library contributors '
-    '<https://github.com/easyscience/diffraction-lib>'
+    f'# SPDX-FileCopyrightText: 2021-{CURRENT_YEAR} EasyDiffraction contributors '
+    '<https://github.com/easyscience/diffraction>'
 )
 LICENSE_TEXT = '# SPDX-License-Identifier: BSD-3-Clause'
 
