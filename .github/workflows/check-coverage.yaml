@@ -59,10 +59,11 @@ jobs:
           post-cleanup: false
 
       - name: Run unit tests with coverage
+        id: run_unit_tests
         continue-on-error: true
         run: pixi run unit-tests-coverage --cov-report=xml:coverage-unit.xml
 
-      - name: Upload unit coverage to Codecov
+      - name: Upload unit tests coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           name: unit-tests-job
@@ -71,6 +72,10 @@ jobs:
           fail_ci_if_error: true
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Force fail if unit tests failed or coverage not met
+        if: steps.run_unit_tests.outcome == 'failure'
+        run: exit 1
 
   func-tests-coverage:
     runs-on: ubuntu-latest
@@ -91,10 +96,11 @@ jobs:
           post-cleanup: false
 
       - name: Run functional tests with coverage
+        id: run_func_tests
         continue-on-error: true
         run: pixi run func-tests-coverage --cov-report=xml:coverage-func.xml
 
-      - name: Upload functional coverage to Codecov
+      - name: Upload functional tests coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           name: func-tests-job
@@ -103,3 +109,7 @@ jobs:
           fail_ci_if_error: true
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Force fail if functional tests failed or coverage not met
+        if: steps.run_func_tests.outcome == 'failure'
+        run: exit 1
