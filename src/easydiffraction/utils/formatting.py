@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import re
+
 from colorama import Fore
 from colorama import Style
 
@@ -29,8 +31,6 @@ def section(title: str) -> str:
 def paragraph(title: str) -> str:
     """Formats a subsection header with bold blue text while keeping
     quoted text unformatted."""
-    import re
-
     parts = re.split(r"('.*?')", title)
     formatted = f'{Fore.LIGHTBLUE_EX + Style.BRIGHT}'
     for part in parts:
