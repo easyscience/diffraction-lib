@@ -62,7 +62,7 @@ jobs:
         run: pixi run unit-tests-coverage --cov-report=xml:coverage-unit.xml
 
       - name: Upload unit tests coverage to Codecov
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         uses: codecov/codecov-action@v5
         with:
           name: unit-tests-job
@@ -94,7 +94,7 @@ jobs:
         run: pixi run func-tests-coverage --cov-report=xml:coverage-func.xml
 
       - name: Upload functional tests coverage to Codecov
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         uses: codecov/codecov-action@v5
         with:
           name: func-tests-job
