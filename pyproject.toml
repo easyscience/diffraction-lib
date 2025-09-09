@@ -52,6 +52,7 @@ dev = [
   'pytest-cov',              # Test coverage
   'pytest-xdist',            # Enable parallel testing
   'ruff',                    # Linting and formatting code
+  'radon',                   # Code complexity and maintainability
   'validate-pyproject[all]', # Validate pyproject.toml
   'versioningit',            # Automatic versioning from git tags
   'jupytext',                # Jupyter notebook text format support
@@ -142,6 +143,7 @@ line-length = 127
 
 [tool.ruff.lint]
 select = [
+  'C90',    # Cyclomatic complexity checks
   'E',      # General PEP 8 style errors
   'E9',     # Runtime errors (e.g., syntax errors, undefined names)
   'F',      # Pyflakes-specific checks (e.g., unused variables, imports)
@@ -154,6 +156,11 @@ select = [
   'TCH',    # Type checking issues (e.g., incompatible types, missing type annotations)
   'TID252', # Enforces absolute imports over relative imports
 ]
+
+# Temporarily increase McCabe complexity limit to 17 to allow
+# refactoring in smaller steps.
+[tool.ruff.lint.mccabe]
+max-complexity = 17 # default is 10
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = 'all'

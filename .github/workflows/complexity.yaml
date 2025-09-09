@@ -1,0 +1,59 @@
+name: Code Complexity
+
+on:
+  # Trigger the workflow on push
+  push:
+    # Selected branches
+    branches: ['**']
+  # Trigger the workflow on pull request
+  pull_request:
+    branches: [master, develop]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Allow only one concurrent workflow, skipping runs queued between the run
+# in-progress and latest queued. And cancel in-progress runs.
+concurrency:
+  group:
+    ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Job 1: Check code quality and consistency
+  code-quality:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.9.0
+        with:
+          environments: >-
+            py313-dev
+          activate-environment: py313-dev
+          run-install: true
+          frozen: true
+          cache: false
+          post-cleanup: false
+
+      - name: Cyclomatic Complexity (radon cc)
+        run: |
+          echo "## Cyclomatic Complexity (radon cc)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          pixi run complexity-check | tee /dev/tty >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Maintainability Index (radon mi)
+        run: |
+          echo "## Maintainability Index (radon mi)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          pixi run maintainability-check | tee /dev/tty >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

@@ -124,6 +124,10 @@ code-quality = { depends-on = [
   "nonpy-format-fix-modified",
 ] }
 
+# 🧮 Code Complexity
+complexity-check = "radon cc -s src/"
+maintainability-check = "radon mi src/"
+
 # 📓 Notebook Management
 notebook-convert = 'jupytext tutorials/*.py --from py:percent --to ipynb'
 notebook-strip = 'nbstripout tutorials/*.ipynb'
