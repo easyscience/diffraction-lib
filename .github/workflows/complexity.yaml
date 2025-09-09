@@ -43,17 +43,7 @@ jobs:
           post-cleanup: false
 
       - name: Cyclomatic Complexity (radon cc)
-        run: |
-          echo "## Cyclomatic Complexity (radon cc)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          pixi run complexity-check | tee /dev/tty >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+        run: pixi run complexity-check
 
       - name: Maintainability Index (radon mi)
-        run: |
-          echo "## Maintainability Index (radon mi)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          pixi run maintainability-check | tee /dev/tty >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+        run: pixi run maintainability-check
