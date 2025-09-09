@@ -48,13 +48,15 @@ class AtomSite(Component):
             value=adp_type,
             name='adp_type',
             cif_name='ADP_type',
-            description='Type of atomic displacement parameter (ADP) used (e.g., Biso, Uiso, Uani, Bani).',
+            description='Type of atomic displacement parameter (ADP) '
+            'used (e.g., Biso, Uiso, Uani, Bani).',
         )
         self.wyckoff_letter = Descriptor(
             value=wyckoff_letter,
             name='wyckoff_letter',
             cif_name='Wyckoff_letter',
-            description='Wyckoff letter indicating the symmetry of the atom site within the space group.',
+            description='Wyckoff letter indicating the symmetry of the '
+            'atom site within the space group.',
         )
         self.fract_x = Parameter(
             value=fract_x,
@@ -78,7 +80,8 @@ class AtomSite(Component):
             value=occupancy,
             name='occupancy',
             cif_name='occupancy',
-            description='Occupancy of the atom site, representing the fraction of the site occupied by the atom type.',
+            description='Occupancy of the atom site, representing the '
+            'fraction of the site occupied by the atom type.',
         )
         self.b_iso = Parameter(
             value=b_iso,
