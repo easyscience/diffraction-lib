@@ -175,6 +175,7 @@ fail_under = 80     # Minimum coverage percentage to pass
 # https://docs.astral.sh/ruff/rules/
 
 [tool.ruff]
+# Temporarily exclude some directories until we have improved the code quality there
 exclude = ['tests', 'tools', 'tutorials', 'tutorials-drafts']
 indent-width = 4
 line-length = 99
@@ -194,6 +195,7 @@ select = [
   'TCH',    # Type checking issues (e.g., incompatible types, missing type annotations)
   'TID252', # Enforces absolute imports over relative imports
 ]
+# Temporarily disable some docstring checks until we have improved the docstring coverage
 ignore = [
   'D100', # Ignore: Missing docstring in public module
   'D101', # Ignore: Missing docstring in class
