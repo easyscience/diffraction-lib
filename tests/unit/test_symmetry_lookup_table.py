@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from easydiffraction.crystallography.space_group_lookup_table import SPACE_GROUP_LOOKUP_DICT
+from easydiffraction.crystallography.space_groups import SPACE_GROUP_LOOKUP_DICT
 
 
 def test_lookup_table_consistency():
@@ -105,7 +105,7 @@ def test_lookup_table_consistency():
         ),
     ],
 )
-def test_space_group_lookup_table_yields_expected(key, expected):
+def test_space_groups_yields_expected(key, expected):
     """Check the lookup table for a few keys and check that the output matches the expected"""
     entry = SPACE_GROUP_LOOKUP_DICT[key]
 
