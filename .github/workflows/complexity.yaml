@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   # Job 1: Check code quality and consistency
-  code-quality:
+  code-complexity:
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -43,7 +43,31 @@ jobs:
           post-cleanup: false
 
       - name: Cyclomatic Complexity (radon cc)
-        run: pixi run complexity-check
+        run: pixi run complexity-check -- -j > cc.json
 
       - name: Maintainability Index (radon mi)
-        run: pixi run maintainability-check
+        run: pixi run maintainability-check -- -j > mi.json
+
+      - name: Summarize Radon results
+        run: |
+          python - <<'PY'
+          import json, pathlib, statistics, os
+
+          cc = json.loads(pathlib.Path("cc.json").read_text())
+          mi = json.loads(pathlib.Path("mi.json").read_text())
+
+          # collect all cc values
+          cc_values = [f["complexity"] for funcs in cc.values() for f in funcs]
+          avg_cc = statistics.mean(cc_values) if cc_values else None
+
+          # collect all mi values
+          mi_values = list(mi.values())
+          avg_mi = statistics.mean(mi_values) if mi_values else None
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as fh:
+              fh.write("## Radon Complexity Report\n\n")
+              fh.write("### Cyclomatic Complexity\n")
+              fh.write(f"Average CC: {avg_cc:.2f}\n\n" if avg_cc else "No functions found\n")
+              fh.write("### Maintainability Index\n")
+              fh.write(f"Average MI: {avg_mi:.2f}\n" if avg_mi else "No files found\n")
+          PY
