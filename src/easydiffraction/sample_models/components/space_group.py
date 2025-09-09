@@ -29,11 +29,13 @@ class SpaceGroup(Component):
             value=name_h_m,
             name='name_h_m',
             cif_name='name_H-M_alt',
+            description='Hermann-Mauguin symbol of the space group.',
         )
         self.it_coordinate_system_code = Descriptor(
             value=it_coordinate_system_code,
             name='it_coordinate_system_code',
             cif_name='IT_coordinate_system_code',
+            description='A qualifier identifying which setting in IT is used.',
         )
 
         # Lock further attribute additions to prevent

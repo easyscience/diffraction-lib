@@ -18,18 +18,24 @@ class LinkedPhase(Component):
     def cif_category_key(self) -> str:
         return 'pd_phase_block'
 
-    def __init__(self, id: str, scale: float):
+    def __init__(
+        self,
+        id: str,
+        scale: float,
+    ):
         super().__init__()
 
         self.id = Descriptor(
             value=id,
             name='id',
             cif_name='id',
+            description='Identifier of the linked phase.',
         )
         self.scale = Parameter(
             value=scale,
             name='scale',
             cif_name='scale',
+            description='Scale factor of the linked phase.',
         )
 
         # Select which of the input parameters is used for the

@@ -31,7 +31,11 @@ class Point(Component):
     def cif_category_key(self) -> str:
         return 'pd_background'
 
-    def __init__(self, x: float, y: float):
+    def __init__(
+        self,
+        x: float,
+        y: float,
+    ):
         super().__init__()
 
         self.x = Descriptor(
@@ -69,7 +73,11 @@ class PolynomialTerm(Component):
     def cif_category_key(self):
         return 'pd_background'
 
-    def __init__(self, order: int, coef: float) -> None:
+    def __init__(
+        self,
+        order: int,
+        coef: float,
+    ) -> None:
         super().__init__()
 
         self.order = Descriptor(
