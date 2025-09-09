@@ -26,8 +26,9 @@ from nbformat.validator import normalize
 BOOTSTRAP_SOURCE = (
     '# Check if the easydiffraction library is installed.\n'
     "# If not, install it including the 'visualization' extras.\n"
-    '# This is needed, e.g., when running this as a notebook via Google Colab or\n'
-    '# Jupyter Notebook in an environment where the library is not pre-installed.\n'
+    '# This is needed, e.g., when running this as a notebook via Google\n'
+    '# Colab or Jupyter Notebook in an environment where the library is\n'
+    '# not pre-installed.\n'
     'import builtins\n'
     'import importlib.util\n'
     '\n'
