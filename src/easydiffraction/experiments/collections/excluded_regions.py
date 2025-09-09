@@ -21,18 +21,24 @@ class ExcludedRegion(Component):
     def cif_category_key(self) -> str:
         return 'excluded_region'
 
-    def __init__(self, start: float, end: float):
+    def __init__(
+        self,
+        start: float,
+        end: float,
+    ):
         super().__init__()
 
         self.start = Descriptor(
             value=start,
             name='start',
             cif_name='start',
+            description='Start of the excluded region.',
         )
         self.end = Parameter(
             value=end,
             name='end',
             cif_name='end',
+            description='End of the excluded region.',
         )
 
         # Select which of the input parameters is used for the
