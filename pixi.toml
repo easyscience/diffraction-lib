@@ -20,14 +20,14 @@ channels = ["conda-forge"]
 # Default feature configuration
 
 [dependencies] # == [feature.default.dependencies]
-pip = ">=25.2,<26"        # Required to install from PyPI
-jupyterlab = ">=4.4.7,<5" # JupyterLab for notebooks
+pip = "*"        # Required to install from PyPI
+jupyterlab = "*" # JupyterLab for notebooks
 
 [target.win-64.dependencies]
 libcblas = "*" # CBLAS library for linear algebra. Required for pdffit2.
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
-pixi-kernel = ">=0.6.6, <0.7" # Pixi Jupyter kernel integration
+pixi-kernel = "*" # Pixi Jupyter kernel integration
 
 # Extra features for different Python versions
 
