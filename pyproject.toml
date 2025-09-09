@@ -176,7 +176,7 @@ fail_under = 80     # Minimum coverage percentage to pass
 
 [tool.ruff]
 # Temporarily exclude some directories until we have improved the code quality there
-exclude = ['tests', 'tools', 'tutorials', 'tutorials-drafts']
+exclude = ['tests', 'tools', 'tutorials-drafts']
 indent-width = 4
 line-length = 99
 
