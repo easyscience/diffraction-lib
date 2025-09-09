@@ -43,27 +43,27 @@ jobs:
           post-cleanup: false
 
       - name: Cyclomatic Complexity (radon cc)
-        run: pixi run complexity-check > cc.json
+        run: pixi run complexity-check-json > cc.json
 
       - name: Maintainability Index (radon mi)
-        run: pixi run maintainability-check > mi.json
+        run: pixi run maintainability-check-json > mi.json
 
       - name: Summarize Radon results
         run: |
           python - <<'PY'
           import json, pathlib, statistics, os
-
+      
           cc = json.loads(pathlib.Path("cc.json").read_text())
           mi = json.loads(pathlib.Path("mi.json").read_text())
-
+      
           # collect all cc values
           cc_values = [f["complexity"] for funcs in cc.values() for f in funcs]
           avg_cc = statistics.mean(cc_values) if cc_values else None
-
-          # collect all mi values
-          mi_values = list(mi.values())
+      
+          # collect all mi values (use the "mi" field, not the whole dict)
+          mi_values = [entry["mi"] for entry in mi.values()]
           avg_mi = statistics.mean(mi_values) if mi_values else None
-
+      
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as fh:
               fh.write("## Radon Complexity Report\n\n")
               fh.write("### Cyclomatic Complexity\n")

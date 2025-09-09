@@ -125,8 +125,10 @@ code-quality = { depends-on = [
 ] }
 
 # 🧮 Code Complexity
-complexity-check = "radon cc -s -j src/"
-maintainability-check = "radon mi -j src/"
+complexity-check = "radon cc -s src/"
+complexity-check-json = "radon cc -s -j src/"
+maintainability-check = "radon mi src/"
+maintainability-check-json = "radon mi -j src/"
 
 # 📓 Notebook Management
 notebook-convert = 'jupytext tutorials/*.py --from py:percent --to ipynb'
