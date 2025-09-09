@@ -111,12 +111,12 @@ ed.download_from_repository(file_name, destination=dir_path)
 # for more details about different types of experiments.
 
 # %%
-project_1.experiments.add(
+project_1.experiments.add_from_data_path(
     name='sim_si',
+    data_path=si_xye_path,
     sample_form='powder',
     beam_mode='time-of-flight',
     radiation_probe='neutron',
-    data_path=si_xye_path,
 )
 
 # %% [markdown]
@@ -707,12 +707,12 @@ lbco_xye_path = f'{dir_path}/{file_name}'
 # Uncomment the following line if your data reduction failed and the reduced data file is missing.
 ed.download_from_repository(file_name, destination=dir_path)
 
-project_2.experiments.add(
+project_2.experiments.add_from_data_path(
     name='sim_lbco',
+    data_path=lbco_xye_path,
     sample_form='powder',
     beam_mode='time-of-flight',
     radiation_probe='neutron',
-    data_path=lbco_xye_path,
 )
 
 # %% [markdown]

@@ -7,21 +7,21 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction.core.constants import DEFAULT_BACKGROUND_TYPE
-from easydiffraction.core.constants import DEFAULT_BEAM_MODE
-from easydiffraction.core.constants import DEFAULT_PEAK_PROFILE_TYPE
-from easydiffraction.core.constants import DEFAULT_RADIATION_PROBE
-from easydiffraction.core.constants import DEFAULT_SAMPLE_FORM
-from easydiffraction.core.constants import DEFAULT_SCATTERING_TYPE
 from easydiffraction.core.objects import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
-from easydiffraction.experiments.collections.datastore import DatastoreFactory
+from easydiffraction.experiments.collections.background import BackgroundTypeEnum
 from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
+from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ExperimentType
+from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
+from easydiffraction.experiments.components.experiment_type import SampleFormEnum
+from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 from easydiffraction.experiments.components.instrument import InstrumentBase
 from easydiffraction.experiments.components.instrument import InstrumentFactory
 from easydiffraction.experiments.components.peak import PeakFactory
+from easydiffraction.experiments.components.peak import PeakProfileTypeEnum
+from easydiffraction.experiments.datastore import DatastoreFactory
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
@@ -62,7 +62,7 @@ class BaseExperiment(Datablock):
         self.type = type
         self.datastore = DatastoreFactory.create(
             sample_form=self.type.sample_form.value,
-            experiment=self,
+            beam_mode=self.type.beam_mode.value,
         )
 
     # ---------------------------
@@ -135,29 +135,8 @@ class BaseExperiment(Datablock):
             cif_lines += ['', self.excluded_regions.as_cif()]
 
         # Measured data
-        if hasattr(self, 'datastore') and hasattr(self.datastore, 'pattern'):
-            cif_lines.append('')
-            cif_lines.append('loop_')
-            category = '_pd_meas'  # TODO: Add category to pattern component
-            attributes = ('2theta_scan', 'intensity_total', 'intensity_total_su')
-            for attribute in attributes:
-                cif_lines.append(f'{category}.{attribute}')
-            pattern = self.datastore.pattern
-            if max_points is not None and len(pattern.x) > 2 * max_points:
-                for i in range(max_points):
-                    x = pattern.x[i]
-                    meas = pattern.meas[i]
-                    meas_su = pattern.meas_su[i]
-                    cif_lines.append(f'{x} {meas} {meas_su}')
-                cif_lines.append('...')
-                for i in range(-max_points, 0):
-                    x = pattern.x[i]
-                    meas = pattern.meas[i]
-                    meas_su = pattern.meas_su[i]
-                    cif_lines.append(f'{x} {meas} {meas_su}')
-            else:
-                for x, meas, meas_su in zip(pattern.x, pattern.meas, pattern.meas_su):
-                    cif_lines.append(f'{x} {meas} {meas_su}')
+        if hasattr(self, 'datastore'):
+            cif_lines += ['', self.datastore.as_cif(max_points=max_points)]
 
         return '\n'.join(cif_lines)
 
@@ -183,7 +162,10 @@ class BasePowderExperiment(BaseExperiment):
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self._peak_profile_type: str = DEFAULT_PEAK_PROFILE_TYPE[self.type.scattering_type.value][self.type.beam_mode.value]
+        self._peak_profile_type: str = PeakProfileTypeEnum.default(
+            self.type.scattering_type.value,
+            self.type.beam_mode.value,
+        ).value
         self.peak = PeakFactory.create(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
@@ -210,7 +192,9 @@ class BasePowderExperiment(BaseExperiment):
             print("For more information, use 'show_supported_peak_profile_types()'")
             return
         self.peak = PeakFactory.create(
-            scattering_type=self.type.scattering_type.value, beam_mode=self.type.beam_mode.value, profile_type=new_type
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            profile_type=new_type,
         )
         self._peak_profile_type = new_type
         print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
@@ -220,12 +204,19 @@ class BasePowderExperiment(BaseExperiment):
         columns_headers = ['Peak profile type', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
-        for name, config in PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].items():
-            description = getattr(config, '_description', 'No description provided.')
-            columns_data.append([name, description])
+
+        scattering_type = self.type.scattering_type.value
+        beam_mode = self.type.beam_mode.value
+
+        for profile_type in PeakFactory._supported[scattering_type][beam_mode].keys():
+            columns_data.append([profile_type.value, profile_type.description()])
 
         print(paragraph('Supported peak profile types'))
-        render_table(columns_headers=columns_headers, columns_alignment=columns_alignment, columns_data=columns_data)
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )
 
     def show_current_peak_profile_type(self):
         print(paragraph('Current peak profile type'))
@@ -248,7 +239,7 @@ class PowderExperiment(
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self._background_type: str = DEFAULT_BACKGROUND_TYPE
+        self._background_type: BackgroundTypeEnum = BackgroundTypeEnum.default()
         self.background = BackgroundFactory.create(background_type=self.background_type)
 
     # -------------
@@ -293,19 +284,19 @@ class PowderExperiment(
         # Attach the data to the experiment's datastore
 
         # The full pattern data
-        self.datastore.pattern.full_x = x
-        self.datastore.pattern.full_meas = y
-        self.datastore.pattern.full_meas_su = sy
+        self.datastore.full_x = x
+        self.datastore.full_meas = y
+        self.datastore.full_meas_su = sy
 
         # The pattern data used for fitting (without excluded points)
         # This is the same as full_x, full_meas, full_meas_su by default
-        self.datastore.pattern.x = x
-        self.datastore.pattern.meas = y
-        self.datastore.pattern.meas_su = sy
+        self.datastore.x = x
+        self.datastore.meas = y
+        self.datastore.meas_su = sy
 
         # Excluded mask
         # No excluded points by default
-        self.datastore.pattern.excluded = np.full(x.shape, fill_value=False, dtype=bool)
+        self.datastore.excluded = np.full(x.shape, fill_value=False, dtype=bool)
 
         print(paragraph('Data loaded successfully'))
         print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
@@ -331,12 +322,15 @@ class PowderExperiment(
         columns_headers = ['Background type', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
-        for name, config in BackgroundFactory._supported.items():
-            description = getattr(config, '_description', 'No description provided.')
-            columns_data.append([name, description])
+        for bt, cls in BackgroundFactory._supported.items():
+            columns_data.append([bt.value, bt.description()])
 
         print(paragraph('Supported background types'))
-        render_table(columns_headers=columns_headers, columns_alignment=columns_alignment, columns_data=columns_data)
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )
 
     def show_current_background_type(self):
         print(paragraph('Current background type'))
@@ -392,9 +386,9 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
         sy = data[:, 2] if data.shape[1] > 2 else np.full_like(y, fill_value=default_sy)
 
         # Attach the data to the experiment's datastore
-        self.datastore.pattern.x = x
-        self.datastore.pattern.meas = y
-        self.datastore.pattern.meas_su = sy
+        self.datastore.x = x
+        self.datastore.meas = y
+        self.datastore.meas_su = sy
 
         print(paragraph('Data loaded successfully'))
         print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
@@ -418,61 +412,159 @@ class SingleCrystalExperiment(BaseExperiment):
 class ExperimentFactory:
     """Creates Experiment instances with only relevant attributes."""
 
-    _supported = {
-        'bragg': {
-            'powder': PowderExperiment,
-            'single crystal': SingleCrystalExperiment,
+    _valid_arg_sets = [
+        {
+            'required': ['cif_path'],
+            'optional': [],
         },
-        'total': {
-            'powder': PairDistributionFunctionExperiment,
+        {
+            'required': ['cif_str'],
+            'optional': [],
+        },
+        {
+            'required': [
+                'name',
+                'data_path',
+            ],
+            'optional': [
+                'sample_form',
+                'beam_mode',
+                'radiation_probe',
+                'scattering_type',
+            ],
+        },
+        {
+            'required': ['name'],
+            'optional': [
+                'sample_form',
+                'beam_mode',
+                'radiation_probe',
+                'scattering_type',
+            ],
+        },
+    ]
+
+    _supported = {
+        ScatteringTypeEnum.BRAGG: {
+            SampleFormEnum.POWDER: PowderExperiment,
+            SampleFormEnum.SINGLE_CRYSTAL: SingleCrystalExperiment,
+        },
+        ScatteringTypeEnum.TOTAL: {
+            SampleFormEnum.POWDER: PairDistributionFunctionExperiment,
         },
     }
 
     @classmethod
-    def create(
-        cls,
-        name: str,
-        sample_form: DEFAULT_SAMPLE_FORM,
-        beam_mode: DEFAULT_BEAM_MODE,
-        radiation_probe: DEFAULT_RADIATION_PROBE,
-        scattering_type: DEFAULT_SCATTERING_TYPE,
-    ) -> BaseExperiment:
-        # TODO: Add checks for expt_type and expt_class
-        expt_type = ExperimentType(
-            sample_form=sample_form,
-            beam_mode=beam_mode,
-            radiation_probe=radiation_probe,
-            scattering_type=scattering_type,
-        )
+    def create(cls, **kwargs):
+        """
+        Main factory method for creating an experiment instance.
+        Validates argument combinations and dispatches to the appropriate creation method.
+        Raises ValueError if arguments are invalid or no valid dispatch is found.
+        """
+        # Check for valid argument combinations
+        user_args = [k for k, v in kwargs.items() if v is not None]
+        if not cls.is_valid_args(user_args):
+            raise ValueError(f'Invalid argument combination: {user_args}')
 
+        # Validate enum arguments if provided
+        if 'sample_form' in kwargs:
+            SampleFormEnum(kwargs['sample_form'])
+        if 'beam_mode' in kwargs:
+            BeamModeEnum(kwargs['beam_mode'])
+        if 'radiation_probe' in kwargs:
+            RadiationProbeEnum(kwargs['radiation_probe'])
+        if 'scattering_type' in kwargs:
+            ScatteringTypeEnum(kwargs['scattering_type'])
+
+        # Dispatch to the appropriate creation method
+        if 'cif_path' in kwargs:
+            return cls._create_from_cif_path(kwargs)
+        elif 'cif_str' in kwargs:
+            return cls._create_from_cif_str(kwargs)
+        elif 'data_path' in kwargs:
+            return cls._create_from_data_path(kwargs)
+        elif 'name' in kwargs:
+            return cls._create_without_data(kwargs)
+
+    @staticmethod
+    def _create_from_cif_path(cif_path):
+        """
+        Create an experiment from a CIF file path.
+        Not yet implemented.
+        """
+        # TODO: Implement CIF file loading logic
+        raise NotImplementedError('CIF file loading not implemented yet.')
+
+    @staticmethod
+    def _create_from_cif_str(cif_str):
+        """
+        Create an experiment from a CIF string.
+        Not yet implemented.
+        """
+        # TODO: Implement CIF string loading logic
+        raise NotImplementedError('CIF string loading not implemented yet.')
+
+    @classmethod
+    def _create_from_data_path(cls, kwargs):
+        """
+        Create an experiment from a raw data ASCII file.
+        Loads the experiment and attaches measured data from the specified file.
+        """
+        expt_type = cls._make_experiment_type(kwargs)
+        scattering_type = expt_type.scattering_type.value
+        sample_form = expt_type.sample_form.value
         expt_class = cls._supported[scattering_type][sample_form]
-        expt_obj = expt_class(
-            name=name,
-            type=expt_type,
-        )
-
+        expt_name = kwargs['name']
+        expt_obj = expt_class(name=expt_name, type=expt_type)
+        data_path = kwargs['data_path']
+        expt_obj._load_ascii_data_to_experiment(data_path)
         return expt_obj
 
+    @classmethod
+    def _create_without_data(cls, kwargs):
+        """
+        Create an experiment without measured data.
+        Returns an experiment instance with only metadata and configuration.
+        """
+        expt_type = cls._make_experiment_type(kwargs)
+        scattering_type = expt_type.scattering_type.value
+        sample_form = expt_type.sample_form.value
+        expt_class = cls._supported[scattering_type][sample_form]
+        expt_name = kwargs['name']
+        expt_obj = expt_class(name=expt_name, type=expt_type)
+        return expt_obj
 
-# User exposed API for convenience
-# TODO: Refactor based on the implementation of method add() in class Experiments
-# TODO: Think of where to keep default values for sample_form, beam_mode, radiation_probe, as they are also defined in the
-#  class ExperimentType
-def Experiment(
-    name: str,
-    sample_form: str = DEFAULT_SAMPLE_FORM,
-    beam_mode: str = DEFAULT_BEAM_MODE,
-    radiation_probe: str = DEFAULT_RADIATION_PROBE,
-    scattering_type: str = DEFAULT_SCATTERING_TYPE,
-    data_path: str = None,
-):
-    experiment = ExperimentFactory.create(
-        name=name,
-        sample_form=sample_form,
-        beam_mode=beam_mode,
-        radiation_probe=radiation_probe,
-        scattering_type=scattering_type,
-    )
-    if data_path:
-        experiment._load_ascii_data_to_experiment(data_path)
-    return experiment
+    @classmethod
+    def _make_experiment_type(cls, kwargs):
+        """
+        Helper to construct an ExperimentType from keyword arguments, using defaults as needed.
+        """
+        return ExperimentType(
+            sample_form=kwargs.get('sample_form', SampleFormEnum.default()),
+            beam_mode=kwargs.get('beam_mode', BeamModeEnum.default()),
+            radiation_probe=kwargs.get('radiation_probe', RadiationProbeEnum.default()),
+            scattering_type=kwargs.get('scattering_type', ScatteringTypeEnum.default()),
+        )
+
+    @staticmethod
+    def is_valid_args(user_args):
+        """
+        Validate user argument set against allowed combinations.
+        Returns True if the argument set matches any valid combination, else False.
+        """
+        user_arg_set = set(user_args)
+        for arg_set in ExperimentFactory._valid_arg_sets:
+            required = set(arg_set['required'])
+            optional = set(arg_set['optional'])
+            # Must have all required, and only required+optional
+            if required.issubset(user_arg_set) and user_arg_set <= (required | optional):
+                return True
+        return False
+
+
+def Experiment(**kwargs):
+    """
+    User-facing API for creating an experiment. Accepts keyword arguments and delegates
+    validation and creation to ExperimentFactory.
+    """
+    return ExperimentFactory.create(**kwargs)

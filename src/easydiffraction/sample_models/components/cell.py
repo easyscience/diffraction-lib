@@ -34,36 +34,42 @@ class Cell(Component):
             name='length_a',
             cif_name='length_a',
             units='Å',
+            description='Length of the unit cell edge a.',
         )
         self.length_b = Parameter(
             value=length_b,
             name='length_b',
             cif_name='length_b',
             units='Å',
+            description='Length of the unit cell edge b.',
         )
         self.length_c = Parameter(
             value=length_c,
             name='length_c',
             cif_name='length_c',
             units='Å',
+            description='Length of the unit cell edge c.',
         )
         self.angle_alpha = Parameter(
             value=angle_alpha,
             name='angle_alpha',
             cif_name='angle_alpha',
             units='deg',
+            description='Angle between edges b and c.',
         )
         self.angle_beta = Parameter(
             value=angle_beta,
             name='angle_beta',
             cif_name='angle_beta',
             units='deg',
+            description='Angle between edges a and c.',
         )
         self.angle_gamma = Parameter(
             value=angle_gamma,
             name='angle_gamma',
             cif_name='angle_gamma',
             units='deg',
+            description='Angle between edges a and b.',
         )
 
         # Lock further attribute additions to prevent

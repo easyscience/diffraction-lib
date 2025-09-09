@@ -142,16 +142,21 @@ line-length = 127
 
 [tool.ruff.lint]
 select = [
-  'E',   # General PEP 8 style errors
-  'E9',  # Runtime errors (e.g., syntax errors, undefined names)
-  'F',   # Pyflakes-specific checks (e.g., unused variables, imports)
-  'F63', # Issues related to invalid escape sequences in strings
-  'F7',  # Type-related errors (e.g., mismatched argument types, unsupported operations)
-  'F82', # Import-related errors (e.g., unresolved imports, reimported modules)
-  'I',   # Import sorting issues (e.g., unsorted imports)
-  'S',   # Security-related issues (e.g., use of insecure functions or libraries)
-  'W',   # General PEP 8 warnings (e.g., lines too long, trailing whitespace)
+  'E',      # General PEP 8 style errors
+  'E9',     # Runtime errors (e.g., syntax errors, undefined names)
+  'F',      # Pyflakes-specific checks (e.g., unused variables, imports)
+  'F63',    # Issues related to invalid escape sequences in strings
+  'F7',     # Type-related errors (e.g., mismatched argument types, unsupported operations)
+  'F82',    # Import-related errors (e.g., unresolved imports, reimported modules)
+  'I',      # Import sorting issues (e.g., unsorted imports)
+  'S',      # Security-related issues (e.g., use of insecure functions or libraries)
+  'W',      # General PEP 8 warnings (e.g., lines too long, trailing whitespace)
+  'TCH',    # Type checking issues (e.g., incompatible types, missing type annotations)
+  'TID252', # Enforces absolute imports over relative imports
 ]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = 'all'
 
 [tool.ruff.lint.isort]
 force-single-line = true

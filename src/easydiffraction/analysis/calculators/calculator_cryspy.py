@@ -11,10 +11,10 @@ from typing import Union
 
 import numpy as np
 
+from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
+from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.sample_models.sample_model import SampleModel
-
-from .calculator_base import CalculatorBase
 
 try:
     import cryspy
@@ -111,7 +111,10 @@ class CryspyCalculator(CalculatorBase):
                 flag_calc_analytical_derivatives=False,
             )
 
-        prefixes = {'constant wavelength': 'pd', 'time-of-flight': 'tof'}
+        prefixes = {
+            BeamModeEnum.CONSTANT_WAVELENGTH: 'pd',
+            BeamModeEnum.TIME_OF_FLIGHT: 'tof',
+        }
         beam_mode = experiment.type.beam_mode.value
         if beam_mode in prefixes.keys():
             cryspy_block_name = f'{prefixes[beam_mode]}_{experiment.name}'
@@ -177,7 +180,7 @@ class CryspyCalculator(CalculatorBase):
             cryspy_biso[idx] = atom_site.b_iso.value
 
         # ---------- Update experiment parameters ----------
-        if experiment.type.beam_mode.value == 'constant wavelength':
+        if experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
             cryspy_expt_name = f'pd_{experiment.name}'
             cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
             # Instrument
@@ -191,7 +194,7 @@ class CryspyCalculator(CalculatorBase):
             cryspy_resolution[3] = experiment.peak.broad_lorentz_x.value
             cryspy_resolution[4] = experiment.peak.broad_lorentz_y.value
 
-        elif experiment.type.beam_mode.value == 'time-of-flight':
+        elif experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
             cryspy_expt_name = f'tof_{experiment.name}'
             cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
             # Instrument
@@ -321,21 +324,21 @@ class CryspyCalculator(CalculatorBase):
                 'asym_alpha_1': '_tof_profile_alpha1',
             }
             cif_lines.append('')
-            if expt_type.beam_mode.value == 'time-of-flight':
+            if expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
                 cif_lines.append('_tof_profile_peak_shape Gauss')
             for local_attr_name, engine_key_name in peak_mapping.items():
                 if hasattr(peak, local_attr_name):
                     attr_value = getattr(peak, local_attr_name).value
                     cif_lines.append(f'{engine_key_name} {attr_value}')
 
-        x_data = experiment.datastore.pattern.x
+        x_data = experiment.datastore.x
         twotheta_min = float(x_data.min())
         twotheta_max = float(x_data.max())
         cif_lines.append('')
-        if expt_type.beam_mode.value == 'constant wavelength':
+        if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
             cif_lines.append(f'_range_2theta_min {twotheta_min}')
             cif_lines.append(f'_range_2theta_max {twotheta_max}')
-        elif expt_type.beam_mode.value == 'time-of-flight':
+        elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
             cif_lines.append(f'_range_time_min {twotheta_min}')
             cif_lines.append(f'_range_time_max {twotheta_max}')
 
@@ -345,14 +348,14 @@ class CryspyCalculator(CalculatorBase):
         cif_lines.append('_phase_scale')
         cif_lines.append(f'{linked_phase.name} 1.0')
 
-        if expt_type.beam_mode.value == 'constant wavelength':
+        if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
             cif_lines.append('')
             cif_lines.append('loop_')
             cif_lines.append('_pd_background_2theta')
             cif_lines.append('_pd_background_intensity')
             cif_lines.append(f'{twotheta_min} 0.0')
             cif_lines.append(f'{twotheta_max} 0.0')
-        elif expt_type.beam_mode.value == 'time-of-flight':
+        elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
             cif_lines.append('')
             cif_lines.append('loop_')
             cif_lines.append('_tof_backgroundpoint_time')
@@ -360,21 +363,21 @@ class CryspyCalculator(CalculatorBase):
             cif_lines.append(f'{twotheta_min} 0.0')
             cif_lines.append(f'{twotheta_max} 0.0')
 
-        if expt_type.beam_mode.value == 'constant wavelength':
+        if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
             cif_lines.append('')
             cif_lines.append('loop_')
             cif_lines.append('_pd_meas_2theta')
             cif_lines.append('_pd_meas_intensity')
             cif_lines.append('_pd_meas_intensity_sigma')
-        elif expt_type.beam_mode.value == 'time-of-flight':
+        elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
             cif_lines.append('')
             cif_lines.append('loop_')
             cif_lines.append('_tof_meas_time')
             cif_lines.append('_tof_meas_intensity')
             cif_lines.append('_tof_meas_intensity_sigma')
 
-        y_data = experiment.datastore.pattern.meas
-        sy_data = experiment.datastore.pattern.meas_su
+        y_data = experiment.datastore.meas
+        sy_data = experiment.datastore.meas_su
         for x_val, y_val, sy_val in zip(x_data, y_data, sy_data):
             cif_lines.append(f'  {x_val:.5f}   {y_val:.5f}   {sy_val:.5f}')
 

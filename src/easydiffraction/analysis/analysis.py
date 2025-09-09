@@ -5,9 +5,14 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-import numpy as np
 import pandas as pd
 
+from easydiffraction.analysis.calculators.calculator_factory import CalculatorFactory
+from easydiffraction.analysis.collections.aliases import Aliases
+from easydiffraction.analysis.collections.constraints import Constraints
+from easydiffraction.analysis.collections.joint_fit_experiments import JointFitExperiments
+from easydiffraction.analysis.minimization import DiffractionMinimizer
+from easydiffraction.analysis.minimizers.minimizer_factory import MinimizerFactory
 from easydiffraction.core.objects import Descriptor
 from easydiffraction.core.objects import Parameter
 from easydiffraction.core.singletons import ConstraintsHandler
@@ -16,13 +21,6 @@ from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
-
-from .calculators.calculator_factory import CalculatorFactory
-from .collections.aliases import Aliases
-from .collections.constraints import Constraints
-from .collections.joint_fit_experiments import JointFitExperiments
-from .minimization import DiffractionMinimizer
-from .minimizers.minimizer_factory import MinimizerFactory
 
 
 class Analysis:
@@ -362,20 +360,20 @@ class Analysis:
         print(paragraph('Current fit mode'))
         print(self.fit_mode)
 
-    def calculate_pattern(self, expt_name: str) -> Optional[np.ndarray]:
+    def calculate_pattern(self, expt_name: str) -> None:
         """
         Calculate the diffraction pattern for a given experiment.
+        The calculated pattern is stored within the experiment's datastore.
 
         Args:
             expt_name: The name of the experiment.
 
         Returns:
-            The calculated pattern as a pandas DataFrame.
+            None.
         """
         experiment = self.project.experiments[expt_name]
         sample_models = self.project.sample_models
-        calculated_pattern = self.calculator.calculate_pattern(sample_models, experiment)
-        return calculated_pattern
+        self.calculator.calculate_pattern(sample_models, experiment)
 
     def show_constraints(self) -> None:
         constraints_dict = self.constraints._items

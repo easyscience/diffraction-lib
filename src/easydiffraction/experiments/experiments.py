@@ -1,13 +1,16 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os.path
 from typing import Dict
 from typing import List
 
 from easydiffraction.core.objects import Collection
+from easydiffraction.experiments.components.experiment_type import BeamModeEnum
+from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
+from easydiffraction.experiments.components.experiment_type import SampleFormEnum
+from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 from easydiffraction.experiments.experiment import BaseExperiment
-from easydiffraction.experiments.experiment import ExperimentFactory
+from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 
@@ -25,83 +28,70 @@ class Experiments(Collection):
         super().__init__()
         self._experiments: Dict[str, BaseExperiment] = self._items  # Alias for legacy support
 
-    def add(
+    def add(self, experiment: BaseExperiment):
+        """
+        Add a pre-built experiment instance.
+        """
+        self._add_prebuilt_experiment(experiment)
+
+    def add_from_cif_path(self, cif_path: str):
+        """
+        Add a new experiment from a CIF file path.
+        """
+        experiment = Experiment(cif_path=cif_path)
+        self._add_prebuilt_experiment(experiment)
+
+    def add_from_cif_str(self, cif_str: str):
+        """
+        Add a new experiment from CIF file content (string).
+        """
+        experiment = Experiment(cif_str=cif_str)
+        self._add_prebuilt_experiment(experiment)
+
+    def add_from_data_path(
         self,
-        experiment=None,
-        name=None,
-        sample_form=None,
-        beam_mode=None,
-        radiation_probe=None,
-        scattering_type=None,
-        cif_path=None,
-        cif_str=None,
-        data_path=None,
+        name: str,
+        data_path: str,
+        sample_form: str = SampleFormEnum.default().value,
+        beam_mode: str = BeamModeEnum.default().value,
+        radiation_probe: str = RadiationProbeEnum.default().value,
+        scattering_type: str = ScatteringTypeEnum.default().value,
     ):
         """
-        Add a new experiment to the collection.
+        Add a new experiment from a data file path.
         """
-        if scattering_type is None:
-            scattering_type = 'bragg'
-        if experiment:
-            self._add_prebuilt_experiment(experiment)
-        elif cif_path:
-            self._add_from_cif_path(cif_path)
-        elif cif_str:
-            self._add_from_cif_string(cif_str)
-        elif all(
-            [
-                name,
-                sample_form,
-                beam_mode,
-                radiation_probe,
-                data_path,
-            ]
-        ):
-            self._add_from_data_path(
-                name=name,
-                sample_form=sample_form,
-                beam_mode=beam_mode,
-                radiation_probe=radiation_probe,
-                scattering_type=scattering_type,
-                data_path=data_path,
-            )
-        else:
-            raise ValueError('Provide either experiment, type parameters, cif_path, cif_str, or data_path')
+        experiment = Experiment(
+            name=name,
+            data_path=data_path,
+            sample_form=sample_form,
+            beam_mode=beam_mode,
+            radiation_probe=radiation_probe,
+            scattering_type=scattering_type,
+        )
+        self._add_prebuilt_experiment(experiment)
 
-    @enforce_type
-    def _add_prebuilt_experiment(self, experiment: BaseExperiment):
-        self._experiments[experiment.name] = experiment
-
-    def _add_from_cif_path(self, cif_path: str) -> None:
-        print('Loading Experiment from CIF path...')
-        raise NotImplementedError('CIF loading not implemented.')
-
-    def _add_from_cif_string(self, cif_str: str) -> None:
-        print('Loading Experiment from CIF string...')
-        raise NotImplementedError('CIF loading not implemented.')
-
-    def _add_from_data_path(
+    def add_without_data(
         self,
-        name,
-        sample_form,
-        beam_mode,
-        radiation_probe,
-        scattering_type,
-        data_path,
+        name: str,
+        sample_form: str = SampleFormEnum.default().value,
+        beam_mode: str = BeamModeEnum.default().value,
+        radiation_probe: str = RadiationProbeEnum.default().value,
+        scattering_type: str = ScatteringTypeEnum.default().value,
     ):
         """
-        Load an experiment from raw data ASCII file.
+        Add a new experiment without any data file.
         """
-        print(paragraph('Loading measured data from ASCII file'))
-        print(os.path.abspath(data_path))
-        experiment = ExperimentFactory.create(
+        experiment = Experiment(
             name=name,
             sample_form=sample_form,
             beam_mode=beam_mode,
             radiation_probe=radiation_probe,
             scattering_type=scattering_type,
         )
-        experiment._load_ascii_data_to_experiment(data_path)
+        self._add_prebuilt_experiment(experiment)
+
+    @enforce_type
+    def _add_prebuilt_experiment(self, experiment: BaseExperiment):
         self._experiments[experiment.name] = experiment
 
     def remove(self, experiment_id: str) -> None:

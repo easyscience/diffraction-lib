@@ -6,10 +6,9 @@ import re
 
 import numpy as np
 
+from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.sample_models.sample_model import SampleModel
-
-from .calculator_base import CalculatorBase
 
 try:
     from diffpy.pdffit2 import PdfFit as pdffit
@@ -81,9 +80,8 @@ class PdffitCalculator(CalculatorBase):
         calculator.setvar('spdiameter', experiment.peak.damp_particle_diameter.value)
 
         # Data
-        pattern = experiment.datastore.pattern
-        x = list(pattern.x)
-        y_noise = list(np.zeros_like(pattern.x))
+        x = list(experiment.datastore.x)
+        y_noise = list(np.zeros_like(x))
 
         # Assign the data to the PDFfit calculator
         calculator.read_data_lists(

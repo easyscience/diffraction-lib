@@ -1,18 +1,6 @@
 name: Test tutorials on Colab
 
 on:
-  # Trigger the workflow on push
-  #push:
-  #  # Every branch
-  #  branches:
-  #    - '**'
-  #  # But do not run this workflow on creating a new tag starting with 'v', e.g. 'v1.0.3' (see publish-pypi.yml)
-  #  tags-ignore:
-  #    - 'v*'
-  # Trigger the workflow on pull request
-  #pull_request:
-  #  branches:
-  #    - '**'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -37,7 +25,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5

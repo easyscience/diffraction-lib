@@ -129,12 +129,12 @@ download_from_repository('mcstas_lbco-si.xye', destination='data')
 
 # %%
 experiment = Experiment(
-    'mcstas',
+    name='mcstas',
+    data_path='data/mcstas_lbco-si.xye',
     sample_form='powder',
     beam_mode='time-of-flight',
     radiation_probe='neutron',
     scattering_type='bragg',
-    data_path='data/mcstas_lbco-si.xye',
 )
 
 # %% [markdown]

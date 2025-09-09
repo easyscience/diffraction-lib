@@ -1,8 +1,16 @@
+[activation.env]
+PYTHONIOENCODING = "utf-8"
+# The following is needed to resolve issues installing easydiffraction
+# from a local path in editable mode in the default environment. With src/
+# included in PYTHONPATH, we use the source code directly in the first place,
+# instead of the installed package.
+PYTHONPATH = "$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
+
 [workspace]
-# Platforms supported for lock file (pixi.lock)
+# Platforms supported for the lock file (pixi.lock)
 platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
 
-# Channels used to fetch the packages from
+# Channels used to fetch packages
 channels = ["conda-forge"]
 
 ##########
@@ -12,18 +20,18 @@ channels = ["conda-forge"]
 # Default feature configuration
 
 [dependencies] # == [feature.default.dependencies]
-pip = "*"        # Needed to install from PyPI
-jupyterlab = "*" # JupyterLab for notebooks
+pip = ">=25.2,<26"        # Required to install from PyPI
+jupyterlab = ">=4.4.7,<5" # JupyterLab for notebooks
 
 [target.win-64.dependencies]
-libcblas = "*" # CBLAS library for linear algebra. Needed for pdffit2 on Windows
+libcblas = "*" # CBLAS library for linear algebra. Required for pdffit2.
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
-pixi-kernel = "*" # Pixi Jupyter kernel integration
+pixi-kernel = ">=0.6.6, <0.7" # Pixi Jupyter kernel integration
 
 # Extra features for different Python versions
 
-# These features are used to specify the Python version for the environment.
+# These features specify the Python version for the environment.
 # Each feature corresponds to a specific Python version.
 
 [feature.py311.dependencies]
@@ -35,30 +43,15 @@ python = "3.12.*"
 [feature.py313.dependencies]
 python = "3.13.*"
 
-# This feature is used for local development with editable installation of
-# easydiffraction. Effectively, the source code defined in the pyproject.toml
-# will be used directly without installing the package. The changes are
-# reflected immediately without needing to reinstall the package.
-# This feature should be deleted in CI, because otherwise the pixi lock file
-# created locally will be considered as outdated in CI.
-
-[feature.ed-local-editable.pypi-dependencies]
-easydiffraction = { editable = true, path = ".", extras = [
-  "dev",
-  "visualization",
-  "docs",
-] }
-
-# This feature is used for development in CI, where the easydiffraction
-# is installed from the local source code defined in the pyproject.toml, but
-# not in editable mode. This ensures that the lock file update locally will
-# work in CI.
+# This feature is for development in CI, where easydiffraction
+# is installed from the local source code defined in pyproject.toml.
+# This ensures that local lock file updates work in CI.
 
 [feature.ed-local.pypi-dependencies]
 easydiffraction = { path = ".", extras = ["dev", "visualization"] }
 
-# This feature is used to build the documentation, where the package is
-# installed from PyPI with the additional dependencies needed for building
+# This feature is used to build documentation, where the package is
+# installed from PyPI with additional dependencies needed for building
 # the docs.
 
 [feature.ed-local-with-docs.pypi-dependencies]
@@ -69,11 +62,11 @@ easydiffraction = { path = ".", extras = ["dev", "visualization", "docs"] }
 [feature.ed-pypi.pypi-dependencies]
 easydiffraction = { version = "*", extras = ["dev", "visualization"] }
 
-# This feature is used to install Node.js and Prettier for formatting
+# This feature installs Node.js and Prettier for formatting
 # non-Python files.
 
 [feature.nodejs.dependencies]
-nodejs = ">=20,<21" # Needed for prettier; pin to a stable LTS
+nodejs = ">=20,<21" # Required for prettier; pinned to a stable LTS
 
 ##############
 # ENVIRONMENTS
@@ -81,10 +74,10 @@ nodejs = ">=20,<21" # Needed for prettier; pin to a stable LTS
 
 [environments]
 
-# The `default` environment is always included in the lock file, so there is no
-# need to specify it explicitly in the environments section.
+# The `default` environment is always included in the lock file, so it does not
+# need to be specified explicitly in the environments section.
 
-default = { features = ["py313", "ed-local-editable", "nodejs"] }
+default = { features = ["py313", "ed-local", "nodejs"] }
 
 py311-dev = { features = ["py311", "ed-local", "nodejs"] }
 py312-dev = { features = ["py312", "ed-local", "nodejs"] }
@@ -101,8 +94,8 @@ py313-prod = { features = ["py313", "ed-pypi"] }
 [tasks]
 
 # 🧪 Testing Tasks
-unit-tests = "python -m pytest tests/unit_tests/ --color=yes -v"
-func-tests = "python -m pytest tests/functional_tests/ --color=yes -n auto -v"
+unit-tests = "python -m pytest tests/unit/ --color=yes -v"
+func-tests = "python -m pytest tests/functional/ --color=yes -n auto -v"
 notebook-tests = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
 script-tests = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
 
@@ -121,13 +114,14 @@ notebook-format-check = 'nbqa ruff tutorials/'
 py-lint-fix = "python -m ruff check . --fix"
 py-format-fix = "python -m ruff format ."
 nonpy-format-fix = "npx prettier . --list-different --write --config=prettierrc.toml"
+nonpy-format-fix-modified = "npx prettier $(git diff --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .) --list-different --write --config=prettierrc.toml"
 notebook-format-fix = 'nbqa ruff tutorials/ --fix'
 
 code-quality = { depends-on = [
   "pyproject-check",
   "py-lint-fix",
   "py-format-fix",
-  "nonpy-format-fix",
+  "nonpy-format-fix-modified",
 ] }
 
 # 📓 Notebook Management

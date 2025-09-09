@@ -45,9 +45,10 @@ class CalculatorBase(ABC):
         sample_models: SampleModels,
         experiment: Experiment,
         called_by_minimizer: bool = False,
-    ) -> np.ndarray:
+    ) -> None:
         """
         Calculate the diffraction pattern for multiple sample models and a single experiment.
+        The calculated pattern is stored within the experiment's datastore.
 
         Args:
             sample_models: Collection of sample models.
@@ -55,9 +56,9 @@ class CalculatorBase(ABC):
             called_by_minimizer: Whether the calculation is called by a minimizer.
 
         Returns:
-            The calculated diffraction pattern as a NumPy array.
+            None.
         """
-        x_data = experiment.datastore.pattern.x
+        x_data = experiment.datastore.x
         y_calc_zeros = np.zeros_like(x_data)
 
         valid_linked_phases = self._get_valid_linked_phases(sample_models, experiment)
@@ -82,6 +83,9 @@ class CalculatorBase(ABC):
                 called_by_minimizer=called_by_minimizer,
             )
 
+            # if not sample_model_y_calc:
+            #    return np.ndarray([])
+
             sample_model_y_calc_scaled = sample_model_scale * sample_model_y_calc
             y_calc_scaled += sample_model_y_calc_scaled
 
@@ -89,13 +93,11 @@ class CalculatorBase(ABC):
         y_bkg = np.zeros_like(x_data)
         if hasattr(experiment, 'background'):
             y_bkg = experiment.background.calculate(x_data)
-        experiment.datastore.pattern.bkg = y_bkg
+        experiment.datastore.bkg = y_bkg
 
         # Calculate total pattern
         y_calc_total = y_calc_scaled + y_bkg
-        experiment.datastore.pattern.calc = y_calc_total
-
-        return y_calc_total
+        experiment.datastore.calc = y_calc_total
 
     @abstractmethod
     def _calculate_single_model_pattern(

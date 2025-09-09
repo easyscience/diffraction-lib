@@ -8,12 +8,11 @@ from typing import Union
 
 import numpy as np
 
+from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModel
 from easydiffraction.sample_models.sample_models import SampleModels
-
-from .calculator_base import CalculatorBase
 
 try:
     from pycrysfml import cfml_py_utilities
@@ -71,7 +70,7 @@ class CrysfmlCalculator(CalculatorBase):
         crysfml_dict = self._crysfml_dict(sample_model, experiment)
         try:
             _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
-            y = self._adjust_pattern_length(y, len(experiment.datastore.pattern.x))
+            y = self._adjust_pattern_length(y, len(experiment.datastore.x))
         except KeyError:
             print('[CrysfmlCalculator] Error: No calculated data')
             y = []
@@ -177,7 +176,7 @@ class CrysfmlCalculator(CalculatorBase):
         instrument = getattr(experiment, 'instrument', None)
         peak = getattr(experiment, 'peak', None)
 
-        x_data = experiment.datastore.pattern.x
+        x_data = experiment.datastore.x
         twotheta_min = float(x_data.min())
         twotheta_max = float(x_data.max())
 

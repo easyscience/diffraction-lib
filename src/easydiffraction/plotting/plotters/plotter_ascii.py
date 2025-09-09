@@ -3,11 +3,10 @@
 
 import asciichartpy
 
+from easydiffraction.plotting.plotters.plotter_base import DEFAULT_HEIGHT
+from easydiffraction.plotting.plotters.plotter_base import SERIES_CONFIG
+from easydiffraction.plotting.plotters.plotter_base import PlotterBase
 from easydiffraction.utils.formatting import paragraph
-
-from .plotter_base import DEFAULT_HEIGHT
-from .plotter_base import SERIES_CONFIG
-from .plotter_base import PlotterBase
 
 DEFAULT_COLORS = {
     'meas': asciichartpy.blue,
