@@ -11,11 +11,10 @@ from typing import Union
 
 import numpy as np
 
+from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.sample_models.sample_model import SampleModel
-
-from .calculator_base import CalculatorBase
 
 try:
     import cryspy

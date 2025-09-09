@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from easydiffraction.analysis.minimizers.minimizer_base import FitResults
+from easydiffraction.analysis.fitting.results import FitResults
 from easydiffraction.analysis.minimizers.minimizer_base import MinimizerBase
 
 
@@ -90,7 +90,7 @@ def test_finalize_fit(mock_minimizer, mock_parameters):
     assert result.parameters == mock_parameters
 
 
-@patch('easydiffraction.analysis.minimizers.fitting_progress_tracker.FittingProgressTracker')
+@patch('easydiffraction.analysis.fitting.progress_tracker.FittingProgressTracker')
 def test_fit(mock_tracker, mock_minimizer, mock_parameters, mock_objective_function):
     mock_minimizer.tracker.finish_tracking = MagicMock()
     result = mock_minimizer.fit(mock_parameters, mock_objective_function)

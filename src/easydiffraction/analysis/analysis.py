@@ -7,6 +7,12 @@ from typing import Union
 
 import pandas as pd
 
+from easydiffraction.analysis.calculators.calculator_factory import CalculatorFactory
+from easydiffraction.analysis.collections.aliases import Aliases
+from easydiffraction.analysis.collections.constraints import Constraints
+from easydiffraction.analysis.collections.joint_fit_experiments import JointFitExperiments
+from easydiffraction.analysis.minimization import DiffractionMinimizer
+from easydiffraction.analysis.minimizers.minimizer_factory import MinimizerFactory
 from easydiffraction.core.objects import Descriptor
 from easydiffraction.core.objects import Parameter
 from easydiffraction.core.singletons import ConstraintsHandler
@@ -15,13 +21,6 @@ from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
-
-from .calculators.calculator_factory import CalculatorFactory
-from .collections.aliases import Aliases
-from .collections.constraints import Constraints
-from .collections.joint_fit_experiments import JointFitExperiments
-from .minimization import DiffractionMinimizer
-from .minimizers.minimizer_factory import MinimizerFactory
 
 
 class Analysis:
