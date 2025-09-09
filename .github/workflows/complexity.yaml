@@ -43,10 +43,10 @@ jobs:
           post-cleanup: false
 
       - name: Cyclomatic Complexity (radon cc)
-        run: pixi run complexity-check -- -j > cc.json
+        run: pixi run complexity-check > cc.json
 
       - name: Maintainability Index (radon mi)
-        run: pixi run maintainability-check -- -j > mi.json
+        run: pixi run maintainability-check > mi.json
 
       - name: Summarize Radon results
         run: |
