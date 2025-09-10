@@ -21,7 +21,6 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          manifest-path: $GITHUB_WORKSPACE/pixi.toml
           environments: >-
             py313-dev
           activate-environment: py313-dev
