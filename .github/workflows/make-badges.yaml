@@ -43,12 +43,12 @@ jobs:
           for BR in master develop ${{ env.CI_BRANCH }}; do
             echo "=== Processing branch $BR ==="
             git worktree add ../worktree-$BR origin/$BR
-            echo "Docstring coverage"
+            echo "Docstring coverage for branch $BR"
             pixi run interrogate -c pyproject.toml --fail-under=0 ../worktree-$BR/src > coverage-docstring-$BR.txt
-            echo "Cyclomatic complexity"
+            echo "Cyclomatic complexity for branch $BR"
             pixi run radon cc -s -j ../worktree-$BR/src > cyclomatic-complexity-$BR.json
-            echo "Maintainability index"
-            pixi run radon mi -j ../worktree-$BR/src > maintainability-index-$BR.json
+            echo "Maintainability index for branch $BR"
+            pixi run radon mi -j ../worktree-$BR/src --exclude ../worktree-$BR/src/easydiffraction/crystallography/space_group_lookup_table.py > maintainability-index-$BR.json
           done
 
       - name: Generate badge summary markdown
