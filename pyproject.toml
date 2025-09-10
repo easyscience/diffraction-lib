@@ -185,18 +185,18 @@ line-length = 99
 # Enable new rules that are not yet stable, like DOC
 preview = true
 
+# https://docs.astral.sh/ruff/rules/
 [tool.ruff.lint]
 select = [
   'B',      # Bugbear-specific checks (e.g., likely bugs, bad patterns)
-  'C90',    # Cyclomatic complexity checks
+  'C',      # Complexity-related issues (e.g., high McCabe complexity)
   'D',      # Docstring formatting issues (old rules)
   'DOC',    # Docstring formatting issues (new rules)
+  'DTZ',    # Docstring timezone issues (e.g., inconsistent timezone formats)
   'E',      # General PEP 8 style errors
-  'E9',     # Runtime errors (e.g., syntax errors, undefined names)
   'F',      # Pyflakes-specific checks (e.g., unused variables, imports)
-  'F63',    # Issues related to invalid escape sequences in strings
-  'F7',     # Type-related errors (e.g., mismatched argument types, unsupported operations)
-  'F82',    # Import-related errors (e.g., unresolved imports, reimported modules)
+  'FLY',    # Flynt-specific checks (e.g., enforcing f-strings)
+  'G',      # Type annotation issues (e.g., missing or incorrect type hints)
   'I',      # Import sorting issues (e.g., unsorted imports)
   'N',      # Naming convention issues (e.g., variable names, function names)
   'NPY',    # NumPy-specific checks (e.g., array operations, broadcasting)
@@ -209,11 +209,13 @@ select = [
   #'PTH',   # Encourages using pathlib over os.path
   #'RUF',   # Ruff-specific checks (e.g., enforcing best practices)
   #'SIM',   # Simplification issues (e.g., redundant code, unnecessary constructs)
-  #'TRY',   # Try/Except-related issues (e.g., broad exceptions, empty except blocks)
+  #'TRY',   # Tryceratops Try/Except-related issues (e.g., broad exceptions, empty except blocks)
   #'UP',    # Pyupgrade-specific checks
 ]
 # Temporarily disable some docstring checks until we have improved the docstring coverage
 ignore = [
+  'C408',   # Ignore: Unnecessary `dict()` call
+  'C416',   # Ignore: Unnecessary list comprehension
   'D100',   # Ignore: Missing docstring in public module
   'D101',   # Ignore: Missing docstring in class
   'D102',   # Ignore: Missing docstring in public method
@@ -225,6 +227,7 @@ ignore = [
   'DOC201', # Ignore: `return` is not documented in docstring
   'DOC501', # Ignore: Raised exception `ValueError` missing from docstring
   'DOC502', # Ignore: Raised exception is not explicitly raised: `TypeError`
+  'DTZ005', # Ignore: `datetime.datetime.now()` called without a `tz` argument
 ]
 
 # Temporarily increase McCabe complexity limit to 17 to allow
