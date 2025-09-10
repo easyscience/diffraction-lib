@@ -466,7 +466,7 @@ class Collection(ABC):
         return '\n'.join(lines)
 
 
-class Datablock(ABC):
+class Datablock():
     """
     Base class for Sample Model and Experiment data blocks.
     """
