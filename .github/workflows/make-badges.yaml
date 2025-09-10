@@ -1,0 +1,35 @@
+name: Branch Badge Summary
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  CI_BRANCH: ${{ github.head_ref || github.ref_name }}
+
+jobs:
+  make-badges:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.9.0
+        with:
+          environments: >-
+            py313-dev
+          activate-environment: py313-dev
+          run-install: true
+          frozen: true
+          cache: false
+          post-cleanup: false
+
+      - name: Generate badge summary markdown
+        run: pixi run make-badges #--output BADGES.md --branch $CI_BRANCH
+
+      - name: Append badge summary to step summary
+        run: cat BADGES.md >> $GITHUB_STEP_SUMMARY
+
