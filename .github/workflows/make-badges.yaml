@@ -29,12 +29,15 @@ jobs:
           cache: false
           post-cleanup: false
 
-      - name: Run docstring coverage and code complexity
+      - name: Run docstring coverage and code complexity checks
         run: |
-          git worktree add ../worktree-master origin/master
-          pixi run interrogate -c pyproject.toml ../worktree-master/src/ > coverage-docstring-master.txt
-          pixi run radon cc -s -j ../worktree-master/src > cyclomatic-complexity-master.json
-          pixi run radon mi -j ../worktree-master/src > maintainability-index-master.json
+          for BR in master develop ${{ env.CI_BRANCH }}; do
+            echo "=== Processing branch $BR ==="
+            git worktree add ../worktree-$BR origin/$BR || git worktree add ../worktree-$BR $BR
+            pixi run interrogate -c pyproject.toml ../worktree-$BR/src > coverage-docstring-$BR.txt --fail-under=0
+            pixi run radon cc -s -j ../worktree-$BR/src > cyclomatic-complexity-$BR.json
+            pixi run radon mi -j ../worktree-$BR/src > maintainability-index-$BR.json
+          done
 
       - name: Generate badge summary markdown
         run: >
