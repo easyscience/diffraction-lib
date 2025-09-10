@@ -182,6 +182,8 @@ class CrysfmlCalculator(CalculatorBase):
         twotheta_min = float(x_data.min())
         twotheta_max = float(x_data.max())
 
+        # TODO: Process default values on the experiment creation
+        #  instead of here
         exp_dict = {
             'NPD': {
                 '_diffrn_radiation_probe': expt_type.radiation_probe.value
