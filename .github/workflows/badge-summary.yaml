@@ -72,12 +72,12 @@ jobs:
           [test-tutorials-branch]: https://github.com/easyscience/diffraction-lib/actions/workflows/test-tutorials.yaml/badge.svg?branch=$CI_BRANCH
           [test-tutorials-branch-link]: https://github.com/easyscience/diffraction-lib/actions/workflows/test-tutorials.yaml
 
-          [build-docs-master]: https://github.com/easyscience/diffraction-lib/actions/workflows/build-docs.yaml/badge.svg
-          [build-docs-master-link]: https://github.com/easyscience/diffraction-lib/actions/workflows/build-docs.yaml
-          [build-docs-develop]: https://github.com/easyscience/diffraction-lib/actions/workflows/build-docs.yaml/badge.svg?branch=develop
-          [build-docs-develop-link]: https://github.com/easyscience/diffraction-lib/actions/workflows/build-docs.yaml
-          [build-docs-branch]: https://github.com/easyscience/diffraction-lib/actions/workflows/build-docs.yaml/badge.svg?branch=$CI_BRANCH
-          [build-docs-branch-link]: https://github.com/easyscience/diffraction-lib/actions/workflows/build-docs.yaml
+          [build-docs-master]: https://github.com/easyscience/diffraction-lib/actions/workflows/build-docs.yml/badge.svg
+          [build-docs-master-link]: https://github.com/easyscience/diffraction-lib/actions/workflows/build-docs.yml
+          [build-docs-develop]: https://github.com/easyscience/diffraction-lib/actions/workflows/build-docs.yml/badge.svg?branch=develop
+          [build-docs-develop-link]: https://github.com/easyscience/diffraction-lib/actions/workflows/build-docs.yml
+          [build-docs-branch]: https://github.com/easyscience/diffraction-lib/actions/workflows/build-docs.yml/badge.svg?branch=$CI_BRANCH
+          [build-docs-branch-link]: https://github.com/easyscience/diffraction-lib/actions/workflows/build-docs.yml
 
           [test-package-pypi]: https://github.com/easyscience/diffraction-lib/actions/workflows/test-package-pypi.yaml/badge.svg
           [test-package-pypi-link]: https://github.com/easyscience/diffraction-lib/actions/workflows/test-package-pypi.yaml
