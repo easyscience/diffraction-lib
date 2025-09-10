@@ -1,8 +1,9 @@
 # %% [markdown]
 # # Structure Refinement: Si, SEPD
 #
-# This example demonstrates a Rietveld refinement of Si crystal structure using
-# time-of-flight neutron powder diffraction data from SEPD at Argonne.
+# This example demonstrates a Rietveld refinement of Si crystal
+# structure using time-of-flight neutron powder diffraction data from
+# SEPD at Argonne.
 
 # %% [markdown]
 # ## Import Library
@@ -16,7 +17,8 @@ from easydiffraction import download_from_repository
 # %% [markdown]
 # ## Define Sample Model
 #
-# This section shows how to add sample models and modify their parameters.
+# This section shows how to add sample models and modify their
+# parameters.
 #
 # #### Create Sample Model
 
@@ -45,8 +47,8 @@ model.atom_sites.add('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.5)
 # %% [markdown]
 # ## Define Experiment
 #
-# This section shows how to add experiments, configure their parameters, and
-# link the sample models defined in the previous step.
+# This section shows how to add expßeriments, configure their
+# parameters, and link the sample models defined in the previous step.
 #
 # #### Download Measured Data
 

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import datetime
@@ -23,9 +23,8 @@ from easydiffraction.utils.utils import twotheta_to_d
 
 
 class ProjectInfo:
-    """
-    Stores metadata about the project, such as name, title, description,
-    and file paths.
+    """Stores metadata about the project, such as name, title,
+    description, and file paths.
     """
 
     def __init__(self) -> None:
@@ -120,9 +119,10 @@ class ProjectInfo:
 
 
 class Project:
-    """
-    Central API for managing a diffraction data analysis project.
-    Provides access to sample models, experiments, analysis, and summary.
+    """Central API for managing a diffraction data analysis project.
+
+    Provides access to sample models, experiments, analysis, and
+    summary.
     """
 
     def __init__(
@@ -145,7 +145,9 @@ class Project:
 
     @property
     def name(self) -> str:
-        """Convenience property to access the project's name directly."""
+        """Convenience property to access the project's name
+        directly.
+        """
         return self.info.name
 
     # ------------------------------------------
@@ -153,8 +155,8 @@ class Project:
     # ------------------------------------------
 
     def load(self, dir_path: str) -> None:
-        """
-        Load a project from a given directory.
+        """Load a project from a given directory.
+
         Loads project info, sample models, experiments, etc.
         """
         print(paragraph(f'Loading project 📦 from {dir_path}'))
@@ -169,9 +171,7 @@ class Project:
         dir_path: str,
         temporary: bool = False,
     ) -> None:
-        """
-        Save the project into a new directory.
-        """
+        """Save the project into a new directory."""
         if temporary:
             tmp: str = tempfile.gettempdir()
             dir_path = os.path.join(tmp, dir_path)
@@ -179,9 +179,7 @@ class Project:
         self.save()
 
     def save(self) -> None:
-        """
-        Save the project into the existing project directory.
-        """
+        """Save the project into the existing project directory."""
         if not self.info.path:
             print(error('Project path not specified. Use save_as() to define the path first.'))
             return
@@ -259,8 +257,8 @@ class Project:
         # Update d-spacing if necessary
         # TODO: This is done before every plot, and not when parameters
         #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting process.
-        #  Need to find a better way to handle this.
+        #  to minimize the performance impact during the fitting
+        #  process. Need to find a better way to handle this.
         if d_spacing:
             self.update_pattern_d_spacing(expt_name)
 
@@ -289,8 +287,8 @@ class Project:
         # Update d-spacing if necessary
         # TODO: This is done before every plot, and not when parameters
         #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting process.
-        #  Need to find a better way to handle this.
+        #  to minimize the performance impact during the fitting
+        #  process. Need to find a better way to handle this.
         if d_spacing:
             self.update_pattern_d_spacing(expt_name)
 
@@ -320,8 +318,8 @@ class Project:
         # Update d-spacing if necessary
         # TODO: This is done before every plot, and not when parameters
         #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting process.
-        #  Need to find a better way to handle this.
+        #  to minimize the performance impact during the fitting
+        #  process. Need to find a better way to handle this.
         if d_spacing:
             self.update_pattern_d_spacing(expt_name)
 
@@ -337,8 +335,8 @@ class Project:
         )
 
     def update_pattern_d_spacing(self, expt_name: str) -> None:
-        """
-        Update the pattern's d-spacing based on the experiment's beam mode.
+        """Update the pattern's d-spacing based on the experiment's beam
+        mode.
         """
         experiment = self.experiments[expt_name]
         datastore = experiment.datastore

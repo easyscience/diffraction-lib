@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import time
@@ -42,8 +42,8 @@ def format_cell(
 
 
 class FittingProgressTracker:
-    """
-    Tracks and reports the reduced chi-square during the optimization process.
+    """Tracks and reports the reduced chi-square during the optimization
+    process.
     """
 
     def __init__(self) -> None:
@@ -72,11 +72,11 @@ class FittingProgressTracker:
         residuals: np.ndarray,
         parameters: List[float],
     ) -> np.ndarray:
-        """
-        Track chi-square progress during the optimization process.
+        """Track chi-square progress during the optimization process.
 
         Parameters:
-            residuals (np.ndarray): Array of residuals between measured and calculated data.
+            residuals (np.ndarray): Array of residuals between measured
+                and calculated data.
             parameters (list): List of free parameters being fitted.
 
         Returns:
@@ -100,17 +100,21 @@ class FittingProgressTracker:
                 '',
             ]
 
-        # Improvement check
-        elif (self._previous_chi2 - reduced_chi2) / self._previous_chi2 > SIGNIFICANT_CHANGE_THRESHOLD:
-            change_percent = (self._previous_chi2 - reduced_chi2) / self._previous_chi2 * 100
+        # Subsequent iterations, check for significant changes
+        else:
+            change = (self._previous_chi2 - reduced_chi2) / self._previous_chi2
 
-            row = [
-                str(self._iteration),
-                f'{reduced_chi2:.2f}',
-                f'{change_percent:.1f}% ↓',
-            ]
+            # Improvement check
+            if change > SIGNIFICANT_CHANGE_THRESHOLD:
+                change_in_percent = change * 100
 
-            self._previous_chi2 = reduced_chi2
+                row = [
+                    str(self._iteration),
+                    f'{reduced_chi2:.2f}',
+                    f'{change_in_percent:.1f}% ↓',
+                ]
+
+                self._previous_chi2 = reduced_chi2
 
         # Output if there is something new to display
         if row:
@@ -176,7 +180,9 @@ class FittingProgressTracker:
             print('╒' + '╤'.join(['═' * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + '╕')
 
             # Header row (all centered)
-            header_row = '│' + '│'.join([format_cell(h, align='center') for h in DEFAULT_HEADERS]) + '│'
+            header_row = (
+                '│' + '│'.join([format_cell(h, align='center') for h in DEFAULT_HEADERS]) + '│'
+            )
             print(header_row)
 
             # Separator
@@ -197,7 +203,11 @@ class FittingProgressTracker:
         else:
             # Alignments for each column
             formatted_row = (
-                '│' + '│'.join([format_cell(cell, align=DEFAULT_ALIGNMENTS[i]) for i, cell in enumerate(row)]) + '│'
+                '│'
+                + '│'.join(
+                    [format_cell(cell, align=DEFAULT_ALIGNMENTS[i]) for i, cell in enumerate(row)]
+                )
+                + '│'
             )
 
             # Print the new row
@@ -218,5 +228,8 @@ class FittingProgressTracker:
             print('╘' + '╧'.join(['═' * FIXED_WIDTH for _ in range(len(row))]) + '╛')
 
         # Print best result
-        print(f'🏆 Best goodness-of-fit (reduced χ²) is {self._best_chi2:.2f} at iteration {self._best_iteration}')
+        print(
+            f'🏆 Best goodness-of-fit (reduced χ²) is {self._best_chi2:.2f} '
+            f'at iteration {self._best_iteration}'
+        )
         print('✅ Fitting complete.')

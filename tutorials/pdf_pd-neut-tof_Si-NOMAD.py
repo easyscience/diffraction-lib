@@ -1,9 +1,9 @@
 # %% [markdown]
 # # Pair Distribution Function: Si, NPD
 #
-# This example demonstrates a pair distribution function (PDF) analysis of Si,
-# based on data collected from a time-of-flight neutron powder diffraction
-# experiment at NOMAD at SNS.
+# This example demonstrates a pair distribution function (PDF) analysis
+# of Si, based on data collected from a time-of-flight neutron powder
+# diffraction experiment at NOMAD at SNS.
 
 # %% [markdown]
 # ## Import Library
@@ -35,7 +35,15 @@ sample_model = project.sample_models['si']
 sample_model.space_group.name_h_m.value = 'F d -3 m'
 sample_model.space_group.it_coordinate_system_code = '1'
 sample_model.cell.length_a = 5.43146
-sample_model.atom_sites.add(label='Si', type_symbol='Si', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=0.5)
+sample_model.atom_sites.add(
+    label='Si',
+    type_symbol='Si',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=0.5,
+)
 
 # %% [markdown]
 # ## Add Experiment

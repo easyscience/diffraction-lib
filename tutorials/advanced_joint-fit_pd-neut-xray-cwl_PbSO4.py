@@ -1,14 +1,15 @@
 # %% [markdown]
 # # Structure Refinement: PbSO4, NPD + XRD
 #
-# This example demonstrates a more advanced use of the EasyDiffraction library
-# by explicitly creating and configuring sample models and experiments
-# before adding them to a project. It could be more suitable for users who are
-# interested in creating custom workflows. This tutorial provides minimal
-# explanation and is intended for users already familiar with EasyDiffraction.
+# This example demonstrates a more advanced use of the EasyDiffraction
+# library by explicitly creating and configuring sample models and
+# experiments before adding them to a project. It could be more suitable
+# for users who are interested in creating custom workflows. This
+# tutorial provides minimal explanation and is intended for users
+# already familiar with EasyDiffraction.
 #
-# The tutorial covers a Rietveld refinement of PbSO4 crystal structure based
-# on the joint fit of both X-ray and neutron diffraction data.
+# The tutorial covers a Rietveld refinement of PbSO4 crystal structure
+# based on the joint fit of both X-ray and neutron diffraction data.
 
 # %% [markdown]
 # ## Import Library
@@ -22,7 +23,8 @@ from easydiffraction import download_from_repository
 # %% [markdown]
 # ## Define Sample Model
 #
-# This section shows how to add sample models and modify their parameters.
+# This section shows how to add sample models and modify their
+# parameters.
 #
 # #### Create Sample Model
 
@@ -57,8 +59,8 @@ model.atom_sites.add('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
 # %% [markdown]
 # ## Define Experiments
 #
-# This section shows how to add experiments, configure their parameters, and
-# link the sample models defined in the previous step.
+# This section shows how to add experiments, configure their parameters,
+# and link the sample models defined in the previous step.
 #
 # ### Experiment 1: npd
 #
@@ -192,7 +194,8 @@ expt2.linked_phases.add('pbso4', scale=0.001)
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage sample models, experiments, and analysis.
+# The project object is used to manage sample models, experiments, and
+# analysis.
 #
 # #### Create Project
 
@@ -215,7 +218,8 @@ project.experiments.add(expt2)
 # %% [markdown]
 # ## Perform Analysis
 #
-# This section outlines the analysis process, including how to configure calculation and fitting engines.
+# This section outlines the analysis process, including how to configure
+# calculation and fitting engines.
 #
 # #### Set Calculator
 

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 from typing import Any
 from typing import List
 from typing import Optional
@@ -32,7 +35,9 @@ class FitResults:
         self.iterations: int = iterations
         self.engine_result: Optional[Any] = engine_result
         self.result: Optional[Any] = None
-        self.starting_parameters: List[Any] = starting_parameters if starting_parameters is not None else []
+        self.starting_parameters: List[Any] = (
+            starting_parameters if starting_parameters is not None else []
+        )
         self.fitting_time: Optional[float] = fitting_time
 
         if 'redchi' in kwargs and self.reduced_chi_square is None:
@@ -102,7 +107,11 @@ class FitResults:
             category_key = getattr(param, 'category_key', 'N/A')
             collection_entry_id = getattr(param, 'collection_entry_id', 'N/A')
             name = getattr(param, 'name', 'N/A')
-            start = f'{getattr(param, "start_value", "N/A"):.4f}' if param.start_value is not None else 'N/A'
+            start = (
+                f'{getattr(param, "start_value", "N/A"):.4f}'
+                if param.start_value is not None
+                else 'N/A'
+            )
             fitted = f'{param.value:.4f}' if param.value is not None else 'N/A'
             uncertainty = f'{param.uncertainty:.4f}' if param.uncertainty is not None else 'N/A'
             units = getattr(param, 'units', 'N/A')
@@ -115,7 +124,17 @@ class FitResults:
                 relative_change = 'N/A'
 
             rows.append(
-                [datablock_id, category_key, collection_entry_id, name, start, fitted, uncertainty, units, relative_change]
+                [
+                    datablock_id,
+                    category_key,
+                    collection_entry_id,
+                    name,
+                    start,
+                    fitted,
+                    uncertainty,
+                    units,
+                    relative_change,
+                ]
             )
 
         render_table(

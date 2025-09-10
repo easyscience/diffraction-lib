@@ -1,8 +1,9 @@
 # %% [markdown]
 # # Pair Distribution Function: NaCl, XRD
 #
-# This example demonstrates a pair distribution function (PDF) analysis of
-# NaCl, based on data collected from an X-ray powder diffraction experiment.
+# This example demonstrates a pair distribution function (PDF) analysis
+# of NaCl, based on data collected from an X-ray powder diffraction
+# experiment.
 #
 # The dataset is taken from:
 # https://github.com/diffpy/add2019-diffpy-cmi/tree/master
@@ -41,7 +42,13 @@ project.sample_models['nacl'].atom_sites.add(
     label='Na', type_symbol='Na', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=1.0
 )
 project.sample_models['nacl'].atom_sites.add(
-    label='Cl', type_symbol='Cl', fract_x=0.5, fract_y=0.5, fract_z=0.5, wyckoff_letter='b', b_iso=1.0
+    label='Cl',
+    type_symbol='Cl',
+    fract_x=0.5,
+    fract_y=0.5,
+    fract_z=0.5,
+    wyckoff_letter='b',
+    b_iso=1.0,
 )
 
 # %% [markdown]

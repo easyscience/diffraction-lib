@@ -9,4 +9,4 @@ def _load():
         return pickle.load(f)  # noqa: S301 safe: internal trusted data
 
 
-SPACE_GROUP_LOOKUP_DICT = _load()
+SPACE_GROUPS = _load()

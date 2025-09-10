@@ -1,9 +1,5 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-
-"""
-General utilities and helpers for easydiffraction.
-"""
 
 import importlib
 import io
@@ -63,13 +59,16 @@ def download_from_repository(
     destination: str = 'data',
     overwrite: bool = False,
 ) -> None:
-    """Download a data file from the EasyDiffraction repository on GitHub.
+    """Download a data file from the EasyDiffraction repository on
+    GitHub.
 
     Args:
         file_name: The file name to fetch (e.g., "NaCl.gr").
         branch: Branch to fetch from. If None, uses DATA_REPO_BRANCH.
-        destination: Directory to save the file into (created if missing).
-        overwrite: Whether to overwrite the file if it already exists. Defaults to False.
+        destination: Directory to save the file into (created if
+            missing).
+        overwrite: Whether to overwrite the file if it already exists.
+            Defaults to False.
 
     Returns:
         None
@@ -99,15 +98,14 @@ def download_from_repository(
 
 
 def package_version(package_name: str) -> str | None:
-    """
-    Get the installed version string of the specified package.
+    """Get the installed version string of the specified package.
 
     Args:
         package_name (str): The name of the package to query.
 
     Returns:
-        str | None: The raw version string (may include local part, e.g., '1.2.3+abc123'),
-        or None if the package is not installed.
+        str | None: The raw version string (may include local part,
+        e.g., '1.2.3+abc123'), or None if the package is not installed.
     """
     try:
         return version(package_name)
@@ -116,17 +114,18 @@ def package_version(package_name: str) -> str | None:
 
 
 def stripped_package_version(package_name: str) -> str | None:
-    """
-    Get the installed version of the specified package, stripped of any local version part.
+    """Get the installed version of the specified package, stripped of
+    any local version part.
 
-    Returns only the public version segment (e.g., '1.2.3' or '1.2.3.post4'),
-    omitting any local segment (e.g., '+d136').
+    Returns only the public version segment (e.g., '1.2.3' or
+    '1.2.3.post4'), omitting any local segment (e.g., '+d136').
 
     Args:
         package_name (str): The name of the package to query.
 
     Returns:
-        str | None: The public version string, or None if the package is not installed.
+        str | None: The public version string, or None if the package
+        is not installed.
     """
     v_str = package_version(package_name)
     if v_str is None:
@@ -139,16 +138,18 @@ def stripped_package_version(package_name: str) -> str | None:
 
 
 def _get_release_info(tag: str | None) -> dict | None:
-    """
-    Fetch release info from GitHub for the given tag (or latest if None).
-    Uses unauthenticated API by default, but includes GITHUB_TOKEN from the environment
-    if available to avoid rate limiting.
+    """Fetch release info from GitHub for the given tag (or latest if
+    None). Uses unauthenticated API by default, but includes
+    GITHUB_TOKEN from the environment if available to avoid rate
+    limiting.
 
     Args:
-        tag (str | None): The tag of the release to fetch, or None for latest.
+        tag (str | None): The tag of the release to fetch, or None for
+            latest.
 
     Returns:
-        dict | None: The release info dictionary if retrievable, None otherwise.
+        dict | None: The release info dictionary if retrievable, None
+        otherwise.
     """
     if tag is not None:
         api_url = f'https://api.github.com/repos/easyscience/diffraction-lib/releases/tags/{tag}'
@@ -173,14 +174,15 @@ def _get_release_info(tag: str | None) -> dict | None:
 
 
 def _get_tutorial_asset(release_info: dict) -> dict | None:
-    """
-    Given a release_info dict, return the 'tutorials.zip' asset dict, or None.
+    """Given a release_info dict, return the 'tutorials.zip' asset dict,
+    or None.
 
     Args:
         release_info (dict): The release info dictionary.
 
     Returns:
-        dict | None: The asset dictionary for 'tutorials.zip' if found, None otherwise.
+        dict | None: The asset dictionary for 'tutorials.zip' if found,
+        None otherwise.
     """
     assets = release_info.get('assets', [])
     for asset in assets:
@@ -190,8 +192,7 @@ def _get_tutorial_asset(release_info: dict) -> dict | None:
 
 
 def _sort_notebooks(notebooks: list[str]) -> list[str]:
-    """
-    Sorts the list of notebook filenames.
+    """Sorts the list of notebook filenames.
 
     Args:
         notebooks (list[str]): List of notebook filenames.
@@ -203,8 +204,8 @@ def _sort_notebooks(notebooks: list[str]) -> list[str]:
 
 
 def _extract_notebooks_from_asset(download_url: str) -> list[str]:
-    """
-    Download the tutorials.zip from download_url and return a sorted list of .ipynb file names.
+    """Download the tutorials.zip from download_url and return a sorted
+    list of .ipynb file names.
 
     Args:
         download_url (str): URL to download the tutorials.zip asset.
@@ -228,19 +229,20 @@ def _extract_notebooks_from_asset(download_url: str) -> list[str]:
 
 
 def fetch_tutorial_list() -> list[str]:
-    """
-    Return a list of available tutorial notebook filenames from the GitHub release
-    that matches the installed version of `easydiffraction`, if possible. If the
-    version-specific release is unavailable, falls back to the latest release.
+    """Return a list of available tutorial notebook filenames from the
+    GitHub release that matches the installed version of
+    `easydiffraction`, if possible. If the version-specific release is
+    unavailable, falls back to the latest release.
 
-    This function does not fetch or display the tutorials themselves; it only lists
-    the notebook filenames (e.g., '01-intro.ipynb', ...) found inside the
-    'tutorials.zip' asset of the appropriate GitHub release.
+    This function does not fetch or display the tutorials themselves; it
+    only lists the notebook filenames (e.g., '01-intro.ipynb', ...)
+    found inside the 'tutorials.zip' asset of the appropriate GitHub
+    release.
 
     Returns:
-        list[str]: A sorted list of tutorial notebook filenames (without directories)
-        extracted from the corresponding release's tutorials.zip, or an empty list
-        if unavailable.
+        list[str]: A sorted list of tutorial notebook filenames (without
+        directories) extracted from the corresponding release's
+        tutorials.zip, or an empty list if unavailable.
     """
     version_str = stripped_package_version('easydiffraction')
     tag = f'v{version_str}' if version_str is not None else None
@@ -263,8 +265,7 @@ def fetch_tutorial_list() -> list[str]:
 
 
 def list_tutorials():
-    """
-    List available tutorial notebooks.
+    """List available tutorial notebooks.
 
     Args:
         None
@@ -287,12 +288,13 @@ def list_tutorials():
 
 
 def fetch_tutorials() -> None:
-    """
-    Download and extract the tutorials ZIP archive from the GitHub release matching the
-    installed version of `easydiffraction`, if available. If the version-specific release
-    is unavailable, falls back to the latest release.
+    """Download and extract the tutorials ZIP archive from the GitHub
+    release matching the installed version of `easydiffraction`, if
+    available. If the version-specific release is unavailable, falls
+    back to the latest release.
 
-    The archive is extracted into the current working directory and then removed.
+    The archive is extracted into the current working directory and then
+    removed.
 
     Args:
         None
@@ -336,8 +338,7 @@ def fetch_tutorials() -> None:
 
 
 def show_version() -> None:
-    """
-    Print the installed version of the easydiffraction package.
+    """Print the installed version of the easydiffraction package.
 
     Args:
         None
@@ -350,11 +351,11 @@ def show_version() -> None:
 
 
 def is_notebook() -> bool:
-    """
-    Determines if the current environment is a Jupyter Notebook.
+    """Determines if the current environment is a Jupyter Notebook.
 
     Returns:
-        bool: True if running inside a Jupyter Notebook, False otherwise.
+        bool: True if running inside a Jupyter Notebook, False
+        otherwise.
     """
     if IPython is None:
         return False
@@ -376,8 +377,7 @@ def is_notebook() -> bool:
 
 
 def is_pycharm() -> bool:
-    """
-    Determines if the current environment is PyCharm.
+    """Determines if the current environment is PyCharm.
 
     Returns:
         bool: True if running inside PyCharm, False otherwise.
@@ -386,8 +386,7 @@ def is_pycharm() -> bool:
 
 
 def is_colab() -> bool:
-    """
-    Determines if the current environment is Google Colab.
+    """Determines if the current environment is Google Colab.
 
     Returns:
         bool: True if running in Google Colab PyCharm, False otherwise.
@@ -399,12 +398,12 @@ def is_colab() -> bool:
 
 
 def is_github_ci() -> bool:
-    """
-    Determines if the current process is running in GitHub Actions CI.
+    """Determines if the current process is running in GitHub Actions
+    CI.
 
     Returns:
-        bool: True if the environment variable ``GITHUB_ACTIONS`` is set
-        (Always "true" on GitHub Actions), False otherwise.
+        bool: True if the environment variable ``GITHUB_ACTIONS`` is
+        set (Always "true" on GitHub Actions), False otherwise.
     """
     return os.environ.get('GITHUB_ACTIONS') is not None
 
@@ -416,13 +415,14 @@ def render_table(
     show_index=False,
     display_handle=None,
 ):
-    """
-    Renders a table either as an HTML (in Jupyter Notebook) or ASCII (in terminal),
-    with aligned columns.
+    """Renders a table either as an HTML (in Jupyter Notebook) or ASCII
+    (in terminal), with aligned columns.
 
     Args:
-        columns_data (list): List of lists, where each inner list represents a row of data.
-        columns_alignment (list): Corresponding text alignment for each column (e.g., 'left', 'center', 'right').
+        columns_data (list): List of lists, where each inner list
+            represents a row of data.
+        columns_alignment (list): Corresponding text alignment for each
+            column (e.g., 'left', 'center', 'right').
         columns_headers (list): List of column headers.
         show_index (bool): Whether to show the index column.
         display_handle: Optional display handle for updating in Jupyter.
@@ -430,7 +430,6 @@ def render_table(
     Returns:
         None
     """
-
     # Use pandas DataFrame for Jupyter Notebook rendering
     if is_notebook():
         # Create DataFrame
@@ -450,7 +449,8 @@ def render_table(
         # Replace None/NaN values with empty strings
         df.fillna('', inplace=True)
 
-        # Formatters for data cell alignment and replacing None with empty string
+        # Formatters for data cell alignment and replacing None with
+        # empty string
         def make_formatter(align):
             return lambda x: f'<div style="text-align: {align};">{x}</div>'
 
@@ -472,7 +472,7 @@ def render_table(
             header=not skip_headers,
         )
 
-        # Add inline CSS to align the entire table to the left and show border
+        # Add CSS to align the entire table to the left and show border
         html = html.replace(
             '<table class="dataframe">',
             '<table class="dataframe" '
@@ -519,8 +519,8 @@ def render_table(
 
 
 def render_cif(cif_text, paragraph_title) -> None:
-    """
-    Display the CIF text as a formatted table in Jupyter Notebook or terminal.
+    """Display the CIF text as a formatted table in Jupyter Notebook or
+    terminal.
 
     Args:
         cif_text: The CIF text to display.
@@ -557,34 +557,45 @@ def tof_to_d(
     quad: float,
     quad_eps=1e-20,
 ) -> np.ndarray:
-    """Convert time-of-flight (TOF) to d-spacing using a quadratic calibration.
+    """Convert time-of-flight (TOF) to d-spacing using a quadratic
+    calibration.
 
     Model:
         TOF = offset + linear * d + quad * d²
 
     The function:
-      - Uses a linear fallback when the quadratic term is effectively zero.
-      - Solves the quadratic for d and selects the smallest positive, finite root.
+      - Uses a linear fallback when the quadratic term is effectively
+        zero.
+      - Solves the quadratic for d and selects the smallest positive,
+        finite root.
       - Returns NaN where no valid solution exists.
       - Expects ``tof`` as a NumPy array; output matches its shape.
 
     Args:
-        tof (np.ndarray): Time-of-flight values (µs). Must be a NumPy array.
+        tof (np.ndarray): Time-of-flight values (µs). Must be a NumPy
+            array.
         offset (float): Calibration offset (µs).
         linear (float): Linear calibration coefficient (µs/Å).
         quad (float): Quadratic calibration coefficient (µs/Å²).
-        quad_eps (float, optional): Threshold to treat ``quad`` as zero. Defaults to 1e-20.
+        quad_eps (float, optional): Threshold to treat ``quad`` as zero.
+            Defaults to 1e-20.
 
     Returns:
         np.ndarray: d-spacing values (Å), NaN where invalid.
 
     Raises:
-        TypeError: If ``tof`` is not a NumPy array or coefficients are not real numbers.
+        TypeError: If ``tof`` is not a NumPy array or coefficients are
+            not real numbers.
     """
     # Type checks
     if not isinstance(tof, np.ndarray):
         raise TypeError(f"'tof' must be a NumPy array, got {type(tof).__name__}")
-    for name, val in (('offset', offset), ('linear', linear), ('quad', quad), ('quad_eps', quad_eps)):
+    for name, val in (
+        ('offset', offset),
+        ('linear', linear),
+        ('quad', quad),
+        ('quad_eps', quad_eps),
+    ):
         if not isinstance(val, (int, float, np.integer, np.floating)):
             raise TypeError(f"'{name}' must be a real number, got {type(val).__name__}")
 
@@ -616,9 +627,12 @@ def tof_to_d(
         root_2 = (-linear - sqrt_discr) / (2 * quad)
 
         # Pick smallest positive, finite root per element
-        roots = np.stack((root_1, root_2), axis=0)  # Stack roots for comparison
-        roots = np.where(np.isfinite(roots) & (roots > 0), roots, np.nan)  # Replace non-finite or negative roots with NaN
-        chosen = np.nanmin(roots, axis=0)  # Choose the smallest positive root or NaN if none are valid
+        # Stack roots for comparison
+        roots = np.stack((root_1, root_2), axis=0)
+        # Replace non-finite or negative roots with NaN
+        roots = np.where(np.isfinite(roots) & (roots > 0), roots, np.nan)
+        # Choose the smallest positive root or NaN if none are valid
+        chosen = np.nanmin(roots, axis=0)
 
         d_out[has_real_roots] = chosen
 
@@ -626,8 +640,7 @@ def tof_to_d(
 
 
 def twotheta_to_d(twotheta, wavelength):
-    """
-    Convert 2-theta to d-spacing using Bragg's law.
+    """Convert 2-theta to d-spacing using Bragg's law.
 
     Parameters:
         twotheta (float or np.ndarray): 2-theta angle in degrees.
@@ -646,8 +659,8 @@ def twotheta_to_d(twotheta, wavelength):
 
 
 def get_value_from_xye_header(file_path, key):
-    """
-    Extracts a floating point value from the first line of the file, corresponding to the given key.
+    """Extracts a floating point value from the first line of the file,
+    corresponding to the given key.
 
     Parameters:
         file_path (str): Path to the input file.
