@@ -58,13 +58,13 @@ jobs:
           --branch ${{ env.CI_BRANCH }}
           --coverage-docstring-master coverage-docstring-master.txt
           --coverage-docstring-develop coverage-docstring-develop.txt
-          --coverage-docstring-feature coverage-docstring-$BR.txt
+          --coverage-docstring-feature coverage-docstring-${{ env.CI_BRANCH }}.txt
           --cyclomatic-complexity-master cyclomatic-complexity-master.json
           --cyclomatic-complexity-develop cyclomatic-complexity-develop.json
-          --cyclomatic-complexity-feature cyclomatic-complexity-$BR.json
+          --cyclomatic-complexity-feature cyclomatic-complexity-${{ env.CI_BRANCH }}.json
           --maintainability-index-master maintainability-index-master.json
           --maintainability-index-develop maintainability-index-develop.json
-          --maintainability-index-feature maintainability-index-$BR.json
+          --maintainability-index-feature maintainability-index-${{ env.CI_BRANCH }}.json
 
       - name: Append badge summary to step summary
         run: cat BADGES.md >> $GITHUB_STEP_SUMMARY
