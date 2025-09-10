@@ -204,9 +204,9 @@ class FittingProgressTracker:
             # Alignments for each column
             formatted_row = (
                 '│'
-                + '│'.join(
-                    [format_cell(cell, align=DEFAULT_ALIGNMENTS[i]) for i, cell in enumerate(row)]
-                )
+                + '│'.join([
+                    format_cell(cell, align=DEFAULT_ALIGNMENTS[i]) for i, cell in enumerate(row)
+                ])
                 + '│'
             )
 

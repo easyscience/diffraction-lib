@@ -1,5 +1,5 @@
 import gzip
-import pickle
+import pickle  # noqa: S403 safe: internal trusted data
 from pathlib import Path
 
 

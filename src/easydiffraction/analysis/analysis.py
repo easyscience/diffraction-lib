@@ -270,16 +270,14 @@ class Analysis:
                         code_variable += f"['{entry_id}']"
                     code_variable += f'.{param_key}'
                     cif_uid = param._generate_human_readable_unique_id()
-                    columns_data.append(
-                        [
-                            datablock_id,
-                            category_key,
-                            entry_id,
-                            param_key,
-                            code_variable,
-                            cif_uid,
-                        ]
-                    )
+                    columns_data.append([
+                        datablock_id,
+                        category_key,
+                        entry_id,
+                        param_key,
+                        code_variable,
+                        cif_uid,
+                    ])
 
         print(paragraph('How to access parameters'))
         render_table(
@@ -385,9 +383,6 @@ class Analysis:
 
         Args:
             expt_name: The name of the experiment.
-
-        Returns:
-            None.
         """
         experiment = self.project.experiments[expt_name]
         sample_models = self.project.sample_models

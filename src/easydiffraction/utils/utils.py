@@ -69,9 +69,6 @@ def download_from_repository(
             missing).
         overwrite: Whether to overwrite the file if it already exists.
             Defaults to False.
-
-    Returns:
-        None
     """
     file_path = os.path.join(destination, file_name)
     if os.path.exists(file_path):
@@ -269,9 +266,6 @@ def list_tutorials():
 
     Args:
         None
-
-    Returns:
-        None
     """
     tutorials = fetch_tutorial_list()
     columns_data = [[t] for t in tutorials]
@@ -297,9 +291,6 @@ def fetch_tutorials() -> None:
     removed.
 
     Args:
-        None
-
-    Returns:
         None
     """
     version_str = stripped_package_version('easydiffraction')
@@ -341,9 +332,6 @@ def show_version() -> None:
     """Print the installed version of the easydiffraction package.
 
     Args:
-        None
-
-    Returns:
         None
     """
     current_ed_version = package_version('easydiffraction')
@@ -426,9 +414,6 @@ def render_table(
         columns_headers (list): List of column headers.
         show_index (bool): Whether to show the index column.
         display_handle: Optional display handle for updating in Jupyter.
-
-    Returns:
-        None
     """
     # Use pandas DataFrame for Jupyter Notebook rendering
     if is_notebook():
@@ -525,9 +510,6 @@ def render_cif(cif_text, paragraph_title) -> None:
     Args:
         cif_text: The CIF text to display.
         paragraph_title: The title to print above the table.
-
-    Returns:
-        None
     """
     # Split into lines and replace empty ones with a '&nbsp;'
     # (non-breaking space) to force empty lines to be rendered in

@@ -182,11 +182,15 @@ fail_under = 80     # Minimum coverage percentage to pass
 exclude = ['tests', 'tools', 'tutorials-drafts']
 indent-width = 4
 line-length = 99
+# Enable new rules that are not yet stable, like DOC
+preview = true
 
 [tool.ruff.lint]
 select = [
   'B',      # Bugbear-specific checks (e.g., likely bugs, bad patterns)
   'C90',    # Cyclomatic complexity checks
+  'D',      # Docstring formatting issues (old rules)
+  'DOC',    # Docstring formatting issues (new rules)
   'E',      # General PEP 8 style errors
   'E9',     # Runtime errors (e.g., syntax errors, undefined names)
   'F',      # Pyflakes-specific checks (e.g., unused variables, imports)
@@ -203,14 +207,17 @@ select = [
 ]
 # Temporarily disable some docstring checks until we have improved the docstring coverage
 ignore = [
-  'D100', # Ignore: Missing docstring in public module
-  'D101', # Ignore: Missing docstring in class
-  'D102', # Ignore: Missing docstring in public method
-  'D103', # Ignore: Missing docstring in public function
-  'D104', # Ignore: Missing docstring in public package
-  'D105', # Ignore: Missing docstring in magic method
-  'D107', # Ignore: Missing docstring in __init__
-  'D205', # Ignore: 1 blank line required between summary and description
+  'D100',   # Ignore: Missing docstring in public module
+  'D101',   # Ignore: Missing docstring in class
+  'D102',   # Ignore: Missing docstring in public method
+  'D103',   # Ignore: Missing docstring in public function
+  'D104',   # Ignore: Missing docstring in public package
+  'D105',   # Ignore: Missing docstring in magic method
+  'D107',   # Ignore: Missing docstring in __init__
+  'D205',   # Ignore: 1 blank line required between summary and description
+  'DOC201', # Ignore: `return` is not documented in docstring
+  'DOC501', # Ignore: Raised exception `ValueError` missing from docstring
+  'DOC502', # Ignore: Raised exception is not explicitly raised: `TypeError`
 ]
 
 # Temporarily increase McCabe complexity limit to 17 to allow

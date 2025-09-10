@@ -90,17 +90,15 @@ class Summary:
             ]
             atom_table = []
             for site in model.atom_sites:
-                atom_table.append(
-                    [
-                        site.label.value,
-                        site.type_symbol.value,
-                        f'{site.fract_x.value:.5f}',
-                        f'{site.fract_y.value:.5f}',
-                        f'{site.fract_z.value:.5f}',
-                        f'{site.occupancy.value:.5f}',
-                        f'{site.b_iso.value:.5f}',
-                    ]
-                )
+                atom_table.append([
+                    site.label.value,
+                    site.type_symbol.value,
+                    f'{site.fract_x.value:.5f}',
+                    f'{site.fract_y.value:.5f}',
+                    f'{site.fract_z.value:.5f}',
+                    f'{site.occupancy.value:.5f}',
+                    f'{site.b_iso.value:.5f}',
+                ])
             render_table(
                 columns_headers=columns_headers,
                 columns_alignment=columns_alignment,
