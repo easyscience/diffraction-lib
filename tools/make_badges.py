@@ -87,11 +87,11 @@ class BadgeGenerator:
             comp = None
         if comp is None:
             color = "lightgrey"
-            label = "complexity"
+            label = ""
             val = "unknown"
         else:
             val = f"{comp:.1f}"
-            label = "complexity"
+            label = ""
             if comp < 5:
                 color = "brightgreen"
             elif comp < 10:
@@ -113,11 +113,11 @@ class BadgeGenerator:
             mi = None
         if mi is None:
             color = "lightgrey"
-            label = "maintainability"
+            label = ""
             val = "unknown"
         else:
-            val = f"{mi:.1f}"
-            label = "maintainability"
+            val = str(round(mi))
+            label = ""
             if mi >= 85:
                 color = "brightgreen"
             elif mi >= 70:
@@ -179,10 +179,17 @@ def read_complexity(path: str) -> str:
     if path and Path(path).exists():
         try:
             data = json.loads(Path(path).read_text(encoding="utf-8"))
-            # Assuming the JSON has a key "cyclomatic_complexity" with a numeric value
-            value = data.get("cyclomatic_complexity")
-            if value is not None:
-                return str(value)
+            complexities = []
+            for file_data in data.values():
+                if isinstance(file_data, list):
+                    for item in file_data:
+                        if isinstance(item, dict):
+                            complexity_value = item.get("complexity")
+                            if isinstance(complexity_value, (int, float)):
+                                complexities.append(complexity_value)
+            if complexities:
+                avg_complexity = sum(complexities) / len(complexities)
+                return f"{avg_complexity:.1f}"
         except Exception:
             pass
     return ""
@@ -192,10 +199,15 @@ def read_maintainability(path: str) -> str:
     if path and Path(path).exists():
         try:
             data = json.loads(Path(path).read_text(encoding="utf-8"))
-            # Assuming the JSON has a key "maintainability_index" with a numeric value
-            value = data.get("maintainability_index")
-            if value is not None:
-                return str(value)
+            mi_values = []
+            for value in data.values():
+                if isinstance(value, dict):
+                    mi = value.get("mi")
+                    if isinstance(mi, (int, float)):
+                        mi_values.append(mi)
+            if mi_values:
+                avg_mi = sum(mi_values) / len(mi_values)
+                return f"{avg_mi:.1f}"
         except Exception:
             pass
     return ""
@@ -245,15 +257,15 @@ def main() -> None:
         ),
         (
             "Maintainability index with radon",
-            f"![Maintainability index]({badge_gen.maintainability_badge(maintainability_master)})",
-            f"![Maintainability index]({badge_gen.maintainability_badge(maintainability_develop)})",
-            f"![Maintainability index]({badge_gen.maintainability_badge(maintainability_feature)})",
+            "[![maintainability-master]][maintainability-master-url]",
+            "[![maintainability-develop]][maintainability-develop-url]",
+            "[![maintainability-feature]][maintainability-feature-url]",
         ),
         (
             "Cyclomatic complexity with radon",
-            f"![Cyclomatic complexity]({badge_gen.complexity_badge(complexity_master)})",
-            f"![Cyclomatic complexity]({badge_gen.complexity_badge(complexity_develop)})",
-            f"![Cyclomatic complexity]({badge_gen.complexity_badge(complexity_feature)})",
+            "[![complexity-master]][complexity-master-url]",
+            "[![complexity-develop]][complexity-develop-url]",
+            "[![complexity-feature]][complexity-feature-url]",
         ),
         (
             "Unit test coverage from Codecov.io",
@@ -319,6 +331,22 @@ def main() -> None:
         "build-docs": badge_gen.github_badge_set("build-docs.yml", feature),
         "publish-pypi": badge_gen.github_badge_set("publish-pypi.yml", feature),
         "test-package-pypi": badge_gen.github_badge_set("test-package-pypi.yaml", feature),
+        "maintainability": {
+            "master": badge_gen.maintainability_badge(maintainability_master),
+            "master_url": "#",
+            "develop": badge_gen.maintainability_badge(maintainability_develop),
+            "develop_url": "#",
+            "feature": badge_gen.maintainability_badge(maintainability_feature),
+            "feature_url": "#",
+        },
+        "complexity": {
+            "master": badge_gen.complexity_badge(complexity_master),
+            "master_url": "#",
+            "develop": badge_gen.complexity_badge(complexity_develop),
+            "develop_url": "#",
+            "feature": badge_gen.complexity_badge(complexity_feature),
+            "feature_url": "#",
+        },
     }
 
     references_lines = []
