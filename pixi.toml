@@ -43,6 +43,12 @@ python = "3.12.*"
 [feature.py313.dependencies]
 python = "3.13.*"
 
+[feature.ed-local-editable.pypi-dependencies]
+easydiffraction = { path = ".", extras = [
+  "dev",
+  "visualization",
+], editable = true }
+
 # This feature is for development in CI, where easydiffraction
 # is installed from the local source code defined in pyproject.toml.
 # This ensures that local lock file updates work in CI.
@@ -77,7 +83,7 @@ nodejs = ">=20,<21" # Required for prettier; pinned to a stable LTS
 # The `default` environment is always included in the lock file, so it does not
 # need to be specified explicitly in the environments section.
 
-default = { features = ["py313", "ed-local", "nodejs"] }
+default = { features = ["py313", "ed-local-editable", "nodejs"] }
 
 py311-dev = { features = ["py311", "ed-local", "nodejs"] }
 py312-dev = { features = ["py312", "ed-local", "nodejs"] }

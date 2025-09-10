@@ -7867,7 +7867,59 @@ packages:
 - pypi: ./
   name: easydiffraction
   version: 0.7.2+devdirty
-  sha256: 697665e8eff909b1b33aa599fe1f00dbeedaf88bb2a0410b6b0e799555c5d0e6
+  sha256: 6a691d18a22ae35776c149d4b4c630276426c3d33006df7586bd0350cf72dda9
+  requires_dist:
+  - asciichartpy
+  - asteval
+  - bumps
+  - colorama
+  - cryspy
+  - dfo-ls
+  - diffpy-pdffit2
+  - diffpy-utils
+  - gemmi
+  - lmfit
+  - pooch
+  - rich
+  - scipy
+  - sympy
+  - tabulate
+  - typer
+  - varname
+  - build ; extra == 'dev'
+  - docformatter ; extra == 'dev'
+  - interrogate ; extra == 'dev'
+  - jinja2 ; extra == 'dev'
+  - jupyterquiz ; extra == 'dev'
+  - jupytext ; extra == 'dev'
+  - nbmake ; extra == 'dev'
+  - nbqa ; extra == 'dev'
+  - nbstripout ; extra == 'dev'
+  - pytest ; extra == 'dev'
+  - pytest-cov ; extra == 'dev'
+  - pytest-xdist ; extra == 'dev'
+  - radon ; extra == 'dev'
+  - ruff ; extra == 'dev'
+  - validate-pyproject[all] ; extra == 'dev'
+  - versioningit ; extra == 'dev'
+  - mkdocs ; extra == 'docs'
+  - mkdocs-autorefs<1.3.0 ; extra == 'docs'
+  - mkdocs-jupyter ; extra == 'docs'
+  - mkdocs-markdownextradata-plugin ; extra == 'docs'
+  - mkdocs-material ; extra == 'docs'
+  - mkdocs-plugin-inline-svg ; extra == 'docs'
+  - mkdocstrings-python ; extra == 'docs'
+  - pyyaml ; extra == 'docs'
+  - darkdetect ; extra == 'visualization'
+  - pandas ; extra == 'visualization'
+  - plotly ; extra == 'visualization'
+  - py3dmol ; extra == 'visualization'
+  requires_python: '>=3.11,<3.14'
+  editable: true
+- pypi: ./
+  name: easydiffraction
+  version: 0.7.2+devdirty
+  sha256: 6a691d18a22ae35776c149d4b4c630276426c3d33006df7586bd0350cf72dda9
   requires_dist:
   - asciichartpy
   - asteval
