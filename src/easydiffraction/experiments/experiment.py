@@ -65,19 +65,6 @@ class BaseExperiment(Datablock):
             beam_mode=self.type.beam_mode.value,
         )
 
-    # ---------------------------
-    # Name (ID) of the experiment
-    # ---------------------------
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    @enforce_type
-    def name(self, new_name: str):
-        self._name = new_name
-
     # ---------------
     # Experiment type
     # ---------------

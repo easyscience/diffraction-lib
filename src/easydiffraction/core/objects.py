@@ -14,6 +14,7 @@ from typing import TypeVar
 from typing import Union
 
 from easydiffraction.core.singletons import UidMapHandler
+from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import error
 from easydiffraction.utils.formatting import warning
 
@@ -503,7 +504,8 @@ class Datablock(ABC):
         return self._name
 
     @name.setter
-    def name(self, new_name):
+    @enforce_type
+    def name(self, new_name: str):
         self._name = new_name
         # For each component/collection in this datablock,
         # also update its datablock_id
