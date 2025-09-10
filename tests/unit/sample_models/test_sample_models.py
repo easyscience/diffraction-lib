@@ -10,8 +10,7 @@ from easydiffraction.sample_models.sample_models import SampleModels
 @pytest.fixture
 def mock_sample_model():
     with (
-        patch('easydiffraction.sample_models.components.space_group.SpaceGroup') as
-        mock_space_group,
+        patch('easydiffraction.sample_models.components.space_group.SpaceGroup') as mock_space_group,
         patch('easydiffraction.sample_models.components.cell.Cell') as mock_cell,
         patch('easydiffraction.sample_models.collections.atom_sites.AtomSites') as mock_atom_sites,
     ):

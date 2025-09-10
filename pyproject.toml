@@ -157,7 +157,7 @@ select = [
   'TCH',    # Type checking issues (e.g., incompatible types, missing type annotations)
   'TID252', # Enforces absolute imports over relative imports
   #'UP',     # Pyupgrade-specific checks
-  'W',      # General PEP 8 warnings (e.g., lines too long, trailing whitespace)
+  'W', # General PEP 8 warnings (e.g., lines too long, trailing whitespace)
 ]
 
 # Temporarily increase McCabe complexity limit to 17 to allow

@@ -454,8 +454,14 @@ def render_table(
         def make_formatter(align):
             return lambda x: f'<div style="text-align: {align};">{x}</div>'
 
-        formatters = {col: make_formatter(align) for col, align in zip(columns_headers,
-        columns_alignment, strict=True)}
+        formatters = {
+            col: make_formatter(align)
+            for col, align in zip(
+                columns_headers,
+                columns_alignment,
+                strict=True,
+            )
+        }
 
         # Convert DataFrame to HTML
         html = df.to_html(
