@@ -60,7 +60,7 @@ class Descriptor:
         value_str = f'{self.__class__.__name__}: {self.uid} = {self.value}'
 
         # Append ± uncertainty if it exists and is nonzero
-        if hasattr(self, 'uncertainty') and getattr(self, 'uncertainty') != 0.0:
+        if hasattr(self, 'uncertainty') and self.uncertainty != 0.0:
             value_str += f' ± {self.uncertainty}'
 
         # Append units if available
