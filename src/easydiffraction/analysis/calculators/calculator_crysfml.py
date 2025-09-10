@@ -195,8 +195,6 @@ class CrysfmlCalculator(CalculatorBase):
                 '_pd_instr_resolution_w': peak.broad_gauss_w.value if peak else 0.0,
                 '_pd_instr_resolution_x': peak.broad_lorentz_x.value if peak else 0.0,
                 '_pd_instr_resolution_y': peak.broad_lorentz_y.value if peak else 0.0,
-                # "_pd_instr_reflex_s_l": peak_asymm.s_l.value if ...
-                # "_pd_instr_reflex_d_l": peak_asymm.d_l.value if ...
                 '_pd_meas_2theta_offset': instrument.calib_twotheta_offset.value
                 if instrument
                 else 0.0,
