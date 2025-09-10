@@ -508,6 +508,7 @@ class Datablock:
     def name(self, new_name: str):
         self._name = new_name
         # For each component/collection in this datablock,
-        # also update its datablock_id
-        for item in self.items():
-            item.datablock_id = new_name
+        # also update its datablock_id if it has one
+        for item in getattr(self, '__dict__', {}).values():
+            if isinstance(item, (Component, Collection)):
+                item.datablock_id = new_name
