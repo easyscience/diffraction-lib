@@ -143,6 +143,7 @@ line-length = 127
 
 [tool.ruff.lint]
 select = [
+  'B',      # Bugbear-specific checks (e.g., likely bugs, bad patterns)
   'C90',    # Cyclomatic complexity checks
   'E',      # General PEP 8 style errors
   'E9',     # Runtime errors (e.g., syntax errors, undefined names)
