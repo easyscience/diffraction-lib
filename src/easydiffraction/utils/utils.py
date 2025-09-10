@@ -454,7 +454,8 @@ def render_table(
         def make_formatter(align):
             return lambda x: f'<div style="text-align: {align};">{x}</div>'
 
-        formatters = {col: make_formatter(align) for col, align in zip(columns_headers, columns_alignment)}
+        formatters = {col: make_formatter(align) for col, align in zip(columns_headers,
+        columns_alignment, strict=True)}
 
         # Convert DataFrame to HTML
         html = df.to_html(
@@ -480,7 +481,7 @@ def render_table(
 
         # Manually apply text alignment to headers
         if not skip_headers:
-            for col, align in zip(columns_headers, columns_alignment):
+            for col, align in zip(columns_headers, columns_alignment, strict=True):
                 html = html.replace(f'<th>{col}', f'<th style="text-align: {align};">{col}')
 
         # Display or update the table in Jupyter Notebook
