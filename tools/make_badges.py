@@ -80,55 +80,88 @@ class BadgeGenerator:
             "feature_url": f"{GITHUB_WORKFLOWS}/{workflow}",
         }
 
-    def complexity_badge(self, value: str) -> str:
-        try:
-            comp = float(value)
-        except (ValueError, TypeError):
-            comp = None
-        if comp is None:
+    def complexity_badge(self, value: tuple) -> str:
+        # value is expected to be (avg_complexity, count) or None
+        if not value or not isinstance(value, tuple) or value[0] is None or value[1] is None or value[1] == 0:
             color = "lightgrey"
             label = ""
             val = "unknown"
         else:
-            val = f"{comp:.1f}"
-            label = ""
-            if comp < 5:
-                color = "brightgreen"
-            elif comp < 10:
-                color = "green"
-            elif comp < 15:
-                color = "yellow"
-            elif comp < 20:
-                color = "orange"
+            avg, count = value
+            try:
+                avg = float(avg)
+                count = int(count)
+            except Exception:
+                color = "lightgrey"
+                label = ""
+                val = "unknown"
             else:
-                color = "red"
-        val_encoded = val.replace("%", "%25")
+                # Assign grade letter based on typical cyclomatic complexity thresholds
+                # Lower is better
+                if avg < 5:
+                    grade = "A"
+                    color = "brightgreen"
+                elif avg < 10:
+                    grade = "B"
+                    color = "green"
+                elif avg < 15:
+                    grade = "C"
+                    color = "yellow"
+                elif avg < 20:
+                    grade = "D"
+                    color = "orange"
+                else:
+                    grade = "F"
+                    color = "red"
+                val = f"{grade} ({avg:.1f} over {count} funcs)"
+                label = ""
+        val_encoded = val.replace("%", "%25").replace("/", "%2F").replace(" ", "%20").replace("(", "%28").replace(")", "%29")
         url = f"{self.shields}/badge/{label}-{val_encoded}-{color}?{STYLE}"
         return url
 
-    def maintainability_badge(self, value: str) -> str:
-        try:
-            mi = float(value)
-        except (ValueError, TypeError):
-            mi = None
-        if mi is None:
+    def maintainability_badge(self, value) -> str:
+        # value is expected to be (avg_mi, count) or (None, None)
+        if not value or not isinstance(value, tuple) or value[0] is None or value[1] is None or value[1] == 0:
             color = "lightgrey"
             label = ""
             val = "unknown"
         else:
-            val = str(round(mi))
-            label = ""
-            if mi >= 85:
-                color = "brightgreen"
-            elif mi >= 70:
-                color = "green"
-            elif mi >= 50:
-                color = "yellow"
-            elif mi >= 30:
-                color = "orange"
+            mi, count = value
+            try:
+                mi = float(mi)
+                count = int(count)
+            except Exception:
+                color = "lightgrey"
+                label = ""
+                val = "unknown"
             else:
-                color = "red"
-        val_encoded = val.replace("%", "%25")
+                mi_rounded = round(mi)
+                # Grade boundaries for maintainability index (radon): A (85-100), B (70-84), C (50-69), D (30-49), F (<30)
+                if mi >= 85:
+                    grade = "A"
+                    color = "brightgreen"
+                elif mi >= 70:
+                    grade = "B"
+                    color = "green"
+                elif mi >= 50:
+                    grade = "C"
+                    color = "yellow"
+                elif mi >= 30:
+                    grade = "D"
+                    color = "orange"
+                else:
+                    grade = "F"
+                    color = "red"
+                val = f"{grade} ({mi_rounded} over {count} files)"
+                label = ""
+        # URL encode special characters
+        val_encoded = (
+            val.replace("%", "%25")
+            .replace("/", "%2F")
+            .replace(" ", "%20")
+            .replace("(", "%28")
+            .replace(")", "%29")
+        )
         url = f"{self.shields}/badge/{label}-{val_encoded}-{color}?{STYLE}"
         return url
 
@@ -175,7 +208,7 @@ def read_coverage(path: str) -> str:
     return ""
 
 
-def read_complexity(path: str) -> str:
+def read_complexity(path: str):
     if path and Path(path).exists():
         try:
             data = json.loads(Path(path).read_text(encoding="utf-8"))
@@ -189,13 +222,13 @@ def read_complexity(path: str) -> str:
                                 complexities.append(complexity_value)
             if complexities:
                 avg_complexity = sum(complexities) / len(complexities)
-                return f"{avg_complexity:.1f}"
+                return (avg_complexity, len(complexities))
         except Exception:
             pass
-    return ""
+    return (None, None)
 
 
-def read_maintainability(path: str) -> str:
+def read_maintainability(path: str):
     if path and Path(path).exists():
         try:
             data = json.loads(Path(path).read_text(encoding="utf-8"))
@@ -207,10 +240,10 @@ def read_maintainability(path: str) -> str:
                         mi_values.append(mi)
             if mi_values:
                 avg_mi = sum(mi_values) / len(mi_values)
-                return f"{avg_mi:.1f}"
+                return (avg_mi, len(mi_values))
         except Exception:
             pass
-    return ""
+    return (None, None)
 
 
 def parse_args():
