@@ -15,11 +15,17 @@ jobs:
       - name: Generate summary with badges
         run: |
           # Header row
-          echo "| | master | develop | \$CI_BRANCH |" >> $GITHUB_STEP_SUMMARY
+          echo "| | master | develop | $CI_BRANCH |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|---|---|" >> $GITHUB_STEP_SUMMARY
 
           # Test code badge row (reference style)
           echo "| Test code | [![test-code-master]][test-code-master-link] | [![test-code-develop]][test-code-develop-link] | [![test-code-branch]][test-code-branch-link] |" >> $GITHUB_STEP_SUMMARY
+
+          # Test tutorials badge row
+          echo "| Test tutorials | [![test-tutorials-master]][test-tutorials-master-link] | [![test-tutorials-develop]][test-tutorials-develop-link] | [![test-tutorials-branch]][test-tutorials-branch-link] |" >> $GITHUB_STEP_SUMMARY
+
+          # Test unpinned PyPI package badge row (single badge)
+          echo "| Test unpinned PyPI package | [![test-pypi-package]][test-pypi-package-link] |  |  |" >> $GITHUB_STEP_SUMMARY
 
           # Static analysis badge row (reference style)
           echo "| Static analysis | [![codefactor-master]][codefactor-master-link] | [![codefactor-develop]][codefactor-develop-link] | [![codefactor-branch]][codefactor-branch-link] |" >> $GITHUB_STEP_SUMMARY
@@ -27,14 +33,8 @@ jobs:
           # Unit test coverage badge row (reference style)
           echo "| Unit test coverage | [![codecov-master]][codecov-master-link] | [![codecov-develop]][codecov-develop-link] | [![codecov-branch]][codecov-branch-link] |" >> $GITHUB_STEP_SUMMARY
 
-          # Test tutorials badge row
-          echo "| Test tutorials | [![test-tutorials-master]][test-tutorials-master-link] | [![test-tutorials-develop]][test-tutorials-develop-link] | [![test-tutorials-branch]][test-tutorials-branch-link] |" >> $GITHUB_STEP_SUMMARY
-
           # Build and deploy docs badge row
           echo "| Build and deploy docs | [![test-docs-master]][test-docs-master-link] | [![test-docs-develop]][test-docs-develop-link] | [![test-docs-branch]][test-docs-branch-link] |" >> $GITHUB_STEP_SUMMARY
-
-          # Test unpinned PyPI package badge row (single badge)
-          echo "| Test unpinned PyPI package | [![test-pypi-package]][test-pypi-package-link] |  |  |" >> $GITHUB_STEP_SUMMARY
 
           # Publish to PyPI badge row (single badge)
           echo "| Publish to PyPI | [![publish-pypi]][publish-pypi-link] |  |  |" >> $GITHUB_STEP_SUMMARY
