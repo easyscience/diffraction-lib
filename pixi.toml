@@ -37,9 +37,6 @@ pixi-kernel = "*" # Pixi Jupyter kernel integration
 [feature.py311.dependencies]
 python = "3.11.*"
 
-[feature.py312.dependencies]
-python = "3.12.*"
-
 [feature.py313.dependencies]
 python = "3.13.*"
 
@@ -86,7 +83,6 @@ nodejs = ">=20,<21" # Required for prettier; pinned to a stable LTS
 default = { features = ["py313", "ed-local-editable", "nodejs"] }
 
 py311-dev = { features = ["py311", "ed-local", "nodejs"] }
-py312-dev = { features = ["py312", "ed-local", "nodejs"] }
 py313-dev = { features = ["py313", "ed-local", "nodejs"] }
 
 py313-docs = { features = ["py313", "ed-local-with-docs"] }
