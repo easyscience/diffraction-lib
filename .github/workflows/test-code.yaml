@@ -158,7 +158,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      PIXI_ENVS: 'py311-dev py312-dev py313-dev'
+      PIXI_ENVS: 'py311-dev py313-dev'
 
     steps:
       - name: Checkout repository
@@ -237,7 +237,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      PIXI_ENVS: 'py311-wheel py312-wheel py313-wheel'
+      PIXI_ENVS: 'py311-wheel py313-wheel'
 
     steps:
       - name:
