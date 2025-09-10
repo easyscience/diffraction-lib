@@ -562,9 +562,12 @@ class ExperimentFactory:
         return False
 
 
-def Experiment(**kwargs):
+
+class Experiment:
     """
-    User-facing API for creating an experiment. Accepts keyword arguments and delegates
+    User-facing API for creating an experiment. Acts like a class constructor but delegates
     validation and creation to ExperimentFactory.
     """
-    return ExperimentFactory.create(**kwargs)
+
+    def __new__(cls, **kwargs):
+        return ExperimentFactory.create(**kwargs)
