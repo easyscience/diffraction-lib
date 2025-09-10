@@ -1,0 +1,60 @@
+name: Branch Badge Summary
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  badges-summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Detect branch
+        id: branch
+        run: echo "name=${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}" >> $GITHUB_OUTPUT
+
+      - name: Generate summary with badges
+        run: |
+          BRANCH="${{ steps.branch.outputs.name }}"
+
+          echo "## Branch Status Badges" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Header row
+          echo "| Badge | main | develop | $BRANCH |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|------|---------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          # Build badge row (reference style)
+          echo "| Build | [![Build-main]][Build-main-link] | [![Build-develop]][Build-develop-link] | [![Build-branch]][Build-branch-link] |" >> $GITHUB_STEP_SUMMARY
+
+          # CodeFactor row (reference style)
+          echo "| CodeFactor | [![CodeFactor-main]][CodeFactor-main-link] | [![CodeFactor-develop]][CodeFactor-develop-link] | [![CodeFactor-branch]][CodeFactor-branch-link] |" >> $GITHUB_STEP_SUMMARY
+
+          # Codecov row (reference style)
+          echo "| Codecov | [![Codecov-main]][Codecov-main-link] | [![Codecov-develop]][Codecov-develop-link] | [![Codecov-branch]][Codecov-branch-link] |" >> $GITHUB_STEP_SUMMARY
+
+          # Badge reference definitions
+          cat <<EOF >> $GITHUB_STEP_SUMMARY
+
+          [![Build-main]]: https://github.com/easyscience/diffraction-lib/actions/workflows/test-code.yaml/badge.svg
+          [Build-main-link]: https://github.com/easyscience/diffraction-lib/actions/workflows/test-code.yaml
+          [![Build-develop]]: https://github.com/easyscience/diffraction-lib/actions/workflows/test-code.yaml/badge.svg?branch=develop
+          [Build-develop-link]: https://github.com/easyscience/diffraction-lib/actions/workflows/test-code.yaml
+          [![Build-branch]]: https://github.com/easyscience/diffraction-lib/actions/workflows/test-code.yaml/badge.svg?branch=$BRANCH
+          [Build-branch-link]: https://github.com/easyscience/diffraction-lib/actions/workflows/test-code.yaml
+          
+          [![CodeFactor-main]]: https://www.codefactor.io/repository/github/easyscience/diffraction-lib/badge
+          [CodeFactor-main-link]: https://www.codefactor.io/repository/github/easyscience/diffraction-lib/overview
+          [![CodeFactor-develop]]: https://www.codefactor.io/repository/github/easyscience/diffraction-lib/badge/develop
+          [CodeFactor-develop-link]: https://www.codefactor.io/repository/github/easyscience/diffraction-lib/overview/develop
+          [![CodeFactor-branch]]: https://www.codefactor.io/repository/github/easyscience/diffraction-lib/badge/$BRANCH
+          [CodeFactor-branch-link]: https://www.codefactor.io/repository/github/easyscience/diffraction-lib/overview/$BRANCH
+          
+          [![Codecov-main]]: https://codecov.io/gh/EasyScience/diffraction-lib/graph/badge.svg?token=qtsB5Q5BXO
+          [Codecov-main-link]: https://codecov.io/gh/EasyScience/diffraction-lib
+          [![Codecov-develop]]: https://codecov.io/gh/EasyScience/diffraction-lib/branch/develop/graph/badge.svg?token=qtsB5Q5BXO
+          [Codecov-develop-link]: https://codecov.io/gh/EasyScience/diffraction-lib/branch/develop
+          [![Codecov-branch]]: https://codecov.io/gh/EasyScience/diffraction-lib/branch/$BRANCH/graph/badge.svg?token=qtsB5Q5BXO
+          [Codecov-branch-link]: https://codecov.io/gh/EasyScience/diffraction-lib/branch/$BRANCH
+          EOF
+          
