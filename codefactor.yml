@@ -1,4 +1,4 @@
 exclude_patterns:
-  - tutorials-drafts/
-  - tests/
-  - tools/
+  - tutorials-drafts/**
+  - tests/**
+  - tools/**
