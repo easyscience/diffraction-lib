@@ -27,9 +27,43 @@ jobs:
           cache: false
           post-cleanup: false
 
+      - name: Run docstring coverage and code complexity (master branch)
+        run: |
+          git fetch origin master
+          git checkout origin/master
+          pixi run docstring-coverage > coverage-docstring-master.txt
+          pixi run complexity-check-json > cyclomatic-complexity-master.json
+          pixi run maintainability-check-json > maintainability-index-master.json
+
+      - name: Run docstring coverage and code complexity (develop branch)
+        run: |
+          git fetch origin develop
+          git checkout origin/develop
+          pixi run docstring-coverage > coverage-docstring-develop.txt
+          pixi run complexity-check-json > cyclomatic-complexity-master.json
+          pixi run maintainability-check-json > maintainability-index-master.json
+
+      - name: Run docstring coverage and code complexity (feature branch)
+        run: |
+          git checkout $CI_BRANCH
+          pixi run docstring-coverage > coverage-docstring-feature.txt
+          pixi run complexity-check-json > cyclomatic-complexity-feature.json
+          pixi run maintainability-check-json > maintainability-index-feature.json
+
       - name: Generate badge summary markdown
-        run: pixi run make-badges #--output BADGES.md --branch $CI_BRANCH
+        run: >
+          pixi run make-badges 
+          --output BADGES.md 
+          --branch $CI_BRANCH
+          --coverage-docstring-master coverage-docstring-master.txt
+          --coverage-docstring-develop coverage-docstring-develop.txt
+          --coverage-docstring-feature coverage-docstring-feature.txt
+          --cyclomatic-complexity-master cyclomatic-complexity-master.json
+          --cyclomatic-complexity-develop cyclomatic-complexity-develop.json
+          --cyclomatic-complexity-feature cyclomatic-complexity-feature.json
+          --maintainability-index-master maintainability-index-master.json
+          --maintainability-index-develop maintainability-index-develop.json
+          --maintainability-index-feature maintainability-index-feature.json
 
       - name: Append badge summary to step summary
         run: cat BADGES.md >> $GITHUB_STEP_SUMMARY
-

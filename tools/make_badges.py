@@ -1,6 +1,7 @@
 from pathlib import Path
 import argparse
 from typing import List, Tuple, Dict
+import json
 
 
 """
@@ -79,6 +80,58 @@ class BadgeGenerator:
             "feature_url": f"{GITHUB_WORKFLOWS}/{workflow}",
         }
 
+    def complexity_badge(self, value: str) -> str:
+        try:
+            comp = float(value)
+        except (ValueError, TypeError):
+            comp = None
+        if comp is None:
+            color = "lightgrey"
+            label = "complexity"
+            val = "unknown"
+        else:
+            val = f"{comp:.1f}"
+            label = "complexity"
+            if comp < 5:
+                color = "brightgreen"
+            elif comp < 10:
+                color = "green"
+            elif comp < 15:
+                color = "yellow"
+            elif comp < 20:
+                color = "orange"
+            else:
+                color = "red"
+        val_encoded = val.replace("%", "%25")
+        url = f"{self.shields}/badge/{label}-{val_encoded}-{color}?{STYLE}"
+        return url
+
+    def maintainability_badge(self, value: str) -> str:
+        try:
+            mi = float(value)
+        except (ValueError, TypeError):
+            mi = None
+        if mi is None:
+            color = "lightgrey"
+            label = "maintainability"
+            val = "unknown"
+        else:
+            val = f"{mi:.1f}"
+            label = "maintainability"
+            if mi >= 85:
+                color = "brightgreen"
+            elif mi >= 70:
+                color = "green"
+            elif mi >= 50:
+                color = "yellow"
+            elif mi >= 30:
+                color = "orange"
+            else:
+                color = "red"
+        val_encoded = val.replace("%", "%25")
+        url = f"{self.shields}/badge/{label}-{val_encoded}-{color}?{STYLE}"
+        return url
+
 
 def make_codefactor_refs(badge_gen: BadgeGenerator, feature: str) -> str:
     return f"""
@@ -122,6 +175,32 @@ def read_coverage(path: str) -> str:
     return ""
 
 
+def read_complexity(path: str) -> str:
+    if path and Path(path).exists():
+        try:
+            data = json.loads(Path(path).read_text(encoding="utf-8"))
+            # Assuming the JSON has a key "cyclomatic_complexity" with a numeric value
+            value = data.get("cyclomatic_complexity")
+            if value is not None:
+                return str(value)
+        except Exception:
+            pass
+    return ""
+
+
+def read_maintainability(path: str) -> str:
+    if path and Path(path).exists():
+        try:
+            data = json.loads(Path(path).read_text(encoding="utf-8"))
+            # Assuming the JSON has a key "maintainability_index" with a numeric value
+            value = data.get("maintainability_index")
+            if value is not None:
+                return str(value)
+        except Exception:
+            pass
+    return ""
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Generate a markdown table of status badges for diffraction-lib.")
     parser.add_argument("--output", default="BADGES.md", help="Output markdown file (default: BADGES.md)")
@@ -129,6 +208,12 @@ def parse_args():
     parser.add_argument("--coverage-docstring-master", help="Path to docstring coverage file for master branch")
     parser.add_argument("--coverage-docstring-develop", help="Path to docstring coverage file for develop branch")
     parser.add_argument("--coverage-docstring-feature", help="Path to docstring coverage file for feature branch")
+    parser.add_argument("--cyclomatic-complexity-master", help="Path to cyclomatic complexity JSON file for master branch")
+    parser.add_argument("--cyclomatic-complexity-develop", help="Path to cyclomatic complexity JSON file for develop branch")
+    parser.add_argument("--cyclomatic-complexity-feature", help="Path to cyclomatic complexity JSON file for feature branch")
+    parser.add_argument("--maintainability-index-master", help="Path to maintainability index JSON file for master branch")
+    parser.add_argument("--maintainability-index-develop", help="Path to maintainability index JSON file for develop branch")
+    parser.add_argument("--maintainability-index-feature", help="Path to maintainability index JSON file for feature branch")
     return parser.parse_args()
 
 
@@ -141,6 +226,14 @@ def main() -> None:
     doc_cov_develop = read_coverage(args.coverage_docstring_develop)
     doc_cov_feature = read_coverage(args.coverage_docstring_feature)
 
+    complexity_master = read_complexity(args.cyclomatic_complexity_master)
+    complexity_develop = read_complexity(args.cyclomatic_complexity_develop)
+    complexity_feature = read_complexity(args.cyclomatic_complexity_feature)
+
+    maintainability_master = read_maintainability(args.maintainability_index_master)
+    maintainability_develop = read_maintainability(args.maintainability_index_develop)
+    maintainability_feature = read_maintainability(args.maintainability_index_feature)
+
     header = f"| | master | develop | {feature} |\n|---|:---:|:---:|:---:|"
 
     rows: List[Tuple[str, str, str, str]] = [
@@ -149,6 +242,18 @@ def main() -> None:
             "[![codefactor-master]][codefactor-master-url]",
             "[![codefactor-develop]][codefactor-develop-url]",
             "[![codefactor-feature]][codefactor-feature-url]",
+        ),
+        (
+            "Maintainability index with radon",
+            f"![Maintainability index]({badge_gen.maintainability_badge(maintainability_master)})",
+            f"![Maintainability index]({badge_gen.maintainability_badge(maintainability_develop)})",
+            f"![Maintainability index]({badge_gen.maintainability_badge(maintainability_feature)})",
+        ),
+        (
+            "Cyclomatic complexity with radon",
+            f"![Cyclomatic complexity]({badge_gen.complexity_badge(complexity_master)})",
+            f"![Cyclomatic complexity]({badge_gen.complexity_badge(complexity_develop)})",
+            f"![Cyclomatic complexity]({badge_gen.complexity_badge(complexity_feature)})",
         ),
         (
             "Unit test coverage from Codecov.io",
