@@ -32,38 +32,29 @@ jobs:
       - name: Run docstring coverage and code complexity (master branch)
         run: |
           git worktree add ../worktree-master origin/master
-          cp -f pixi.toml ../worktree-master/
-          cp -rf tools ../worktree-master/
-          cd ../worktree-master
-          pixi run --manifest-path ${{ env.PIXI_PROJECT_MANIFEST }} docstring-coverage > ../coverage-docstring-master.txt
-          pixi run --manifest-path ${{ env.PIXI_PROJECT_MANIFEST }} complexity-check-json > ../cyclomatic-complexity-master.json
-          pixi run --manifest-path ${{ env.PIXI_PROJECT_MANIFEST }} maintainability-check-json > ../maintainability-index-master.json
+          pixi run docstring-coverage ../worktree-master/src > ../coverage-docstring-master.txt
+          pixi run complexity-check-json ../worktree-master/src > ../cyclomatic-complexity-master.json
+          pixi run maintainability-check-json ../worktree-master/src > ../maintainability-index-master.json
 
       - name: Run docstring coverage and code complexity (develop branch)
         run: |
           git worktree add ../worktree-develop origin/develop
-          cp -f pixi.toml ../worktree-develop/
-          cp -rf tools ../worktree-develop/
-          cd ../worktree-develop
-          pixi run --manifest-path ${{ env.PIXI_PROJECT_MANIFEST }} docstring-coverage > ../coverage-docstring-develop.txt
-          pixi run --manifest-path ${{ env.PIXI_PROJECT_MANIFEST }} complexity-check-json > ../cyclomatic-complexity-develop.json
-          pixi run --manifest-path ${{ env.PIXI_PROJECT_MANIFEST }} maintainability-check-json > ../maintainability-index-develop.json
+          pixi run docstring-coverage ../worktree-develop/src > ../coverage-docstring-develop.txt
+          pixi run complexity-check-json ../worktree-develop/src > ../cyclomatic-complexity-develop.json
+          pixi run maintainability-check-json ../worktree-develop/src > ../maintainability-index-develop.json
 
       - name: Run docstring coverage and code complexity (feature branch)
         run: |
-          git worktree add ../worktree-feature $CI_BRANCH
-          cp -f pixi.toml ../worktree-feature/
-          cp -rf tools ../worktree-feature/
-          cd ../worktree-feature
-          pixi run --manifest-path ${{ env.PIXI_PROJECT_MANIFEST }} docstring-coverage > ../coverage-docstring-feature.txt
-          pixi run --manifest-path ${{ env.PIXI_PROJECT_MANIFEST }} complexity-check-json > ../cyclomatic-complexity-feature.json
-          pixi run --manifest-path ${{ env.PIXI_PROJECT_MANIFEST }} maintainability-check-json > ../maintainability-index-feature.json
+          git worktree add ../worktree-feature ${{ env.CI_BRANCH }}
+          pixi run docstring-coverage ../worktree-feature/src > ../coverage-docstring-feature.txt
+          pixi run complexity-check-json ../worktree-feature/src > ../cyclomatic-complexity-feature.json
+          pixi run maintainability-check-json ../worktree-feature/src > ../maintainability-index-feature.json
 
       - name: Generate badge summary markdown
         run: >
           pixi run make-badges 
           --output BADGES.md 
-          --branch $CI_BRANCH
+          --branch ${{ env.CI_BRANCH }}
           --coverage-docstring-master coverage-docstring-master.txt
           --coverage-docstring-develop coverage-docstring-develop.txt
           --coverage-docstring-feature coverage-docstring-feature.txt
