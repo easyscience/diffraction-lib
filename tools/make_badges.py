@@ -326,9 +326,9 @@ def main() -> None:
         ),
         (
             "Docstring coverage with interrogate",
-            f"![Docstring coverage]({badge_gen.docstring_badge(doc_cov_master)})",
-            f"![Docstring coverage]({badge_gen.docstring_badge(doc_cov_develop)})",
-            f"![Docstring coverage]({badge_gen.docstring_badge(doc_cov_feature)})",
+            "[![docstring-master]][docstring-master-url]",
+            "[![docstring-develop]][docstring-develop-url]",
+            "[![docstring-feature]][docstring-feature-url]",
         ),
         (
             "Build and deploy docs",
@@ -378,6 +378,14 @@ def main() -> None:
             "develop": badge_gen.complexity_badge(complexity_develop),
             "develop_url": "#",
             "feature": badge_gen.complexity_badge(complexity_feature),
+            "feature_url": "#",
+        },
+        "docstring": {
+            "master": badge_gen.docstring_badge(doc_cov_master),
+            "master_url": "#",
+            "develop": badge_gen.docstring_badge(doc_cov_develop),
+            "develop_url": "#",
+            "feature": badge_gen.docstring_badge(doc_cov_feature),
             "feature_url": "#",
         },
     }
