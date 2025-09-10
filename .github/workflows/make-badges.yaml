@@ -29,26 +29,12 @@ jobs:
           cache: false
           post-cleanup: false
 
-      - name: Run docstring coverage and code complexity (master branch)
+      - name: Run docstring coverage and code complexity
         run: |
           git worktree add ../worktree-master origin/master
-          pixi run docstring-coverage ../worktree-master/src > ../coverage-docstring-master.txt
-          pixi run complexity-check-json ../worktree-master/src > ../cyclomatic-complexity-master.json
-          pixi run maintainability-check-json ../worktree-master/src > ../maintainability-index-master.json
-
-      - name: Run docstring coverage and code complexity (develop branch)
-        run: |
-          git worktree add ../worktree-develop origin/develop
-          pixi run docstring-coverage ../worktree-develop/src > ../coverage-docstring-develop.txt
-          pixi run complexity-check-json ../worktree-develop/src > ../cyclomatic-complexity-develop.json
-          pixi run maintainability-check-json ../worktree-develop/src > ../maintainability-index-develop.json
-
-      - name: Run docstring coverage and code complexity (feature branch)
-        run: |
-          git worktree add ../worktree-feature ${{ env.CI_BRANCH }}
-          pixi run docstring-coverage ../worktree-feature/src > ../coverage-docstring-feature.txt
-          pixi run complexity-check-json ../worktree-feature/src > ../cyclomatic-complexity-feature.json
-          pixi run maintainability-check-json ../worktree-feature/src > ../maintainability-index-feature.json
+          pixi run interrogate -c pyproject.toml ../worktree-master/src/ > coverage-docstring-master.txt
+          pixi run radon cc -s -j ../worktree-master/src > cyclomatic-complexity-master.json
+          pixi run radon mi -j ../worktree-master/src > maintainability-index-master.json
 
       - name: Generate badge summary markdown
         run: >
