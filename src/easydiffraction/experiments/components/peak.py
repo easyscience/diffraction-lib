@@ -233,7 +233,7 @@ class IkedaCarpenterAsymmetryMixin:
         )
 
 
-class PairDistrFuncBroadeningMixin:
+class PairDistributionFunctionBroadeningMixin:
     def _add_pair_distribution_function_broadening(self):
         self.damp_q = Parameter(
             value=0.05,
@@ -386,9 +386,9 @@ class TimeOfFlightPseudoVoigtBackToBack(
         self._locked: bool = True
 
 
-class PairDistrFuncGaussianDampedSinc(
+class PairDistributionFunctionGaussianDampedSinc(
     PeakBase,
-    PairDistrFuncBroadeningMixin,
+    PairDistributionFunctionBroadeningMixin,
 ):
     def __init__(self):
         super().__init__()
@@ -416,10 +416,10 @@ class PeakFactory:
         },
         ST.TOTAL: {
             BM.CONSTANT_WAVELENGTH: {
-                PPT.GAUSSIAN_DAMPED_SINC: PairDistrFuncGaussianDampedSinc,
+                PPT.GAUSSIAN_DAMPED_SINC: PairDistributionFunctionGaussianDampedSinc,
             },
             BM.TIME_OF_FLIGHT: {
-                PPT.GAUSSIAN_DAMPED_SINC: PairDistrFuncGaussianDampedSinc,
+                PPT.GAUSSIAN_DAMPED_SINC: PairDistributionFunctionGaussianDampedSinc,
             },
         },
     }
