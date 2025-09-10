@@ -33,8 +33,9 @@ jobs:
         run: |
           for BR in master develop ${{ env.CI_BRANCH }}; do
             echo "=== Processing branch $BR ==="
+            git worktree remove -f ../worktree-$BR || true
             git worktree add ../worktree-$BR origin/$BR || git worktree add ../worktree-$BR $BR
-            pixi run interrogate -c pyproject.toml ../worktree-$BR/src > coverage-docstring-$BR.txt --fail-under=0
+            pixi run interrogate -c pyproject.toml --fail-under=0 ../worktree-$BR/src > coverage-docstring-$BR.txt
             pixi run radon cc -s -j ../worktree-$BR/src > cyclomatic-complexity-$BR.json
             pixi run radon mi -j ../worktree-$BR/src > maintainability-index-$BR.json
           done
