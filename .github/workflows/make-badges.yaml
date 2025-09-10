@@ -33,6 +33,8 @@ jobs:
       - name: Run docstring coverage and code complexity (master branch)
         run: |
           git worktree add ../worktree-master origin/master
+          cp -f pixi.toml ../worktree-master/
+          cp -rf tools ../worktree-master/
           cd ../worktree-master
           pixi run docstring-coverage > ../coverage-docstring-master.txt
           pixi run complexity-check-json > ../cyclomatic-complexity-master.json
@@ -41,6 +43,8 @@ jobs:
       - name: Run docstring coverage and code complexity (develop branch)
         run: |
           git worktree add ../worktree-develop origin/develop
+          cp -f pixi.toml ../worktree-develop/
+          cp -rf tools ../worktree-develop/
           cd ../worktree-develop
           pixi run docstring-coverage > ../coverage-docstring-develop.txt
           pixi run complexity-check-json > ../cyclomatic-complexity-develop.json
@@ -49,6 +53,8 @@ jobs:
       - name: Run docstring coverage and code complexity (feature branch)
         run: |
           git worktree add ../worktree-feature $CI_BRANCH
+          cp -f pixi.toml ../worktree-feature/
+          cp -rf tools ../worktree-feature/
           cd ../worktree-feature
           pixi run docstring-coverage > ../coverage-docstring-feature.txt
           pixi run complexity-check-json > ../cyclomatic-complexity-feature.json
