@@ -11,7 +11,7 @@ from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.sample_models.sample_model import SampleModel
 
 try:
-    from diffpy.pdffit2 import PdfFit as pdffit
+    from diffpy.pdffit2 import PdfFit
     from diffpy.pdffit2 import redirect_stdout
     from diffpy.structure.parsers.p_cif import P_cif as pdffit_cif_parser
 
@@ -21,7 +21,7 @@ try:
 except ImportError:
     # TODO: Add the following print to debug mode
     # print("⚠️ 'pdffit' module not found. This calculation engine will not be available.")
-    pdffit = None
+    PdfFit = None
 
 
 class PdffitCalculator(CalculatorBase):
@@ -29,7 +29,7 @@ class PdffitCalculator(CalculatorBase):
     Wrapper for Pdffit library.
     """
 
-    engine_imported: bool = pdffit is not None
+    engine_imported: bool = PdfFit is not None
 
     @property
     def name(self):
@@ -47,7 +47,7 @@ class PdffitCalculator(CalculatorBase):
         called_by_minimizer: bool = False,
     ):
         # Create PDF calculator object
-        calculator = pdffit()
+        calculator = PdfFit()
 
         # ---------------------------
         # Set sample model parameters
