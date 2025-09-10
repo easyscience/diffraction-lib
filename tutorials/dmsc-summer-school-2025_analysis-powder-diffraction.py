@@ -219,7 +219,7 @@ project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear = ed.get_value_
 # which is the `calib_d_to_tof_linear` parameter, you can do the following:
 
 # %%
-project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear
+print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear)
 
 # %% [markdown]
 # The `value` attribute represents the current value of the parameter as a
@@ -230,7 +230,7 @@ project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear
 # the whole object, you can do the following:
 
 # %%
-project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value
+print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value)
 
 # %% [markdown]
 # Note that to set the value of the parameter, you can simply assign a new
