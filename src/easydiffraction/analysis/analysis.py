@@ -223,9 +223,9 @@ class Analysis:
     def how_to_access_parameters(self) -> None:
         sample_models_params = self.project.sample_models.get_all_params()
         experiments_params = self.project.experiments.get_all_params()
-        params = {'sample_models': sample_models_params, 'experiments': experiments_params}
+        all_params = {'sample_models': sample_models_params, 'experiments': experiments_params}
 
-        if not params:
+        if not all_params:
             print(warning('No parameters found.'))
             return
 
@@ -249,7 +249,7 @@ class Analysis:
 
         columns_data = []
         project_varname = self.project._varname
-        for datablock_type, params in params.items():
+        for datablock_type, params in all_params.items():
             for param in params:
                 if isinstance(param, (Descriptor, Parameter)):
                     datablock_id = param.datablock_id
@@ -261,7 +261,8 @@ class Analysis:
                         code_variable += f"['{entry_id}']"
                     code_variable += f'.{param_key}'
                     cif_uid = param._generate_human_readable_unique_id()
-                    columns_data.append([datablock_id, category_key, entry_id, param_key, code_variable, cif_uid])
+                    columns_data.append([datablock_id, category_key, entry_id, param_key,
+                                         code_variable, cif_uid,])
 
         print(paragraph('How to access parameters'))
         render_table(
