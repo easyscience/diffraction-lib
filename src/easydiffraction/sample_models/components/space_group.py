@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Optional
@@ -8,9 +8,7 @@ from easydiffraction.core.objects import Descriptor
 
 
 class SpaceGroup(Component):
-    """
-    Represents the space group of a sample model.
-    """
+    """Represents the space group of a sample model."""
 
     @property
     def category_key(self) -> str:

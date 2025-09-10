@@ -2,19 +2,20 @@
 # # Structure Refinement: LBCO, HRPT
 #
 # This example demonstrates how to use the EasyDiffraction API in a
-# simplified, user-friendly manner that closely follows the GUI workflow for a
-# Rietveld refinement of La0.5Ba0.5CoO3 crystal structure using constant
-# wavelength neutron powder diffraction data from HRPT at PSI.
+# simplified, user-friendly manner that closely follows the GUI workflow
+# for a Rietveld refinement of La0.5Ba0.5CoO3 crystal structure using
+# constant wavelength neutron powder diffraction data from HRPT at PSI.
 #
-# It is intended for users with minimal programming experience who want to
-# learn how to perform standard crystal structure fitting using diffraction
-# data. This script covers creating a project, adding sample models and
-# experiments, performing analysis, and refining parameters.
+# It is intended for users with minimal programming experience who want
+# to learn how to perform standard crystal structure fitting using
+# diffraction data. This script covers creating a project, adding sample
+# models and experiments, performing analysis, and refining parameters.
 #
-# Only a single import of `easydiffraction` is required, and all operations are
-# performed through high-level components of the `project` object, such as
-# `project.sample_models`, `project.experiments`, and `project.analysis`.
-# The `project` object is the main container for all information.
+# Only a single import of `easydiffraction` is required, and all
+# operations are performed through high-level components of the
+# `project` object, such as `project.sample_models`,
+# `project.experiments`, and `project.analysis`. The `project` object is
+# the main container for all information.
 
 # %% [markdown]
 # ## Import Library
@@ -83,7 +84,8 @@ project.plotter.engine = 'plotly'
 # %% [markdown]
 # ## Step 2: Define Sample Model
 #
-# This section shows how to add sample models and modify their parameters.
+# This section shows how to add sample models and modify their
+# parameters.
 
 # %% [markdown]
 # #### Add Sample Model
@@ -95,8 +97,8 @@ project.sample_models.add(name='lbco')
 # #### Show Defined Sample Models
 #
 # Show the names of the models added. These names are used to access the
-# model using the syntax: `project.sample_models['model_name']`. All model
-# parameters can be accessed via the `project` object.
+# model using the syntax: `project.sample_models['model_name']`. All
+# model parameters can be accessed via the `project` object.
 
 # %%
 project.sample_models.show_names()
@@ -194,8 +196,8 @@ project.save()
 # %% [markdown]
 # ## Step 3: Define Experiment
 #
-# This section shows how to add experiments, configure their parameters, and
-# link the sample models defined in the previous step.
+# This section shows how to add experiments, configure their parameters,
+# and link the sample models defined in the previous step.
 
 # %% [markdown]
 # #### Download Measured Data
@@ -562,8 +564,14 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Set aliases for parameters.
 
 # %%
-project.analysis.aliases.add(label='biso_La', param_uid=project.sample_models['lbco'].atom_sites['La'].b_iso.uid)
-project.analysis.aliases.add(label='biso_Ba', param_uid=project.sample_models['lbco'].atom_sites['Ba'].b_iso.uid)
+project.analysis.aliases.add(
+    label='biso_La',
+    param_uid=project.sample_models['lbco'].atom_sites['La'].b_iso.uid,
+)
+project.analysis.aliases.add(
+    label='biso_Ba',
+    param_uid=project.sample_models['lbco'].atom_sites['Ba'].b_iso.uid,
+)
 
 # %% [markdown]
 # Set constraints.

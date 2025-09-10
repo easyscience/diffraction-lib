@@ -1,11 +1,12 @@
 # %% [markdown]
 # # Structure Refinement: NCAF, WISH
 #
-# This example demonstrates a Rietveld refinement of Na2Ca3Al2F14 crystal
-# structure using time-of-flight neutron powder diffraction data from WISH at
-# ISIS.
+# This example demonstrates a Rietveld refinement of Na2Ca3Al2F14
+# crystal structure using time-of-flight neutron powder diffraction data
+# from WISH at ISIS.
 #
-# Two datasets from detector banks 5+6 and 4+7 are used for joint fitting.
+# Two datasets from detector banks 5+6 and 4+7 are used for joint
+# fitting.
 
 # %% [markdown]
 # ## Import Library
@@ -19,7 +20,8 @@ from easydiffraction import download_from_repository
 # %% [markdown]
 # ## Define Sample Model
 #
-# This section covers how to add sample models and modify their parameters.
+# This section covers how to add sample models and modify their
+# parameters.
 #
 # #### Create Sample Model
 
@@ -53,8 +55,8 @@ model.atom_sites.add('F3', 'F', 0.4612, 0.4612, 0.4612, wyckoff_letter='a', b_is
 # %% [markdown]
 # ## Define Experiment
 #
-# This section shows how to add experiments, configure their parameters, and
-# link the sample models defined in the previous step.
+# This section shows how to add experiments, configure their parameters,
+# and link the sample models defined in the previous step.
 #
 # #### Download Measured Data
 
@@ -216,8 +218,8 @@ expt47.excluded_regions.add(start=100004, end=200000)
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage the sample model, experiments, and
-# analysis
+# The project object is used to manage the sample model, experiments,
+# and analysis
 #
 # #### Create Project
 

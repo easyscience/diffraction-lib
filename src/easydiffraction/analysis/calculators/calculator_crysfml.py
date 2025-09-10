@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Any
@@ -18,17 +18,17 @@ try:
     from pycrysfml import cfml_py_utilities
 
     # TODO: Add the following print to debug mode
-    # print("✅ 'pycrysfml' calculation engine is successfully imported.")
+    # print("✅ 'pycrysfml' calculation engine is successfully
+    # imported.")
 except ImportError:
     # TODO: Add the following print to debug mode
-    # print("⚠️ 'pycrysfml' module not found. This calculation engine will not be available.")
+    # print("⚠️ 'pycrysfml' module not found. This calculation engine
+    # will not be available.")
     cfml_py_utilities = None
 
 
 class CrysfmlCalculator(CalculatorBase):
-    """
-    Wrapper for Crysfml library.
-    """
+    """Wrapper for Crysfml library."""
 
     engine_imported: bool = cfml_py_utilities is not None
 
@@ -41,12 +41,13 @@ class CrysfmlCalculator(CalculatorBase):
         sample_models: SampleModels,
         experiments: Experiments,
     ) -> None:
-        """
-        Call Crysfml to calculate structure factors.
+        """Call Crysfml to calculate structure factors.
 
         Args:
-            sample_models: The sample models to calculate structure factors for.
-            experiments: The experiments associated with the sample models.
+            sample_models: The sample models to calculate structure
+                factors for.
+            experiments: The experiments associated with the sample
+                models.
         """
         raise NotImplementedError('HKL calculation is not implemented for CrysfmlCalculator.')
 
@@ -56,16 +57,18 @@ class CrysfmlCalculator(CalculatorBase):
         experiment: Experiment,
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
-        """
-        Calculates the diffraction pattern using Crysfml for the given sample model and experiment.
+        """Calculates the diffraction pattern using Crysfml for the
+        given sample model and experiment.
 
         Args:
             sample_model: The sample model to calculate the pattern for.
             experiment: The experiment associated with the sample model.
-            called_by_minimizer: Whether the calculation is called by a minimizer.
+            called_by_minimizer: Whether the calculation is called by a
+            minimizer.
 
         Returns:
-            The calculated diffraction pattern as a NumPy array or a list of floats.
+            The calculated diffraction pattern as a NumPy array or a
+                list of floats.
         """
         crysfml_dict = self._crysfml_dict(sample_model, experiment)
         try:
@@ -81,8 +84,7 @@ class CrysfmlCalculator(CalculatorBase):
         pattern: List[float],
         target_length: int,
     ) -> List[float]:
-        """
-        Adjusts the length of the pattern to match the target length.
+        """Adjusts the length of the pattern to match the target length.
 
         Args:
             pattern: The pattern to adjust.
@@ -91,7 +93,8 @@ class CrysfmlCalculator(CalculatorBase):
         Returns:
             The adjusted pattern.
         """
-        # TODO: Check the origin of this discrepancy coming from PyCrysFML
+        # TODO: Check the origin of this discrepancy coming from
+        #  PyCrysFML
         if len(pattern) > target_length:
             return pattern[:target_length]
         return pattern
@@ -101,15 +104,16 @@ class CrysfmlCalculator(CalculatorBase):
         sample_model: SampleModels,
         experiment: Experiment,
     ) -> Dict[str, Union[Experiment, SampleModel]]:
-        """
-        Converts the sample model and experiment into a dictionary format for Crysfml.
+        """Converts the sample model and experiment into a dictionary
+        format for Crysfml.
 
         Args:
             sample_model: The sample model to convert.
             experiment: The experiment to convert.
 
         Returns:
-            A dictionary representation of the sample model and experiment.
+            A dictionary representation of the sample model and
+                experiment.
         """
         sample_model_dict = self._convert_sample_model_to_dict(sample_model)
         experiment_dict = self._convert_experiment_to_dict(experiment)
@@ -122,8 +126,7 @@ class CrysfmlCalculator(CalculatorBase):
         self,
         sample_model: SampleModel,
     ) -> Dict[str, Any]:
-        """
-        Converts a sample model into a dictionary format.
+        """Converts a sample model into a dictionary format.
 
         Args:
             sample_model: The sample model to convert.
@@ -163,8 +166,7 @@ class CrysfmlCalculator(CalculatorBase):
         self,
         experiment: Experiment,
     ) -> Dict[str, Any]:
-        """
-        Converts an experiment into a dictionary format.
+        """Converts an experiment into a dictionary format.
 
         Args:
             experiment: The experiment to convert.
@@ -180,18 +182,24 @@ class CrysfmlCalculator(CalculatorBase):
         twotheta_min = float(x_data.min())
         twotheta_max = float(x_data.max())
 
+        # TODO: Process default values on the experiment creation
+        #  instead of here
         exp_dict = {
             'NPD': {
-                '_diffrn_radiation_probe': expt_type.radiation_probe.value if expt_type else 'neutron',
-                '_diffrn_radiation_wavelength': instrument.setup_wavelength.value if instrument else 1.0,
+                '_diffrn_radiation_probe': expt_type.radiation_probe.value
+                if expt_type
+                else 'neutron',
+                '_diffrn_radiation_wavelength': instrument.setup_wavelength.value
+                if instrument
+                else 1.0,
                 '_pd_instr_resolution_u': peak.broad_gauss_u.value if peak else 0.0,
                 '_pd_instr_resolution_v': peak.broad_gauss_v.value if peak else 0.0,
                 '_pd_instr_resolution_w': peak.broad_gauss_w.value if peak else 0.0,
                 '_pd_instr_resolution_x': peak.broad_lorentz_x.value if peak else 0.0,
                 '_pd_instr_resolution_y': peak.broad_lorentz_y.value if peak else 0.0,
-                # "_pd_instr_reflex_s_l": peak_asymm.s_l.value if peak_asymm else 0.0,
-                # "_pd_instr_reflex_d_l": peak_asymm.d_l.value if peak_asymm else 0.0,
-                '_pd_meas_2theta_offset': instrument.calib_twotheta_offset.value if instrument else 0.0,
+                '_pd_meas_2theta_offset': instrument.calib_twotheta_offset.value
+                if instrument
+                else 0.0,
                 '_pd_meas_2theta_range_min': twotheta_min,
                 '_pd_meas_2theta_range_max': twotheta_max,
                 '_pd_meas_2theta_range_inc': (twotheta_max - twotheta_min) / len(x_data),

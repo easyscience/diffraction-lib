@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.core.objects import Component
@@ -98,10 +98,12 @@ class TimeOfFlightInstrument(InstrumentBase):
 
 
 class InstrumentFactory:
+    ST = ScatteringTypeEnum
+    BM = BeamModeEnum
     _supported = {
-        ScatteringTypeEnum.BRAGG: {
-            BeamModeEnum.CONSTANT_WAVELENGTH: ConstantWavelengthInstrument,
-            BeamModeEnum.TIME_OF_FLIGHT: TimeOfFlightInstrument,
+        ST.BRAGG: {
+            BM.CONSTANT_WAVELENGTH: ConstantWavelengthInstrument,
+            BM.TIME_OF_FLIGHT: TimeOfFlightInstrument,
         }
     }
 
@@ -114,13 +116,15 @@ class InstrumentFactory:
         supported_scattering_types = list(cls._supported.keys())
         if scattering_type not in supported_scattering_types:
             raise ValueError(
-                f"Unsupported scattering type: '{scattering_type}'.\n Supported scattering types: {supported_scattering_types}"
+                f"Unsupported scattering type: '{scattering_type}'.\n "
+                f'Supported scattering types: {supported_scattering_types}'
             )
 
         supported_beam_modes = list(cls._supported[scattering_type].keys())
         if beam_mode not in supported_beam_modes:
             raise ValueError(
-                f"Unsupported beam mode: '{beam_mode}' for scattering type: '{scattering_type}'.\n "
+                f"Unsupported beam mode: '{beam_mode}' for scattering type: "
+                f"'{scattering_type}'.\n "
                 f'Supported beam modes: {supported_beam_modes}'
             )
 

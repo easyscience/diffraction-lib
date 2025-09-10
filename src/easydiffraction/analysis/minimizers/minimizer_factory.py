@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Any
@@ -19,7 +19,8 @@ class MinimizerFactory:
         'lmfit': {
             'engine': 'lmfit',
             'method': 'leastsq',
-            'description': 'LMFIT library using the default Levenberg-Marquardt least squares method',
+            'description': 'LMFIT library using the default Levenberg-Marquardt '
+            'least squares method',
             'class': LmfitMinimizer,
         },
         'lmfit (leastsq)': {
@@ -44,8 +45,7 @@ class MinimizerFactory:
 
     @classmethod
     def list_available_minimizers(cls) -> List[str]:
-        """
-        List all available minimizers.
+        """List all available minimizers.
 
         Returns:
             A list of minimizer names.
@@ -57,8 +57,8 @@ class MinimizerFactory:
         # TODO: Rename this method to `show_supported_minimizers` for
         #  consistency with other methods in the library. E.g.
         #  `show_supported_calculators`, etc.
-        """
-        Display a table of available minimizers and their descriptions.
+        """Display a table of available minimizers and their
+        descriptions.
         """
         columns_headers: List[str] = ['Minimizer', 'Description']
         columns_alignment = ['left', 'left']
@@ -76,8 +76,7 @@ class MinimizerFactory:
 
     @classmethod
     def create_minimizer(cls, selection: str) -> MinimizerBase:
-        """
-        Create a minimizer instance based on the selection.
+        """Create a minimizer instance based on the selection.
 
         Args:
             selection: The name of the minimizer to create.
@@ -90,7 +89,9 @@ class MinimizerFactory:
         """
         config = cls._available_minimizers.get(selection)
         if not config:
-            raise ValueError(f"Unknown minimizer '{selection}'. Use one of {cls.list_available_minimizers()}")
+            raise ValueError(
+                f"Unknown minimizer '{selection}'. Use one of {cls.list_available_minimizers()}"
+            )
 
         minimizer_class: Type[MinimizerBase] = config.get('class')
         method: Optional[str] = config.get('method')
@@ -109,8 +110,7 @@ class MinimizerFactory:
         method: Optional[str] = None,
         description: str = 'No description provided.',
     ) -> None:
-        """
-        Register a new minimizer.
+        """Register a new minimizer.
 
         Args:
             name: The name of the minimizer.

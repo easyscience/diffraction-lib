@@ -56,6 +56,8 @@ dev = [
   'versioningit',            # Automatic versioning from git tags
   'jupytext',                # Jupyter notebook text format support
   'jupyterquiz',             # Quizzes in Jupyter notebooks
+  'docformatter',            # Code formatter for docstrings
+  'interrogate',             # Check for missing docstrings
 ]
 docs = [
   'mkdocs',                          # Static site generator
@@ -113,12 +115,14 @@ source = 'versioningit' # Use versioningit to manage the version
 
 # Versioningit generates versions from git tags, so we don't need to
 # either specify them statically in pyproject.toml or save them in the
-# source code.
+# source code. Do not use {distance} in the version format, as it
+# forces a version bump for every commit, which triggers unnecessary
+# pixi.lock update without any changes to the source code.
 
 [tool.versioningit.format]
-distance = '{base_version}+d{distance}'       # example: 0.5.8+d3, 1.2.3.post4+d2
-dirty = '{base_version}'                      # example: 0.5.8, 1.2.3.post4
-distance-dirty = '{base_version}+d{distance}' # example: as in distance
+distance = '{base_version}+dev'            # example: 0.5.8+dev, 1.2.3.post4+dev
+dirty = '{base_version}+dirty'             # example: 0.5.8+dirty, 1.2.3.post4+dirty
+distance-dirty = '{base_version}+devdirty' # example: 0.5.8+devdirty
 
 # Configure how versioningit detects versions from Git
 # - 'match' ensures it only considers tags starting with 'v'
@@ -128,6 +132,43 @@ method = 'git'
 match = ['v*']
 default-tag = 'v999.0.0'
 
+################################
+# Configuration for docformatter
+################################
+
+# 'docformatter' -- Code formatter for docstrings
+# https://docformatter.readthedocs.io/en/latest/
+
+[tool.docformatter]
+recursive = true
+wrap-summaries = 72
+wrap-descriptions = 72
+close-quotes-on-newline = true
+
+################################
+# Configuration for interrogate
+################################
+
+# 'interrogate' -- Check for missing docstrings
+# https://interrogate.readthedocs.io/en/latest/
+
+[tool.interrogate]
+fail-under = 80
+verbose = 1
+
+#######################################
+# Configuration for coverage/pytest-cov
+#######################################
+
+[tool.coverage.run]
+branch = true                    # Measure branch coverage as well
+source = ["src/easydiffraction"] # Limit coverage to the source code directory
+
+[tool.coverage.report]
+show_missing = true # Show missing lines
+skip_covered = true # Skip files with 100% coverage in the report
+fail_under = 80     # Minimum coverage percentage to pass
+
 ########################
 # Configuration for ruff
 ########################
@@ -136,12 +177,14 @@ default-tag = 'v999.0.0'
 # https://docs.astral.sh/ruff/rules/
 
 [tool.ruff]
-exclude = ['tutorials-drafts']
+# Temporarily exclude some directories until we have improved the code quality there
+exclude = ['tests', 'tools', 'tutorials-drafts']
 indent-width = 4
-line-length = 127
+line-length = 99
 
 [tool.ruff.lint]
 select = [
+  'D',      # Docstring-related issues (e.g., missing docstrings, incorrect formatting)
   'E',      # General PEP 8 style errors
   'E9',     # Runtime errors (e.g., syntax errors, undefined names)
   'F',      # Pyflakes-specific checks (e.g., unused variables, imports)
@@ -154,6 +197,17 @@ select = [
   'TCH',    # Type checking issues (e.g., incompatible types, missing type annotations)
   'TID252', # Enforces absolute imports over relative imports
 ]
+# Temporarily disable some docstring checks until we have improved the docstring coverage
+ignore = [
+  'D100', # Ignore: Missing docstring in public module
+  'D101', # Ignore: Missing docstring in class
+  'D102', # Ignore: Missing docstring in public method
+  'D103', # Ignore: Missing docstring in public function
+  'D104', # Ignore: Missing docstring in public package
+  'D105', # Ignore: Missing docstring in magic method
+  'D107', # Ignore: Missing docstring in __init__
+  'D205', # Ignore: 1 blank line required between summary and description
+]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = 'all'
@@ -162,15 +216,18 @@ ban-relative-imports = 'all'
 force-single-line = true
 
 [tool.ruff.lint.per-file-ignores]
-# allow asserts in test files
-'*test_*.py' = ['S101']
+'*test_*.py' = ['S101'] # allow asserts in test files
 
-#[tool.ruff.lint.pycodestyle]
-#max-line-length = 88 # https://peps.python.org/pep-0008/#maximum-line-length
-#max-doc-length = 72  # https://peps.python.org/pep-0008/#maximum-line-length
+[tool.ruff.lint.pycodestyle]
+max-line-length = 99 # https://peps.python.org/pep-0008/#maximum-line-length
+max-doc-length = 72  # https://peps.python.org/pep-0008/#maximum-line-length
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.ruff.format]
-docstring-code-format = true # Whether to format code snippets in docstrings
-indent-style = 'space'       # PEP 8 recommends using spaces over tabs
-line-ending = 'lf'           # Line endings will be converted to \n
-quote-style = 'single'       # But double quotes in docstrings (PEP 8, PEP 257)
+docstring-code-format = true    # Whether to format code snippets in docstrings
+docstring-code-line-length = 72 # Line length for code snippets in docstrings
+indent-style = 'space'          # PEP 8 recommends using spaces over tabs
+line-ending = 'lf'              # Line endings will be converted to \n
+quote-style = 'single'          # But double quotes in docstrings (PEP 8, PEP 257)

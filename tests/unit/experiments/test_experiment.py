@@ -37,7 +37,8 @@ class ConcreteBaseExperiment(BaseExperiment):
 
 
 class ConcreteSingleCrystalExperiment(SingleCrystalExperiment):
-    """Concrete implementation of SingleCrystalExperiment for testing."""
+    """Concrete implementation of SingleCrystalExperiment for
+    testing."""
 
     def _load_ascii_data_to_experiment(self, data_path):
         pass

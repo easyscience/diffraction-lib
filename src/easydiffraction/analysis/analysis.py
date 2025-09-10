@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import List
@@ -40,8 +40,7 @@ class Analysis:
         self,
         params: List[Union[Descriptor, Parameter]],
     ) -> pd.DataFrame:
-        """
-        Convert a list of parameters to a DataFrame.
+        """Convert a list of parameters to a DataFrame.
 
         Args:
             params: List of Descriptor or Parameter objects.
@@ -212,7 +211,12 @@ class Analysis:
         dataframe = self._get_params_as_dataframe(free_params)
         dataframe = dataframe[columns_headers]
 
-        print(paragraph('Free parameters for both sample models (🧩 data blocks) and experiments (🔬 data blocks)'))
+        print(
+            paragraph(
+                'Free parameters for both sample models (🧩 data blocks) '
+                'and experiments (🔬 data blocks)'
+            )
+        )
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -223,7 +227,10 @@ class Analysis:
     def how_to_access_parameters(self) -> None:
         sample_models_params = self.project.sample_models.get_all_params()
         experiments_params = self.project.experiments.get_all_params()
-        params = {'sample_models': sample_models_params, 'experiments': experiments_params}
+        params = {
+            'sample_models': sample_models_params,
+            'experiments': experiments_params,
+        }
 
         if not params:
             print(warning('No parameters found.'))
@@ -256,12 +263,23 @@ class Analysis:
                     category_key = param.category_key
                     entry_id = param.collection_entry_id
                     param_key = param.name
-                    code_variable = f"{project_varname}.{datablock_type}['{datablock_id}'].{category_key}"
+                    code_variable = (
+                        f"{project_varname}.{datablock_type}['{datablock_id}'].{category_key}"
+                    )
                     if entry_id:
                         code_variable += f"['{entry_id}']"
                     code_variable += f'.{param_key}'
                     cif_uid = param._generate_human_readable_unique_id()
-                    columns_data.append([datablock_id, category_key, entry_id, param_key, code_variable, cif_uid])
+                    columns_data.append(
+                        [
+                            datablock_id,
+                            category_key,
+                            entry_id,
+                            param_key,
+                            code_variable,
+                            cif_uid,
+                        ]
+                    )
 
         print(paragraph('How to access parameters'))
         render_table(
@@ -337,7 +355,8 @@ class Analysis:
             },
             {
                 'Strategy': 'joint',
-                'Description': 'Simultaneous fitting of all experiments; some parameters are shared',
+                'Description': 'Simultaneous fitting of all experiments; '
+                'some parameters are shared',
             },
         ]
 
@@ -361,9 +380,8 @@ class Analysis:
         print(self.fit_mode)
 
     def calculate_pattern(self, expt_name: str) -> None:
-        """
-        Calculate the diffraction pattern for a given experiment.
-        The calculated pattern is stored within the experiment's datastore.
+        """Calculate the diffraction pattern for a given experiment. The
+        calculated pattern is stored within the experiment's datastore.
 
         Args:
             expt_name: The name of the experiment.
@@ -431,11 +449,22 @@ class Analysis:
         experiment_ids = experiments.ids
 
         if self.fit_mode == 'joint':
-            print(paragraph(f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"))
-            self.fitter.fit(sample_models, experiments, calculator, weights=self.joint_fit_experiments)
+            print(
+                paragraph(
+                    f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"
+                )
+            )
+            self.fitter.fit(
+                sample_models,
+                experiments,
+                calculator,
+                weights=self.joint_fit_experiments,
+            )
         elif self.fit_mode == 'single':
             for expt_name in experiments.ids:
-                print(paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"))
+                print(
+                    paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting")
+                )
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name
                 dummy_experiments.add(experiment)

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -14,19 +14,14 @@ from easydiffraction.utils.decorators import enforce_type
 
 
 class BaseDatastore:
-    """
-    Base class for all data stores.
+    """Base class for all data stores.
 
-    Attributes
-    ----------
-    meas : Optional[np.ndarray]
-        Measured intensities.
-    meas_su : Optional[np.ndarray]
-        Standard uncertainties of measured intensities.
-    excluded : Optional[np.ndarray]
-        Flags for excluded points.
-    _calc : Optional[np.ndarray]
-        Stored calculated intensities.
+    Attributes:
+        meas (Optional[np.ndarray]): Measured intensities.
+        meas_su (Optional[np.ndarray]): Standard uncertainties of
+            measured intensities.
+        excluded (Optional[np.ndarray]): Flags for excluded points.
+        _calc (Optional[np.ndarray]): Stored calculated intensities.
     """
 
     def __init__(self) -> None:
@@ -37,17 +32,20 @@ class BaseDatastore:
 
     @property
     def calc(self) -> Optional[np.ndarray]:
-        """Access calculated intensities. Should be updated via external calculation.
+        """Access calculated intensities. Should be updated via external
+        calculation.
 
         Returns:
-            Optional[np.ndarray]: Calculated intensities array or None if not set.
+            Optional[np.ndarray]: Calculated intensities array or None
+                if not set.
         """
         return self._calc
 
     @calc.setter
     @enforce_type
     def calc(self, values: np.ndarray) -> None:
-        """Set calculated intensities (from Analysis.calculate_pattern()).
+        """Set calculated intensities (from
+        Analysis.calculate_pattern()).
 
         Args:
             values (np.ndarray): Array of calculated intensities.
@@ -56,9 +54,8 @@ class BaseDatastore:
 
     @abstractmethod
     def _cif_mapping(self) -> dict[str, str]:
-        """
-        Must be implemented in subclasses to return a mapping from attribute
-        names to CIF tags.
+        """Must be implemented in subclasses to return a mapping from
+        attribute names to CIF tags.
 
         Returns:
             dict[str, str]: Mapping from attribute names to CIF tags.
@@ -66,17 +63,18 @@ class BaseDatastore:
         pass
 
     def as_cif(self, max_points: Optional[int] = None) -> str:
-        """
-        Generate a CIF-formatted string representing the datastore data.
+        """Generate a CIF-formatted string representing the datastore
+        data.
 
         Args:
-            max_points (Optional[int]): Maximum number of points to include
-            from start and end.
-            If the total points exceed twice this number, data in the middle
-            is truncated with '...'.
+            max_points (Optional[int]): Maximum number of points to
+                include from start and end. If the total points exceed
+                twice this number, data in the middle is truncated with
+                '...'.
 
         Returns:
-            str: CIF-formatted string of the data. Empty string if no data available.
+            str: CIF-formatted string of the data. Empty string if no
+                data available.
         """
         cif_lines = ['loop_']
 
@@ -124,22 +122,19 @@ class BaseDatastore:
 class PowderDatastore(BaseDatastore):
     """Class for powder diffraction data.
 
-    Attributes
-    ----------
-    x : Optional[np.ndarray]
-        Scan variable (e.g. 2θ or time-of-flight values).
-    d : Optional[np.ndarray]
-        d-spacing values.
-    bkg : Optional[np.ndarray]
-        Background values.
+    Attributes:
+        x (Optional[np.ndarray]): Scan variable (e.g. 2θ or
+            time-of-flight values).
+        d (Optional[np.ndarray]): d-spacing values.
+        bkg (Optional[np.ndarray]): Background values.
     """
 
     def __init__(self, beam_mode: BeamModeEnum = BeamModeEnum.default()) -> None:
-        """
-        Initialize PowderDatastore.
+        """Initialize PowderDatastore.
 
         Args:
-            beam_mode (str): Beam mode, e.g. 'time-of-flight' or 'constant wavelength'.
+            beam_mode (str): Beam mode, e.g. 'time-of-flight' or
+                'constant wavelength'.
         """
         super().__init__()
         self.beam_mode = beam_mode
@@ -148,8 +143,8 @@ class PowderDatastore(BaseDatastore):
         self.bkg: Optional[np.ndarray] = None
 
     def _cif_mapping(self) -> dict[str, str]:
-        """
-        Return mapping from attribute names to CIF tags based on beam mode.
+        """Return mapping from attribute names to CIF tags based on beam
+        mode.
 
         Returns:
             dict[str, str]: Mapping dictionary.
@@ -173,22 +168,15 @@ class PowderDatastore(BaseDatastore):
 class SingleCrystalDatastore(BaseDatastore):
     """Class for single crystal diffraction data.
 
-    Attributes
-    ----------
-    sin_theta_over_lambda : Optional[np.ndarray]
-        sin(θ)/λ values.
-    index_h : Optional[np.ndarray]
-        Miller index h.
-    index_k : Optional[np.ndarray]
-        Miller index k.
-    index_l : Optional[np.ndarray]
-        Miller index l.
+    Attributes:
+        sin_theta_over_lambda (Optional[np.ndarray]): sin(θ)/λ values.
+        index_h (Optional[np.ndarray]): Miller index h.
+        index_k (Optional[np.ndarray]): Miller index k.
+        index_l (Optional[np.ndarray]): Miller index l.
     """
 
     def __init__(self) -> None:
-        """
-        Initialize SingleCrystalDatastore.
-        """
+        """Initialize SingleCrystalDatastore."""
         super().__init__()
         self.sin_theta_over_lambda: Optional[np.ndarray] = None
         self.index_h: Optional[np.ndarray] = None
@@ -196,8 +184,8 @@ class SingleCrystalDatastore(BaseDatastore):
         self.index_l: Optional[np.ndarray] = None
 
     def _cif_mapping(self) -> dict[str, str]:
-        """
-        Return mapping from attribute names to CIF tags for single crystal data.
+        """Return mapping from attribute names to CIF tags for single
+        crystal data.
 
         Returns:
             dict[str, str]: Mapping dictionary.
@@ -223,23 +211,35 @@ class DatastoreFactory:
         sample_form: str = SampleFormEnum.default(),
         beam_mode: str = BeamModeEnum.default(),
     ) -> BaseDatastore:
-        """
-        Create and return a datastore object for the given sample form.
+        """Create and return a datastore object for the given sample
+        form.
 
         Args:
-            sample_form (str): Sample form type, e.g. 'powder' or 'single crystal'.
+            sample_form (str): Sample form type, e.g. 'powder' or
+                'single crystal'.
             beam_mode (str): Beam mode for powder sample form.
 
         Returns:
-            BaseDatastore: Instance of a datastore class corresponding to sample form.
+            BaseDatastore: Instance of a datastore class corresponding
+                to sample form.
+
+        Raises:
+            ValueError: If the sample_form or beam_mode is not
+                supported.
         """
         supported_sample_forms = list(cls._supported.keys())
         if sample_form not in supported_sample_forms:
-            raise ValueError(f"Unsupported sample form: '{sample_form}'.\nSupported sample forms: {supported_sample_forms}")
+            raise ValueError(
+                f"Unsupported sample form: '{sample_form}'.\n"
+                f'Supported sample forms: {supported_sample_forms}'
+            )
 
         supported_beam_modes = ['time-of-flight', 'constant wavelength']
         if beam_mode not in supported_beam_modes:
-            raise ValueError(f"Unsupported beam mode: '{beam_mode}'.\nSupported beam modes: {supported_beam_modes}")
+            raise ValueError(
+                f"Unsupported beam mode: '{beam_mode}'.\n"
+                f'Supported beam modes: {supported_beam_modes}'
+            )
 
         datastore_class = cls._supported[sample_form]
         if sample_form == 'powder':

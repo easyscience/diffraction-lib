@@ -1,11 +1,11 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import TYPE_CHECKING
 
-# This is needed for static type checkers like mypy and IDEs to recognize the imports
-# without actually importing them at runtime, which helps avoid circular dependencies
-# and reduces initial load time.
+# This is needed for static type checkers like mypy and IDEs to
+# recognize the imports without actually importing them at runtime,
+# which helps avoid circular dependencies and reduces initial load time.
 if TYPE_CHECKING:
     # Analysis
     from easydiffraction.analysis.analysis import Analysis

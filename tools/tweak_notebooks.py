@@ -1,6 +1,6 @@
 """
-Add a single bootstrap code cell as the very first cell to every .ipynb file
-found under the given path(s).
+Add a single bootstrap code cell as the very first cell to every .ipynb
+file found under the given path(s).
 
 Usage:
     python tools/tweak_notebooks.py tutorials/ [more_paths ...]
@@ -26,8 +26,9 @@ from nbformat.validator import normalize
 BOOTSTRAP_SOURCE = (
     '# Check if the easydiffraction library is installed.\n'
     "# If not, install it including the 'visualization' extras.\n"
-    '# This is needed, e.g., when running this as a notebook via Google Colab or\n'
-    '# Jupyter Notebook in an environment where the library is not pre-installed.\n'
+    '# This is needed, e.g., when running this as a notebook via Google\n'
+    '# Colab or Jupyter Notebook in an environment where the library is\n'
+    '# not pre-installed.\n'
     'import builtins\n'
     'import importlib.util\n'
     '\n'
@@ -48,7 +49,8 @@ def iter_notebooks(paths: list[Path]):
 
 
 def has_bootstrap_first_cell(nb) -> bool:
-    """Return True if the first cell exactly matches our bootstrap cell."""
+    """Return True if the first cell exactly matches our bootstrap
+    cell."""
     if not nb.cells:
         return False
     first = nb.cells[0]
@@ -63,6 +65,7 @@ def has_bootstrap_first_cell(nb) -> bool:
 def ensure_bootstrap(nb) -> bool:
     """
     Ensure the bootstrap cell exists as the very first cell.
+
     Returns True if a modification was made.
     """
     if has_bootstrap_first_cell(nb):

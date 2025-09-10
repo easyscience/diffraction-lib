@@ -1,9 +1,9 @@
 # %% [markdown]
 # # Pair Distribution Function: Ni, NPD
 #
-# This example demonstrates a pair distribution function (PDF) analysis of Ni,
-# based on data collected from a constant wavelength neutron powder diffraction
-# experiment.
+# This example demonstrates a pair distribution function (PDF) analysis
+# of Ni, based on data collected from a constant wavelength neutron
+# powder diffraction experiment.
 #
 # The dataset is taken from:
 # https://github.com/diffpy/cmi_exchange/tree/main/cmi_scripts/fitNiPDF
@@ -37,7 +37,13 @@ project.sample_models['ni'].space_group.name_h_m = 'F m -3 m'
 project.sample_models['ni'].space_group.it_coordinate_system_code = '1'
 project.sample_models['ni'].cell.length_a = 3.52387
 project.sample_models['ni'].atom_sites.add(
-    label='Ni', type_symbol='Ni', fract_x=0.0, fract_y=0.0, fract_z=0.0, wyckoff_letter='a', b_iso=0.5
+    label='Ni',
+    type_symbol='Ni',
+    fract_x=0.0,
+    fract_y=0.0,
+    fract_z=0.0,
+    wyckoff_letter='a',
+    b_iso=0.5,
 )
 
 # %% [markdown]

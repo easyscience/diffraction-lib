@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import TYPE_CHECKING
@@ -21,9 +21,7 @@ if TYPE_CHECKING:
 
 
 class DiffractionMinimizer:
-    """
-    Handles the fitting workflow using a pluggable minimizer.
-    """
+    """Handles the fitting workflow using a pluggable minimizer."""
 
     def __init__(self, selection: str = 'lmfit (leastsq)') -> None:
         self.selection: str = selection
@@ -38,15 +36,13 @@ class DiffractionMinimizer:
         calculator: Any,
         weights: Optional[np.array] = None,
     ) -> None:
-        """
-        Run the fitting process.
+        """Run the fitting process.
 
         Args:
             sample_models: Collection of sample models.
             experiments: Collection of experiments.
             calculator: The calculator to use for pattern generation.
             weights: Optional weights for joint fitting.
-
         """
         params = sample_models.get_free_params() + experiments.get_free_params()
 
@@ -79,8 +75,7 @@ class DiffractionMinimizer:
         experiments: Experiments,
         calculator: CalculatorBase,
     ) -> None:
-        """
-        Collect reliability inputs and display results after fitting.
+        """Collect reliability inputs and display results after fitting.
 
         Args:
             sample_models: Collection of sample models.
@@ -110,8 +105,7 @@ class DiffractionMinimizer:
         sample_models: SampleModels,
         experiments: Experiments,
     ) -> List[Parameter]:
-        """
-        Collect free parameters from sample models and experiments.
+        """Collect free parameters from sample models and experiments.
 
         Args:
             sample_models: Collection of sample models.
@@ -120,7 +114,9 @@ class DiffractionMinimizer:
         Returns:
             List of free parameters.
         """
-        free_params: List[Parameter] = sample_models.get_free_params() + experiments.get_free_params()
+        free_params: List[Parameter] = (
+            sample_models.get_free_params() + experiments.get_free_params()
+        )
         return free_params
 
     def _residual_function(
@@ -132,9 +128,9 @@ class DiffractionMinimizer:
         calculator: CalculatorBase,
         weights: Optional[np.array] = None,
     ) -> np.ndarray:
-        """
-        Residual function computes the difference between measured and calculated patterns.
-        It updates the parameter values according to the optimizer-provided engine_params.
+        """Residual function computes the difference between measured
+        and calculated patterns. It updates the parameter values
+        according to the optimizer-provided engine_params.
 
         Args:
             engine_params: Engine-specific parameter dict.
@@ -162,14 +158,16 @@ class DiffractionMinimizer:
             _weights = np.array(_weights_list, dtype=np.float64)
 
         # Normalize weights so they sum to num_expts
-        # We should obtain the same reduced chi_squared when a single dataset is split into
-        # two parts and fit together. If weights sum to one, then reduced chi_squared
-        # will be half as large as expected.
+        # We should obtain the same reduced chi_squared when a single
+        # dataset is split into two parts and fit together. If weights
+        # sum to one, then reduced chi_squared will be half as large as
+        # expected.
         _weights *= num_expts / np.sum(_weights)
         residuals: List[float] = []
 
         for (expt_id, experiment), weight in zip(experiments._items.items(), _weights):
-            # Calculate the difference between measured and calculated patterns
+            # Calculate the difference between measured and calculated
+            # patterns
             calculator.calculate_pattern(
                 sample_models,
                 experiment,
@@ -180,7 +178,8 @@ class DiffractionMinimizer:
             y_meas_su: np.ndarray = experiment.datastore.meas_su
             diff = (y_meas - y_calc) / y_meas_su
 
-            # Residuals are squared before going into reduced chi-squared
+            # Residuals are squared before going into reduced
+            # chi-squared
             diff *= np.sqrt(weight)
 
             # Append the residuals for this experiment

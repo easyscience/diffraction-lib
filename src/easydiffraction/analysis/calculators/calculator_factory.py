@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Dict
@@ -33,7 +33,9 @@ class CalculatorFactory:
     }
 
     @classmethod
-    def _supported_calculators(cls) -> Dict[str, Dict[str, Union[str, Type[CalculatorBase]]]]:
+    def _supported_calculators(
+        cls,
+    ) -> Dict[str, Dict[str, Union[str, Type[CalculatorBase]]]]:
         return {
             name: cfg
             for name, cfg in cls._potential_calculators.items()

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from abc import ABC
@@ -16,8 +16,8 @@ from easydiffraction.analysis.fitting.results import FitResults
 
 
 class MinimizerBase(ABC):
-    """
-    Abstract base class for minimizer implementations.
+    """Abstract base class for minimizer implementations.
+
     Provides shared logic and structure for concrete minimizers.
     """
 
@@ -49,8 +49,8 @@ class MinimizerBase(ABC):
 
     @abstractmethod
     def _prepare_solver_args(self, parameters: List[Any]) -> Dict[str, Any]:
-        """
-        Prepare the solver arguments directly from the list of free parameters.
+        """Prepare the solver arguments directly from the list of free
+        parameters.
         """
         pass
 
@@ -89,8 +89,8 @@ class MinimizerBase(ABC):
 
     @abstractmethod
     def _check_success(self, raw_result: Any) -> bool:
-        """
-        Determine whether the fit was successful.
+        """Determine whether the fit was successful.
+
         This must be implemented by concrete minimizers.
         """
         pass

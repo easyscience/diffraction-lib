@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import os
@@ -15,19 +15,19 @@ try:
     from diffpy.pdffit2 import redirect_stdout
     from diffpy.structure.parsers.p_cif import P_cif as pdffit_cif_parser
 
-    redirect_stdout(open(os.path.devnull, 'w'))  # silence the C++ engine output
+    # Silence the C++ engine output
+    redirect_stdout(open(os.path.devnull, 'w'))
     # TODO: Add the following print to debug mode
     # print("✅ 'pdffit' calculation engine is successfully imported.")
 except ImportError:
     # TODO: Add the following print to debug mode
-    # print("⚠️ 'pdffit' module not found. This calculation engine will not be available.")
+    # print("⚠️ 'pdffit' module not found. This calculation engine will
+    # not be available.")
     pdffit = None
 
 
 class PdffitCalculator(CalculatorBase):
-    """
-    Wrapper for Pdffit library.
-    """
+    """Wrapper for Pdffit library."""
 
     engine_imported: bool = pdffit is not None
 
