@@ -5,7 +5,16 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Allow only one concurrent workflow, skipping runs queued between the run
+# in-progress and latest queued. And cancel in-progress runs.
+concurrency:
+  group:
+    ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# Set the environment variables to be used in all jobs defined in this workflow
 env:
+  # CI_BRANCH - the branch name (used in mkdocs.yml)
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
 
 jobs:
@@ -34,8 +43,11 @@ jobs:
           for BR in master develop ${{ env.CI_BRANCH }}; do
             echo "=== Processing branch $BR ==="
             git worktree add ../worktree-$BR origin/$BR
+            echo "Docstring coverage"
             pixi run interrogate -c pyproject.toml --fail-under=0 ../worktree-$BR/src > coverage-docstring-$BR.txt
+            echo "Cyclomatic complexity"
             pixi run radon cc -s -j ../worktree-$BR/src > cyclomatic-complexity-$BR.json
+            echo "Maintainability index"
             pixi run radon mi -j ../worktree-$BR/src > maintainability-index-$BR.json
           done
 
