@@ -243,7 +243,7 @@ class PowderExperiment(
         try:
             data = np.loadtxt(data_path)
         except Exception as e:
-            raise IOError(f'Failed to read data from {data_path}: {e}')
+            raise IOError(f'Failed to read data from {data_path}: {e}') from e
 
         if data.shape[1] < 2:
             raise ValueError('Data file must have at least two columns: x and y.')
@@ -347,11 +347,11 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
         try:
             from diffpy.utils.parsers.loaddata import loadData
         except ImportError:
-            raise ImportError('diffpy module not found.')
+            raise ImportError('diffpy module not found.') from None
         try:
             data = loadData(data_path)
         except Exception as e:
-            raise IOError(f'Failed to read data from {data_path}: {e}')
+            raise IOError(f'Failed to read data from {data_path}: {e}') from e
 
         if data.shape[1] < 2:
             raise ValueError('Data file must have at least two columns: x and y.')
