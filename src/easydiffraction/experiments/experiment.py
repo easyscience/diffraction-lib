@@ -322,7 +322,7 @@ class PowderExperiment(
         columns_headers = ['Background type', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
-        for bt, cls in BackgroundFactory._supported.items():
+        for bt in BackgroundFactory._supported.keys():
             columns_data.append([bt.value, bt.description()])
 
         print(paragraph('Supported background types'))
