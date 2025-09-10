@@ -1,0 +1,4 @@
+exclude_patterns:
+  - tutorials-drafts/
+  - tests/
+  - tools/
