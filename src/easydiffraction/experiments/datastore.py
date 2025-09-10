@@ -134,7 +134,7 @@ class PowderDatastore(BaseDatastore):
         Background values.
     """
 
-    def __init__(self, beam_mode: BeamModeEnum = BeamModeEnum.default()) -> None:
+    def __init__(self, beam_mode: Optional[BeamModeEnum] = None) -> None:
         """
         Initialize PowderDatastore.
 
@@ -142,6 +142,10 @@ class PowderDatastore(BaseDatastore):
             beam_mode (str): Beam mode, e.g. 'time-of-flight' or 'constant wavelength'.
         """
         super().__init__()
+
+        if beam_mode is None:
+            beam_mode = BeamModeEnum.default()
+
         self.beam_mode = beam_mode
         self.x: Optional[np.ndarray] = None
         self.d: Optional[np.ndarray] = None
