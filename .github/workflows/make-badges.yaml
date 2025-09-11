@@ -50,7 +50,7 @@ jobs:
             echo "Maintainability index for branch $BR"
             pixi run radon mi -j ../worktree-$BR/src --exclude ../worktree-$BR/src/easydiffraction/crystallography/space_group_lookup_table.py > maintainability-index-$BR.json
             echo "Raw metrics for branch $BR"
-            pixi run radon raw -s -j ../worktree-$BR/src > raw-metrics-$BR.json
+            pixi run radon raw -s -j ../worktree-$BR/src --exclude ../worktree-$BR/src/easydiffraction/crystallography/space_group_lookup_table.py > raw-metrics-$BR.json
           done
 
       - name: Set environment variables for badges
