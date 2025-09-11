@@ -134,6 +134,8 @@ complexity-check = "radon cc -s src/"
 complexity-check-json = "radon cc -s -j src/"
 maintainability-check = "radon mi src/"
 maintainability-check-json = "radon mi -j src/"
+raw-metrics = "radon raw -s src/"
+raw-metrics-json = "radon raw -s -j src/"
 
 # 📊 Coverage
 unit-tests-coverage = "pixi run unit-tests --cov=src/easydiffraction --cov-report=term-missing"
