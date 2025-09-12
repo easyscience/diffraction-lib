@@ -4,13 +4,13 @@ develop_branch: develop
 cards:
   - group: Tests
     type: gh_action
-    title: Test code and package
+    title: Test code and package (GitHub.com)
     file: test-code.yaml
     enabled: true
 
   - group: Tests
     type: gh_action
-    title: Test tutorials
+    title: Test tutorials (GitHub.com)
     file: test-tutorials.yaml
     enabled: true
 
@@ -44,15 +44,9 @@ cards:
     enabled: true
 
   - group: Size
-    type: radon_files
-    title: Number of files
+    type: radon_ff
+    title: Functions/Files count (radon)
     report: reports/{branch}/cyclomatic-complexity.json
-    enabled: true
-
-  - group: Size
-    type: radon_funcs
-    title: Number of functions
-    dir: reports/{branch}/cyclomatic-complexity.json
     enabled: true
 
   - group: Coverage
@@ -68,18 +62,18 @@ cards:
 
   - group: Security
     type: gh_action
-    title: Scan security
-    workflow: scan-security.yaml
+    title: Scan security (GitHub.com)
+    workflow: scan-security.yml
     enabled: true
 
   - group: Build & Release
     type: gh_action
     title: Publish (PyPI.org)
-    workflow: publish-pypi.yaml
+    workflow: publish-pypi.yml
     enabled: true
 
   - group: Build & Release
     type: gh_action
     title: Build and deploy docs
-    workflow: build-docs.yaml
+    workflow: build-docs.yml
     enabled: true
