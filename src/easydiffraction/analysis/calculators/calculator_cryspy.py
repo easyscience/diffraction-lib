@@ -388,7 +388,7 @@ class CryspyCalculator(CalculatorBase):
 
         y_data = experiment.datastore.meas
         sy_data = experiment.datastore.meas_su
-        for x_val, y_val, sy_val in zip(x_data, y_data, sy_data):
+        for x_val, y_val, sy_val in zip(x_data, y_data, sy_data, strict=True):
             cif_lines.append(f'  {x_val:.5f}   {y_val:.5f}   {sy_val:.5f}')
 
         cryspy_experiment_cif = '\n'.join(cif_lines)

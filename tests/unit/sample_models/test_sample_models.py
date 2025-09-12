@@ -10,13 +10,13 @@ from easydiffraction.sample_models.sample_models import SampleModels
 @pytest.fixture
 def mock_sample_model():
     with (
-        patch('easydiffraction.sample_models.components.space_group.SpaceGroup') as MockSpaceGroup,
-        patch('easydiffraction.sample_models.components.cell.Cell') as MockCell,
-        patch('easydiffraction.sample_models.collections.atom_sites.AtomSites') as MockAtomSites,
+        patch('easydiffraction.sample_models.components.space_group.SpaceGroup') as mock_space_group,
+        patch('easydiffraction.sample_models.components.cell.Cell') as mock_cell,
+        patch('easydiffraction.sample_models.collections.atom_sites.AtomSites') as mock_atom_sites,
     ):
-        space_group = MockSpaceGroup.return_value
-        cell = MockCell.return_value
-        atom_sites = MockAtomSites.return_value
+        space_group = mock_space_group.return_value
+        cell = mock_cell.return_value
+        atom_sites = mock_atom_sites.return_value
 
         # Mock attributes
         space_group.name_h_m.value = 'P 1'

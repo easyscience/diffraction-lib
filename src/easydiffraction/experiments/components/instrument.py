@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from typing import Optional
+
 from easydiffraction.core.objects import Component
 from easydiffraction.core.objects import Parameter
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
@@ -110,9 +112,14 @@ class InstrumentFactory:
     @classmethod
     def create(
         cls,
-        scattering_type=ScatteringTypeEnum.default(),
-        beam_mode=BeamModeEnum.default(),
+        scattering_type: Optional[ScatteringTypeEnum] = None,
+        beam_mode: Optional[BeamModeEnum] = None,
     ):
+        if beam_mode is None:
+            beam_mode = BeamModeEnum.default()
+        if scattering_type is None:
+            scattering_type = ScatteringTypeEnum.default()
+
         supported_scattering_types = list(cls._supported.keys())
         if scattering_type not in supported_scattering_types:
             raise ValueError(

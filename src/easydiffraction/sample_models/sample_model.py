@@ -37,19 +37,6 @@ class SampleModel(Datablock):
         elif cif_str:
             self.load_from_cif_string(cif_str)
 
-    # ----------------------
-    # Name (ID) of the model
-    # ----------------------
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    @enforce_type
-    def name(self, new_name: str):
-        self._name = new_name
-
     # -----------
     # Space group
     # -----------

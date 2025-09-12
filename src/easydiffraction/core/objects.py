@@ -14,6 +14,7 @@ from typing import TypeVar
 from typing import Union
 
 from easydiffraction.core.singletons import UidMapHandler
+from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import error
 from easydiffraction.utils.formatting import warning
 
@@ -70,7 +71,7 @@ class Descriptor:
         value_str = f'{self.__class__.__name__}: {self.uid} = {self.value}'
 
         # Append ± uncertainty if it exists and is nonzero
-        if hasattr(self, 'uncertainty') and getattr(self, 'uncertainty') != 0.0:
+        if hasattr(self, 'uncertainty') and self.uncertainty != 0.0:
             value_str += f' ± {self.uncertainty}'
 
         # Append units if available
@@ -493,7 +494,7 @@ class Collection(ABC):
         return '\n'.join(lines)
 
 
-class Datablock(ABC):
+class Datablock:
     """Base class for Sample Model and Experiment data blocks."""
 
     # TODO: Consider unifying with class Component?
@@ -528,9 +529,11 @@ class Datablock(ABC):
         return self._name
 
     @name.setter
-    def name(self, new_name):
+    @enforce_type
+    def name(self, new_name: str):
         self._name = new_name
         # For each component/collection in this datablock,
-        # also update its datablock_id
-        for item in self.items():
-            item.datablock_id = new_name
+        # also update its datablock_id if it has one
+        for item in getattr(self, '__dict__', {}).values():
+            if isinstance(item, (Component, Collection)):
+                item.datablock_id = new_name

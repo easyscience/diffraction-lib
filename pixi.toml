@@ -20,14 +20,14 @@ channels = ["conda-forge"]
 # Default feature configuration
 
 [dependencies] # == [feature.default.dependencies]
-pip = ">=25.2,<26"        # Required to install from PyPI
-jupyterlab = ">=4.4.7,<5" # JupyterLab for notebooks
+pip = "*"        # Required to install from PyPI
+jupyterlab = "*" # JupyterLab for notebooks
 
 [target.win-64.dependencies]
 libcblas = "*" # CBLAS library for linear algebra. Required for pdffit2.
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
-pixi-kernel = ">=0.6.6, <0.7" # Pixi Jupyter kernel integration
+pixi-kernel = "*" # Pixi Jupyter kernel integration
 
 # Extra features for different Python versions
 
@@ -37,11 +37,14 @@ pixi-kernel = ">=0.6.6, <0.7" # Pixi Jupyter kernel integration
 [feature.py311.dependencies]
 python = "3.11.*"
 
-[feature.py312.dependencies]
-python = "3.12.*"
-
 [feature.py313.dependencies]
 python = "3.13.*"
+
+[feature.ed-local-editable.pypi-dependencies]
+easydiffraction = { path = ".", extras = [
+  "dev",
+  "visualization",
+], editable = true }
 
 # This feature is for development in CI, where easydiffraction
 # is installed from the local source code defined in pyproject.toml.
@@ -77,10 +80,9 @@ nodejs = ">=20,<21" # Required for prettier; pinned to a stable LTS
 # The `default` environment is always included in the lock file, so it does not
 # need to be specified explicitly in the environments section.
 
-default = { features = ["py313", "ed-local", "nodejs"] }
+default = { features = ["py313", "ed-local-editable", "nodejs"] }
 
 py311-dev = { features = ["py311", "ed-local", "nodejs"] }
-py312-dev = { features = ["py312", "ed-local", "nodejs"] }
 py313-dev = { features = ["py313", "ed-local", "nodejs"] }
 
 py313-docs = { features = ["py313", "ed-local-with-docs"] }
@@ -127,6 +129,14 @@ code-quality = { depends-on = [
   "nonpy-format-fix-modified",
 ] }
 
+# 🧮 Code Complexity
+complexity-check = "radon cc -s src/"
+complexity-check-json = "radon cc -s -j src/"
+maintainability-check = "radon mi src/"
+maintainability-check-json = "radon mi -j src/"
+raw-metrics = "radon raw -s src/"
+raw-metrics-json = "radon raw -s -j src/"
+
 # 📊 Coverage
 unit-tests-coverage = "pixi run unit-tests --cov=src/easydiffraction --cov-report=term-missing"
 func-tests-coverage = "pixi run func-tests --cov=src/easydiffraction --cov-report=term-missing"
@@ -166,6 +176,7 @@ pre-commit = { depends-on = ["code-quality", "tests"] }
 dist-build = "python -m build --wheel --outdir dist"
 spdx-update = "python tools/update_spdx.py"
 prettier-install = "npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml"
+make-badges = "python tools/make_badges.py"
 
 # 🔗 Shortcuts
 easydiffraction = "python -m easydiffraction"
