@@ -60,12 +60,6 @@ cards:
     report: reports/{branch}/coverage-docstring.txt
     enabled: true
 
-  - group: Security
-    type: gh_action
-    title: Scan security (GitHub.com)
-    workflow: scan-security.yml
-    enabled: true
-
   - group: Build & Release
     type: gh_action
     title: Publish (PyPI.org)
