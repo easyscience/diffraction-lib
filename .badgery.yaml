@@ -69,7 +69,7 @@ cards:
   - group: Security
     type: gh_action
     title: Scan security
-    workflow: security.yaml
+    workflow: scan-security.yaml
     enabled: true
 
   - group: Build & Release
