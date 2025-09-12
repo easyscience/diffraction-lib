@@ -16,6 +16,10 @@ concurrency:
 env:
   # CI_BRANCH - the branch name (used in mkdocs.yml)
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
+  DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+  DEVELOP_BRANCH: develop
+  REPO_OWNER: ${{ github.repository_owner }}
+  REPO_NAME: ${{ github.event.repository.name }}
 
 jobs:
   make-badges:
@@ -30,63 +34,53 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          environments: >-
-            py313-dev
+          environments: py313-dev
           activate-environment: py313-dev
           run-install: true
           frozen: true
           cache: false
           post-cleanup: false
 
-      - name: Run docstring coverage and code complexity checks
+      - name: Run docstring coverage and code complexity/maintainability checks
         run: |
-          for BR in master develop ${{ env.CI_BRANCH }}; do
-            echo "=== Processing branch $BR ==="
-            git worktree add ../worktree-$BR origin/$BR
-            echo "Docstring coverage for branch $BR"
-            pixi run interrogate -c pyproject.toml --fail-under=0 ../worktree-$BR/src > coverage-docstring-$BR.txt
-            echo "Cyclomatic complexity for branch $BR"
-            pixi run radon cc -s -j ../worktree-$BR/src > cyclomatic-complexity-$BR.json
-            echo "Maintainability index for branch $BR"
-            pixi run radon mi -j ../worktree-$BR/src --exclude ../worktree-$BR/src/easydiffraction/crystallography/space_group_lookup_table.py > maintainability-index-$BR.json
-            echo "Raw metrics for branch $BR"
-            pixi run radon raw -s -j ../worktree-$BR/src --exclude ../worktree-$BR/src/easydiffraction/crystallography/space_group_lookup_table.py > raw-metrics-$BR.json
+          for BRANCH in ${{ env.DEFAULT_BRANCH }} ${{ env.DEVELOP_BRANCH }} ${{ env.CI_BRANCH }}; do
+            echo "=== Processing branch $BRANCH ==="
+            if [ -d "../worktree-$BRANCH" ]; then
+              echo "Branch $BRANCH already processed, skipping"
+              continue
+            fi
+            git worktree add ../worktree-$BRANCH origin/$BRANCH
+            mkdir -p reports/$BRANCH
+            echo "Docstring coverage for branch $BRANCH"
+            pixi run interrogate -c pyproject.toml --fail-under=0 ../worktree-$BRANCH/src > reports/$BRANCH/coverage-docstring.txt
+            echo "Cyclomatic complexity for branch $BRANCH"
+            pixi run radon cc -s -j ../worktree-$BRANCH/src > reports/$BRANCH/cyclomatic-complexity.json
+            echo "Maintainability index for branch $BRANCH"
+            pixi run radon mi -j ../worktree-$BRANCH/src > reports/$BRANCH/maintainability-index.json
+            echo "Raw metrics for branch $BRANCH"
+            pixi run radon raw -s -j ../worktree-$BRANCH/src > reports/$BRANCH/raw-metrics.json
           done
 
-      - name: Set environment variables for badges
-        run: |
-          echo "CI_DOCSTRING_MASTER=coverage-docstring-master.txt" >> $GITHUB_ENV
-            echo "CI_DOCSTRING_DEVELOP=coverage-docstring-develop.txt" >> $GITHUB_ENV
-            echo "CI_DOCSTRING_FEATURE=coverage-docstring-${{ env.CI_BRANCH }}.txt" >> $GITHUB_ENV
-            echo "CI_COMPLEXITY_MASTER=cyclomatic-complexity-master.json" >> $GITHUB_ENV
-            echo "CI_COMPLEXITY_DEVELOP=cyclomatic-complexity-develop.json" >> $GITHUB_ENV
-            echo "CI_COMPLEXITY_FEATURE=cyclomatic-complexity-${{ env.CI_BRANCH }}.json" >> $GITHUB_ENV
-            echo "CI_MAINTAINABILITY_MASTER=maintainability-index-master.json" >> $GITHUB_ENV
-            echo "CI_MAINTAINABILITY_DEVELOP=maintainability-index-develop.json" >> $GITHUB_ENV
-            echo "CI_MAINTAINABILITY_FEATURE=maintainability-index-${{ env.CI_BRANCH }}.json" >> $GITHUB_ENV
-            echo "CI_RAW_METRICS_MASTER=raw-metrics-master.json" >> $GITHUB_ENV
-            echo "CI_RAW_METRICS_DEVELOP=raw-metrics-develop.json" >> $GITHUB_ENV
-            echo "CI_RAW_METRICS_FEATURE=raw-metrics-${{ env.CI_BRANCH }}.json" >> $GITHUB_ENV
-
       - name: Generate dashboard HTML
-        run: >
-          pixi run make-badges  --repo ${{ github.repository }}  
-          --branch ${{ env.CI_BRANCH }} --output index.html
+        run: |
+          pixi add --pypi --git https://github.com/enhantica/badgery badgery
+          pixi run python -m badgery --repo ${{ github.repository }} --branch ${{ env.CI_BRANCH }} --output index.html
 
       - name: Prepare publish directory
         run: |
-          mkdir -p _dashboard_publish/diffraction-lib/${{ env.CI_BRANCH }}
-          cp index.html _dashboard_publish/diffraction-lib/${{ env.CI_BRANCH }}
+          mkdir -p _dashboard_publish/${{ env.REPO_NAME }}/${{ env.CI_BRANCH }}
+          cp index.html _dashboard_publish/${{ env.REPO_NAME }}/${{ env.CI_BRANCH }}
 
-      - name: Publish to easyscience/dashboard master branch
+      - name: Publish to main branch of ${{ github.repository }}
         uses: peaceiris/actions-gh-pages@v3
         with:
-          external_repository: easyscience/dashboard
-          publish_branch: master
+          external_repository: ${{ env.REPO_OWNER }}/dashboard
+          publish_branch: main
           personal_token: ${{ secrets.GH_API_PERSONAL_ACCSESS_TOKEN }}
           publish_dir: ./_dashboard_publish
           keep_files: true
 
-      - name: Add dashboard to summary
+      - name: Add dashboard link to summary
         run: |
-          echo "[Dashboard link](https://easyscience.github.io/dashboard/diffraction-lib/${{ env.CI_BRANCH }}/index.html)" >> $GITHUB_STEP_SUMMARY
+          URL="https://${{ env.REPO_OWNER }}.github.io/dashboard/${{ env.REPO_NAME }}/${{ env.CI_BRANCH }}"
+          echo "Dashboard link: [$URL]($URL)" >> $GITHUB_STEP_SUMMARY
