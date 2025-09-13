@@ -1,6 +1,6 @@
 [activation.env]
 PYTHONIOENCODING = "utf-8"
-# The following is needed to resolve issues installing easydiffraction
+# The following is needed to resolve issues installing the main package
 # from a local path in editable mode in the default environment. With src/
 # included in PYTHONPATH, we use the source code directly in the first place,
 # instead of the installed package.
@@ -22,12 +22,14 @@ channels = ["conda-forge"]
 [dependencies] # == [feature.default.dependencies]
 pip = "*"        # Required to install from PyPI
 jupyterlab = "*" # JupyterLab for notebooks
+#pypi-dependencies = { file = "pyproject.toml", extras = ["dev"] }
 
 [target.win-64.dependencies]
 libcblas = "*" # CBLAS library for linear algebra. Required for pdffit2.
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
 pixi-kernel = "*" # Pixi Jupyter kernel integration
+easydiffraction = { path = ".", extras = ["all"] }
 
 # Extra features for different Python versions
 
@@ -39,31 +41,6 @@ python = "3.11.*"
 
 [feature.py313.dependencies]
 python = "3.13.*"
-
-[feature.ed-local-editable.pypi-dependencies]
-easydiffraction = { path = ".", extras = [
-  "dev",
-  "visualization",
-], editable = true }
-
-# This feature is for development in CI, where easydiffraction
-# is installed from the local source code defined in pyproject.toml.
-# This ensures that local lock file updates work in CI.
-
-[feature.ed-local.pypi-dependencies]
-easydiffraction = { path = ".", extras = ["dev", "visualization"] }
-
-# This feature is used to build documentation, where the package is
-# installed from PyPI with additional dependencies needed for building
-# the docs.
-
-[feature.ed-local-with-docs.pypi-dependencies]
-easydiffraction = { path = ".", extras = ["dev", "visualization", "docs"] }
-
-# This feature is used when the easydiffraction package is installed from PyPI.
-
-[feature.ed-pypi.pypi-dependencies]
-easydiffraction = { version = "*", extras = ["dev", "visualization"] }
 
 # This feature installs Node.js and Prettier for formatting
 # non-Python files.
@@ -80,14 +57,10 @@ nodejs = ">=20,<21" # Required for prettier; pinned to a stable LTS
 # The `default` environment is always included in the lock file, so it does not
 # need to be specified explicitly in the environments section.
 
-default = { features = ["py313", "ed-local-editable", "nodejs"] }
+default = { features = ["py313", "nodejs"] }
 
-py311-dev = { features = ["py311", "ed-local", "nodejs"] }
-py313-dev = { features = ["py313", "ed-local", "nodejs"] }
-
-py313-docs = { features = ["py313", "ed-local-with-docs"] }
-
-py313-prod = { features = ["py313", "ed-pypi"] }
+py311-dev = { features = ["py311", "nodejs"] }
+py313-dev = { features = ["py313", "nodejs"] }
 
 #######
 # TASKS
