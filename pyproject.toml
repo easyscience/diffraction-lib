@@ -76,6 +76,11 @@ visualization = [
   'plotly',     # Interactive plots
   'py3Dmol',    # Visualisation of crystal structures
 ]
+all = [
+  "easydiffraction[dev]",
+  "easydiffraction[docs]",
+  "easydiffraction[visualization]",
+]
 
 [project.urls]
 homepage = 'https://easydiffraction.org'
