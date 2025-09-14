@@ -84,6 +84,7 @@ pyproject-check = "python -m validate_pyproject pyproject.toml"
 py-lint-check = "python -m ruff check ."
 py-format-check = "python -m ruff format . --check"
 nonpy-format-check = "npx prettier . --list-different --config=prettierrc.toml"
+nonpy-format-check-modified = "npx prettier $(git diff --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .) --list-different --config=prettierrc.toml"
 notebook-format-check = 'nbqa ruff tutorials/'
 docs-format-check = "docformatter --check src/ tutorials/"
 
@@ -95,8 +96,7 @@ nonpy-format-fix-modified = "npx prettier $(git diff --name-only HEAD | grep -E 
 notebook-format-fix = 'nbqa ruff tutorials/ --fix'
 docs-format-fix = "docformatter --in-place src/ tutorials/"
 
-code-quality = { depends-on = [
-  "pyproject-check",
+fix = { depends-on = [
   "py-format-fix",
   "docs-format-fix",
   "py-lint-fix",
@@ -148,8 +148,10 @@ docs-setup = { depends-on = [
 # 🚀 Development & Build Tasks
 dist-build = "python -m build --wheel --outdir dist"
 spdx-update = "python tools/update_spdx.py"
-pre-commit-install = "pixi run pre-commit install --hook-type pre-commit --hook-type pre-push"
 prettier-install = "npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml"
+pre-commit-install = "pre-commit clean &&pre-commit install --hook-type pre-commit --hook-type pre-push --overwrite"
+pre-commit = "pre-commit run --all-files --hook-stage pre-commit"
+pre-push = "pre-commit run --all-files --hook-stage pre-push"
 
 # 🔗 Shortcuts
 easydiffraction = "python -m easydiffraction"
