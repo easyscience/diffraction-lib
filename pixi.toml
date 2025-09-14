@@ -87,6 +87,7 @@ nonpy-format-check = "npx prettier . --list-different --config=prettierrc.toml"
 nonpy-format-check-modified = "npx prettier $(git diff --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .) --list-different --config=prettierrc.toml"
 notebook-format-check = 'nbqa ruff tutorials/'
 docs-format-check = "docformatter --check src/ tutorials/"
+block-pixi-sha256 = "python tools/block-pixi-sha256.py"
 
 ## 🛠️ Fixes
 py-lint-fix = "python -m ruff check . --fix"

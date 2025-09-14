@@ -4731,7 +4731,7 @@ packages:
 - pypi: ./
   name: easydiffraction
   version: 0.7.2+devdirty
-  sha256: e3d5db322b3bf7b19f5370ecb788e21b575236a4f2a62277db80669250e673a7
+  sha256: 78f3441c6875843208106a4b43423ab56ff27c813d704848835906402f033364
   requires_dist:
   - asciichartpy
   - asteval
