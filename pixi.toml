@@ -28,8 +28,10 @@ jupyterlab = "*" # JupyterLab for notebooks
 libcblas = "*" # CBLAS library for linear algebra. Required for pdffit2.
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
-pixi-kernel = "*"                                  # Pixi Jupyter kernel
-easydiffraction = { path = ".", extras = ["all"] } # Main package 
+pixi-kernel = "*" # Pixi Jupyter kernel
+easydiffraction = { git = "https://github.com/easyscience/diffraction-lib", rev = "ruff-lint-arg", extras = [
+  "all",
+] } # Main package
 
 # Extra features for different Python versions
 
