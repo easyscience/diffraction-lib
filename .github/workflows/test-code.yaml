@@ -180,7 +180,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run -e $env unit-tests
+            pixi run --environment $env unit-tests
           done
 
       - name:
@@ -189,7 +189,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run -e $env func-tests "${{ needs.code-quality.outputs.pytest-marks }}"
+            pixi run --environment $env func-tests "${{ needs.code-quality.outputs.pytest-marks }}"
           done
 
       # Delete all local tags when not on a tagged commit to force versioningit
@@ -237,7 +237,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      PIXI_ENVS: 'py311-wheel py313-wheel'
+      PIXI_ENVS: 'py311-dev py313-dev'
 
     steps:
       - name:
@@ -246,10 +246,6 @@ jobs:
         with: # name or path are taken from the upload step of the previous job
           name: edl_${{ matrix.os }}_${{ runner.arch }}
           path: . # directory to extract downloaded zipped artifacts
-
-      - name: Move pixi/wheel/pixi.toml to project root
-        shell: bash
-        run: mv pixi/wheel/pixi.toml .
 
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
@@ -269,7 +265,7 @@ jobs:
             whl_path="$(python3 -c "import pathlib; w = sorted(pathlib.Path('dist/${env_prefix}').glob('*.whl')); print(w[0].resolve().as_uri())")"
             echo "📦 Adding easydiffraction from: $whl_path"
             pixi add --feature $env_prefix --pypi "easydiffraction[dev,visualization] @ $whl_path"
-            pixi run -e $env easydiffraction version
+            pixi run --environment $env easydiffraction version
           done
 
       - name: Run unit tests
@@ -277,7 +273,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run -e $env unit-tests
+            pixi run --environment $env unit-tests
           done
 
       - name:
@@ -286,5 +282,5 @@ jobs:
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run -e $env func-tests "${{ needs.code-quality.outputs.pytest-marks }}"
+            pixi run --environment $env func-tests "${{ needs.code-quality.outputs.pytest-marks }}"
           done
