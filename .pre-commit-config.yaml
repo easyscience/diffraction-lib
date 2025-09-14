@@ -39,6 +39,13 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
+      - id: block-pixi-lock-sha256
+        name: Block pixi.lock sha256-only changes
+        entry: python tools/block-pixi-sha256.py
+        language: python
+        additional_dependencies: []
+        files: ^pixi\.lock$
+
       # ----------------
       # Pre-push checks
       # ----------------
