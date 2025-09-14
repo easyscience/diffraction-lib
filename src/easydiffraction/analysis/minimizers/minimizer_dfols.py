@@ -25,6 +25,8 @@ class DfolsMinimizer(MinimizerBase):
         **kwargs: Any,
     ) -> None:
         super().__init__(name=name, method=None, max_iterations=max_iterations)
+        # Intentionally unused, accepted for API compatibility
+        del kwargs
 
     def _prepare_solver_args(self, parameters: List[Any]) -> Dict[str, Any]:
         x0 = []

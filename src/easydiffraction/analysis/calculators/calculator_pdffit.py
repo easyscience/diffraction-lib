@@ -37,6 +37,8 @@ class PdffitCalculator(CalculatorBase):
 
     def calculate_structure_factors(self, sample_models, experiments):
         # PDF doesn't compute HKL but we keep interface consistent
+        # Intentionally unused, required by public API/signature
+        del sample_models, experiments
         print('[pdffit] Calculating HKLs (not applicable)...')
         return []
 
@@ -46,6 +48,9 @@ class PdffitCalculator(CalculatorBase):
         experiment: Experiment,
         called_by_minimizer: bool = False,
     ):
+        # Intentionally unused, required by public API/signature
+        del called_by_minimizer
+
         # Create PDF calculator object
         calculator = PdfFit()
 

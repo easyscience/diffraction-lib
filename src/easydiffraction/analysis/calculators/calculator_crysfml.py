@@ -70,6 +70,9 @@ class CrysfmlCalculator(CalculatorBase):
             The calculated diffraction pattern as a NumPy array or a
                 list of floats.
         """
+        # Intentionally unused, required by public API/signature
+        del called_by_minimizer
+
         crysfml_dict = self._crysfml_dict(sample_model, experiment)
         try:
             _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)

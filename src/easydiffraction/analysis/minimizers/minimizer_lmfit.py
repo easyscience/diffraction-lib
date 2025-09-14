@@ -122,4 +122,6 @@ class LmfitMinimizer(MinimizerBase):
             *args: Additional positional arguments.
             **kwargs: Additional keyword arguments.
         """
+        # Intentionally unused, required by callback signature
+        del params, resid, args, kwargs
         self._iteration = iter

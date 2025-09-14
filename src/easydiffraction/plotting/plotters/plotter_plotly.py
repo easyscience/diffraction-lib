@@ -51,6 +51,8 @@ class PlotlyPlotter(PlotterBase):
         title,
         height=None,
     ):
+        # Intentionally unused; accepted for API compatibility
+        del height
         data = []
         for idx, y in enumerate(y_series):
             label = labels[idx]

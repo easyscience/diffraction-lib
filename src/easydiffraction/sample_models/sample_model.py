@@ -142,12 +142,16 @@ class SampleModel(Datablock):
         """Load model data from a CIF file."""
         # TODO: Implement CIF parsing here
         print(f'Loading SampleModel from CIF file: {cif_path}')
-        # Example: self.id = extract_id_from_cif(cif_path)
+        print('Not implemented yet.')
 
     def load_from_cif_string(self, cif_str: str):
         """Load model data from a CIF string."""
         # TODO: Implement CIF parsing from a string
         print('Loading SampleModel from CIF string.')
+        print('Not implemented yet.')
+        # Intentionally unused, to avoid linter warning unless
+        # implemented later
+        del cif_str
 
     # -----------------
     # Convertion to CIF
@@ -177,13 +181,8 @@ class SampleModel(Datablock):
     # Show methods
     # ------------
 
-    def show_structure(self, plane='xy', grid_size=20):
-        """Show an ASCII projection of the structure on a 2D plane.
-
-        Args:
-            plane (str): 'xy', 'xz', or 'yz' plane to project.
-            grid_size (int): Size of the ASCII grid (default is 20).
-        """
+    def show_structure(self):
+        """Show an ASCII projection of the structure on a 2D plane."""
         print(paragraph(f"Sample model 🧩 '{self.name}' structure view"))
         print('Not implemented yet.')
 

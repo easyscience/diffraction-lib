@@ -33,6 +33,8 @@ class AsciiPlotter(PlotterBase):
         title,
         height=None,
     ):
+        # Intentionally unused; kept for a consistent plotting API
+        del axes_labels
         title = paragraph(title)
         legend = '\n'.join([self._get_legend_item(label) for label in labels])
 
