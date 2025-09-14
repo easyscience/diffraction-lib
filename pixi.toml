@@ -29,9 +29,8 @@ libcblas = "*" # CBLAS library for linear algebra. Required for pdffit2.
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
 pixi-kernel = "*" # Pixi Jupyter kernel
-easydiffraction = { git = "https://github.com/easyscience/diffraction-lib", rev = "ruff-lint-arg", extras = [
-  "all",
-] } # Main package
+#easydiffraction = { version = "*", extras = ["all"] } # Main package
+easydiffraction = { path = ".", extras = ["all"] } # Main package
 
 # Extra features for different Python versions
 
@@ -147,11 +146,10 @@ docs-setup = { depends-on = [
 ] }
 
 # 🚀 Development & Build Tasks
-pre-commit = { depends-on = ["code-quality", "tests"] }
 dist-build = "python -m build --wheel --outdir dist"
 spdx-update = "python tools/update_spdx.py"
+pre-commit-install = "pixi run pre-commit install --hook-type pre-commit --hook-type pre-push"
 prettier-install = "npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml"
-make-badges = "python tools/make_badges.py"
 
 # 🔗 Shortcuts
 easydiffraction = "python -m easydiffraction"

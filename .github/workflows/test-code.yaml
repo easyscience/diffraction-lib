@@ -212,6 +212,10 @@ jobs:
             pixi run mv dist/*.whl dist/$env_prefix/
           done
 
+      - name: Remove local easydiffraction from pixi.toml
+        shell: bash
+        run: pixi remove --pypi easydiffraction
+
       # More than one file/dir need to be specified in 'path', to preserve the
       # structure of the dist/ directory, not only its contents.
       - name: Upload Python package for the next job
@@ -221,7 +225,8 @@ jobs:
           path: |
             dist/
             tests/
-            pixi/wheel/pixi.toml
+            pixi.toml
+            pixi.lock
           if-no-files-found: 'error'
           compression-level: 0
 
@@ -252,6 +257,7 @@ jobs:
         with:
           environments: ${{ env.PIXI_ENVS }}
           run-install: true
+          frozen: true
           cache: false
           post-cleanup: false
 
