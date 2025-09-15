@@ -45,6 +45,10 @@ jobs:
           cache: false
           post-cleanup: false
 
+      - name: Install and setup development dependencies
+        shell: bash
+        run: pixi run dev
+
       - name: Test tutorials as python scripts
         shell: bash
         run: pixi run script-tests

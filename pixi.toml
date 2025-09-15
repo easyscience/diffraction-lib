@@ -1,16 +1,30 @@
+#######################
+# ENVIRONMENT VARIABLES
+#######################
+
+# Platform-independent 
+
 [activation.env]
-# Apply to Linux + macOS
 PYTHONIOENCODING = "utf-8"
+
+# Platform-specific
+
 # Ensures the main package is used from the source code during
 # development, even if main package is installed in editable mode
 # via uv. This is important because `pixi update` might replace
 # the installed version with the latest released version.
-PYTHONPATH = "src${PYTHONPATH:+:${PYTHONPATH}}"
-#PYTHONPATH = "src"
 
-#[target.win-64.activation.env]
-# Override only on Windows
-#PYTHONPATH = "src${PYTHONPATH:+;${PYTHONPATH}}"
+# Unix/macOS
+[target.unix.activation.env]
+PYTHONPATH = "src${PYTHONPATH:+:${PYTHONPATH}}" # remove ":" if needed
+
+# Windows
+[target.win.activation.env]
+PYTHONPATH = "src;%PYTHONPATH%"
+
+###########
+# WORKSPACE
+###########
 
 [workspace]
 # Supported platforms for the lock file (pixi.lock)
