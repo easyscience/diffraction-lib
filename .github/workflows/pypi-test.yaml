@@ -17,8 +17,8 @@ concurrency:
 
 # Set the environment variables to be used in all jobs defined in this workflow
 env:
-  #DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-  DEFAULT_BRANCH: ruff-lint-arg
+  CI_BRANCH: ${{ github.head_ref || github.ref_name }}
+  DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
 
 jobs:
   pypi-package-tests:
@@ -38,7 +38,7 @@ jobs:
 
       - name: Download the pixi configuration file from the master branch
         run: |
-          curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/${{ env.DEFAULT_BRANCH }}/pixi.toml
+          curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/${{ env.CI_BRANCH }}/pixi.toml
 
       - name: Download the tests from the master branch
         shell: bash
