@@ -229,7 +229,7 @@ jobs:
       # which triggers deployment to the custom domain via webhook.
       #
       # To be able to push to the gh_pages branch, the personal GitHub API access
-      # token GH_API_PERSONAL_ACCSESS_TOKEN must be set for this repository via
+      # token GH_API_PERSONAL_ACCESS_TOKEN must be set for this repository via
       # https://github.com/easyscience/diffraction-lib/settings/secrets/actions
       # Then the gh_pages branch is used to deploy the site to the custom domain.
       # Deploying is done with a webhook added via:
@@ -237,7 +237,7 @@ jobs:
       - name: PROD deployment to gh_pages for custom domain
         uses: s0/git-publish-subdir-action@develop
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_API_PERSONAL_ACCSESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_API_PERSONAL_ACCESS_TOKEN }}
           REPO: self
           BRANCH: gh_pages
           FOLDER: site
