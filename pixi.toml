@@ -148,11 +148,17 @@ docs-setup = { depends-on = [
 dist-build = 'python -m build --wheel --outdir dist'
 spdx-update = 'python tools/update_spdx.py'
 dev-install = 'uv pip install -r pyproject.toml --extra all'
+npm-config = 'npm config set registry https://registry.npmjs.org/'
 prettier-install = 'npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml'
 pre-commit-setup = 'pre-commit clean && pre-commit install --hook-type pre-commit --hook-type pre-push --overwrite'
 pre-commit-update = 'pre-commit autoupdate'
 
-dev = { depends-on = ['dev-install', 'prettier-install', 'pre-commit-setup'] }
+dev = { depends-on = [
+  'dev-install',
+  'npm-config',
+  'prettier-install',
+  'pre-commit-setup',
+] }
 
 ## 🔗 Shortcuts
 easydiffraction = 'python -m easydiffraction'

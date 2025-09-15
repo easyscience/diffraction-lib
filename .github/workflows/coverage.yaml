@@ -46,6 +46,10 @@ jobs:
           cache: false
           post-cleanup: false
 
+      - name: Install and setup development dependencies
+        shell: bash
+        run: pixi run dev
+
       - name: Run docstring coverage
         run: pixi run docstring-coverage
 
@@ -66,6 +70,10 @@ jobs:
           frozen: true
           cache: false
           post-cleanup: false
+
+      - name: Install and setup development dependencies
+        shell: bash
+        run: pixi run dev
 
       - name: Run unit tests with coverage
         run: pixi run unit-tests-coverage --cov-report=xml:coverage-unit.xml
@@ -98,6 +106,10 @@ jobs:
           frozen: true
           cache: false
           post-cleanup: false
+
+      - name: Install and setup development dependencies
+        shell: bash
+        run: pixi run dev
 
       - name: Run functional tests with coverage
         run: pixi run func-tests-coverage --cov-report=xml:coverage-func.xml

@@ -40,6 +40,10 @@ jobs:
           cache: false
           post-cleanup: false
 
+      - name: Install and setup development dependencies
+        shell: bash
+        run: pixi run dev
+
       - name: Run docstring coverage and code complexity/maintainability checks
         run: |
           for BRANCH in ${{ env.DEFAULT_BRANCH }} ${{ env.DEVELOP_BRANCH }} ${{ env.CI_BRANCH }}; do
