@@ -81,7 +81,7 @@ pyproject-check = 'python -m validate_pyproject pyproject.toml'
 py-lint-check = 'python -m ruff check .'
 py-format-check = 'python -m ruff format . --check'
 nonpy-format-check = 'npx prettier . --list-different --config=prettierrc.toml'
-nonpy-format-check-modified = "npx prettier $(git diff --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .) --list-different --config=prettierrc.toml"
+nonpy-format-check-modified = "npx prettier $(git diff --diff-filter=d --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .) --list-different --config=prettierrc.toml"
 notebook-format-check = 'nbqa ruff tutorials/'
 docs-format-check = 'docformatter src/ tutorials/ --check'
 pre-commit-check = 'pre-commit run --all-files --hook-stage pre-commit'
@@ -91,7 +91,7 @@ pre-push-check = 'pre-commit run --all-files --hook-stage pre-push'
 py-lint-fix = 'pixi run py-lint-check --fix'
 py-format-fix = 'python -m ruff format .'
 nonpy-format-fix = 'pixi run nonpy-format-check --write'
-nonpy-format-fix-modified = "npx prettier $(git diff --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .) --list-different --write --config=prettierrc.toml"
+nonpy-format-fix-modified = "pixi run nonpy-format-check-modified --write"
 notebook-format-fix = 'pixi run notebook-format-check --fix'
 docs-format-fix = 'docformatter src/ tutorials/ --in-place'
 
