@@ -1,19 +1,17 @@
 # This is the main workflow for testing the code before and after
 # packaging it.
 # The workflow is divided into three jobs:
-# 1. code-quality:
-#    - Check the validity of pyproject.toml
-#    - Check code linting
-#    - Check code formatting
-#    - Check formatting of Markdown, YAML, TOML, etc. files
-# 2. test-source:
+# 1. test-source:
 #    - Test the code base against the latest code in the repository
 #    - Create the Python package
 #    - Upload the Python package for the next job
-# 3. test-package:
+# 2. test-package:
 #    - Download the Python package (including extra files) from the previous job
 #    - Install the downloaded Python package
 #    - Test the code base against the installed package
+# 3. trigger-dashboard-build:
+#    - Trigger the dashboard build workflow to update the code quality
+#      metrics on the dashboard
 
 name: Test code and package
 
@@ -31,6 +29,11 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# Need permissions to trigger the dashboard build workflow
+permissions:
+  actions: write
+  contents: read
+
 # Allow only one concurrent workflow, skipping runs queued between the run
 # in-progress and latest queued. And cancel in-progress runs.
 concurrency:
@@ -40,113 +43,11 @@ concurrency:
 
 # Set the environment variables to be used in all jobs defined in this workflow
 env:
-  # CI_BRANCH - the branch name (used in mkdocs.yml)
-  # NOTEBOOKS_DIR - the directory containing the Jupyter notebooks (used in mkdocs.yml)
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
-  NOTEBOOKS_DIR: tutorials
 
 jobs:
-  # Job 1: Check code quality and consistency
-  code-quality:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    runs-on: ${{ matrix.os }}
-
-    outputs:
-      pytest-marks: ${{ steps.set-mark.outputs.pytest_marks }}
-
-    steps:
-      # Determine if functional tests should be run fully or only the fast ones
-      # (to save time on branches other than master and develop)
-      - name: Set mark for functional tests
-        id: set-mark
-        run: |
-          if [[ "${{ env.CI_BRANCH }}" == "master" || "${{ env.CI_BRANCH }}" == "develop" ]]; then
-            echo "pytest_marks=" >> $GITHUB_OUTPUT
-          else
-            echo "pytest_marks=-m 'fast'" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Set up pixi (incl. environments and dependencies)
-        uses: prefix-dev/setup-pixi@v0.9.0
-        with:
-          environments: default
-          activate-environment: default
-          run-install: true
-          frozen: true
-          cache: false
-          post-cleanup: false
-
-      - name: Install and setup development dependencies
-        shell: bash
-        run: pixi run dev
-
-      # Check the validity of pyproject.toml
-      - name: Check validity of pyproject.toml
-        id: check_pyproject
-        continue-on-error: true
-        shell: bash
-        run: pixi run pyproject-check
-
-      # Check code linting with Ruff in the project root
-      - name: Check code linting
-        id: check_code_linting
-        continue-on-error: true
-        shell: bash
-        run: pixi run py-lint-check
-
-      - name: Suggestion to fix code linting issues (*.py files)
-        if: steps.check_code_linting.outcome == 'failure'
-        shell: bash
-        run:
-          echo "In project root run 'pixi run py-lint-fix' and commit changes"
-
-      # Check code formatting with Ruff in the project root
-      - name: Check code formatting
-        id: check_code_formatting
-        continue-on-error: true
-        shell: bash
-        run: pixi run py-format-check
-
-      - name: Suggestion to fix code formatting issues (*.py files)
-        if: steps.check_code_formatting.outcome == 'failure'
-        shell: bash
-        run:
-          echo "In project root run 'pixi run py-format-fix' and commit changes"
-
-      # Check formatting of Markdown, YAML, TOML, etc. files with Prettier in
-      # the project root
-      - name: Check formatting of Markdown, YAML, TOML, etc. files
-        id: check_others_formatting
-        continue-on-error: true
-        shell: bash
-        run: pixi run nonpy-format-check
-
-      - name: Suggestion to fix non-code formatting issues (*.md, *.yml, etc.)
-        if: steps.check_others_formatting.outcome == 'failure'
-        shell: bash
-        run:
-          echo "In project root run 'pixi run nonpy-format-fix' and commit
-          changes"
-
-      - name: Force fail if any of the previous steps failed
-        if: |
-          steps.check_pyproject.outcome == 'failure' ||
-          steps.check_code_linting.outcome == 'failure' ||
-          steps.check_code_formatting.outcome == 'failure' ||
-          steps.check_others_formatting.outcome == 'failure'
-        run: exit 1
-
-  # Job 2: Test code
-  # TODO: Add coverage reporting with upload to Codecov?
+  # Job 21: Test code
   test-source:
-    needs: code-quality # previous job needs to be finished first
-
     strategy:
       fail-fast: false
       matrix:
@@ -179,9 +80,9 @@ jobs:
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run --environment $env dev
             echo "PYTHONPATH:"
-            pixi run printenv PYTHONPATH || ""
+            pixi run printenv PYTHONPATH || true
             echo "PWD:"
-            pixi run printenv PWD || ""
+            pixi run printenv PWD || true
             echo "pwd:"
             pixi run echo $(pwd)
             pixi run --environment $env easydiffraction version
@@ -244,7 +145,7 @@ jobs:
 
   # Job 3: Test the package
   test-package:
-    needs: [code-quality, test-source] # depend on both previous jobs
+    needs: [test-source] # depend on previous job
 
     strategy:
       fail-fast: false
@@ -310,3 +211,25 @@ jobs:
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run --environment $env func-tests "${{ needs.code-quality.outputs.pytest-marks }}"
           done
+
+  # Job 3: Trigger dashboard build
+  trigger-dashboard-build:
+    needs: [test-source, test-package] # depend on previous jobs
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v5
+
+      - name: Trigger dashboard build
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: "dashboard.yaml",
+              ref: "${{ env.CI_BRANCH }}"
+            });
