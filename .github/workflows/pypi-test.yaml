@@ -1,7 +1,6 @@
 name: PyPI package tests
 
 on:
-  push:
   # Run daily, at 00:00.
   schedule:
     - cron: '0 0 * * *'

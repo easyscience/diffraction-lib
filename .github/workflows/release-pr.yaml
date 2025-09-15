@@ -9,6 +9,7 @@
 name: Release PR creation
 
 on:
+  push: # TODO: remove this line to disable automatic trigger on push
   workflow_dispatch: # manual trigger only
 
 permissions:
