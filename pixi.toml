@@ -100,11 +100,14 @@ test = { depends-on = ['unit-tests'] }
 
 ### ✔️ Checks
 pyproject-check = 'python -m validate_pyproject pyproject.toml'
-py-lint-check = "python -m ruff check $(git diff --cached --name-only -- '*.py')"
-#py-format-check = "python -m ruff format $(git diff --cached --name-only -- '*.py') --check"
-py-format-check = "files=$(git diff --cached --name-only -- '*.py'); [ -n \"$files\" ] && python -m ruff format $files --check || true"
-nonpy-format-check = "npx prettier $(git diff --cached --diff-filter=d --name-only | grep -E '\\.(json|ya?ml|toml|md|css|html)$') --list-different --config=prettierrc.toml"
-nonpy-format-check-modified = "npx prettier $(git diff --diff-filter=d --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .) --list-different --config=prettierrc.toml"
+py-lint-check-pre = "python -m ruff check"
+py-format-check-pre = "python -m ruff format --check"
+nonpy-format-check-pre = "npx prettier --list-different --config=prettierrc.toml"
+py-lint-check = 'pixi run py-lint-check-pre .'
+py-format-check = "pixi run py-format-check-pre ."
+nonpy-format-check = "pixi run nonpy-format-check-pre ."
+nonpy-format-check-modified = "pixi run nonpy-format-check-pre $(git diff --diff-filter=d --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .)"
+
 notebook-format-check = 'nbqa ruff tutorials/'
 docs-format-check = 'docformatter src/ tutorials/ --check'
 # Run like a real commit: staged files only
@@ -114,7 +117,11 @@ pre-commit-check-all = 'pre-commit run --all-files --hook-stage pre-commit'
 # Pre-push check: lint/format everything
 pre-push-check = 'pre-commit run --all-files --hook-stage pre-push'
 
-check = { depends-on = ['py-lint-check', 'py-format-check'] }
+check = { depends-on = [
+  'py-lint-check',
+  'py-format-check',
+  'nonpy-format-check-modified',
+] }
 
 ### 🛠️ Fixes
 py-lint-fix = 'pixi run py-lint-check --fix'

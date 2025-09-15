@@ -11,23 +11,23 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
-      - id: pixi-py-lint-check
-        name: pixi run py-lint-check
-        entry: pixi run py-lint-check
+      - id: pixi-py-lint-check-staged
+        name: pixi run py-lint-check-staged
+        entry: pixi run py-lint-check-pre
         language: system
         pass_filenames: false
         stages: [pre-commit]
 
-      - id: pixi-py-format-check
-        name: pixi run py-format-check
-        entry: pixi run py-format-check
+      - id: pixi-py-format-check-staged
+        name: pixi run py-format-check-staged
+        entry: pixi run py-format-check-pre
         language: system
         pass_filenames: false
         stages: [pre-commit]
 
-      - id: pixi-nonpy-format-check
-        name: pixi run nonpy-format-check
-        entry: pixi run nonpy-format-check
+      - id: pixi-nonpy-format-check-modified
+        name: pixi run nonpy-format-check-modified
+        entry: pixi run nonpy-format-check-modified
         language: system
         pass_filenames: false
         stages: [pre-commit]
