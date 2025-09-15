@@ -39,7 +39,7 @@ cards:
 
   - group: Size
     type: radon_loc
-    title: Source/Logical lines of code
+    title: Source/Logical lines of code (radon)
     report: reports/{branch}/raw-metrics.json
     enabled: true
 
