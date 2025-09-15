@@ -1,8 +1,5 @@
 [activation.env]
 PYTHONIOENCODING = 'utf-8'
-# Ensures the main package is correctly imported in editable mode.
-# With src/ included in PYTHONPATH, source code is used directly instead of the installed package.
-PYTHONPATH = '${PWD}/src${PYTHONPATH:+:$PYTHONPATH}'
 
 [workspace]
 # Supported platforms for the lock file (pixi.lock)
@@ -147,7 +144,8 @@ docs-setup = { depends-on = [
 ## 🚀 Development & Build Tasks
 dist-build = 'python -m build --wheel --outdir dist'
 spdx-update = 'python tools/update_spdx.py'
-dev-install = 'uv pip install -r pyproject.toml --extra all'
+#dev-install = 'uv pip install --requirements pyproject.toml --extra all'
+dev-install = "uv pip install --editable '.[all]'"
 npm-config = 'npm config set registry https://registry.npmjs.org/'
 prettier-install = 'npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml'
 pre-commit-setup = 'pre-commit clean && pre-commit install --hook-type pre-commit --hook-type pre-push --overwrite'

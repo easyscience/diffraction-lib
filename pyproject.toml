@@ -127,9 +127,9 @@ source = 'versioningit' # Use versioningit to manage the version
 # pixi.lock update without any changes to the source code.
 
 [tool.versioningit.format]
-distance = '{base_version}+dev'            # example: 0.5.8+dev, 1.2.3.post4+dev
-dirty = '{base_version}+dirty'             # example: 0.5.8+dirty, 1.2.3.post4+dirty
-distance-dirty = '{base_version}+devdirty' # example: 0.5.8+devdirty
+distance = '{base_version}+dev{distance}'            # example: 1.2.3.post4+dev3
+dirty = '{base_version}+dirty{distance}'             # example: 0.5.8+dirty3
+distance-dirty = '{base_version}+devdirty{distance}' # example: 0.5.8+devdirty3
 
 # Configure how versioningit detects versions from Git
 # - 'match' ensures it only considers tags starting with 'v'
