@@ -1,6 +1,7 @@
 name: PyPI package tests
 
 on:
+  push:
   # Run daily, at 00:00.
   schedule:
     - cron: '0 0 * * *'
@@ -32,7 +33,7 @@ jobs:
 
       - name: Download the pixi configuration file from the master branch
         run: |
-          curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/master/pixi/prod/pixi.toml
+          curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/master/pixi.toml
 
       - name: Download the tests from the master branch
         shell: bash
@@ -45,6 +46,9 @@ jobs:
 
       - name: Create the environment and install dependencies
         run: pixi install
+
+      - name: Install package from PyPI with dev and visualization extras
+        run: pixi add --pypi "easydiffraction[dev,visualization]"
 
       - name: Run unit tests to verify the installation
         run: pixi run unit-tests
