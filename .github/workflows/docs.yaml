@@ -24,7 +24,7 @@ on:
   # Trigger the workflow on push
   push:
     # Selected branches
-    branches: [master, develop]
+    branches: [master, develop, '**']
     # Runs on creating a new tag starting with 'v', e.g. 'v1.0.3'
     tags: ['v*']
   # Allows you to run this workflow manually from the Actions tab
@@ -86,9 +86,8 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          environments: >-
-            py313-docs
-          activate-environment: py313-docs
+          environments: default
+          activate-environment: default
           run-install: true
           frozen: true
           cache: false
