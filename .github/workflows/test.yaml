@@ -1,17 +1,17 @@
 # This is the main workflow for testing the code before and after
 # packaging it.
 # The workflow is divided into three jobs:
-# 1. prepare-env:
+# 1. env-prepare:
 #    - Prepare the environment for testing
-# 2. test-source:
+# 2. source-test:
 #    - Test the code base against the latest code in the repository
 #    - Create the Python package
 #    - Upload the Python package for the next job
-# 3. test-package:
+# 3. package-test:
 #    - Download the Python package (including extra files) from the previous job
 #    - Install the downloaded Python package
 #    - Test the code base against the installed package
-# 4. trigger-dashboard-build:
+# 4. dashboard-build-trigger:
 #    - Trigger the dashboard build workflow to update the code quality
 #      metrics on the dashboard
 
@@ -49,7 +49,7 @@ env:
 
 jobs:
   # Job 1: Prepare environment
-  prepare-env:
+  env-prepare:
     runs-on: [ubuntu-latest]
 
     outputs:
@@ -68,8 +68,8 @@ jobs:
           fi
 
   # Job 2: Test code
-  test-source:
-    needs: prepare-env # depend on previous job
+  source-test:
+    needs: env-prepare # depend on previous job
 
     strategy:
       fail-fast: false
@@ -115,12 +115,12 @@ jobs:
             pixi run --environment $env unit-tests
           done
 
-      - name: Run functional tests ${{ needs.prepare-env.outputs.pytest-marks }}
+      - name: Run functional tests ${{ needs.env-prepare.outputs.pytest-marks }}
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run --environment $env func-tests "${{ needs.prepare-env.outputs.pytest-marks }}"
+            pixi run --environment $env func-tests "${{ needs.env-prepare.outputs.pytest-marks }}"
           done
 
       # Delete all local tags when not on a tagged commit to force versioningit
@@ -162,8 +162,8 @@ jobs:
           compression-level: 0
 
   # Job 3: Test the package
-  test-package:
-    needs: [prepare-env, test-source] # depend on previous jobs
+  package-test:
+    needs: [env-prepare, source-test] # depend on previous jobs
 
     strategy:
       fail-fast: false
@@ -221,17 +221,17 @@ jobs:
             pixi run --environment $env unit-tests
           done
 
-      - name: Run functional tests ${{ needs.prepare-env.outputs.pytest-marks }}
+      - name: Run functional tests ${{ needs.env-prepare.outputs.pytest-marks }}
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run --environment $env func-tests "${{ needs.prepare-env.outputs.pytest-marks }}"
+            pixi run --environment $env func-tests "${{ needs.env-prepare.outputs.pytest-marks }}"
           done
 
   # Job 4: Trigger dashboard build
-  trigger-dashboard-build:
-    needs: [test-source, test-package] # depend on previous jobs
+  dashboard-build-trigger:
+    needs: [source-test, package-test] # depend on previous jobs
 
     runs-on: ubuntu-latest
 

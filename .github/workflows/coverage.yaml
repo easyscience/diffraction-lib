@@ -123,7 +123,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   # Job 4: Trigger dashboard build
-  trigger-dashboard-build:
+  dashboard-build-trigger:
     needs: [docstring-coverage, unit-tests-coverage, func-tests-coverage] # depend on the previous jobs
 
     runs-on: ubuntu-latest
