@@ -26,6 +26,8 @@ try:
 except ImportError:
     IPython = None
 
+import pathlib
+
 from easydiffraction.utils.formatting import error
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
@@ -70,14 +72,15 @@ def download_from_repository(
         overwrite: Whether to overwrite the file if it already exists.
             Defaults to False.
     """
-    file_path = os.path.join(destination, file_name)
-    if os.path.exists(file_path):
+    dest_path = pathlib.Path(destination)
+    file_path = dest_path / file_name
+    if file_path.exists():
         if not overwrite:
             print(warning(f"File '{file_path}' already exists and will not be overwritten."))
             return
         else:
             print(warning(f"File '{file_path}' already exists and will be overwritten."))
-            os.remove(file_path)
+            file_path.unlink()
 
     base = 'https://raw.githubusercontent.com'
     org = 'easyscience'
@@ -217,7 +220,7 @@ def _extract_notebooks_from_asset(download_url: str) -> list[str]:
             zipfile.ZipFile(io.BytesIO(response.read())) as zip_file,
         ):
             notebooks = [
-                os.path.basename(name)
+                pathlib.Path(name).name
                 for name in zip_file.namelist()
                 if name.endswith('.ipynb') and not name.endswith('/')
             ]
@@ -325,7 +328,7 @@ def fetch_tutorials() -> None:
         zip_ref.extractall()
 
     print('🧹 Cleaning up...')
-    os.remove(file_name)
+    pathlib.Path(file_name).unlink()
 
     print('✅ Tutorials fetched successfully.')
 
@@ -658,7 +661,7 @@ def get_value_from_xye_header(file_path, key):
     """
     pattern = rf'{key}\s*=\s*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)'
 
-    with open(file_path, 'r') as f:
+    with pathlib.Path(file_path).open('r') as f:
         first_line = f.readline()
 
     match = re.search(pattern, first_line)

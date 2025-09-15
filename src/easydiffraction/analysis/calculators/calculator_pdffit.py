@@ -3,6 +3,7 @@
 
 import os
 import re
+from pathlib import Path
 from typing import Optional
 
 import numpy as np
@@ -18,7 +19,7 @@ try:
 
     # Silence the C++ engine output while keeping the handle open
     _pdffit_devnull: Optional[object]
-    with open(os.path.devnull, 'w') as _tmp_devnull:
+    with Path(os.devnull).open('w') as _tmp_devnull:
         # Duplicate file descriptor so the handle remains
         # valid after the context
         _pdffit_devnull = os.fdopen(os.dup(_tmp_devnull.fileno()), 'w')

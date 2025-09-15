@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import datetime
-import os
+import pathlib
 import tempfile
 from textwrap import wrap
 from typing import List
@@ -31,7 +31,7 @@ class ProjectInfo:
         self._name: str = 'untitled_project'
         self._title: str = 'Untitled Project'
         self._description: str = ''
-        self._path: str = os.getcwd()
+        self._path: str = pathlib.Path.cwd()
         self._created: datetime.datetime = datetime.datetime.now()
         self._last_modified: datetime.datetime = datetime.datetime.now()
 
@@ -174,7 +174,7 @@ class Project:
         """Save the project into a new directory."""
         if temporary:
             tmp: str = tempfile.gettempdir()
-            dir_path = os.path.join(tmp, dir_path)
+            dir_path = str(pathlib.Path(tmp) / dir_path)
         self.info.path = dir_path
         self.save()
 
@@ -185,42 +185,42 @@ class Project:
             return
 
         print(paragraph(f"Saving project 📦 '{self.name}' to"))
-        print(os.path.abspath(self.info.path))
+        print(pathlib.Path(self.info.path).resolve())
 
-        os.makedirs(self.info.path, exist_ok=True)
+        pathlib.Path(self.info.path).mkdir(exist_ok=True, parents=True)
 
         # Save project info
-        with open(os.path.join(self.info.path, 'project.cif'), 'w') as f:
+        with (pathlib.Path(self.info.path) / 'project.cif').open('w') as f:
             f.write(self.info.as_cif())
             print('✅ project.cif')
 
         # Save sample models
-        sm_dir: str = os.path.join(self.info.path, 'sample_models')
-        os.makedirs(sm_dir, exist_ok=True)
+        sm_dir_path = pathlib.Path(self.info.path) / 'sample_models'
+        sm_dir_path.mkdir(exist_ok=True, parents=True)
         for model in self.sample_models:
             file_name: str = f'{model.name}.cif'
-            file_path: str = os.path.join(sm_dir, file_name)
-            with open(file_path, 'w') as f:
+            file_path = sm_dir_path / file_name
+            with file_path.open('w') as f:
                 f.write(model.as_cif())
                 print(f'✅ sample_models/{file_name}')
 
         # Save experiments
-        expt_dir: str = os.path.join(self.info.path, 'experiments')
-        os.makedirs(expt_dir, exist_ok=True)
+        expt_dir_path = pathlib.Path(self.info.path) / 'experiments'
+        expt_dir_path.mkdir(exist_ok=True, parents=True)
         for experiment in self.experiments:
             file_name: str = f'{experiment.name}.cif'
-            file_path: str = os.path.join(expt_dir, file_name)
-            with open(file_path, 'w') as f:
+            file_path = expt_dir_path / file_name
+            with file_path.open('w') as f:
                 f.write(experiment.as_cif())
                 print(f'✅ experiments/{file_name}')
 
         # Save analysis
-        with open(os.path.join(self.info.path, 'analysis.cif'), 'w') as f:
+        with (pathlib.Path(self.info.path) / 'analysis.cif').open('w') as f:
             f.write(self.analysis.as_cif())
             print('✅ analysis.cif')
 
         # Save summary
-        with open(os.path.join(self.info.path, 'summary.cif'), 'w') as f:
+        with (pathlib.Path(self.info.path) / 'summary.cif').open('w') as f:
             f.write(self.summary.as_cif())
             print('✅ summary.cif')
 
