@@ -25,9 +25,9 @@ jupyterlab = '*' # JupyterLab for notebooks
 libcblas = '*' # CBLAS library for linear algebra; required for pdffit2.
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
-pixi-kernel = '*' # Pixi Jupyter kernel
-# easydiffraction = { version = '*', extras = ['all'] } # Main package
-easydiffraction = { path = '.', extras = ['all'] } # Main package
+pixi-kernel = '*'                                               # Pixi Jupyter kernel
+uv = '*'                                                        # Python package manager
+easydiffraction = { version = '*', extras = ['visualization'] } # Main package
 
 # Features for specific Python versions
 
@@ -81,7 +81,7 @@ pyproject-check = 'python -m validate_pyproject pyproject.toml'
 py-lint-check = 'python -m ruff check .'
 py-format-check = 'python -m ruff format . --check'
 nonpy-format-check = 'npx prettier . --list-different --config=prettierrc.toml'
-nonpy-format-check-modified = 'npx prettier $(git diff --name-only HEAD | grep -E "\\.(json|ya?ml|toml|md|css|html)$" || echo .) --list-different --config=prettierrc.toml'
+nonpy-format-check-modified = "npx prettier $(git diff --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .) --list-different --config=prettierrc.toml"
 notebook-format-check = 'nbqa ruff tutorials/'
 docs-format-check = 'docformatter src/ tutorials/ --check'
 pre-commit-check = 'pre-commit run --all-files --hook-stage pre-commit'
@@ -91,7 +91,7 @@ pre-push-check = 'pre-commit run --all-files --hook-stage pre-push'
 py-lint-fix = 'pixi run py-lint-check --fix'
 py-format-fix = 'python -m ruff format .'
 nonpy-format-fix = 'pixi run nonpy-format-check --write'
-nonpy-format-fix-modified = 'pixi run nonpy-format-check-modified --write '
+nonpy-format-fix-modified = "npx prettier $(git diff --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .) --list-different --write --config=prettierrc.toml"
 notebook-format-fix = 'pixi run notebook-format-check --fix'
 docs-format-fix = 'docformatter src/ tutorials/ --in-place'
 
@@ -134,8 +134,8 @@ notebook-prepare = { depends-on = [
 docs-assets = 'tools/add_assets_to_docs.sh'
 docs-notebooks = 'mv tutorials/*.ipynb docs/tutorials/'
 docs-config = 'python tools/create_mkdocs_yml.py'
-docs-serve = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs serve --dirty'
-docs-build = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs build'
+docs-serve = "JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS='ignore::RuntimeWarning' python -m mkdocs serve --dirty"
+docs-build = "JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS='ignore::RuntimeWarning' python -m mkdocs build"
 docs-clean = 'tools/cleanup_docs.sh'
 docs-setup = { depends-on = [
   'docs-config',
@@ -147,11 +147,12 @@ docs-setup = { depends-on = [
 ## 🚀 Development & Build Tasks
 dist-build = 'python -m build --wheel --outdir dist'
 spdx-update = 'python tools/update_spdx.py'
+dev-install = 'uv pip install -r pyproject.toml --extra all'
 prettier-install = 'npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml'
 pre-commit-setup = 'pre-commit clean && pre-commit install --hook-type pre-commit --hook-type pre-push --overwrite'
 pre-commit-update = 'pre-commit autoupdate'
 
-dev = { depends-on = ['prettier-install', 'pre-commit-setup'] }
+dev = { depends-on = ['dev-install', 'prettier-install', 'pre-commit-setup'] }
 
 ## 🔗 Shortcuts
 easydiffraction = 'python -m easydiffraction'
