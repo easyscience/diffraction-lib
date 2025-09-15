@@ -72,7 +72,7 @@ func-tests = 'python -m pytest tests/functional/ --color=yes -n auto -v'
 notebook-tests = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
 script-tests = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
 
-tests = { depends-on = ['unit-tests', 'func-tests'] }
+test = { depends-on = ['unit-tests'] }
 
 ## 🧹 Code Quality
 
@@ -95,7 +95,7 @@ nonpy-format-fix-modified = 'pixi run nonpy-format-check-modified --write '
 notebook-format-fix = 'pixi run notebook-format-check --fix'
 docs-format-fix = 'docformatter src/ tutorials/ --in-place'
 
-pre-commit-fix = { depends-on = [
+fix = { depends-on = [
   'py-format-fix',
   'docs-format-fix',
   'py-lint-fix',
@@ -115,7 +115,7 @@ unit-tests-coverage = 'pixi run unit-tests --cov=src/easydiffraction --cov-repor
 func-tests-coverage = 'pixi run func-tests --cov=src/easydiffraction --cov-report=term-missing'
 docstring-coverage = 'interrogate -c pyproject.toml src/'
 
-coverage = { depends-on = ['docstring-coverage', 'unit-tests-coverage'] }
+cov = { depends-on = ['docstring-coverage', 'unit-tests-coverage'] }
 
 ## 📓 Notebook Management
 notebook-convert = 'jupytext tutorials/*.py --from py:percent --to ipynb'
@@ -151,7 +151,7 @@ prettier-install = 'npm install --no-save --no-audit --no-fund prettier prettier
 pre-commit-setup = 'pre-commit clean && pre-commit install --hook-type pre-commit --hook-type pre-push --overwrite'
 pre-commit-update = 'pre-commit autoupdate'
 
-dev-setup = { depends-on = ['prettier-install', 'pre-commit-setup'] }
+dev = { depends-on = ['prettier-install', 'pre-commit-setup'] }
 
 ## 🔗 Shortcuts
 easydiffraction = 'python -m easydiffraction'
