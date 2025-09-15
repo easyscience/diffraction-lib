@@ -178,6 +178,13 @@ jobs:
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             pixi run --environment $env dev
+            echo "PYTHONPATH:"
+            pixi run printenv PYTHONPATH 
+            echo "PWD:"
+            pixi run printenv PWD
+            echo "pwd:"
+            pixi run echo $(pwd)
+            pixi run --environment $env easydiffraction version
           done
 
       - name: Run unit tests
