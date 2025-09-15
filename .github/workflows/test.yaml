@@ -1,15 +1,17 @@
 # This is the main workflow for testing the code before and after
 # packaging it.
 # The workflow is divided into three jobs:
-# 1. test-source:
+# 1. prepare-env:
+#    - Prepare the environment for testing
+# 2. test-source:
 #    - Test the code base against the latest code in the repository
 #    - Create the Python package
 #    - Upload the Python package for the next job
-# 2. test-package:
+# 3. test-package:
 #    - Download the Python package (including extra files) from the previous job
 #    - Install the downloaded Python package
 #    - Test the code base against the installed package
-# 3. trigger-dashboard-build:
+# 4. trigger-dashboard-build:
 #    - Trigger the dashboard build workflow to update the code quality
 #      metrics on the dashboard
 
@@ -46,8 +48,29 @@ env:
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
 
 jobs:
-  # Job 21: Test code
+  # Job 1: Prepare environment
+  prepare-env:
+    runs-on: [ubuntu-latest]
+
+    outputs:
+      pytest-marks: ${{ steps.set-mark.outputs.pytest_marks }}
+
+    steps:
+      # Determine if functional tests should be run fully or only the fast ones
+      # (to save time on branches other than master and develop)
+      - name: Set mark for functional tests
+        id: set-mark
+        run: |
+          if [[ "${{ env.CI_BRANCH }}" == "master" || "${{ env.CI_BRANCH }}" == "develop" ]]; then
+            echo "pytest_marks=" >> $GITHUB_OUTPUT
+          else
+            echo "pytest_marks=-m 'fast'" >> $GITHUB_OUTPUT
+          fi
+
+  # Job 2: Test code
   test-source:
+    needs: prepare-env # depend on previous job
+
     strategy:
       fail-fast: false
       matrix:
@@ -145,7 +168,7 @@ jobs:
 
   # Job 3: Test the package
   test-package:
-    needs: [test-source] # depend on previous job
+    needs: [prepare-env, test-source] # depend on previous jobs
 
     strategy:
       fail-fast: false
@@ -179,7 +202,7 @@ jobs:
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run --environment $env dev
+            pixi run --environment $env wheel
           done
 
       - name: Add easydiffraction package from the built wheel
@@ -212,7 +235,7 @@ jobs:
             pixi run --environment $env func-tests "${{ needs.code-quality.outputs.pytest-marks }}"
           done
 
-  # Job 3: Trigger dashboard build
+  # Job 4: Trigger dashboard build
   trigger-dashboard-build:
     needs: [test-source, test-package] # depend on previous jobs
 
