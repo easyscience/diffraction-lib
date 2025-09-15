@@ -24,9 +24,9 @@ This is an example of a workflow that describes the development process.
   ```bash
   pixi install
   ```
-- Install Prettier for non-Python files formatting
+- Install and setup development dependencies
   ```bash
-  pixi run prettier-install
+  pixi run dev
   ```
 
 ## Making changes
@@ -46,10 +46,30 @@ This is an example of a workflow that describes the development process.
 
 ## Checking code quality and testing
 
-- Check and fix code quality (configuration is in `pyproject.toml` and
+### Pre-commit checks
+
+- Check code quality (configuration is in `pyproject.toml` and
   `prettierrc.toml`)
   ```bash
-  pixi run code-quality
+  pixi run pre-commit-check
+  ```
+- Fix some code quality issues automatically
+  ```bash
+  pixi run pre-commit-fix
+  ```
+
+### Pre-push checks
+
+- Run tests and checks before pushing changes
+  ```bash
+  pixi run pre-push
+  ```
+
+### Individual tests and checks (if needed)
+
+- Check coverage by tests and docstrings
+  ```bash
+  pixi run cov
   ```
 - Run unit tests
   ```bash
@@ -115,3 +135,16 @@ This is an example of a workflow that describes the development process.
 - Create a pull request on
   [EasyScience GitHub repository](https://github.com/easyscience/diffraction-lib/pulls)
   and request a review from team members
+- Add one of the required labels:
+  - `[maintainer] auto-pull-request`
+  - `[scope] bug`
+  - `[scope] documentation`
+  - `[scope] enhancement`
+  - `[scope] maintenance`
+  - `[scope] significant`
+- After approval, merge the pull request into the `develop` branch using "Squash
+  and merge" option
+- Delete the branch remotely
+  ```bash
+  git push origin --delete new-feature
+  ```
