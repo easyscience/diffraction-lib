@@ -174,7 +174,11 @@ jobs:
 
       - name: Install and setup development dependencies
         shell: bash
-        run: pixi run dev
+        run: |
+          for env in ${{ env.PIXI_ENVS }}; do
+            echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
+            pixi run --environment $env dev
+          done
 
       - name: Run unit tests
         shell: bash
@@ -264,7 +268,11 @@ jobs:
 
       - name: Install and setup development dependencies
         shell: bash
-        run: pixi run dev
+        run: |
+          for env in ${{ env.PIXI_ENVS }}; do
+            echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
+            pixi run --environment $env dev
+          done
 
       - name: Add easydiffraction package from the built wheel
         shell: bash

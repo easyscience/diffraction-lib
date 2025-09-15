@@ -33,9 +33,9 @@ jobs:
           gh pr create \
             --base ${{ env.DEFAULT_BRANCH }} \
             --head develop \
-            --title "Release: merge develop into main" \
+            --title "Release: merge develop into ${{ env.DEFAULT_BRANCH }}" \
             --label "[maintainer] auto-pull-request" \
-            --body "⚠️ This PR is created automatically to trigger the release pipeline. It merges the accumulated changes from \`develop\` into \`main\`.
+            --body "⚠️ This PR is created automatically to trigger the release pipeline. It merges the accumulated changes from \`develop\` into \`${{ env.DEFAULT_BRANCH }}\`.
 
             It is labeled \`[maintainer] auto-pull-request\` and is excluded from release notes and version bump logic."
         env:
