@@ -101,16 +101,15 @@ test = { depends-on = ['unit-tests'] }
 ### ✔️ Checks
 pyproject-check = 'python -m validate_pyproject pyproject.toml'
 py-lint-check-pre = "python -m ruff check"
-py-format-check-pre = "python -m ruff format --check"
-nonpy-format-check-pre = "npx prettier --list-different --config=prettierrc.toml"
 py-lint-check = 'pixi run py-lint-check-pre .'
+py-format-check-pre = "python -m ruff format --check"
 py-format-check = "pixi run py-format-check-pre ."
-nonpy-format-check = "pixi run nonpy-format-check-pre ."
+nonpy-format-check-pre = "npx prettier --list-different --config=prettierrc.toml"
 nonpy-format-check-modified = "pixi run nonpy-format-check-pre $(git diff --diff-filter=d --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .)"
-
+nonpy-format-check = "pixi run nonpy-format-check-pre ."
 notebook-format-check = 'nbqa ruff tutorials/'
 docs-format-check = 'docformatter src/ tutorials/ --check'
-# Run like a real commit: staged files only
+# Run like a real commit: staged files only (almost)
 pre-commit-check = 'pre-commit run --hook-stage pre-commit'
 # CI check: lint/format everything
 pre-commit-check-all = 'pre-commit run --all-files --hook-stage pre-commit'
