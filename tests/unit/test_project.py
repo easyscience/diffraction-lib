@@ -12,6 +12,19 @@ from easydiffraction.project import ProjectInfo
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.summary import Summary
 
+
+def _normalize_posix(p: pathlib.Path) -> str:
+    """Return a normalized POSIX-style path string with a leading '/'.
+
+    This makes tests robust across Windows and POSIX when using paths like
+    '/test/path' that, on Windows, become '\\test\\path'. We avoid relying on
+    drive letters or platform-specific semantics for these synthetic test paths.
+    """
+    s = str(p).replace('\\', '/')
+    if not s.startswith('/'):
+        s = '/' + s.lstrip('/')
+    return s
+
 # ------------------------------------------
 # Tests for ProjectInfo
 # ------------------------------------------
@@ -42,7 +55,8 @@ def test_project_info_setters():
     assert project_info.name == 'test_project'
     assert project_info.title == 'Test Project'
     assert project_info.description == 'This is a test project.'
-    assert str(project_info.path) == '/test/path'
+    # Use POSIX form for cross-platform consistency (Windows vs POSIX separators)
+    assert _normalize_posix(project_info.path) == '/test/path'
 
 
 def test_project_info_update_last_modified():
@@ -120,7 +134,7 @@ def test_project_load(mock_print):
 
     # Assertions
     # path is normalised/stored as a pathlib.Path
-    assert str(project.info.path) == '/test/path'
+    assert _normalize_posix(project.info.path) == '/test/path'
     assert 'Loading project 📦 from /test/path' in mock_print.call_args_list[0][0][0]
 
 
