@@ -1,17 +1,15 @@
 [activation.env]
-PYTHONIOENCODING = "utf-8"
-# The following is needed to resolve issues installing the main package
-# from a local path in editable mode in the default environment. With src/
-# included in PYTHONPATH, we use the source code directly in the first place,
-# instead of the installed package.
-PYTHONPATH = "$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}"
+PYTHONIOENCODING = 'utf-8'
+# Ensures the main package is correctly imported in editable mode.
+# With src/ included in PYTHONPATH, source code is used directly instead of the installed package.
+PYTHONPATH = '${PWD}/src${PYTHONPATH:+:$PYTHONPATH}'
 
 [workspace]
-# Platforms supported for the lock file (pixi.lock)
-platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
+# Supported platforms for the lock file (pixi.lock)
+platforms = ['win-64', 'linux-64', 'osx-64', 'osx-arm64']
 
-# Channels used to fetch packages
-channels = ["conda-forge"]
+# Channels for fetching packages
+channels = ['conda-forge']
 
 ##########
 # FEATURES
@@ -20,34 +18,31 @@ channels = ["conda-forge"]
 # Default feature configuration
 
 [dependencies] # == [feature.default.dependencies]
-pip = "*"        # Required to install from PyPI
-jupyterlab = "*" # JupyterLab for notebooks
-#pypi-dependencies = { file = "pyproject.toml", extras = ["dev"] }
+pip = '*'        # Required to install from PyPI
+jupyterlab = '*' # JupyterLab for notebooks
 
 [target.win-64.dependencies]
-libcblas = "*" # CBLAS library for linear algebra. Required for pdffit2.
+libcblas = '*' # CBLAS library for linear algebra; required for pdffit2.
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
-pixi-kernel = "*" # Pixi Jupyter kernel
-#easydiffraction = { version = "*", extras = ["all"] } # Main package
-easydiffraction = { path = ".", extras = ["all"] } # Main package
+pixi-kernel = '*' # Pixi Jupyter kernel
+# easydiffraction = { version = '*', extras = ['all'] } # Main package
+easydiffraction = { path = '.', extras = ['all'] } # Main package
 
-# Extra features for different Python versions
+# Features for specific Python versions
 
-# These features specify the Python version for the environment.
-# Each feature corresponds to a specific Python version.
+# Each feature sets a specific Python version for the environment.
 
 [feature.py311.dependencies]
-python = "3.11.*"
+python = '3.11.*'
 
 [feature.py313.dependencies]
-python = "3.13.*"
+python = '3.13.*'
 
-# This feature installs Node.js and Prettier for formatting
-# non-Python files.
+# This feature installs Node.js for formatting non-Python files with Prettier.
 
 [feature.nodejs.dependencies]
-nodejs = ">=20,<21" # Required for prettier; pinned to a stable LTS
+nodejs = '*'
 
 ##############
 # ENVIRONMENTS
@@ -55,13 +50,15 @@ nodejs = ">=20,<21" # Required for prettier; pinned to a stable LTS
 
 [environments]
 
-# The `default` environment is always included in the lock file, so it does not
-# need to be specified explicitly in the environments section.
+# The `default` feature is always included in all environments.
+# Additional features can be specified per environment.
 
-default = { features = ["py313", "nodejs"] }
+# The `default` environment is always created and includes the `default` feature.
+# It does not need to be specified explicitly unless non-default features are included.
 
-py311-dev = { features = ["py311", "nodejs"] }
-py313-dev = { features = ["py313", "nodejs"] }
+default = { features = ['py313', 'nodejs'] }
+py311-dev = { features = ['py311', 'nodejs'] }
+py313-dev = { features = ['py313', 'nodejs'] }
 
 #######
 # TASKS
@@ -69,57 +66,58 @@ py313-dev = { features = ["py313", "nodejs"] }
 
 [tasks]
 
-# 🧪 Testing Tasks
-unit-tests = "python -m pytest tests/unit/ --color=yes -v"
-func-tests = "python -m pytest tests/functional/ --color=yes -n auto -v"
+## 🧪 Testing Tasks
+unit-tests = 'python -m pytest tests/unit/ --color=yes -v'
+func-tests = 'python -m pytest tests/functional/ --color=yes -n auto -v'
 notebook-tests = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
 script-tests = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
 
-tests = { depends-on = ["unit-tests", "func-tests"] }
+tests = { depends-on = ['unit-tests', 'func-tests'] }
 
-# 🧹 Code Quality
+## 🧹 Code Quality
 
-## ✔️ Checks
-pyproject-check = "python -m validate_pyproject pyproject.toml"
-py-lint-check = "python -m ruff check ."
-py-format-check = "python -m ruff format . --check"
-nonpy-format-check = "npx prettier . --list-different --config=prettierrc.toml"
-nonpy-format-check-modified = "npx prettier $(git diff --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .) --list-different --config=prettierrc.toml"
+### ✔️ Checks
+pyproject-check = 'python -m validate_pyproject pyproject.toml'
+py-lint-check = 'python -m ruff check .'
+py-format-check = 'python -m ruff format . --check'
+nonpy-format-check = 'npx prettier . --list-different --config=prettierrc.toml'
+nonpy-format-check-modified = 'npx prettier $(git diff --name-only HEAD | grep -E "\\.(json|ya?ml|toml|md|css|html)$" || echo .) --list-different --config=prettierrc.toml'
 notebook-format-check = 'nbqa ruff tutorials/'
-docs-format-check = "docformatter --check src/ tutorials/"
-block-pixi-sha256 = "python tools/block-pixi-sha256.py"
+docs-format-check = 'docformatter src/ tutorials/ --check'
+pre-commit-check = 'pre-commit run --all-files --hook-stage pre-commit'
+pre-push-check = 'pre-commit run --all-files --hook-stage pre-push'
 
-## 🛠️ Fixes
-py-lint-fix = "python -m ruff check . --fix"
-py-format-fix = "python -m ruff format ."
-nonpy-format-fix = "npx prettier . --list-different --write --config=prettierrc.toml"
-nonpy-format-fix-modified = "npx prettier $(git diff --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .) --list-different --write --config=prettierrc.toml"
-notebook-format-fix = 'nbqa ruff tutorials/ --fix'
-docs-format-fix = "docformatter --in-place src/ tutorials/"
+### 🛠️ Fixes
+py-lint-fix = 'pixi run py-lint-check --fix'
+py-format-fix = 'python -m ruff format .'
+nonpy-format-fix = 'pixi run nonpy-format-check --write'
+nonpy-format-fix-modified = 'pixi run nonpy-format-check-modified --write '
+notebook-format-fix = 'pixi run notebook-format-check --fix'
+docs-format-fix = 'docformatter src/ tutorials/ --in-place'
 
-fix = { depends-on = [
-  "py-format-fix",
-  "docs-format-fix",
-  "py-lint-fix",
-  "nonpy-format-fix-modified",
+pre-commit-fix = { depends-on = [
+  'py-format-fix',
+  'docs-format-fix',
+  'py-lint-fix',
+  'nonpy-format-fix-modified',
 ] }
 
-# 🧮 Code Complexity
-complexity-check = "radon cc -s src/"
-complexity-check-json = "radon cc -s -j src/"
-maintainability-check = "radon mi src/"
-maintainability-check-json = "radon mi -j src/"
-raw-metrics = "radon raw -s src/"
-raw-metrics-json = "radon raw -s -j src/"
+## 🧮 Code Complexity
+complexity-check = 'radon cc -s src/'
+complexity-check-json = 'radon cc -s -j src/'
+maintainability-check = 'radon mi src/'
+maintainability-check-json = 'radon mi -j src/'
+raw-metrics = 'radon raw -s src/'
+raw-metrics-json = 'radon raw -s -j src/'
 
-# 📊 Coverage
-unit-tests-coverage = "pixi run unit-tests --cov=src/easydiffraction --cov-report=term-missing"
-func-tests-coverage = "pixi run func-tests --cov=src/easydiffraction --cov-report=term-missing"
-docstring-coverage = "interrogate -c pyproject.toml src/"
+## 📊 Coverage
+unit-tests-coverage = 'pixi run unit-tests --cov=src/easydiffraction --cov-report=term-missing'
+func-tests-coverage = 'pixi run func-tests --cov=src/easydiffraction --cov-report=term-missing'
+docstring-coverage = 'interrogate -c pyproject.toml src/'
 
-coverage = "pixi run docstring-coverage || true; pixi run unit-tests-coverage || true"
+coverage = { depends-on = ['docstring-coverage', 'unit-tests-coverage'] }
 
-# 📓 Notebook Management
+## 📓 Notebook Management
 notebook-convert = 'jupytext tutorials/*.py --from py:percent --to ipynb'
 notebook-strip = 'nbstripout tutorials/*.ipynb'
 notebook-tweak = 'python tools/tweak_notebooks.py tutorials/'
@@ -127,37 +125,35 @@ notebook-clean = 'rm -f tutorials/*.ipynb'
 notebook-exec = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --overwrite --color=yes -n auto -v'
 
 notebook-prepare = { depends-on = [
-  "notebook-convert",
-  "notebook-strip",
-  "notebook-tweak",
+  'notebook-convert',
+  'notebook-strip',
+  'notebook-tweak',
 ] }
 
-# 📚 Documentation Tasks
-docs-assets = "tools/add_assets_to_docs.sh"
-docs-notebooks = "mv tutorials/*.ipynb docs/tutorials/"
-docs-config = "python tools/create_mkdocs_yml.py"
+## 📚 Documentation Tasks
+docs-assets = 'tools/add_assets_to_docs.sh'
+docs-notebooks = 'mv tutorials/*.ipynb docs/tutorials/'
+docs-config = 'python tools/create_mkdocs_yml.py'
 docs-serve = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs serve --dirty'
 docs-build = 'JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS="ignore::RuntimeWarning" python -m mkdocs build'
-docs-clean = "tools/cleanup_docs.sh"
+docs-clean = 'tools/cleanup_docs.sh'
 docs-setup = { depends-on = [
-  "docs-config",
-  "docs-assets",
-  "notebook-prepare",
-  "docs-notebooks",
+  'docs-config',
+  'docs-assets',
+  'notebook-prepare',
+  'docs-notebooks',
 ] }
 
-# 🚀 Development & Build Tasks
-dist-build = "python -m build --wheel --outdir dist"
-spdx-update = "python tools/update_spdx.py"
-prettier-install = "npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml"
-pre-commit-setup = "pre-commit clean && pre-commit install --hook-type pre-commit --hook-type pre-push --overwrite"
-pre-commit-update = "pre-commit autoupdate"
-pre-commit = "pre-commit run --all-files --hook-stage pre-commit"
-pre-push = "pre-commit run --all-files --hook-stage pre-push"
+## 🚀 Development & Build Tasks
+dist-build = 'python -m build --wheel --outdir dist'
+spdx-update = 'python tools/update_spdx.py'
+prettier-install = 'npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml'
+pre-commit-setup = 'pre-commit clean && pre-commit install --hook-type pre-commit --hook-type pre-push --overwrite'
+pre-commit-update = 'pre-commit autoupdate'
 
-dev-setup = { depends-on = ["prettier-install", "pre-commit-setup"] }
+dev-setup = { depends-on = ['prettier-install', 'pre-commit-setup'] }
 
-# 🔗 Shortcuts
-easydiffraction = "python -m easydiffraction"
-tutorials-list = "python -m easydiffraction list-tutorials"
-tutorials-fetch = "python -m easydiffraction fetch-tutorials"
+## 🔗 Shortcuts
+easydiffraction = 'python -m easydiffraction'
+tutorials-list = 'python -m easydiffraction list-tutorials'
+tutorials-fetch = 'python -m easydiffraction fetch-tutorials'
