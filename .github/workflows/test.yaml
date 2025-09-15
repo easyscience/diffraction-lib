@@ -104,10 +104,6 @@ jobs:
             pixi run --environment $env dev
             echo "PYTHONPATH:"
             pixi run printenv PYTHONPATH || true
-            echo "PWD:"
-            pixi run printenv PWD || true
-            echo "pwd:"
-            pixi run echo $(pwd)
             pixi run --environment $env easydiffraction version
           done
 

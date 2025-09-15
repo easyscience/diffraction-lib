@@ -93,6 +93,10 @@ jobs:
           cache: false
           post-cleanup: false
 
+      - name: Install and setup development dependencies
+        shell: bash
+        run: pixi run dev
+
       - name: Clone easyscience/assets-docs and easyscience/assets-branding
         run: |
           cd ..

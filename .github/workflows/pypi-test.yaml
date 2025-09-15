@@ -37,6 +37,7 @@ jobs:
           post-cleanup: false
 
       - name: Download the pixi configuration file from the master branch
+        shell: bash
         run: |
           curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/${CI_BRANCH}/pixi.toml
 
