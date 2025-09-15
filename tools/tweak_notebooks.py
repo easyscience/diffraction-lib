@@ -32,9 +32,8 @@ BOOTSTRAP_SOURCE = (
     'import builtins\n'
     'import importlib.util\n'
     '\n'
-    "if hasattr(builtins, '__IPYTHON__'):\n"
-    "    if importlib.util.find_spec('easydiffraction') is None:\n"
-    "        !pip install 'easydiffraction[visualization]'\n"
+    "if hasattr(builtins, '__IPYTHON__') and importlib.util.find_spec('easydiffraction') is None:\n"
+    "    !pip install 'easydiffraction[visualization]'\n"
 )
 
 BOOTSTRAP_TAG = 'hide-in-docs'
