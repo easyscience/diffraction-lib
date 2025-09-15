@@ -20,19 +20,22 @@ jobs:
         with:
           fetch-depth: '0' # full history with tags to get the version number by versioningit
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.9.0
         with:
-          python-version: '3.13'
+          environments: default
+          activate-environment: default
+          run-install: true
+          frozen: true
+          cache: false
+          post-cleanup: false
 
-      - name: Upgrade package installer for Python
-        run: pip install --upgrade pip
-
-      - name: Install build tool
-        run: pip install --upgrade build
+      - name: Install and setup development dependencies
+        shell: bash
+        run: pixi run dev
 
       - name: Create Python package
-        run: python -m build
+        run: pixi run python -m build
 
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

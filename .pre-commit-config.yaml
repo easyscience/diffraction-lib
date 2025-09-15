@@ -25,9 +25,9 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
-      - id: pixi-nonpy-format-check-modified
-        name: pixi run nonpy-format-check-modified
-        entry: pixi run nonpy-format-check-modified
+      - id: pixi-nonpy-format-check
+        name: pixi run nonpy-format-check
+        entry: pixi run nonpy-format-check
         language: system
         pass_filenames: false
         stages: [pre-commit]

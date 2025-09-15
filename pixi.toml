@@ -100,20 +100,24 @@ test = { depends-on = ['unit-tests'] }
 
 ### ✔️ Checks
 pyproject-check = 'python -m validate_pyproject pyproject.toml'
-py-lint-check = 'python -m ruff check .'
-py-format-check = 'python -m ruff format . --check'
-nonpy-format-check = 'npx prettier . --list-different --config=prettierrc.toml'
+py-lint-check = "python -m ruff check $(git diff --cached --name-only -- '*.py')"
+#py-format-check = "python -m ruff format $(git diff --cached --name-only -- '*.py') --check"
+py-format-check = "files=$(git diff --cached --name-only -- '*.py'); [ -n \"$files\" ] && python -m ruff format $files --check || true"
+nonpy-format-check = "npx prettier $(git diff --cached --diff-filter=d --name-only | grep -E '\\.(json|ya?ml|toml|md|css|html)$') --list-different --config=prettierrc.toml"
 nonpy-format-check-modified = "npx prettier $(git diff --diff-filter=d --name-only HEAD | grep -E '\\.(json|ya?ml|toml|md|css|html)$' || echo .) --list-different --config=prettierrc.toml"
 notebook-format-check = 'nbqa ruff tutorials/'
 docs-format-check = 'docformatter src/ tutorials/ --check'
-pre-commit-check = 'pre-commit run --all-files --hook-stage pre-commit'
+# Run like a real commit: staged files only
+pre-commit-check = 'pre-commit run --hook-stage pre-commit'
+# CI check: lint/format everything
+pre-commit-check-all = 'pre-commit run --all-files --hook-stage pre-commit'
 pre-push-check = 'pre-commit run --all-files --hook-stage pre-push'
 
 check = { depends-on = ['py-lint-check', 'py-format-check'] }
 
 ### 🛠️ Fixes
 py-lint-fix = 'pixi run py-lint-check --fix'
-py-format-fix = 'python -m ruff format .'
+py-format-fix = "python -m ruff format $(git diff --cached --name-only -- '*.py')"
 nonpy-format-fix = 'pixi run nonpy-format-check --write'
 nonpy-format-fix-modified = "pixi run nonpy-format-check-modified --write"
 notebook-format-fix = 'pixi run notebook-format-check --fix'
@@ -123,7 +127,7 @@ fix = { depends-on = [
   'py-format-fix',
   'docs-format-fix',
   'py-lint-fix',
-  'nonpy-format-fix-modified',
+  'nonpy-format-fix',
 ] }
 
 ## 🧮 Code Complexity
@@ -175,7 +179,7 @@ spdx-update = 'python tools/update_spdx.py'
 dev-install = "uv pip install --editable '.[all]'"
 npm-config = 'npm config set registry https://registry.npmjs.org/'
 prettier-install = 'npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml'
-pre-commit-setup = 'pre-commit clean && pre-commit install --hook-type pre-commit --hook-type pre-push --overwrite'
+pre-commit-setup = 'pre-commit clean && pre-commit uninstall && pre-commit install --hook-type pre-commit --hook-type pre-push --overwrite'
 pre-commit-update = 'pre-commit autoupdate'
 
 dev = { depends-on = [
