@@ -10,11 +10,26 @@ import yaml
 # Special imports
 # ---------------
 
-# Needed to parse !!python/name:material.extensions.emoji.twemoji
-import material.extensions.emoji  # noqa: F401  # isort: skip
+# Needed to register YAML tags such as
+#   !!python/name:material.extensions.emoji.twemoji
+#   !!python/name:pymdownx.superfences.fence_code_format
+# These imports are required for their side-effects so we reference
+# specific attributes below to satisfy the linter without suppression.
+import material.extensions.emoji  # isort: skip
+import pymdownx.superfences  # isort: skip
 
-# Needed to parse !!python/name:pymdownx.superfences.fence_code_format
-import pymdownx.superfences  # noqa: F401  # isort: skip
+def _activate_yaml_tag_side_effects() -> None:  # pragma: no cover - trivial
+    """Access imported modules' attributes so Ruff sees them as used.
+
+    The primary purpose of importing these packages is to ensure the
+    tagged constructors are importable during YAML load. Accessing the
+    attributes makes the side-effect explicit without needing noqa.
+    """
+    _ = material.extensions.emoji.twemoji  # type: ignore[attr-defined]
+    _ = pymdownx.superfences.fence_code_format  # type: ignore[attr-defined]
+
+
+_activate_yaml_tag_side_effects()
 
 
 def load_yaml_with_env_variables(file_path: str) -> Dict[str, Any]:

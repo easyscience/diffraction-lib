@@ -31,7 +31,7 @@ class ProjectInfo:
         self._name: str = 'untitled_project'
         self._title: str = 'Untitled Project'
         self._description: str = ''
-        self._path: str = pathlib.Path.cwd()
+        self._path: pathlib.Path = pathlib.Path.cwd()
         self._created: datetime.datetime = datetime.datetime.now()
         self._last_modified: datetime.datetime = datetime.datetime.now()
 
@@ -63,13 +63,14 @@ class ProjectInfo:
         self._description = ' '.join(value.split())
 
     @property
-    def path(self) -> str:
-        """Return the project path."""
+    def path(self) -> pathlib.Path:
+        """Return the project path as a Path object."""
         return self._path
 
     @path.setter
-    def path(self, value: str) -> None:
-        self._path = value
+    def path(self, value) -> None:
+        # Accept str or Path; normalize to Path
+        self._path = pathlib.Path(value)
 
     @property
     def created(self) -> datetime.datetime:
@@ -174,7 +175,7 @@ class Project:
         """Save the project into a new directory."""
         if temporary:
             tmp: str = tempfile.gettempdir()
-            dir_path = str(pathlib.Path(tmp) / dir_path)
+            dir_path = pathlib.Path(tmp) / dir_path
         self.info.path = dir_path
         self.save()
 
@@ -185,42 +186,43 @@ class Project:
             return
 
         print(paragraph(f"Saving project 📦 '{self.name}' to"))
-        print(pathlib.Path(self.info.path).resolve())
+        print(self.info.path.resolve())
 
-        pathlib.Path(self.info.path).mkdir(exist_ok=True, parents=True)
+        # Ensure project directory exists
+        self.info.path.mkdir(parents=True, exist_ok=True)
 
         # Save project info
-        with (pathlib.Path(self.info.path) / 'project.cif').open('w') as f:
+        with (self.info.path / 'project.cif').open('w') as f:
             f.write(self.info.as_cif())
             print('✅ project.cif')
 
         # Save sample models
-        sm_dir_path = pathlib.Path(self.info.path) / 'sample_models'
-        sm_dir_path.mkdir(exist_ok=True, parents=True)
+        sm_dir = self.info.path / 'sample_models'
+        sm_dir.mkdir(parents=True, exist_ok=True)
         for model in self.sample_models:
             file_name: str = f'{model.name}.cif'
-            file_path = sm_dir_path / file_name
+            file_path = sm_dir / file_name
             with file_path.open('w') as f:
                 f.write(model.as_cif())
                 print(f'✅ sample_models/{file_name}')
 
         # Save experiments
-        expt_dir_path = pathlib.Path(self.info.path) / 'experiments'
-        expt_dir_path.mkdir(exist_ok=True, parents=True)
+        expt_dir = self.info.path / 'experiments'
+        expt_dir.mkdir(parents=True, exist_ok=True)
         for experiment in self.experiments:
             file_name: str = f'{experiment.name}.cif'
-            file_path = expt_dir_path / file_name
+            file_path = expt_dir / file_name
             with file_path.open('w') as f:
                 f.write(experiment.as_cif())
                 print(f'✅ experiments/{file_name}')
 
         # Save analysis
-        with (pathlib.Path(self.info.path) / 'analysis.cif').open('w') as f:
+        with (self.info.path / 'analysis.cif').open('w') as f:
             f.write(self.analysis.as_cif())
             print('✅ analysis.cif')
 
         # Save summary
-        with (pathlib.Path(self.info.path) / 'summary.cif').open('w') as f:
+        with (self.info.path / 'summary.cif').open('w') as f:
             f.write(self.summary.as_cif())
             print('✅ summary.cif')
 

@@ -161,9 +161,9 @@ def _get_release_info(tag: str | None) -> dict | None:
         token = os.environ.get('GITHUB_TOKEN')
         if token:
             headers['Authorization'] = f'token {token}'
-
-        request = urllib.request.Request(api_url, headers=headers)  # noqa: S310
-        with urllib.request.urlopen(request) as response:  # noqa: S310
+        request = urllib.request.Request(api_url, headers=headers)  # noqa: S310 - constructing request (validated URL)
+        # Safe network call: HTTPS enforced and validated
+        with _safe_urlopen(request) as response:
             return json.load(response)
     except Exception as e:
         if tag is not None:
@@ -203,6 +203,23 @@ def _sort_notebooks(notebooks: list[str]) -> list[str]:
     return sorted(notebooks)
 
 
+def _safe_urlopen(request_or_url):  # type: ignore[no-untyped-def]
+    """Wrapper for urlopen with prior validation.
+
+    Centralises lint suppression for validated HTTPS requests.
+    """
+    # Only allow https scheme.
+    if isinstance(request_or_url, str):
+        parsed = urllib.parse.urlparse(request_or_url)
+        if parsed.scheme != 'https':  # pragma: no cover - sanity check
+            raise ValueError('Only https URLs are permitted')
+    elif isinstance(request_or_url, urllib.request.Request):  # noqa: S310 - request object inspected, not opened
+        parsed = urllib.parse.urlparse(request_or_url.full_url)
+        if parsed.scheme != 'https':  # pragma: no cover
+            raise ValueError('Only https URLs are permitted')
+    return urllib.request.urlopen(request_or_url)  # noqa: S310 - validated https only
+
+
 def _extract_notebooks_from_asset(download_url: str) -> list[str]:
     """Download the tutorials.zip from download_url and return a sorted
     list of .ipynb file names.
@@ -215,9 +232,10 @@ def _extract_notebooks_from_asset(download_url: str) -> list[str]:
     """
     try:
         _validate_url(download_url)
+        # Download & open zip (validated HTTPS) in combined context.
         with (
-            urllib.request.urlopen(download_url) as response,  # noqa: S310
-            zipfile.ZipFile(io.BytesIO(response.read())) as zip_file,
+            _safe_urlopen(download_url) as resp,
+            zipfile.ZipFile(io.BytesIO(resp.read())) as zip_file,
         ):
             notebooks = [
                 pathlib.Path(name).name
@@ -321,7 +339,8 @@ def fetch_tutorials() -> None:
     _validate_url(file_url)
 
     print('📥 Downloading tutorial notebooks...')
-    urllib.request.urlretrieve(file_url, file_name)  # noqa: S310
+    with _safe_urlopen(file_url) as resp:
+        pathlib.Path(file_name).write_bytes(resp.read())
 
     print('📦 Extracting tutorials to "tutorials/"...')
     with zipfile.ZipFile(file_name, 'r') as zip_ref:
@@ -358,13 +377,14 @@ def is_notebook() -> bool:
         return True
 
     try:
-        shell = get_ipython().__class__.__name__  # noqa: F821
+        # get_ipython is only defined inside IPython environments
+        shell = get_ipython().__class__.__name__  # type: ignore[name-defined]
         if shell == 'ZMQInteractiveShell':  # Jupyter notebook or qtconsole
             return True
-        elif shell == 'TerminalInteractiveShell':  # Terminal running IPython
+        if shell == 'TerminalInteractiveShell':  # Terminal running IPython
             return False
-        else:  # Other type (unlikely)
-            return False
+        # Fallback for any other shell type
+        return False
     except NameError:
         return False  # Probably standard Python interpreter
 
