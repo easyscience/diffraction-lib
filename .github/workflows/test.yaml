@@ -119,13 +119,12 @@ jobs:
             pixi run --environment $env unit-tests
           done
 
-      - name:
-          Run functional tests ${{ needs.code-quality.outputs.pytest-marks }}
+      - name: Run functional tests ${{ needs.prepare-env.outputs.pytest-marks }}
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run --environment $env func-tests "${{ needs.code-quality.outputs.pytest-marks }}"
+            pixi run --environment $env func-tests "${{ needs.prepare-env.outputs.pytest-marks }}"
           done
 
       # Delete all local tags when not on a tagged commit to force versioningit
@@ -226,13 +225,12 @@ jobs:
             pixi run --environment $env unit-tests
           done
 
-      - name:
-          Run functional tests ${{ needs.code-quality.outputs.pytest-marks }}
+      - name: Run functional tests ${{ needs.prepare-env.outputs.pytest-marks }}
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run --environment $env func-tests "${{ needs.code-quality.outputs.pytest-marks }}"
+            pixi run --environment $env func-tests "${{ needs.prepare-env.outputs.pytest-marks }}"
           done
 
   # Job 4: Trigger dashboard build

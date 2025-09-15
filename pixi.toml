@@ -6,10 +6,11 @@ PYTHONIOENCODING = "utf-8"
 # via uv. This is important because `pixi update` might replace
 # the installed version with the latest released version.
 PYTHONPATH = "src${PYTHONPATH:+:${PYTHONPATH}}"
+#PYTHONPATH = "src"
 
-[target.win-64.activation.env]
+#[target.win-64.activation.env]
 # Override only on Windows
-PYTHONPATH = "src${PYTHONPATH:+;${PYTHONPATH}}"
+#PYTHONPATH = "src${PYTHONPATH:+;${PYTHONPATH}}"
 
 [workspace]
 # Supported platforms for the lock file (pixi.lock)

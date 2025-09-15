@@ -1,4 +1,4 @@
-name: Test unpinned PyPI package
+name: PyPI package tests
 
 on:
   # Run daily, at 00:00.
@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-package:
+  pypi-package-tests:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]

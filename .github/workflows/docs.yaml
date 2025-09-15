@@ -14,7 +14,7 @@
 # and inspecting, as well as links to both the development and production versions of
 # the deployed documentation site.
 
-name: Build and deploy docs
+name: Docs build and deployment
 
 on:
   # Trigger the workflow on pull request
