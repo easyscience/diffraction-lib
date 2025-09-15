@@ -212,14 +212,16 @@ def _extract_notebooks_from_asset(download_url: str) -> list[str]:
     """
     try:
         _validate_url(download_url)
-        with urllib.request.urlopen(download_url) as response:  # noqa: S310
-            with zipfile.ZipFile(io.BytesIO(response.read())) as zip_file:
-                notebooks = [
-                    os.path.basename(name)
-                    for name in zip_file.namelist()
-                    if name.endswith('.ipynb') and not name.endswith('/')
-                ]
-                return _sort_notebooks(notebooks)
+        with (
+            urllib.request.urlopen(download_url) as response,  # noqa: S310
+            zipfile.ZipFile(io.BytesIO(response.read())) as zip_file,
+        ):
+            notebooks = [
+                os.path.basename(name)
+                for name in zip_file.namelist()
+                if name.endswith('.ipynb') and not name.endswith('/')
+            ]
+            return _sort_notebooks(notebooks)
     except Exception as e:
         print(error(f"Failed to download or parse 'tutorials.zip': {e}"))
         return []

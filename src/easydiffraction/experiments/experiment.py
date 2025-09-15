@@ -202,7 +202,7 @@ class BasePowderExperiment(BaseExperiment):
         scattering_type = self.type.scattering_type.value
         beam_mode = self.type.beam_mode.value
 
-        for profile_type in PeakFactory._supported[scattering_type][beam_mode].keys():
+        for profile_type in PeakFactory._supported[scattering_type][beam_mode]:
             columns_data.append([profile_type.value, profile_type.description()])
 
         print(paragraph('Supported peak profile types'))
@@ -316,7 +316,7 @@ class PowderExperiment(
         columns_headers = ['Background type', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
-        for bt in BackgroundFactory._supported.keys():
+        for bt in BackgroundFactory._supported:
             columns_data.append([bt.value, bt.description()])
 
         print(paragraph('Supported background types'))

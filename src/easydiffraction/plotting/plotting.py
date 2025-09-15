@@ -134,10 +134,7 @@ class Plotter:
             error(f'No measured data available for experiment {expt_name}')
             return
 
-        if d_spacing:
-            x_array = pattern.d
-        else:
-            x_array = pattern.x
+        x_array = pattern.d if d_spacing else pattern.x
         x = self._filtered_y_array(
             y_array=x_array,
             x_array=x_array,
@@ -194,10 +191,7 @@ class Plotter:
             print(f'No calculated data available for experiment {expt_name}')
             return
 
-        if d_spacing:
-            x_array = pattern.d
-        else:
-            x_array = pattern.x
+        x_array = pattern.d if d_spacing else pattern.x
         x = self._filtered_y_array(
             y_array=x_array,
             x_array=x_array,
@@ -258,10 +252,7 @@ class Plotter:
             print(error(f'No calculated data available for experiment {expt_name}'))
             return
 
-        if d_spacing:
-            x_array = pattern.d
-        else:
-            x_array = pattern.x
+        x_array = pattern.d if d_spacing else pattern.x
         x = self._filtered_y_array(
             y_array=x_array,
             x_array=x_array,

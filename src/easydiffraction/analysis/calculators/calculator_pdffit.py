@@ -3,6 +3,7 @@
 
 import os
 import re
+from typing import Optional
 
 import numpy as np
 
@@ -15,8 +16,13 @@ try:
     from diffpy.pdffit2 import redirect_stdout
     from diffpy.structure.parsers.p_cif import P_cif as pdffit_cif_parser
 
-    # Silence the C++ engine output
-    redirect_stdout(open(os.path.devnull, 'w'))
+    # Silence the C++ engine output while keeping the handle open
+    _pdffit_devnull: Optional[object]
+    with open(os.path.devnull, 'w') as _tmp_devnull:
+        # Duplicate file descriptor so the handle remains
+        # valid after the context
+        _pdffit_devnull = os.fdopen(os.dup(_tmp_devnull.fileno()), 'w')
+    redirect_stdout(_pdffit_devnull)
     # TODO: Add the following print to debug mode
     # print("✅ 'pdffit' calculation engine is successfully imported.")
 except ImportError:

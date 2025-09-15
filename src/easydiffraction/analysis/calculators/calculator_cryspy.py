@@ -123,7 +123,7 @@ class CryspyCalculator(CalculatorBase):
             BeamModeEnum.TIME_OF_FLIGHT: 'tof',
         }
         beam_mode = experiment.type.beam_mode.value
-        if beam_mode in prefixes.keys():
+        if beam_mode in prefixes:
             cryspy_block_name = f'{prefixes[beam_mode]}_{experiment.name}'
         else:
             print(f'[CryspyCalculator] Error: Unknown beam mode {experiment.type.beam_mode.value}')

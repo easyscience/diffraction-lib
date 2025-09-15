@@ -85,7 +85,7 @@ class BaseDatastore:
 
         # Collect data arrays according to mapping keys
         data_arrays = []
-        for attr_name in mapping.keys():
+        for attr_name in mapping:
             attr_array = getattr(self, attr_name, None)
             if attr_array is None:
                 data_arrays.append(np.array([]))
