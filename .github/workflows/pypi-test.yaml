@@ -38,16 +38,16 @@ jobs:
 
       - name: Download the pixi configuration file from the master branch
         run: |
-          curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/${{ env.CI_BRANCH }}/pixi.toml
+          curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/${CI_BRANCH}/pixi.toml
 
       - name: Download the tests from the master branch
         shell: bash
         run: |
-          curl -LO https://github.com/easyscience/diffraction-lib/archive/refs/heads/${{ env.DEFAULT_BRANCH }}.zip
-          unzip ${env.DEFAULT_BRANCH}.zip -d .
+          curl -LO https://github.com/easyscience/diffraction-lib/archive/refs/heads/${DEFAULT_BRANCH}.zip
+          unzip ${DEFAULT_BRANCH}.zip -d .
           mkdir -p tests
-          cp -r diffraction-lib-${{ env.DEFAULT_BRANCH }}/tests/* tests/
-          rm -rf ${env.DEFAULT_BRANCH}.zip diffraction-lib-${{ env.DEFAULT_BRANCH }}
+          cp -r diffraction-lib-${DEFAULT_BRANCH}/tests/* tests/
+          rm -rf ${DEFAULT_BRANCH}.zip diffraction-lib-${DEFAULT_BRANCH}
 
       - name: Create the environment and install dependencies
         run: pixi install
