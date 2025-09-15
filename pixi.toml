@@ -96,7 +96,7 @@ script-tests = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
 
 test = { depends-on = ['unit-tests'] }
 
-## 🧹 Code Quality
+# 🧹 Code Quality
 
 ### ✔️ Checks
 pyproject-check = 'python -m validate_pyproject pyproject.toml'
@@ -111,6 +111,7 @@ docs-format-check = 'docformatter src/ tutorials/ --check'
 pre-commit-check = 'pre-commit run --hook-stage pre-commit'
 # CI check: lint/format everything
 pre-commit-check-all = 'pre-commit run --all-files --hook-stage pre-commit'
+# Pre-push check: lint/format everything
 pre-push-check = 'pre-commit run --all-files --hook-stage pre-push'
 
 check = { depends-on = ['py-lint-check', 'py-format-check'] }
