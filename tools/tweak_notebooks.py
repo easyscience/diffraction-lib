@@ -1,17 +1,13 @@
-"""
-Add a single bootstrap code cell as the very first cell to every .ipynb
-file found under the given path(s).
+"""Insert a bootstrap code cell as the first cell of every notebook.
 
-Usage:
-    python tools/tweak_notebooks.py tutorials/ [more_paths ...]
+Usage::
+        python tools/tweak_notebooks.py tutorials/ [more_paths ...]
 
-What it does:
-- Inserts a new *code* cell at index 0 that checks whether the `easydiffraction`
-  package is available in the current Jupyter environment and installs it with
-  the `visualization` extra if missing.
-- The inserted cell is tagged with "hide-in-docs".
-- If a notebook already has this exact bootstrap cell as its first cell, it will
-  not be inserted again (idempotent).
+The bootstrap cell:
+- Checks if ``easydiffraction`` is importable; if not, installs it
+    with the ``visualization`` extra.
+- Adds the tag ``hide-in-docs``.
+- Idempotent: skipped if already present and identical.
 """
 
 from __future__ import annotations
@@ -25,14 +21,13 @@ from nbformat.validator import normalize
 
 BOOTSTRAP_SOURCE = (
     '# Check if the easydiffraction library is installed.\n'
-    "# If not, install it including the 'visualization' extras.\n"
-    '# This is needed, e.g., when running this as a notebook via Google\n'
-    '# Colab or Jupyter Notebook in an environment where the library is\n'
-    '# not pre-installed.\n'
+    "# If not, install it with the 'visualization' extras.\n"
+    '# Needed when running remotely (e.g. Colab) where the lib is absent.\n'
     'import builtins\n'
     'import importlib.util\n'
     '\n'
-    "if hasattr(builtins, '__IPYTHON__') and importlib.util.find_spec('easydiffraction') is None:\n"
+    "if (hasattr(builtins, '__IPYTHON__') and\n"
+    "    importlib.util.find_spec('easydiffraction') is None):\n"
     "    !pip install 'easydiffraction[visualization]'\n"
 )
 
@@ -49,7 +44,8 @@ def iter_notebooks(paths: list[Path]):
 
 def has_bootstrap_first_cell(nb) -> bool:
     """Return True if the first cell exactly matches our bootstrap
-    cell."""
+    cell.
+    """
     if not nb.cells:
         return False
     first = nb.cells[0]
@@ -62,8 +58,7 @@ def has_bootstrap_first_cell(nb) -> bool:
 
 
 def ensure_bootstrap(nb) -> bool:
-    """
-    Ensure the bootstrap cell exists as the very first cell.
+    """Ensure the bootstrap cell exists as the very first cell.
 
     Returns True if a modification was made.
     """

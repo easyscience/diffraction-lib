@@ -1,5 +1,4 @@
-"""
-Update or insert SPDX headers in Python files.
+"""Update or insert SPDX headers in Python files.
 
 - Ensures SPDX-FileCopyrightText has the current year.
 - Ensures SPDX-License-Identifier is set to BSD-3-Clause.
@@ -18,7 +17,8 @@ LICENSE_TEXT = '# SPDX-License-Identifier: BSD-3-Clause'
 
 
 def update_spdx_header(file_path: Path):
-    with open(file_path, 'r', encoding='utf-8') as f:
+    # Use Path.open to satisfy lint rule PTH123.
+    with file_path.open('r', encoding='utf-8') as f:
         lines = f.readlines()
 
     # Patterns to match existing SPDX lines
@@ -49,14 +49,15 @@ def update_spdx_header(file_path: Path):
         insert_pos += 1
         new_lines.insert(insert_pos, '\n')
 
-    with open(file_path, 'w', encoding='utf-8') as f:
+    with file_path.open('w', encoding='utf-8') as f:
         f.writelines(new_lines)
 
 
 def main():
     """Recursively update or insert SPDX headers in all Python files
     under the 'src' directory, skipping files located in virtual
-    environment folders ('venv' or '.venv')."""
+    environment folders ('venv' or '.venv').
+    """
     for py_file in Path('src').rglob('*.py'):
         if 'venv' in py_file.parts or '.venv' in py_file.parts:
             continue

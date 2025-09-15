@@ -109,6 +109,8 @@ docs-format-check = 'docformatter src/ tutorials/ --check'
 pre-commit-check = 'pre-commit run --all-files --hook-stage pre-commit'
 pre-push-check = 'pre-commit run --all-files --hook-stage pre-push'
 
+check = { depends-on = ['py-lint-check', 'py-format-check'] }
+
 ### 🛠️ Fixes
 py-lint-fix = 'pixi run py-lint-check --fix'
 py-format-fix = 'python -m ruff format .'

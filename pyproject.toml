@@ -185,7 +185,7 @@ fail_under = 58     # Temporarily reduce to allow gradual improvement
 
 [tool.ruff]
 # Temporarily exclude some directories until we have improved the code quality there
-exclude = ['tests', 'tools', 'tutorials-drafts']
+exclude = ['tests', 'tutorials-drafts']
 indent-width = 4
 line-length = 99
 # Enable new rules that are not yet stable, like DOC
@@ -215,7 +215,17 @@ select = [
   'TCH',    # Type checking issues (e.g., incompatible types, missing type annotations)
   'TID252', # Enforces absolute imports over relative imports
   'W',      # General PEP 8 warnings (e.g., lines too long, trailing whitespace)
+  #'ANN',   # Missing or incorrect type annotations
+  #'COM',   # Comment formatting issues
+  #'PERF',  # Performance-related issues (e.g., inefficient code patterns)
+  #'PIE',   # Potentially problematic idioms and errors
+  #'PL',    # PyLint-specific checks (e.g., code smells, potential errors)
+  #'PT',    # Pytest-related issues
+  #'RET',   # Return statement issues (e.g., inconsistent returns)
   #'RUF',   # Ruff-specific checks (e.g., enforcing best practices)
+  #'SLF',   # Self argument-related issues (e.g., missing or misused self)
+  #'T20',   # Flake8-print-specific checks (e.g., print statements left in code) 
+  #'TD',    # Type definition issues (e.g., incorrect or missing type definitions)
   #'TRY',   # Tryceratops Try/Except-related issues (e.g., broad exceptions, empty except blocks)
   #'UP',    # Pyupgrade-specific checks
 ]
