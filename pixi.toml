@@ -5,11 +5,11 @@ PYTHONIOENCODING = "utf-8"
 # development, even if main package is installed in editable mode
 # via uv. This is important because `pixi update` might replace
 # the installed version with the latest released version.
-PYTHONPATH = "$(pwd)/src:${PYTHONPATH}"
+PYTHONPATH = "src${PYTHONPATH:+:${PYTHONPATH}}"
 
 [target.win-64.activation.env]
 # Override only on Windows
-PYTHONPATH = "$(pwd)/src;${PYTHONPATH}"
+PYTHONPATH = "src${PYTHONPATH:+;${PYTHONPATH}}"
 
 [workspace]
 # Supported platforms for the lock file (pixi.lock)
@@ -168,7 +168,7 @@ dev = { depends-on = [
   'pre-commit-setup',
 ] }
 
-wheel = { depends-on = ['npm-config', 'prettier-install', 'pre-commit-setup'] }
+wheel = { depends-on = ['npm-config', 'prettier-install'] }
 
 ## 🔗 Shortcuts
 easydiffraction = 'python -m easydiffraction'
