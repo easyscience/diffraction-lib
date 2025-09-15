@@ -10,6 +10,8 @@ name: Code quality checks
 on:
   # Trigger the workflow on push
   push:
+    # Every branch
+    branches: ['**']
     # Do not run this workflow on creating a new tag starting with
     # 'v', e.g. 'v1.0.3' (see publish-pypi.yml)
     tags-ignore: ['v*']

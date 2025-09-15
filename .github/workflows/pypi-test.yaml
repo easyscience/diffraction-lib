@@ -54,7 +54,9 @@ jobs:
         run: pixi install
 
       - name: Install package from PyPI with dev and visualization extras
-        run: pixi add --pypi "easydiffraction[dev,visualization]"
+        run: |
+          pixi add --pypi "easydiffraction[dev,visualization]"
+          pixi run easydiffraction version
 
       - name: Run unit tests to verify the installation
         run: pixi run unit-tests
