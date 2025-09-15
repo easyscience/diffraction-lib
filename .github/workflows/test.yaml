@@ -15,7 +15,7 @@
 #    - Trigger the dashboard build workflow to update the code quality
 #      metrics on the dashboard
 
-name: Test code and package
+name: Code and package tests
 
 on:
   # Trigger the workflow on push
