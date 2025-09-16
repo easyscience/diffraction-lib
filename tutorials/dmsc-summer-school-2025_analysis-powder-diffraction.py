@@ -446,7 +446,7 @@ project_1.experiments['sim_si'].background.add(x=110000, y=0.01)
 # #### Add Sample Model
 
 # %%
-project_1.sample_models.add(name='si')
+project_1.sample_models.add_minimal(name='si')
 
 # %% [markdown]
 # #### Set Space Group
@@ -951,7 +951,7 @@ project_2.experiments['sim_lbco'].background.add(x=110000, y=0.2)
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.sample_models.add(name='lbco')
+project_2.sample_models.create(name='lbco')
 
 # %% [markdown]
 # #### Exercise 3.2: Set Space Group
@@ -1366,7 +1366,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1, x_max=1.7, d_spacing=
 
 # %% tags=["solution", "hide-input"]
 # Set Space Group
-project_2.sample_models.add(name='si')
+project_2.sample_models.create(name='si')
 project_2.sample_models['si'].space_group.name_h_m = 'F d -3 m'
 project_2.sample_models['si'].space_group.it_coordinate_system_code = '2'
 

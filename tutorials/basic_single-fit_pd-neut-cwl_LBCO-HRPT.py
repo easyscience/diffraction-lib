@@ -91,7 +91,7 @@ project.plotter.engine = 'plotly'
 # #### Add Sample Model
 
 # %%
-project.sample_models.add(name='lbco')
+project.sample_models.add_minimal(name='lbco')
 
 # %% [markdown]
 # #### Show Defined Sample Models

@@ -30,7 +30,7 @@ project.plotter.engine = 'plotly'
 # ## Add Sample Model
 
 # %%
-project.sample_models.add(name='ni')
+project.sample_models.add_minimal(name='ni')
 
 # %%
 project.sample_models['ni'].space_group.name_h_m = 'F m -3 m'

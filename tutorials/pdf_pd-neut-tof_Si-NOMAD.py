@@ -28,7 +28,7 @@ project.plotter.x_max = 40
 # ## Add Sample Model
 
 # %%
-project.sample_models.add(name='si')
+project.sample_models.add_minimal(name='si')
 
 # %%
 sample_model = project.sample_models['si']

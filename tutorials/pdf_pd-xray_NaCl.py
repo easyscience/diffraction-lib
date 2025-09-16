@@ -32,7 +32,7 @@ project.plotter.x_max = 30.0
 # ## Add Sample Model
 
 # %%
-project.sample_models.add(name='nacl')
+project.sample_models.add_minimal(name='nacl')
 
 # %%
 project.sample_models['nacl'].space_group.name_h_m = 'F m -3 m'

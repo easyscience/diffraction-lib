@@ -32,7 +32,7 @@ project = ed.Project()
 # ## Step 2: Define Sample Model
 
 # %%
-project.sample_models.add(name='lbco')
+project.sample_models.add_minimal(name='lbco')
 
 # %%
 sample_model = project.sample_models['lbco']
