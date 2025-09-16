@@ -63,8 +63,5 @@ class DiffractionCalculator:
         Args:
             sample_models: Collection of sample models.
             experiment: A single experiment object.
-
-        Returns:
-            None.
         """
         self._calculator.calculate_pattern(sample_models, experiment)

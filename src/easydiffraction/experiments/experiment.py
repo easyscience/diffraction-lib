@@ -65,19 +65,6 @@ class BaseExperiment(Datablock):
             beam_mode=self.type.beam_mode.value,
         )
 
-    # ---------------------------
-    # Name (ID) of the experiment
-    # ---------------------------
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    @enforce_type
-    def name(self, new_name: str):
-        self._name = new_name
-
     # ---------------
     # Experiment type
     # ---------------
@@ -263,7 +250,7 @@ class PowderExperiment(
         try:
             data = np.loadtxt(data_path)
         except Exception as e:
-            raise IOError(f'Failed to read data from {data_path}: {e}')
+            raise IOError(f'Failed to read data from {data_path}: {e}') from e
 
         if data.shape[1] < 2:
             raise ValueError('Data file must have at least two columns: x and y.')
@@ -329,7 +316,7 @@ class PowderExperiment(
         columns_headers = ['Background type', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
-        for bt, cls in BackgroundFactory._supported.items():
+        for bt in BackgroundFactory._supported.keys():
             columns_data.append([bt.value, bt.description()])
 
         print(paragraph('Supported background types'))
@@ -367,11 +354,11 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
         try:
             from diffpy.utils.parsers.loaddata import loadData
         except ImportError:
-            raise ImportError('diffpy module not found.')
+            raise ImportError('diffpy module not found.') from None
         try:
             data = loadData(data_path)
         except Exception as e:
-            raise IOError(f'Failed to read data from {data_path}: {e}')
+            raise IOError(f'Failed to read data from {data_path}: {e}') from e
 
         if data.shape[1] < 2:
             raise ValueError('Data file must have at least two columns: x and y.')
@@ -574,10 +561,12 @@ class ExperimentFactory:
         return False
 
 
-def Experiment(**kwargs):
+class Experiment:
     """User-facing API for creating an experiment.
 
     Accepts keyword arguments and delegates validation and creation to
     ExperimentFactory.
     """
-    return ExperimentFactory.create(**kwargs)
+
+    def __new__(cls, **kwargs):
+        return ExperimentFactory.create(**kwargs)

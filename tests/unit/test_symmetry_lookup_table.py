@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from easydiffraction.crystallography.space_group_lookup_table import SPACE_GROUPS
+from easydiffraction.crystallography.space_groups import SPACE_GROUPS
 
 
 def test_lookup_table_consistency():

@@ -123,19 +123,17 @@ class FitResults:
             else:
                 relative_change = 'N/A'
 
-            rows.append(
-                [
-                    datablock_id,
-                    category_key,
-                    collection_entry_id,
-                    name,
-                    start,
-                    fitted,
-                    uncertainty,
-                    units,
-                    relative_change,
-                ]
-            )
+            rows.append([
+                datablock_id,
+                category_key,
+                collection_entry_id,
+                name,
+                start,
+                fitted,
+                uncertainty,
+                units,
+                relative_change,
+            ])
 
         render_table(
             columns_headers=headers,

@@ -5,6 +5,7 @@ from abc import abstractmethod
 from enum import Enum
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Type
 from typing import Union
 
@@ -223,8 +224,11 @@ class BackgroundFactory:
     @classmethod
     def create(
         cls,
-        background_type: BackgroundTypeEnum = BackgroundTypeEnum.default(),
+        background_type: Optional[BackgroundTypeEnum] = None,
     ) -> BackgroundBase:
+        if background_type is None:
+            background_type = BackgroundTypeEnum.default()
+
         if background_type not in cls._supported:
             supported_types = list(cls._supported.keys())
 

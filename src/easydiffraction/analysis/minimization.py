@@ -165,7 +165,7 @@ class DiffractionMinimizer:
         _weights *= num_expts / np.sum(_weights)
         residuals: List[float] = []
 
-        for (expt_id, experiment), weight in zip(experiments._items.items(), _weights):
+        for experiment, weight in zip(experiments._items.values(), _weights, strict=True):
             # Calculate the difference between measured and calculated
             # patterns
             calculator.calculate_pattern(

@@ -53,9 +53,6 @@ class CalculatorBase(ABC):
             experiment: The experiment object.
             called_by_minimizer: Whether the calculation is called by a
                 minimizer.
-
-        Returns:
-            None.
         """
         x_data = experiment.datastore.x
         y_calc_zeros = np.zeros_like(x_data)
