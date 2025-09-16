@@ -117,8 +117,9 @@ pre-commit-check-all = 'pre-commit run --all-files --hook-stage pre-commit'
 pre-push-check = 'pre-commit run --all-files --hook-stage pre-push'
 
 check = { depends-on = [
-  'py-lint-check',
+  'docs-format-check',
   'py-format-check',
+  'py-lint-check',
   'nonpy-format-check-modified',
 ] }
 
