@@ -14,7 +14,7 @@ TEMP_DIR = tempfile.gettempdir()
 
 def test_single_fit_neutron_pd_cwl_lbco() -> None:
     # Set sample model
-    model = SampleModel('lbco')
+    model = SampleModel(name='lbco')
     model.space_group.name_h_m = 'P m -3 m'
     model.cell.length_a = 3.88
     model.atom_sites.add('La', 'La', 0, 0, 0, occupancy=0.5, b_iso=0.1)
@@ -93,7 +93,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
 @pytest.mark.fast
 def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Set sample model
-    model = SampleModel('lbco')
+    model = SampleModel(name='lbco')
 
     space_group = model.space_group
     space_group.name_h_m = 'P m -3 m'
@@ -211,7 +211,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
 
 def test_fit_neutron_pd_cwl_hs() -> None:
     # Set sample model
-    model = SampleModel('hs')
+    model = SampleModel(name='hs')
     model.space_group.name_h_m = 'R -3 m'
     model.space_group.it_coordinate_system_code = 'h'
     model.cell.length_a = 6.8615

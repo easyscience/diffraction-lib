@@ -28,7 +28,8 @@ class MockCalculator(CalculatorBase):
 def mock_sample_models():
     sample_models = MagicMock()
     sample_models.get_all_params.return_value = {'param1': 1, 'param2': 2}
-    sample_models.get_ids.return_value = ['phase1', 'phase2']
+    # Updated API: use `names` property instead of `get_ids()`
+    sample_models.names = ['phase1', 'phase2']
     sample_models.__getitem__.side_effect = lambda key: MagicMock(apply_symmetry_constraints=MagicMock())
     return sample_models
 

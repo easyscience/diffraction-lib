@@ -175,8 +175,10 @@ class BaseSampleModel(Datablock):
 class SampleModel:
     """User-facing API for creating a sample model.
 
-    Accepts keyword arguments and delegates validation and creation to
-    SampleModelFactory.
+    Use keyword-only arguments:
+    - `name` for a minimal, empty model
+    - `cif_path` to load from a CIF file
+    - `cif_str` to load from CIF content
     """
 
     def __new__(cls, **kwargs):

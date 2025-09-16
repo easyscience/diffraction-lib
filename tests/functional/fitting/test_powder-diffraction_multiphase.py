@@ -13,7 +13,7 @@ TEMP_DIR = tempfile.gettempdir()
 
 def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     # Set sample models
-    model_1 = SampleModel('lbco')
+    model_1 = SampleModel(name='lbco')
     model_1.space_group.name_h_m = 'P m -3 m'
     model_1.space_group.it_coordinate_system_code = '1'
     model_1.cell.length_a = 3.8909
@@ -22,7 +22,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     model_1.atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, wyckoff_letter='b', b_iso=0.2567)
     model_1.atom_sites.add('O', 'O', 0, 0.5, 0.5, wyckoff_letter='c', b_iso=1.4041)
 
-    model_2 = SampleModel('si')
+    model_2 = SampleModel(name='si')
     model_2.space_group.name_h_m = 'F d -3 m'
     model_2.space_group.it_coordinate_system_code = '2'
     model_2.cell.length_a = 5.43146

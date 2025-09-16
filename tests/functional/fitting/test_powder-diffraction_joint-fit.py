@@ -15,7 +15,7 @@ TEMP_DIR = tempfile.gettempdir()
 @pytest.mark.fast
 def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     # Set sample model
-    model = SampleModel('pbso4')
+    model = SampleModel(name='pbso4')
     model.space_group.name_h_m.value = 'P n m a'
     model.cell.length_a.value = 8.47
     model.cell.length_b.value = 5.39
@@ -101,7 +101,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
 @pytest.mark.fast
 def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Set sample model
-    model = SampleModel('pbso4')
+    model = SampleModel(name='pbso4')
     model.space_group.name_h_m = 'P n m a'
     model.cell.length_a = 8.47
     model.cell.length_b = 5.39

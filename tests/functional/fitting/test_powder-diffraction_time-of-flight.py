@@ -13,7 +13,7 @@ TEMP_DIR = tempfile.gettempdir()
 
 def test_single_fit_neutron_pd_tof_si() -> None:
     # Set sample model
-    model = SampleModel('si')
+    model = SampleModel(name='si')
     model.space_group.name_h_m = 'F d -3 m'
     model.space_group.it_coordinate_system_code = '2'
     model.cell.length_a = 5.4315
@@ -70,7 +70,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
 def test_single_fit_neutron_pd_tof_ncaf() -> None:
     # Set sample model
-    model = SampleModel('ncaf')
+    model = SampleModel(name='ncaf')
     model.space_group.name_h_m = 'I 21 3'
     model.space_group.it_coordinate_system_code = '1'
     model.cell.length_a = 10.250256
