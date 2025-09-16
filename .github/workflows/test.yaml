@@ -104,7 +104,7 @@ jobs:
             pixi run --environment $env dev
             echo "PYTHONPATH:"
             pixi run printenv PYTHONPATH || true
-            pixi run --environment $env easydiffraction version
+            pixi run --environment $env easydiffraction --version
           done
 
       - name: Run unit tests
@@ -210,7 +210,7 @@ jobs:
             whl_path="$(python3 -c "import pathlib; w = sorted(pathlib.Path('dist/${env_prefix}').glob('*.whl')); print(w[0].resolve().as_uri())")"
             echo "📦 Adding easydiffraction from: $whl_path"
             pixi add --feature $env_prefix --pypi "easydiffraction[all] @ $whl_path"
-            pixi run --environment $env easydiffraction version
+            pixi run --environment $env easydiffraction --version
           done
 
       - name: Run unit tests
