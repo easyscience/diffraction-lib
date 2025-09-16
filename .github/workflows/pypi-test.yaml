@@ -70,8 +70,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pixi run tutorials-list
-          pixi run tutorials-fetch
+          pixi run easydiffraction list-tutorials
+          pixi run easydiffraction fetch-tutorials
 
       - name: Test tutorials as notebooks
         run: pixi run notebook-tests
