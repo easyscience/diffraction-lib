@@ -13,7 +13,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     project = ed.Project()
 
     # Set sample model
-    project.sample_models.add(name='nacl')
+    project.sample_models.add_minimal(name='nacl')
     sample_model = project.sample_models['nacl']
     sample_model.space_group.name_h_m = 'F m -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
@@ -67,7 +67,7 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     project = ed.Project()
 
     # Set sample model
-    project.sample_models.add(name='ni')
+    project.sample_models.add_minimal(name='ni')
     sample_model = project.sample_models['ni']
     sample_model.space_group.name_h_m.value = 'F m -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
@@ -115,7 +115,7 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     project = ed.Project()
 
     # Set sample model
-    project.sample_models.add(name='si')
+    project.sample_models.add_minimal(name='si')
     sample_model = project.sample_models['si']
     sample_model.space_group.name_h_m.value = 'F d -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'

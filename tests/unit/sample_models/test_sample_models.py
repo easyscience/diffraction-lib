@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from easydiffraction.sample_models.sample_models import SampleModel
+from easydiffraction.sample_models.sample_model import BaseSampleModel, SampleModel
 from easydiffraction.sample_models.sample_models import SampleModels
 
 
@@ -38,23 +38,23 @@ def mock_sample_models():
 
 
 def test_sample_models_add(mock_sample_models, mock_sample_model):
-    mock_sample_models.add(model=mock_sample_model)
+    mock_sample_models.add(mock_sample_model)
 
     # Assertions
-    assert 'test_model' in mock_sample_models.get_ids()
+    assert 'test_model' in mock_sample_models.names
 
 
 def test_sample_models_remove(mock_sample_models, mock_sample_model):
-    mock_sample_models.add(model=mock_sample_model)
+    mock_sample_models.add(mock_sample_model)
     mock_sample_models.remove('test_model')
 
     # Assertions
-    assert 'test_model' not in mock_sample_models.get_ids()
+    assert 'test_model' not in mock_sample_models.names
 
 
 def test_sample_models_as_cif(mock_sample_models, mock_sample_model):
     mock_sample_model.as_cif = MagicMock(return_value='data_test_model')
-    mock_sample_models.add(model=mock_sample_model)
+    mock_sample_models.add(mock_sample_model)
 
     cif = mock_sample_models.as_cif()
 
@@ -64,17 +64,66 @@ def test_sample_models_as_cif(mock_sample_models, mock_sample_model):
 
 @patch('builtins.print')
 def test_sample_models_show_names(mock_print, mock_sample_models, mock_sample_model):
-    mock_sample_models.add(model=mock_sample_model)
+    mock_sample_models.add(mock_sample_model)
     mock_sample_models.show_names()
 
     # Assertions
     mock_print.assert_called_with(['test_model'])
 
 
-@patch.object(SampleModel, 'show_params', autospec=True)
+@patch.object(BaseSampleModel, 'show_params', autospec=True)
 def test_sample_models_show_params(mock_show_params, mock_sample_models, mock_sample_model):
-    mock_sample_models.add(model=mock_sample_model)
+    mock_sample_models.add(mock_sample_model)
     mock_sample_models.show_params()
 
     # Assertions
     mock_show_params.assert_called_once_with(mock_sample_model)
+
+
+def test_sample_models_add_minimal(monkeypatch):
+    sm = SampleModels()
+    # Patch SampleModel to avoid heavy init
+    class DummyModel(SampleModel):
+        def __init__(self, name, cif_path=None, cif_str=None):  # type: ignore[no-untyped-def]
+            # Do not call super().__init__ to keep it light
+            self._name = name
+
+    monkeypatch.setattr('easydiffraction.sample_models.sample_models.SampleModel', DummyModel)
+    sm.add_minimal('m1')
+    assert 'm1' in sm.names
+
+
+def test_sample_models_add_from_cif_path(monkeypatch):
+    sm = SampleModels()
+    created = {}
+
+    def fake_create(**kwargs):  # type: ignore[no-untyped-def]
+        created['kwargs'] = kwargs
+        return BaseSampleModel(name='dummy_from_path')
+
+    monkeypatch.setattr(
+        'easydiffraction.sample_models.sample_model_factory.SampleModelFactory.create',
+        staticmethod(fake_create),
+    )
+
+    sm.add_from_cif_path('/path/to/file.cif')
+    assert 'dummy_from_path' in sm.names
+    assert created['kwargs']['cif_path'] == '/path/to/file.cif'
+
+
+def test_sample_models_add_from_cif_str(monkeypatch):
+    sm = SampleModels()
+    created = {}
+
+    def fake_create(**kwargs):  # type: ignore[no-untyped-def]
+        created['kwargs'] = kwargs
+        return BaseSampleModel(name='dummy_from_str')
+
+    monkeypatch.setattr(
+        'easydiffraction.sample_models.sample_model_factory.SampleModelFactory.create',
+        staticmethod(fake_create),
+    )
+
+    sm.add_from_cif_str('data_cif')
+    assert 'dummy_from_str' in sm.names
+    assert created['kwargs']['cif_str'] == 'data_cif'
