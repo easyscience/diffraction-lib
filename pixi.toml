@@ -16,7 +16,7 @@ PYTHONIOENCODING = "utf-8"
 
 # Unix/macOS
 [target.unix.activation.env]
-PYTHONPATH = "src${PYTHONPATH:+:${PYTHONPATH}}" # remove ":" if needed
+PYTHONPATH = "src${PYTHONPATH:+:${PYTHONPATH}}" # removes ":" if needed
 
 # Windows
 [target.win.activation.env]
@@ -47,9 +47,9 @@ jupyterlab = '*' # JupyterLab for notebooks
 libcblas = '*' # CBLAS library for linear algebra; required for pdffit2.
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
-pixi-kernel = '*'                                               # Pixi Jupyter kernel
-uv = '*'                                                        # Python package manager
-easydiffraction = { version = '*', extras = ['visualization'] } # Main package
+pixi-kernel = '*'                                     # Pixi Jupyter kernel
+uv = '*'                                              # Python package manager
+easydiffraction = { version = '*', extras = ['all'] } # Main package
 
 # Features for specific Python versions
 
@@ -199,7 +199,5 @@ dev = { depends-on = [
 
 wheel = { depends-on = ['npm-config', 'prettier-install'] }
 
-## 🔗 Shortcuts
+## 🔗 Main Package Shortcut
 easydiffraction = 'python -m easydiffraction'
-tutorials-list = 'python -m easydiffraction list-tutorials'
-tutorials-fetch = 'python -m easydiffraction fetch-tutorials'
