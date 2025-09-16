@@ -4,21 +4,11 @@
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
-from pathlib import Path
-from typing import FrozenSet
 from typing import Optional
-from typing import Set
-from typing import Tuple
 
 import gemmi
 
 from easydiffraction.sample_models.sample_model import BaseSampleModel
-
-
-@dataclass(frozen=True)
-class _ArgSpec:
-    keys: FrozenSet[str]
 
 
 class SampleModelFactory:
@@ -33,26 +23,11 @@ class SampleModelFactory:
     Any other combination is considered invalid.
     """
 
-    _valid_arg_sets: Tuple[_ArgSpec, ...] = (
-        _ArgSpec(frozenset({'name'})),
-        _ArgSpec(frozenset({'cif_path'})),
-        _ArgSpec(frozenset({'cif_str'})),
+    VALID_ARG_SETS = (
+        frozenset({'name'}),
+        frozenset({'cif_path'}),
+        frozenset({'cif_str'}),
     )
-
-    @classmethod
-    def _present_keys(
-        cls,
-        *,
-        name: Optional[str] = None,
-        cif_path: Optional[str] = None,
-        cif_str: Optional[str] = None,
-    ) -> Set[str]:
-        present = {
-            k
-            for k, v in {'name': name, 'cif_path': cif_path, 'cif_str': cif_str}.items()
-            if v is not None
-        }
-        return present
 
     @classmethod
     def _validate_args(
@@ -62,11 +37,14 @@ class SampleModelFactory:
         cif_path: Optional[str] = None,
         cif_str: Optional[str] = None,
     ) -> None:
-        present = frozenset(cls._present_keys(name=name, cif_path=cif_path, cif_str=cif_str))
-        valid = {spec.keys for spec in cls._valid_arg_sets}
-        if present not in valid:
+        present = frozenset(
+            k
+            for k, v in {'name': name, 'cif_path': cif_path, 'cif_str': cif_str}.items()
+            if v is not None
+        )
+        if present not in cls.VALID_ARG_SETS:
             # Build helpful error message
-            combos = ['(' + ', '.join(sorted(spec.keys)) + ')' for spec in cls._valid_arg_sets]
+            combos = ['(' + ', '.join(sorted(spec)) + ')' for spec in cls.VALID_ARG_SETS]
             allowed = ', '.join(combos)
             raise ValueError(
                 'Invalid argument combination for SampleModel creation. '
@@ -132,19 +110,11 @@ class SampleModelFactory:
 
     @staticmethod
     def _read_cif_document_from_path(path: str) -> gemmi.cif.Document:
-        # Prefer official API if available
-        if hasattr(gemmi.cif, 'read_file'):
-            return gemmi.cif.read_file(path)
-        # Fallback: read as text and parse string
-        text = Path(path).read_text(encoding='utf-8', errors='ignore')
-        return gemmi.cif.read_string(text)
+        return gemmi.cif.read_file(path)
 
     @staticmethod
     def _read_cif_document_from_string(text: str) -> gemmi.cif.Document:
-        if hasattr(gemmi.cif, 'read_string'):
-            return gemmi.cif.read_string(text)
-        # Fallback: return empty document if API is unavailable
-        return gemmi.cif.Document()
+        return gemmi.cif.read_string(text)
 
     @staticmethod
     def _has_structural_content(block: gemmi.cif.Block) -> bool:
@@ -169,10 +139,10 @@ class SampleModelFactory:
             if cls._has_structural_content(block):
                 return block
         # As a fallback, return the sole or first block
-        if hasattr(doc, 'sole_block'):
+        try:
             return doc.sole_block()
-        # Indexing works in gemmi: doc[0]
-        return doc[0]
+        except Exception:
+            return doc[0]
 
     @classmethod
     def _create_model_from_block(cls, block: gemmi.cif.Block) -> BaseSampleModel:
@@ -197,7 +167,7 @@ class SampleModelFactory:
 
     @classmethod
     def _extract_name_from_block(cls, block: gemmi.cif.Block) -> str:
-        return getattr(block, 'name', None) or 'model'
+        return block.name or 'model'
 
     @classmethod
     def _apply_space_group_from_block(cls, model: BaseSampleModel, block: gemmi.cif.Block) -> None:
@@ -208,13 +178,9 @@ class SampleModelFactory:
         )
         if not sg_hm:
             try:
-                if hasattr(gemmi, 'make_small_structure_from_block'):
-                    ss = gemmi.make_small_structure_from_block(block)
-                    sg = (
-                        getattr(ss, 'spacegroup', None)
-                        or getattr(ss, 'get_spacegroup', lambda: None)()
-                    )
-                    sg_hm = getattr(sg, 'hm', None)
+                ss = gemmi.make_small_structure_from_block(block)
+                sg = ss.get_spacegroup()
+                sg_hm = sg.hm if sg is not None else None
             except Exception:
                 sg_hm = None
         if sg_hm:
