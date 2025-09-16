@@ -1,0 +1,44 @@
+# This workflow creates a backmerge PR from DEFAULT_BRANCH into `develop`
+# whenever a new version tag is pushed (v*).
+#
+# Usage:
+#   - Triggered automatically on tag push (v*).
+#   - Creates a PR titled "Backmerge: DEFAULT_BRANCH into develop".
+#   - Adds the label "[maintainer] auto-pull-request" so it is excluded from changelogs.
+
+name: Backmerge PR creation
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# Set the environment variables to be used in all jobs defined in this workflow
+env:
+  DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+
+jobs:
+  create-backmerge-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ env.DEFAULT_BRANCH }} branch
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ env.DEFAULT_BRANCH }}
+
+      - name: Create PR from ${{ env.DEFAULT_BRANCH }} to develop
+        run: |
+          gh pr create \
+            --base develop \
+            --head ${{ env.DEFAULT_BRANCH }} \
+            --title "Backmerge: ${{ env.DEFAULT_BRANCH }} into develop" \
+            --label "[maintainer] auto-pull-request" \
+            --body "⚠️ This PR is created automatically for backmerges changes from \`${{ env.DEFAULT_BRANCH }}\` into \`develop\`, following a new release tag push.
+
+            It is labeled \`[maintainer] auto-pull-request\` and is excluded from release notes and version bump logic."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_API_PERSONAL_ACCESS_TOKEN }}

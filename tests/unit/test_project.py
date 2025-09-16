@@ -1,7 +1,8 @@
 import datetime
 import os
+import pathlib
 import time
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, ANY
 from unittest.mock import patch
 
 from easydiffraction.analysis.analysis import Analysis
@@ -10,6 +11,19 @@ from easydiffraction.project import Project
 from easydiffraction.project import ProjectInfo
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.summary import Summary
+
+
+def _normalize_posix(p: pathlib.Path) -> str:
+    """Return a normalized POSIX-style path string with a leading '/'.
+
+    This makes tests robust across Windows and POSIX when using paths like
+    '/test/path' that, on Windows, become '\\test\\path'. We avoid relying on
+    drive letters or platform-specific semantics for these synthetic test paths.
+    """
+    s = str(p).replace('\\', '/')
+    if not s.startswith('/'):
+        s = '/' + s.lstrip('/')
+    return s
 
 # ------------------------------------------
 # Tests for ProjectInfo
@@ -23,7 +37,7 @@ def test_project_info_initialization():
     assert project_info.name == 'untitled_project'
     assert project_info.title == 'Untitled Project'
     assert project_info.description == ''
-    assert project_info.path == os.getcwd()
+    assert project_info.path == pathlib.Path.cwd()
     assert isinstance(project_info.created, datetime.datetime)
     assert isinstance(project_info.last_modified, datetime.datetime)
 
@@ -41,7 +55,8 @@ def test_project_info_setters():
     assert project_info.name == 'test_project'
     assert project_info.title == 'Test Project'
     assert project_info.description == 'This is a test project.'
-    assert project_info.path == '/test/path'
+    # Use POSIX form for cross-platform consistency (Windows vs POSIX separators)
+    assert _normalize_posix(project_info.path) == '/test/path'
 
 
 def test_project_info_update_last_modified():
@@ -118,14 +133,15 @@ def test_project_load(mock_print):
     project.load('/test/path')
 
     # Assertions
-    assert project.info.path == '/test/path'
+    # path is normalised/stored as a pathlib.Path
+    assert _normalize_posix(project.info.path) == '/test/path'
     assert 'Loading project 📦 from /test/path' in mock_print.call_args_list[0][0][0]
 
 
 @patch('builtins.print')
-@patch('os.makedirs')
-@patch('builtins.open', new_callable=MagicMock)
-def test_project_save(mock_open, mock_makedirs, mock_print):
+@patch('pathlib.Path.open', new_callable=MagicMock)
+@patch('pathlib.Path.mkdir')
+def test_project_save(mock_mkdir, mock_open, mock_print):
     with (
         patch('easydiffraction.sample_models.sample_models.SampleModels'),
         patch('easydiffraction.experiments.experiments.Experiments'),
@@ -138,14 +154,16 @@ def test_project_save(mock_open, mock_makedirs, mock_print):
     project.save()
 
     # Assertions
-    mock_makedirs.assert_any_call('/test/path', exist_ok=True)
-    # mock_open.assert_any_call("/test/path\\summary.cif", "w")
+    # Bound Path.mkdir call does not pass the path object itself as first arg
+    mock_mkdir.assert_any_call(parents=True, exist_ok=True)
+    # Bound Path.open receives only the mode (path is bound); ensure at least one write call
+    mock_open.assert_any_call('w')
 
 
 @patch('builtins.print')
-@patch('os.makedirs')
-@patch('builtins.open', new_callable=MagicMock)
-def test_project_save_as(mock_open, mock_makedirs, mock_print):
+@patch('pathlib.Path.open', new_callable=MagicMock)
+@patch('pathlib.Path.mkdir')
+def test_project_save_as(mock_mkdir, mock_open, mock_print):
     with (
         patch('easydiffraction.sample_models.sample_models.SampleModels'),
         patch('easydiffraction.experiments.experiments.Experiments'),
@@ -157,9 +175,9 @@ def test_project_save_as(mock_open, mock_makedirs, mock_print):
     project.save_as('new_project_path')
 
     # Assertions
-    assert project.info.path.endswith('new_project_path')
-    mock_makedirs.assert_any_call(project.info.path, exist_ok=True)
-    mock_open.assert_any_call(os.path.join(project.info.path, 'project.cif'), 'w')
+    assert project.info.path.name == 'new_project_path'
+    mock_mkdir.assert_any_call(parents=True, exist_ok=True)
+    mock_open.assert_any_call('w')
 
 
 def test_project_set_sample_models():

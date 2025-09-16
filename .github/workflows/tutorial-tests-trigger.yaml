@@ -1,4 +1,4 @@
-name: Trigger scheduled test code
+name: Scheduled tutorial tests trigger
 
 on:
   # Run daily, at 00:00.
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  trigger-test-tutorials:
+  tutorial-tests-trigger:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,7 +17,7 @@ jobs:
         with:
           ref: develop
 
-      - name: Trigger test-tutorials workflow
+      - name: Dispatch tutorial tests workflow
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -25,6 +25,6 @@ jobs:
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: "test-code.yaml",
+              workflow_id: "tutorial-tests.yaml",
               ref: "develop"
             });

@@ -25,6 +25,8 @@ class DfolsMinimizer(MinimizerBase):
         **kwargs: Any,
     ) -> None:
         super().__init__(name=name, method=None, max_iterations=max_iterations)
+        # Intentionally unused, accepted for API compatibility
+        del kwargs
 
     def _prepare_solver_args(self, parameters: List[Any]) -> Dict[str, Any]:
         x0 = []
@@ -54,10 +56,7 @@ class DfolsMinimizer(MinimizerBase):
             raw_result: The result object returned by the solver.
         """
         # Ensure compatibility with raw_result coming from dfols.solve()
-        if hasattr(raw_result, 'x'):
-            result_values = raw_result.x
-        else:
-            result_values = raw_result  # fallback for raw_result being directly a list/array
+        result_values = raw_result.x if hasattr(raw_result, 'x') else raw_result
 
         for i, param in enumerate(parameters):
             param.value = result_values[i]

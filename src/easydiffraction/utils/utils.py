@@ -26,6 +26,8 @@ try:
 except ImportError:
     IPython = None
 
+import pathlib
+
 from easydiffraction.utils.formatting import error
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
@@ -70,14 +72,15 @@ def download_from_repository(
         overwrite: Whether to overwrite the file if it already exists.
             Defaults to False.
     """
-    file_path = os.path.join(destination, file_name)
-    if os.path.exists(file_path):
+    dest_path = pathlib.Path(destination)
+    file_path = dest_path / file_name
+    if file_path.exists():
         if not overwrite:
             print(warning(f"File '{file_path}' already exists and will not be overwritten."))
             return
         else:
             print(warning(f"File '{file_path}' already exists and will be overwritten."))
-            os.remove(file_path)
+            file_path.unlink()
 
     base = 'https://raw.githubusercontent.com'
     org = 'easyscience'
@@ -158,9 +161,9 @@ def _get_release_info(tag: str | None) -> dict | None:
         token = os.environ.get('GITHUB_TOKEN')
         if token:
             headers['Authorization'] = f'token {token}'
-
-        request = urllib.request.Request(api_url, headers=headers)  # noqa: S310
-        with urllib.request.urlopen(request) as response:  # noqa: S310
+        request = urllib.request.Request(api_url, headers=headers)  # noqa: S310 - constructing request (validated URL)
+        # Safe network call: HTTPS enforced and validated
+        with _safe_urlopen(request) as response:
             return json.load(response)
     except Exception as e:
         if tag is not None:
@@ -200,6 +203,23 @@ def _sort_notebooks(notebooks: list[str]) -> list[str]:
     return sorted(notebooks)
 
 
+def _safe_urlopen(request_or_url):  # type: ignore[no-untyped-def]
+    """Wrapper for urlopen with prior validation.
+
+    Centralises lint suppression for validated HTTPS requests.
+    """
+    # Only allow https scheme.
+    if isinstance(request_or_url, str):
+        parsed = urllib.parse.urlparse(request_or_url)
+        if parsed.scheme != 'https':  # pragma: no cover - sanity check
+            raise ValueError('Only https URLs are permitted')
+    elif isinstance(request_or_url, urllib.request.Request):  # noqa: S310 - request object inspected, not opened
+        parsed = urllib.parse.urlparse(request_or_url.full_url)
+        if parsed.scheme != 'https':  # pragma: no cover
+            raise ValueError('Only https URLs are permitted')
+    return urllib.request.urlopen(request_or_url)  # noqa: S310 - validated https only
+
+
 def _extract_notebooks_from_asset(download_url: str) -> list[str]:
     """Download the tutorials.zip from download_url and return a sorted
     list of .ipynb file names.
@@ -212,14 +232,17 @@ def _extract_notebooks_from_asset(download_url: str) -> list[str]:
     """
     try:
         _validate_url(download_url)
-        with urllib.request.urlopen(download_url) as response:  # noqa: S310
-            with zipfile.ZipFile(io.BytesIO(response.read())) as zip_file:
-                notebooks = [
-                    os.path.basename(name)
-                    for name in zip_file.namelist()
-                    if name.endswith('.ipynb') and not name.endswith('/')
-                ]
-                return _sort_notebooks(notebooks)
+        # Download & open zip (validated HTTPS) in combined context.
+        with (
+            _safe_urlopen(download_url) as resp,
+            zipfile.ZipFile(io.BytesIO(resp.read())) as zip_file,
+        ):
+            notebooks = [
+                pathlib.Path(name).name
+                for name in zip_file.namelist()
+                if name.endswith('.ipynb') and not name.endswith('/')
+            ]
+            return _sort_notebooks(notebooks)
     except Exception as e:
         print(error(f"Failed to download or parse 'tutorials.zip': {e}"))
         return []
@@ -316,14 +339,15 @@ def fetch_tutorials() -> None:
     _validate_url(file_url)
 
     print('📥 Downloading tutorial notebooks...')
-    urllib.request.urlretrieve(file_url, file_name)  # noqa: S310
+    with _safe_urlopen(file_url) as resp:
+        pathlib.Path(file_name).write_bytes(resp.read())
 
     print('📦 Extracting tutorials to "tutorials/"...')
     with zipfile.ZipFile(file_name, 'r') as zip_ref:
         zip_ref.extractall()
 
     print('🧹 Cleaning up...')
-    os.remove(file_name)
+    pathlib.Path(file_name).unlink()
 
     print('✅ Tutorials fetched successfully.')
 
@@ -353,13 +377,14 @@ def is_notebook() -> bool:
         return True
 
     try:
-        shell = get_ipython().__class__.__name__  # noqa: F821
+        # get_ipython is only defined inside IPython environments
+        shell = get_ipython().__class__.__name__  # type: ignore[name-defined]
         if shell == 'ZMQInteractiveShell':  # Jupyter notebook or qtconsole
             return True
-        elif shell == 'TerminalInteractiveShell':  # Terminal running IPython
+        if shell == 'TerminalInteractiveShell':  # Terminal running IPython
             return False
-        else:  # Other type (unlikely)
-            return False
+        # Fallback for any other shell type
+        return False
     except NameError:
         return False  # Probably standard Python interpreter
 
@@ -656,7 +681,7 @@ def get_value_from_xye_header(file_path, key):
     """
     pattern = rf'{key}\s*=\s*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)'
 
-    with open(file_path, 'r') as f:
+    with pathlib.Path(file_path).open('r') as f:
         first_line = f.readline()
 
     match = re.search(pattern, first_line)

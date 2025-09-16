@@ -275,10 +275,9 @@ class Component(ABC):
         If the attribute 'name' does not exist, add it. If the attribute
         'name' exists and is a Parameter or Descriptor, set its value.
         """
-        if hasattr(self, '_locked') and self._locked:
-            if not hasattr(self, name):
-                print(error(f"Cannot add new parameter '{name}'"))
-                return
+        if hasattr(self, '_locked') and self._locked and not hasattr(self, name):
+            print(error(f"Cannot add new parameter '{name}'"))
+            return
 
         # Try to get the attribute from the instance's dictionary
         attr = self.__dict__.get(name, None)
@@ -475,7 +474,7 @@ class Collection(ABC):
                 params = item.as_dict()
                 category_key = item.cif_category_key
                 # Keys
-                keys = [f'_{category_key}.{param_key}' for param_key in params.keys()]
+                keys = [f'_{category_key}.{param_key}' for param_key in params]
                 # Values. If the value is a string and contains spaces,
                 # add quotes
                 values = []

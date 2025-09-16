@@ -83,10 +83,7 @@ class LmfitMinimizer(MinimizerBase):
             parameters: List of parameters being optimized.
             raw_result: The result object returned by the solver.
         """
-        if hasattr(raw_result, 'params'):
-            param_values = raw_result.params
-        else:
-            param_values = raw_result  # fallback if params attribute is not present
+        param_values = raw_result.params if hasattr(raw_result, 'params') else raw_result
 
         for param in parameters:
             param_result = param_values.get(param.minimizer_uid)
@@ -122,4 +119,6 @@ class LmfitMinimizer(MinimizerBase):
             *args: Additional positional arguments.
             **kwargs: Additional keyword arguments.
         """
+        # Intentionally unused, required by callback signature
+        del params, resid, args, kwargs
         self._iteration = iter

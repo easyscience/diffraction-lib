@@ -336,12 +336,11 @@ class Analysis:
         if strategy not in ['single', 'joint']:
             raise ValueError("Fit mode must be either 'single' or 'joint'")
         self._fit_mode = strategy
-        if strategy == 'joint':
-            if not hasattr(self, 'joint_fit_experiments'):
-                # Pre-populate all experiments with weight 0.5
-                self.joint_fit_experiments = JointFitExperiments()
-                for id in self.project.experiments.ids:
-                    self.joint_fit_experiments.add(id, weight=0.5)
+        if strategy == 'joint' and not hasattr(self, 'joint_fit_experiments'):
+            # Pre-populate all experiments with weight 0.5
+            self.joint_fit_experiments = JointFitExperiments()
+            for id in self.project.experiments.ids:
+                self.joint_fit_experiments.add(id, weight=0.5)
         print(paragraph('Current fit mode changed to'))
         print(self._fit_mode)
 

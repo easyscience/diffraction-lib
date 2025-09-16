@@ -1,26 +1,34 @@
 import os
 import re
+from pathlib import Path
 from typing import Any
 from typing import Dict
 from typing import List
 
+import material.extensions.emoji  # side-effect: register emoji tag
+import pymdownx.superfences  # side-effect: register superfence tag
 import yaml
 
-# ---------------
-# Special imports
-# ---------------
+# Side-effect imports above ensure tagged YAML constructors
+# (e.g., !!python/name:...) can be resolved during load.
 
-# Needed to parse !!python/name:material.extensions.emoji.twemoji
-import material.extensions.emoji  # noqa: F401  # isort: skip
 
-# Needed to parse !!python/name:pymdownx.superfences.fence_code_format
-import pymdownx.superfences  # noqa: F401  # isort: skip
+def _activate_yaml_tag_side_effects() -> None:  # pragma: no cover - trivial
+    """Access imported modules' attributes so Ruff sees them as used.
+
+    The primary purpose of importing these packages is to ensure the
+    tagged constructors are importable during YAML load. Accessing the
+    attributes makes the side-effect explicit without needing noqa.
+    """
+    _ = material.extensions.emoji.twemoji  # type: ignore[attr-defined]
+    _ = pymdownx.superfences.fence_code_format  # type: ignore[attr-defined]
+
+
+_activate_yaml_tag_side_effects()
 
 
 def load_yaml_with_env_variables(file_path: str) -> Dict[str, Any]:
-    """
-    Load a YAML file while resolving environment variables defined using
-    !ENV ${VAR_NAME}.
+    """Load YAML resolving env variables declared as !ENV ${VAR_NAME}.
 
     Args:
         file_path (str): Path to the YAML file.
@@ -31,10 +39,9 @@ def load_yaml_with_env_variables(file_path: str) -> Dict[str, Any]:
     tag = '!ENV'
     pattern = re.compile(r'.*?\${([A-Z0-9_]+)}.*?')
 
-    def constructor_env_variables(loader, node):
-        """Replace !ENV ${VAR_NAME} with the actual environment variable
-        values."""
-        value = loader.construct_scalar(node)
+    def constructor_env_variables(loader, node):  # type: ignore[all]
+        """YAML constructor replacing !ENV markers with values."""
+        value = loader.construct_scalar(node)  # type: ignore[attr-defined]
         for var in pattern.findall(value):
             value = value.replace(f'${{{var}}}', os.environ.get(var, var))
         return value
@@ -43,22 +50,12 @@ def load_yaml_with_env_variables(file_path: str) -> Dict[str, Any]:
     loader.add_implicit_resolver(tag, pattern, None)
     loader.add_constructor(tag, constructor_env_variables)
 
-    with open(file_path, 'r', encoding='utf-8') as file:
-        return yaml.full_load(file)
+    with Path(file_path).open('r', encoding='utf-8') as fh:
+        return yaml.full_load(fh)
 
 
 def merge_yaml(base_config: Dict[str, Any], override_config: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Recursively merges two YAML dictionaries. The override_config values
-    replace or extend base_config.
-
-    Args:
-        base_config (dict): The base YAML configuration.
-        override_config (dict): The YAML configuration that overrides the base.
-
-    Returns:
-        dict: The merged YAML configuration.
-    """
+    """Deep merge two YAML dicts; override has priority."""
     if not isinstance(base_config, dict):
         return override_config
 
@@ -80,13 +77,10 @@ def merge_yaml(base_config: Dict[str, Any], override_config: Dict[str, Any]) -> 
 
 
 def merge_lists(base_list: List[Any], override_list: List[Any]) -> List[Any]:
-    """
-    Merges two lists while ensuring dictionaries with the same key are
-    merged and other values are appended without duplication.
+    """Merge two lists with handling of single-key dict items.
 
-    - If an item in the list is a dictionary with a single key, and a matching dictionary exists,
-      they are merged instead of duplicated.
-    - Other values are added uniquely.
+    Single-key dicts sharing a key are deep-merged; other items are
+    appended if not already present.
 
     Args:
         base_list (list): The base list.
@@ -116,30 +110,23 @@ def merge_lists(base_list: List[Any], override_list: List[Any]) -> List[Any]:
 
 
 def save_yaml(data: Dict[str, Any], output_file: str) -> None:
-    """
-    Save a YAML dictionary to a file, ensuring proper Unicode handling
-    and preserving !!python/name tags.
-
-    Args:
-        data (dict): YAML data to be saved.
-        output_file (str): Output file path.
-    """
+    """Write YAML preserving !!python/name tags and Unicode."""
 
     class CustomDumper(yaml.Dumper):
-        """Custom YAML dumper to prevent adding empty quotes for
-        !!python/name."""
+        """Custom dumper avoiding unnecessary anchors & quotes."""
 
-        def ignore_aliases(self, data):
-            return True  # Prevents unnecessary YAML processing on certain tags
+        def ignore_aliases(self, _):  # noqa: D401 - simple override
+            return True
 
-    with open(output_file, 'w', encoding='utf-8') as f:
+    out_path = Path(output_file)
+    with out_path.open('w', encoding='utf-8') as f:
         f.write('# WARNING: This file is auto-generated during the build process.\n')
         f.write('# DO NOT EDIT THIS FILE MANUALLY.\n')
         f.write('# It is created by merging:\n')
         f.write('#   - Generic YAML file: ../assets-docs/mkdocs.yml\n')
         f.write('#   - Project specific YAML file: docs/mkdocs.yml\n\n')
 
-    with open(output_file, 'a', encoding='utf-8') as f:
+    with out_path.open('a', encoding='utf-8') as f:
         yaml.dump(
             data,
             f,

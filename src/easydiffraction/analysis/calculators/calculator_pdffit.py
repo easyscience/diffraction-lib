@@ -3,6 +3,8 @@
 
 import os
 import re
+from pathlib import Path
+from typing import Optional
 
 import numpy as np
 
@@ -15,8 +17,13 @@ try:
     from diffpy.pdffit2 import redirect_stdout
     from diffpy.structure.parsers.p_cif import P_cif as pdffit_cif_parser
 
-    # Silence the C++ engine output
-    redirect_stdout(open(os.path.devnull, 'w'))
+    # Silence the C++ engine output while keeping the handle open
+    _pdffit_devnull: Optional[object]
+    with Path(os.devnull).open('w') as _tmp_devnull:
+        # Duplicate file descriptor so the handle remains
+        # valid after the context
+        _pdffit_devnull = os.fdopen(os.dup(_tmp_devnull.fileno()), 'w')
+    redirect_stdout(_pdffit_devnull)
     # TODO: Add the following print to debug mode
     # print("✅ 'pdffit' calculation engine is successfully imported.")
 except ImportError:
@@ -37,6 +44,8 @@ class PdffitCalculator(CalculatorBase):
 
     def calculate_structure_factors(self, sample_models, experiments):
         # PDF doesn't compute HKL but we keep interface consistent
+        # Intentionally unused, required by public API/signature
+        del sample_models, experiments
         print('[pdffit] Calculating HKLs (not applicable)...')
         return []
 
@@ -46,6 +55,9 @@ class PdffitCalculator(CalculatorBase):
         experiment: Experiment,
         called_by_minimizer: bool = False,
     ):
+        # Intentionally unused, required by public API/signature
+        del called_by_minimizer
+
         # Create PDF calculator object
         calculator = PdfFit()
 
