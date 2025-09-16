@@ -11,31 +11,20 @@ from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_cif
 
 
-class SampleModel(Datablock):
-    """Represents an individual structural model of a sample.
+class BaseSampleModel(Datablock):
+    """Base sample model: structure container with only a name.
 
     Wraps crystallographic information including space group, cell, and
-    atomic sites.
+    atomic sites. Creation from CIF is handled by the factory; this base
+    class accepts only the `name`.
     """
 
-    # TODO: Move cif_path and cif_str out of __init__ and into separate
-    #  methods
-    def __init__(
-        self,
-        name: str,
-        cif_path: str = None,
-        cif_str: str = None,
-    ):
+    def __init__(self, name: str):
         super().__init__()
         self._name = name
         self.space_group = SpaceGroup()
         self.cell = Cell()
         self.atom_sites = AtomSites()
-
-        if cif_path:
-            self.load_from_cif_file(cif_path)
-        elif cif_str:
-            self.load_from_cif_string(cif_str)
 
     # -----------
     # Space group
@@ -134,28 +123,9 @@ class SampleModel(Datablock):
         self._apply_atomic_coordinates_symmetry_constraints()
         self._apply_atomic_displacement_symmetry_constraints()
 
-    # -----------------
-    # Creation from CIF
-    # -----------------
-
-    def load_from_cif_file(self, cif_path: str):
-        """Load model data from a CIF file."""
-        # TODO: Implement CIF parsing here
-        print(f'Loading SampleModel from CIF file: {cif_path}')
-        print('Not implemented yet.')
-
-    def load_from_cif_string(self, cif_str: str):
-        """Load model data from a CIF string."""
-        # TODO: Implement CIF parsing from a string
-        print('Loading SampleModel from CIF string.')
-        print('Not implemented yet.')
-        # Intentionally unused, to avoid linter warning unless
-        # implemented later
-        del cif_str
-
-    # -----------------
-    # Convertion to CIF
-    # -----------------
+    # -----------
+    # CIF methods
+    # -----------
 
     def as_cif(self) -> str:
         """Export the sample model to CIF format.
@@ -200,3 +170,17 @@ class SampleModel(Datablock):
         cif_text: str = self.as_cif()
         paragraph_title: str = paragraph(f"Sample model 🧩 '{self.name}' as cif")
         render_cif(cif_text, paragraph_title)
+
+
+class SampleModel:
+    """User-facing API for creating a sample model.
+
+    Accepts keyword arguments and delegates validation and creation to
+    SampleModelFactory.
+    """
+
+    def __new__(cls, **kwargs):
+        # Lazy import to avoid circular import at module load time
+        from easydiffraction.sample_models.sample_model_factory import SampleModelFactory
+
+        return SampleModelFactory.create(**kwargs)
