@@ -90,24 +90,34 @@ jobs:
         run: pixi run nonpy-format-check
 
       # Check formatting of Jupyter Notebooks in the tutorials folder
-      - name: Convert tutorial scripts to notebooks
-        shell: bash
-        run: pixi run notebook-prepare
-
-      - name: Check notebooks formatting
+      - name: Convert tutorial scripts to notebooks and check formatting
         id: check_notebooks_formatting
         continue-on-error: true
         shell: bash
-        run: pixi run notebook-format-check
+        run: |
+          pixi run notebook-prepare
+          pixi run notebook-format-check
 
-      # Fail conditions
-      - name: Force fail if any of the previous steps failed
-        if: |
-          steps.check_pyproject.outcome == 'failure' ||
-          steps.check_code_linting.outcome == 'failure' ||
-          steps.check_code_formatting.outcome == 'failure' ||
-          steps.check_docs_formatting.outcome == 'failure' ||
-          steps.check_others_formatting.outcome == 'failure' ||
-          steps.check_notebooks_formatting.outcome == 'failure'
+      # Add summary
+      - name: Add quality checks summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## 🧪 Code Quality Checks Summary"
+            echo ""
+            echo "| Check | Status |"
+            echo "|-------|--------|"
+            echo "| pyproject-check | ${{ steps.check_pyproject.outcome == 'success' && '✅' || '❌' }} |"
+            echo "| lint-check      | ${{ steps.check_code_linting.outcome == 'success' && '✅' || '❌' }} |"
+            echo "| format-check    | ${{ steps.check_code_formatting.outcome == 'success' && '✅' || '❌' }} |"
+            echo "| docs-format     | ${{ steps.check_docs_formatting.outcome == 'success' && '✅' || '❌' }} |"
+            echo "| nonpy-format    | ${{ steps.check_others_formatting.outcome == 'success' && '✅' || '❌' }} |"
+            echo "| notebooks       | ${{ steps.check_notebooks_formatting.outcome == 'success' && '✅' || '❌' }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Fail job requirement
+      - name: Fail job if any check failed
+        if: failure()
         shell: bash
         run: exit 1
