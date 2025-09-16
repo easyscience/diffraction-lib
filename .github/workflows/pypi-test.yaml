@@ -1,4 +1,4 @@
-name: Test unpinned PyPI package
+name: PyPI package tests
 
 on:
   # Run daily, at 00:00.
@@ -14,8 +14,13 @@ concurrency:
     ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Set the environment variables to be used in all jobs defined in this workflow
+env:
+  CI_BRANCH: ${{ github.head_ref || github.ref_name }}
+  DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+
 jobs:
-  test-package:
+  pypi-package-tests:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -30,21 +35,29 @@ jobs:
           cache: false
           post-cleanup: false
 
-      - name: Download the pixi configuration file from the master branch
-        run: |
-          curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/master/pixi/prod/pixi.toml
-
-      - name: Download the tests from the master branch
+      - name:
+          Download the pixi configuration file from the ${{ env.CI_BRANCH}}
+          branch
         shell: bash
         run: |
-          curl -LO https://github.com/easyscience/diffraction-lib/archive/refs/heads/master.zip
-          unzip master.zip -d .
+          curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/${CI_BRANCH}/pixi.toml
+
+      - name: Download the tests from the ${{ env.DEFAULT_BRANCH }} branch
+        shell: bash
+        run: |
+          curl -LO https://github.com/easyscience/diffraction-lib/archive/refs/heads/${DEFAULT_BRANCH}.zip
+          unzip ${DEFAULT_BRANCH}.zip -d .
           mkdir -p tests
-          cp -r diffraction-lib-master/tests/* tests/
-          rm -rf master.zip diffraction-lib-master
+          cp -r diffraction-lib-${DEFAULT_BRANCH}/tests/* tests/
+          rm -rf ${DEFAULT_BRANCH}.zip diffraction-lib-${DEFAULT_BRANCH}
 
       - name: Create the environment and install dependencies
         run: pixi install
+
+      - name: Install package from PyPI with dev and visualization extras
+        run: |
+          pixi add --pypi "easydiffraction[dev,visualization]"
+          pixi run easydiffraction --version
 
       - name: Run unit tests to verify the installation
         run: pixi run unit-tests

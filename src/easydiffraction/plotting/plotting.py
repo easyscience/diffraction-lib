@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.plotting.plotters.plotter_ascii import AsciiPlotter
@@ -35,7 +35,9 @@ class Plotter:
 
     @engine.setter
     def engine(self, new_engine):
-        """Sets the current plotting engine name and updates the plotter instance."""
+        """Sets the current plotting engine name and updates the plotter
+        instance.
+        """
         new_plotter = PlotterFactory.create_plotter(new_engine)
         if new_plotter is None:
             return
@@ -84,9 +86,7 @@ class Plotter:
             self._height = DEFAULT_HEIGHT
 
     def show_config(self):
-        """
-        Displays the current configuration settings.
-        """
+        """Displays the current configuration settings."""
         columns_headers = ['Parameter', 'Value']
         columns_alignment = ['left', 'left']
         columns_data = [
@@ -103,9 +103,7 @@ class Plotter:
         )
 
     def show_supported_engines(self):
-        """
-        Displays the supported plotting engines.
-        """
+        """Displays the supported plotting engines."""
         columns_headers = ['Engine', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
@@ -136,10 +134,7 @@ class Plotter:
             error(f'No measured data available for experiment {expt_name}')
             return
 
-        if d_spacing:
-            x_array = pattern.d
-        else:
-            x_array = pattern.x
+        x_array = pattern.d if d_spacing else pattern.x
         x = self._filtered_y_array(
             y_array=x_array,
             x_array=x_array,
@@ -196,10 +191,7 @@ class Plotter:
             print(f'No calculated data available for experiment {expt_name}')
             return
 
-        if d_spacing:
-            x_array = pattern.d
-        else:
-            x_array = pattern.x
+        x_array = pattern.d if d_spacing else pattern.x
         x = self._filtered_y_array(
             y_array=x_array,
             x_array=x_array,
@@ -260,10 +252,7 @@ class Plotter:
             print(error(f'No calculated data available for experiment {expt_name}'))
             return
 
-        if d_spacing:
-            x_array = pattern.d
-        else:
-            x_array = pattern.x
+        x_array = pattern.d if d_spacing else pattern.x
         x = self._filtered_y_array(
             y_array=x_array,
             x_array=x_array,

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Optional
@@ -15,8 +15,8 @@ def calculate_r_factor(
     y_obs: np.ndarray,
     y_calc: np.ndarray,
 ) -> float:
-    """
-    Calculate the R-factor (reliability factor) between observed and calculated data.
+    """Calculate the R-factor (reliability factor) between observed and
+    calculated data.
 
     Args:
         y_obs: Observed data points.
@@ -37,8 +37,8 @@ def calculate_weighted_r_factor(
     y_calc: np.ndarray,
     weights: np.ndarray,
 ) -> float:
-    """
-    Calculate the weighted R-factor between observed and calculated data.
+    """Calculate the weighted R-factor between observed and calculated
+    data.
 
     Args:
         y_obs: Observed data points.
@@ -60,8 +60,8 @@ def calculate_rb_factor(
     y_obs: np.ndarray,
     y_calc: np.ndarray,
 ) -> float:
-    """
-    Calculate the Bragg R-factor between observed and calculated data.
+    """Calculate the Bragg R-factor between observed and calculated
+    data.
 
     Args:
         y_obs: Observed data points.
@@ -81,8 +81,8 @@ def calculate_r_factor_squared(
     y_obs: np.ndarray,
     y_calc: np.ndarray,
 ) -> float:
-    """
-    Calculate the R-factor squared between observed and calculated data.
+    """Calculate the R-factor squared between observed and calculated
+    data.
 
     Args:
         y_obs: Observed data points.
@@ -102,8 +102,7 @@ def calculate_reduced_chi_square(
     residuals: np.ndarray,
     num_parameters: int,
 ) -> float:
-    """
-    Calculate the reduced chi-square statistic.
+    """Calculate the reduced chi-square statistic.
 
     Args:
         residuals: Residuals between observed and calculated data.
@@ -127,8 +126,8 @@ def get_reliability_inputs(
     experiments: Experiments,
     calculator: CalculatorBase,
 ) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
-    """
-    Collect observed and calculated data points for reliability calculations.
+    """Collect observed and calculated data points for reliability
+    calculations.
 
     Args:
         sample_models: Collection of sample models.
@@ -136,12 +135,13 @@ def get_reliability_inputs(
         calculator: The calculator to use for pattern generation.
 
     Returns:
-        Tuple containing arrays of (observed values, calculated values, error values)
+        Tuple containing arrays of (observed values, calculated values,
+            error values)
     """
     y_obs_all = []
     y_calc_all = []
     y_err_all = []
-    for expt_name, experiment in experiments._items.items():
+    for experiment in experiments._items.values():
         calculator.calculate_pattern(sample_models, experiment)
         y_calc = experiment.datastore.calc
         y_meas = experiment.datastore.meas

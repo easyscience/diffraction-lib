@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import asciichartpy
@@ -33,6 +33,8 @@ class AsciiPlotter(PlotterBase):
         title,
         height=None,
     ):
+        # Intentionally unused; kept for a consistent plotting API
+        del axes_labels
         title = paragraph(title)
         legend = '\n'.join([self._get_legend_item(label) for label in labels])
 

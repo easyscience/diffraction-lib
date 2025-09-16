@@ -86,8 +86,8 @@ model_2.atom_sites.add('O',   'O',  0.436, 0.022, 0.958, wyckoff_letter='b', b_i
 # %% [markdown]
 # ## Define Experiment
 #
-# This section shows how to add experiments, configure their parameters, and
-# link the sample models defined in the previous step.
+# This section shows how to add experiments, configure their parameters,
+# and link the sample models defined in the previous step.
 #
 # #### Download Data
 

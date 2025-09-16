@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import darkdetect
@@ -51,6 +51,8 @@ class PlotlyPlotter(PlotterBase):
         title,
         height=None,
     ):
+        # Intentionally unused; accepted for API compatibility
+        del height
         data = []
         for idx, y in enumerate(y_series):
             label = labels[idx]
@@ -104,7 +106,8 @@ class PlotlyPlotter(PlotterBase):
         )
 
         # Format the axes ticks
-        # Keeps decimals for small numbers; groups thousands for large ones
+        # Keeps decimals for small numbers;
+        # groups thousands for large ones
         fig.update_xaxes(tickformat=',.6~g', separatethousands=True)
         fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
 

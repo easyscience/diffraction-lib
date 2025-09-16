@@ -1,10 +1,11 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from abc import abstractmethod
 from enum import Enum
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Type
 from typing import Union
 
@@ -42,15 +43,15 @@ class Point(Component):
             value=x,
             name='x',
             cif_name='line_segment_X',
-            description='X-coordinates used to create many straight-line segments representing the background in a '
-            'calculated diffractogram.',
+            description='X-coordinates used to create many straight-line segments '
+            'representing the background in a calculated diffractogram.',
         )
         self.y = Parameter(
             value=y,  # TODO: rename to intensity
             name='y',  # TODO: rename to intensity
             cif_name='line_segment_intensity',
-            description='Intensity used to create many straight-line segments representing the background in a calculated '
-            'diffractogram',
+            description='Intensity used to create many straight-line segments '
+            'representing the background in a calculated diffractogram',
         )
 
         # Select which of the input parameters is used for the
@@ -84,15 +85,15 @@ class PolynomialTerm(Component):
             value=order,
             name='chebyshev_order',
             cif_name='Chebyshev_order',
-            description='The value of an order used in a Chebyshev polynomial equation representing the background in a '
-            'calculated diffractogram',
+            description='The value of an order used in a Chebyshev polynomial '
+            'equation representing the background in a calculated diffractogram',
         )
         self.coef = Parameter(
             value=coef,
             name='chebyshev_coef',
             cif_name='Chebyshev_coef',
-            description='The value of a coefficient used in a Chebyshev polynomial equation representing the background in a '
-            'calculated diffractogram',
+            description='The value of a coefficient used in a Chebyshev polynomial '
+            'equation representing the background in a calculated diffractogram',
         )
 
         # Select which of the input parameters is used for the
@@ -214,16 +215,20 @@ class BackgroundTypeEnum(str, Enum):
 
 
 class BackgroundFactory:
-    _supported: Dict[BackgroundTypeEnum, Type[BackgroundBase]] = {
-        BackgroundTypeEnum.LINE_SEGMENT: LineSegmentBackground,
-        BackgroundTypeEnum.CHEBYSHEV: ChebyshevPolynomialBackground,
+    BT = BackgroundTypeEnum
+    _supported: Dict[BT, Type[BackgroundBase]] = {
+        BT.LINE_SEGMENT: LineSegmentBackground,
+        BT.CHEBYSHEV: ChebyshevPolynomialBackground,
     }
 
     @classmethod
     def create(
         cls,
-        background_type: BackgroundTypeEnum = BackgroundTypeEnum.default(),
+        background_type: Optional[BackgroundTypeEnum] = None,
     ) -> BackgroundBase:
+        if background_type is None:
+            background_type = BackgroundTypeEnum.default()
+
         if background_type not in cls._supported:
             supported_types = list(cls._supported.keys())
 

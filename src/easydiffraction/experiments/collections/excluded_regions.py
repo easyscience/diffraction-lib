@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import List
@@ -51,9 +51,7 @@ class ExcludedRegion(Component):
 
 
 class ExcludedRegions(Collection):
-    """
-    Collection of ExcludedRegion instances.
-    """
+    """Collection of ExcludedRegion instances."""
 
     @property
     def _type(self) -> str:
@@ -64,8 +62,8 @@ class ExcludedRegions(Collection):
         return ExcludedRegion
 
     def on_item_added(self, item: ExcludedRegion) -> None:
-        """
-        Mark excluded points in the experiment pattern when a new region is added.
+        """Mark excluded points in the experiment pattern when a new
+        region is added.
         """
         datastore = self._parent.datastore
 
@@ -82,8 +80,8 @@ class ExcludedRegions(Collection):
 
     def show(self) -> None:
         # TODO: Consider moving this to the base class
-        #  to avoid code duplication with implementations in Background, etc.
-        #  Consider using parameter names as column headers
+        #  to avoid code duplication with implementations in Background,
+        #  etc. Consider using parameter names as column headers
         columns_headers: List[str] = ['start', 'end']
         columns_alignment = ['left', 'left']
         columns_data: List[List[float]] = []

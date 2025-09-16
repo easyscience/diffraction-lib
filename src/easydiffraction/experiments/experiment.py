@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from abc import abstractmethod
@@ -49,8 +49,8 @@ class InstrumentMixin:
 
 
 class BaseExperiment(Datablock):
-    """
-    Base class for all experiments with only core attributes.
+    """Base class for all experiments with only core attributes.
+
     Wraps experiment type, instrument and datastore.
     """
 
@@ -64,19 +64,6 @@ class BaseExperiment(Datablock):
             sample_form=self.type.sample_form.value,
             beam_mode=self.type.beam_mode.value,
         )
-
-    # ---------------------------
-    # Name (ID) of the experiment
-    # ---------------------------
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    @enforce_type
-    def name(self, new_name: str):
-        self._name = new_name
 
     # ---------------
     # Experiment type
@@ -99,8 +86,8 @@ class BaseExperiment(Datablock):
         self,
         max_points: Optional[int] = None,
     ) -> str:
-        """
-        Export the sample model to CIF format.
+        """Export the sample model to CIF format.
+
         Returns:
             str: CIF string representation of the experiment.
         """
@@ -151,9 +138,7 @@ class BaseExperiment(Datablock):
 
 
 class BasePowderExperiment(BaseExperiment):
-    """
-    Base class for all powder experiments.
-    """
+    """Base class for all powder experiments."""
 
     def __init__(
         self,
@@ -185,8 +170,17 @@ class BasePowderExperiment(BaseExperiment):
 
     @peak_profile_type.setter
     def peak_profile_type(self, new_type: str):
-        if new_type not in PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value]:
-            supported_types = list(PeakFactory._supported[self.type.scattering_type.value][self.type.beam_mode.value].keys())
+        if (
+            new_type
+            not in PeakFactory._supported[self.type.scattering_type.value][
+                self.type.beam_mode.value
+            ]
+        ):
+            supported_types = list(
+                PeakFactory._supported[self.type.scattering_type.value][
+                    self.type.beam_mode.value
+                ].keys()
+            )
             print(warning(f"Unsupported peak profile '{new_type}'"))
             print(f'Supported peak profiles: {supported_types}')
             print("For more information, use 'show_supported_peak_profile_types()'")
@@ -208,7 +202,7 @@ class BasePowderExperiment(BaseExperiment):
         scattering_type = self.type.scattering_type.value
         beam_mode = self.type.beam_mode.value
 
-        for profile_type in PeakFactory._supported[scattering_type][beam_mode].keys():
+        for profile_type in PeakFactory._supported[scattering_type][beam_mode]:
             columns_data.append([profile_type.value, profile_type.description()])
 
         print(paragraph('Supported peak profile types'))
@@ -227,8 +221,8 @@ class PowderExperiment(
     InstrumentMixin,
     BasePowderExperiment,
 ):
-    """
-    Powder experiment class with specific attributes.
+    """Powder experiment class with specific attributes.
+
     Wraps background, peak profile, and linked phases.
     """
 
@@ -247,8 +241,8 @@ class PowderExperiment(
     # -------------
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """
-        Loads x, y, sy values from an ASCII data file into the experiment.
+        """Loads x, y, sy values from an ASCII data file into the
+        experiment.
 
         The file must be structured as:
             x  y  sy
@@ -256,7 +250,7 @@ class PowderExperiment(
         try:
             data = np.loadtxt(data_path)
         except Exception as e:
-            raise IOError(f'Failed to read data from {data_path}: {e}')
+            raise IOError(f'Failed to read data from {data_path}: {e}') from e
 
         if data.shape[1] < 2:
             raise ValueError('Data file must have at least two columns: x and y.')
@@ -269,16 +263,16 @@ class PowderExperiment(
         y: np.ndarray = data[:, 1]
 
         # Round x to 4 decimal places
-        # TODO: This is needed for CrysPy, as otherwise it fails to match
-        #  the size of the data arrays.
+        # TODO: This is needed for CrysPy, as otherwise it fails to
+        #  match the size of the data arrays.
         x = np.round(x, 4)
 
         # Determine sy from column 3 if available, otherwise use sqrt(y)
         sy: np.ndarray = data[:, 2] if data.shape[1] > 2 else np.sqrt(y)
 
         # Replace values smaller than 0.0001 with 1.0
-        # TODO: This is needed for minimization algorithms that fail with
-        #  very small or zero uncertainties.
+        # TODO: This is needed for minimization algorithms that fail
+        #  with very small or zero uncertainties.
         sy = np.where(sy < 0.0001, 1.0, sy)
 
         # Attach the data to the experiment's datastore
@@ -322,7 +316,7 @@ class PowderExperiment(
         columns_headers = ['Background type', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
-        for bt, cls in BackgroundFactory._supported.items():
+        for bt in BackgroundFactory._supported:
             columns_data.append([bt.value, bt.description()])
 
         print(paragraph('Supported background types'))
@@ -338,8 +332,8 @@ class PowderExperiment(
 
 
 # TODO: Refactor this class to reuse PowderExperiment
-# TODO: This is not a specific experiment, but rather processed data from
-#  PowderExperiment. So, we should think of a better design.
+# TODO: This is not a specific experiment, but rather processed data
+#  from PowderExperiment. So, we should think of a better design.
 class PairDistributionFunctionExperiment(BasePowderExperiment):
     """PDF experiment class with specific attributes."""
 
@@ -351,8 +345,8 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
         super().__init__(name=name, type=type)
 
     def _load_ascii_data_to_experiment(self, data_path):
-        """
-        Loads x, y, sy values from an ASCII data file into the experiment.
+        """Loads x, y, sy values from an ASCII data file into the
+        experiment.
 
         The file must be structured as:
             x  y  sy
@@ -360,11 +354,11 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
         try:
             from diffpy.utils.parsers.loaddata import loadData
         except ImportError:
-            raise ImportError('diffpy module not found.')
+            raise ImportError('diffpy module not found.') from None
         try:
             data = loadData(data_path)
         except Exception as e:
-            raise IOError(f'Failed to read data from {data_path}: {e}')
+            raise IOError(f'Failed to read data from {data_path}: {e}') from e
 
         if data.shape[1] < 2:
             raise ValueError('Data file must have at least two columns: x and y.')
@@ -375,13 +369,14 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
 
         # Extract x, y, and sy data
         x = data[:, 0]
-        # We should also add sx = data[:, 2] to capture the e.s.d. of x. It
-        # might be useful in future.
+        # We should also add sx = data[:, 2] to capture the e.s.d. of x.
+        # It might be useful in future.
         y = data[:, 1]
-        # Using sqrt isn’t appropriate here, as the y-scale isn’t raw counts
-        # and includes both positive and negative values. For now, set the
-        # e.s.d. to a fixed value of 0.03 if it’s not included in the measured
-        # data file. We should improve this later.
+        # Using sqrt isn’t appropriate here, as the y-scale isn’t raw
+        # counts and includes both positive and negative values. For
+        # now, set the e.s.d. to a fixed value of 0.03 if it’s not
+        # included in the measured data file. We should improve this
+        # later.
         # sy = data[:, 3] if data.shape[1] > 2 else np.sqrt(y)
         sy = data[:, 2] if data.shape[1] > 2 else np.full_like(y, fill_value=default_sy)
 
@@ -456,10 +451,11 @@ class ExperimentFactory:
 
     @classmethod
     def create(cls, **kwargs):
-        """
-        Main factory method for creating an experiment instance.
-        Validates argument combinations and dispatches to the appropriate creation method.
-        Raises ValueError if arguments are invalid or no valid dispatch is found.
+        """Main factory method for creating an experiment instance.
+
+        Validates argument combinations and dispatches to the
+        appropriate creation method. Raises ValueError if arguments are
+        invalid or no valid dispatch is found.
         """
         # Check for valid argument combinations
         user_args = [k for k, v in kwargs.items() if v is not None]
@@ -488,8 +484,8 @@ class ExperimentFactory:
 
     @staticmethod
     def _create_from_cif_path(cif_path):
-        """
-        Create an experiment from a CIF file path.
+        """Create an experiment from a CIF file path.
+
         Not yet implemented.
         """
         # TODO: Implement CIF file loading logic
@@ -497,8 +493,8 @@ class ExperimentFactory:
 
     @staticmethod
     def _create_from_cif_str(cif_str):
-        """
-        Create an experiment from a CIF string.
+        """Create an experiment from a CIF string.
+
         Not yet implemented.
         """
         # TODO: Implement CIF string loading logic
@@ -506,9 +502,10 @@ class ExperimentFactory:
 
     @classmethod
     def _create_from_data_path(cls, kwargs):
-        """
-        Create an experiment from a raw data ASCII file.
-        Loads the experiment and attaches measured data from the specified file.
+        """Create an experiment from a raw data ASCII file.
+
+        Loads the experiment and attaches measured data from the
+        specified file.
         """
         expt_type = cls._make_experiment_type(kwargs)
         scattering_type = expt_type.scattering_type.value
@@ -522,9 +519,10 @@ class ExperimentFactory:
 
     @classmethod
     def _create_without_data(cls, kwargs):
-        """
-        Create an experiment without measured data.
-        Returns an experiment instance with only metadata and configuration.
+        """Create an experiment without measured data.
+
+        Returns an experiment instance with only metadata and
+        configuration.
         """
         expt_type = cls._make_experiment_type(kwargs)
         scattering_type = expt_type.scattering_type.value
@@ -536,8 +534,8 @@ class ExperimentFactory:
 
     @classmethod
     def _make_experiment_type(cls, kwargs):
-        """
-        Helper to construct an ExperimentType from keyword arguments, using defaults as needed.
+        """Helper to construct an ExperimentType from keyword arguments,
+        using defaults as needed.
         """
         return ExperimentType(
             sample_form=kwargs.get('sample_form', SampleFormEnum.default()),
@@ -548,9 +546,10 @@ class ExperimentFactory:
 
     @staticmethod
     def is_valid_args(user_args):
-        """
-        Validate user argument set against allowed combinations.
-        Returns True if the argument set matches any valid combination, else False.
+        """Validate user argument set against allowed combinations.
+
+        Returns True if the argument set matches any valid combination,
+        else False.
         """
         user_arg_set = set(user_args)
         for arg_set in ExperimentFactory._valid_arg_sets:
@@ -562,9 +561,12 @@ class ExperimentFactory:
         return False
 
 
-def Experiment(**kwargs):
+class Experiment:
+    """User-facing API for creating an experiment.
+
+    Accepts keyword arguments and delegates validation and creation to
+    ExperimentFactory.
     """
-    User-facing API for creating an experiment. Accepts keyword arguments and delegates
-    validation and creation to ExperimentFactory.
-    """
-    return ExperimentFactory.create(**kwargs)
+
+    def __new__(cls, **kwargs):
+        return ExperimentFactory.create(**kwargs)

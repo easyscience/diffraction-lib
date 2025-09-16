@@ -1,8 +1,9 @@
 # %% [markdown]
 # # Structure Refinement: HS, HRPT
 #
-# This example demonstrates a Rietveld refinement of HS crystal structure
-# using constant wavelength neutron powder diffraction data from HRPT at PSI.
+# This example demonstrates a Rietveld refinement of HS crystal
+# structure using constant wavelength neutron powder diffraction data
+# from HRPT at PSI.
 
 # %% [markdown]
 # ## Import Library
@@ -16,7 +17,8 @@ from easydiffraction import download_from_repository
 # %% [markdown]
 # ## Define Sample Model
 #
-# This section shows how to add sample models and modify their parameters.
+# This section shows how to add sample models and modify their
+# parameters.
 #
 # #### Create Sample Model
 
@@ -70,8 +72,8 @@ model.show_as_cif()
 # %% [markdown]
 # ## Define Experiment
 #
-# This section shows how to add experiments, configure their parameters, and
-# link the sample models defined in the previous step.
+# This section shows how to add experiments, configure their parameters,
+# and link the sample models defined in the previous step.
 #
 # #### Download Measured Data
 

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import secrets
@@ -14,6 +14,7 @@ from typing import TypeVar
 from typing import Union
 
 from easydiffraction.core.singletons import UidMapHandler
+from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import error
 from easydiffraction.utils.formatting import warning
 
@@ -21,23 +22,33 @@ T = TypeVar('T')
 
 
 class Descriptor:
-    """
-    Base class for descriptors (non-refinable attributes).
-    """
+    """Base class for descriptors (non-refinable attributes)."""
 
     def __init__(
         self,
-        value: Any,  # Value of the parameter
-        name: str,  # ED parameter name (to access it in the code)
-        cif_name: str,  # CIF parameter name (to show it in the CIF)
-        pretty_name: Optional[str] = None,  # Pretty name (to show it in the table)
-        datablock_id: Optional[str] = None,  # Parent datablock name
-        category_key: Optional[str] = None,  # ED parent category name
-        cif_category_key: Optional[str] = None,  # CIF parent category name
-        collection_entry_id: Optional[str] = None,  # Parent collection entry id
-        units: Optional[str] = None,  # Units of the parameter
-        description: Optional[str] = None,  # Description of the parameter
-        editable: bool = True,  # If false, the parameter can never be edited. It is calculated automatically
+        # Value of the parameter
+        value: Any,
+        # ED parameter name (to access it in the code)
+        name: str,
+        # CIF parameter name (to show it in the CIF)
+        cif_name: str,
+        # Pretty name (to show it in the table)
+        pretty_name: Optional[str] = None,
+        # Parent datablock name
+        datablock_id: Optional[str] = None,
+        # ED parent category name
+        category_key: Optional[str] = None,
+        # CIF parent category name
+        cif_category_key: Optional[str] = None,
+        # Parent collection entry id
+        collection_entry_id: Optional[str] = None,
+        # Units of the parameter
+        units: Optional[str] = None,
+        # Description of the parameter
+        description: Optional[str] = None,
+        # If false, the parameter can never be edited. It is calculated
+        # automatically
+        editable: bool = True,
     ) -> None:
         self._value = value
         self.name: str = name
@@ -60,7 +71,7 @@ class Descriptor:
         value_str = f'{self.__class__.__name__}: {self.uid} = {self.value}'
 
         # Append ± uncertainty if it exists and is nonzero
-        if hasattr(self, 'uncertainty') and getattr(self, 'uncertainty') != 0.0:
+        if hasattr(self, 'uncertainty') and self.uncertainty != 0.0:
             value_str += f' ± {self.uncertainty}'
 
         # Append units if available
@@ -74,9 +85,9 @@ class Descriptor:
 
     def _generate_random_unique_id(self) -> str:
         # Derived class Parameter will use this unique id for the
-        # minimization process to identify the parameter. It will also be
-        # used to create the alias for the parameter in the constraint
-        # expression.
+        # minimization process to identify the parameter. It will also
+        # be used to create the alias for the parameter in the
+        # constraint expression.
         length = 16
         letters = [secrets.choice(string.ascii_lowercase) for _ in range(length)]
         uid = ''.join(letters)
@@ -84,15 +95,19 @@ class Descriptor:
 
     def _generate_human_readable_unique_id(self):
         # Instead of generating a random string, we can use the
-        # name of the parameter and the block name to create a unique id.
+        # name of the parameter and the block name to create a unique
+        # id.
         #  E.g.:
-        #  - "block-id.category-name.parameter-name": "lbco.cell.length_a"
-        #  - "block-id.category-name.entry-id.parameter-name": "lbco.atom_site.Ba.fract_x"
+        #  - "block-id.category-name.parameter-name":
+        #    "lbco.cell.length_a"
+        #  - "block-id.category-name.entry-id.parameter-name":
+        #    "lbco.atom_site.Ba.fract_x"
         # For the analysis, we can use the same format, but without the
         # datablock id. E.g.:
-        #  - "category-name.entry-id.parameter-name": "alias.occ_Ba.label"
-        # This need to be called after the parameter is created and all its
-        # attributes are set.
+        #  - "category-name.entry-id.parameter-name":
+        #    "alias.occ_Ba.label"
+        # This need to be called after the parameter is created and all
+        # its attributes are set.
         if self.datablock_id:
             uid = f'{self.datablock_id}.{self.cif_category_key}'
         else:
@@ -148,7 +163,12 @@ class Descriptor:
         if self._editable:
             self._value = new_value
         else:
-            print(warning(f"The parameter '{self.cif_name}' it is calculated automatically and cannot be changed manually."))
+            print(
+                warning(
+                    f"The parameter '{self.cif_name}' it is calculated "
+                    f'automatically and cannot be changed manually.'
+                )
+            )
 
     @property
     def description(self) -> Optional[str]:
@@ -160,8 +180,8 @@ class Descriptor:
 
 
 class Parameter(Descriptor):
-    """
-    A parameter with a value, uncertainty, units, and CIF representation.
+    """A parameter with a value, uncertainty, units, and CIF
+    representation.
     """
 
     def __init__(
@@ -196,24 +216,27 @@ class Parameter(Descriptor):
             description,
             editable,
         )
-        self.uncertainty: float = uncertainty  # Standard uncertainty or estimated standard deviation
+        self.uncertainty: float = (
+            uncertainty  # Standard uncertainty or estimated standard deviation
+        )
         self.free: bool = free  # If the parameter is free to be fitted during the optimization
-        self.constrained: bool = constrained  # If symmetry constrains the parameter during the optimization
+        self.constrained: bool = (
+            constrained  # If symmetry constrains the parameter during the optimization
+        )
         self.min: Optional[float] = min_value  # Minimum physical value of the parameter
         self.max: Optional[float] = max_value  # Maximum physical value of the parameter
         self.start_value: Optional[Any] = None  # Starting value for optimization
 
 
 class Component(ABC):
-    """
-    Base class for standard components, like Cell, Peak, etc.
-    """
+    """Base class for standard components, like Cell, Peak, etc."""
 
     @property
     @abstractmethod
     def category_key(self):
-        """
-        Must be implemented in subclasses to return the ED category name.
+        """Must be implemented in subclasses to return the ED category
+        name.
+
         Can differ from cif_category_key.
         """
         pass
@@ -221,8 +244,8 @@ class Component(ABC):
     @property
     @abstractmethod
     def cif_category_key(self):
-        """
-        Must be implemented in subclasses to return the CIF category name.
+        """Must be implemented in subclasses to return the CIF category
+        name.
         """
         pass
 
@@ -232,13 +255,13 @@ class Component(ABC):
         self._datablock_id = None  # Parent datablock name to be set by the parent
         self._entry_id = None  # Parent collection entry id to be set by the parent
 
-        # TODO: Currently, it is not used. Planned to be used for displaying
-        #  the parameters in the specific order.
+        # TODO: Currently, it is not used. Planned to be used for
+        #  displaying the parameters in the specific order.
         self._ordered_attrs: List[str] = []
 
     def __getattr__(self, name: str) -> Any:
-        """
-        If the attribute is a Parameter or Descriptor, return its value by default
+        """If the attribute is a Parameter or Descriptor, return its
+        value by default.
         """
         attr = self.__dict__.get(name, None)
         if isinstance(attr, (Descriptor, Parameter)):
@@ -246,31 +269,31 @@ class Component(ABC):
         raise AttributeError(f'{name} not found in {self}')
 
     def __setattr__(self, name: str, value: Any) -> None:
+        """If an object is locked for adding new attributes, raise an
+        error.
+
+        If the attribute 'name' does not exist, add it. If the attribute
+        'name' exists and is a Parameter or Descriptor, set its value.
         """
-        If an object is locked for adding new attributes, raise an error.
-        If the attribute 'name' does not exist, add it.
-        If the attribute 'name' exists and is a Parameter or Descriptor, set its value.
-        """
-        if hasattr(self, '_locked') and self._locked:
-            if not hasattr(self, name):
-                print(error(f"Cannot add new parameter '{name}'"))
-                return
+        if hasattr(self, '_locked') and self._locked and not hasattr(self, name):
+            print(error(f"Cannot add new parameter '{name}'"))
+            return
 
         # Try to get the attribute from the instance's dictionary
         attr = self.__dict__.get(name, None)
 
-        # If the attribute is not set, and it is a Parameter or Descriptor,
-        # set its category_key and cif_category_key to the current category_key
-        # and cif_category_key and add it to the component.
-        # Also add its name to the list of ordered attributes
+        # If the attribute is not set, and it is a Parameter or
+        # Descriptor, set its category_key and cif_category_key to the
+        # current category_key and cif_category_key and add it to the
+        # component. Also add its name to the list of ordered attributes
         if attr is None:
             if isinstance(value, (Descriptor, Parameter)):
                 value.category_key = self.category_key
                 value.cif_category_key = self.cif_category_key
                 self._ordered_attrs.append(name)
             super().__setattr__(name, value)
-        # If the attribute is already set and is a Parameter or Descriptor,
-        # update its value. Else, allow normal reassignment
+        # If the attribute is already set and is a Parameter or
+        # Descriptor, update its value. Else, allow normal reassignment
         else:
             if isinstance(attr, (Descriptor, Parameter)):
                 attr.value = value
@@ -284,7 +307,8 @@ class Component(ABC):
     @datablock_id.setter
     def datablock_id(self, new_id):
         self._datablock_id = new_id
-        # For each parameter in this component, also update its datablock_id
+        # For each parameter in this component, also update its
+        # datablock_id
         for param in self.get_all_params():
             param.datablock_id = new_id
 
@@ -354,9 +378,8 @@ class Component(ABC):
 
 
 class Collection(ABC):
-    """
-    Base class for collections like AtomSites, LinkedPhases, SampleModels,
-    Experiments, etc.
+    """Base class for collections like AtomSites, LinkedPhases,
+    SampleModels, Experiments, etc.
     """
 
     @property
@@ -386,18 +409,22 @@ class Collection(ABC):
             param.datablock_id = new_id
 
     def add(self, *args, **kwargs):
-        """
-        Add a new item to the collection. The item must be a subclass of
-        Component.
+        """Add a new item to the collection.
+
+        The item must be a subclass of Component.
         """
         if self._child_class is None:
             raise ValueError('Child class is not defined.')
         child_obj = self._child_class(*args, **kwargs)
-        child_obj.datablock_id = self.datablock_id  # Setting the datablock_id to update its child parameters
-        child_obj.entry_id = child_obj.entry_id  # Forcing the entry_id to be reset to update its child parameters
+        # Setting the datablock_id to update its child parameters
+        child_obj.datablock_id = self.datablock_id
+        # Forcing the entry_id to be reset to update its child
+        # parameters
+        child_obj.entry_id = child_obj.entry_id
         self._items[child_obj._entry_id] = child_obj
 
-        # Call on_item_added if it exists, i.e. defined in the derived class
+        # Call on_item_added if it exists, i.e. defined in the derived
+        # class
         if hasattr(self, 'on_item_added'):
             self.on_item_added(child_obj)
 
@@ -447,8 +474,9 @@ class Collection(ABC):
                 params = item.as_dict()
                 category_key = item.cif_category_key
                 # Keys
-                keys = [f'_{category_key}.{param_key}' for param_key in params.keys()]
-                # Values. If the value is a string and contains spaces, add quotes
+                keys = [f'_{category_key}.{param_key}' for param_key in params]
+                # Values. If the value is a string and contains spaces,
+                # add quotes
                 values = []
                 for value in params.values():
                     value = f'{value}'
@@ -465,10 +493,8 @@ class Collection(ABC):
         return '\n'.join(lines)
 
 
-class Datablock(ABC):
-    """
-    Base class for Sample Model and Experiment data blocks.
-    """
+class Datablock:
+    """Base class for Sample Model and Experiment data blocks."""
 
     # TODO: Consider unifying with class Component?
 
@@ -485,9 +511,8 @@ class Datablock(ABC):
         super().__setattr__(name, value)
 
     def items(self):
-        """
-        Returns a list of both components and collections in the
-        data block.
+        """Returns a list of both components and collections in the data
+        block.
         """
         attr_objs = []
         for attr_name in dir(self):
@@ -503,9 +528,11 @@ class Datablock(ABC):
         return self._name
 
     @name.setter
-    def name(self, new_name):
+    @enforce_type
+    def name(self, new_name: str):
         self._name = new_name
         # For each component/collection in this datablock,
-        # also update its datablock_id
-        for item in self.items():
-            item.datablock_id = new_name
+        # also update its datablock_id if it has one
+        for item in getattr(self, '__dict__', {}).values():
+            if isinstance(item, (Component, Collection)):
+                item.datablock_id = new_name

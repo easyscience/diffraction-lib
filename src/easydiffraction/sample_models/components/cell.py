@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.core.objects import Component
@@ -6,9 +6,7 @@ from easydiffraction.core.objects import Parameter
 
 
 class Cell(Component):
-    """
-    Represents the unit cell parameters of a sample model.
-    """
+    """Represents the unit cell parameters of a sample model."""
 
     @property
     def category_key(self) -> str:

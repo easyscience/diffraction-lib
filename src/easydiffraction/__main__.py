@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import sys
@@ -15,10 +15,26 @@ import easydiffraction as ed
 app = typer.Typer(add_completion=False)
 
 
-@app.command('version')
-def version():
-    """Show easydiffraction version."""
-    ed.show_version()
+@app.callback(invoke_without_command=True)
+def main(
+    ctx: typer.Context,
+    version: bool = typer.Option(  # noqa: FBT003 - boolean option is intended
+        False,
+        '--version',
+        '-V',
+        help='Show easydiffraction version and exit.',
+        is_eager=True,
+    ),
+):
+    """EasyDiffraction command-line interface."""
+    if version:
+        ed.show_version()
+        raise typer.Exit(code=0)
+    # If no subcommand and no option provided, show help and exit 0.
+    if ctx.invoked_subcommand is None:
+        typer.echo(app.get_help(ctx))
+        raise typer.Exit(code=0)
+    # Otherwise, let the chosen subcommand execute.
 
 
 @app.command('list-tutorials')

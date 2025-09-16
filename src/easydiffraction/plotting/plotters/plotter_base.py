@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from abc import ABC
@@ -16,11 +16,26 @@ DEFAULT_MIN = -np.inf
 DEFAULT_MAX = np.inf
 
 DEFAULT_AXES_LABELS = {
-    (ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH): ['2θ (degree)', 'Intensity (arb. units)'],
-    (ScatteringTypeEnum.BRAGG, BeamModeEnum.TIME_OF_FLIGHT): ['TOF (µs)', 'Intensity (arb. units)'],
-    (ScatteringTypeEnum.BRAGG, 'd-spacing'): ['d (Å)', 'Intensity (arb. units)'],
-    (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): ['r (Å)', 'G(r) (Å)'],
-    (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): ['r (Å)', 'G(r) (Å)'],
+    (ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH): [
+        '2θ (degree)',
+        'Intensity (arb. units)',
+    ],
+    (ScatteringTypeEnum.BRAGG, BeamModeEnum.TIME_OF_FLIGHT): [
+        'TOF (µs)',
+        'Intensity (arb. units)',
+    ],
+    (ScatteringTypeEnum.BRAGG, 'd-spacing'): [
+        'd (Å)',
+        'Intensity (arb. units)',
+    ],
+    (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): [
+        'r (Å)',
+        'G(r) (Å)',
+    ],
+    (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): [
+        'r (Å)',
+        'G(r) (Å)',
+    ],
 }
 
 SERIES_CONFIG = dict(

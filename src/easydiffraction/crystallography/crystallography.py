@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Any
@@ -13,15 +13,15 @@ from sympy import simplify
 from sympy import symbols
 from sympy import sympify
 
-from easydiffraction.crystallography.space_group_lookup_table import SPACE_GROUP_LOOKUP_DICT
+from easydiffraction.crystallography.space_groups import SPACE_GROUPS
 
 
 def apply_cell_symmetry_constraints(
     cell: Dict[str, float],
     name_hm: str,
 ) -> Dict[str, float]:
-    """
-    Apply symmetry constraints to unit cell parameters based on space group.
+    """Apply symmetry constraints to unit cell parameters based on space
+    group.
 
     Args:
         cell: Dictionary containing lattice parameters.
@@ -89,8 +89,8 @@ def apply_atom_site_symmetry_constraints(
     coord_code: int,
     wyckoff_letter: str,
 ) -> Dict[str, Any]:
-    """
-    Apply symmetry constraints to atomic coordinates based on site symmetry.
+    """Apply symmetry constraints to atomic coordinates based on site
+    symmetry.
 
     Args:
         atom_site: Dictionary containing atom position data.
@@ -113,7 +113,7 @@ def apply_atom_site_symmetry_constraints(
         print(error_msg)
         return atom_site
 
-    space_group_entry = SPACE_GROUP_LOOKUP_DICT[(it_number, it_coordinate_system_code)]
+    space_group_entry = SPACE_GROUPS[(it_number, it_coordinate_system_code)]
     wyckoff_positions = space_group_entry['Wyckoff_positions'][wyckoff_letter]
     coords_xyz = wyckoff_positions['coords_xyz']
 

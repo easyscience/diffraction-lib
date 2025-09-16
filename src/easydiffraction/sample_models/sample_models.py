@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import List
@@ -11,9 +11,7 @@ from easydiffraction.utils.formatting import paragraph
 
 
 class SampleModels(Collection):
-    """
-    Collection manager for multiple SampleModel instances.
-    """
+    """Collection manager for multiple SampleModel instances."""
 
     @property
     def _child_class(self):
@@ -30,9 +28,9 @@ class SampleModels(Collection):
         cif_path: Optional[str] = None,
         cif_str: Optional[str] = None,
     ) -> None:
-        """
-        Add a new sample model to the collection.
-        Dispatches based on input type: pre-built model or parameters for new creation.
+        """Add a new sample model to the collection.
+        Dispatches based on input type: pre-built model or parameters
+        for new creation.
 
         Args:
             model: An existing SampleModel instance.
@@ -46,8 +44,7 @@ class SampleModels(Collection):
             self._create_and_add_sample_model(name, cif_path, cif_str)
 
     def remove(self, name: str) -> None:
-        """
-        Remove a sample model by its ID.
+        """Remove a sample model by its ID.
 
         Args:
             name: ID of the model to remove.
@@ -56,8 +53,7 @@ class SampleModels(Collection):
             del self._models[name]
 
     def get_ids(self) -> List[str]:
-        """
-        Return a list of all model IDs in the collection.
+        """Return a list of all model IDs in the collection.
 
         Returns:
             List of model IDs.
@@ -80,8 +76,7 @@ class SampleModels(Collection):
             model.show_params()
 
     def as_cif(self) -> str:
-        """
-        Export all sample models to CIF format.
+        """Export all sample models to CIF format.
 
         Returns:
             CIF string representation of all sample models.
@@ -90,11 +85,10 @@ class SampleModels(Collection):
 
     @enforce_type
     def _add_prebuilt_sample_model(self, sample_model: SampleModel) -> None:
-        """
-        Add a pre-built SampleModel instance.
+        """Add a pre-built SampleModel instance.
 
         Args:
-            model: The SampleModel instance to add.
+            sample_model: The SampleModel instance to add.
 
         Raises:
             TypeError: If model is not a SampleModel instance.
@@ -107,8 +101,7 @@ class SampleModels(Collection):
         cif_path: Optional[str] = None,
         cif_str: Optional[str] = None,
     ) -> None:
-        """
-        Create a SampleModel instance and add it to the collection.
+        """Create a SampleModel instance and add it to the collection.
 
         Args:
             name: Name for the new model.
@@ -116,7 +109,8 @@ class SampleModels(Collection):
             cif_str: CIF content as string.
 
         Raises:
-            ValueError: If neither name, cif_path, nor cif_str is provided.
+            ValueError: If neither name, cif_path, nor cif_str is
+            provided.
         """
         if cif_path:
             model = SampleModel(cif_path=cif_path)

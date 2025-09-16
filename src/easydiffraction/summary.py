@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from textwrap import wrap
@@ -10,16 +10,14 @@ from easydiffraction.utils.utils import render_table
 
 
 class Summary:
-    """
-    Generates reports and exports results from the project.
+    """Generates reports and exports results from the project.
 
-    This class collects and presents all relevant information
-    about the fitted model, experiments, and analysis results.
+    This class collects and presents all relevant information about the
+    fitted model, experiments, and analysis results.
     """
 
     def __init__(self, project) -> None:
-        """
-        Initialize the summary with a reference to the project.
+        """Initialize the summary with a reference to the project.
 
         Args:
             project: The Project instance this summary belongs to.
@@ -37,9 +35,7 @@ class Summary:
         self.show_fitting_details()
 
     def show_project_info(self) -> None:
-        """
-        Print the project title and description.
-        """
+        """Print the project title and description."""
         print(section('Project info'))
 
         print(paragraph('Title'))
@@ -50,9 +46,8 @@ class Summary:
             print('\n'.join(wrap(self.project.info.description, width=60)))
 
     def show_crystallographic_data(self) -> None:
-        """
-        Print crystallographic data including phase datablocks,
-        space groups, cell parameters, and atom sites.
+        """Print crystallographic data including phase datablocks, space
+        groups, cell parameters, and atom sites.
         """
         print(section('Crystallographic data'))
 
@@ -65,7 +60,10 @@ class Summary:
 
             print(paragraph('Cell parameters'))
             columns_alignment: List[str] = ['left', 'right']
-            cell_data = [[k.replace('length_', '').replace('angle_', ''), f'{v:.5f}'] for k, v in model.cell.as_dict().items()]
+            cell_data = [
+                [k.replace('length_', '').replace('angle_', ''), f'{v:.5f}']
+                for k, v in model.cell.as_dict().items()
+            ]
             render_table(
                 columns_alignment=columns_alignment,
                 columns_data=cell_data,
@@ -92,17 +90,15 @@ class Summary:
             ]
             atom_table = []
             for site in model.atom_sites:
-                atom_table.append(
-                    [
-                        site.label.value,
-                        site.type_symbol.value,
-                        f'{site.fract_x.value:.5f}',
-                        f'{site.fract_y.value:.5f}',
-                        f'{site.fract_z.value:.5f}',
-                        f'{site.occupancy.value:.5f}',
-                        f'{site.b_iso.value:.5f}',
-                    ]
-                )
+                atom_table.append([
+                    site.label.value,
+                    site.type_symbol.value,
+                    f'{site.fract_x.value:.5f}',
+                    f'{site.fract_y.value:.5f}',
+                    f'{site.fract_z.value:.5f}',
+                    f'{site.occupancy.value:.5f}',
+                    f'{site.b_iso.value:.5f}',
+                ])
             render_table(
                 columns_headers=columns_headers,
                 columns_alignment=columns_alignment,
@@ -110,8 +106,7 @@ class Summary:
             )
 
     def show_experimental_data(self) -> None:
-        """
-        Print experimental data including experiment datablocks,
+        """Print experimental data including experiment datablocks,
         types, instrument settings, and peak profile information.
         """
         print(section('Experiments'))
@@ -121,7 +116,11 @@ class Summary:
             print(f'🔬 {expt.name}')
 
             print(paragraph('Experiment type'))
-            print(f'{expt.type.sample_form.value}, {expt.type.radiation_probe.value}, {expt.type.beam_mode.value}')
+            print(
+                f'{expt.type.sample_form.value}, '
+                f'{expt.type.radiation_probe.value}, '
+                f'{expt.type.beam_mode.value}'
+            )
 
             if hasattr(expt, 'instrument'):
                 if hasattr(expt.instrument, 'setup_wavelength'):
@@ -161,9 +160,8 @@ class Summary:
                     )
 
     def show_fitting_details(self) -> None:
-        """
-        Print fitting details including calculation and minimization engines,
-        and fit quality metrics.
+        """Print fitting details including calculation and minimization
+        engines, and fit quality metrics.
         """
         print(section('Fitting'))
 
@@ -191,7 +189,7 @@ class Summary:
     # ------------------------------------------
 
     def as_cif(self) -> str:
-        """
-        Export the final fitted data and analysis results as CIF format.
+        """Export the final fitted data and analysis results as CIF
+        format.
         """
         return 'To be added...'

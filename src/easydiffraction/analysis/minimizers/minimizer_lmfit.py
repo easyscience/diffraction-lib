@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Any
@@ -14,9 +14,7 @@ DEFAULT_MAX_ITERATIONS = 1000
 
 
 class LmfitMinimizer(MinimizerBase):
-    """
-    Minimizer using the lmfit package.
-    """
+    """Minimizer using the lmfit package."""
 
     def __init__(
         self,
@@ -34,14 +32,14 @@ class LmfitMinimizer(MinimizerBase):
         self,
         parameters: List[Any],
     ) -> Dict[str, Any]:
-        """
-        Prepares the solver arguments for the lmfit minimizer.
+        """Prepares the solver arguments for the lmfit minimizer.
 
         Args:
             parameters: List of parameters to be optimized.
 
         Returns:
-            A dictionary containing the prepared lmfit.Parameters object.
+            A dictionary containing the prepared lmfit. Parameters
+                object.
         """
         engine_parameters = lmfit.Parameters()
         for param in parameters:
@@ -55,8 +53,7 @@ class LmfitMinimizer(MinimizerBase):
         return {'engine_parameters': engine_parameters}
 
     def _run_solver(self, objective_function: Any, **kwargs: Any) -> Any:
-        """
-        Runs the lmfit solver.
+        """Runs the lmfit solver.
 
         Args:
             objective_function: The objective function to minimize.
@@ -80,17 +77,13 @@ class LmfitMinimizer(MinimizerBase):
         parameters: List[Any],
         raw_result: Any,
     ) -> None:
-        """
-        Synchronizes the result from the solver to the parameters.
+        """Synchronizes the result from the solver to the parameters.
 
         Args:
             parameters: List of parameters being optimized.
             raw_result: The result object returned by the solver.
         """
-        if hasattr(raw_result, 'params'):
-            param_values = raw_result.params
-        else:
-            param_values = raw_result  # fallback if params attribute is not present
+        param_values = raw_result.params if hasattr(raw_result, 'params') else raw_result
 
         for param in parameters:
             param_result = param_values.get(param.minimizer_uid)
@@ -99,8 +92,7 @@ class LmfitMinimizer(MinimizerBase):
                 param.uncertainty = getattr(param_result, 'stderr', None)
 
     def _check_success(self, raw_result: Any) -> bool:
-        """
-        Determines success from lmfit MinimizerResult.
+        """Determines success from lmfit MinimizerResult.
 
         Args:
             raw_result: The result object returned by the solver.
@@ -118,8 +110,7 @@ class LmfitMinimizer(MinimizerBase):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        """
-        Callback function for each iteration of the minimizer.
+        """Callback function for each iteration of the minimizer.
 
         Args:
             params: The current parameters.
@@ -128,4 +119,6 @@ class LmfitMinimizer(MinimizerBase):
             *args: Additional positional arguments.
             **kwargs: Additional keyword arguments.
         """
+        # Intentionally unused, required by callback signature
+        del params, resid, args, kwargs
         self._iteration = iter

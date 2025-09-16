@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.core.objects import Datablock
@@ -12,14 +12,20 @@ from easydiffraction.utils.utils import render_cif
 
 
 class SampleModel(Datablock):
-    """
-    Represents an individual structural model of a sample.
+    """Represents an individual structural model of a sample.
+
     Wraps crystallographic information including space group, cell, and
     atomic sites.
     """
 
-    # TODO: Move cif_path and cif_str out of __init__ and into separate methods
-    def __init__(self, name: str, cif_path: str = None, cif_str: str = None):
+    # TODO: Move cif_path and cif_str out of __init__ and into separate
+    #  methods
+    def __init__(
+        self,
+        name: str,
+        cif_path: str = None,
+        cif_str: str = None,
+    ):
         super().__init__()
         self._name = name
         self.space_group = SpaceGroup()
@@ -30,19 +36,6 @@ class SampleModel(Datablock):
             self.load_from_cif_file(cif_path)
         elif cif_str:
             self.load_from_cif_string(cif_str)
-
-    # ----------------------
-    # Name (ID) of the model
-    # ----------------------
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    @enforce_type
-    def name(self, new_name: str):
-        self._name = new_name
 
     # -----------
     # Space group
@@ -116,7 +109,12 @@ class SampleModel(Datablock):
             }
             wl = atom.wyckoff_letter.value
             if not wl:
-                # raise ValueError("Wyckoff letter is not defined for atom.")
+                # TODO: Decide how to handle this case
+                #  For now, we just skip applying constraints if wyckoff
+                #  letter is not set. Alternatively, could raise an
+                #  error or warning
+                #  print(f"Warning: Wyckoff letter is not ...")
+                #  raise ValueError("Wyckoff letter is not ...")
                 continue
             ecr.apply_atom_site_symmetry_constraints(
                 atom_site=dummy_atom,
@@ -144,20 +142,24 @@ class SampleModel(Datablock):
         """Load model data from a CIF file."""
         # TODO: Implement CIF parsing here
         print(f'Loading SampleModel from CIF file: {cif_path}')
-        # Example: self.id = extract_id_from_cif(cif_path)
+        print('Not implemented yet.')
 
     def load_from_cif_string(self, cif_str: str):
         """Load model data from a CIF string."""
         # TODO: Implement CIF parsing from a string
         print('Loading SampleModel from CIF string.')
+        print('Not implemented yet.')
+        # Intentionally unused, to avoid linter warning unless
+        # implemented later
+        del cif_str
 
     # -----------------
     # Convertion to CIF
     # -----------------
 
     def as_cif(self) -> str:
-        """
-        Export the sample model to CIF format.
+        """Export the sample model to CIF format.
+
         Returns:
             str: CIF string representation of the sample model.
         """
@@ -179,20 +181,15 @@ class SampleModel(Datablock):
     # Show methods
     # ------------
 
-    def show_structure(self, plane='xy', grid_size=20):
-        """
-        Show an ASCII projection of the structure on a 2D plane.
-
-        Args:
-            plane (str): 'xy', 'xz', or 'yz' plane to project.
-            grid_size (int): Size of the ASCII grid (default is 20).
-        """
-
+    def show_structure(self):
+        """Show an ASCII projection of the structure on a 2D plane."""
         print(paragraph(f"Sample model 🧩 '{self.name}' structure view"))
         print('Not implemented yet.')
 
     def show_params(self):
-        """Display structural parameters (space group, unit cell, atomic sites)."""
+        """Display structural parameters (space group, unit cell, atomic
+        sites).
+        """
         print(f'\nSampleModel ID: {self.name}')
         print(f'Space group: {self.space_group.name_h_m}')
         print(f'Cell parameters: {self.cell.as_dict()}')

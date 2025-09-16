@@ -1,9 +1,9 @@
 # %% [markdown]
 # # Structure Refinement: LBCO+Si, McStas
 #
-# This example demonstrates a Rietveld refinement of La0.5Ba0.5CoO3 crystal
-# structure with a small amount of Si phase using time-of-flight neutron powder
-# diffraction data simulated with McStas.
+# This example demonstrates a Rietveld refinement of La0.5Ba0.5CoO3
+# crystal structure with a small amount of Si phase using time-of-flight
+# neutron powder diffraction data simulated with McStas.
 
 # %% [markdown]
 # ## Import Library
@@ -17,7 +17,8 @@ from easydiffraction import download_from_repository
 # %% [markdown]
 # ## Define Sample Models
 #
-# This section shows how to add sample models and modify their parameters.
+# This section shows how to add sample models and modify their
+# parameters.
 #
 # ### Create Sample Model 1: LBCO
 
@@ -41,44 +42,10 @@ model_1.cell.length_a = 3.8909
 # #### Set Atom Sites
 
 # %%
-model_1.atom_sites.add(
-    'La',
-    'La',
-    0,
-    0,
-    0,
-    wyckoff_letter='a',
-    b_iso=0.2,
-    occupancy=0.5,
-)
-model_1.atom_sites.add(
-    'Ba',
-    'Ba',
-    0,
-    0,
-    0,
-    wyckoff_letter='a',
-    b_iso=0.2,
-    occupancy=0.5,
-)
-model_1.atom_sites.add(
-    'Co',
-    'Co',
-    0.5,
-    0.5,
-    0.5,
-    wyckoff_letter='b',
-    b_iso=0.2567,
-)
-model_1.atom_sites.add(
-    'O',
-    'O',
-    0,
-    0.5,
-    0.5,
-    wyckoff_letter='c',
-    b_iso=1.4041,
-)
+model_1.atom_sites.add('La', 'La', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
+model_1.atom_sites.add('Ba', 'Ba', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
+model_1.atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, wyckoff_letter='b', b_iso=0.2567)
+model_1.atom_sites.add('O', 'O', 0, 0.5, 0.5, wyckoff_letter='c', b_iso=1.4041)
 
 # %% [markdown]
 # ### Create Sample Model 2: Si
@@ -116,8 +83,8 @@ model_2.atom_sites.add(
 # %% [markdown]
 # ## Define Experiment
 #
-# This section shows how to add experiments, configure their parameters, and
-# link the sample models defined in the previous step.
+# This section shows how to add experiments, configure their parameters,
+# and link the sample models defined in the previous step.
 #
 # #### Download Data
 
@@ -196,7 +163,8 @@ experiment.linked_phases.add('si', scale=0.2)
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage sample models, experiments, and analysis.
+# The project object is used to manage sample models, experiments, and
+# analysis.
 #
 # #### Create Project
 

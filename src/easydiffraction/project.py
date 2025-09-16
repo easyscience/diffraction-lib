@@ -1,8 +1,8 @@
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction Python Library contributors <https://github.com/easyscience/diffraction-lib>
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import datetime
-import os
+import pathlib
 import tempfile
 from textwrap import wrap
 from typing import List
@@ -23,16 +23,15 @@ from easydiffraction.utils.utils import twotheta_to_d
 
 
 class ProjectInfo:
-    """
-    Stores metadata about the project, such as name, title, description,
-    and file paths.
+    """Stores metadata about the project, such as name, title,
+    description, and file paths.
     """
 
     def __init__(self) -> None:
         self._name: str = 'untitled_project'
         self._title: str = 'Untitled Project'
         self._description: str = ''
-        self._path: str = os.getcwd()
+        self._path: pathlib.Path = pathlib.Path.cwd()
         self._created: datetime.datetime = datetime.datetime.now()
         self._last_modified: datetime.datetime = datetime.datetime.now()
 
@@ -64,13 +63,14 @@ class ProjectInfo:
         self._description = ' '.join(value.split())
 
     @property
-    def path(self) -> str:
-        """Return the project path."""
+    def path(self) -> pathlib.Path:
+        """Return the project path as a Path object."""
         return self._path
 
     @path.setter
-    def path(self, value: str) -> None:
-        self._path = value
+    def path(self, value) -> None:
+        # Accept str or Path; normalize to Path
+        self._path = pathlib.Path(value)
 
     @property
     def created(self) -> datetime.datetime:
@@ -120,9 +120,10 @@ class ProjectInfo:
 
 
 class Project:
-    """
-    Central API for managing a diffraction data analysis project.
-    Provides access to sample models, experiments, analysis, and summary.
+    """Central API for managing a diffraction data analysis project.
+
+    Provides access to sample models, experiments, analysis, and
+    summary.
     """
 
     def __init__(
@@ -145,7 +146,9 @@ class Project:
 
     @property
     def name(self) -> str:
-        """Convenience property to access the project's name directly."""
+        """Convenience property to access the project's name
+        directly.
+        """
         return self.info.name
 
     # ------------------------------------------
@@ -153,8 +156,8 @@ class Project:
     # ------------------------------------------
 
     def load(self, dir_path: str) -> None:
-        """
-        Load a project from a given directory.
+        """Load a project from a given directory.
+
         Loads project info, sample models, experiments, etc.
         """
         print(paragraph(f'Loading project 📦 from {dir_path}'))
@@ -169,60 +172,57 @@ class Project:
         dir_path: str,
         temporary: bool = False,
     ) -> None:
-        """
-        Save the project into a new directory.
-        """
+        """Save the project into a new directory."""
         if temporary:
             tmp: str = tempfile.gettempdir()
-            dir_path = os.path.join(tmp, dir_path)
+            dir_path = pathlib.Path(tmp) / dir_path
         self.info.path = dir_path
         self.save()
 
     def save(self) -> None:
-        """
-        Save the project into the existing project directory.
-        """
+        """Save the project into the existing project directory."""
         if not self.info.path:
             print(error('Project path not specified. Use save_as() to define the path first.'))
             return
 
         print(paragraph(f"Saving project 📦 '{self.name}' to"))
-        print(os.path.abspath(self.info.path))
+        print(self.info.path.resolve())
 
-        os.makedirs(self.info.path, exist_ok=True)
+        # Ensure project directory exists
+        self.info.path.mkdir(parents=True, exist_ok=True)
 
         # Save project info
-        with open(os.path.join(self.info.path, 'project.cif'), 'w') as f:
+        with (self.info.path / 'project.cif').open('w') as f:
             f.write(self.info.as_cif())
             print('✅ project.cif')
 
         # Save sample models
-        sm_dir: str = os.path.join(self.info.path, 'sample_models')
-        os.makedirs(sm_dir, exist_ok=True)
+        sm_dir = self.info.path / 'sample_models'
+        sm_dir.mkdir(parents=True, exist_ok=True)
         for model in self.sample_models:
             file_name: str = f'{model.name}.cif'
-            file_path: str = os.path.join(sm_dir, file_name)
-            with open(file_path, 'w') as f:
+            file_path = sm_dir / file_name
+            with file_path.open('w') as f:
                 f.write(model.as_cif())
                 print(f'✅ sample_models/{file_name}')
 
         # Save experiments
-        expt_dir: str = os.path.join(self.info.path, 'experiments')
-        os.makedirs(expt_dir, exist_ok=True)
+        expt_dir = self.info.path / 'experiments'
+        expt_dir.mkdir(parents=True, exist_ok=True)
         for experiment in self.experiments:
             file_name: str = f'{experiment.name}.cif'
-            file_path: str = os.path.join(expt_dir, file_name)
-            with open(file_path, 'w') as f:
+            file_path = expt_dir / file_name
+            with file_path.open('w') as f:
                 f.write(experiment.as_cif())
                 print(f'✅ experiments/{file_name}')
 
         # Save analysis
-        with open(os.path.join(self.info.path, 'analysis.cif'), 'w') as f:
+        with (self.info.path / 'analysis.cif').open('w') as f:
             f.write(self.analysis.as_cif())
             print('✅ analysis.cif')
 
         # Save summary
-        with open(os.path.join(self.info.path, 'summary.cif'), 'w') as f:
+        with (self.info.path / 'summary.cif').open('w') as f:
             f.write(self.summary.as_cif())
             print('✅ summary.cif')
 
@@ -259,8 +259,8 @@ class Project:
         # Update d-spacing if necessary
         # TODO: This is done before every plot, and not when parameters
         #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting process.
-        #  Need to find a better way to handle this.
+        #  to minimize the performance impact during the fitting
+        #  process. Need to find a better way to handle this.
         if d_spacing:
             self.update_pattern_d_spacing(expt_name)
 
@@ -289,8 +289,8 @@ class Project:
         # Update d-spacing if necessary
         # TODO: This is done before every plot, and not when parameters
         #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting process.
-        #  Need to find a better way to handle this.
+        #  to minimize the performance impact during the fitting
+        #  process. Need to find a better way to handle this.
         if d_spacing:
             self.update_pattern_d_spacing(expt_name)
 
@@ -320,8 +320,8 @@ class Project:
         # Update d-spacing if necessary
         # TODO: This is done before every plot, and not when parameters
         #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting process.
-        #  Need to find a better way to handle this.
+        #  to minimize the performance impact during the fitting
+        #  process. Need to find a better way to handle this.
         if d_spacing:
             self.update_pattern_d_spacing(expt_name)
 
@@ -337,8 +337,8 @@ class Project:
         )
 
     def update_pattern_d_spacing(self, expt_name: str) -> None:
-        """
-        Update the pattern's d-spacing based on the experiment's beam mode.
+        """Update the pattern's d-spacing based on the experiment's beam
+        mode.
         """
         experiment = self.experiments[expt_name]
         datastore = experiment.datastore
