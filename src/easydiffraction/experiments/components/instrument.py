@@ -3,20 +3,16 @@
 
 from typing import Optional
 
-from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import CategoryItem
 from easydiffraction.core.objects import Parameter
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 
 
-class InstrumentBase(Component):
+class InstrumentBase(CategoryItem):
     @property
     def category_key(self) -> str:
         return 'instrument'
-
-    @property
-    def cif_category_key(self) -> str:
-        return 'instr'
 
 
 class ConstantWavelengthInstrument(InstrumentBase):
@@ -30,14 +26,16 @@ class ConstantWavelengthInstrument(InstrumentBase):
         self.setup_wavelength: Parameter = Parameter(
             value=setup_wavelength,
             name='wavelength',
-            cif_name='wavelength',
+            full_cif_names=['_instr.wavelength'],
+            default_value=1.5406,
             units='Å',
             description='Incident neutron or X-ray wavelength',
         )
         self.calib_twotheta_offset: Parameter = Parameter(
             value=calib_twotheta_offset,
             name='twotheta_offset',
-            cif_name='2theta_offset',
+            full_cif_names=['_instr.2theta_offset'],
+            default_value=0.0,
             units='deg',
             description='Instrument misalignment offset',
         )
@@ -61,35 +59,40 @@ class TimeOfFlightInstrument(InstrumentBase):
         self.setup_twotheta_bank: Parameter = Parameter(
             value=setup_twotheta_bank,
             name='twotheta_bank',
-            cif_name='2theta_bank',
+            full_cif_names=['_instr.2theta_bank'],
+            default_value=150.0,
             units='deg',
             description='Detector bank position',
         )
         self.calib_d_to_tof_offset: Parameter = Parameter(
             value=calib_d_to_tof_offset,
             name='d_to_tof_offset',
-            cif_name='d_to_tof_offset',
+            full_cif_names=['_instr.d_to_tof_offset'],
+            default_value=0.0,
             units='µs',
             description='TOF offset',
         )
         self.calib_d_to_tof_linear: Parameter = Parameter(
             value=calib_d_to_tof_linear,
             name='d_to_tof_linear',
-            cif_name='d_to_tof_linear',
+            full_cif_names=['_instr.d_to_tof_linear'],
+            default_value=10000.0,
             units='µs/Å',
             description='TOF linear conversion',
         )
         self.calib_d_to_tof_quad: Parameter = Parameter(
             value=calib_d_to_tof_quad,
             name='d_to_tof_quad',
-            cif_name='d_to_tof_quad',
+            full_cif_names=['_instr.d_to_tof_quad'],
+            default_value=-0.00001,
             units='µs/Å²',
             description='TOF quadratic correction',
         )
         self.calib_d_to_tof_recip: Parameter = Parameter(
             value=calib_d_to_tof_recip,
             name='d_to_tof_recip',
-            cif_name='d_to_tof_recip',
+            full_cif_names=['_instr.d_to_tof_recip'],
+            default_value=0.0,
             units='µs·Å',
             description='TOF reciprocal velocity correction',
         )

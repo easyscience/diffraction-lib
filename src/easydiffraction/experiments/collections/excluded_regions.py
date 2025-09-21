@@ -4,22 +4,18 @@
 from typing import List
 from typing import Type
 
-from easydiffraction.core.objects import Collection
-from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import CategoryCollection
+from easydiffraction.core.objects import CategoryItem
 from easydiffraction.core.objects import Descriptor
 from easydiffraction.core.objects import Parameter
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_table
 
 
-class ExcludedRegion(Component):
+class ExcludedRegion(CategoryItem):
     @property
     def category_key(self) -> str:
         return 'excluded_regions'
-
-    @property
-    def cif_category_key(self) -> str:
-        return 'excluded_region'
 
     def __init__(
         self,
@@ -31,26 +27,29 @@ class ExcludedRegion(Component):
         self.start = Descriptor(
             value=start,
             name='start',
-            cif_name='start',
+            value_type=float,
+            full_cif_names=['_excluded_region.start'],
+            default_value=start,
             description='Start of the excluded region.',
         )
         self.end = Parameter(
             value=end,
             name='end',
-            cif_name='end',
+            full_cif_names=['_excluded_region.end'],
+            default_value=end,
             description='End of the excluded region.',
         )
 
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_id = f'{start}-{end}'
+        self._entry_name = f'{start}-{end}'
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
         self._locked = True
 
 
-class ExcludedRegions(Collection):
+class ExcludedRegions(CategoryCollection):
     """Collection of ExcludedRegion instances."""
 
     @property

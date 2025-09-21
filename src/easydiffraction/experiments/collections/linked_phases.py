@@ -3,20 +3,16 @@
 
 from typing import Type
 
-from easydiffraction.core.objects import Collection
-from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import CategoryCollection
+from easydiffraction.core.objects import CategoryItem
 from easydiffraction.core.objects import Descriptor
 from easydiffraction.core.objects import Parameter
 
 
-class LinkedPhase(Component):
+class LinkedPhase(CategoryItem):
     @property
     def category_key(self) -> str:
         return 'linked_phases'
-
-    @property
-    def cif_category_key(self) -> str:
-        return 'pd_phase_block'
 
     def __init__(
         self,
@@ -28,26 +24,29 @@ class LinkedPhase(Component):
         self.id = Descriptor(
             value=id,
             name='id',
-            cif_name='id',
+            value_type=str,
+            full_cif_names=['_pd_phase_block.id'],
+            default_value=id,
             description='Identifier of the linked phase.',
         )
         self.scale = Parameter(
             value=scale,
             name='scale',
-            cif_name='scale',
+            full_cif_names=['_pd_phase_block.scale'],
+            default_value=scale,
             description='Scale factor of the linked phase.',
         )
 
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_id = id
+        self._entry_name = id
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
         self._locked = True
 
 
-class LinkedPhases(Collection):
+class LinkedPhases(CategoryCollection):
     """Collection of LinkedPhase instances."""
 
     @property

@@ -3,7 +3,7 @@
 
 from enum import Enum
 
-from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import CategoryItem
 from easydiffraction.core.objects import Descriptor
 
 
@@ -67,11 +67,7 @@ class BeamModeEnum(str, Enum):
             return 'Time-of-flight (TOF) diffraction.'
 
 
-class ExperimentType(Component):
-    @property
-    def cif_category_key(self) -> str:
-        return 'expt_type'
-
+class ExperimentType(CategoryItem):
     @property
     def category_key(self) -> str:
         return 'expt_type'
@@ -88,27 +84,35 @@ class ExperimentType(Component):
         self.sample_form: Descriptor = Descriptor(
             value=sample_form,
             name='sample_form',
-            cif_name='sample_form',
+            value_type=str,
+            full_cif_names=['_expt_type.sample_form'],
+            default_value=SampleFormEnum.default(),
             description='Specifies whether the diffraction data corresponds to '
             'powder diffraction or single crystal diffraction',
         )
         self.beam_mode: Descriptor = Descriptor(
             value=beam_mode,
             name='beam_mode',
-            cif_name='beam_mode',
+            value_type=str,
+            full_cif_names=['_expt_type.beam_mode'],
+            default_value=BeamModeEnum.default(),
             description='Defines whether the measurement is performed with a '
             'constant wavelength (CW) or time-of-flight (TOF) method',
         )
         self.radiation_probe: Descriptor = Descriptor(
             value=radiation_probe,
             name='radiation_probe',
-            cif_name='radiation_probe',
+            value_type=str,
+            full_cif_names=['_expt_type.radiation_probe'],
+            default_value=RadiationProbeEnum.default(),
             description='Specifies whether the measurement uses neutrons or X-rays',
         )
         self.scattering_type: Descriptor = Descriptor(
             value=scattering_type,
             name='scattering_type',
-            cif_name='scattering_type',
+            value_type=str,
+            full_cif_names=['_expt_type.scattering_type'],
+            default_value=ScatteringTypeEnum.default(),
             description='Specifies whether the experiment uses Bragg scattering '
             '(for conventional structure refinement) or total scattering '
             '(for pair distribution function analysis - PDF)',

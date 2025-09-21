@@ -13,8 +13,8 @@ import numpy as np
 from numpy.polynomial.chebyshev import chebval
 from scipy.interpolate import interp1d
 
-from easydiffraction.core.objects import Collection
-from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import CategoryCollection
+from easydiffraction.core.objects import CategoryItem
 from easydiffraction.core.objects import Descriptor
 from easydiffraction.core.objects import Parameter
 from easydiffraction.utils.formatting import paragraph
@@ -23,14 +23,10 @@ from easydiffraction.utils.utils import render_table
 
 
 # TODO: rename to LineSegment
-class Point(Component):
+class Point(CategoryItem):
     @property
     def category_key(self) -> str:
         return 'background'
-
-    @property
-    def cif_category_key(self) -> str:
-        return 'pd_background'
 
     def __init__(
         self,
@@ -42,37 +38,36 @@ class Point(Component):
         self.x = Descriptor(
             value=x,
             name='x',
-            cif_name='line_segment_X',
+            value_type=float,
+            full_cif_names=['_pd_background.line_segment_X'],
+            default_value=x,
             description='X-coordinates used to create many straight-line segments '
             'representing the background in a calculated diffractogram.',
         )
         self.y = Parameter(
             value=y,  # TODO: rename to intensity
             name='y',  # TODO: rename to intensity
-            cif_name='line_segment_intensity',
+            full_cif_names=['_pd_background.line_segment_intensity'],
+            default_value=y,
             description='Intensity used to create many straight-line segments '
             'representing the background in a calculated diffractogram',
         )
 
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_id = str(x)
+        self._entry_name = str(x)
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
         self._locked = True
 
 
-class PolynomialTerm(Component):
+class PolynomialTerm(CategoryItem):
     # TODO: make consistency in where to place the following properties:
     #  before or after the __init__ method
     @property
     def category_key(self) -> str:
         return 'background'
-
-    @property
-    def cif_category_key(self):
-        return 'pd_background'
 
     def __init__(
         self,
@@ -84,28 +79,31 @@ class PolynomialTerm(Component):
         self.order = Descriptor(
             value=order,
             name='chebyshev_order',
-            cif_name='Chebyshev_order',
+            value_type=float,
+            full_cif_names=['_pd_background.Chebyshev_order'],
+            default_value=order,
             description='The value of an order used in a Chebyshev polynomial '
             'equation representing the background in a calculated diffractogram',
         )
         self.coef = Parameter(
             value=coef,
             name='chebyshev_coef',
-            cif_name='Chebyshev_coef',
+            full_cif_names=['_pd_background.Chebyshev_coef'],
+            default_value=coef,
             description='The value of a coefficient used in a Chebyshev polynomial '
             'equation representing the background in a calculated diffractogram',
         )
 
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_id = str(order)
+        self._entry_name = str(order)
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
         self._locked = True
 
 
-class BackgroundBase(Collection):
+class BackgroundBase(CategoryCollection):
     @property
     def _type(self) -> str:
         return 'category'  # datablock or category
