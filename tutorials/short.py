@@ -32,10 +32,12 @@ model.space_group = sg
 model.cell = cell
 model.atom_sites = sites
 
+
 print(model.parameters)
 
 models = SampleModels()
-models.add(model)
+# models.add(model)
+models.add_from_cif_path('data/lbco.cif')
 
 print(models)
 for p in models.parameters:
@@ -46,7 +48,7 @@ exp = Experiment(name='exp1', data_path='data/hrpt_lbco.xye')
 print(exp)
 
 linked_phases = LinkedPhases()
-linked_phase = LinkedPhase(id='mdl', scale=1.0)
+linked_phase = LinkedPhase(id='lbco', scale=1.0)
 linked_phases.add(linked_phase)
 
 exp.linked_phases = linked_phases
