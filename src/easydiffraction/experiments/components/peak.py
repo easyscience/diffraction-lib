@@ -64,6 +64,14 @@ class PeakProfileTypeEnum(str, Enum):
 
 # --- Mixins ---
 class ConstantWavelengthBroadeningMixin:
+    _allowed_attributes = {
+        'broad_gauss_u',
+        'broad_gauss_v',
+        'broad_gauss_w',
+        'broad_lorentz_x',
+        'broad_lorentz_y',
+    }
+
     def _add_constant_wavelength_broadening(self) -> None:
         self.broad_gauss_u: Parameter = Parameter(
             value=0.01,
@@ -110,6 +118,17 @@ class ConstantWavelengthBroadeningMixin:
 
 
 class TimeOfFlightBroadeningMixin:
+    _allowed_attributes = {
+        'broad_gauss_sigma_0',
+        'broad_gauss_sigma_1',
+        'broad_gauss_sigma_2',
+        'broad_lorentz_gamma_0',
+        'broad_lorentz_gamma_1',
+        'broad_lorentz_gamma_2',
+        'broad_mix_beta_0',
+        'broad_mix_beta_1',
+    }
+
     def _add_time_of_flight_broadening(self) -> None:
         self.broad_gauss_sigma_0: Parameter = Parameter(
             value=0.0,
@@ -180,6 +199,13 @@ class TimeOfFlightBroadeningMixin:
 
 
 class EmpiricalAsymmetryMixin:
+    _allowed_attributes = {
+        'asym_empir_1',
+        'asym_empir_2',
+        'asym_empir_3',
+        'asym_empir_4',
+    }
+
     def _add_empirical_asymmetry(self) -> None:
         self.asym_empir_1: Parameter = Parameter(
             value=0.1,
@@ -216,6 +242,11 @@ class EmpiricalAsymmetryMixin:
 
 
 class FcjAsymmetryMixin:
+    _allowed_attributes = {
+        'asym_fcj_1',
+        'asym_fcj_2',
+    }
+
     def _add_fcj_asymmetry(self) -> None:
         self.asym_fcj_1: Parameter = Parameter(
             value=0.01,
@@ -236,6 +267,11 @@ class FcjAsymmetryMixin:
 
 
 class IkedaCarpenterAsymmetryMixin:
+    _allowed_attributes = {
+        'asym_alpha_0',
+        'asym_alpha_1',
+    }
+
     def _add_ikeda_carpenter_asymmetry(self) -> None:
         self.asym_alpha_0: Parameter = Parameter(
             value=0.01,
@@ -256,6 +292,15 @@ class IkedaCarpenterAsymmetryMixin:
 
 
 class PairDistributionFunctionBroadeningMixin:
+    _allowed_attributes = {
+        'damp_q',
+        'broad_q',
+        'cutoff_q',
+        'sharp_delta_1',
+        'sharp_delta_2',
+        'damp_particle_diameter',
+    }
+
     def _add_pair_distribution_function_broadening(self):
         self.damp_q = Parameter(
             value=0.05,

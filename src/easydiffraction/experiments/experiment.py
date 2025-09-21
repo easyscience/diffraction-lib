@@ -29,6 +29,10 @@ from easydiffraction.utils.utils import render_table
 
 
 class InstrumentMixin:
+    _allowed_attributes = {
+        'instrument',
+    }
+
     def __init__(self, *args, **kwargs):
         expt_type = kwargs.get('type')
         super().__init__(*args, **kwargs)
@@ -145,6 +149,11 @@ class BaseExperiment(Datablock):
 class BasePowderExperiment(BaseExperiment):
     """Base class for all powder experiments."""
 
+    _allowed_attributes = {
+        'peak',
+        'linked_phases',
+    }
+
     def __init__(
         self,
         name: str,
@@ -233,6 +242,10 @@ class PowderExperiment(
 
     Wraps background, peak profile, and linked phases.
     """
+
+    _allowed_attributes = {
+        'background',
+    }
 
     def __init__(
         self,
