@@ -545,11 +545,11 @@ class Parameter(Descriptor):
     # Extend writable attributes
     _writable_attributes = Descriptor._writable_attributes | {
         'free',
+        'uncertainty',
     }
 
     # Extend read-only attributes
     _readonly_attributes = Descriptor._readonly_attributes | {
-        'uncertainty',
         'constrained',
         'physical_min',
         'physical_max',
@@ -615,7 +615,6 @@ class Parameter(Descriptor):
             editable=editable,
         )
 
-        # Refinement attributes
         self._uncertainty = uncertainty
         self._free = free
         self._constrained = constrained
@@ -654,16 +653,16 @@ class Parameter(Descriptor):
         return self._uncertainty
 
     @uncertainty.setter
-    def uncertainty(self, _):
-        self._readonly_error()
+    def uncertainty(self, value):
+        self._uncertainty = value
 
     @property
     def free(self):
         return self._free
 
     @free.setter
-    def free(self, _):
-        self._readonly_error()
+    def free(self, value):
+        self._uncertainty = value
 
     @property
     def constrained(self):
