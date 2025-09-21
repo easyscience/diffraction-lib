@@ -4,6 +4,8 @@ from easydiffraction import Logger
 from easydiffraction import Project
 from easydiffraction import SampleModel
 from easydiffraction import SampleModels
+from easydiffraction.experiments.collections.background import LineSegmentBackground
+from easydiffraction.experiments.collections.background import Point
 from easydiffraction.experiments.collections.linked_phases import LinkedPhase
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
 from easydiffraction.sample_models.collections.atom_sites import AtomSite
@@ -61,6 +63,14 @@ exp.peak.broad_gauss_v = -0.1
 exp.peak.broad_gauss_w = 0.1
 exp.peak.broad_lorentz_y = 0.1
 
+bkg = LineSegmentBackground()
+point1 = Point(x=10, y=170)
+point2 = Point(x=165, y=170)
+bkg.add(point1)
+bkg.add(point2)
+# exp.background.add(bkg)
+exp.background = bkg
+
 # exp.background.add(x=10, y=170)
 # exp.background.add(x=30, y=170)
 # exp.background.add(x=50, y=170)
@@ -90,6 +100,27 @@ proj.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
 
 
 models['lbco'].cell.length_a.free = True
+
+models['lbco'].atom_sites['La'].b_iso.free = True
+models['lbco'].atom_sites['Ba'].b_iso.free = True
+models['lbco'].atom_sites['Co'].b_iso.free = True
+models['lbco'].atom_sites['O'].b_iso.free = True
+
+exp.instrument.calib_twotheta_offset.free = True
+
+exp.peak.broad_gauss_u.free = True
+exp.peak.broad_gauss_v.free = True
+exp.peak.broad_gauss_w.free = True
+exp.peak.broad_lorentz_y.free = True
+
+exp.background['10'].y.free = True
+exp.background['165'].y.free = True
+
+exp.linked_phases['lbco'].scale.free = True
+
+
 print('----', models['lbco'].cell.length_a.free)
 proj.analysis.show_free_params()
 proj.analysis.fit()
+
+proj.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
