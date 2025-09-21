@@ -3,23 +3,23 @@
 
 from typing import List
 
-from easydiffraction.core.objects import Collection
+from easydiffraction.core.objects import DatablockCollection
 from easydiffraction.sample_models.sample_model import BaseSampleModel
 from easydiffraction.sample_models.sample_model import SampleModel
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 
 
-class SampleModels(Collection):
+class SampleModels(DatablockCollection):
     """Collection manager for multiple SampleModel instances."""
 
-    @property
-    def _child_class(self):
-        return BaseSampleModel
+    # @property
+    # def _child_class(self):
+    #    return BaseSampleModel
 
     def __init__(self) -> None:
         super().__init__()  # Initialize Collection
-        self._models = self._items  # Alias for legacy support
+        self._models = self._datablocks  # Alias for legacy support
 
     @property
     def names(self) -> List[str]:

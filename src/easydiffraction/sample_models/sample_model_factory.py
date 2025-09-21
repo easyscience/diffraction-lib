@@ -9,6 +9,8 @@ from typing import Optional
 import gemmi
 
 from easydiffraction.sample_models.sample_model import BaseSampleModel
+from easydiffraction.utils.cif_aliases import cif_get_values
+from easydiffraction.utils.cif_aliases import normalize_wyckoff
 
 
 class SampleModelFactory:
@@ -148,96 +150,70 @@ class SampleModelFactory:
     def _create_model_from_block(cls, block: gemmi.cif.Block) -> BaseSampleModel:
         name = cls._extract_name_from_block(block)
         model = BaseSampleModel(name=name)
-        cls._apply_space_group_from_block(model, block)
-        cls._apply_cell_from_block(model, block)
-        cls._apply_atom_sites_from_block(model, block)
+        cls._set_space_group_from_cif_block(model, block)
+        cls._set_cell_from_cif_block(model, block)
+        cls._set_atom_sites_from_cif_block(model, block)
         return model
-
-    @staticmethod
-    def _as_float(val: str | None) -> float | None:
-        if not val:
-            return None
-        try:
-            return float(val)
-        except Exception:
-            try:
-                return float(val.split('(')[0])
-            except Exception:
-                return None
 
     @classmethod
     def _extract_name_from_block(cls, block: gemmi.cif.Block) -> str:
         return block.name or 'model'
 
     @classmethod
-    def _apply_space_group_from_block(cls, model: BaseSampleModel, block: gemmi.cif.Block) -> None:
-        sg_hm = (
-            block.find_value('_space_group.name_H-M_alt')
-            or block.find_value('_symmetry.space_group_name_H-M')
-            or None
-        )
-        if not sg_hm:
-            try:
-                ss = gemmi.make_small_structure_from_block(block)
-                sg = ss.get_spacegroup()
-                sg_hm = sg.hm if sg is not None else None
-            except Exception:
-                sg_hm = None
-        if sg_hm:
-            if (sg_hm.startswith('"') and sg_hm.endswith('"')) or (
-                sg_hm.startswith("'") and sg_hm.endswith("'")
-            ):
-                sg_hm = sg_hm[1:-1]
-            model.space_group.name_h_m = sg_hm
-
-        it_code = (
-            block.find_value('_space_group.IT_coordinate_system_code')
-            or block.find_value('_symmetry.IT_coordinate_system_code')
-            or None
-        )
-        if it_code:
-            try:
-                model.space_group.it_coordinate_system_code = int(it_code)
-            except Exception:
-                model.space_group.it_coordinate_system_code = it_code
+    def _set_space_group_from_cif_block(
+        cls, model: BaseSampleModel, block: gemmi.cif.Block
+    ) -> None:
+        # (Optional) set additional space group CIF tags if needed
+        model.space_group.set_from_cif(block)
 
     @classmethod
-    def _apply_cell_from_block(cls, model: BaseSampleModel, block: gemmi.cif.Block) -> None:
-        a = cls._as_float(block.find_value('_cell.length_a'))
-        b = cls._as_float(block.find_value('_cell.length_b'))
-        c = cls._as_float(block.find_value('_cell.length_c'))
-        alpha = cls._as_float(block.find_value('_cell.angle_alpha'))
-        beta = cls._as_float(block.find_value('_cell.angle_beta'))
-        gamma = cls._as_float(block.find_value('_cell.angle_gamma'))
-
-        if a is not None:
-            model.cell.length_a = a
-        if b is not None:
-            model.cell.length_b = b
-        if c is not None:
-            model.cell.length_c = c
-        if alpha is not None:
-            model.cell.angle_alpha = alpha
-        if beta is not None:
-            model.cell.angle_beta = beta
-        if gamma is not None:
-            model.cell.angle_gamma = gamma
+    def _set_cell_from_cif_block(
+        cls,
+        model: BaseSampleModel,
+        block: gemmi.cif.Block,
+    ) -> None:
+        model.cell.set_from_cif(block)
 
     @classmethod
-    def _apply_atom_sites_from_block(cls, model: BaseSampleModel, block: gemmi.cif.Block) -> None:
-        labels = list(block.find_values('_atom_site.label') or [])
-        types = list(block.find_values('_atom_site.type_symbol') or [])
-        xs = list(block.find_values('_atom_site.fract_x') or [])
-        ys = list(block.find_values('_atom_site.fract_y') or [])
-        zs = list(block.find_values('_atom_site.fract_z') or [])
-        occs = list(block.find_values('_atom_site.occupancy') or [])
-        bisos = list(block.find_values('_atom_site.B_iso_or_equiv') or [])
-        uisos = list(block.find_values('_atom_site.U_iso_or_equiv') or [])
-        wycks = (
-            list(block.find_values('_atom_site.Wyckoff_letter') or [])
-            or list(block.find_values('_atom_site.Wyckoff_symbol') or [])
-            or list(block.find_values('_atom_site.wyckoff_symbol') or [])
-        )
+    def _set_atom_sites_from_cif_block(
+        cls, model: BaseSampleModel, block: gemmi.cif.Block
+    ) -> None:
+        model.atom_sites.set_from_cif(block)
+
+        return
+        labels = list(block.find_loop('_atom_site.label'))
+
+        loop = block.find_loop_item('_atom_site.label').loop
+        return
+
+        # loop = block.find_mmcif_category('_atom_site').loop
+        # for row in range(loop.length()):
+        #    [loop[row, col] for ]
+        #    for col in range(loop.width()):
+        #        loop[row, col]
+        #
+        #       block.find_mmcif_category('_atom_site').loop.tags
+
+        for atom in loop:
+            pass
+            print(atom)
+
+        # Use component-aware lookup keyed by AtomSite attribute names
+        # Note: We don't have an AtomSite instance yet, but alias keys
+        # support dotted/legacy paths
+        labels = cif_get_values(block, 'atom_site_label')
+        types = cif_get_values(block, 'atom_site_type_symbol')
+        xs = cif_get_values(block, 'atom_site_fract_x')
+        ys = cif_get_values(block, 'atom_site_fract_y')
+        zs = cif_get_values(block, 'atom_site_fract_z')
+        occs = cif_get_values(block, 'atom_site_occupancy')
+        bisos = cif_get_values(block, 'atom_site_b_iso')
+        uisos = cif_get_values(block, 'atom_site_u_iso')
+        wycks = cif_get_values(block, 'atom_site_wyckoff', normalize=normalize_wyckoff)
+
+        for i in range(len(types)):
+            if wycks[i] is not None and wycks[i] == '?':
+                wycks[i] = None
 
         if not any([labels, types, xs, ys, zs, occs, bisos, uisos, wycks]):
             return

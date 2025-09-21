@@ -4,7 +4,7 @@
 from typing import Dict
 from typing import List
 
-from easydiffraction.core.objects import Collection
+from easydiffraction.core.objects import DatablockCollection
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
 from easydiffraction.experiments.components.experiment_type import SampleFormEnum
@@ -15,7 +15,7 @@ from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 
 
-class Experiments(Collection):
+class Experiments(DatablockCollection):
     """Collection manager for multiple Experiment instances."""
 
     @property

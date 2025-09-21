@@ -19,6 +19,12 @@ class BaseSampleModel(Datablock):
     class accepts only the `name`.
     """
 
+    _allowed_attributes = {
+        'space_group',
+        'cell',
+        'atom_sites',
+    }
+
     def __init__(self, name: str):
         super().__init__()
         self._name = name
@@ -137,13 +143,13 @@ class BaseSampleModel(Datablock):
         cif_lines = [f'data_{self.name}']
 
         # Space Group
-        cif_lines += ['', self.space_group.as_cif()]
+        cif_lines += ['', self.space_group.as_cif]
 
         # Unit Cell
-        cif_lines += ['', self.cell.as_cif()]
+        cif_lines += ['', self.cell.as_cif]
 
         # Atom Sites
-        cif_lines += ['', self.atom_sites.as_cif()]
+        # cif_lines += ['', self.atom_sites.as_cif()]
 
         return '\n'.join(cif_lines)
 

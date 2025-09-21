@@ -3,7 +3,7 @@
 from enum import Enum
 from typing import Optional
 
-from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import CategoryItem
 from easydiffraction.core.objects import Parameter
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
@@ -68,7 +68,8 @@ class ConstantWavelengthBroadeningMixin:
         self.broad_gauss_u: Parameter = Parameter(
             value=0.01,
             name='broad_gauss_u',
-            cif_name='broad_gauss_u',
+            full_cif_names=['_peak.broad_gauss_u'],
+            default_value=0.01,
             units='deg²',
             description='Gaussian broadening coefficient (dependent on '
             'sample size and instrument resolution)',
@@ -76,28 +77,32 @@ class ConstantWavelengthBroadeningMixin:
         self.broad_gauss_v: Parameter = Parameter(
             value=-0.01,
             name='broad_gauss_v',
-            cif_name='broad_gauss_v',
+            full_cif_names=['_peak.broad_gauss_v'],
+            default_value=-0.01,
             units='deg²',
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
         )
         self.broad_gauss_w: Parameter = Parameter(
             value=0.02,
             name='broad_gauss_w',
-            cif_name='broad_gauss_w',
+            full_cif_names=['_peak.broad_gauss_w'],
+            default_value=0.02,
             units='deg²',
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
         )
         self.broad_lorentz_x: Parameter = Parameter(
             value=0.0,
             name='broad_lorentz_x',
-            cif_name='broad_lorentz_x',
+            full_cif_names=['_peak.broad_lorentz_x'],
+            default_value=0.0,
             units='deg',
             description='Lorentzian broadening coefficient (dependent on sample strain effects)',
         )
         self.broad_lorentz_y: Parameter = Parameter(
             value=0.0,
             name='broad_lorentz_y',
-            cif_name='broad_lorentz_y',
+            full_cif_names=['_peak.broad_lorentz_y'],
+            default_value=0.0,
             units='deg',
             description='Lorentzian broadening coefficient (dependent on '
             'microstructural defects and strain)',
@@ -109,49 +114,56 @@ class TimeOfFlightBroadeningMixin:
         self.broad_gauss_sigma_0: Parameter = Parameter(
             value=0.0,
             name='gauss_sigma_0',
-            cif_name='gauss_sigma_0',
+            full_cif_names=['_peak.gauss_sigma_0'],
+            default_value=0.0,
             units='µs²',
             description='Gaussian broadening coefficient (instrumental resolution)',
         )
         self.broad_gauss_sigma_1: Parameter = Parameter(
             value=0.0,
             name='gauss_sigma_1',
-            cif_name='gauss_sigma_1',
+            full_cif_names=['_peak.gauss_sigma_1'],
+            default_value=0.0,
             units='µs/Å',
             description='Gaussian broadening coefficient (dependent on d-spacing)',
         )
         self.broad_gauss_sigma_2: Parameter = Parameter(
             value=0.0,
             name='gauss_sigma_2',
-            cif_name='gauss_sigma_2',
+            full_cif_names=['_peak.gauss_sigma_2'],
+            default_value=0.0,
             units='µs²/Å²',
             description='Gaussian broadening coefficient (instrument-dependent term)',
         )
         self.broad_lorentz_gamma_0: Parameter = Parameter(
             value=0.0,
             name='lorentz_gamma_0',
-            cif_name='lorentz_gamma_0',
+            full_cif_names=['_peak.lorentz_gamma_0'],
+            default_value=0.0,
             units='µs',
             description='Lorentzian broadening coefficient (dependent on microstrain effects)',
         )
         self.broad_lorentz_gamma_1: Parameter = Parameter(
             value=0.0,
             name='lorentz_gamma_1',
-            cif_name='lorentz_gamma_1',
+            full_cif_names=['_peak.lorentz_gamma_1'],
+            default_value=0.0,
             units='µs/Å',
             description='Lorentzian broadening coefficient (dependent on d-spacing)',
         )
         self.broad_lorentz_gamma_2: Parameter = Parameter(
             value=0.0,
             name='lorentz_gamma_2',
-            cif_name='lorentz_gamma_2',
+            full_cif_names=['_peak.lorentz_gamma_2'],
+            default_value=0.0,
             units='µs²/Å²',
             description='Lorentzian broadening coefficient (instrumental-dependent term)',
         )
         self.broad_mix_beta_0: Parameter = Parameter(
             value=0.0,
             name='mix_beta_0',
-            cif_name='mix_beta_0',
+            full_cif_names=['_peak.mix_beta_0'],
+            default_value=0.0,
             units='deg',
             description='Mixing parameter. Defines the ratio of Gaussian '
             'to Lorentzian contributions in TOF profiles',
@@ -159,7 +171,8 @@ class TimeOfFlightBroadeningMixin:
         self.broad_mix_beta_1: Parameter = Parameter(
             value=0.0,
             name='mix_beta_1',
-            cif_name='mix_beta_1',
+            full_cif_names=['_peak.mix_beta_1'],
+            default_value=0.0,
             units='deg',
             description='Mixing parameter. Defines the ratio of Gaussian '
             'to Lorentzian contributions in TOF profiles',
@@ -171,28 +184,32 @@ class EmpiricalAsymmetryMixin:
         self.asym_empir_1: Parameter = Parameter(
             value=0.1,
             name='asym_empir_1',
-            cif_name='asym_empir_1',
+            full_cif_names=['_peak.asym_empir_1'],
+            default_value=0.1,
             units='',
             description='Empirical asymmetry coefficient p1',
         )
         self.asym_empir_2: Parameter = Parameter(
             value=0.2,
             name='asym_empir_2',
-            cif_name='asym_empir_2',
+            full_cif_names=['_peak.asym_empir_2'],
+            default_value=0.2,
             units='',
             description='Empirical asymmetry coefficient p2',
         )
         self.asym_empir_3: Parameter = Parameter(
             value=0.3,
             name='asym_empir_3',
-            cif_name='asym_empir_3',
+            full_cif_names=['_peak.asym_empir_3'],
+            default_value=0.3,
             units='',
             description='Empirical asymmetry coefficient p3',
         )
         self.asym_empir_4: Parameter = Parameter(
             value=0.4,
             name='asym_empir_4',
-            cif_name='asym_empir_4',
+            full_cif_names=['_peak.asym_empir_4'],
+            default_value=0.4,
             units='',
             description='Empirical asymmetry coefficient p4',
         )
@@ -203,14 +220,16 @@ class FcjAsymmetryMixin:
         self.asym_fcj_1: Parameter = Parameter(
             value=0.01,
             name='asym_fcj_1',
-            cif_name='asym_fcj_1',
+            full_cif_names=['_peak.asym_fcj_1'],
+            default_value=0.01,
             units='',
             description='FCJ asymmetry coefficient 1',
         )
         self.asym_fcj_2: Parameter = Parameter(
             value=0.02,
             name='asym_fcj_2',
-            cif_name='asym_fcj_2',
+            full_cif_names=['_peak.asym_fcj_2'],
+            default_value=0.02,
             units='',
             description='FCJ asymmetry coefficient 2',
         )
@@ -221,14 +240,16 @@ class IkedaCarpenterAsymmetryMixin:
         self.asym_alpha_0: Parameter = Parameter(
             value=0.01,
             name='asym_alpha_0',
-            cif_name='asym_alpha_0',
+            full_cif_names=['_peak.asym_alpha_0'],
+            default_value=0.01,
             units='',
             description='Ikeda-Carpenter asymmetry parameter α₀',
         )
         self.asym_alpha_1: Parameter = Parameter(
             value=0.02,
             name='asym_alpha_1',
-            cif_name='asym_alpha_1',
+            full_cif_names=['_peak.asym_alpha_1'],
+            default_value=0.02,
             units='',
             description='Ikeda-Carpenter asymmetry parameter α₁',
         )
@@ -239,7 +260,8 @@ class PairDistributionFunctionBroadeningMixin:
         self.damp_q = Parameter(
             value=0.05,
             name='damp_q',
-            cif_name='damp_q',
+            full_cif_names=['_peak.damp_q'],
+            default_value=0.05,
             units='Å⁻¹',
             description='Instrumental Q-resolution damping factor '
             '(affects high-r PDF peak amplitude)',
@@ -247,7 +269,8 @@ class PairDistributionFunctionBroadeningMixin:
         self.broad_q = Parameter(
             value=0.0,
             name='broad_q',
-            cif_name='broad_q',
+            full_cif_names=['_peak.broad_q'],
+            default_value=0.0,
             units='Å⁻²',
             description='Quadratic PDF peak broadening coefficient '
             '(thermal and model uncertainty contribution)',
@@ -255,7 +278,8 @@ class PairDistributionFunctionBroadeningMixin:
         self.cutoff_q = Parameter(
             value=25.0,
             name='cutoff_q',
-            cif_name='cutoff_q',
+            full_cif_names=['_peak.cutoff_q'],
+            default_value=25.0,
             units='Å⁻¹',
             description='Q-value cutoff applied to model PDF for Fourier '
             'transform (controls real-space resolution)',
@@ -263,34 +287,33 @@ class PairDistributionFunctionBroadeningMixin:
         self.sharp_delta_1 = Parameter(
             value=0.0,
             name='sharp_delta_1',
-            cif_name='sharp_delta_1',
+            full_cif_names=['_peak.sharp_delta_1'],
+            default_value=0.0,
             units='Å',
             description='PDF peak sharpening coefficient (1/r dependence)',
         )
         self.sharp_delta_2 = Parameter(
             value=0.0,
             name='sharp_delta_2',
-            cif_name='sharp_delta_2',
+            full_cif_names=['_peak.sharp_delta_2'],
+            default_value=0.0,
             units='Å²',
             description='PDF peak sharpening coefficient (1/r² dependence)',
         )
         self.damp_particle_diameter = Parameter(
             value=0.0,
             name='damp_particle_diameter',
-            cif_name='damp_particle_diameter',
+            full_cif_names=['_peak.damp_particle_diameter'],
+            default_value=0.0,
             units='Å',
             description='Particle diameter for spherical envelope damping correction in PDF',
         )
 
 
 # --- Base peak class ---
-class PeakBase(Component):
+class PeakBase(CategoryItem):
     @property
     def category_key(self) -> str:
-        return 'peak'
-
-    @property
-    def cif_category_key(self) -> str:
         return 'peak'
 
 

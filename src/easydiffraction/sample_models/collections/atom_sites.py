@@ -1,85 +1,110 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+from typing import Optional
 
-from easydiffraction.core.objects import Collection
-from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import CategoryCollection
+from easydiffraction.core.objects import CategoryItem
 from easydiffraction.core.objects import Descriptor
 from easydiffraction.core.objects import Parameter
 
 
-class AtomSite(Component):
+class AtomSite(CategoryItem):
     """Represents a single atom site within the crystal structure."""
+
+    _allowed_attributes = {
+        'label',
+        'type_symbol',
+        'fract_x',
+        'fract_y',
+        'fract_z',
+        'wyckoff_letter',
+        'occupancy',
+        'b_iso',
+        'adp_type',
+    }
 
     @property
     def category_key(self):
         return 'atom_sites'
 
-    @property
-    def cif_category_key(self):
-        return 'atom_site'
-
     def __init__(
         self,
-        label: str,
-        type_symbol: str,
-        fract_x: float,
-        fract_y: float,
-        fract_z: float,
-        wyckoff_letter: str = None,
-        occupancy: float = 1.0,
-        b_iso: float = 0.0,
-        adp_type: str = 'Biso',
+        label: Optional[str] = None,
+        type_symbol: Optional[str] = None,
+        fract_x: Optional[float] = None,
+        fract_y: Optional[float] = None,
+        fract_z: Optional[float] = None,
+        wyckoff_letter: Optional[str] = None,
+        occupancy: Optional[float] = None,
+        b_iso: Optional[float] = None,
+        adp_type: Optional[str] = None,
     ):  # TODO: add support for Uiso, Uani and Bani
         super().__init__()
 
         self.label = Descriptor(
             value=label,
             name='label',
-            cif_name='label',
+            value_type=str,
+            default_value='La',
+            full_cif_names=['_atom_site.label'],
             description='Unique identifier for the atom site.',
         )
         self.type_symbol = Descriptor(
             value=type_symbol,
             name='type_symbol',
-            cif_name='type_symbol',
+            value_type=str,
+            default_value='La',
+            full_cif_names=['_atom_site.type_symbol'],
             description='Chemical symbol of the atom at this site.',
         )
         self.adp_type = Descriptor(
             value=adp_type,
             name='adp_type',
-            cif_name='ADP_type',
+            value_type=str,
+            default_value='Biso',
+            full_cif_names=['_atom_site.ADP_type'],
             description='Type of atomic displacement parameter (ADP) '
             'used (e.g., Biso, Uiso, Uani, Bani).',
         )
         self.wyckoff_letter = Descriptor(
             value=wyckoff_letter,
             name='wyckoff_letter',
-            cif_name='Wyckoff_letter',
+            value_type=str,
+            default_value=None,
+            full_cif_names=['_atom_site.Wyckoff_letter', '_atom_site.Wyckoff_symbol'],
             description='Wyckoff letter indicating the symmetry of the '
             'atom site within the space group.',
         )
         self.fract_x = Parameter(
             value=fract_x,
             name='fract_x',
-            cif_name='fract_x',
+            default_value=0.0,
+            full_cif_names=['_atom_site.fract_x'],
             description='Fractional x-coordinate of the atom site within the unit cell.',
         )
         self.fract_y = Parameter(
             value=fract_y,
             name='fract_y',
-            cif_name='fract_y',
+            default_value=0.0,
+            full_cif_names=['_atom_site.fract_y'],
             description='Fractional y-coordinate of the atom site within the unit cell.',
         )
         self.fract_z = Parameter(
             value=fract_z,
             name='fract_z',
-            cif_name='fract_z',
+            default_value=0.0,
+            full_cif_names=['_atom_site.fract_z'],
             description='Fractional z-coordinate of the atom site within the unit cell.',
         )
         self.occupancy = Parameter(
             value=occupancy,
             name='occupancy',
-            cif_name='occupancy',
+            default_value=1.0,
+            physical_min=0.0,
+            physical_max=1.0,
+            # fit_min = 0.0,
+            # fit_max = 1.0,
+            full_cif_names=['_atom_site.occupancy'],
             description='Occupancy of the atom site, representing the '
             'fraction of the site occupied by the atom type.',
         )
@@ -87,27 +112,19 @@ class AtomSite(Component):
             value=b_iso,
             name='b_iso',
             units='Å²',
-            cif_name='B_iso_or_equiv',
+            default_value=0.0,
+            physical_min=0.0,
+            full_cif_names=['_atom_site.B_iso_or_equiv'],
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
         )
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_id = label
-
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked = True
+        # TODO: Check if it can be self.label.value instead
+        self._entry_name = self.label
 
 
-class AtomSites(Collection):
+class AtomSites(CategoryCollection):
     """Collection of AtomSite instances."""
 
-    # TODO: Check, if we can get rid of this property
-    #  We could use class name instead
-    @property
-    def _type(self):
-        return 'category'  # datablock or category
-
-    @property
-    def _child_class(self):
-        return AtomSite
+    def __init__(self):
+        super().__init__(child_class=AtomSite)
