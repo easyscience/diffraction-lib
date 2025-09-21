@@ -4,6 +4,8 @@ from easydiffraction import Logger
 from easydiffraction import Project
 from easydiffraction import SampleModel
 from easydiffraction import SampleModels
+from easydiffraction.experiments.collections.linked_phases import LinkedPhase
+from easydiffraction.experiments.collections.linked_phases import LinkedPhases
 from easydiffraction.sample_models.collections.atom_sites import AtomSite
 from easydiffraction.sample_models.collections.atom_sites import AtomSites
 from easydiffraction.sample_models.components.cell import Cell
@@ -36,18 +38,27 @@ models = SampleModels()
 models.add(model)
 
 print(models)
-print(models.parameters)
+for p in models.parameters:
+    print(p)
 print(models.as_cif)
 
 exp = Experiment(name='exp1', data_path='data/hrpt_lbco.xye')
 print(exp)
+
+linked_phases = LinkedPhases()
+linked_phase = LinkedPhase(id='mdl', scale=1.0)
+linked_phases.add(linked_phase)
+
+exp.linked_phases = linked_phases
+
 
 experiments = Experiments()
 print(experiments)
 
 experiments.add(exp)
 print(experiments)
-print(experiments.parameters)
+for p in experiments.parameters:
+    print(p)
 # print(experiments.as_cif)
 
 
@@ -56,6 +67,7 @@ print(proj)
 
 proj.sample_models = models
 proj.experiments = experiments
+
 
 # proj.plotter.engine = 'plotly'
 

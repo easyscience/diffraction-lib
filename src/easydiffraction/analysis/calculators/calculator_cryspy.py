@@ -314,7 +314,10 @@ class CryspyCalculator(CalculatorBase):
             }
             cif_lines.append('')
             for local_attr_name, engine_key_name in instrument_mapping.items():
-                if hasattr(instrument, local_attr_name):
+                if (
+                    hasattr(instrument, local_attr_name)
+                    and getattr(instrument, local_attr_name) is not None
+                ):
                     attr_value = getattr(instrument, local_attr_name).value
                     cif_lines.append(f'{engine_key_name} {attr_value}')
 
@@ -337,7 +340,7 @@ class CryspyCalculator(CalculatorBase):
             if expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
                 cif_lines.append('_tof_profile_peak_shape Gauss')
             for local_attr_name, engine_key_name in peak_mapping.items():
-                if hasattr(peak, local_attr_name):
+                if hasattr(peak, local_attr_name) and getattr(peak, local_attr_name) is not None:
                     attr_value = getattr(peak, local_attr_name).value
                     cif_lines.append(f'{engine_key_name} {attr_value}')
 

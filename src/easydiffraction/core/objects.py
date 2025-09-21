@@ -1118,7 +1118,11 @@ class CategoryCollection(
 
     def add(self, item: CategoryItem):
         # Insert the item using its entry_name.value as key
-        self._items[item.entry_name.value] = item
+        # TODO: Fix temporary workaround
+        if isinstance(item.entry_name, Descriptor):
+            self._items[item.entry_name.value] = item
+        else:
+            self._items[item.entry_name] = item
 
     def from_cif(self, block):
         # Derive loop size using entry_name first CIF tag alias
