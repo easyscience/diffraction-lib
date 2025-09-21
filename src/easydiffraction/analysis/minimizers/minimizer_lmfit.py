@@ -44,7 +44,7 @@ class LmfitMinimizer(MinimizerBase):
         engine_parameters = lmfit.Parameters()
         for param in parameters:
             engine_parameters.add(
-                name=param.minimizer_uid,
+                name=param._minimizer_uid,
                 value=param.value,
                 vary=param.free,
                 min=param.min,
@@ -86,7 +86,7 @@ class LmfitMinimizer(MinimizerBase):
         param_values = raw_result.params if hasattr(raw_result, 'params') else raw_result
 
         for param in parameters:
-            param_result = param_values.get(param.minimizer_uid)
+            param_result = param_values.get(param._minimizer_uid)
             if param_result is not None:
                 param.value = param_result.value
                 param.uncertainty = getattr(param_result, 'stderr', None)

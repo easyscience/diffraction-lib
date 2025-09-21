@@ -42,7 +42,19 @@ class UidMapHandler(BaseSingleton):
         return self._uid_map
 
     def add_to_uid_map(self, parameter):
-        """Adds a single Parameter object to the UID map."""
+        """Adds a single Parameter or Descriptor object to the UID map.
+
+        Only Descriptor or Parameter instances are allowed (not
+        Components or others).
+        """
+        from easydiffraction.core.objects import Descriptor
+        from easydiffraction.core.objects import Parameter
+
+        if not isinstance(parameter, (Descriptor, Parameter)):
+            raise TypeError(
+                f'Cannot add object of type {type(parameter).__name__} to UID map. '
+                'Only Descriptor or Parameter instances are allowed.'
+            )
         self._uid_map[parameter.uid] = parameter
 
     def replace_uid(self, old_uid, new_uid):
@@ -51,10 +63,11 @@ class UidMapHandler(BaseSingleton):
         Moves the associated parameter from old_uid to new_uid. Raises a
         KeyError if the old_uid doesn't exist.
         """
-        if old_uid in self._uid_map:
-            self._uid_map[new_uid] = self._uid_map.pop(old_uid)
-        else:
+        if old_uid not in self._uid_map:
+            # Only raise if old_uid is not None and not empty
+            print('DEBUG: replace_uid failed', old_uid, 'current map:', list(self._uid_map.keys()))
             raise KeyError(f"UID '{old_uid}' not found in the UID map.")
+        self._uid_map[new_uid] = self._uid_map.pop(old_uid)
 
     # TODO: Implement removing from the UID map
 
