@@ -98,5 +98,6 @@ class Experiments(DatablockCollection):
         for exp in self._experiments.values():
             print(exp)
 
+    @property
     def as_cif(self) -> str:
         return '\n\n'.join([exp.as_cif() for exp in self._experiments.values()])

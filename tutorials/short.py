@@ -1,5 +1,7 @@
 from easydiffraction import Experiment
+from easydiffraction import Experiments
 from easydiffraction import Logger
+from easydiffraction import Project
 from easydiffraction import SampleModel
 from easydiffraction import SampleModels
 from easydiffraction.sample_models.collections.atom_sites import AtomSite
@@ -38,5 +40,23 @@ print(models.parameters)
 print(models.as_cif)
 
 exp = Experiment(name='exp1', data_path='data/hrpt_lbco.xye')
-
 print(exp)
+
+experiments = Experiments()
+print(experiments)
+
+experiments.add(exp)
+print(experiments)
+print(experiments.parameters)
+# print(experiments.as_cif)
+
+
+proj = Project(name='PROJ')
+print(proj)
+
+proj.sample_models = models
+proj.experiments = experiments
+
+# proj.plotter.engine = 'plotly'
+
+proj.plot_meas_vs_calc(expt_name='exp1', x_min=38, x_max=41)
