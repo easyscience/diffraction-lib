@@ -670,7 +670,7 @@ class Parameter(Descriptor):
 
     @free.setter
     def free(self, value):
-        self._uncertainty = value
+        self._free = value
 
     @property
     def constrained(self):
