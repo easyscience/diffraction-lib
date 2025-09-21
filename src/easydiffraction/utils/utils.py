@@ -11,6 +11,7 @@ import zipfile
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
 from typing import List
+from typing import Optional
 from urllib.parse import urlparse
 
 import numpy as np
@@ -18,6 +19,9 @@ import pandas as pd
 import pooch
 from packaging.version import Version
 from tabulate import tabulate
+from uncertainties import UFloat
+from uncertainties import ufloat
+from uncertainties import ufloat_fromstr
 
 try:
     import IPython
@@ -689,3 +693,47 @@ def get_value_from_xye_header(file_path, key):
         return float(match.group(1))
     else:
         raise ValueError(f'{key} not found in the header.')
+
+
+def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
+    """Parse a CIF-style numeric string into a `ufloat` with an optional
+    uncertainty.
+
+    Examples of supported input:
+    - "3.566"       → ufloat(3.566, nan)
+    - "3.566(2)"    → ufloat(3.566, 0.002)
+    - None          → ufloat(default, nan)
+
+    Behavior:
+    - If the input string contains a value with parentheses (e.g.
+      "3.566(2)"), the number in parentheses is interpreted as an
+      estimated standard deviation (esd) in the last digit(s).
+    - If the input string has no parentheses, an uncertainty of NaN is
+      assigned to indicate "no esd provided".
+    - If parsing fails, the function falls back to the given `default`
+      value with uncertainty NaN.
+
+    Parameters
+    ----------
+    s : str or None
+        Numeric string in CIF format (e.g. "3.566", "3.566(2)") or None.
+    default : float or None, optional
+        Default value to use if `s` is None or parsing fails.
+        Defaults to None.
+
+    Returns:
+    -------
+    UFloat
+        An `uncertainties.UFloat` object with the parsed value and
+        uncertainty. The uncertainty will be NaN if not specified or
+        parsing failed.
+    """
+    if s is None:
+        return ufloat(default, np.nan)
+
+    if '(' not in s and ')' not in s:
+        s = f'{s}(nan)'
+    try:
+        return ufloat_fromstr(s)
+    except Exception:
+        return ufloat(default, np.nan)
