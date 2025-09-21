@@ -55,7 +55,7 @@ class Analysis:
                 common_attrs = {
                     'datablock': param.datablock_id,
                     'category': param.category_key,
-                    'entry': param.collection_entry_id,
+                    'entry': param.entry_name,
                     'parameter': param.name,
                     'value': param.value,
                     'units': param.units,
@@ -261,19 +261,19 @@ class Analysis:
                 if isinstance(param, (Descriptor, Parameter)):
                     datablock_id = param.datablock_id
                     category_key = param.category_key
-                    entry_id = param.collection_entry_id
+                    entry_name = param.entry_name
                     param_key = param.name
                     code_variable = (
                         f"{project_varname}.{datablock_type}['{datablock_id}'].{category_key}"
                     )
-                    if entry_id:
-                        code_variable += f"['{entry_id}']"
+                    if entry_name:
+                        code_variable += f"['{entry_name}']"
                     code_variable += f'.{param_key}'
                     cif_uid = param._generate_human_readable_unique_id()
                     columns_data.append([
                         datablock_id,
                         category_key,
-                        entry_id,
+                        entry_name,
                         param_key,
                         code_variable,
                         cif_uid,

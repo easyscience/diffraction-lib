@@ -3,18 +3,14 @@
 
 from typing import Type
 
-from easydiffraction.core.objects import Collection
-from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import CategoryCollection
+from easydiffraction.core.objects import CategoryItem
 from easydiffraction.core.objects import Descriptor
 
 
-class JointFitExperiment(Component):
+class JointFitExperiment(CategoryItem):
     @property
     def category_key(self) -> str:
-        return 'joint_fit_experiment'
-
-    @property
-    def cif_category_key(self) -> str:
         return 'joint_fit_experiment'
 
     def __init__(self, id: str, weight: float) -> None:
@@ -23,24 +19,28 @@ class JointFitExperiment(Component):
         self.id: Descriptor = Descriptor(
             value=id,
             name='id',
-            cif_name='id',
+            value_type=str,
+            full_cif_names=['_joint_fit_experiment.id'],
+            default_value=id,
         )
         self.weight: Descriptor = Descriptor(
             value=weight,
             name='weight',
-            cif_name='weight',
+            value_type=float,
+            full_cif_names=['_joint_fit_experiment.weight'],
+            default_value=weight,
         )
 
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_id = id
+        self._entry_name = id
 
         # Lock further attribute additions to prevent
         # accidental modifications by users
         self._locked = True
 
 
-class JointFitExperiments(Collection):
+class JointFitExperiments(CategoryCollection):
     """Collection manager for experiments that are fitted together in a
     `joint` fit.
     """

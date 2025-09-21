@@ -105,7 +105,7 @@ class FitResults:
         for param in self.parameters:
             datablock_id = getattr(param, 'datablock_id', 'N/A')
             category_key = getattr(param, 'category_key', 'N/A')
-            collection_entry_id = getattr(param, 'collection_entry_id', 'N/A')
+            entry_name = getattr(param, 'entry_name', 'N/A')
             name = getattr(param, 'name', 'N/A')
             start = (
                 f'{getattr(param, "start_value", "N/A"):.4f}'
@@ -126,7 +126,7 @@ class FitResults:
             rows.append([
                 datablock_id,
                 category_key,
-                collection_entry_id,
+                entry_name,
                 name,
                 start,
                 fitted,
