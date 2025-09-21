@@ -29,6 +29,8 @@ if TYPE_CHECKING:
     from easydiffraction.utils.formatting import chapter
     from easydiffraction.utils.formatting import paragraph
     from easydiffraction.utils.formatting import section
+    from easydiffraction.utils.logging import Logger
+    from easydiffraction.utils.logging import log
     from easydiffraction.utils.utils import download_from_repository
     from easydiffraction.utils.utils import fetch_tutorials
     from easydiffraction.utils.utils import get_value_from_xye_header
@@ -104,6 +106,17 @@ def __getattr__(name):
         from easydiffraction.utils.utils import show_version
 
         return show_version
+    elif name == 'Logger':
+        from easydiffraction.utils.logging import Logger
+
+        # Auto-configure once on import:
+        # PRETTY in notebooks (rich installed) else RAISE; level WARNING
+        Logger.configure()
+        return Logger
+    elif name == 'log':
+        from easydiffraction.utils.logging import log
+
+        return log
     raise AttributeError(f"module 'easydiffraction' has no attribute {name}")
 
 
@@ -125,4 +138,6 @@ __all__ = [
     'list_tutorials',
     'get_value_from_xye_header',
     'show_version',
+    'Logger',
+    'log',
 ]
