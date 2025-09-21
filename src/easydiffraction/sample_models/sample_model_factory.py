@@ -161,10 +161,11 @@ class SampleModelFactory:
 
     @classmethod
     def _set_space_group_from_cif_block(
-        cls, model: BaseSampleModel, block: gemmi.cif.Block
+        cls,
+        model: BaseSampleModel,
+        block: gemmi.cif.Block,
     ) -> None:
-        # (Optional) set additional space group CIF tags if needed
-        model.space_group.set_from_cif(block)
+        model.space_group.from_cif(block)
 
     @classmethod
     def _set_cell_from_cif_block(
@@ -172,13 +173,15 @@ class SampleModelFactory:
         model: BaseSampleModel,
         block: gemmi.cif.Block,
     ) -> None:
-        model.cell.set_from_cif(block)
+        model.cell.from_cif(block)
 
     @classmethod
     def _set_atom_sites_from_cif_block(
-        cls, model: BaseSampleModel, block: gemmi.cif.Block
+        cls,
+        model: BaseSampleModel,
+        block: gemmi.cif.Block,
     ) -> None:
-        model.atom_sites.set_from_cif(block)
+        model.atom_sites.from_cif(block)
 
         return
         labels = list(block.find_loop('_atom_site.label'))

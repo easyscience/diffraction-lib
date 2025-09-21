@@ -507,21 +507,29 @@ class Descriptor(
             block: CIF-like object with ``find_values(tag)``.
             idx: Value index (default: first).
         """
+        # Try to find the value(s) from the CIF block iterating over
+        # the possible cif names in order of preference.
         found_values: list[Any] = []
         for tag in self.full_cif_names:
             candidate = list(block.find_values(tag))
             if candidate:
                 found_values = candidate
                 break
+        # Return default if no value(s) found in CIF
         if not found_values:
             self.value = self.default_value
             return
+        # If found, extract the requested index for loop categories.
+        # Use first value in case of single item category
         raw = found_values[idx]
+        # Parse value and uncertainty in case of expected float type
         if self.value_type is float:
             u = str_to_ufloat(raw)
             self.value = u.n
             if hasattr(self, 'uncertainty'):
                 self.uncertainty = u.s  # type: ignore[attr-defined]
+        # Parse string value, stripping a single matching quote pair if
+        # present
         elif self.value_type is str:
             if (len(raw) >= 2) and (raw[0] == raw[-1]) and (raw[0] in {"'", '"'}):
                 self.value = raw[1:-1]
@@ -1127,15 +1135,24 @@ class CategoryCollection(
         # Derive loop size using entry_name first CIF tag alias
         if self._child_class is None:
             raise ValueError('Child class is not defined.')
-        size = 0
+        # TODO: Find a better way and then remove TODO in the AtomSite
+        #  class
+        # Create a temporary instance to access entry_name attribute
+        # used as ID column for the items in this collection
         child_obj = self._child_class()
         attr_name = child_obj.entry_name.name
         attr = getattr(child_obj, attr_name)
+        # Try to find the value(s) from the CIF block iterating over
+        # the possible cif names in order of preference.
+        size = 0
         for name in attr.full_cif_names:
             size = len(block.find_values(name))
             break
+        # If no values found, nothing to do
         if not size:
             return
+        # If values found, delegate to child class to parse each
+        # row and add to collection
         for row_idx in range(size):
             child_obj = self._child_class()
             child_obj.from_cif(block, idx=row_idx)
