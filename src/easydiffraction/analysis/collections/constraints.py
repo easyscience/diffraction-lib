@@ -8,6 +8,11 @@ from easydiffraction.core.objects import Descriptor
 
 
 class Constraint(CategoryItem):
+    _allowed_attributes = {
+        'lhs_alias',
+        'rhs_expr',
+    }
+
     @property
     def category_key(self) -> str:
         return 'constraint'
@@ -34,19 +39,7 @@ class Constraint(CategoryItem):
         # as ID for the whole object
         self._entry_name = lhs_alias
 
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked = True
-
 
 class Constraints(CategoryCollection):
-    # @property
-    # def _type(self) -> str:
-    #    return 'category'  # datablock or category
-
-    # @property
-    # def _child_class(self) -> Type[Constraint]:
-    #    return Constraint
-
     def __init__(self):
         super().__init__(child_class=Constraint)

@@ -1,3 +1,4 @@
+from easydiffraction import Experiment
 from easydiffraction import Logger
 from easydiffraction import SampleModel
 from easydiffraction import SampleModels
@@ -34,3 +35,8 @@ models.add(model)
 
 print(models)
 print(models.parameters)
+print(models.as_cif)
+
+exp = Experiment(name='exp1', data_path='data/hrpt_lbco.xye')
+
+print(exp)

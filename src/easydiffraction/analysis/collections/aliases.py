@@ -8,6 +8,11 @@ from easydiffraction.core.objects import Descriptor
 
 
 class Alias(CategoryItem):
+    _allowed_attributes = {
+        'label',
+        'param_uid',
+    }
+
     @property
     def category_key(self) -> str:
         return 'alias'
@@ -34,19 +39,7 @@ class Alias(CategoryItem):
         # as ID for the whole object
         self._entry_name = label
 
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked = True
-
 
 class Aliases(CategoryCollection):
-    # @property
-    # def _type(self) -> str:
-    #    return 'category'  # datablock or category
-
-    # @property
-    # def _child_class(self) -> Type[Alias]:
-    #    return Alias
-
     def __init__(self):
         super().__init__(child_class=Alias)

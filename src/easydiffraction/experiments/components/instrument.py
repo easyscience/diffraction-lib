@@ -10,6 +10,11 @@ from easydiffraction.experiments.components.experiment_type import ScatteringTyp
 
 
 class InstrumentBase(CategoryItem):
+    _allowed_attributes = {
+        'setup_wavelength',
+        'calib_twotheta_offset',
+    }
+
     @property
     def category_key(self) -> str:
         return 'instrument'
@@ -40,12 +45,16 @@ class ConstantWavelengthInstrument(InstrumentBase):
             description='Instrument misalignment offset',
         )
 
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked: bool = True
-
 
 class TimeOfFlightInstrument(InstrumentBase):
+    _allowed_attributes = {
+        'setup_twotheta_bank',
+        'calib_d_to_tof_offset',
+        'calib_d_to_tof_linear',
+        'calib_d_to_tof_quad',
+        'calib_d_to_tof_recip',
+    }
+
     def __init__(
         self,
         setup_twotheta_bank: float = 150.0,
@@ -96,10 +105,6 @@ class TimeOfFlightInstrument(InstrumentBase):
             units='µs·Å',
             description='TOF reciprocal velocity correction',
         )
-
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked: bool = True
 
 
 class InstrumentFactory:

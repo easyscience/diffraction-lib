@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Type
 
 from easydiffraction.core.objects import CategoryCollection
 from easydiffraction.core.objects import CategoryItem
@@ -9,6 +8,11 @@ from easydiffraction.core.objects import Descriptor
 
 
 class JointFitExperiment(CategoryItem):
+    _allowed_attributes = {
+        'id',
+        'weight',
+    }
+
     @property
     def category_key(self) -> str:
         return 'joint_fit_experiment'
@@ -17,7 +21,7 @@ class JointFitExperiment(CategoryItem):
         super().__init__()
 
         self.id: Descriptor = Descriptor(
-            value=id,
+            value=id,  # TODO: need new name instead of id
             name='id',
             value_type=str,
             full_cif_names=['_joint_fit_experiment.id'],
@@ -35,20 +39,11 @@ class JointFitExperiment(CategoryItem):
         # as ID for the whole object
         self._entry_name = id
 
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked = True
-
 
 class JointFitExperiments(CategoryCollection):
     """Collection manager for experiments that are fitted together in a
     `joint` fit.
     """
 
-    @property
-    def _type(self) -> str:
-        return 'category'  # datablock or category
-
-    @property
-    def _child_class(self) -> Type[JointFitExperiment]:
-        return JointFitExperiment
+    def __init__(self):
+        super().__init__(child_class=JointFitExperiment)

@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import List
-from typing import Type
 
 from easydiffraction.core.objects import CategoryCollection
 from easydiffraction.core.objects import CategoryItem
@@ -13,6 +12,11 @@ from easydiffraction.utils.utils import render_table
 
 
 class ExcludedRegion(CategoryItem):
+    _allowed_attributes = {
+        'start',
+        'end',
+    }
+
     @property
     def category_key(self) -> str:
         return 'excluded_regions'
@@ -44,21 +48,20 @@ class ExcludedRegion(CategoryItem):
         # as ID for the whole object
         self._entry_name = f'{start}-{end}'
 
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked = True
-
 
 class ExcludedRegions(CategoryCollection):
     """Collection of ExcludedRegion instances."""
 
-    @property
-    def _type(self) -> str:
-        return 'category'  # datablock or category
+    # @property
+    # def _type(self) -> str:
+    #    return 'category'  # datablock or category
 
-    @property
-    def _child_class(self) -> Type[ExcludedRegion]:
-        return ExcludedRegion
+    def __init__(self):
+        super().__init__(child_class=ExcludedRegion)
+
+    # @property
+    # def _child_class(self) -> Type[ExcludedRegion]:
+    #    return ExcludedRegion
 
     def on_item_added(self, item: ExcludedRegion) -> None:
         """Mark excluded points in the experiment pattern when a new

@@ -68,6 +68,13 @@ class BeamModeEnum(str, Enum):
 
 
 class ExperimentType(CategoryItem):
+    _allowed_attributes = {
+        'sample_form',
+        'beam_mode',
+        'radiation_probe',
+        'scattering_type',
+    }
+
     @property
     def category_key(self) -> str:
         return 'expt_type'
@@ -117,7 +124,3 @@ class ExperimentType(CategoryItem):
             '(for conventional structure refinement) or total scattering '
             '(for pair distribution function analysis - PDF)',
         )
-
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked: bool = True

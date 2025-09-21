@@ -24,6 +24,11 @@ from easydiffraction.utils.utils import render_table
 
 # TODO: rename to LineSegment
 class Point(CategoryItem):
+    _allowed_attributes = {
+        'x',
+        'y',
+    }
+
     @property
     def category_key(self) -> str:
         return 'background'
@@ -57,14 +62,16 @@ class Point(CategoryItem):
         # as ID for the whole object
         self._entry_name = str(x)
 
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked = True
-
 
 class PolynomialTerm(CategoryItem):
     # TODO: make consistency in where to place the following properties:
     #  before or after the __init__ method
+
+    _allowed_attributes = {
+        'order',
+        'coef',
+    }
+
     @property
     def category_key(self) -> str:
         return 'background'
@@ -98,15 +105,11 @@ class PolynomialTerm(CategoryItem):
         # as ID for the whole object
         self._entry_name = str(order)
 
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked = True
-
 
 class BackgroundBase(CategoryCollection):
-    @property
-    def _type(self) -> str:
-        return 'category'  # datablock or category
+    # @property
+    # def _type(self) -> str:
+    #    return 'category'  # datablock or category
 
     @abstractmethod
     def calculate(self, x_data: np.ndarray) -> np.ndarray:
@@ -120,9 +123,12 @@ class BackgroundBase(CategoryCollection):
 class LineSegmentBackground(BackgroundBase):
     _description: str = 'Linear interpolation between points'
 
-    @property
-    def _child_class(self) -> Type[Point]:
-        return Point
+    def __init__(self):
+        super().__init__(child_class=Point)
+
+    # @property
+    # def _child_class(self) -> Type[Point]:
+    #    return Point
 
     def calculate(self, x_data: np.ndarray) -> np.ndarray:
         """Interpolate background points over x_data."""
@@ -165,9 +171,12 @@ class LineSegmentBackground(BackgroundBase):
 class ChebyshevPolynomialBackground(BackgroundBase):
     _description: str = 'Chebyshev polynomial background'
 
-    @property
-    def _child_class(self) -> Type[PolynomialTerm]:
-        return PolynomialTerm
+    def __init__(self):
+        super().__init__(child_class=PolynomialTerm)
+
+    # @property
+    # def _child_class(self) -> Type[PolynomialTerm]:
+    #    return PolynomialTerm
 
     def calculate(self, x_data: np.ndarray) -> np.ndarray:
         """Evaluate polynomial background over x_data."""

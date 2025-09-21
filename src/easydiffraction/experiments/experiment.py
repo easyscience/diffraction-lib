@@ -10,7 +10,6 @@ import numpy as np
 from easydiffraction.core.objects import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
 from easydiffraction.experiments.collections.background import BackgroundTypeEnum
-from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ExperimentType
@@ -53,6 +52,12 @@ class BaseExperiment(Datablock):
 
     Wraps experiment type, instrument and datastore.
     """
+
+    _allowed_attributes = {
+        'name',
+        'type',
+        'datastore',
+    }
 
     # TODO: Find better name for the attribute 'type'.
     #  1. It shadows the built-in type() function.
@@ -158,7 +163,10 @@ class BasePowderExperiment(BaseExperiment):
         )
 
         self.linked_phases: LinkedPhases = LinkedPhases()
-        self.excluded_regions: ExcludedRegions = ExcludedRegions(parent=self)
+        # TEMPORARY
+        # self.excluded_regions:
+        # ExcludedRegions = ExcludedRegions(parent=self)
+        # TEMPORARY
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:

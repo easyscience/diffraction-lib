@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Dict
 from typing import List
 
 from easydiffraction.core.objects import DatablockCollection
@@ -18,13 +17,14 @@ from easydiffraction.utils.formatting import paragraph
 class Experiments(DatablockCollection):
     """Collection manager for multiple Experiment instances."""
 
-    @property
-    def _child_class(self):
-        return BaseExperiment
+    # @property
+    # def _child_class(self):
+    #    return BaseExperiment
 
     def __init__(self) -> None:
         super().__init__()
-        self._experiments: Dict[str, BaseExperiment] = self._items  # Alias for legacy support
+        # self._experiments: Dict[str, BaseExperiment] = self._items
+        self._experiments = self._datablocks  # Alias for legacy support
 
     def add(self, experiment: BaseExperiment):
         """Add a pre-built experiment instance."""

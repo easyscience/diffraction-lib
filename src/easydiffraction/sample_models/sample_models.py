@@ -79,6 +79,7 @@ class SampleModels(DatablockCollection):
     # CIF methods
     # -----------
 
+    @property
     def as_cif(self) -> str:
         """Export all sample models to CIF format.
 

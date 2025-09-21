@@ -149,7 +149,7 @@ class BaseSampleModel(Datablock):
         cif_lines += ['', self.cell.as_cif]
 
         # Atom Sites
-        # cif_lines += ['', self.atom_sites.as_cif()]
+        cif_lines += ['', self.atom_sites.as_cif]
 
         return '\n'.join(cif_lines)
 
