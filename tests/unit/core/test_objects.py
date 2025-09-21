@@ -1,5 +1,5 @@
 from easydiffraction.core.objects import Collection
-from easydiffraction.core.objects import Component
+from easydiffraction.core.objects import CategoryItem
 from easydiffraction.core.objects import Datablock
 from easydiffraction.core.objects import Descriptor
 from easydiffraction.core.objects import Parameter
@@ -45,7 +45,7 @@ def test_parameter_initialization():
 
 
 def test_component_abstract_methods():
-    class TestComponent(Component):
+    class TestComponent(CategoryItem):
         @property
         def category_key(self):
             return 'test_category'
@@ -60,7 +60,7 @@ def test_component_abstract_methods():
 
 
 def test_component_attribute_handling():
-    class TestComponent(Component):
+    class TestComponent(CategoryItem):
         @property
         def category_key(self):
             return 'test_category'
@@ -106,7 +106,7 @@ def test_collection_iteration():
 
 
 def test_datablock_components():
-    class TestComponent(Component):
+    class TestComponent(CategoryItem):
         @property
         def category_key(self):
             return 'test_category'
