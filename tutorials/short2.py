@@ -12,7 +12,7 @@ from easydiffraction.sample_models.components.cell import Cell
 from easydiffraction.sample_models.components.space_group import SpaceGroup
 
 Logger.configure(mode=Logger.Mode.LOG, level=Logger.Level.DEBUG)
-# Logger.configure(mode=Logger.Mode.RAISE, level=Logger.Level.DEBUG)
+Logger.configure(mode=Logger.Mode.RAISE, level=Logger.Level.DEBUG)
 
 sg = SpaceGroup()
 sg.name_h_m = 'P n m a'
@@ -91,4 +91,5 @@ proj.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
 
 models['lbco'].cell.length_a.free = True
 print('----', models['lbco'].cell.length_a.free)
-# proj.analysis.show_free_params()
+proj.analysis.show_free_params()
+proj.analysis.fit()

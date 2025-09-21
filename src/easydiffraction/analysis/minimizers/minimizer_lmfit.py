@@ -47,8 +47,8 @@ class LmfitMinimizer(MinimizerBase):
                 name=param._minimizer_uid,
                 value=param.value,
                 vary=param.free,
-                min=param.min,
-                max=param.max,
+                min=param.physical_min,
+                max=param.physical_max,
             )
         return {'engine_parameters': engine_parameters}
 

@@ -554,6 +554,7 @@ class Parameter(Descriptor):
     _writable_attributes = Descriptor._writable_attributes | {
         'free',
         'uncertainty',
+        'start_value',
     }
 
     # Extend read-only attributes
@@ -628,6 +629,9 @@ class Parameter(Descriptor):
         self._constrained = constrained
         self._physical_min = physical_min
         self._physical_max = physical_max
+
+        # TODO: Used in minimization. Check if needed.
+        self.start_value = None
 
     # ------------------------------------------------------------------
     # Dunder methods
@@ -1224,6 +1228,24 @@ class DatablockCollection(
         params = []
         for datablock in self._datablocks.values():
             params.extend(datablock.parameters)
+        return params
+
+    # TODO: Need refactoring to new API
+    def get_fittable_params(self) -> List[Parameter]:
+        all_params = self.parameters
+        params = []
+        for param in all_params:
+            if hasattr(param, 'free') and not param.constrained:
+                params.append(param)
+        return params
+
+    # TODO: Need refactoring to new API
+    def get_free_params(self) -> List[Parameter]:
+        fittable_params = self.get_fittable_params()
+        params = []
+        for param in fittable_params:
+            if param.free:
+                params.append(param)
         return params
 
     @property

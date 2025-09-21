@@ -53,7 +53,7 @@ class Analysis:
             common_attrs = {}
             if isinstance(param, (Descriptor, Parameter)):
                 common_attrs = {
-                    'datablock': param.datablock_id,
+                    'datablock': param.datablock_name,
                     'category': param.category_key,
                     'entry': param.entry_name,
                     'parameter': param.name,
@@ -66,8 +66,8 @@ class Analysis:
                 param_attrs = {
                     'fittable': True,
                     'free': param.free,
-                    'min': param.min,
-                    'max': param.max,
+                    'min': param.physical_min,
+                    'max': param.physical_max,
                     'uncertainty': f'{param.uncertainty:.4f}' if param.uncertainty else '',
                     'value': f'{param.value:.4f}',
                     'units': param.units,
@@ -259,19 +259,19 @@ class Analysis:
         for datablock_type, params in all_params.items():
             for param in params:
                 if isinstance(param, (Descriptor, Parameter)):
-                    datablock_id = param.datablock_id
+                    datablock_name = param.datablock_name
                     category_key = param.category_key
                     entry_name = param.entry_name
                     param_key = param.name
                     code_variable = (
-                        f"{project_varname}.{datablock_type}['{datablock_id}'].{category_key}"
+                        f"{project_varname}.{datablock_type}['{datablock_name}'].{category_key}"
                     )
                     if entry_name:
                         code_variable += f"['{entry_name}']"
                     code_variable += f'.{param_key}'
                     cif_uid = param._generate_human_readable_unique_id()
                     columns_data.append([
-                        datablock_id,
+                        datablock_name,
                         category_key,
                         entry_name,
                         param_key,
