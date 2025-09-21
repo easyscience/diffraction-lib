@@ -304,45 +304,52 @@ class CryspyCalculator(CalculatorBase):
             cif_lines.append(f'_setup_radiation {radiation_probe}')
 
         if instrument:
-            instrument_mapping = {
-                'setup_wavelength': '_setup_wavelength',
-                'calib_twotheta_offset': '_setup_offset_2theta',
-                'setup_twotheta_bank': '_tof_parameters_2theta_bank',
-                'calib_d_to_tof_offset': '_tof_parameters_Zero',
-                'calib_d_to_tof_linear': '_tof_parameters_Dtt1',
-                'calib_d_to_tof_quad': '_tof_parameters_dtt2',
-            }
+            # Restrict to only attributes relevant for the beam mode to
+            # avoid probing non-existent guarded attributes (which
+            # triggers diagnostics).
+            if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+                instrument_mapping = {
+                    'setup_wavelength': '_setup_wavelength',
+                    'calib_twotheta_offset': '_setup_offset_2theta',
+                }
+            else:  # TIME_OF_FLIGHT
+                instrument_mapping = {
+                    'setup_twotheta_bank': '_tof_parameters_2theta_bank',
+                    'calib_d_to_tof_offset': '_tof_parameters_Zero',
+                    'calib_d_to_tof_linear': '_tof_parameters_Dtt1',
+                    'calib_d_to_tof_quad': '_tof_parameters_dtt2',
+                }
             cif_lines.append('')
             for local_attr_name, engine_key_name in instrument_mapping.items():
-                if (
-                    hasattr(instrument, local_attr_name)
-                    and getattr(instrument, local_attr_name) is not None
-                ):
-                    attr_value = getattr(instrument, local_attr_name).value
-                    cif_lines.append(f'{engine_key_name} {attr_value}')
+                attr_obj = instrument.__dict__.get(local_attr_name)
+                if attr_obj is not None:
+                    cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 
         if peak:
-            peak_mapping = {
-                'broad_gauss_u': '_pd_instr_resolution_U',
-                'broad_gauss_v': '_pd_instr_resolution_V',
-                'broad_gauss_w': '_pd_instr_resolution_W',
-                'broad_lorentz_x': '_pd_instr_resolution_X',
-                'broad_lorentz_y': '_pd_instr_resolution_Y',
-                'broad_gauss_sigma_0': '_tof_profile_sigma0',
-                'broad_gauss_sigma_1': '_tof_profile_sigma1',
-                'broad_gauss_sigma_2': '_tof_profile_sigma2',
-                'broad_mix_beta_0': '_tof_profile_beta0',
-                'broad_mix_beta_1': '_tof_profile_beta1',
-                'asym_alpha_0': '_tof_profile_alpha0',
-                'asym_alpha_1': '_tof_profile_alpha1',
-            }
-            cif_lines.append('')
-            if expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
+            if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+                peak_mapping = {
+                    'broad_gauss_u': '_pd_instr_resolution_U',
+                    'broad_gauss_v': '_pd_instr_resolution_V',
+                    'broad_gauss_w': '_pd_instr_resolution_W',
+                    'broad_lorentz_x': '_pd_instr_resolution_X',
+                    'broad_lorentz_y': '_pd_instr_resolution_Y',
+                }
+            else:  # TIME_OF_FLIGHT
+                peak_mapping = {
+                    'broad_gauss_sigma_0': '_tof_profile_sigma0',
+                    'broad_gauss_sigma_1': '_tof_profile_sigma1',
+                    'broad_gauss_sigma_2': '_tof_profile_sigma2',
+                    'broad_mix_beta_0': '_tof_profile_beta0',
+                    'broad_mix_beta_1': '_tof_profile_beta1',
+                    'asym_alpha_0': '_tof_profile_alpha0',
+                    'asym_alpha_1': '_tof_profile_alpha1',
+                }
                 cif_lines.append('_tof_profile_peak_shape Gauss')
+            cif_lines.append('')
             for local_attr_name, engine_key_name in peak_mapping.items():
-                if hasattr(peak, local_attr_name) and getattr(peak, local_attr_name) is not None:
-                    attr_value = getattr(peak, local_attr_name).value
-                    cif_lines.append(f'{engine_key_name} {attr_value}')
+                attr_obj = peak.__dict__.get(local_attr_name)
+                if attr_obj is not None:
+                    cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 
         x_data = experiment.datastore.x
         twotheta_min = float(x_data.min())
