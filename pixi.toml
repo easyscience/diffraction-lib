@@ -2,7 +2,7 @@
 # ENVIRONMENT VARIABLES
 #######################
 
-# Platform-independent 
+# Platform-independent
 
 [activation.env]
 PYTHONIOENCODING = "utf-8"
@@ -184,7 +184,7 @@ docs-setup = { depends-on = [
 dist-build = 'python -m build --wheel --outdir dist'
 spdx-update = 'python tools/update_spdx.py'
 #dev-install = 'uv pip install --requirements pyproject.toml --extra all'
-dev-install = "uv pip install --editable '.[all]'"
+dev-install = "python -m uv pip install --editable '.[all]'"
 npm-config = 'npm config set registry https://registry.npmjs.org/'
 prettier-install = 'npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml'
 pre-commit-setup = 'pre-commit clean && pre-commit uninstall && pre-commit install --hook-type pre-commit --hook-type pre-push --overwrite'
