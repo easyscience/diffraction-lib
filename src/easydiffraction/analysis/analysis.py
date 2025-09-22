@@ -269,7 +269,7 @@ class Analysis:
                     if category_entry_name:
                         code_variable += f"['{category_entry_name}']"
                     code_variable += f'.{param_key}'
-                    cif_uid = param._generate_human_readable_unique_id()
+                    cif_uid = param.cif_uid
                     columns_data.append([
                         datablock_name,
                         category_key,

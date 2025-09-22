@@ -127,4 +127,5 @@ experiment.linked_phases['lbco'].scale.free = True
 project.analysis.fit()
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+# project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)

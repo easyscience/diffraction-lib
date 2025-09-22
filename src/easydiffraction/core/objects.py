@@ -671,6 +671,14 @@ class Parameter(Descriptor):
     def physical_max(self, _):
         self._readonly_error()
 
+    @property
+    def cif_uid(self):
+        return self.name  # TODO: Modify to return CIF-specific names?
+
+    @cif_uid.setter
+    def cif_uid(self, _):
+        self._readonly_error()
+
     # ------------------------------------------------------------------
     # Public writable properties
     # ------------------------------------------------------------------
