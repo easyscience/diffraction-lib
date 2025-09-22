@@ -66,8 +66,8 @@ class PolynomialTerm(CategoryItem):
     #  before or after the __init__ method
 
     _allowed_attributes = {
-        'order',
-        'coef',
+        'chebyshev_order',
+        'chebyshev_coef',
     }
 
     @property
@@ -81,7 +81,7 @@ class PolynomialTerm(CategoryItem):
     ) -> None:
         super().__init__()
 
-        self.order = Descriptor(
+        self.chebyshev_order = Descriptor(
             value=order,
             name='chebyshev_order',
             value_type=float,
@@ -90,7 +90,7 @@ class PolynomialTerm(CategoryItem):
             description='The value of an order used in a Chebyshev polynomial '
             'equation representing the background in a calculated diffractogram',
         )
-        self.coef = Parameter(
+        self.chebyshev_coef = Parameter(
             value=coef,
             name='chebyshev_coef',
             full_cif_names=['_pd_background.Chebyshev_coef'],
@@ -99,7 +99,7 @@ class PolynomialTerm(CategoryItem):
             'equation representing the background in a calculated diffractogram',
         )
         # self._category_entry_attr_name = str(order)
-        self._category_entry_attr_name = self.order.name
+        self._category_entry_attr_name = self.chebyshev_order.name
 
 
 class BackgroundBase(CategoryCollection):
@@ -169,7 +169,7 @@ class ChebyshevPolynomialBackground(BackgroundBase):
             return np.zeros_like(x_data)
 
         u = (x_data - x_data.min()) / (x_data.max() - x_data.min()) * 2 - 1  # scale to [-1, 1]
-        coefs = [term.coef.value for term in self._items.values()]
+        coefs = [term.chebyshev_coef.value for term in self._items.values()]
         y_data = chebval(u, coefs)
         return y_data
 
@@ -178,8 +178,8 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         columns_alignment = ['left', 'left']
         columns_data: List[List[Union[int, float]]] = []
         for term in self._items.values():
-            order = term.order.value
-            coef = term.coef.value
+            order = term.chebyshev_order.value
+            coef = term.chebyshev_coef.value
             columns_data.append([order, coef])
 
         print(paragraph('Chebyshev polynomial background terms'))

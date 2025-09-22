@@ -272,7 +272,7 @@ expt2.peak.broad_gauss_w.free = True
 expt2.peak.broad_lorentz_y.free = True
 
 for term in expt2.background:
-    term.coef.free = True
+    term.chebyshev_coef.free = True
 
 # %% [markdown]
 # #### Perform Fit
