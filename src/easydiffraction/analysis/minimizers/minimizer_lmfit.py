@@ -47,8 +47,8 @@ class LmfitMinimizer(MinimizerBase):
                 name=param._minimizer_uid,
                 value=param.value,
                 vary=param.free,
-                min=param.physical_min,  # TODO: re-enable bounds
-                max=param.physical_max,  # TODO: re-enable bounds
+                min=param.fit_min,
+                max=param.fit_max,
             )
         return {'engine_parameters': engine_parameters}
 
@@ -88,7 +88,7 @@ class LmfitMinimizer(MinimizerBase):
         for param in parameters:
             param_result = param_values.get(param._minimizer_uid)
             if param_result is not None:
-                param.value = param_result.value
+                param._value = param_result.value  # Bypass ranges check
                 param.uncertainty = getattr(param_result, 'stderr', None)
 
     def _check_success(self, raw_result: Any) -> bool:

@@ -52,8 +52,8 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     model.cell.length_a.free = True
     expt.linked_phases['lbco'].scale.free = True
     expt.instrument.calib_twotheta_offset.free = True
-    expt.background['10'].y.free = True
-    expt.background['165'].y.free = True
+    expt.background[10].y.free = True
+    expt.background[165].y.free = True
 
     # Perform fit
     project.analysis.fit()

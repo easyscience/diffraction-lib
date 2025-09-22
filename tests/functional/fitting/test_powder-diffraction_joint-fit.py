@@ -20,11 +20,11 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     model.cell.length_a.value = 8.47
     model.cell.length_b.value = 5.39
     model.cell.length_c.value = 6.95
-    model.atom_sites.add('Pb', 'Pb', 0.1876, 0.25, 0.167, b_iso=1.37)
-    model.atom_sites.add('S', 'S', 0.0654, 0.25, 0.684, b_iso=0.3777)
-    model.atom_sites.add('O1', 'O', 0.9082, 0.25, 0.5954, b_iso=1.9764)
-    model.atom_sites.add('O2', 'O', 0.1935, 0.25, 0.5432, b_iso=1.4456)
-    model.atom_sites.add('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
+    model.atom_sites.add_from_args('Pb', 'Pb', 0.1876, 0.25, 0.167, b_iso=1.37)
+    model.atom_sites.add_from_args('S', 'S', 0.0654, 0.25, 0.684, b_iso=0.3777)
+    model.atom_sites.add_from_args('O1', 'O', 0.9082, 0.25, 0.5954, b_iso=1.9764)
+    model.atom_sites.add_from_args('O2', 'O', 0.1935, 0.25, 0.5432, b_iso=1.4456)
+    model.atom_sites.add_from_args('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
 
     # Set experiments
     data_file = 'd1a_pbso4_first-half.dat'
@@ -37,7 +37,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt1.peak.broad_gauss_w = 0.386
     expt1.peak.broad_lorentz_x = 0
     expt1.peak.broad_lorentz_y = 0.0878
-    expt1.linked_phases.add('pbso4', scale=1.46)
+    expt1.linked_phases.add_from_args('pbso4', scale=1.46)
     expt1.background_type = 'line-segment'
     for x, y in [
         (11.0, 206.1624),
@@ -49,7 +49,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         (120.0, 244.4525),
         (153.0, 226.0595),
     ]:
-        expt1.background.add(x, y)
+        expt1.background.add_from_args(x, y)
 
     data_file = 'd1a_pbso4_second-half.dat'
     download_from_repository(data_file, destination=TEMP_DIR)
@@ -61,7 +61,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt2.peak.broad_gauss_w = 0.386
     expt2.peak.broad_lorentz_x = 0
     expt2.peak.broad_lorentz_y = 0.0878
-    expt2.linked_phases.add('pbso4', scale=1.46)
+    expt2.linked_phases.add_from_args('pbso4', scale=1.46)
     expt2.background_type = 'line-segment'
     for x, y in [
         (11.0, 206.1624),
@@ -73,7 +73,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         (120.0, 244.4525),
         (153.0, 226.0595),
     ]:
-        expt2.background.add(x, y)
+        expt2.background.add_from_args(x, y)
 
     # Create project
     project = Project()
@@ -106,11 +106,11 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     model.cell.length_a = 8.47
     model.cell.length_b = 5.39
     model.cell.length_c = 6.95
-    model.atom_sites.add('Pb', 'Pb', 0.1876, 0.25, 0.167, b_iso=1.37)
-    model.atom_sites.add('S', 'S', 0.0654, 0.25, 0.684, b_iso=0.3777)
-    model.atom_sites.add('O1', 'O', 0.9082, 0.25, 0.5954, b_iso=1.9764)
-    model.atom_sites.add('O2', 'O', 0.1935, 0.25, 0.5432, b_iso=1.4456)
-    model.atom_sites.add('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
+    model.atom_sites.add_from_args('Pb', 'Pb', 0.1876, 0.25, 0.167, b_iso=1.37)
+    model.atom_sites.add_from_args('S', 'S', 0.0654, 0.25, 0.684, b_iso=0.3777)
+    model.atom_sites.add_from_args('O1', 'O', 0.9082, 0.25, 0.5954, b_iso=1.9764)
+    model.atom_sites.add_from_args('O2', 'O', 0.1935, 0.25, 0.5432, b_iso=1.4456)
+    model.atom_sites.add_from_args('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
 
     # Set experiments
     data_file = 'd1a_pbso4.dat'
@@ -127,7 +127,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt1.peak.broad_gauss_w = 0.386
     expt1.peak.broad_lorentz_x = 0
     expt1.peak.broad_lorentz_y = 0.088
-    expt1.linked_phases.add('pbso4', scale=1.5)
+    expt1.linked_phases.add_from_args('pbso4', scale=1.5)
     for x, y in [
         (11.0, 206.1624),
         (15.0, 194.75),
@@ -138,7 +138,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         (120.0, 244.4525),
         (153.0, 226.0595),
     ]:
-        expt1.background.add(x, y)
+        expt1.background.add_from_args(x, y)
 
     data_file = 'lab_pbso4.dat'
     download_from_repository(data_file, destination=TEMP_DIR)
@@ -154,7 +154,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt2.peak.broad_gauss_w = 0.021272
     expt2.peak.broad_lorentz_x = 0
     expt2.peak.broad_lorentz_y = 0.057691
-    expt2.linked_phases.add('pbso4', scale=0.001)
+    expt2.linked_phases.add_from_args('pbso4', scale=0.001)
     for x, y in [
         (11.0, 141.8516),
         (13.0, 102.8838),
@@ -165,7 +165,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         (90.0, 113.7473),
         (110.0, 132.4643),
     ]:
-        expt2.background.add(x, y)
+        expt2.background.add_from_args(x, y)
 
     # Create project
     project = Project()

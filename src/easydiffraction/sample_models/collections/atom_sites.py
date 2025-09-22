@@ -100,10 +100,8 @@ class AtomSite(CategoryItem):
             value=occupancy,
             name='occupancy',
             default_value=1.0,
-            # physical_min=0.0,
-            # physical_max=1.0,
-            # fit_min = 0.0,
-            # fit_max = 1.0,
+            physical_min=0.0,
+            physical_max=1.0,
             full_cif_names=['_atom_site.occupancy'],
             description='Occupancy of the atom site, representing the '
             'fraction of the site occupied by the atom type.',
@@ -113,7 +111,7 @@ class AtomSite(CategoryItem):
             name='b_iso',
             units='Å²',
             default_value=0.0,
-            # physical_min=0.0, # Adding this causes lmfit to stack
+            physical_min=0.0,
             full_cif_names=['_atom_site.B_iso_or_equiv'],
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
         )

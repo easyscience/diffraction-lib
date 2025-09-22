@@ -38,6 +38,7 @@ from typing import Union
 import numpy as np
 
 from easydiffraction import log
+from easydiffraction.core.singletons import UidMapHandler
 from easydiffraction.utils.utils import str_to_ufloat
 
 __all__ = [
@@ -270,6 +271,7 @@ class Descriptor(
 
         # UID
         self._uid = self._generate_random_uid()
+        UidMapHandler.get().add_to_uid_map(self)
 
     # ------------------------------------------------------------------
     # Dunder methods
@@ -535,11 +537,12 @@ class Parameter(Descriptor):
         'free',
         'uncertainty',
         'start_value',
+        'fit_min',
+        'fit_max',
     }
 
     # Extend read-only attributes
     _readonly_attributes = Descriptor._readonly_attributes | {
-        'constrained',
         'physical_min',
         'physical_max',
     }
@@ -565,6 +568,8 @@ class Parameter(Descriptor):
         constrained: bool = False,
         physical_min: Optional[float] = -np.inf,
         physical_max: Optional[float] = np.inf,
+        fit_min: Optional[float] = -np.inf,
+        fit_max: Optional[float] = np.inf,
     ) -> None:
         """Initialize a Parameter.
 
@@ -582,6 +587,8 @@ class Parameter(Descriptor):
             constrained: True if constrained by symmetry.
             physical_min: Physical lower bound.
             physical_max: Physical upper bound.
+            fit_min: Lower bound during refinement.
+            fit_max: Upper bound during refinement.
         """
         super().__init__(
             value=value,
@@ -600,6 +607,8 @@ class Parameter(Descriptor):
         self._constrained = constrained
         self._physical_min = physical_min
         self._physical_max = physical_max
+        self._fit_min = fit_min
+        self._fit_max = fit_max
 
         # TODO: Used in minimization. Check if needed.
         self.start_value = None
@@ -683,6 +692,22 @@ class Parameter(Descriptor):
     # Public writable properties
     # ------------------------------------------------------------------
 
+    @property
+    def fit_min(self):
+        return self._fit_min
+
+    @fit_min.setter
+    def fit_min(self, value):
+        self._fit_min = value
+
+    @property
+    def fit_max(self):
+        return self._fit_max
+
+    @fit_max.setter
+    def fit_max(self, value):
+        self._fit_max = value
+
     # Redefine value from Descriptor with extra range check
     @property
     def value(self) -> Any:
@@ -696,6 +721,9 @@ class Parameter(Descriptor):
         """Set value with type & physical range validation."""
         if self._value == new_value:
             return
+        # Auto-cast int to float
+        if isinstance(new_value, int):
+            new_value = float(new_value)  # TODO: how to get rid of this?
         # Type check (reuse Descriptor's logic)
         if self.value_type and not isinstance(new_value, self.value_type):
             self._type_warning(self.name, self.value_type, new_value)

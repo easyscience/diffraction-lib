@@ -48,9 +48,8 @@ class UidMapHandler(BaseSingleton):
         Components or others).
         """
         from easydiffraction.core.objects import Descriptor
-        from easydiffraction.core.objects import Parameter
 
-        if not isinstance(parameter, (Descriptor, Parameter)):
+        if not isinstance(parameter, Descriptor):
             raise TypeError(
                 f'Cannot add object of type {type(parameter).__name__} to UID map. '
                 'Only Descriptor or Parameter instances are allowed.'
@@ -165,8 +164,8 @@ class ConstraintsHandler(BaseSingleton):
                 param = uid_map[dependent_uid]
 
                 # Update its value and mark it as constrained
-                param.value = rhs_value
-                param.constrained = True
+                param._value = rhs_value  # To bypass ranges check
+                param._constrained = True  # To bypass read-only check
 
             except Exception as error:
                 print(f"Failed to apply constraint '{lhs_alias} = {rhs_expr}': {error}")

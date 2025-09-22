@@ -66,7 +66,7 @@ class Analysis:
                 param_attrs = {
                     'fittable': True,
                     'free': param.free,
-                    'min': param.physical_min,
+                    'min': param.fit_min,
                     'max': param.physical_max,
                     'uncertainty': f'{param.uncertainty:.4f}' if param.uncertainty else '',
                     'value': f'{param.value:.4f}',
@@ -340,7 +340,7 @@ class Analysis:
             # Pre-populate all experiments with weight 0.5
             self.joint_fit_experiments = JointFitExperiments()
             for id in self.project.experiments.ids:
-                self.joint_fit_experiments.add(id, weight=0.5)
+                self.joint_fit_experiments.add_from_args(id, weight=0.5)
         print(paragraph('Current fit mode changed to'))
         print(self._fit_mode)
 

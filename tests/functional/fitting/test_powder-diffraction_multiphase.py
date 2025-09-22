@@ -17,16 +17,16 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     model_1.space_group.name_h_m = 'P m -3 m'
     model_1.space_group.it_coordinate_system_code = '1'
     model_1.cell.length_a = 3.8909
-    model_1.atom_sites.add('La', 'La', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
-    model_1.atom_sites.add('Ba', 'Ba', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
-    model_1.atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, wyckoff_letter='b', b_iso=0.2567)
-    model_1.atom_sites.add('O', 'O', 0, 0.5, 0.5, wyckoff_letter='c', b_iso=1.4041)
+    model_1.atom_sites.add_from_args('La', 'La', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
+    model_1.atom_sites.add_from_args('Ba', 'Ba', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
+    model_1.atom_sites.add_from_args('Co', 'Co', 0.5, 0.5, 0.5, wyckoff_letter='b', b_iso=0.2567)
+    model_1.atom_sites.add_from_args('O', 'O', 0, 0.5, 0.5, wyckoff_letter='c', b_iso=1.4041)
 
     model_2 = SampleModel(name='si')
     model_2.space_group.name_h_m = 'F d -3 m'
     model_2.space_group.it_coordinate_system_code = '2'
     model_2.cell.length_a = 5.43146
-    model_2.atom_sites.add('Si', 'Si', 0.0, 0.0, 0.0, wyckoff_letter='a', b_iso=0.0)
+    model_2.atom_sites.add_from_args('Si', 'Si', 0.0, 0.0, 0.0, wyckoff_letter='a', b_iso=0.0)
 
     # Set experiment
     data_file = 'mcstas_lbco-si.xys'
@@ -48,10 +48,10 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     expt.peak.broad_mix_beta_1 = 0.0041
     expt.peak.asym_alpha_0 = 0.0
     expt.peak.asym_alpha_1 = 0.0097
-    expt.linked_phases.add('lbco', scale=4.0)
-    expt.linked_phases.add('si', scale=0.2)
+    expt.linked_phases.add_from_args('lbco', scale=4.0)
+    expt.linked_phases.add_from_args('si', scale=0.2)
     for x in range(45000, 115000, 5000):
-        expt.background.add(x=x, y=0.2)
+        expt.background.add_from_args(x=x, y=0.2)
 
     # Create project
     project = Project()
@@ -60,7 +60,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     project.experiments.add(expt)
 
     # Exclude regions from fitting
-    project.experiments['mcstas'].excluded_regions.add(start=108000, end=200000)
+    project.experiments['mcstas'].excluded_regions.add_from_args(start=108000, end=200000)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'

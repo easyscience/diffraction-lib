@@ -34,8 +34,8 @@ class DfolsMinimizer(MinimizerBase):
         bounds_upper = []
         for param in parameters:
             x0.append(param.value)
-            bounds_lower.append(param.physical_min if param.physical_min is not None else -np.inf)
-            bounds_upper.append(param.physical_max if param.physical_max is not None else np.inf)
+            bounds_lower.append(param.fit_min)
+            bounds_upper.append(param.fit_max)
         bounds = (np.array(bounds_lower), np.array(bounds_upper))
         return {'x0': np.array(x0), 'bounds': bounds}
 
