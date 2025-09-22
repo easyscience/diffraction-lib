@@ -13,17 +13,17 @@ def test_experiment_type_initialization():
     assert isinstance(experiment_type.sample_form, Descriptor)
     assert experiment_type.sample_form.value == 'powder'
     assert experiment_type.sample_form.name == 'sample_form'
-    assert experiment_type.sample_form.cif_name == 'sample_form'
+    assert experiment_type.sample_form.full_cif_names == ['_expt_type.sample_form']
 
     assert isinstance(experiment_type.beam_mode, Descriptor)
     assert experiment_type.beam_mode.value == 'constant wavelength'
     assert experiment_type.beam_mode.name == 'beam_mode'
-    assert experiment_type.beam_mode.cif_name == 'beam_mode'
+    assert experiment_type.beam_mode.full_cif_names == ['_expt_type.beam_mode']
 
     assert isinstance(experiment_type.radiation_probe, Descriptor)
     assert experiment_type.radiation_probe.value == 'neutron'
     assert experiment_type.radiation_probe.name == 'radiation_probe'
-    assert experiment_type.radiation_probe.cif_name == 'radiation_probe'
+    assert experiment_type.radiation_probe.full_cif_names == ['_expt_type.radiation_probe']
 
 
 def test_experiment_type_properties():
@@ -35,10 +35,9 @@ def test_experiment_type_properties():
     )
 
     assert experiment_type.category_key == 'expt_type'
-    assert experiment_type.cif_category_key == 'expt_type'
-    assert experiment_type.datablock_id is None
-    assert experiment_type.entry_id is None
-    assert experiment_type._locked is True
+    # Removed legacy attributes: cif_category_key, datablock_id, entry_id, and internal _locked
+    # Just validate category_key and basic descriptor integrity
+    assert experiment_type.sample_form.full_cif_names[0].startswith('_expt_type.')
 
 
 def no_test_experiment_type_locking_attributes():

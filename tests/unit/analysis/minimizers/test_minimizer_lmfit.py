@@ -10,8 +10,30 @@ from easydiffraction.core.objects import Parameter
 
 @pytest.fixture
 def mock_parameters():
-    param1 = Parameter(name='param1', cif_name='param1', value=1.0, free=True, min_value=0.0, max_value=2.0, uncertainty=None)
-    param2 = Parameter(name='param2', cif_name='param2', value=2.0, free=False, min_value=1.0, max_value=3.0, uncertainty=None)
+    param1 = Parameter(
+        value=1.0,
+        name='param1',
+        full_cif_names=['_test.param1'],
+        default_value=1.0,
+        free=True,
+        physical_min=0.0,
+        physical_max=10.0,
+        fit_min=0.0,
+        fit_max=2.0,
+        uncertainty=None,
+    )
+    param2 = Parameter(
+        value=2.0,
+        name='param2',
+        full_cif_names=['_test.param2'],
+        default_value=2.0,
+        free=False,
+        physical_min=0.0,
+        physical_max=10.0,
+        fit_min=1.0,
+        fit_max=3.0,
+        uncertainty=None,
+    )
     return [param1, param2]
 
 
@@ -42,7 +64,9 @@ def test_prepare_solver_args(lmfit_minimizer, mock_parameters):
 
 @patch('easydiffraction.analysis.minimizers.minimizer_lmfit.lmfit.minimize')
 def test_run_solver(mock_minimize, lmfit_minimizer, mock_objective_function, mock_parameters):
-    mock_minimize.return_value = MagicMock(params={'param1': MagicMock(value=1.5), 'param2': MagicMock(value=2.5)})
+    mock_minimize.return_value = MagicMock(
+        params={'param1': MagicMock(value=1.5), 'param2': MagicMock(value=2.5)}
+    )
 
     solver_args = lmfit_minimizer._prepare_solver_args(mock_parameters)
     raw_result = lmfit_minimizer._run_solver(mock_objective_function, **solver_args)
@@ -61,7 +85,10 @@ def test_run_solver(mock_minimize, lmfit_minimizer, mock_objective_function, moc
 
 def test_sync_result_to_parameters(lmfit_minimizer, mock_parameters):
     raw_result = MagicMock(
-        params={'None__param1': MagicMock(value=1.5, stderr=0.1), 'None__param2': MagicMock(value=2.5, stderr=0.2)}
+        params={
+            'None__param1': MagicMock(value=1.5, stderr=0.1),
+            'None__param2': MagicMock(value=2.5, stderr=0.2),
+        }
     )
 
     lmfit_minimizer._sync_result_to_parameters(mock_parameters, raw_result)
@@ -84,7 +111,10 @@ def test_check_success(lmfit_minimizer):
 @patch('easydiffraction.analysis.minimizers.minimizer_lmfit.lmfit.minimize')
 def test_fit(mock_minimize, lmfit_minimizer, mock_parameters, mock_objective_function):
     mock_minimize.return_value = MagicMock(
-        params={'None__param1': MagicMock(value=1.5, stderr=0.1), 'None__param2': MagicMock(value=2.5, stderr=0.2)},
+        params={
+            'None__param1': MagicMock(value=1.5, stderr=0.1),
+            'None__param2': MagicMock(value=2.5, stderr=0.2),
+        },
         success=True,
     )
     lmfit_minimizer.tracker.finish_tracking = MagicMock()
