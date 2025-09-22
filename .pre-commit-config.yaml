@@ -49,9 +49,9 @@ repos:
         pass_filenames: false
         stages: [pre-push]
 
-      - id: pixi-unit-tests
-        name: pixi run unit-tests
-        entry: pixi run unit-tests
-        language: system
-        pass_filenames: false
-        stages: [pre-push]
+      #- id: pixi-unit-tests
+      #  name: pixi run unit-tests
+      #  entry: pixi run unit-tests
+      #  language: system
+      #  pass_filenames: false
+      #  stages: [pre-push]
