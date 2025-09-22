@@ -181,8 +181,8 @@ project.plotter.engine = 'plotly'
 # #### Add Sample Models
 
 # %%
-project.sample_models.add_from_args(model_1)
-project.sample_models.add_from_args(model_2)
+project.sample_models.add(model_1)
+project.sample_models.add(model_2)
 
 # %% [markdown]
 # #### Show Sample Models
@@ -194,7 +194,7 @@ project.sample_models.show_names()
 # #### Add Experiments
 
 # %%
-project.experiments.add_from_args(experiment)
+project.experiments.add(experiment)
 
 # %% [markdown]
 # #### Set Excluded Regions

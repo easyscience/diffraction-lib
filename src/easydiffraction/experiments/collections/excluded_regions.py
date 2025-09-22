@@ -53,10 +53,16 @@ class ExcludedRegions(CategoryCollection):
     def __init__(self):
         super().__init__(child_class=ExcludedRegion)
 
-    def _on_item_added(self, item: ExcludedRegion) -> None:
+    def add(self, item: ExcludedRegion) -> None:
         """Mark excluded points in the experiment pattern when a new
         region is added.
         """
+        # Call parent add first
+
+        super().add(item)
+
+        # Now add extra behavior specific to ExcludedRegions
+
         datastore = self._parent.datastore
 
         # Boolean mask for points within the new excluded region
