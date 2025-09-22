@@ -109,31 +109,31 @@ class BaseExperiment(Datablock):
         cif_lines += ['', self.type.as_cif]
 
         # Instrument setup and calibration
-        if hasattr(self, 'instrument'):
+        if 'instrument' in self._allowed_attributes:
             cif_lines += ['', self.instrument.as_cif]
 
         # Peak profile, broadening and asymmetry
-        if hasattr(self, 'peak'):
+        if 'peak' in self._allowed_attributes:
             cif_lines += ['', self.peak.as_cif]
 
         # Phase scale factors for powder experiments
-        if hasattr(self, 'linked_phases') and self.linked_phases._items:
+        if 'linked_phases' in self._allowed_attributes and self.linked_phases._items:
             cif_lines += ['', self.linked_phases.as_cif]
 
         # Crystal scale factor for single crystal experiments
-        # if hasattr(self, 'linked_crystal'):
-        #    cif_lines += ['', self.linked_crystal.as_cif]
+        if 'linked_crystal' in self._allowed_attributes:
+            cif_lines += ['', self.linked_crystal.as_cif]
 
         # Background points
-        if hasattr(self, 'background') and self.background._items:
+        if 'background' in self._allowed_attributes and self.background._items:
             cif_lines += ['', self.background.as_cif]
 
         # Excluded regions
-        if hasattr(self, 'excluded_regions') and self.excluded_regions._items:
+        if 'excluded_regions' in self._allowed_attributes and self.excluded_regions._items:
             cif_lines += ['', self.excluded_regions.as_cif]
 
         # Measured data
-        if hasattr(self, 'datastore'):
+        if 'datastore' in self._allowed_attributes:
             cif_lines += ['', self.datastore.as_cif(max_points=max_points)]
 
         return '\n'.join(cif_lines)

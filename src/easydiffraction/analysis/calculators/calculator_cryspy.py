@@ -312,7 +312,7 @@ class CryspyCalculator(CalculatorBase):
                     'setup_wavelength': '_setup_wavelength',
                     'calib_twotheta_offset': '_setup_offset_2theta',
                 }
-            else:  # TIME_OF_FLIGHT
+            elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
                 instrument_mapping = {
                     'setup_twotheta_bank': '_tof_parameters_2theta_bank',
                     'calib_d_to_tof_offset': '_tof_parameters_Zero',
@@ -334,7 +334,7 @@ class CryspyCalculator(CalculatorBase):
                     'broad_lorentz_x': '_pd_instr_resolution_X',
                     'broad_lorentz_y': '_pd_instr_resolution_Y',
                 }
-            else:  # TIME_OF_FLIGHT
+            elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
                 peak_mapping = {
                     'broad_gauss_sigma_0': '_tof_profile_sigma0',
                     'broad_gauss_sigma_1': '_tof_profile_sigma1',

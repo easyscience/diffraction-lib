@@ -122,20 +122,20 @@ class Summary:
                 f'{expt.type.beam_mode.value}'
             )
 
-            if hasattr(expt, 'instrument'):
-                if hasattr(expt.instrument, 'setup_wavelength'):
+            if 'instrument' in expt._allowed_attributes:
+                if 'setup_wavelength' in expt.instrument._allowed_attributes:
                     print(paragraph('Wavelength'))
                     print(f'{expt.instrument.setup_wavelength.value:.5f}')
-                if hasattr(expt.instrument, 'calib_twotheta_offset'):
+                if 'calib_twotheta_offset' in expt.instrument._allowed_attributes:
                     print(paragraph('2θ offset'))
                     print(f'{expt.instrument.calib_twotheta_offset.value:.5f}')
 
-            if hasattr(expt, 'peak_profile_type'):
+            if 'peak_profile_type' in expt._allowed_attributes:
                 print(paragraph('Profile type'))
                 print(expt.peak_profile_type)
 
-            if hasattr(expt, 'peak'):
-                if hasattr(expt.peak, 'broad_gauss_u'):
+            if 'peak' in expt._allowed_attributes:
+                if 'broad_gauss_u' in expt.peak:
                     print(paragraph('Peak broadening (Gaussian)'))
                     columns_alignment = ['left', 'right']
                     columns_data = [
@@ -147,7 +147,7 @@ class Summary:
                         columns_alignment=columns_alignment,
                         columns_data=columns_data,
                     )
-                if hasattr(expt.peak, 'broad_lorentz_x'):
+                if 'broad_lorentz_x' in expt.peak:
                     print(paragraph('Peak broadening (Lorentzian)'))
                     columns_alignment = ['left', 'right']
                     columns_data = [
