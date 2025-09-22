@@ -164,10 +164,7 @@ class Logger:
             if cls._mode is cls.Mode.VERBOSE:
                 raise exc_type(message)
             if cls._mode is cls.Mode.COMPACT:
-                cls._logger.log(int(level), message)
-                raise SystemExit(1)
-            cls._logger.log(int(level), message)
-            raise exc_type(message)
+                raise exc_type(message) from None
         cls._logger.log(int(level), message)
 
     # ---------------- convenience API ----------------
