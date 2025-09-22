@@ -113,7 +113,7 @@ class AtomSite(CategoryItem):
             name='b_iso',
             units='Å²',
             default_value=0.0,
-            # physical_min=0.0,
+            # physical_min=0.0, # Adding this causes lmfit to stack
             full_cif_names=['_atom_site.B_iso_or_equiv'],
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
         )

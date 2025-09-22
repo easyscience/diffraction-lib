@@ -3,14 +3,11 @@
 
 from __future__ import annotations
 
-import math
 from typing import Optional
 
 import gemmi
 
 from easydiffraction.sample_models.sample_model import BaseSampleModel
-from easydiffraction.utils.cif_aliases import cif_get_values
-from easydiffraction.utils.cif_aliases import normalize_wyckoff
 
 
 class SampleModelFactory:
@@ -78,7 +75,11 @@ class SampleModelFactory:
         Raises:
             ValueError: If the argument combination is invalid.
         """
-        cls._validate_args(name=name, cif_path=cif_path, cif_str=cif_str)
+        cls._validate_args(
+            name=name,
+            cif_path=cif_path,
+            cif_str=cif_str,
+        )
         if name is not None:
             return BaseSampleModel(name=name)
         if cif_path is not None:
@@ -93,14 +94,20 @@ class SampleModelFactory:
     # -------------------------------
 
     @classmethod
-    def _create_from_cif_path(cls, cif_path: str) -> BaseSampleModel:
+    def _create_from_cif_path(
+        cls,
+        cif_path: str,
+    ) -> BaseSampleModel:
         # Parse CIF and build model
         doc = cls._read_cif_document_from_path(cif_path)
         block = cls._pick_first_structural_block(doc)
         return cls._create_model_from_block(block)
 
     @classmethod
-    def _create_from_cif_str(cls, cif_str: str) -> BaseSampleModel:
+    def _create_from_cif_str(
+        cls,
+        cif_str: str,
+    ) -> BaseSampleModel:
         # Parse CIF string and build model
         doc = cls._read_cif_document_from_string(cif_str)
         block = cls._pick_first_structural_block(doc)
@@ -135,7 +142,10 @@ class SampleModelFactory:
         return all(block.find_value(tag) for tag in required_cell)
 
     @classmethod
-    def _pick_first_structural_block(cls, doc: gemmi.cif.Document) -> gemmi.cif.Block:
+    def _pick_first_structural_block(
+        cls,
+        doc: gemmi.cif.Document,
+    ) -> gemmi.cif.Block:
         # Prefer blocks with atom_site loop; else first block with cell
         for block in doc:
             if cls._has_structural_content(block):
@@ -147,7 +157,10 @@ class SampleModelFactory:
             return doc[0]
 
     @classmethod
-    def _create_model_from_block(cls, block: gemmi.cif.Block) -> BaseSampleModel:
+    def _create_model_from_block(
+        cls,
+        block: gemmi.cif.Block,
+    ) -> BaseSampleModel:
         name = cls._extract_name_from_block(block)
         model = BaseSampleModel(name=name)
         cls._set_space_group_from_cif_block(model, block)
@@ -182,92 +195,3 @@ class SampleModelFactory:
         block: gemmi.cif.Block,
     ) -> None:
         model.atom_sites.from_cif(block)
-
-        return
-        labels = list(block.find_loop('_atom_site.label'))
-
-        loop = block.find_loop_item('_atom_site.label').loop
-        return
-
-        # loop = block.find_mmcif_category('_atom_site').loop
-        # for row in range(loop.length()):
-        #    [loop[row, col] for ]
-        #    for col in range(loop.width()):
-        #        loop[row, col]
-        #
-        #       block.find_mmcif_category('_atom_site').loop.tags
-
-        for atom in loop:
-            pass
-            print(atom)
-
-        # Use component-aware lookup keyed by AtomSite attribute names
-        # Note: We don't have an AtomSite instance yet, but alias keys
-        # support dotted/legacy paths
-        labels = cif_get_values(block, 'atom_site_label')
-        types = cif_get_values(block, 'atom_site_type_symbol')
-        xs = cif_get_values(block, 'atom_site_fract_x')
-        ys = cif_get_values(block, 'atom_site_fract_y')
-        zs = cif_get_values(block, 'atom_site_fract_z')
-        occs = cif_get_values(block, 'atom_site_occupancy')
-        bisos = cif_get_values(block, 'atom_site_b_iso')
-        uisos = cif_get_values(block, 'atom_site_u_iso')
-        wycks = cif_get_values(block, 'atom_site_wyckoff', normalize=normalize_wyckoff)
-
-        for i in range(len(types)):
-            if wycks[i] is not None and wycks[i] == '?':
-                wycks[i] = None
-
-        if not any([labels, types, xs, ys, zs, occs, bisos, uisos, wycks]):
-            return
-
-        n = max([
-            len(labels),
-            len(types),
-            len(xs),
-            len(ys),
-            len(zs),
-            len(occs),
-            len(bisos),
-            len(uisos),
-            len(wycks),
-        ])
-
-        for i in range(n):
-            label = (
-                (labels[i] if i < len(labels) and labels[i] else None)
-                or (types[i] if i < len(types) and types[i] else None)
-                or f'X{i + 1}'
-            )
-            type_symbol = (types[i] if i < len(types) and types[i] else None) or label
-            fx = cls._as_float(xs[i]) if i < len(xs) else None
-            fy = cls._as_float(ys[i]) if i < len(ys) else None
-            fz = cls._as_float(zs[i]) if i < len(zs) else None
-            occ = cls._as_float(occs[i]) if i < len(occs) else None
-            b_iso = cls._as_float(bisos[i]) if i < len(bisos) else None
-            if b_iso is None:
-                u_iso = cls._as_float(uisos[i]) if i < len(uisos) else None
-                if u_iso is not None:
-                    b_iso = 8.0 * math.pi * math.pi * u_iso
-            fx = 0.0 if fx is None else fx
-            fy = 0.0 if fy is None else fy
-            fz = 0.0 if fz is None else fz
-            occ = 1.0 if occ is None else occ
-            b_iso = 0.0 if b_iso is None else b_iso
-
-            wyck = wycks[i] if i < len(wycks) else None
-            if wyck:
-                wyck = wyck.strip().strip('?')
-                if len(wyck) > 1 and wyck[-1].isalpha():
-                    wyck = wyck[-1]
-
-            model.atom_sites.add(
-                label=label,
-                type_symbol=type_symbol,
-                fract_x=fx,
-                fract_y=fy,
-                fract_z=fz,
-                wyckoff_letter=wyck,
-                b_iso=b_iso,
-                occupancy=occ,
-            )
