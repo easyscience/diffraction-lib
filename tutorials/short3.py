@@ -94,6 +94,8 @@ experiment.excluded_regions.add_from_args(start=165, end=180)
 # %%
 experiment.linked_phases.add_from_args(id='lbco', scale=10.0)
 
+experiment.show_as_cif()  # TODO
+
 # %% [markdown]
 # ## Step 4: Perform Analysis
 

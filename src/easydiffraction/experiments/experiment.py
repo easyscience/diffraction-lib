@@ -121,8 +121,8 @@ class BaseExperiment(Datablock):
             cif_lines += ['', self.linked_phases.as_cif]
 
         # Crystal scale factor for single crystal experiments
-        if hasattr(self, 'linked_crystal'):
-            cif_lines += ['', self.linked_crystal.as_cif]
+        # if hasattr(self, 'linked_crystal'):
+        #    cif_lines += ['', self.linked_crystal.as_cif]
 
         # Background points
         if hasattr(self, 'background') and self.background._items:
@@ -416,6 +416,10 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
 
 class SingleCrystalExperiment(BaseExperiment):
     """Single crystal experiment class with specific attributes."""
+
+    _allowed_attributes = {
+        'linked_crystal',
+    }
 
     def __init__(
         self,
