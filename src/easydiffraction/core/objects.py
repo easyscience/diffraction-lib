@@ -82,7 +82,7 @@ class DiagnosticsMixin:
         message = f'Attribute {caller} of {self.uid} is read-only.'
         log.error(message, exc_type=AttributeError)
 
-    def _set_error(self, key: str, allowed: set[str] | None = None) -> None:
+    def _setattr_error(self, key: str, allowed: set[str] | None = None) -> None:
         """Error for attempts to set a non-existent attribute."""
         suggestion = difflib.get_close_matches(key, allowed or [], n=1)
         hint = f' Did you mean "{suggestion[0]}"?' if suggestion else ''
@@ -90,7 +90,7 @@ class DiagnosticsMixin:
         message = f'Cannot set "{key}" on {type(self).__name__}.{hint}{allowed_list}'
         log.error(message, exc_type=AttributeError)
 
-    def _get_error(self, key: str, allowed: set[str] | None = None) -> None:
+    def _getattr_error(self, key: str, allowed: set[str] | None = None) -> None:
         """Error for attempts to get a non-existent attribute."""
         suggestion = difflib.get_close_matches(key, allowed or [], n=1)
         hint = f' Did you mean "{suggestion[0]}"?' if suggestion else ''
@@ -142,7 +142,7 @@ class AttributeAccessGuardMixin:
         diagnostics).
         """
         allowed = self._allowed_attribute_names
-        self._get_error(key, allowed)
+        self._getattr_error(key, allowed)
 
     @property
     def _allowed_attribute_names(self) -> set[str]:
@@ -301,7 +301,7 @@ class Descriptor(
 
         allowed = self._allowed_attribute_names
         if key not in allowed:
-            self._set_error(key, allowed)
+            self._setattr_error(key, allowed)
             return
 
         object.__setattr__(self, key, value)
@@ -383,7 +383,7 @@ class Descriptor(
         return self._entry_name
 
     @entry_name.setter
-    def entry_name(self, _new_id):  # unused: interface compatibility
+    def entry_name(self, _):
         self._readonly_error()
 
     @property
@@ -805,7 +805,7 @@ class CategoryItem(
 
         allowed = self._allowed_attribute_names
         if key not in allowed:
-            self._set_error(key, allowed)
+            self._setattr_error(key, allowed)
             return
 
         try:
@@ -865,7 +865,7 @@ class CategoryItem(
         return self._entry_name
 
     @entry_name.setter
-    def entry_name(self, _new_id: str) -> None:  # unused: interface compatibility
+    def entry_name(self, _) -> None:
         self._readonly_error()
 
     @property
@@ -903,106 +903,6 @@ class CategoryItem(
         """
         for param in self.parameters:
             param.from_cif(block, idx=idx)
-
-
-class Datablock(
-    DiagnosticsMixin,
-    AttributeAccessGuardMixin,
-    GuardedBase,
-):
-    """Base container for sample model or experiment categories.
-
-    Responsibilities:
-    * Guard public attribute additions
-    * Propagate datablock name to contained components/collections
-    * Provide aggregated parameter access
-    """
-
-    # ------------------------------------------------------------------
-    # Class configuration
-    # ------------------------------------------------------------------
-    _allowed_attributes = {
-        'name',
-    }  # extend in subclasses with real children
-
-    # ------------------------------------------------------------------
-    # Initialization
-    # ------------------------------------------------------------------
-    def __init__(self) -> None:
-        # TODO: check how name is set in subclasses
-        self._name = None  # set later via property
-
-    # ------------------------------------------------------------------
-    # Dunder methods
-    # ------------------------------------------------------------------
-    def __str__(self) -> str:
-        """Human-readable representation of this component."""
-        s = f"{self.__class__.__name__} '{self.name}' ({len(self.parameters)} parameters)"
-        for base in type(self).__mro__:
-            if base is Datablock:
-                s = f'{base.__name__}: {s}'
-                break
-        return s
-
-    def __setattr__(self, key: str, value: Any) -> None:
-        """Controlled attribute setting (with datablock propagation)."""
-        if key.startswith('_'):
-            object.__setattr__(self, key, value)
-            return
-
-        allowed = self._allowed_attribute_names
-        if key not in allowed:
-            self._set_error(key, allowed)
-            return
-
-        if isinstance(value, (CategoryItem, CategoryCollection)):
-            object.__setattr__(self, key, value)
-            if hasattr(value, '_set_datablock_name'):
-                value._set_datablock_name(self._name)
-            else:
-                value.datablock_name = self._name
-        else:
-            object.__setattr__(self, key, value)
-
-    # ------------------------------------------------------------------
-    # Public read-only properties
-    # ------------------------------------------------------------------
-    @property
-    def parameters(self) -> list[Descriptor]:
-        """Return flattened list of parameters from all contained
-        categories.
-        """
-        params = []
-        for _attr_name, attr_obj in self.__dict__.items():
-            if isinstance(attr_obj, (CategoryItem, CategoryCollection)):
-                params.extend(attr_obj.parameters)
-        return params
-
-    @property
-    def categories(self) -> list[Union[CategoryItem, CategoryCollection]]:
-        """Return all component / collection category objects in the
-        datablock.
-        """
-        attr_objs = []
-        for attr_obj in self.__dict__.values():
-            if isinstance(attr_obj, (CategoryItem, CategoryCollection)):
-                attr_objs.append(attr_obj)
-        return attr_objs
-
-    @property
-    def name(self) -> Optional[str]:
-        """Return datablock name (may be ``None`` if unset)."""
-        return self._name
-
-    @name.setter
-    def name(self, new_name: str) -> None:
-        """Assign datablock name and propagate to children."""
-        if not isinstance(new_name, str):
-            self._type_warning('name', str, new_name)
-            return
-        self._name = new_name
-        for category in self.categories:
-            category._set_datablock_name(new_name)
 
 
 class CategoryCollection(
@@ -1043,7 +943,6 @@ class CategoryCollection(
     def __iter__(self) -> Iterator[CategoryItem]:
         return iter(self._items.values())
 
-    # TODO: implement __setattr__ with propagation of ??? to children
     def __setattr__(self, key: str, value: Any) -> None:
         if key.startswith('_'):
             object.__setattr__(self, key, value)
@@ -1051,7 +950,7 @@ class CategoryCollection(
 
         allowed = self._allowed_attribute_names
         if key not in allowed:
-            self._set_error(key, allowed)
+            self._setattr_error(key, allowed)
             return
 
         object.__setattr__(self, key, value)
@@ -1129,11 +1028,17 @@ class CategoryCollection(
 
     def add(self, item: CategoryItem):
         # Insert the item using its entry_name.value as key
-        # TODO: Fix temporary workaround
+        # TODO: Temporary workaround
         if isinstance(item.entry_name, Descriptor):
-            self._items[item.entry_name.value] = item
+            entry_name = item.entry_name.value
         else:
-            self._items[item.entry_name] = item
+            entry_name = item.entry_name
+        # Add item
+        self._items[entry_name] = item
+        # Propagate datablock name to added item
+        self._items[entry_name]._set_datablock_name(self.datablock_name)
+        # Propagate entry name to added item
+        self._items[entry_name]._set_entry_name(entry_name)
 
     def from_cif(self, block):
         # Derive loop size using entry_name first CIF tag alias
@@ -1161,6 +1066,103 @@ class CategoryCollection(
             child_obj = self._child_class()
             child_obj.from_cif(block, idx=row_idx)
             self.add(child_obj)
+
+
+class Datablock(
+    DiagnosticsMixin,
+    AttributeAccessGuardMixin,
+    GuardedBase,
+):
+    """Base container for sample model or experiment categories.
+
+    Responsibilities:
+    * Guard public attribute additions
+    * Propagate datablock name to contained components/collections
+    * Provide aggregated parameter access
+    """
+
+    # ------------------------------------------------------------------
+    # Class configuration
+    # ------------------------------------------------------------------
+    _allowed_attributes = {
+        'name',
+    }  # extend in subclasses with real children
+
+    # ------------------------------------------------------------------
+    # Initialization
+    # ------------------------------------------------------------------
+    def __init__(self) -> None:
+        self._name = None  # set later via property
+
+    # ------------------------------------------------------------------
+    # Dunder methods
+    # ------------------------------------------------------------------
+    def __str__(self) -> str:
+        """Human-readable representation of this component."""
+        s = f"{self.__class__.__name__} '{self.name}' ({len(self.parameters)} parameters)"
+        for base in type(self).__mro__:
+            if base is Datablock:
+                s = f'{base.__name__}: {s}'
+                break
+        return s
+
+    def __setattr__(self, key: str, value: Any) -> None:
+        """Controlled attribute setting (with datablock propagation)."""
+        if key.startswith('_'):
+            object.__setattr__(self, key, value)
+            return
+
+        allowed = self._allowed_attribute_names
+        if key not in allowed:
+            self._setattr_error(key, allowed)
+            return
+
+        # Propagate datablock name to children
+        if isinstance(value, (CategoryItem, CategoryCollection)):
+            value._set_datablock_name(self.name)
+
+        object.__setattr__(self, key, value)
+
+    # ------------------------------------------------------------------
+    # Public read-only properties
+    # ------------------------------------------------------------------
+    @property
+    def parameters(self) -> list[Descriptor]:
+        """Return flattened list of parameters from all contained
+        categories.
+        """
+        params = []
+        for _attr_name, attr_obj in self.__dict__.items():
+            if isinstance(attr_obj, (CategoryItem, CategoryCollection)):
+                params.extend(attr_obj.parameters)
+        return params
+
+    @property
+    def categories(self) -> list[Union[CategoryItem, CategoryCollection]]:
+        """Return all component / collection category objects in the
+        datablock.
+        """
+        attr_objs = []
+        for attr_obj in self.__dict__.values():
+            if isinstance(attr_obj, (CategoryItem, CategoryCollection)):
+                attr_objs.append(attr_obj)
+        return attr_objs
+
+    @property
+    def name(self) -> Optional[str]:
+        """Return datablock name (may be ``None`` if unset)."""
+        return self._name
+
+    @name.setter
+    def name(self, new_name: str) -> None:
+        """Assign datablock name and propagate to children."""
+        if not isinstance(new_name, str):
+            self._type_warning('name', str, new_name)
+            return
+        self._name = new_name
+        # Propagate datablock name to children
+        for category in self.categories:
+            category._set_datablock_name(new_name)
 
 
 class DatablockCollection(
@@ -1200,7 +1202,7 @@ class DatablockCollection(
 
         allowed = self._allowed_attribute_names
         if key not in allowed:
-            self._set_error(key, allowed)
+            self._setattr_error(key, allowed)
             return
 
         object.__setattr__(self, key, value)
