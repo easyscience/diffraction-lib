@@ -12,13 +12,18 @@ from easydiffraction.sample_models.collections.atom_sites import AtomSite
 from easydiffraction.sample_models.collections.atom_sites import AtomSites
 from easydiffraction.sample_models.components.cell import Cell
 from easydiffraction.sample_models.components.space_group import SpaceGroup
+import easydiffraction as ed
 
-Logger.configure(mode=Logger.Mode.LOG, level=Logger.Level.DEBUG)
-Logger.configure(mode=Logger.Mode.RAISE, level=Logger.Level.DEBUG)
+Logger.configure(mode=Logger.Mode.VERBOSE, level=Logger.Level.DEBUG)
+Logger.configure(mode=Logger.Mode.COMPACT, level=Logger.Level.DEBUG)
+
+
+project = ed.Project()
+
 
 sg = SpaceGroup()
 sg.name_h_m = 'P n m a'
-sg.it_coordinate_system_code = 'cab'
+sg.it_coordinate_system_coded = 'cab'
 
 cell = Cell()
 cell.length_a = 5.4603

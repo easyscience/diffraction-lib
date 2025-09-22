@@ -1203,7 +1203,7 @@ class DatablockCollection(
             params.extend(datablock.parameters)
         return params
 
-    # TODO: Need refactoring to new API
+    # TODO: Need refactoring to updated API
     def get_fittable_params(self) -> List[Parameter]:
         params = []
         for param in self.parameters:
@@ -1211,7 +1211,7 @@ class DatablockCollection(
                 params.append(param)
         return params
 
-    # TODO: Need refactoring to new API
+    # TODO: Need refactoring to updated API
     def get_free_params(self) -> List[Parameter]:
         params = []
         for param in self.get_fittable_params():
@@ -1235,14 +1235,3 @@ class DatablockCollection(
         # Insert the item using its name as key
         self._datablocks[item.name] = item
         item._parent = self
-
-    # Convenience mapping-style helpers (not strictly required but
-    # helpful)
-    # def values(self):  # noqa: D401 - simple proxy
-    #    return self._datablocks.values()
-
-    # def items(self):  # noqa: D401
-    #    return self._datablocks.items()
-
-    # def keys(self):  # noqa: D401
-    #    return self._datablocks.keys()

@@ -8,6 +8,7 @@ from easydiffraction.sample_models.components.cell import Cell
 from easydiffraction.sample_models.components.space_group import SpaceGroup
 from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.logging import log as logger
 from easydiffraction.utils.utils import render_cif
 
 
@@ -191,4 +192,11 @@ class SampleModel:
         # Lazy import to avoid circular import at module load time
         from easydiffraction.sample_models.sample_model_factory import SampleModelFactory
 
-        return SampleModelFactory.create(**kwargs)
+        try:
+            return SampleModelFactory.create(**kwargs)
+        except TypeError:
+            logger.error(
+                f'Invalid argument(s) for SampleModel: {kwargs}. '
+                f"Did you mean 'name', 'cif_path', or 'cif_str'?",
+                exc_type=TypeError,
+            )
