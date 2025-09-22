@@ -25,6 +25,8 @@ DEFAULT_COLORS = {
 
 class PlotlyPlotter(PlotterBase):
     pio.templates.default = 'plotly_dark' if darkdetect.isDark() else 'plotly_white'
+    if is_pycharm():
+        pio.renderers.default = 'browser'
 
     def _get_trace(self, x, y, label):
         mode = SERIES_CONFIG[label]['mode']
@@ -105,14 +107,13 @@ class PlotlyPlotter(PlotterBase):
             layout=layout,
         )
 
-        # Format the axes ticks
-        # Keeps decimals for small numbers;
-        # groups thousands for large ones
+        # Format the axes ticks.
+        # Keeps decimals for small numbers; groups thousands for large
+        # ones
         fig.update_xaxes(tickformat=',.6~g', separatethousands=True)
         fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
 
         # Show the figure
-
         if is_pycharm() or display is None or HTML is None:
             fig.show(config=config)
         else:
