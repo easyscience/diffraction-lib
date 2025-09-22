@@ -199,7 +199,9 @@ class Project:
         # Save sample models
         sm_dir = self.info.path / 'sample_models'
         sm_dir.mkdir(parents=True, exist_ok=True)
-        for model in self.sample_models:
+        # Iterate over sample model objects (MutableMapping iter gives
+        # keys)
+        for model in self.sample_models.values():
             file_name: str = f'{model.name}.cif'
             file_path = sm_dir / file_name
             with file_path.open('w') as f:
@@ -209,7 +211,7 @@ class Project:
         # Save experiments
         expt_dir = self.info.path / 'experiments'
         expt_dir.mkdir(parents=True, exist_ok=True)
-        for experiment in self.experiments:
+        for experiment in self.experiments.values():
             file_name: str = f'{experiment.name}.cif'
             file_path = expt_dir / file_name
             with file_path.open('w') as f:

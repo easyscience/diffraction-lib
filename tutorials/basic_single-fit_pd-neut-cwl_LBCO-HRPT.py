@@ -447,11 +447,11 @@ project.sample_models['lbco'].cell.length_a.free = True
 # %%
 project.experiments['hrpt'].linked_phases['lbco'].scale.free = True
 project.experiments['hrpt'].instrument.calib_twotheta_offset.free = True
-project.experiments['hrpt'].background['10'].y.free = True
-project.experiments['hrpt'].background['30'].y.free = True
-project.experiments['hrpt'].background['50'].y.free = True
-project.experiments['hrpt'].background['110'].y.free = True
-project.experiments['hrpt'].background['165'].y.free = True
+project.experiments['hrpt'].background[10].y.free = True
+project.experiments['hrpt'].background[30].y.free = True
+project.experiments['hrpt'].background[50].y.free = True
+project.experiments['hrpt'].background[110].y.free = True
+project.experiments['hrpt'].background[165].y.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
@@ -702,6 +702,7 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %% [markdown]
 # #### Show Project Summary
+
 
 # %%
 project.summary.show_report()

@@ -168,7 +168,7 @@ class BaseSampleModel(Datablock):
         """
         print(f'\nSampleModel ID: {self.name}')
         print(f'Space group: {self.space_group.name_h_m}')
-        print(f'Cell parameters: {self.cell.as_dict()}')
+        print(f'Cell parameters: {self.cell.as_dict}')
         print('Atom sites:')
         self.atom_sites.show()
 

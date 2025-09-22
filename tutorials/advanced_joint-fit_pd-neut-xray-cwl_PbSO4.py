@@ -206,14 +206,14 @@ project = Project()
 # #### Add Sample Model
 
 # %%
-project.sample_models.add_from_args(model)
+project.sample_models.add(model)
 
 # %% [markdown]
 # #### Add Experiments
 
 # %%
-project.experiments.add_from_args(expt1)
-project.experiments.add_from_args(expt2)
+project.experiments.add(expt1)
+project.experiments.add(expt2)
 
 # %% [markdown]
 # ## Perform Analysis

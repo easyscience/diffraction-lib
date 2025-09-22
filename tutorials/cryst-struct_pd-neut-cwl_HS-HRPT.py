@@ -35,6 +35,7 @@ model.space_group.it_coordinate_system_code = 'h'
 # %% [markdown]
 # #### Set Unit Cell
 
+
 # %%
 model.cell.length_a = 6.9
 model.cell.length_c = 14.1

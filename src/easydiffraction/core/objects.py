@@ -447,6 +447,14 @@ class Descriptor(
     def editable(self):
         return self._editable
 
+    @property
+    def cif_uid(self):
+        return self.name  # TODO: Modify to return CIF-specific names?
+
+    @cif_uid.setter
+    def cif_uid(self, _):
+        self._readonly_error()
+
     # ------------------------------------------------------------------
     # Public writable properties
     # ------------------------------------------------------------------
@@ -681,14 +689,6 @@ class Parameter(Descriptor):
 
     @physical_max.setter
     def physical_max(self, _):
-        self._readonly_error()
-
-    @property
-    def cif_uid(self):
-        return self.name  # TODO: Modify to return CIF-specific names?
-
-    @cif_uid.setter
-    def cif_uid(self, _):
         self._readonly_error()
 
     # ------------------------------------------------------------------
@@ -1249,7 +1249,9 @@ class DatablockCollection(
     def as_cif(self) -> str:
         # Concatenate as_cif of all contained datablocks
         return '\n\n'.join(
-            getattr(item, 'as_cif', '') for item in self._items.values() if hasattr(item, 'as_cif')
+            getattr(item, 'as_cif', '')
+            for item in self._datablocks.values()
+            if hasattr(item, 'as_cif')
         )
 
     # ------------------------------------------------------------------
@@ -1257,4 +1259,16 @@ class DatablockCollection(
     # ------------------------------------------------------------------
     def add(self, item):
         # Insert the item using its name as key
-        self._items[item.name] = item
+        self._datablocks[item.name] = item
+        item._parent = self
+
+    # Convenience mapping-style helpers (not strictly required but
+    # helpful)
+    # def values(self):  # noqa: D401 - simple proxy
+    #    return self._datablocks.values()
+
+    # def items(self):  # noqa: D401
+    #    return self._datablocks.items()
+
+    # def keys(self):  # noqa: D401
+    #    return self._datablocks.keys()

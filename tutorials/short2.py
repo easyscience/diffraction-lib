@@ -102,7 +102,7 @@ exp.background = bkg
 experiments = Experiments()
 print(experiments)
 
-experiments.add_from_args(exp)
+experiments.add(exp)
 print(experiments)
 for p in experiments.parameters:
     print(p)

@@ -79,8 +79,8 @@ class Analysis:
         return dataframe
 
     def show_all_params(self) -> None:
-        sample_models_params = self.project.sample_models.get_all_params()
-        experiments_params = self.project.experiments.get_all_params()
+        sample_models_params = self.project.sample_models.parameters
+        experiments_params = self.project.experiments.parameters
 
         if not sample_models_params and not experiments_params:
             print(warning('No parameters found.'))
@@ -225,8 +225,8 @@ class Analysis:
         )
 
     def how_to_access_parameters(self) -> None:
-        sample_models_params = self.project.sample_models.get_all_params()
-        experiments_params = self.project.experiments.get_all_params()
+        sample_models_params = self.project.sample_models.parameters
+        experiments_params = self.project.experiments.parameters
         all_params = {
             'sample_models': sample_models_params,
             'experiments': experiments_params,

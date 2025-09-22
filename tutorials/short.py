@@ -70,7 +70,7 @@ exp.peak.broad_lorentz_y = 0.1
 experiments = Experiments()
 print(experiments)
 
-experiments.add_from_args(exp)
+experiments.add(exp)
 print(experiments)
 for p in experiments.parameters:
     print(p)

@@ -149,13 +149,13 @@ project.plotter.engine = 'plotly'
 # #### Add Sample Model
 
 # %%
-project.sample_models.add_from_args(model)
+project.sample_models.add(model)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add_from_args(expt)
+project.experiments.add(expt)
 
 # %% [markdown]
 # ## Perform Analysis

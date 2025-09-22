@@ -62,7 +62,7 @@ class Summary:
             columns_alignment: List[str] = ['left', 'right']
             cell_data = [
                 [k.replace('length_', '').replace('angle_', ''), f'{v:.5f}']
-                for k, v in model.cell.as_dict().items()
+                for k, v in model.cell.as_dict.items()
             ]
             render_table(
                 columns_alignment=columns_alignment,
