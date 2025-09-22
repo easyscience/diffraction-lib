@@ -103,10 +103,6 @@ class PolynomialTerm(CategoryItem):
 
 
 class BackgroundBase(CategoryCollection):
-    # @property
-    # def _type(self) -> str:
-    #    return 'category'  # datablock or category
-
     @abstractmethod
     def calculate(self, x_data: np.ndarray) -> np.ndarray:
         pass
@@ -121,10 +117,6 @@ class LineSegmentBackground(BackgroundBase):
 
     def __init__(self):
         super().__init__(child_class=Point)
-
-    # @property
-    # def _child_class(self) -> Type[Point]:
-    #    return Point
 
     def calculate(self, x_data: np.ndarray) -> np.ndarray:
         """Interpolate background points over x_data."""
@@ -169,10 +161,6 @@ class ChebyshevPolynomialBackground(BackgroundBase):
 
     def __init__(self):
         super().__init__(child_class=PolynomialTerm)
-
-    # @property
-    # def _child_class(self) -> Type[PolynomialTerm]:
-    #    return PolynomialTerm
 
     def calculate(self, x_data: np.ndarray) -> np.ndarray:
         """Evaluate polynomial background over x_data."""

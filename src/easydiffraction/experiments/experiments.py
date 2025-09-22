@@ -17,10 +17,6 @@ from easydiffraction.utils.formatting import paragraph
 class Experiments(DatablockCollection):
     """Collection manager for multiple Experiment instances."""
 
-    # @property
-    # def _child_class(self):
-    #    return BaseExperiment
-
     def __init__(self) -> None:
         super().__init__()
         # self._experiments: Dict[str, BaseExperiment] = self._items

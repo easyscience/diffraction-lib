@@ -13,10 +13,6 @@ from easydiffraction.utils.formatting import paragraph
 class SampleModels(DatablockCollection):
     """Collection manager for multiple SampleModel instances."""
 
-    # @property
-    # def _child_class(self):
-    #    return BaseSampleModel
-
     def __init__(self) -> None:
         super().__init__()  # Initialize Collection
         self._models = self._datablocks  # Alias for legacy support

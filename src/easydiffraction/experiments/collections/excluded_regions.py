@@ -50,18 +50,10 @@ class ExcludedRegion(CategoryItem):
 class ExcludedRegions(CategoryCollection):
     """Collection of ExcludedRegion instances."""
 
-    # @property
-    # def _type(self) -> str:
-    #    return 'category'  # datablock or category
-
     def __init__(self):
         super().__init__(child_class=ExcludedRegion)
 
-    # @property
-    # def _child_class(self) -> Type[ExcludedRegion]:
-    #    return ExcludedRegion
-
-    def on_item_added(self, item: ExcludedRegion) -> None:
+    def _on_item_added(self, item: ExcludedRegion) -> None:
         """Mark excluded points in the experiment pattern when a new
         region is added.
         """

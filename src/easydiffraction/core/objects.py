@@ -891,6 +891,7 @@ class CategoryCollection(
         self._parent: Optional[Any] = None
         self._items = {}
         self._child_class = child_class
+        self._on_item_added = None
 
     # ------------------------------------------------------------------
     # Dunder methods
@@ -986,6 +987,19 @@ class CategoryCollection(
     def add(self, item: CategoryItem):
         item._parent = self
         self._items[item.category_entry_name] = item
+
+        # Call on_item_added if it exists, i.e. defined in the derived
+        # class
+        # TODO: Consider better way to handle this
+        if self._on_item_added is not None:
+            self._on_item_added(self._items[item.category_entry_name])
+
+    def add_from_args(self, *args, **kwargs):
+        """Create and add a new child instance from the provided
+        arguments.
+        """
+        child_obj = self._child_class(*args, **kwargs)
+        self.add(child_obj)
 
     def from_cif(self, block):
         # Derive loop size using category_entry_name first CIF tag alias

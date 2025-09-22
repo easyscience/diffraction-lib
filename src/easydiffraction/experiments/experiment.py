@@ -10,6 +10,7 @@ import numpy as np
 from easydiffraction.core.objects import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
 from easydiffraction.experiments.collections.background import BackgroundTypeEnum
+from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ExperimentType
@@ -80,7 +81,7 @@ class BaseExperiment(Datablock):
     # ---------------
 
     @property
-    def type(self):
+    def type(self):  # TODO: Consider another name
         return self._type
 
     @type.setter
@@ -153,6 +154,7 @@ class BasePowderExperiment(BaseExperiment):
     _allowed_attributes = {
         'peak',
         'linked_phases',
+        'excluded_regions',
     }
 
     def __init__(
@@ -177,6 +179,7 @@ class BasePowderExperiment(BaseExperiment):
         # self.excluded_regions:
         # ExcludedRegions = ExcludedRegions(parent=self)
         # TEMPORARY
+        self.excluded_regions: ExcludedRegions = ExcludedRegions()
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
