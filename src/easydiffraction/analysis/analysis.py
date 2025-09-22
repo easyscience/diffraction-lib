@@ -480,10 +480,10 @@ class Analysis:
         lines.append(f'_analysis.fit_mode  {self.fit_mode}')
 
         lines.append('')
-        lines.append(self.aliases.as_cif())
+        lines.append(self.aliases.as_cif)
 
         lines.append('')
-        lines.append(self.constraints.as_cif())
+        lines.append(self.constraints.as_cif)
 
         return '\n'.join(lines)
 

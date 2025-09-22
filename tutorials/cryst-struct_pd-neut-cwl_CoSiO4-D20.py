@@ -23,7 +23,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel('cosio')
+model = SampleModel(name='cosio')
 
 # %% [markdown]
 # #### Set Space Group

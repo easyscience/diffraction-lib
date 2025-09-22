@@ -26,7 +26,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel('ncaf')
+model = SampleModel(name='ncaf')
 
 # %% [markdown]
 # #### Set Space Group

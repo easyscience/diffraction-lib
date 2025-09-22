@@ -29,7 +29,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel('pbso4')
+model = SampleModel(name='pbso4')
 
 # %% [markdown]
 # #### Set Space Group

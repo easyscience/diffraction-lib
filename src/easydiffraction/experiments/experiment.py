@@ -153,6 +153,7 @@ class BasePowderExperiment(BaseExperiment):
 
     _allowed_attributes = {
         'peak',
+        'peak_profile_type',
         'linked_phases',
         'excluded_regions',
     }
@@ -175,10 +176,6 @@ class BasePowderExperiment(BaseExperiment):
         )
 
         self.linked_phases: LinkedPhases = LinkedPhases()
-        # TEMPORARY
-        # self.excluded_regions:
-        # ExcludedRegions = ExcludedRegions(parent=self)
-        # TEMPORARY
         self.excluded_regions: ExcludedRegions = ExcludedRegions()
 
     @abstractmethod
@@ -249,6 +246,7 @@ class PowderExperiment(
 
     _allowed_attributes = {
         'background',
+        'background_type',
     }
 
     def __init__(

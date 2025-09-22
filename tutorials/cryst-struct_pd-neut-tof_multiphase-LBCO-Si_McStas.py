@@ -23,7 +23,7 @@ from easydiffraction import download_from_repository
 # ### Create Sample Model 1: LBCO
 
 # %%
-model_1 = SampleModel('lbco')
+model_1 = SampleModel(name='lbco')
 
 # %% [markdown]
 # #### Set Space Group
@@ -51,7 +51,7 @@ model_1.atom_sites.add_from_args('O', 'O', 0, 0.5, 0.5, wyckoff_letter='c', b_is
 # ### Create Sample Model 2: Si
 
 # %%
-model_2 = SampleModel('si')
+model_2 = SampleModel(name='si')
 
 # %% [markdown]
 # #### Set Space Group

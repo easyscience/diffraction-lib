@@ -23,7 +23,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel('si')
+model = SampleModel(name='si')
 
 # %% [markdown]
 # #### Set Space Group
@@ -123,13 +123,13 @@ project.plotter.engine = 'plotly'
 # #### Add Sample Model
 
 # %%
-project.sample_models.add_from_args(model)
+project.sample_models.add(model)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add_from_args(expt)
+project.experiments.add(expt)
 
 # %% [markdown]
 # ## Perform Analysis
