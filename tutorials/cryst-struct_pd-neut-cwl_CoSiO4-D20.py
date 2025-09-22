@@ -44,12 +44,12 @@ model.cell.length_c = 4.8
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Co1', 'Co', 0, 0, 0, wyckoff_letter='a', b_iso=0.5)
-model.atom_sites.add('Co2', 'Co', 0.279, 0.25, 0.985, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add('Si', 'Si', 0.094, 0.25, 0.429, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add('O1', 'O', 0.091, 0.25, 0.771, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add('O2', 'O', 0.448, 0.25, 0.217, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add('O3', 'O', 0.164, 0.032, 0.28, wyckoff_letter='d', b_iso=0.5)
+model.atom_sites.add_from_args('Co1', 'Co', 0, 0, 0, wyckoff_letter='a', b_iso=0.5)
+model.atom_sites.add_from_args('Co2', 'Co', 0.279, 0.25, 0.985, wyckoff_letter='c', b_iso=0.5)
+model.atom_sites.add_from_args('Si', 'Si', 0.094, 0.25, 0.429, wyckoff_letter='c', b_iso=0.5)
+model.atom_sites.add_from_args('O1', 'O', 0.091, 0.25, 0.771, wyckoff_letter='c', b_iso=0.5)
+model.atom_sites.add_from_args('O2', 'O', 0.448, 0.25, 0.217, wyckoff_letter='c', b_iso=0.5)
+model.atom_sites.add_from_args('O3', 'O', 0.164, 0.032, 0.28, wyckoff_letter='d', b_iso=0.5)
 
 # %% [markdown]
 # #### Symmetry Constraints
@@ -107,26 +107,26 @@ expt.peak.broad_gauss_w = 0.4
 # #### Set Background
 
 # %%
-expt.background.add(x=8, y=500)
-expt.background.add(x=9, y=500)
-expt.background.add(x=10, y=500)
-expt.background.add(x=11, y=500)
-expt.background.add(x=12, y=500)
-expt.background.add(x=15, y=500)
-expt.background.add(x=25, y=500)
-expt.background.add(x=30, y=500)
-expt.background.add(x=50, y=500)
-expt.background.add(x=70, y=500)
-expt.background.add(x=90, y=500)
-expt.background.add(x=110, y=500)
-expt.background.add(x=130, y=500)
-expt.background.add(x=150, y=500)
+expt.background.add_from_args(x=8, y=500)
+expt.background.add_from_args(x=9, y=500)
+expt.background.add_from_args(x=10, y=500)
+expt.background.add_from_args(x=11, y=500)
+expt.background.add_from_args(x=12, y=500)
+expt.background.add_from_args(x=15, y=500)
+expt.background.add_from_args(x=25, y=500)
+expt.background.add_from_args(x=30, y=500)
+expt.background.add_from_args(x=50, y=500)
+expt.background.add_from_args(x=70, y=500)
+expt.background.add_from_args(x=90, y=500)
+expt.background.add_from_args(x=110, y=500)
+expt.background.add_from_args(x=130, y=500)
+expt.background.add_from_args(x=150, y=500)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add('cosio', scale=1.0)
+expt.linked_phases.add_from_args('cosio', scale=1.0)
 
 # %% [markdown]
 # ## Define Project
@@ -149,13 +149,13 @@ project.plotter.engine = 'plotly'
 # #### Add Sample Model
 
 # %%
-project.sample_models.add(model)
+project.sample_models.add_from_args(model)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(expt)
+project.experiments.add_from_args(expt)
 
 # %% [markdown]
 # ## Perform Analysis
@@ -229,11 +229,11 @@ for point in expt.background:
 # Set aliases for parameters.
 
 # %%
-project.analysis.aliases.add(
+project.analysis.aliases.add_from_args(
     label='biso_Co1',
     param_uid=project.sample_models['cosio'].atom_sites['Co1'].b_iso.uid,
 )
-project.analysis.aliases.add(
+project.analysis.aliases.add_from_args(
     label='biso_Co2',
     param_uid=project.sample_models['cosio'].atom_sites['Co2'].b_iso.uid,
 )
@@ -242,7 +242,7 @@ project.analysis.aliases.add(
 # Set constraints.
 
 # %%
-project.analysis.constraints.add(
+project.analysis.constraints.add_from_args(
     lhs_alias='biso_Co2',
     rhs_expr='biso_Co1',
 )

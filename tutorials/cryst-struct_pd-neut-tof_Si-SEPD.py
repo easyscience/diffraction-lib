@@ -42,7 +42,7 @@ model.cell.length_a = 5.431
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.5)
+model.atom_sites.add_from_args('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.5)
 
 # %% [markdown]
 # ## Define Experiment
@@ -94,13 +94,13 @@ expt.peak.asym_alpha_1 = 0.5971
 # %%
 expt.background_type = 'line-segment'
 for x in range(0, 35000, 5000):
-    expt.background.add(x=x, y=200)
+    expt.background.add_from_args(x=x, y=200)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add('si', scale=10.0)
+expt.linked_phases.add_from_args('si', scale=10.0)
 
 # %% [markdown]
 # ## Define Project
@@ -123,13 +123,13 @@ project.plotter.engine = 'plotly'
 # #### Add Sample Model
 
 # %%
-project.sample_models.add(model)
+project.sample_models.add_from_args(model)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(expt)
+project.experiments.add_from_args(expt)
 
 # %% [markdown]
 # ## Perform Analysis

@@ -25,7 +25,7 @@ site = AtomSite()
 site.type_symbol = 'Si'
 
 sites = AtomSites()
-sites.add(site)
+sites.add_from_args(site)
 
 model = SampleModel(name='mdl')
 model.space_group = sg
@@ -36,7 +36,7 @@ model.atom_sites = sites
 print(model.parameters)
 
 models = SampleModels()
-# models.add(model)
+# models.add_from_args(model)
 models.add_from_cif_path('tutorials/data/lbco.cif')
 
 print(models)
@@ -49,7 +49,7 @@ print(exp)
 
 linked_phases = LinkedPhases()
 linked_phase = LinkedPhase(id='lbco', scale=10.0)
-linked_phases.add(linked_phase)
+linked_phases.add_from_args(linked_phase)
 
 exp.linked_phases = linked_phases
 
@@ -61,16 +61,16 @@ exp.peak.broad_gauss_v = -0.1
 exp.peak.broad_gauss_w = 0.1
 exp.peak.broad_lorentz_y = 0.1
 
-# exp.background.add(x=10, y=170)
-# exp.background.add(x=30, y=170)
-# exp.background.add(x=50, y=170)
-# exp.background.add(x=110, y=170)
-# exp.background.add(x=165, y=170)
+# exp.background.add_from_args(x=10, y=170)
+# exp.background.add_from_args(x=30, y=170)
+# exp.background.add_from_args(x=50, y=170)
+# exp.background.add_from_args(x=110, y=170)
+# exp.background.add_from_args(x=165, y=170)
 
 experiments = Experiments()
 print(experiments)
 
-experiments.add(exp)
+experiments.add_from_args(exp)
 print(experiments)
 for p in experiments.parameters:
     print(p)

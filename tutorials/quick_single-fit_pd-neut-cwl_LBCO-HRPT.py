@@ -45,10 +45,10 @@ sample_model.space_group.it_coordinate_system_code = '1'
 sample_model.cell.length_a = 3.88
 
 # %%
-sample_model.atom_sites.add('La', 'La', 0, 0, 0, b_iso=0.5, occupancy=0.5)
-sample_model.atom_sites.add('Ba', 'Ba', 0, 0, 0, b_iso=0.5, occupancy=0.5)
-sample_model.atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, b_iso=0.5)
-sample_model.atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
+sample_model.atom_sites.add_from_args('La', 'La', 0, 0, 0, b_iso=0.5, occupancy=0.5)
+sample_model.atom_sites.add_from_args('Ba', 'Ba', 0, 0, 0, b_iso=0.5, occupancy=0.5)
+sample_model.atom_sites.add_from_args('Co', 'Co', 0.5, 0.5, 0.5, b_iso=0.5)
+sample_model.atom_sites.add_from_args('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
 
 # %% [markdown]
 # ## Step 3: Define Experiment
@@ -79,18 +79,18 @@ experiment.peak.broad_gauss_w = 0.1
 experiment.peak.broad_lorentz_y = 0.1
 
 # %%
-experiment.background.add(x=10, y=170)
-experiment.background.add(x=30, y=170)
-experiment.background.add(x=50, y=170)
-experiment.background.add(x=110, y=170)
-experiment.background.add(x=165, y=170)
+experiment.background.add_from_args(x=10, y=170)
+experiment.background.add_from_args(x=30, y=170)
+experiment.background.add_from_args(x=50, y=170)
+experiment.background.add_from_args(x=110, y=170)
+experiment.background.add_from_args(x=165, y=170)
 
 # %%
-experiment.excluded_regions.add(start=0, end=5)
-experiment.excluded_regions.add(start=165, end=180)
+experiment.excluded_regions.add_from_args(start=0, end=5)
+experiment.excluded_regions.add_from_args(start=165, end=180)
 
 # %%
-experiment.linked_phases.add(id='lbco', scale=10.0)
+experiment.linked_phases.add_from_args(id='lbco', scale=10.0)
 
 # %% [markdown]
 # ## Step 4: Perform Analysis
@@ -111,11 +111,11 @@ experiment.peak.broad_gauss_v.free = True
 experiment.peak.broad_gauss_w.free = True
 experiment.peak.broad_lorentz_y.free = True
 
-experiment.background['10'].y.free = True
-experiment.background['30'].y.free = True
-experiment.background['50'].y.free = True
-experiment.background['110'].y.free = True
-experiment.background['165'].y.free = True
+experiment.background[10].y.free = True
+experiment.background[30].y.free = True
+experiment.background[50].y.free = True
+experiment.background[110].y.free = True
+experiment.background[165].y.free = True
 
 experiment.linked_phases['lbco'].scale.free = True
 

@@ -45,12 +45,12 @@ model.cell.length_a = 10.250256
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Ca', 'Ca', 0.4663, 0.0, 0.25, wyckoff_letter='b', b_iso=0.92)
-model.atom_sites.add('Al', 'Al', 0.2521, 0.2521, 0.2521, wyckoff_letter='a', b_iso=0.73)
-model.atom_sites.add('Na', 'Na', 0.0851, 0.0851, 0.0851, wyckoff_letter='a', b_iso=2.08)
-model.atom_sites.add('F1', 'F', 0.1377, 0.3054, 0.1195, wyckoff_letter='c', b_iso=0.90)
-model.atom_sites.add('F2', 'F', 0.3625, 0.3633, 0.1867, wyckoff_letter='c', b_iso=1.37)
-model.atom_sites.add('F3', 'F', 0.4612, 0.4612, 0.4612, wyckoff_letter='a', b_iso=0.88)
+model.atom_sites.add_from_args('Ca', 'Ca', 0.4663, 0.0, 0.25, wyckoff_letter='b', b_iso=0.92)
+model.atom_sites.add_from_args('Al', 'Al', 0.2521, 0.2521, 0.2521, wyckoff_letter='a', b_iso=0.73)
+model.atom_sites.add_from_args('Na', 'Na', 0.0851, 0.0851, 0.0851, wyckoff_letter='a', b_iso=2.08)
+model.atom_sites.add_from_args('F1', 'F', 0.1377, 0.3054, 0.1195, wyckoff_letter='c', b_iso=0.90)
+model.atom_sites.add_from_args('F2', 'F', 0.3625, 0.3633, 0.1867, wyckoff_letter='c', b_iso=1.37)
+model.atom_sites.add_from_args('F3', 'F', 0.4612, 0.4612, 0.4612, wyckoff_letter='a', b_iso=0.88)
 
 # %% [markdown]
 # ## Define Experiment
@@ -160,7 +160,7 @@ for x, y in [
     (91958, 268),
     (102712, 262),
 ]:
-    expt56.background.add(x, y)
+    expt56.background.add_from_args(x, y)
 
 # %%
 expt47.background_type = 'line-segment'
@@ -193,27 +193,27 @@ for x, y in [
     (92770, 255),
     (101524, 260),
 ]:
-    expt47.background.add(x, y)
+    expt47.background.add_from_args(x, y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt56.linked_phases.add('ncaf', scale=1.0)
+expt56.linked_phases.add_from_args('ncaf', scale=1.0)
 
 # %%
-expt47.linked_phases.add('ncaf', scale=2.0)
+expt47.linked_phases.add_from_args('ncaf', scale=2.0)
 
 # %% [markdown]
 # #### Set Excluded Regions
 
 # %%
-expt56.excluded_regions.add(start=0, end=10010)
-expt56.excluded_regions.add(start=100010, end=200000)
+expt56.excluded_regions.add_from_args(start=0, end=10010)
+expt56.excluded_regions.add_from_args(start=100010, end=200000)
 
 # %%
-expt47.excluded_regions.add(start=0, end=10006)
-expt47.excluded_regions.add(start=100004, end=200000)
+expt47.excluded_regions.add_from_args(start=0, end=10006)
+expt47.excluded_regions.add_from_args(start=100004, end=200000)
 
 # %% [markdown]
 # ## Define Project
@@ -236,14 +236,14 @@ project.plotter.engine = 'plotly'
 # #### Add Sample Model
 
 # %%
-project.sample_models.add(model)
+project.sample_models.add_from_args(model)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(expt56)
-project.experiments.add(expt47)
+project.experiments.add_from_args(expt56)
+project.experiments.add_from_args(expt47)
 
 # %% [markdown]
 # ## Perform Analysis

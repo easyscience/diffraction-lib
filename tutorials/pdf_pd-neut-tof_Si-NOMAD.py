@@ -35,7 +35,7 @@ sample_model = project.sample_models['si']
 sample_model.space_group.name_h_m.value = 'F d -3 m'
 sample_model.space_group.it_coordinate_system_code = '1'
 sample_model.cell.length_a = 5.43146
-sample_model.atom_sites.add(
+sample_model.atom_sites.add_from_args(
     label='Si',
     type_symbol='Si',
     fract_x=0,
@@ -63,7 +63,7 @@ project.experiments.add_from_data_path(
 
 # %%
 experiment = project.experiments['nomad']
-experiment.linked_phases.add(id='si', scale=1.0)
+experiment.linked_phases.add_from_args(id='si', scale=1.0)
 experiment.peak.damp_q = 0.02
 experiment.peak.broad_q = 0.03
 experiment.peak.cutoff_q = 35.0

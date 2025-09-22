@@ -49,11 +49,11 @@ model.cell.length_c = 6.95
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Pb', 'Pb', 0.1876, 0.25, 0.167, b_iso=1.37)
-model.atom_sites.add('S', 'S', 0.0654, 0.25, 0.684, b_iso=0.3777)
-model.atom_sites.add('O1', 'O', 0.9082, 0.25, 0.5954, b_iso=1.9764)
-model.atom_sites.add('O2', 'O', 0.1935, 0.25, 0.5432, b_iso=1.4456)
-model.atom_sites.add('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
+model.atom_sites.add_from_args('Pb', 'Pb', 0.1876, 0.25, 0.167, b_iso=1.37)
+model.atom_sites.add_from_args('S', 'S', 0.0654, 0.25, 0.684, b_iso=0.3777)
+model.atom_sites.add_from_args('O1', 'O', 0.9082, 0.25, 0.5954, b_iso=1.9764)
+model.atom_sites.add_from_args('O2', 'O', 0.1935, 0.25, 0.5432, b_iso=1.4456)
+model.atom_sites.add_from_args('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
 
 
 # %% [markdown]
@@ -119,13 +119,13 @@ for x, y in [
     (120.0, 244.4525),
     (153.0, 226.0595),
 ]:
-    expt1.background.add(x, y)
+    expt1.background.add_from_args(x, y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt1.linked_phases.add('pbso4', scale=1.5)
+expt1.linked_phases.add_from_args('pbso4', scale=1.5)
 
 # %% [markdown]
 # ### Experiment 2: xrd
@@ -183,13 +183,13 @@ for x, y in [
     (4, 54.552),
     (5, -20.661),
 ]:
-    expt2.background.add(x, y)
+    expt2.background.add_from_args(x, y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt2.linked_phases.add('pbso4', scale=0.001)
+expt2.linked_phases.add_from_args('pbso4', scale=0.001)
 
 # %% [markdown]
 # ## Define Project
@@ -206,14 +206,14 @@ project = Project()
 # #### Add Sample Model
 
 # %%
-project.sample_models.add(model)
+project.sample_models.add_from_args(model)
 
 # %% [markdown]
 # #### Add Experiments
 
 # %%
-project.experiments.add(expt1)
-project.experiments.add(expt2)
+project.experiments.add_from_args(expt1)
+project.experiments.add_from_args(expt2)
 
 # %% [markdown]
 # ## Perform Analysis

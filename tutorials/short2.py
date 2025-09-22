@@ -28,7 +28,7 @@ site.label = 'Si'
 site.type_symbol = 'Si'
 
 sites = AtomSites()
-sites.add(site)
+sites.add_from_args(site)
 
 
 model = SampleModel(name='mdl')
@@ -39,7 +39,7 @@ model.atom_sites = sites
 site = AtomSite()
 site.label = 'Tb'
 site.type_symbol = 'Tb'
-sites.add(site)
+sites.add_from_args(site)
 
 
 # model.cell = 'k'
@@ -54,7 +54,7 @@ for p in model.parameters:
 print('================================')
 
 models = SampleModels()
-# models.add(model)
+# models.add_from_args(model)
 models.add_from_cif_path('tutorials/data/lbco.cif')
 
 print(models)
@@ -67,7 +67,7 @@ print(exp)
 
 linked_phases = LinkedPhases()
 linked_phase = LinkedPhase(id='lbco', scale=10.0)
-linked_phases.add(linked_phase)
+linked_phases.add_from_args(linked_phase)
 
 exp.linked_phases = linked_phases
 
@@ -85,24 +85,24 @@ point2 = Point(x=30, y=170)
 point3 = Point(x=50, y=170)
 point4 = Point(x=110, y=170)
 point5 = Point(x=165, y=170)
-bkg.add(point1)
-bkg.add(point2)
-bkg.add(point3)
-bkg.add(point4)
-bkg.add(point5)
-# exp.background.add(bkg)
+bkg.add_from_args(point1)
+bkg.add_from_args(point2)
+bkg.add_from_args(point3)
+bkg.add_from_args(point4)
+bkg.add_from_args(point5)
+# exp.background.add_from_args(bkg)
 exp.background = bkg
 
-# exp.background.add(x=10, y=170)
-# exp.background.add(x=30, y=170)
-# exp.background.add(x=50, y=170)
-# exp.background.add(x=110, y=170)
-# exp.background.add(x=165, y=170)
+# exp.background.add_from_args(x=10, y=170)
+# exp.background.add_from_args(x=30, y=170)
+# exp.background.add_from_args(x=50, y=170)
+# exp.background.add_from_args(x=110, y=170)
+# exp.background.add_from_args(x=165, y=170)
 
 experiments = Experiments()
 print(experiments)
 
-experiments.add(exp)
+experiments.add_from_args(exp)
 print(experiments)
 for p in experiments.parameters:
     print(p)

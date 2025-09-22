@@ -43,11 +43,11 @@ model.cell.length_c = 14.1
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Zn', 'Zn', 0, 0, 0.5, wyckoff_letter='b', b_iso=0.5)
-model.atom_sites.add('Cu', 'Cu', 0.5, 0, 0, wyckoff_letter='e', b_iso=0.5)
-model.atom_sites.add('O', 'O', 0.21, -0.21, 0.06, wyckoff_letter='h', b_iso=0.5)
-model.atom_sites.add('Cl', 'Cl', 0, 0, 0.197, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add('H', '2H', 0.13, -0.13, 0.08, wyckoff_letter='h', b_iso=0.5)
+model.atom_sites.add_from_args('Zn', 'Zn', 0, 0, 0.5, wyckoff_letter='b', b_iso=0.5)
+model.atom_sites.add_from_args('Cu', 'Cu', 0.5, 0, 0, wyckoff_letter='e', b_iso=0.5)
+model.atom_sites.add_from_args('O', 'O', 0.21, -0.21, 0.06, wyckoff_letter='h', b_iso=0.5)
+model.atom_sites.add_from_args('Cl', 'Cl', 0, 0, 0.197, wyckoff_letter='c', b_iso=0.5)
+model.atom_sites.add_from_args('H', '2H', 0.13, -0.13, 0.08, wyckoff_letter='h', b_iso=0.5)
 
 # %% [markdown]
 # #### Symmetry constraints
@@ -107,21 +107,21 @@ expt.peak.broad_lorentz_y = 0
 # #### Set Background
 
 # %%
-expt.background.add(x=4.4196, y=500)
-expt.background.add(x=6.6207, y=500)
-expt.background.add(x=10.4918, y=500)
-expt.background.add(x=15.4634, y=500)
-expt.background.add(x=45.6041, y=500)
-expt.background.add(x=74.6844, y=500)
-expt.background.add(x=103.4187, y=500)
-expt.background.add(x=121.6311, y=500)
-expt.background.add(x=159.4116, y=500)
+expt.background.add_from_args(x=4.4196, y=500)
+expt.background.add_from_args(x=6.6207, y=500)
+expt.background.add_from_args(x=10.4918, y=500)
+expt.background.add_from_args(x=15.4634, y=500)
+expt.background.add_from_args(x=45.6041, y=500)
+expt.background.add_from_args(x=74.6844, y=500)
+expt.background.add_from_args(x=103.4187, y=500)
+expt.background.add_from_args(x=121.6311, y=500)
+expt.background.add_from_args(x=159.4116, y=500)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add('hs', scale=0.5)
+expt.linked_phases.add_from_args('hs', scale=0.5)
 
 # %% [markdown]
 # ## Define Project
@@ -144,13 +144,13 @@ project.plotter.engine = 'plotly'
 # #### Add Sample Model
 
 # %%
-project.sample_models.add(model)
+project.sample_models.add_from_args(model)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(expt)
+project.experiments.add_from_args(expt)
 
 # %% [markdown]
 # ## Perform Analysis
