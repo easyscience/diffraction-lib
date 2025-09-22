@@ -37,7 +37,7 @@ class Alias(CategoryItem):
 
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_name = label
+        self._entry_name = self.label.name
 
 
 class Aliases(CategoryCollection):

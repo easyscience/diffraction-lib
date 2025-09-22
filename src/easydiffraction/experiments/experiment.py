@@ -36,7 +36,7 @@ class InstrumentMixin:
     def __init__(self, *args, **kwargs):
         expt_type = kwargs.get('type')
         super().__init__(*args, **kwargs)
-        self._instrument = InstrumentFactory.create(
+        self.instrument = InstrumentFactory.create(
             scattering_type=expt_type.scattering_type.value,
             beam_mode=expt_type.beam_mode.value,
         )
@@ -49,6 +49,7 @@ class InstrumentMixin:
     @enforce_type
     def instrument(self, new_instrument: InstrumentBase):
         self._instrument = new_instrument
+        self._instrument._parent = self
 
 
 class BaseExperiment(Datablock):

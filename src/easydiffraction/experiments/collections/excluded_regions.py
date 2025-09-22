@@ -46,7 +46,8 @@ class ExcludedRegion(CategoryItem):
 
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_name = f'{start}-{end}'
+        # self._entry_name = f'{start}-{end}'
+        self._entry_name = self.start.name
 
 
 class ExcludedRegions(CategoryCollection):

@@ -37,7 +37,7 @@ class JointFitExperiment(CategoryItem):
 
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_name = id
+        self._entry_name = self.id.name
 
 
 class JointFitExperiments(CategoryCollection):

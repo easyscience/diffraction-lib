@@ -220,9 +220,6 @@ class Descriptor(
         full_cif_names: list[str],
         default_value: Any,
         pretty_name: Optional[str] = None,
-        datablock_name: Optional[str] = None,
-        category_key: Optional[str] = None,
-        entry_name: Optional[str] = None,
         units: Optional[str] = None,
         description: Optional[str] = None,
         editable: bool = True,
@@ -244,12 +241,6 @@ class Descriptor(
             Fallback value when CIF extraction yields no entry.
         pretty_name:
             Human-facing label (UI / reporting).
-        datablock_name:
-            Parent datablock name (injected later by container).
-        category_key:
-            Parent category key (component-level grouping).
-        entry_name:
-            Parent collection entry identifier.
         units:
             Physical units (if applicable).
         description:
@@ -259,12 +250,11 @@ class Descriptor(
         allowed_values:
             Optional list of enumerated allowed values.
         """
+        self._parent: Optional[Any] = None
+
         # Identity
         self._name = name
         self._pretty_name = pretty_name
-        self._datablock_name = datablock_name
-        self._category_key = category_key
-        self._entry_name = entry_name
 
         # Semantics
         self._value_type = value_type
@@ -316,21 +306,6 @@ class Descriptor(
         length = 16
         return ''.join(secrets.choice(string.ascii_lowercase) for _ in range(length))
 
-    def _set_datablock_name(self, new_name: str):
-        """Internal helper to assign datablock name (called by
-        parent).
-        """
-        self._datablock_name = new_name
-
-    def _set_entry_name(self, new_name):
-        """Internal helper to assign entry name of CategoryCollection
-        (called by parent).
-        """
-        self._entry_name = new_name
-
-    def _set_category_key(self, category_key: str) -> None:
-        self._category_key = category_key
-
     # ------------------------------------------------------------------
     # Public read-only properties
     # ------------------------------------------------------------------
@@ -361,7 +336,7 @@ class Descriptor(
         if self.category_key is not None:
             parts.append(self.category_key)
         if self.entry_name is not None:
-            parts.append(self.entry_name)
+            parts.append(str(self.entry_name))  # TODO: stringify (bkg)?
         parts.append(self.name)
         return '.'.join(parts)
 
@@ -370,25 +345,30 @@ class Descriptor(
         self._readonly_error()
 
     @property
-    def datablock_name(self):
-        """Read-only datablock name (injected by parent container)."""
-        return self._datablock_name
+    def datablock_name(self) -> Optional[str]:
+        if self._parent is not None:
+            return getattr(self._parent, 'datablock_name', None)
+        return None
 
     @datablock_name.setter
     def datablock_name(self, _):
         self._readonly_error()
 
     @property
-    def entry_name(self):
-        return self._entry_name
+    def entry_name(self) -> Optional[str]:
+        if self._parent is not None:
+            return getattr(self._parent, 'entry_name', None)
+        return None
 
     @entry_name.setter
     def entry_name(self, _):
         self._readonly_error()
 
     @property
-    def category_key(self):
-        return self._category_key
+    def category_key(self) -> Optional[str]:
+        if self._parent is not None:
+            return getattr(self._parent, 'category_key', None)
+        return None
 
     @category_key.setter
     def category_key(self, _):
@@ -577,9 +557,6 @@ class Parameter(Descriptor):
         full_cif_names: list[str],
         default_value: Any,
         pretty_name: Optional[str] = None,
-        datablock_name: Optional[str] = None,
-        category_key: Optional[str] = None,
-        entry_name: Optional[str] = None,
         units: Optional[str] = None,
         description: Optional[str] = None,
         editable: bool = True,
@@ -597,9 +574,6 @@ class Parameter(Descriptor):
             full_cif_names: Ordered CIF tag aliases.
             default_value: Fallback when CIF extraction fails.
             pretty_name: Human readable label.
-            datablock_name: Parent datablock (if known).
-            category_key: Parent category key.
-            entry_name: Identifier inside owning collection.
             units: Display / physical units.
             description: Long form description.
             editable: Whether user may manually edit value.
@@ -616,9 +590,6 @@ class Parameter(Descriptor):
             full_cif_names=full_cif_names,
             default_value=default_value,
             pretty_name=pretty_name,
-            datablock_name=datablock_name,
-            category_key=category_key,
-            entry_name=entry_name,
             units=units,
             description=description,
             editable=editable,
@@ -652,7 +623,7 @@ class Parameter(Descriptor):
     # ------------------------------------------------------------------
 
     @property
-    def _minimizer_uid(self):  # n?o?q?a: D401 - simple delegation
+    def _minimizer_uid(self):
         """Return variant of uid safe for minimizer engines."""
         return self.full_name.replace('.', '__')
 
@@ -749,7 +720,8 @@ class CategoryItem(
     # Class configuration
     # ------------------------------------------------------------------
     _allowed_attributes = {
-        'datablock_name',
+        'datablock_name',  # TODO: Needed?
+        'entry_name',  # TODO: Needed?
     }
     _MISSING_ATTR = object()
 
@@ -760,8 +732,8 @@ class CategoryItem(
         """Initialize component with unset datablock and entry
         identifiers.
         """
-        self._datablock_name = None
-        self._entry_name = None
+        self._parent: Optional[Any] = None
+        self._entry_name = None  # TODO: Needed? Make Abstract?
 
     # ------------------------------------------------------------------
     # Abstract API
@@ -796,7 +768,7 @@ class CategoryItem(
         Logic:
         * Private names: direct set.
         * Public names: must be allowed.
-        * New descriptor: inject category if unset.
+        * New descriptor: inject parent.
         * Plain value for existing descriptor: update its value.
         """
         if key.startswith('_'):
@@ -815,8 +787,7 @@ class CategoryItem(
 
         # If replacing or assigning a Descriptor instance
         if isinstance(value, Descriptor):
-            if value._category_key is None:  # auto-inject only if unset
-                value._set_category_key(self.category_key)
+            value._parent = self
             object.__setattr__(self, key, value)
 
         # If updating the value of an existing Descriptor
@@ -824,21 +795,6 @@ class CategoryItem(
             attr.value = value
         else:
             object.__setattr__(self, key, value)
-
-    # ------------------------------------------------------------------
-    # Internal helpers
-    # ------------------------------------------------------------------
-    def _set_datablock_name(self, new_name: str):
-        """Set datablock name and propagate to children (internal)."""
-        self._datablock_name = new_name
-        for param in self.parameters:
-            param._set_datablock_name(new_name)
-
-    def _set_entry_name(self, new_name: str) -> None:
-        """Set entry ID and propagate to child parameters."""
-        self._entry_name = new_name
-        for param in self.parameters:
-            param._set_entry_name(new_name)
 
     # ------------------------------------------------------------------
     # Public read-only properties
@@ -852,8 +808,10 @@ class CategoryItem(
 
     @property
     def datablock_name(self) -> Optional[str]:
-        """Read-only datablock name (set by parent datablock)."""
-        return self._datablock_name
+        """Read-only datablock name (delegated to parent)."""
+        if self._parent is not None:
+            return getattr(self._parent, 'datablock_name', None)
+        return None
 
     @datablock_name.setter
     def datablock_name(self, _):
@@ -861,8 +819,13 @@ class CategoryItem(
 
     @property
     def entry_name(self) -> Optional[str]:
-        """Entry identifier (injected by parent collection)."""
-        return self._entry_name
+        """Entry identifier (delegated to parent if available)."""
+        if self._entry_name is None:
+            return None
+        entry_attr_name = self._entry_name
+        entry_attr = getattr(self, entry_attr_name)
+        entry_name = entry_attr.value
+        return entry_name
 
     @entry_name.setter
     def entry_name(self, _) -> None:
@@ -926,9 +889,10 @@ class CategoryCollection(
     # Initialization
     # ------------------------------------------------------------------
     def __init__(self, child_class=None):
+        self._parent: Optional[Any] = None
         self._items = {}
         self._child_class = child_class
-        self._datablock_name = None
+        # self._datablock_name = None
 
     # ------------------------------------------------------------------
     # Dunder methods
@@ -956,15 +920,6 @@ class CategoryCollection(
         object.__setattr__(self, key, value)
 
     # ------------------------------------------------------------------
-    # Internal helpers
-    # ------------------------------------------------------------------
-    def _set_datablock_name(self, new_name: str):
-        """Set datablock name and propagate to children (internal)."""
-        self._datablock_name = new_name
-        for item in self._items.values():
-            item._set_datablock_name(new_name)
-
-    # ------------------------------------------------------------------
     # Public read-only properties
     # ------------------------------------------------------------------
     @property
@@ -977,8 +932,12 @@ class CategoryCollection(
 
     @property
     def datablock_name(self):
-        """Read-only datablock name (set by parent datablock)."""
-        return self._datablock_name
+        """Read-only datablock name (delegated to parent if
+        available).
+        """
+        if self._parent is not None:
+            return getattr(self._parent, 'datablock_name', None)
+        return None
 
     @datablock_name.setter
     def datablock_name(self, _):
@@ -1029,16 +988,18 @@ class CategoryCollection(
     def add(self, item: CategoryItem):
         # Insert the item using its entry_name.value as key
         # TODO: Temporary workaround
-        if isinstance(item.entry_name, Descriptor):
-            entry_name = item.entry_name.value
-        else:
-            entry_name = item.entry_name
+        # if isinstance(item.entry_name, Descriptor):
+        #    entry_name = item.entry_name.value
+        # else:
+        #    entry_name = item.entry_name
+
+        # entry_attr_name = item.entry_name
+        # entry_attr = getattr(item, entry_attr_name)
+        # entry_name = entry_attr.value
+
         # Add item
-        self._items[entry_name] = item
-        # Propagate datablock name to added item
-        self._items[entry_name]._set_datablock_name(self.datablock_name)
-        # Propagate entry name to added item
-        self._items[entry_name]._set_entry_name(entry_name)
+        item._parent = self
+        self._items[item.entry_name] = item
 
     def from_cif(self, block):
         # Derive loop size using entry_name first CIF tag alias
@@ -1049,12 +1010,13 @@ class CategoryCollection(
         # Create a temporary instance to access entry_name attribute
         # used as ID column for the items in this collection
         child_obj = self._child_class()
-        attr_name = child_obj.entry_name.name
-        attr = getattr(child_obj, attr_name)
+        # attr_name = child_obj.entry_name.name
+        # entry_attr_name = child_obj.entry_name
+        entry_attr = getattr(child_obj, child_obj._entry_name)
         # Try to find the value(s) from the CIF block iterating over
         # the possible cif names in order of preference.
         size = 0
-        for name in attr.full_cif_names:
+        for name in entry_attr.full_cif_names:
             size = len(block.find_values(name))
             break
         # If no values found, nothing to do
@@ -1086,12 +1048,14 @@ class Datablock(
     # ------------------------------------------------------------------
     _allowed_attributes = {
         'name',
+        'datablock_name',  # for compatibility with parent delegation
     }  # extend in subclasses with real children
 
     # ------------------------------------------------------------------
     # Initialization
     # ------------------------------------------------------------------
     def __init__(self) -> None:
+        self._parent: Optional[Any] = None
         self._name = None  # set later via property
 
     # ------------------------------------------------------------------
@@ -1117,9 +1081,8 @@ class Datablock(
             self._setattr_error(key, allowed)
             return
 
-        # Propagate datablock name to children
         if isinstance(value, (CategoryItem, CategoryCollection)):
-            value._set_datablock_name(self.name)
+            value._parent = self
 
         object.__setattr__(self, key, value)
 
@@ -1160,9 +1123,9 @@ class Datablock(
             self._type_warning('name', str, new_name)
             return
         self._name = new_name
-        # Propagate datablock name to children
-        for category in self.categories:
-            category._set_datablock_name(new_name)
+
+    # For compatibility with parent delegation.
+    datablock_name = name
 
 
 class DatablockCollection(
@@ -1185,6 +1148,7 @@ class DatablockCollection(
     # Initialization
     # ------------------------------------------------------------------
     def __init__(self):
+        self._parent: Optional[Any] = None
         self._datablocks = {}
 
     # ------------------------------------------------------------------
@@ -1205,12 +1169,15 @@ class DatablockCollection(
             self._setattr_error(key, allowed)
             return
 
+        if isinstance(value, (CategoryItem, CategoryCollection)):
+            value._parent = self
         object.__setattr__(self, key, value)
 
     def __getitem__(self, name):
         return self._datablocks[name]
 
     def __setitem__(self, name, datablock):
+        datablock._parent = self
         self._datablocks[name] = datablock
 
     def __delitem__(self, name):
@@ -1234,18 +1201,16 @@ class DatablockCollection(
 
     # TODO: Need refactoring to new API
     def get_fittable_params(self) -> List[Parameter]:
-        all_params = self.parameters
         params = []
-        for param in all_params:
-            if hasattr(param, 'free') and not param.constrained:
+        for param in self.parameters:
+            if isinstance(param, Parameter) and not param.constrained:
                 params.append(param)
         return params
 
     # TODO: Need refactoring to new API
     def get_free_params(self) -> List[Parameter]:
-        fittable_params = self.get_fittable_params()
         params = []
-        for param in fittable_params:
+        for param in self.get_fittable_params():
             if param.free:
                 params.append(param)
         return params

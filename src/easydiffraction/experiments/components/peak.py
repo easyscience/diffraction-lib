@@ -372,10 +372,6 @@ class ConstantWavelengthPseudoVoigt(
 
         self._add_constant_wavelength_broadening()
 
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked: bool = True
-
 
 class ConstantWavelengthSplitPseudoVoigt(
     PeakBase,
@@ -387,10 +383,6 @@ class ConstantWavelengthSplitPseudoVoigt(
 
         self._add_constant_wavelength_broadening()
         self._add_empirical_asymmetry()
-
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked: bool = True
 
 
 class ConstantWavelengthThompsonCoxHastings(
@@ -404,10 +396,6 @@ class ConstantWavelengthThompsonCoxHastings(
         self._add_constant_wavelength_broadening()
         self._add_fcj_asymmetry()
 
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked: bool = True
-
 
 class TimeOfFlightPseudoVoigt(
     PeakBase,
@@ -417,10 +405,6 @@ class TimeOfFlightPseudoVoigt(
         super().__init__()
 
         self._add_time_of_flight_broadening()
-
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked: bool = True
 
 
 class TimeOfFlightPseudoVoigtIkedaCarpenter(
@@ -434,10 +418,6 @@ class TimeOfFlightPseudoVoigtIkedaCarpenter(
         self._add_time_of_flight_broadening()
         self._add_ikeda_carpenter_asymmetry()
 
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked: bool = True
-
 
 class TimeOfFlightPseudoVoigtBackToBack(
     PeakBase,
@@ -450,10 +430,6 @@ class TimeOfFlightPseudoVoigtBackToBack(
         self._add_time_of_flight_broadening()
         self._add_ikeda_carpenter_asymmetry()
 
-        # Lock further attribute additions to prevent
-        # accidental modifications by users
-        self._locked: bool = True
-
 
 class PairDistributionFunctionGaussianDampedSinc(
     PeakBase,
@@ -462,7 +438,6 @@ class PairDistributionFunctionGaussianDampedSinc(
     def __init__(self):
         super().__init__()
         self._add_pair_distribution_function_broadening()
-        self._locked = True  # Lock further attribute additions
 
 
 # --- Peak factory ---

@@ -37,7 +37,7 @@ class Constraint(CategoryItem):
 
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_name = lhs_alias
+        self._entry_name = self.lhs_alias.name
 
 
 class Constraints(CategoryCollection):

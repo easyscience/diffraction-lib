@@ -117,8 +117,9 @@ class AtomSite(CategoryItem):
             full_cif_names=['_atom_site.B_iso_or_equiv'],
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
         )
-        # Select which of the input parameters is used for the
-        # as ID for the whole object
+        # Select which of the attributes defined above is used as ID
+        # for the whole object
+        #
         # TODO: Check if it can be self.label.value instead
         #  Seems not, as it is used in CategoryCollection to find the
         #  number of rows in the loop (... child_obj.entry_name.name).
@@ -126,7 +127,8 @@ class AtomSite(CategoryItem):
         #  to self.label.name (validated label).
         #  After changing, need to get rid of temporary fix in method
         #  'add' in class CategoryCollection.
-        self._entry_name = self.label
+        self._entry_name = self.label.name
+        # self._entry_name = self.label
 
 
 class AtomSites(CategoryCollection):

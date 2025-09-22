@@ -60,7 +60,8 @@ class Point(CategoryItem):
 
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_name = str(x)
+        # self._entry_name = str(x)
+        self._entry_name = self.x.name
 
 
 class PolynomialTerm(CategoryItem):
@@ -103,7 +104,8 @@ class PolynomialTerm(CategoryItem):
 
         # Select which of the input parameters is used for the
         # as ID for the whole object
-        self._entry_name = str(order)
+        # self._entry_name = str(order)
+        self._entry_name = self.order.name
 
 
 class BackgroundBase(CategoryCollection):
