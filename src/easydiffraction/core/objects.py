@@ -148,6 +148,9 @@ class AttributeAccessGuardMixin:
     @property
     def _allowed_attribute_names(self) -> set[str]:
         """Instance-level allowed attribute names."""
+        # TODO: Currently Descriptors have both _allowed_attribute_names
+        #  and _allowed_attributes (str names), as well ass
+        #  _cached_allowed_attributes. Check what is needed.
         allowed = set(type(self)._cached_allowed_attributes)
         allowed |= {n for n in self.__dict__ if not n.startswith('_')}
         return allowed

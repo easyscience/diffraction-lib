@@ -87,7 +87,9 @@ class CalculatorBase(ABC):
 
         # Calculate background contribution
         y_bkg = np.zeros_like(x_data)
-        if hasattr(experiment, 'background'):
+        # TODO: Change to the following check in other places instead of
+        #  old `hasattr` check, because `hasattr` triggers warnings?
+        if 'background' in experiment._allowed_attributes:
             y_bkg = experiment.background.calculate(x_data)
         experiment.datastore.bkg = y_bkg
 

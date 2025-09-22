@@ -18,10 +18,10 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     sample_model.space_group.name_h_m = 'F m -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
     sample_model.cell.length_a = 5.6018
-    sample_model.atom_sites.add(
+    sample_model.atom_sites.add_from_args(
         label='Na', type_symbol='Na', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=1.1053
     )
-    sample_model.atom_sites.add(
+    sample_model.atom_sites.add_from_args(
         label='Cl', type_symbol='Cl', fract_x=0.5, fract_y=0.5, fract_z=0.5, wyckoff_letter='b', b_iso=0.5708
     )
 
@@ -44,7 +44,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     experiment.peak.sharp_delta_1 = 0
     experiment.peak.sharp_delta_2 = 3.5041
     experiment.peak.damp_particle_diameter = 0
-    experiment.linked_phases.add(id='nacl', scale=0.4254)
+    experiment.linked_phases.add_from_args(id='nacl', scale=0.4254)
 
     # Select fitting parameters
     sample_model.cell.length_a.free = True
@@ -72,7 +72,7 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     sample_model.space_group.name_h_m.value = 'F m -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
     sample_model.cell.length_a = 3.526
-    sample_model.atom_sites.add(
+    sample_model.atom_sites.add_from_args(
         label='Ni', type_symbol='Ni', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=0.4281
     )
 
@@ -94,7 +94,7 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     experiment.peak.sharp_delta_1 = 0
     experiment.peak.sharp_delta_2 = 2.5587
     experiment.peak.damp_particle_diameter = 0
-    experiment.linked_phases.add(id='ni', scale=0.9892)
+    experiment.linked_phases.add_from_args(id='ni', scale=0.9892)
 
     # Select fitting parameters
     sample_model.cell.length_a.free = True
@@ -120,7 +120,7 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     sample_model.space_group.name_h_m.value = 'F d -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
     sample_model.cell.length_a = 5.4306
-    sample_model.atom_sites.add(label='Si', type_symbol='Si', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=0.717)
+    sample_model.atom_sites.add_from_args(label='Si', type_symbol='Si', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=0.717)
 
     # Set experiment
     data_file = 'NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr'
@@ -140,7 +140,7 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     experiment.peak.sharp_delta_1 = 2.54
     experiment.peak.sharp_delta_2 = -1.7525
     experiment.peak.damp_particle_diameter = 0
-    experiment.linked_phases.add(id='si', scale=1.2728)
+    experiment.linked_phases.add_from_args(id='si', scale=1.2728)
 
     # Select fitting parameters
     project.sample_models['si'].cell.length_a.free = True
