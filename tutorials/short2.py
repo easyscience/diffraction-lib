@@ -24,18 +24,34 @@ cell = Cell()
 cell.length_a = 5.4603
 
 site = AtomSite()
+site.label = 'Si'
 site.type_symbol = 'Si'
 
 sites = AtomSites()
 sites.add(site)
+
 
 model = SampleModel(name='mdl')
 model.space_group = sg
 model.cell = cell
 model.atom_sites = sites
 
+site = AtomSite()
+site.label = 'Tb'
+site.type_symbol = 'Tb'
+sites.add(site)
 
-print(model.parameters)
+
+# model.cell = 'k'
+
+
+# print(model.parameters)
+for p in model.parameters:
+    print(p)
+
+# exit()
+
+print('================================')
 
 models = SampleModels()
 # models.add(model)
@@ -65,9 +81,15 @@ exp.peak.broad_lorentz_y = 0.1
 
 bkg = LineSegmentBackground()
 point1 = Point(x=10, y=170)
-point2 = Point(x=165, y=170)
+point2 = Point(x=30, y=170)
+point3 = Point(x=50, y=170)
+point4 = Point(x=110, y=170)
+point5 = Point(x=165, y=170)
 bkg.add(point1)
 bkg.add(point2)
+bkg.add(point3)
+bkg.add(point4)
+bkg.add(point5)
 # exp.background.add(bkg)
 exp.background = bkg
 
@@ -85,7 +107,7 @@ print(experiments)
 for p in experiments.parameters:
     print(p)
 # print(experiments.as_cif)
-
+# exit()
 
 proj = Project(name='PROJ')
 print(proj)
@@ -94,10 +116,61 @@ proj.sample_models = models
 proj.experiments = experiments
 
 
-# proj.plotter.engine = 'plotly'
-
 proj.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
 
+
+def set_as_online():
+    m = proj.sample_models['lbco']
+    m.cell.length_a = 3.8909
+    m.cell.length_b = 3.8909
+    m.cell.length_c = 3.8909
+    m.atom_sites['La'].b_iso = 0.5052
+    m.atom_sites['Ba'].b_iso = 0.5049
+    m.atom_sites['Co'].b_iso = 0.2370
+    m.atom_sites['O'].b_iso = 1.3935
+    e = proj.experiments['hrpt']
+    e.linked_phases['lbco'].scale = 9.1351
+    e.instrument.calib_twotheta_offset = 0.6226
+    e.peak.broad_gauss_u = 0.0816
+    e.peak.broad_gauss_v = -0.1159
+    e.peak.broad_gauss_w = 0.1204
+    e.peak.broad_lorentz_y = 0.0844
+    e.background[10].y = 168.5585
+    e.background[30].y = 164.3357
+    e.background[50].y = 166.8881
+    e.background[110].y = 175.4006
+    e.background[165].y = 174.2813
+
+
+def set_as_initial():
+    m = proj.sample_models['lbco']
+    m.cell.length_a.uncertainty = None
+    m.cell.length_a = 3.885
+    m.cell.length_b = 3.885
+    m.cell.length_c = 3.885
+    # m.atom_sites['La'].b_iso = 0.5052
+    # m.atom_sites['Ba'].b_iso = 0.5049
+    # m.atom_sites['Co'].b_iso = 0.2370
+    # m.atom_sites['O'].b_iso = 1.3935
+    # e = proj.experiments['hrpt']
+    # e.linked_phases['lbco'].scale = 9.1351
+    # e.instrument.calib_twotheta_offset = 0.6226
+    # e.peak.broad_gauss_u = 0.0816
+    # e.peak.broad_gauss_v = -0.1159
+    # e.peak.broad_gauss_w = 0.1204
+    # e.peak.broad_lorentz_y = 0.0844
+    # e.background[10].y = 168.5585
+    # e.background[30].y = 164.3357
+    # e.background[50].y = 166.8881
+    # e.background[110].y = 175.4006
+    # e.background[165].y = 174.2813
+
+
+set_as_online()
+# set_as_initial()
+proj.plotter.engine = 'plotly'
+proj.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+# exit()
 
 models['lbco'].cell.length_a.free = True
 
@@ -113,8 +186,11 @@ exp.peak.broad_gauss_v.free = True
 exp.peak.broad_gauss_w.free = True
 exp.peak.broad_lorentz_y.free = True
 
-exp.background['10'].y.free = True
-exp.background['165'].y.free = True
+exp.background[10].y.free = True
+exp.background[30].y.free = True
+exp.background[50].y.free = True
+exp.background[110].y.free = True
+exp.background[165].y.free = True
 
 exp.linked_phases['lbco'].scale.free = True
 
@@ -123,4 +199,6 @@ print('----', models['lbco'].cell.length_a.free)
 proj.analysis.show_free_params()
 proj.analysis.fit()
 
+# proj.plotter.engine = 'plotly'
+# proj.plot_meas_vs_calc(expt_name='hrpt')
 proj.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
