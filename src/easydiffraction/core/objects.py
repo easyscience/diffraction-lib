@@ -191,7 +191,7 @@ class Descriptor(
         'pretty_name',
         'datablock_name',
         'category_key',
-        'entry_name',
+        'category_entry_name',
         'units',
         'description',
         'editable',
@@ -328,15 +328,15 @@ class Descriptor(
         """Assemble hierarchical fully-qualified name.
 
         Parts (if present): ``datablock_name``, ``category_key``,
-        ``entry_name`` and final ``name``.
+        ``category_entry_name`` and final ``name``.
         """
         parts = []
         if self.datablock_name is not None:
             parts.append(self.datablock_name)
         if self.category_key is not None:
             parts.append(self.category_key)
-        if self.entry_name is not None:
-            parts.append(str(self.entry_name))  # TODO: stringify (bkg)?
+        if self.category_entry_name is not None:
+            parts.append(str(self.category_entry_name))  # TODO: stringify (bkg)?
         parts.append(self.name)
         return '.'.join(parts)
 
@@ -355,13 +355,13 @@ class Descriptor(
         self._readonly_error()
 
     @property
-    def entry_name(self) -> Optional[str]:
+    def category_entry_name(self) -> Optional[str]:
         if self._parent is not None:
-            return getattr(self._parent, 'entry_name', None)
+            return getattr(self._parent, 'category_entry_name', None)
         return None
 
-    @entry_name.setter
-    def entry_name(self, _):
+    @category_entry_name.setter
+    def category_entry_name(self, _):
         self._readonly_error()
 
     @property
@@ -721,7 +721,7 @@ class CategoryItem(
     # ------------------------------------------------------------------
     _allowed_attributes = {
         'datablock_name',  # TODO: Needed?
-        'entry_name',  # TODO: Needed?
+        'category_entry_name',  # TODO: Needed?
     }
     _MISSING_ATTR = object()
 
@@ -733,7 +733,7 @@ class CategoryItem(
         identifiers.
         """
         self._parent: Optional[Any] = None
-        self._entry_name = None  # TODO: Needed? Make Abstract?
+        self._category_entry_attr_name = None
 
     # ------------------------------------------------------------------
     # Abstract API
@@ -818,17 +818,16 @@ class CategoryItem(
         self._readonly_error()
 
     @property
-    def entry_name(self) -> Optional[str]:
+    def category_entry_name(self) -> Optional[str]:
         """Entry identifier (delegated to parent if available)."""
-        if self._entry_name is None:
+        if self._category_entry_attr_name is None:
             return None
-        entry_attr_name = self._entry_name
-        entry_attr = getattr(self, entry_attr_name)
-        entry_name = entry_attr.value
-        return entry_name
+        attr = getattr(self, self._category_entry_attr_name)
+        name = attr.value
+        return name
 
-    @entry_name.setter
-    def entry_name(self, _) -> None:
+    @category_entry_name.setter
+    def category_entry_name(self, _) -> None:
         self._readonly_error()
 
     @property
@@ -892,7 +891,6 @@ class CategoryCollection(
         self._parent: Optional[Any] = None
         self._items = {}
         self._child_class = child_class
-        # self._datablock_name = None
 
     # ------------------------------------------------------------------
     # Dunder methods
@@ -986,33 +984,19 @@ class CategoryCollection(
     # ------------------------------------------------------------------
 
     def add(self, item: CategoryItem):
-        # Insert the item using its entry_name.value as key
-        # TODO: Temporary workaround
-        # if isinstance(item.entry_name, Descriptor):
-        #    entry_name = item.entry_name.value
-        # else:
-        #    entry_name = item.entry_name
-
-        # entry_attr_name = item.entry_name
-        # entry_attr = getattr(item, entry_attr_name)
-        # entry_name = entry_attr.value
-
-        # Add item
         item._parent = self
-        self._items[item.entry_name] = item
+        self._items[item.category_entry_name] = item
 
     def from_cif(self, block):
-        # Derive loop size using entry_name first CIF tag alias
+        # Derive loop size using category_entry_name first CIF tag alias
         if self._child_class is None:
             raise ValueError('Child class is not defined.')
         # TODO: Find a better way and then remove TODO in the AtomSite
         #  class
-        # Create a temporary instance to access entry_name attribute
-        # used as ID column for the items in this collection
+        # Create a temporary instance to access category_entry_name
+        # attribute used as ID column for the items in this collection
         child_obj = self._child_class()
-        # attr_name = child_obj.entry_name.name
-        # entry_attr_name = child_obj.entry_name
-        entry_attr = getattr(child_obj, child_obj._entry_name)
+        entry_attr = getattr(child_obj, child_obj._category_entry_attr_name)
         # Try to find the value(s) from the CIF block iterating over
         # the possible cif names in order of preference.
         size = 0

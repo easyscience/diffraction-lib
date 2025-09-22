@@ -57,11 +57,8 @@ class Point(CategoryItem):
             description='Intensity used to create many straight-line segments '
             'representing the background in a calculated diffractogram',
         )
-
-        # Select which of the input parameters is used for the
-        # as ID for the whole object
-        # self._entry_name = str(x)
-        self._entry_name = self.x.name
+        # self._category_entry_attr_name = str(x)
+        self._category_entry_attr_name = self.x.name
 
 
 class PolynomialTerm(CategoryItem):
@@ -101,11 +98,8 @@ class PolynomialTerm(CategoryItem):
             description='The value of a coefficient used in a Chebyshev polynomial '
             'equation representing the background in a calculated diffractogram',
         )
-
-        # Select which of the input parameters is used for the
-        # as ID for the whole object
-        # self._entry_name = str(order)
-        self._entry_name = self.order.name
+        # self._category_entry_attr_name = str(order)
+        self._category_entry_attr_name = self.order.name
 
 
 class BackgroundBase(CategoryCollection):

@@ -34,10 +34,7 @@ class Alias(CategoryItem):
             full_cif_names=['_alias.param_uid'],
             default_value=param_uid,
         )
-
-        # Select which of the input parameters is used for the
-        # as ID for the whole object
-        self._entry_name = self.label.name
+        self._category_entry_attr_name = self.label.name
 
 
 class Aliases(CategoryCollection):

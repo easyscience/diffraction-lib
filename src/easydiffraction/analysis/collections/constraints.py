@@ -34,10 +34,7 @@ class Constraint(CategoryItem):
             full_cif_names=['_constraint.rhs_expr'],
             default_value=rhs_expr,
         )
-
-        # Select which of the input parameters is used for the
-        # as ID for the whole object
-        self._entry_name = self.lhs_alias.name
+        self._category_entry_attr_name = self.lhs_alias.name
 
 
 class Constraints(CategoryCollection):

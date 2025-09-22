@@ -66,7 +66,7 @@ class CalculatorBase(ABC):
         # Calculate contributions from valid linked sample models
         y_calc_scaled = y_calc_zeros
         for linked_phase in valid_linked_phases:
-            sample_model_id = linked_phase.entry_name
+            sample_model_id = linked_phase.category_entry_name
             sample_model_scale = linked_phase.scale.value
             sample_model = sample_models[sample_model_id]
 
@@ -136,7 +136,7 @@ class CalculatorBase(ABC):
 
         valid_linked_phases = []
         for linked_phase in experiment.linked_phases:
-            if linked_phase.entry_name not in sample_models.names:
+            if linked_phase.category_entry_name not in sample_models.names:
                 print(
                     f"Warning: Linked phase '{linked_phase.id.value}' not "
                     f'found in Sample Models {sample_models.names}'

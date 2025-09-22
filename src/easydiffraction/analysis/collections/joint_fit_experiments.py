@@ -34,10 +34,7 @@ class JointFitExperiment(CategoryItem):
             full_cif_names=['_joint_fit_experiment.weight'],
             default_value=weight,
         )
-
-        # Select which of the input parameters is used for the
-        # as ID for the whole object
-        self._entry_name = self.id.name
+        self._category_entry_attr_name = self.id.name
 
 
 class JointFitExperiments(CategoryCollection):

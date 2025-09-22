@@ -40,10 +40,7 @@ class LinkedPhase(CategoryItem):
             default_value=scale,
             description='Scale factor of the linked phase.',
         )
-
-        # Select which of the input parameters is used for the
-        # as ID for the whole object
-        self._entry_name = self.id.name
+        self._category_entry_attr_name = self.id.name
 
 
 class LinkedPhases(CategoryCollection):
