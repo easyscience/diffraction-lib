@@ -8,7 +8,7 @@ from easydiffraction.core.objects import Descriptor
 
 
 class JointFitExperiment(CategoryItem):
-    _allowed_attributes = {
+    _class_public_attrs = {
         'id',
         'weight',
     }

@@ -19,7 +19,7 @@ class BaseSampleModel(Datablock):
     class accepts only the `name`.
     """
 
-    _allowed_attributes = {
+    _class_public_attrs = {
         'space_group',
         'cell',
         'atom_sites',

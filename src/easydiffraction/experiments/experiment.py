@@ -30,7 +30,7 @@ from easydiffraction.utils.utils import render_table
 
 
 class InstrumentMixin:
-    _allowed_attributes = {
+    _class_public_attrs = {
         'instrument',
     }
 
@@ -59,7 +59,7 @@ class BaseExperiment(Datablock):
     Wraps experiment type, instrument and datastore.
     """
 
-    _allowed_attributes = {
+    _class_public_attrs = {
         'name',
         'type',
         'datastore',
@@ -109,31 +109,31 @@ class BaseExperiment(Datablock):
         cif_lines += ['', self.type.as_cif]
 
         # Instrument setup and calibration
-        if 'instrument' in self._allowed_attributes:
+        if 'instrument' in self._class_public_attrs:
             cif_lines += ['', self.instrument.as_cif]
 
         # Peak profile, broadening and asymmetry
-        if 'peak' in self._allowed_attributes:
+        if 'peak' in self._class_public_attrs:
             cif_lines += ['', self.peak.as_cif]
 
         # Phase scale factors for powder experiments
-        if 'linked_phases' in self._allowed_attributes and self.linked_phases._items:
+        if 'linked_phases' in self._class_public_attrs and self.linked_phases._items:
             cif_lines += ['', self.linked_phases.as_cif]
 
         # Crystal scale factor for single crystal experiments
-        if 'linked_crystal' in self._allowed_attributes:
+        if 'linked_crystal' in self._class_public_attrs:
             cif_lines += ['', self.linked_crystal.as_cif]
 
         # Background points
-        if 'background' in self._allowed_attributes and self.background._items:
+        if 'background' in self._class_public_attrs and self.background._items:
             cif_lines += ['', self.background.as_cif]
 
         # Excluded regions
-        if 'excluded_regions' in self._allowed_attributes and self.excluded_regions._items:
+        if 'excluded_regions' in self._class_public_attrs and self.excluded_regions._items:
             cif_lines += ['', self.excluded_regions.as_cif]
 
         # Measured data
-        if 'datastore' in self._allowed_attributes:
+        if 'datastore' in self._class_public_attrs:
             cif_lines += ['', self.datastore.as_cif(max_points=max_points)]
 
         return '\n'.join(cif_lines)
@@ -151,7 +151,7 @@ class BaseExperiment(Datablock):
 class BasePowderExperiment(BaseExperiment):
     """Base class for all powder experiments."""
 
-    _allowed_attributes = {
+    _class_public_attrs = {
         'peak',
         'peak_profile_type',
         'linked_phases',
@@ -244,7 +244,7 @@ class PowderExperiment(
     Wraps background, peak profile, and linked phases.
     """
 
-    _allowed_attributes = {
+    _class_public_attrs = {
         'background',
         'background_type',
     }
@@ -415,7 +415,7 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
 class SingleCrystalExperiment(BaseExperiment):
     """Single crystal experiment class with specific attributes."""
 
-    _allowed_attributes = {
+    _class_public_attrs = {
         'linked_crystal',
     }
 

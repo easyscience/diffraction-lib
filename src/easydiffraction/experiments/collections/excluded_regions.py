@@ -12,7 +12,7 @@ from easydiffraction.utils.utils import render_table
 
 
 class ExcludedRegion(CategoryItem):
-    _allowed_attributes = {
+    _class_public_attrs = {
         'start',
         'end',
     }

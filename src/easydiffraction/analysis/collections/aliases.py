@@ -8,7 +8,7 @@ from easydiffraction.core.objects import Descriptor
 
 
 class Alias(CategoryItem):
-    _allowed_attributes = {
+    _class_public_attrs = {
         'label',
         'param_uid',
     }

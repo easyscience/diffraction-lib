@@ -11,7 +11,7 @@ from easydiffraction.core.objects import Parameter
 class AtomSite(CategoryItem):
     """Represents a single atom site within the crystal structure."""
 
-    _allowed_attributes = {
+    _class_public_attrs = {
         'label',
         'type_symbol',
         'fract_x',

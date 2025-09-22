@@ -24,7 +24,7 @@ from easydiffraction.utils.utils import render_table
 
 # TODO: rename to LineSegment
 class Point(CategoryItem):
-    _allowed_attributes = {
+    _class_public_attrs = {
         'x',
         'y',
     }
@@ -65,7 +65,7 @@ class PolynomialTerm(CategoryItem):
     # TODO: make consistency in where to place the following properties:
     #  before or after the __init__ method
 
-    _allowed_attributes = {
+    _class_public_attrs = {
         'chebyshev_order',
         'chebyshev_coef',
     }

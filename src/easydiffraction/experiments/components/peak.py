@@ -64,7 +64,7 @@ class PeakProfileTypeEnum(str, Enum):
 
 # --- Mixins ---
 class ConstantWavelengthBroadeningMixin:
-    _allowed_attributes = {
+    _class_public_attrs = {
         'broad_gauss_u',
         'broad_gauss_v',
         'broad_gauss_w',
@@ -118,7 +118,7 @@ class ConstantWavelengthBroadeningMixin:
 
 
 class TimeOfFlightBroadeningMixin:
-    _allowed_attributes = {
+    _class_public_attrs = {
         'broad_gauss_sigma_0',
         'broad_gauss_sigma_1',
         'broad_gauss_sigma_2',
@@ -199,7 +199,7 @@ class TimeOfFlightBroadeningMixin:
 
 
 class EmpiricalAsymmetryMixin:
-    _allowed_attributes = {
+    _class_public_attrs = {
         'asym_empir_1',
         'asym_empir_2',
         'asym_empir_3',
@@ -242,7 +242,7 @@ class EmpiricalAsymmetryMixin:
 
 
 class FcjAsymmetryMixin:
-    _allowed_attributes = {
+    _class_public_attrs = {
         'asym_fcj_1',
         'asym_fcj_2',
     }
@@ -267,7 +267,7 @@ class FcjAsymmetryMixin:
 
 
 class IkedaCarpenterAsymmetryMixin:
-    _allowed_attributes = {
+    _class_public_attrs = {
         'asym_alpha_0',
         'asym_alpha_1',
     }
@@ -292,7 +292,7 @@ class IkedaCarpenterAsymmetryMixin:
 
 
 class PairDistributionFunctionBroadeningMixin:
-    _allowed_attributes = {
+    _class_public_attrs = {
         'damp_q',
         'broad_q',
         'cutoff_q',

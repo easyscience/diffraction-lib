@@ -10,7 +10,7 @@ from easydiffraction.core.objects import Parameter
 class Cell(CategoryItem):
     """Represents the unit cell parameters of a sample model."""
 
-    _allowed_attributes = {
+    _class_public_attrs = {
         'length_a',
         'length_b',
         'length_c',

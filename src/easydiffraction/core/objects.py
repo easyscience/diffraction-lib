@@ -59,6 +59,10 @@ class GuardedBase(ABC):
         """Subclasses must implement human-readable representation."""
         raise NotImplementedError
 
+    def __repr__(self) -> str:
+        # Reuse __str__; subclasses only override if needed
+        return self.__str__()
+
     def __setattr__(self, key, value):
         """Subclasses must implement controlled attribute setting."""
         raise NotImplementedError
@@ -72,10 +76,6 @@ class DiagnosticsMixin:
     as a base for all core model objects to ensure consistent
     error/warning reporting.
     """
-
-    def __repr__(self) -> str:
-        # Reuse __str__; subclasses only override if needed
-        return self.__str__()
 
     def _readonly_error(self) -> None:
         """Error for attempts to modify a read-only attribute."""
@@ -123,42 +123,57 @@ class DiagnosticsMixin:
 class AttributeAccessGuardMixin:
     """Blocks adding unknown attributes and caches the allowed set.
 
-    The union of ``_allowed_attributes`` across the class MRO and the
+    The union of ``_class_public_attrs`` across the class MRO and the
     instance's current public ``__dict__`` keys defines what can be
     assigned via normal attribute access.
     """
 
-    _allowed_attributes: set[str] = set()
-    _cached_allowed_attributes: set[str] = set()
+    _class_public_attrs: set[str] = set()
+    _merged_public_attrs: set[str] = set()
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         allowed = set()
         for base in cls.__mro__:
-            allowed |= getattr(base, '_allowed_attributes', set())
-        cls._cached_allowed_attributes = allowed
+            allowed |= getattr(base, '_class_public_attrs', set())
+        cls._merged_public_attrs = allowed
 
     def __getattr__(self, key: str) -> Any:
         """Fallback for missing attribute access (emits helpful
         diagnostics).
         """
-        allowed = self._allowed_attribute_names
+        allowed = type(self)._merged_public_attrs
         self._getattr_error(key, allowed)
 
-    @property
-    def _allowed_attribute_names(self) -> set[str]:
-        """Instance-level allowed attribute names."""
-        # TODO: Currently Descriptors have both _allowed_attribute_names
-        #  and _allowed_attributes (str names), as well ass
-        #  _cached_allowed_attributes. Check what is needed.
-        allowed = set(type(self)._cached_allowed_attributes)
-        allowed |= {n for n in self.__dict__ if not n.startswith('_')}
-        return allowed
+
+class AttributeSetGuardMixin:
+    """Provides a reusable guard for __setattr__ implementations.
+
+    - Private attributes (starting with '_') are always allowed.
+    - Public attributes must be in `_merged_public_attrs`.
+    - Delegates error reporting to DiagnosticsMixin._setattr_error.
+    """
+
+    def _guarded_setattr(self, key: str, value: Any) -> bool:
+        """Helper for __setattr__ implementations.
+
+        Returns True if the attribute was handled (set or error), False
+        if the caller should continue with custom logic.
+        """
+        if key.startswith('_'):
+            object.__setattr__(self, key, value)
+            return True
+        allowed = type(self)._merged_public_attrs
+        if key not in allowed:
+            self._setattr_error(key, allowed)
+            return True
+        return False
 
 
 class Descriptor(
     DiagnosticsMixin,
     AttributeAccessGuardMixin,
+    AttributeSetGuardMixin,
     GuardedBase,
 ):
     @staticmethod
@@ -205,7 +220,7 @@ class Descriptor(
     }
 
     # All allowed attributes
-    _allowed_attributes = _readonly_attributes | _writable_attributes
+    _class_public_attrs = _readonly_attributes | _writable_attributes
     # TODO: Update guard mixin to use readonly attributes for allowed
     #  in getter, while writable attributes for allowed in setter.
     #  Think about caching, as it is currently done for all allowed
@@ -290,15 +305,8 @@ class Descriptor(
         """Controlled setting enforcing allowed public attribute
         names.
         """
-        if key.startswith('_'):
-            object.__setattr__(self, key, value)
+        if self._guarded_setattr(key, value):
             return
-
-        allowed = self._allowed_attribute_names
-        if key not in allowed:
-            self._setattr_error(key, allowed)
-            return
-
         object.__setattr__(self, key, value)
 
     # ------------------------------------------------------------------
@@ -559,7 +567,7 @@ class Parameter(Descriptor):
     }
 
     # All allowed attributes
-    _allowed_attributes = _readonly_attributes | _writable_attributes
+    _class_public_attrs = _readonly_attributes | _writable_attributes
 
     # ------------------------------------------------------------------
     # Initialization
@@ -741,6 +749,7 @@ class Parameter(Descriptor):
 class CategoryItem(
     DiagnosticsMixin,
     AttributeAccessGuardMixin,
+    AttributeSetGuardMixin,
     GuardedBase,
 ):
     """Base class for logical model components.
@@ -758,7 +767,7 @@ class CategoryItem(
     # ------------------------------------------------------------------
     # Class configuration
     # ------------------------------------------------------------------
-    _allowed_attributes = {
+    _class_public_attrs = {
         'datablock_name',  # TODO: Needed?
         'category_entry_name',  # TODO: Needed?
     }
@@ -802,33 +811,17 @@ class CategoryItem(
         return s
 
     def __setattr__(self, key: str, value: Any) -> None:
-        """Controlled attribute assignment.
-
-        Logic:
-        * Private names: direct set.
-        * Public names: must be allowed.
-        * New descriptor: inject parent.
-        * Plain value for existing descriptor: update its value.
-        """
-        if key.startswith('_'):
-            object.__setattr__(self, key, value)
+        """Controlled attribute assignment with reusable guard."""
+        if self._guarded_setattr(key, value):
             return
-
-        allowed = self._allowed_attribute_names
-        if key not in allowed:
-            self._setattr_error(key, allowed)
-            return
-
         try:
             attr = object.__getattribute__(self, key)
         except AttributeError:
             attr = self._MISSING_ATTR
-
         # If replacing or assigning a Descriptor instance
         if isinstance(value, Descriptor):
             value._parent = self
             object.__setattr__(self, key, value)
-
         # If updating the value of an existing Descriptor
         elif attr is not self._MISSING_ATTR and isinstance(attr, Descriptor):
             attr.value = value
@@ -909,6 +902,7 @@ class CategoryItem(
 class CategoryCollection(
     DiagnosticsMixin,
     AttributeAccessGuardMixin,
+    AttributeSetGuardMixin,
     GuardedBase,
 ):
     """Handles loop-style category containers (e.g. AtomSites).
@@ -919,7 +913,7 @@ class CategoryCollection(
     # ------------------------------------------------------------------
     # Class configuration
     # ------------------------------------------------------------------
-    _allowed_attributes = {
+    _class_public_attrs = {
         'datablock_name',
     }
 
@@ -945,15 +939,8 @@ class CategoryCollection(
         return iter(self._items.values())
 
     def __setattr__(self, key: str, value: Any) -> None:
-        if key.startswith('_'):
-            object.__setattr__(self, key, value)
+        if self._guarded_setattr(key, value):
             return
-
-        allowed = self._allowed_attribute_names
-        if key not in allowed:
-            self._setattr_error(key, allowed)
-            return
-
         object.__setattr__(self, key, value)
 
     # ------------------------------------------------------------------
@@ -1063,6 +1050,7 @@ class CategoryCollection(
 class Datablock(
     DiagnosticsMixin,
     AttributeAccessGuardMixin,
+    AttributeSetGuardMixin,
     GuardedBase,
 ):
     """Base container for sample model or experiment categories.
@@ -1076,7 +1064,7 @@ class Datablock(
     # ------------------------------------------------------------------
     # Class configuration
     # ------------------------------------------------------------------
-    _allowed_attributes = {
+    _class_public_attrs = {
         'name',
         'datablock_name',  # for compatibility with parent delegation
     }  # extend in subclasses with real children
@@ -1102,18 +1090,10 @@ class Datablock(
 
     def __setattr__(self, key: str, value: Any) -> None:
         """Controlled attribute setting (with datablock propagation)."""
-        if key.startswith('_'):
-            object.__setattr__(self, key, value)
+        if self._guarded_setattr(key, value):
             return
-
-        allowed = self._allowed_attribute_names
-        if key not in allowed:
-            self._setattr_error(key, allowed)
-            return
-
         if isinstance(value, (CategoryItem, CategoryCollection)):
             value._parent = self
-
         object.__setattr__(self, key, value)
 
     # ------------------------------------------------------------------
@@ -1161,6 +1141,7 @@ class Datablock(
 class DatablockCollection(
     DiagnosticsMixin,
     AttributeAccessGuardMixin,
+    AttributeSetGuardMixin,
     GuardedBase,
     MutableMapping,
 ):
@@ -1172,7 +1153,7 @@ class DatablockCollection(
     # ------------------------------------------------------------------
     # Class configuration
     # ------------------------------------------------------------------
-    _allowed_attributes = set()
+    _class_public_attrs = set()
 
     # ------------------------------------------------------------------
     # Initialization
@@ -1190,15 +1171,8 @@ class DatablockCollection(
 
     def __setattr__(self, key: str, value: Any) -> None:
         """Controlled attribute setting (with datablock propagation)."""
-        if key.startswith('_'):
-            object.__setattr__(self, key, value)
+        if self._guarded_setattr(key, value):
             return
-
-        allowed = self._allowed_attribute_names
-        if key not in allowed:
-            self._setattr_error(key, allowed)
-            return
-
         if isinstance(value, (CategoryItem, CategoryCollection)):
             value._parent = self
         object.__setattr__(self, key, value)

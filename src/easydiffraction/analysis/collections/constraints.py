@@ -8,7 +8,7 @@ from easydiffraction.core.objects import Descriptor
 
 
 class Constraint(CategoryItem):
-    _allowed_attributes = {
+    _class_public_attrs = {
         'lhs_alias',
         'rhs_expr',
     }

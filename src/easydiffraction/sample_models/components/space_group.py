@@ -16,7 +16,7 @@ from easydiffraction.core.objects import Descriptor
 class SpaceGroup(CategoryItem):
     """Represents the space group of a sample model."""
 
-    _allowed_attributes = {
+    _class_public_attrs = {
         'name_h_m',
         'it_coordinate_system_code',
     }

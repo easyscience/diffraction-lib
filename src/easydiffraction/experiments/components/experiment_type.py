@@ -68,7 +68,7 @@ class BeamModeEnum(str, Enum):
 
 
 class ExperimentType(CategoryItem):
-    _allowed_attributes = {
+    _class_public_attrs = {
         'sample_form',
         'beam_mode',
         'radiation_probe',

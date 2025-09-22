@@ -9,7 +9,7 @@ from easydiffraction.core.objects import Parameter
 
 
 class LinkedPhase(CategoryItem):
-    _allowed_attributes = {
+    _class_public_attrs = {
         'id',
         'scale',
     }

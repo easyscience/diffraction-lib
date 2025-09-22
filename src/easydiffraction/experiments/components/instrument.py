@@ -10,7 +10,7 @@ from easydiffraction.experiments.components.experiment_type import ScatteringTyp
 
 
 class InstrumentBase(CategoryItem):
-    _allowed_attributes = {
+    _class_public_attrs = {
         'setup_wavelength',
         'calib_twotheta_offset',
     }
@@ -47,7 +47,7 @@ class ConstantWavelengthInstrument(InstrumentBase):
 
 
 class TimeOfFlightInstrument(InstrumentBase):
-    _allowed_attributes = {
+    _class_public_attrs = {
         'setup_twotheta_bank',
         'calib_d_to_tof_offset',
         'calib_d_to_tof_linear',
