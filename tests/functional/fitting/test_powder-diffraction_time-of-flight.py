@@ -17,7 +17,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     model.space_group.name_h_m = 'F d -3 m'
     model.space_group.it_coordinate_system_code = '2'
     model.cell.length_a = 5.4315
-    model.atom_sites.add('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.529)
+    model.atom_sites.add_from_args('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.529)
 
     # Set experiment
     data_file = 'sepd_si.xye'
@@ -39,9 +39,9 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     expt.peak.broad_mix_beta_1 = 0.00946
     expt.peak.asym_alpha_0 = 0.0
     expt.peak.asym_alpha_1 = 0.5971
-    expt.linked_phases.add('si', scale=14.92)
+    expt.linked_phases.add_from_args('si', scale=14.92)
     for x in range(0, 35000, 5000):
-        expt.background.add(x=x, y=200)
+        expt.background.add_from_args(x=x, y=200)
     expt.show_as_cif()
 
     # Create project
@@ -74,12 +74,12 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     model.space_group.name_h_m = 'I 21 3'
     model.space_group.it_coordinate_system_code = '1'
     model.cell.length_a = 10.250256
-    model.atom_sites.add('Ca', 'Ca', 0.4661, 0.0, 0.25, wyckoff_letter='b', b_iso=0.9)
-    model.atom_sites.add('Al', 'Al', 0.25171, 0.25171, 0.25171, wyckoff_letter='a', b_iso=0.66)
-    model.atom_sites.add('Na', 'Na', 0.08481, 0.08481, 0.08481, wyckoff_letter='a', b_iso=1.9)
-    model.atom_sites.add('F1', 'F', 0.1375, 0.3053, 0.1195, wyckoff_letter='c', b_iso=0.9)
-    model.atom_sites.add('F2', 'F', 0.3626, 0.3634, 0.1867, wyckoff_letter='c', b_iso=1.28)
-    model.atom_sites.add('F3', 'F', 0.4612, 0.4612, 0.4612, wyckoff_letter='a', b_iso=0.79)
+    model.atom_sites.add_from_args('Ca', 'Ca', 0.4661, 0.0, 0.25, wyckoff_letter='b', b_iso=0.9)
+    model.atom_sites.add_from_args('Al', 'Al', 0.25171, 0.25171, 0.25171, wyckoff_letter='a', b_iso=0.66)
+    model.atom_sites.add_from_args('Na', 'Na', 0.08481, 0.08481, 0.08481, wyckoff_letter='a', b_iso=1.9)
+    model.atom_sites.add_from_args('F1', 'F', 0.1375, 0.3053, 0.1195, wyckoff_letter='c', b_iso=0.9)
+    model.atom_sites.add_from_args('F2', 'F', 0.3626, 0.3634, 0.1867, wyckoff_letter='c', b_iso=1.28)
+    model.atom_sites.add_from_args('F3', 'F', 0.4612, 0.4612, 0.4612, wyckoff_letter='a', b_iso=0.79)
 
     # Set experiment
     data_file = 'wish_ncaf.xye'
@@ -101,7 +101,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     expt.peak.broad_mix_beta_1 = 0.0099
     expt.peak.asym_alpha_0 = -0.009
     expt.peak.asym_alpha_1 = 0.1085
-    expt.linked_phases.add('ncaf', scale=1.0928)
+    expt.linked_phases.add_from_args('ncaf', scale=1.0928)
     for x, y in [
         (9162, 465),
         (11136, 593),
@@ -132,7 +132,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         (91958, 268),
         (102712, 262),
     ]:
-        expt.background.add(x, y)
+        expt.background.add_from_args(x, y)
 
     # Create project
     project = Project()
