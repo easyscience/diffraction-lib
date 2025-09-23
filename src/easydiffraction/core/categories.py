@@ -9,7 +9,6 @@ from easydiffraction.core.guards import AttributeAccessGuardMixin
 from easydiffraction.core.guards import AttributeSetGuardMixin
 from easydiffraction.core.guards import DiagnosticsMixin
 from easydiffraction.core.guards import GuardedBase
-from easydiffraction.core.parameters import BaseDescriptor
 from easydiffraction.core.parameters import Descriptor
 from easydiffraction.core.parameters import Parameter
 
@@ -87,11 +86,11 @@ class CategoryItem(
         except AttributeError:
             attr = self._MISSING_ATTR
         # If replacing or assigning any descriptor/parameter instance
-        if isinstance(value, BaseDescriptor):
+        if isinstance(value, (Descriptor, Parameter)):
             value._parent = self
             object.__setattr__(self, key, value)
         # If updating the value of an existing descriptor/parameter
-        elif attr is not self._MISSING_ATTR and isinstance(attr, BaseDescriptor):
+        elif attr is not self._MISSING_ATTR and isinstance(attr, (Descriptor, Parameter)):
             attr.value = value
         else:
             object.__setattr__(self, key, value)
@@ -104,7 +103,7 @@ class CategoryItem(
         """Return all descriptor/parameter instances owned by this
         component.
         """
-        return [v for v in self.__dict__.values() if isinstance(v, Descriptor)]
+        return [v for v in self.__dict__.values() if isinstance(v, (Descriptor, Parameter))]
 
     @property
     def datablock_name(self) -> Optional[str]:

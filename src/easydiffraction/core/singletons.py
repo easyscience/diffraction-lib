@@ -48,8 +48,9 @@ class UidMapHandler(BaseSingleton):
         Components or others).
         """
         from easydiffraction.core.parameters import Descriptor
+        from easydiffraction.core.parameters import Parameter
 
-        if not isinstance(parameter, Descriptor):
+        if not isinstance(parameter, (Descriptor, Parameter)):
             raise TypeError(
                 f'Cannot add object of type {type(parameter).__name__} to UID map. '
                 'Only Descriptor or Parameter instances are allowed.'
