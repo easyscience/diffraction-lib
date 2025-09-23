@@ -87,15 +87,15 @@ def test_get_reliability_inputs():
     experiments = Mock()
     calculator = Mock()
 
-    experiments._items = {
-        'experiment1': Mock(
-            datastore=Mock(
-                meas=np.array([10.0, 20.0, 30.0]),
-                meas_su=np.array([1.0, 1.0, 1.0]),
-                excluded=np.array([False, False, False]),
-            )
+    mock_db = Mock(
+        datastore=Mock(
+            meas=np.array([10.0, 20.0, 30.0]),
+            meas_su=np.array([1.0, 1.0, 1.0]),
+            excluded=np.array([False, False, False]),
         )
-    }
+    )
+    experiments._items = {'experiment1': mock_db}
+    experiments._datablocks = {'experiment1': mock_db}
 
     def mock_calculate_pattern(sample_models, experiment, **kwargs):
         experiment.datastore.calc = np.array([9.0, 19.0, 29.0])

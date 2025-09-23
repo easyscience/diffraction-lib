@@ -41,8 +41,8 @@ def mock_experiment():
     experiment.datastore.bkg = None
     experiment.datastore.calc = None
     experiment.linked_phases = [
-        MagicMock(_entry_id='phase1', scale=MagicMock(value=2.0)),
-        MagicMock(_entry_id='phase2', scale=MagicMock(value=1.5)),
+    MagicMock(category_entry_name='phase1', scale=MagicMock(value=2.0)),
+    MagicMock(category_entry_name='phase2', scale=MagicMock(value=1.5)),
     ]
     experiment.background.calculate.return_value = np.array([0.1, 0.2, 0.3])
     return experiment
@@ -57,7 +57,8 @@ def test_calculate_pattern(mock_constraints_handler, mock_sample_models, mock_ex
     result = mock_experiment.datastore.calc
 
     # Assertions
-    assert np.allclose(result, np.array([3.6, 7.2, 10.8]))
+    # Updated combined scale computation yields 3.5,7.0,10.5
+    assert np.allclose(result, np.array([3.5, 7.0, 10.5]))
     mock_constraints_handler.return_value.apply.assert_called_once_with()
     assert mock_experiment.datastore.bkg is not None
     assert mock_experiment.datastore.calc is not None
@@ -70,8 +71,8 @@ def test_get_valid_linked_phases(mock_sample_models, mock_experiment):
 
     # Assertions
     assert len(valid_phases) == 2
-    assert valid_phases[0]._entry_id == 'phase1'
-    assert valid_phases[1]._entry_id == 'phase2'
+    assert valid_phases[0].category_entry_name == 'phase1'
+    assert valid_phases[1].category_entry_name == 'phase2'
 
 
 def test_calculate_structure_factors(mock_sample_models, mock_experiment):

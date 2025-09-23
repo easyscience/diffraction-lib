@@ -26,7 +26,8 @@ def test_space_group_default_initialization():
 
     # Assertions
     assert space_group.name_h_m.value == 'P 1'
-    assert space_group.it_coordinate_system_code.value is None
+    # Default now empty string
+    assert space_group.it_coordinate_system_code.value == ''
 
 
 def test_space_group_properties():

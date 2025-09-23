@@ -32,6 +32,6 @@ def test_cell_properties():
     cell = Cell()
 
     # Assertions
-    assert cell.cif_category_key == 'cell'
     assert cell.category_key == 'cell'
-    assert cell._entry_id is None
+    assert cell.category_key == 'cell'
+    assert cell.category_entry_name is None

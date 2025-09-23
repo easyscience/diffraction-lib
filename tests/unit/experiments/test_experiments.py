@@ -81,6 +81,5 @@ def test_experiments_as_cif():
     mock_experiment.as_cif.return_value = 'mock_cif_content'
 
     experiments.add(experiment=mock_experiment)
-    cif_output = experiments.as_cif()
-
+    cif_output = experiments.as_cif
     assert 'mock_cif_content' in cif_output

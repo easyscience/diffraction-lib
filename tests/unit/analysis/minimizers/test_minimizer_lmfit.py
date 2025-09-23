@@ -52,14 +52,14 @@ def test_prepare_solver_args(lmfit_minimizer, mock_parameters):
 
     # Assertions
     assert isinstance(solver_args['engine_parameters'], lmfit.Parameters)
-    assert 'None__param1' in solver_args['engine_parameters']
-    assert 'None__param2' in solver_args['engine_parameters']
-    assert solver_args['engine_parameters']['None__param1'].value == 1.0
-    assert solver_args['engine_parameters']['None__param1'].min == 0.0
-    assert solver_args['engine_parameters']['None__param1'].max == 2.0
-    assert solver_args['engine_parameters']['None__param1'].vary is True
-    assert solver_args['engine_parameters']['None__param2'].value == 2.0
-    assert solver_args['engine_parameters']['None__param2'].vary is False
+    assert 'param1' in solver_args['engine_parameters']
+    assert 'param2' in solver_args['engine_parameters']
+    assert solver_args['engine_parameters']['param1'].value == 1.0
+    assert solver_args['engine_parameters']['param1'].min == 0.0
+    assert solver_args['engine_parameters']['param1'].max == 2.0
+    assert solver_args['engine_parameters']['param1'].vary is True
+    assert solver_args['engine_parameters']['param2'].value == 2.0
+    assert solver_args['engine_parameters']['param2'].vary is False
 
 
 @patch('easydiffraction.analysis.minimizers.minimizer_lmfit.lmfit.minimize')
@@ -86,8 +86,8 @@ def test_run_solver(mock_minimize, lmfit_minimizer, mock_objective_function, moc
 def test_sync_result_to_parameters(lmfit_minimizer, mock_parameters):
     raw_result = MagicMock(
         params={
-            'None__param1': MagicMock(value=1.5, stderr=0.1),
-            'None__param2': MagicMock(value=2.5, stderr=0.2),
+                'param1': MagicMock(value=1.5, stderr=0.1),
+                'param2': MagicMock(value=2.5, stderr=0.2),
         }
     )
 
@@ -112,8 +112,8 @@ def test_check_success(lmfit_minimizer):
 def test_fit(mock_minimize, lmfit_minimizer, mock_parameters, mock_objective_function):
     mock_minimize.return_value = MagicMock(
         params={
-            'None__param1': MagicMock(value=1.5, stderr=0.1),
-            'None__param2': MagicMock(value=2.5, stderr=0.2),
+            'param1': MagicMock(value=1.5, stderr=0.1),
+            'param2': MagicMock(value=2.5, stderr=0.2),
         },
         success=True,
     )

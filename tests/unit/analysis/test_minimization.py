@@ -24,17 +24,17 @@ def mock_experiments():
         MagicMock(name='param3', value=3.0, start_value=None, min=2.0, max=4.0, free=True),
     ]
     experiments.ids = ['experiment1']
-    experiments._items = {
-        'experiment1': MagicMock(
-            datastore=MagicMock(
-                pattern=MagicMock(
-                    meas=np.array([10.0, 20.0, 30.0]),
-                    meas_su=np.array([1.0, 1.0, 1.0]),
-                    excluded=np.array([False, False, False]),
-                )
+    mock_db = MagicMock(
+        datastore=MagicMock(
+            pattern=MagicMock(
+                meas=np.array([10.0, 20.0, 30.0]),
+                meas_su=np.array([1.0, 1.0, 1.0]),
+                excluded=np.array([False, False, False]),
             )
         )
-    }
+    )
+    experiments._items = {'experiment1': mock_db}
+    experiments._datablocks = {'experiment1': mock_db}
     return experiments
 
 

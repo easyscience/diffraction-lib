@@ -14,24 +14,25 @@ def test_point_initialization():
     point = Point(x=1.0, y=2.0)
     assert point.x.value == 1.0
     assert point.y.value == 2.0
-    assert point.cif_category_key == 'pd_background'
+    # Updated API: no separate cif_category_key / _entry_id; only category_key & entry name
     assert point.category_key == 'background'
-    assert point._entry_id == '1.0'
+    # Entry name now retains original numeric type
+    assert point.category_entry_name == 1.0
 
 
 def test_polynomial_term_initialization():
     term = PolynomialTerm(order=2, coef=3.0)
     assert term.order.value == 2
     assert term.coef.value == 3.0
-    assert term.cif_category_key == 'pd_background'
     assert term.category_key == 'background'
-    assert term._entry_id == '2'
+    assert term.category_entry_name == 2
 
 
 def test_line_segment_background_add_and_calculate():
     background = LineSegmentBackground()
-    background.add(1.0, 2.0)
-    background.add(3.0, 4.0)
+    # New API: must add Point instances (legacy vararg numeric form removed)
+    background.add(Point(x=1.0, y=2.0))
+    background.add(Point(x=3.0, y=4.0))
 
     x_data = np.array([1.0, 2.0, 3.0])
     y_data = background.calculate(x_data)
@@ -51,8 +52,8 @@ def test_line_segment_background_calculate_no_points():
 
 def test_line_segment_background_show(capsys):
     background = LineSegmentBackground()
-    background.add(1.0, 2.0)
-    background.add(3.0, 4.0)
+    background.add(Point(x=1.0, y=2.0))
+    background.add(Point(x=3.0, y=4.0))
 
     background.show()
     captured = capsys.readouterr()

@@ -33,9 +33,9 @@ def test_atom_site_properties():
     atom_site = AtomSite(label='O1', type_symbol='O', fract_x=0.1, fract_y=0.2, fract_z=0.3)
 
     # Assertions
-    assert atom_site.cif_category_key == 'atom_site'
+    # Category key is plural collection name
     assert atom_site.category_key == 'atom_sites'
-    assert atom_site._entry_id == 'O1'
+    assert atom_site.category_entry_name == 'O1'
 
 
 @pytest.fixture
@@ -81,6 +81,7 @@ def test_atom_sites_add_multiple(atom_sites_collection):
     assert len(atom_sites_collection._items) == 2
 
 
-def test_atom_sites_type(atom_sites_collection):
-    # Assertions
-    assert atom_sites_collection._type == 'category'
+## Removed obsolete test_atom_sites_type (internal _type attribute deprecated)
+def test_atom_sites_len(atom_sites_collection):
+    # Use internal items dict for size as __len__ not implemented
+    assert len(atom_sites_collection._items) == 0

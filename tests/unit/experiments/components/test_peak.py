@@ -86,9 +86,10 @@ def test_ikeda_carpenter_asymmetry_mixin():
 # --- Tests for Base and Derived Peak Classes ---
 def test_peak_base_properties():
     peak = PeakBase()
-    assert peak.cif_category_key == 'peak'
     assert peak.category_key == 'peak'
-    assert peak._entry_id is None
+    assert peak.category_key == 'peak'
+    # _entry_id removed; rely on category_entry_name if needed
+    assert peak.category_entry_name is None
 
 
 def test_constant_wavelength_pseudo_voigt_initialization():

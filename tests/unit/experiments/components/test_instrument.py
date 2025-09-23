@@ -10,7 +10,7 @@ from easydiffraction.experiments.components.instrument import TimeOfFlightInstru
 def test_instrument_base_properties():
     instrument = InstrumentBase()
     assert instrument.category_key == 'instrument'
-    assert instrument._entry_id is None
+    assert instrument.category_entry_name is None
 
 
 def test_constant_wavelength_instrument_initialization():
