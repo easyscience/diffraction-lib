@@ -1,3 +1,47 @@
+"""Parameter & descriptor abstraction layer.
+
+This module defines a lightweight three-layer hierarchy for
+*descriptors* and *parameters* used across the library. It
+intentionally separates **metadata** concerns (name, units, CIF tags)
+from **value semantics** (validation, range checking, fitting flags)
+to keep mutation and validation logic centralised and observable by
+the guard / diagnostics system.
+
+Key concepts
+------------
+Descriptor (``BaseDescriptor`` / ``GenericDescriptor`` / ``Descriptor``)
+    Generic piece of data with metadata (name, units, default
+    value, allowed values) but without numeric fitting semantics.
+
+Parameter (``BaseParameter`` / ``GenericParameter`` / ``Parameter``)
+    Extension of a descriptor adding physical & fit bounds,
+    uncertainty, and fitting control flags (``free`` /
+    ``constrained``).
+
+Design notes
+------------
+* A small *3-layer pattern* is used for both descriptors and
+    parameters:
+    - ``Base*``: abstract metadata & attribute guards (read‑only
+        surfaces).
+    - ``Generic*``: adds runtime value storage & generic logic.
+    - Concrete (``Descriptor`` / ``Parameter``): adds CIF integration.
+* Attribute setting is intercepted by ``AttributeSetGuardMixin``; test
+    code or user code may assign raw Python values to attributes that
+    are descriptor objects higher up the containment graph. Those
+    guards forward the assignment to the internal ``value`` field while
+    producing diagnostic warnings (e.g., for type coercion or range
+    violations).
+* No heavy external dependencies: only ``numpy`` (for ``np.inf`` /
+    ``np.nan``) and minimal utility parsing via ``str_to_ufloat``.
+* The UID generation is deliberately simple & random (sufficient
+    session level uniqueness). Stable / persisted UID guarantees are
+    handled elsewhere if required.
+
+The intention of the documentation additions in this patch is strictly
+clarificatory; no runtime behaviour is modified.
+"""
+
 from __future__ import annotations
 
 import secrets
@@ -30,8 +74,16 @@ class BaseDescriptor(
     GuardedBase,
     ABC,
 ):
-    """Base class for all descriptors, readonly attribute logic and
-    metadata.
+    """Abstract root for descriptor-like objects.
+
+    Provides:
+        * Guarded attribute surface (read-only enforcement for declared
+            fields).
+        * Common metadata fields (``name``, ``units``, ``description``,
+            etc.).
+        * Lazy providers for ``default_value`` / ``allowed_values`` that
+            permit static literals and callables (late binding / dynamic
+            defaults).
     """
 
     # _writable_attributes = set()
@@ -63,6 +115,28 @@ class BaseDescriptor(
         default_value: Any = None,
         allowed_values: Optional[List[T]] = None,
     ) -> None:
+        """Initialise the base descriptor.
+
+        Parameters
+        ----------
+        name:
+            Canonical identifier (last token in fully-qualified name).
+        value_type:
+            Expected Python type for stored values (used for
+            validation).
+        pretty_name:
+            Optional human readable display label.
+        units:
+            Physical / semantic units string or ``None``.
+        description:
+            Free-form explanatory text.
+        editable:
+            Whether UI / higher layers may edit the value.
+        default_value:
+            Either a literal or a callable returning the default.
+        allowed_values:
+            Optional finite list restricting admissible values.
+        """
         if type(self) is BaseDescriptor:
             raise TypeError(
                 'BaseDescriptor is an abstract class and cannot be instantiated directly.'
@@ -164,8 +238,11 @@ class GenericDescriptor(BaseDescriptor):
 
     @staticmethod
     def _generate_uid() -> str:
-        """Generate stable random uid (sufficient collision resistance
-        for session).
+        """Generate simple pseudo-random UID.
+
+        Collisions are statistically negligible for typical interactive
+        sessions (16 lower-case letters => 26**16 space). Not intended
+        for persistent cross-session identity guarantees.
         """
         length = 16
         uid = ''.join(secrets.choice(string.ascii_lowercase) for _ in range(length))
@@ -198,7 +275,9 @@ class GenericDescriptor(BaseDescriptor):
         UidMapHandler.get().add_to_uid_map(self)
 
     def __str__(self) -> str:
-        """Return human-readable representation."""
+        """Return concise human-readable representation for logging /
+        debug.
+        """
         value_str = f'{self.__class__.__name__}: {self.full_name} = "{self.value}"'
         if self.units:
             value_str += f' {self.units}'
@@ -279,7 +358,12 @@ class GenericDescriptor(BaseDescriptor):
 
 
 class Descriptor(GenericDescriptor):
-    """Descriptor with CIF attributes and from_cif logic."""
+    """Concrete descriptor with CIF import support.
+
+    Adds ``full_cif_names``: ordered preference list of possible CIF
+    tags from which a value may be sourced. ``from_cif`` walks this
+    list until a tag with at least one value is found.
+    """
 
     _readonly_attributes = GenericDescriptor._readonly_attributes | {
         'full_cif_names',
@@ -333,38 +417,37 @@ class Descriptor(GenericDescriptor):
         """Populate the descriptor value from a CIF datablock.
 
         Strategy:
-        * Iterate tags; take first with at least one value.
-        * If none found use ``default_value``.
-        * Floats: parse via ``str_to_ufloat``; store sigma.
-        * Strings: strip a single matching quote pair.
+        * Iterate candidate tags; take first producing one or more
+          values.
+        * Fallback to ``default_value`` if none yield results.
+        * For float descriptors: parse `(value, sigma)` via
+          ``str_to_ufloat``.
+        * For string descriptors: strip a single symmetrical quote
+          pair.
 
-        Args:
-            block: CIF-like object with ``find_values(tag)``.
-            idx: Value index (default: first).
+        Parameters
+        ----------
+        block:
+            CIF-like object exposing ``find_values(tag)``.
+        idx:
+            Extraction index for loop categories (ignored for single
+            value).
         """
-        # Try to find the value(s) from the CIF block iterating over
-        # the possible cif names in order of preference.
         found_values: list[Any] = []
         for tag in self.full_cif_names:
             candidate = list(block.find_values(tag))
             if candidate:
                 found_values = candidate
                 break
-        # Return default if no value(s) found in CIF
         if not found_values:
             self.value = self.default_value
             return
-        # If found, extract the requested index for loop categories.
-        # Use first value in case of single item category
         raw = found_values[idx]
-        # Parse value and uncertainty in case of expected float type
         if self.value_type is float:
             u = str_to_ufloat(raw)
             self.value = u.n
             if hasattr(self, 'uncertainty'):
                 self.uncertainty = u.s  # type: ignore[attr-defined]
-        # Parse string value, stripping a single matching quote pair if
-        # present
         elif self.value_type is str:
             if (len(raw) >= 2) and (raw[0] == raw[-1]) and (raw[0] in {"'", '"'}):
                 self.value = raw[1:-1]
@@ -402,6 +485,17 @@ class BaseParameter(BaseDescriptor, ABC):
         fit_max: Optional[float] = np.inf,
         constrained: bool = False,
     ) -> None:
+        """Initialise common parameter metadata & bounds.
+
+        Physical vs fit bounds
+        ----------------------
+        ``physical_*`` constraints model the admissible region
+        defined by physics / domain knowledge. ``fit_*`` may be
+        narrower (e.g., to stabilise optimisers) but still lie inside
+        the physical bounds. ``constrained`` toggles whether an
+        external symbolic expression controls this parameter (handled
+        at higher layers; here it is only stored).
+        """
         if type(self) is BaseParameter:
             raise TypeError(
                 'BaseParameter is an abstract class and cannot be instantiated directly.'
@@ -464,8 +558,13 @@ class BaseParameter(BaseDescriptor, ABC):
 
 
 class GenericParameter(GenericDescriptor, BaseParameter):
-    """Parameter with value logic, numeric validation, and mutable
-    attributes.
+    """Concrete numeric parameter with validation and uncertainty.
+
+    Adds runtime state used by minimisation:
+    * ``uncertainty``: one-sigma estimate (``np.nan`` if unknown).
+    * ``free``: candidate for refinement when True.
+        * ``start_value``: snapshot of the initial value before a fit
+            begins.
     """
 
     _writable_attributes = GenericDescriptor._writable_attributes | {
@@ -519,7 +618,9 @@ class GenericParameter(GenericDescriptor, BaseParameter):
         self.start_value = None
 
     def __str__(self) -> str:
-        """Return human-readable representation."""
+        """Return concise human-readable representation for logging /
+        debug.
+        """
         value_str = f'{self.__class__.__name__}: {self.full_name} = "{self.value}"'
         if not np.isnan(self.uncertainty) and self.uncertainty != 0.0:
             value_str += f' ± {self.uncertainty}'
@@ -571,7 +672,7 @@ class GenericParameter(GenericDescriptor, BaseParameter):
 
 
 class Parameter(GenericParameter):
-    """Parameter with CIF attributes and from_cif logic."""
+    """Concrete floating point parameter with CIF import support."""
 
     _readonly_attributes = GenericParameter._readonly_attributes | {
         'full_cif_names',

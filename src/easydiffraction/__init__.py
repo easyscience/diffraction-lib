@@ -3,6 +3,9 @@
 
 from typing import TYPE_CHECKING
 
+from easydiffraction.utils.logging import Logger
+from easydiffraction.utils.logging import log
+
 # This is needed for static type checkers like mypy and IDEs to
 # recognize the imports without actually importing them at runtime,
 # which helps avoid circular dependencies and reduces initial load time.
@@ -29,13 +32,13 @@ if TYPE_CHECKING:
     from easydiffraction.utils.formatting import chapter
     from easydiffraction.utils.formatting import paragraph
     from easydiffraction.utils.formatting import section
-    from easydiffraction.utils.logging import Logger
-    from easydiffraction.utils.logging import log
     from easydiffraction.utils.utils import download_from_repository
     from easydiffraction.utils.utils import fetch_tutorials
     from easydiffraction.utils.utils import get_value_from_xye_header
     from easydiffraction.utils.utils import list_tutorials
     from easydiffraction.utils.utils import show_version
+
+Logger.configure(mode=Logger.Mode.VERBOSE, level=Logger.Level.DEBUG)
 
 
 # Lazy loading of submodules and classes
@@ -106,17 +109,6 @@ def __getattr__(name):
         from easydiffraction.utils.utils import show_version
 
         return show_version
-    elif name == 'Logger':
-        from easydiffraction.utils.logging import Logger
-
-        # Auto-configure once on import:
-        # PRETTY in notebooks (rich installed) else RAISE; level WARNING
-        Logger.configure()
-        return Logger
-    elif name == 'log':
-        from easydiffraction.utils.logging import log
-
-        return log
     raise AttributeError(f"module 'easydiffraction' has no attribute {name}")
 
 
