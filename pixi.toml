@@ -126,7 +126,8 @@ check = { depends-on = [
 
 ### 🛠️ Fixes
 py-lint-fix = 'pixi run py-lint-check --fix'
-py-format-fix = "python -m ruff format $(git diff --cached --name-only -- '*.py')"
+#py-format-fix = "python -m ruff format $(git diff --cached --name-only -- '*.py')"
+py-format-fix = "python -m ruff format"
 nonpy-format-fix = 'pixi run nonpy-format-check --write'
 nonpy-format-fix-modified = "pixi run nonpy-format-check-modified --write"
 notebook-format-fix = 'pixi run notebook-format-check --fix'
