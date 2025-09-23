@@ -592,7 +592,7 @@ class CifMixin:
 
     @property
     def cif_uid(self):
-        return self.name
+        return self.full_name
 
     @cif_uid.setter
     def cif_uid(self, _):
