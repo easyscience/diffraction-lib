@@ -1,7 +1,7 @@
-from easydiffraction.core.objects import CategoryItem
-from easydiffraction.core.objects import Datablock
-from easydiffraction.core.objects import Descriptor
-from easydiffraction.core.objects import Parameter
+from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.datablocks import Datablock
+from easydiffraction.core.parameters import Descriptor, Parameter
+
 
 # filepath: src/easydiffraction/core/test_objects.py
 

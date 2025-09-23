@@ -7,7 +7,7 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction.core.objects import Datablock
+from easydiffraction.core.datablocks import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
 from easydiffraction.experiments.collections.background import BackgroundTypeEnum
 from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions

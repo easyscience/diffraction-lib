@@ -1,6 +1,6 @@
 import pytest
 
-from easydiffraction.core.objects import Parameter
+from easydiffraction.core.parameters import Parameter
 from easydiffraction.experiments.components.instrument import ConstantWavelengthInstrument
 from easydiffraction.experiments.components.instrument import InstrumentBase
 from easydiffraction.experiments.components.instrument import InstrumentFactory

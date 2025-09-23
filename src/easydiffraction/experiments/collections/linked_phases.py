@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-from easydiffraction.core.objects import CategoryCollection
-from easydiffraction.core.objects import CategoryItem
-from easydiffraction.core.objects import Descriptor
-from easydiffraction.core.objects import Parameter
+from easydiffraction.core.categories import CategoryCollection
+from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.parameters import Descriptor
+from easydiffraction.core.parameters import Parameter
 
 
 class LinkedPhase(CategoryItem):

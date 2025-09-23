@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-from easydiffraction.core.objects import CategoryCollection
-from easydiffraction.core.objects import CategoryItem
-from easydiffraction.core.objects import Descriptor
+from easydiffraction.core.categories import CategoryCollection
+from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.parameters import Descriptor
 
 
 class Alias(CategoryItem):

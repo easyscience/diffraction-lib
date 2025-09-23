@@ -3,8 +3,8 @@
 
 from enum import Enum
 
-from easydiffraction.core.objects import CategoryItem
-from easydiffraction.core.objects import Descriptor
+from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.parameters import Descriptor
 
 
 class SampleFormEnum(str, Enum):

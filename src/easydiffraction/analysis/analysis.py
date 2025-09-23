@@ -13,8 +13,8 @@ from easydiffraction.analysis.collections.constraints import Constraints
 from easydiffraction.analysis.collections.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.minimization import DiffractionMinimizer
 from easydiffraction.analysis.minimizers.minimizer_factory import MinimizerFactory
-from easydiffraction.core.objects import Descriptor
-from easydiffraction.core.objects import Parameter
+from easydiffraction.core.parameters import Descriptor
+from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.singletons import ConstraintsHandler
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.utils.formatting import paragraph

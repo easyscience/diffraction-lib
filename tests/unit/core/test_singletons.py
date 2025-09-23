@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from easydiffraction.core.objects import Parameter
+from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.singletons import BaseSingleton
 from easydiffraction.core.singletons import ConstraintsHandler
 from easydiffraction.core.singletons import UidMapHandler

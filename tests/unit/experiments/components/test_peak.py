@@ -1,6 +1,6 @@
 import pytest
 
-from easydiffraction.core.objects import Parameter
+from easydiffraction.core.parameters import Parameter
 from easydiffraction.experiments.components.peak import ConstantWavelengthBroadeningMixin
 from easydiffraction.experiments.components.peak import ConstantWavelengthPseudoVoigt
 from easydiffraction.experiments.components.peak import ConstantWavelengthSplitPseudoVoigt

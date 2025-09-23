@@ -3,7 +3,7 @@
 
 from typing import List
 
-from easydiffraction.core.objects import DatablockCollection
+from easydiffraction.core.datablocks import DatablockCollection
 from easydiffraction.sample_models.sample_model import BaseSampleModel
 from easydiffraction.sample_models.sample_model import SampleModel
 from easydiffraction.utils.decorators import enforce_type

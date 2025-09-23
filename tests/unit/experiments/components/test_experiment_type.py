@@ -1,4 +1,4 @@
-from easydiffraction.core.objects import Descriptor
+from easydiffraction.core.parameters import Descriptor
 from easydiffraction.experiments.components.experiment_type import ExperimentType
 
 

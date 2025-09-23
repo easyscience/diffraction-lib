@@ -3,8 +3,8 @@
 
 from typing import Any
 
-from easydiffraction.core.objects import CategoryItem
-from easydiffraction.core.objects import Parameter
+from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.parameters import Parameter
 
 
 class Cell(CategoryItem):

@@ -3,7 +3,7 @@
 
 from typing import List
 
-from easydiffraction.core.objects import DatablockCollection
+from easydiffraction.core.datablocks import DatablockCollection
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
 from easydiffraction.experiments.components.experiment_type import SampleFormEnum

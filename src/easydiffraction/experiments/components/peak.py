@@ -3,8 +3,8 @@
 from enum import Enum
 from typing import Optional
 
-from easydiffraction.core.objects import CategoryItem
-from easydiffraction.core.objects import Parameter
+from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.parameters import Parameter
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 

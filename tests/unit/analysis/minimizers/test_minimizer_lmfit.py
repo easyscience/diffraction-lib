@@ -5,7 +5,7 @@ import lmfit
 import pytest
 
 from easydiffraction.analysis.minimizers.minimizer_lmfit import LmfitMinimizer
-from easydiffraction.core.objects import Parameter
+from easydiffraction.core.parameters import Parameter
 
 
 @pytest.fixture

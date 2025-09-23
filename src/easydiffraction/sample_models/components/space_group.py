@@ -9,8 +9,8 @@ from cryspy.A_functions_base.function_2_space_group import (
 )
 from cryspy.A_functions_base.function_2_space_group import get_it_number_by_name_hm_short
 
-from easydiffraction.core.objects import CategoryItem
-from easydiffraction.core.objects import Descriptor
+from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.parameters import Descriptor
 
 
 class SpaceGroup(CategoryItem):

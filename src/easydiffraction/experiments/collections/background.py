@@ -13,10 +13,10 @@ import numpy as np
 from numpy.polynomial.chebyshev import chebval
 from scipy.interpolate import interp1d
 
-from easydiffraction.core.objects import CategoryCollection
-from easydiffraction.core.objects import CategoryItem
-from easydiffraction.core.objects import Descriptor
-from easydiffraction.core.objects import Parameter
+from easydiffraction.core.categories import CategoryCollection
+from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.parameters import Descriptor
+from easydiffraction.core.parameters import Parameter
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_table
@@ -62,44 +62,53 @@ class Point(CategoryItem):
 
 
 class PolynomialTerm(CategoryItem):
-    # TODO: make consistency in where to place the following properties:
-    #  before or after the __init__ method
+    """Chebyshev polynomial term.
+
+    New public attribute names: ``order`` and ``coef`` replacing the
+    longer ``chebyshev_order`` / ``chebyshev_coef``. Backward-compatible
+    aliases are kept so existing serialized data / external code does
+    not break immediately. Tests should migrate to the short names.
+    """
 
     _class_public_attrs = {
+        # New canonical names
+        'order',
+        'coef',
+        # Backward compatibility (aliases)
         'chebyshev_order',
         'chebyshev_coef',
     }
 
     @property
-    def category_key(self) -> str:
+    def category_key(self) -> str:  # noqa: D401
         return 'background'
 
-    def __init__(
-        self,
-        order: int,
-        coef: float,
-    ) -> None:
+    def __init__(self, order: int, coef: float) -> None:
         super().__init__()
 
-        self.chebyshev_order = Descriptor(
+        # Canonical descriptors
+        self.order = Descriptor(
             value=order,
-            name='chebyshev_order',
-            value_type=float,
+            name='order',
+            value_type=int,
             full_cif_names=['_pd_background.Chebyshev_order'],
             default_value=order,
-            description='The value of an order used in a Chebyshev polynomial '
-            'equation representing the background in a calculated diffractogram',
+            description='Order used in a Chebyshev polynomial background term',
         )
-        self.chebyshev_coef = Parameter(
+        self.coef = Parameter(
             value=coef,
-            name='chebyshev_coef',
+            name='coef',
             full_cif_names=['_pd_background.Chebyshev_coef'],
             default_value=coef,
-            description='The value of a coefficient used in a Chebyshev polynomial '
-            'equation representing the background in a calculated diffractogram',
+            description='Coefficient used in a Chebyshev polynomial background term',
         )
-        # self._category_entry_attr_name = str(order)
-        self._category_entry_attr_name = self.chebyshev_order.name
+
+        # Backward-compatible aliases (point to same objects)
+        self.chebyshev_order = self.order
+        self.chebyshev_coef = self.coef
+
+        # Entry attribute used as the identifier within the collection
+        self._category_entry_attr_name = self.order.name
 
 
 class BackgroundBase(CategoryCollection):

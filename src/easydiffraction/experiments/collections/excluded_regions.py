@@ -3,10 +3,10 @@
 
 from typing import List
 
-from easydiffraction.core.objects import CategoryCollection
-from easydiffraction.core.objects import CategoryItem
-from easydiffraction.core.objects import Descriptor
-from easydiffraction.core.objects import Parameter
+from easydiffraction.core.categories import CategoryCollection
+from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.parameters import Descriptor
+from easydiffraction.core.parameters import Parameter
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_table
 

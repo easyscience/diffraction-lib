@@ -12,7 +12,7 @@ import numpy as np
 from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
 from easydiffraction.analysis.fitting.metrics import get_reliability_inputs
 from easydiffraction.analysis.minimizers.minimizer_factory import MinimizerFactory
-from easydiffraction.core.objects import Parameter
+from easydiffraction.core.parameters import Parameter
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModels
 
