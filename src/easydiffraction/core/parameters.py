@@ -64,7 +64,7 @@ from easydiffraction.utils.utils import str_to_ufloat
 T = TypeVar('T')
 
 
-# ------------------ 3-Layer Descriptor Hierarchy ---------------------
+# Technique-independent base classes for descriptors & parameters
 
 
 class BaseDescriptor(
@@ -357,107 +357,6 @@ class GenericDescriptor(BaseDescriptor):
         self._readonly_error()
 
 
-class Descriptor(GenericDescriptor):
-    """Concrete descriptor with CIF import support.
-
-    Adds ``full_cif_names``: ordered preference list of possible CIF
-    tags from which a value may be sourced. ``from_cif`` walks this
-    list until a tag with at least one value is found.
-    """
-
-    _readonly_attributes = GenericDescriptor._readonly_attributes | {
-        'full_cif_names',
-        'cif_uid',
-    }
-    _class_public_attrs = _readonly_attributes | GenericDescriptor._writable_attributes
-
-    def __init__(
-        self,
-        value: Any,
-        name: str,
-        value_type: type,
-        full_cif_names: list[str],
-        default_value: Any,
-        pretty_name: Optional[str] = None,
-        units: Optional[str] = None,
-        description: Optional[str] = None,
-        editable: bool = True,
-        allowed_values: Optional[List[T]] = None,
-    ) -> None:
-        super().__init__(
-            value=value,
-            name=name,
-            value_type=value_type,
-            default_value=default_value,
-            pretty_name=pretty_name,
-            units=units,
-            description=description,
-            editable=editable,
-            allowed_values=allowed_values,
-        )
-        self._full_cif_names = full_cif_names
-
-    @property
-    def full_cif_names(self):
-        return self._full_cif_names
-
-    @full_cif_names.setter
-    def full_cif_names(self, _):
-        self._readonly_error()
-
-    @property
-    def cif_uid(self):
-        return self.name  # TODO: Modify to return CIF-specific names?!
-
-    @cif_uid.setter
-    def cif_uid(self, _):
-        self._readonly_error()
-
-    def from_cif(self, block: Any, idx: int = 0) -> None:
-        """Populate the descriptor value from a CIF datablock.
-
-        Strategy:
-        * Iterate candidate tags; take first producing one or more
-          values.
-        * Fallback to ``default_value`` if none yield results.
-        * For float descriptors: parse `(value, sigma)` via
-          ``str_to_ufloat``.
-        * For string descriptors: strip a single symmetrical quote
-          pair.
-
-        Parameters
-        ----------
-        block:
-            CIF-like object exposing ``find_values(tag)``.
-        idx:
-            Extraction index for loop categories (ignored for single
-            value).
-        """
-        found_values: list[Any] = []
-        for tag in self.full_cif_names:
-            candidate = list(block.find_values(tag))
-            if candidate:
-                found_values = candidate
-                break
-        if not found_values:
-            self.value = self.default_value
-            return
-        raw = found_values[idx]
-        if self.value_type is float:
-            u = str_to_ufloat(raw)
-            self.value = u.n
-            if hasattr(self, 'uncertainty'):
-                self.uncertainty = u.s  # type: ignore[attr-defined]
-        elif self.value_type is str:
-            if (len(raw) >= 2) and (raw[0] == raw[-1]) and (raw[0] in {"'", '"'}):
-                self.value = raw[1:-1]
-            else:
-                self.value = raw
-
-
-# ------------------ 3-Layer Parameter Hierarchy ---------------------
-
-
 class BaseParameter(BaseDescriptor, ABC):
     # _writable_attributes = set()
     _readonly_attributes = BaseDescriptor._readonly_attributes | {
@@ -671,12 +570,107 @@ class GenericParameter(GenericDescriptor, BaseParameter):
         self._value = new_value
 
 
-class Parameter(GenericParameter):
+# Technique-specific mixin & concrete classes
+
+
+class CifMixin:
+    """Mixin providing CIF-related attributes and methods."""
+
+    _readonly_attributes = {'full_cif_names', 'cif_uid'}
+
+    def __init__(self, full_cif_names: list[str], *args, **kwargs):
+        self._full_cif_names = full_cif_names
+        super().__init__(*args, **kwargs)
+
+    @property
+    def full_cif_names(self):
+        return self._full_cif_names
+
+    @full_cif_names.setter
+    def full_cif_names(self, _):
+        self._readonly_error()
+
+    @property
+    def cif_uid(self):
+        return self.name
+
+    @cif_uid.setter
+    def cif_uid(self, _):
+        self._readonly_error()
+
+    def from_cif(self, block: Any, idx: int = 0) -> None:
+        """Populate the value from a CIF datablock.
+
+        Strategy:
+        * Iterate candidate tags; take first producing one or more
+          values.
+        * Fallback to ``default_value`` if none yield results.
+        * For float descriptors: parse `(value, sigma)` via
+          ``str_to_ufloat``.
+        * For string descriptors: strip a single symmetrical quote pair.
+        """
+        found_values: list[Any] = []
+        for tag in self.full_cif_names:
+            candidate = list(block.find_values(tag))
+            if candidate:
+                found_values = candidate
+                break
+        if not found_values:
+            self.value = self.default_value
+            return
+        raw = found_values[idx]
+        if self.value_type is float:
+            u = str_to_ufloat(raw)
+            self.value = u.n
+            if hasattr(self, 'uncertainty'):
+                self.uncertainty = u.s  # type: ignore[attr-defined]
+        elif self.value_type is str:
+            if (len(raw) >= 2) and (raw[0] == raw[-1]) and (raw[0] in {"'", '"'}):
+                self.value = raw[1:-1]
+            else:
+                self.value = raw
+        else:
+            self.value = raw
+
+
+class Descriptor(CifMixin, GenericDescriptor):
+    """Concrete descriptor with CIF import support."""
+
+    _readonly_attributes = GenericDescriptor._readonly_attributes | CifMixin._readonly_attributes
+    _class_public_attrs = _readonly_attributes | GenericDescriptor._writable_attributes
+
+    def __init__(
+        self,
+        value: Any,
+        name: str,
+        value_type: type,
+        full_cif_names: list[str],
+        default_value: Any,
+        pretty_name: Optional[str] = None,
+        units: Optional[str] = None,
+        description: Optional[str] = None,
+        editable: bool = True,
+        allowed_values: Optional[List[T]] = None,
+    ) -> None:
+        CifMixin.__init__(self, full_cif_names=full_cif_names)
+        GenericDescriptor.__init__(
+            self,
+            value=value,
+            name=name,
+            value_type=value_type,
+            default_value=default_value,
+            pretty_name=pretty_name,
+            units=units,
+            description=description,
+            editable=editable,
+            allowed_values=allowed_values,
+        )
+
+
+class Parameter(CifMixin, GenericParameter):
     """Concrete floating point parameter with CIF import support."""
 
-    _readonly_attributes = GenericParameter._readonly_attributes | {
-        'full_cif_names',
-    }
+    _readonly_attributes = GenericParameter._readonly_attributes | CifMixin._readonly_attributes
     _class_public_attrs = _readonly_attributes | GenericParameter._writable_attributes
 
     def __init__(
@@ -697,7 +691,9 @@ class Parameter(GenericParameter):
         fit_min: Optional[float] = -np.inf,
         fit_max: Optional[float] = np.inf,
     ) -> None:
-        super().__init__(
+        CifMixin.__init__(self, full_cif_names=full_cif_names)
+        GenericParameter.__init__(
+            self,
             value=value,
             name=name,
             value_type=float,
@@ -715,27 +711,3 @@ class Parameter(GenericParameter):
             fit_min=fit_min,
             fit_max=fit_max,
         )
-        self._full_cif_names = full_cif_names
-
-    @property
-    def full_cif_names(self):
-        return self._full_cif_names
-
-    @full_cif_names.setter
-    def full_cif_names(self, _):
-        self._readonly_error()
-
-    def from_cif(self, block: Any, idx: int = 0) -> None:
-        found_values: list[Any] = []
-        for tag in self.full_cif_names:
-            candidate = list(block.find_values(tag))
-            if candidate:
-                found_values = candidate
-                break
-        if not found_values:
-            self.value = self.default_value
-            return
-        raw = found_values[idx]
-        u = str_to_ufloat(raw)
-        self.value = u.n
-        self.uncertainty = u.s
