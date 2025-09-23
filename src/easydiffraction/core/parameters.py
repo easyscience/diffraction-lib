@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import secrets
 import string
+from abc import ABC
 from typing import Any
 from typing import List
 from typing import Optional
@@ -19,191 +20,215 @@ from easydiffraction.utils.utils import str_to_ufloat
 T = TypeVar('T')
 
 
-class Descriptor(
+# ------------------ 3-Layer Descriptor Hierarchy ---------------------
+
+
+class BaseDescriptor(
     DiagnosticsMixin,
     AttributeAccessGuardMixin,
     AttributeSetGuardMixin,
     GuardedBase,
+    ABC,
 ):
-    @staticmethod
-    def _make_callable(x):
-        """Ensure a value is returned via a callable."""
-        return x if callable(x) else (lambda: x)
-
-    """Non-refinable attribute/metadata holder.
-
-    Represents a fixed property (e.g. CIF tag, metadata field). Unlike
-    :class:`Parameter`, descriptors cannot be refined. They support:
-
-    * Guarded attribute set (prevents accidental API growth).
-    * Type / value validation (optional enumerated allowed values).
-    * CIF import convenience (``from_cif``).
-    * Stable unique identifier (``uid``) used by optimizers.
-    * Computed ``full_name`` from hierarchy context parts.
+    """Base class for all descriptors, readonly attribute logic and
+    metadata.
     """
 
-    # ------------------------------------------------------------------
-    # Class configuration
-    # ------------------------------------------------------------------
-    # Attributes that user may set directly
-    _writable_attributes = {
-        'value',
-    }
-
-    # Attributes exposed but read-only
+    # _writable_attributes = set()
     _readonly_attributes = {
         'name',
-        'value_type',
-        'full_cif_names',
-        'default_value',
         'pretty_name',
-        'datablock_name',
-        'category_key',
-        'category_entry_name',
+        'value_type',
         'units',
         'description',
         'editable',
+        'parameters',
+        'default_value',
         'allowed_values',
-        'uid',
-        'full_name',
     }
+    _class_public_attrs = _readonly_attributes  # | _writable_attributes
 
-    # All allowed attributes
-    _class_public_attrs = _readonly_attributes | _writable_attributes
-    # TODO: Update guard mixin to use readonly attributes for allowed
-    #  in getter, while writable attributes for allowed in setter.
-    #  Think about caching, as it is currently done for all allowed
-    #  attributes.
-    #  Think on splitting for CategoryItem, CategoryCollection and
-    #  Datablock and how to handle extensions in subclasses.
+    @staticmethod
+    def _make_callable(x):
+        return x if callable(x) else (lambda: x)
 
-    # ------------------------------------------------------------------
-    # Initialization
-    # ------------------------------------------------------------------
     def __init__(
         self,
-        value: Any,
         name: str,
         value_type: type,
-        full_cif_names: list[str],
-        default_value: Any,
         pretty_name: Optional[str] = None,
         units: Optional[str] = None,
         description: Optional[str] = None,
         editable: bool = True,
+        default_value: Any = None,
         allowed_values: Optional[List[T]] = None,
     ) -> None:
-        """Create descriptor.
-
-        Parameters
-        ----------
-        value:
-            Initial value (uses default when empty or ``None``).
-        name:
-            Internal symbolic name.
-        value_type:
-            Expected Python type (e.g. ``str`` or ``float``).
-        full_cif_names:
-            Ordered CIF tag aliases (first tag providing data is used).
-        default_value:
-            Fallback value when CIF extraction yields no entry.
-        pretty_name:
-            Human-facing label (UI / reporting).
-        units:
-            Physical units (if applicable).
-        description:
-            Long-form description or help text.
-        editable:
-            If false the value should not be manually changed by users.
-        allowed_values:
-            Optional list of enumerated allowed values.
-        """
+        if type(self) is BaseDescriptor:
+            raise TypeError(
+                'BaseDescriptor is an abstract class and cannot be instantiated directly.'
+            )
         self._parent: Optional[Any] = None
-
-        # Identity
         self._name = name
         self._pretty_name = pretty_name
-
-        # Semantics
         self._value_type = value_type
         self._units = units
         self._description = description
         self._editable = editable
         self._default_value_provider = self._make_callable(default_value)
         self._allowed_values_provider = self._make_callable(allowed_values)
-        self._full_cif_names = full_cif_names
 
-        # Value
-        self._value = value if value is not None else self._default_value_provider()
+    def __setattr__(self, key: str, value: Any) -> None:
+        if self._guarded_setattr(key, value):
+            return
+        object.__setattr__(self, key, value)
 
-        # UID
-        self._uid = self._generate_random_uid()
+    @property
+    def parameters(self) -> list:
+        return [self]
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, _):
+        self._readonly_error()
+
+    @property
+    def pretty_name(self):
+        return self._pretty_name
+
+    @pretty_name.setter
+    def pretty_name(self, _):
+        self._readonly_error()
+
+    @property
+    def value_type(self):
+        return self._value_type
+
+    @value_type.setter
+    def value_type(self, _):
+        self._readonly_error()
+
+    @property
+    def units(self):
+        return self._units
+
+    @units.setter
+    def units(self, _):
+        self._readonly_error()
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, _):
+        self._readonly_error()
+
+    @property
+    def editable(self):
+        return self._editable
+
+    @editable.setter
+    def editable(self, _):
+        self._readonly_error()
+
+    @property
+    def allowed_values(self):
+        return self._allowed_values_provider()
+
+    @allowed_values.setter
+    def allowed_values(self, _):
+        self._readonly_error()
+
+    @property
+    def default_value(self):
+        return self._default_value_provider()
+
+    @default_value.setter
+    def default_value(self, _):
+        self._readonly_error()
+
+
+class GenericDescriptor(BaseDescriptor):
+    _writable_attributes = {'value'}
+    _readonly_attributes = BaseDescriptor._readonly_attributes | {
+        'uid',
+        'full_name',
+        'datablock_name',
+        'category_key',
+        'category_entry_name',
+    }
+    _class_public_attrs = _readonly_attributes | _writable_attributes
+
+    @staticmethod
+    def _generate_uid() -> str:
+        """Generate stable random uid (sufficient collision resistance
+        for session).
+        """
+        length = 16
+        uid = ''.join(secrets.choice(string.ascii_lowercase) for _ in range(length))
+        return uid
+
+    def __init__(
+        self,
+        value: Any,
+        name: str,
+        value_type: type,
+        default_value: Any = None,
+        pretty_name: Optional[str] = None,
+        units: Optional[str] = None,
+        description: Optional[str] = None,
+        editable: bool = True,
+        allowed_values: Optional[List[T]] = None,
+    ) -> None:
+        super().__init__(
+            name=name,
+            value_type=value_type,
+            pretty_name=pretty_name,
+            units=units,
+            description=description,
+            editable=editable,
+            default_value=default_value,
+            allowed_values=allowed_values,
+        )
+        self._value = value if value is not None else self.default_value
+        self._uid = self._generate_uid()
         UidMapHandler.get().add_to_uid_map(self)
 
-    # ------------------------------------------------------------------
-    # Dunder methods
-    # ------------------------------------------------------------------
     def __str__(self) -> str:
-        """Return concise human-readable representation."""
+        """Return human-readable representation."""
         value_str = f'{self.__class__.__name__}: {self.full_name} = "{self.value}"'
         if self.units:
             value_str += f' {self.units}'
         return value_str
 
-    def __setattr__(self, key: str, value: Any) -> None:
-        """Controlled setting enforcing allowed public attribute
-        names.
-        """
-        if self._guarded_setattr(key, value):
-            return
-        object.__setattr__(self, key, value)
-
-    # ------------------------------------------------------------------
-    # Internal helpers
-    # ------------------------------------------------------------------
-    def _generate_random_uid(self) -> str:
-        """Generate stable random uid (sufficient collision resistance
-        for session).
-        """
-        length = 16
-        return ''.join(secrets.choice(string.ascii_lowercase) for _ in range(length))
-
-    # ------------------------------------------------------------------
-    # Public read-only properties
-    # ------------------------------------------------------------------
     @property
-    def parameters(self) -> list:  # noqa: D401 - compatibility shim
-        """Return list with self (uniform interface with components)."""
-        return [self]
+    def value(self) -> Any:
+        return self._value
+
+    # TODO
+    @value.setter
+    def value(self, new_value: Any) -> None:
+        if self._value == new_value:
+            return
+        # Type check
+        if self.value_type and not isinstance(new_value, self.value_type):
+            self._type_warning(self.name, self.value_type, new_value)
+            return
+        # Allowed values check
+        if self.allowed_values is not None and new_value not in self.allowed_values:
+            self._allowed_values_warning(self.name, new_value, self.allowed_values)
+            return
+        self._value = new_value
 
     @property
     def uid(self) -> str:
-        """Stable, non-human unique ID."""
         return self._uid
 
     @uid.setter
     def uid(self, _):
-        self._readonly_error()
-
-    @property
-    def full_name(self) -> str:
-        """Assemble hierarchical fully-qualified name.
-
-        Parts (if present): ``datablock_name``, ``category_key``,
-        ``category_entry_name`` and final ``name``.
-        """
-        parts = []
-        if self.datablock_name is not None:
-            parts.append(self.datablock_name)
-        if self.category_key is not None:
-            parts.append(self.category_key)
-        if self.category_entry_name is not None:
-            parts.append(str(self.category_entry_name))  # TODO: stringify (bkg)?
-        parts.append(self.name)
-        return '.'.join(parts)
-
-    @full_name.setter
-    def full_name(self, _):  # pragma: no cover - defensive
         self._readonly_error()
 
     @property
@@ -237,36 +262,56 @@ class Descriptor(
         self._readonly_error()
 
     @property
-    def name(self):
-        return self._name
+    def full_name(self) -> str:
+        parts = []
+        if self.datablock_name is not None:
+            parts.append(self.datablock_name)
+        if self.category_key is not None:
+            parts.append(self.category_key)
+        if self.category_entry_name is not None:
+            parts.append(str(self.category_entry_name))
+        parts.append(self.name)
+        return '.'.join(parts)
 
-    @name.setter
-    def name(self, _):
+    @full_name.setter
+    def full_name(self, _):
         self._readonly_error()
 
-    @property
-    def pretty_name(self):
-        return self._pretty_name
 
-    @pretty_name.setter
-    def pretty_name(self, _):
-        self._readonly_error()
+class Descriptor(GenericDescriptor):
+    """Descriptor with CIF attributes and from_cif logic."""
 
-    @property
-    def units(self):
-        return self._units
+    _readonly_attributes = GenericDescriptor._readonly_attributes | {
+        'full_cif_names',
+        'cif_uid',
+    }
+    _class_public_attrs = _readonly_attributes | GenericDescriptor._writable_attributes
 
-    @units.setter
-    def units(self, _):
-        self._readonly_error()
-
-    @property
-    def value_type(self):
-        return self._value_type
-
-    @value_type.setter
-    def value_type(self, _):
-        self._readonly_error()
+    def __init__(
+        self,
+        value: Any,
+        name: str,
+        value_type: type,
+        full_cif_names: list[str],
+        default_value: Any,
+        pretty_name: Optional[str] = None,
+        units: Optional[str] = None,
+        description: Optional[str] = None,
+        editable: bool = True,
+        allowed_values: Optional[List[T]] = None,
+    ) -> None:
+        super().__init__(
+            value=value,
+            name=name,
+            value_type=value_type,
+            default_value=default_value,
+            pretty_name=pretty_name,
+            units=units,
+            description=description,
+            editable=editable,
+            allowed_values=allowed_values,
+        )
+        self._full_cif_names = full_cif_names
 
     @property
     def full_cif_names(self):
@@ -277,73 +322,13 @@ class Descriptor(
         self._readonly_error()
 
     @property
-    def allowed_values(self) -> Optional[List[T]]:
-        return self._allowed_values_provider()
-
-    @allowed_values.setter
-    def allowed_values(self, _):
-        self._readonly_error()
-
-    @property
-    def default_value(self):
-        return self._default_value_provider()
-
-    @default_value.setter
-    def default_value(self, _):
-        self._readonly_error()
-
-    @property
-    def description(self):
-        return self._description
-
-    @description.setter
-    def description(self, _):
-        self._readonly_error()
-
-    @property
-    def editable(self):
-        return self._editable
-
-    @property
     def cif_uid(self):
-        return self.name  # TODO: Modify to return CIF-specific names?
+        return self.name  # TODO: Modify to return CIF-specific names?!
 
     @cif_uid.setter
     def cif_uid(self, _):
         self._readonly_error()
 
-    # ------------------------------------------------------------------
-    # Public writable properties
-    # ------------------------------------------------------------------
-    @property
-    def value(self) -> Any:
-        """Return current value (fall back to ``default_value`` when
-        empty).
-        """
-        if self._value in (None, ''):
-            return self.default_value
-        return self._value
-
-    @value.setter
-    def value(self, new_value: Any) -> None:
-        """Set value with type and enumerated allowed-values
-        validation.
-        """
-        if self._value == new_value:
-            return
-        # Type check
-        if self.value_type and not isinstance(new_value, self.value_type):
-            self._type_warning(self.name, self.value_type, new_value)
-            return
-        # Allowed values check
-        if self.allowed_values is not None and new_value not in self.allowed_values:
-            self._allowed_values_warning(self.name, new_value, self.allowed_values)
-            return
-        self._value = new_value
-
-    # ------------------------------------------------------------------
-    # Public methods
-    # ------------------------------------------------------------------
     def from_cif(self, block: Any, idx: int = 0) -> None:
         """Populate the descriptor value from a CIF datablock.
 
@@ -387,50 +372,123 @@ class Descriptor(
                 self.value = raw
 
 
-class Parameter(Descriptor):
-    """Refinable numerical descriptor.
+# ------------------ 3-Layer Parameter Hierarchy ---------------------
 
-    Extends :class:`Descriptor` adding:
 
-    * Refinement flags (``free`` / ``constrained``).
-    * Physical bounds (``physical_min`` / ``physical_max``).
-    * Numerical uncertainty (``uncertainty``).
-    """
-
-    # ------------------------------------------------------------------
-    # Class configuration
-    # ------------------------------------------------------------------
-    # Extend writable attributes
-    _writable_attributes = Descriptor._writable_attributes | {
-        'free',
-        'uncertainty',
-        'start_value',
-        'fit_min',
-        'fit_max',
-    }
-
-    # Extend read-only attributes
-    _readonly_attributes = Descriptor._readonly_attributes | {
+class BaseParameter(BaseDescriptor, ABC):
+    # _writable_attributes = set()
+    _readonly_attributes = BaseDescriptor._readonly_attributes | {
         'physical_min',
         'physical_max',
+        'fit_min',
+        'fit_max',
+        'constrained',
     }
+    _class_public_attrs = _readonly_attributes  # | _writable_attributes
 
-    # All allowed attributes
-    _class_public_attrs = _readonly_attributes | _writable_attributes
-
-    # ------------------------------------------------------------------
-    # Initialization
-    # ------------------------------------------------------------------
     def __init__(
         self,
-        value: Any,
         name: str,
-        full_cif_names: list[str],
-        default_value: Any,
+        value_type: type,
         pretty_name: Optional[str] = None,
         units: Optional[str] = None,
         description: Optional[str] = None,
         editable: bool = True,
+        default_value: Any = None,
+        allowed_values: Optional[List[T]] = None,
+        physical_min: Optional[float] = -np.inf,
+        physical_max: Optional[float] = np.inf,
+        fit_min: Optional[float] = -np.inf,
+        fit_max: Optional[float] = np.inf,
+        constrained: bool = False,
+    ) -> None:
+        if type(self) is BaseParameter:
+            raise TypeError(
+                'BaseParameter is an abstract class and cannot be instantiated directly.'
+            )
+        super().__init__(
+            name=name,
+            value_type=value_type,
+            pretty_name=pretty_name,
+            units=units,
+            description=description,
+            editable=editable,
+            default_value=default_value,
+            allowed_values=allowed_values,
+        )
+        self._physical_min = physical_min
+        self._physical_max = physical_max
+        self._fit_min = fit_min
+        self._fit_max = fit_max
+        self._constrained = constrained
+
+    @property
+    def physical_min(self):
+        return self._physical_min
+
+    @physical_min.setter
+    def physical_min(self, _):
+        self._readonly_error()
+
+    @property
+    def physical_max(self):
+        return self._physical_max
+
+    @physical_max.setter
+    def physical_max(self, _):
+        self._readonly_error()
+
+    @property
+    def fit_min(self):
+        return self._fit_min
+
+    @fit_min.setter
+    def fit_min(self, _):
+        self._readonly_error()
+
+    @property
+    def fit_max(self):
+        return self._fit_max
+
+    @fit_max.setter
+    def fit_max(self, _):
+        self._readonly_error()
+
+    @property
+    def constrained(self):
+        return self._constrained
+
+    @constrained.setter
+    def constrained(self, _):
+        self._readonly_error()
+
+
+class GenericParameter(GenericDescriptor, BaseParameter):
+    """Parameter with value logic, numeric validation, and mutable
+    attributes.
+    """
+
+    _writable_attributes = GenericDescriptor._writable_attributes | {
+        'uncertainty',
+        'free',
+        'start_value',
+    }
+    _readonly_attributes = (
+        BaseParameter._readonly_attributes | GenericDescriptor._readonly_attributes
+    )
+    _class_public_attrs = _readonly_attributes | _writable_attributes
+
+    def __init__(
+        self,
+        value: Any,
+        name: str,
+        value_type: type = float,
+        default_value: Any = None,
+        pretty_name: Optional[str] = None,
+        units: Optional[str] = None,
+        description: Optional[str] = None,
+        editable: bool = True,
+        allowed_values: Optional[List[T]] = None,
         uncertainty: float = np.nan,
         free: bool = False,
         constrained: bool = False,
@@ -439,55 +497,29 @@ class Parameter(Descriptor):
         fit_min: Optional[float] = -np.inf,
         fit_max: Optional[float] = np.inf,
     ) -> None:
-        """Initialize a Parameter.
-
-        Args:
-            value: Initial floating value.
-            name: Internal symbolic name.
-            full_cif_names: Ordered CIF tag aliases.
-            default_value: Fallback when CIF extraction fails.
-            pretty_name: Human readable label.
-            units: Display / physical units.
-            description: Long form description.
-            editable: Whether user may manually edit value.
-            uncertainty: Standard uncertainty (sigma).
-            free: True if parameter is free during refinement.
-            constrained: True if constrained by symmetry.
-            physical_min: Physical lower bound.
-            physical_max: Physical upper bound.
-            fit_min: Lower bound during refinement.
-            fit_max: Upper bound during refinement.
-        """
-        super().__init__(
-            value=value,
+        BaseParameter.__init__(
+            self,
             name=name,
-            value_type=float,
-            full_cif_names=full_cif_names,
-            default_value=default_value,
+            value_type=value_type,
             pretty_name=pretty_name,
             units=units,
             description=description,
             editable=editable,
+            default_value=default_value,
+            allowed_values=allowed_values,
+            physical_min=physical_min,
+            physical_max=physical_max,
+            fit_min=fit_min,
+            fit_max=fit_max,
+            constrained=constrained,
         )
-
+        self._value = value if value is not None else self.default_value
         self._uncertainty = uncertainty
         self._free = free
-        self._constrained = constrained
-        self._physical_min = physical_min
-        self._physical_max = physical_max
-        self._fit_min = fit_min
-        self._fit_max = fit_max
-
-        # TODO: Used in minimization. Check if needed.
         self.start_value = None
 
-    # ------------------------------------------------------------------
-    # Dunder methods
-    # ------------------------------------------------------------------
     def __str__(self) -> str:
-        """Return human-readable string with value, uncertainty &
-        units.
-        """
+        """Return human-readable representation."""
         value_str = f'{self.__class__.__name__}: {self.full_name} = "{self.value}"'
         if not np.isnan(self.uncertainty) and self.uncertainty != 0.0:
             value_str += f' ± {self.uncertainty}'
@@ -495,18 +527,10 @@ class Parameter(Descriptor):
             value_str += f' {self.units}'
         return value_str
 
-    # ------------------------------------------------------------------
-    # Internal helpers
-    # ------------------------------------------------------------------
-
     @property
     def _minimizer_uid(self):
         """Return variant of uid safe for minimizer engines."""
         return self.full_name.replace('.', '__')
-
-    # ------------------------------------------------------------------
-    # Public read-only properties
-    # ------------------------------------------------------------------
 
     @property
     def uncertainty(self):
@@ -525,65 +549,16 @@ class Parameter(Descriptor):
         self._free = value
 
     @property
-    def constrained(self):
-        return self._constrained
-
-    @constrained.setter
-    def constrained(self, _):
-        self._readonly_error()
-
-    @property
-    def physical_min(self):
-        return self._physical_min
-
-    @physical_min.setter
-    def physical_min(self, _):
-        self._readonly_error()
-
-    @property
-    def physical_max(self):
-        return self._physical_max
-
-    @physical_max.setter
-    def physical_max(self, _):
-        self._readonly_error()
-
-    # ------------------------------------------------------------------
-    # Public writable properties
-    # ------------------------------------------------------------------
-
-    @property
-    def fit_min(self):
-        return self._fit_min
-
-    @fit_min.setter
-    def fit_min(self, value):
-        self._fit_min = value
-
-    @property
-    def fit_max(self):
-        return self._fit_max
-
-    @fit_max.setter
-    def fit_max(self, value):
-        self._fit_max = value
-
-    # Redefine value from Descriptor with extra range check
-    @property
     def value(self) -> Any:
-        """Return current value, or default if unset."""
-        if self._value in (None, ''):
-            return self.default_value
         return self._value
 
     @value.setter
     def value(self, new_value: Any) -> None:
-        """Set value with type & physical range validation."""
         if self._value == new_value:
             return
         # Auto-cast int to float
         if isinstance(new_value, int):
-            new_value = float(new_value)  # TODO: how to get rid of this?
+            new_value = float(new_value)  # TODO: think of a better way
         # Type check (reuse Descriptor's logic)
         if self.value_type and not isinstance(new_value, self.value_type):
             self._type_warning(self.name, self.value_type, new_value)
@@ -593,3 +568,73 @@ class Parameter(Descriptor):
             self._range_warning(self.name, new_value, self.physical_min, self.physical_max)
             return
         self._value = new_value
+
+
+class Parameter(GenericParameter):
+    """Parameter with CIF attributes and from_cif logic."""
+
+    _readonly_attributes = GenericParameter._readonly_attributes | {
+        'full_cif_names',
+    }
+    _class_public_attrs = _readonly_attributes | GenericParameter._writable_attributes
+
+    def __init__(
+        self,
+        value: Any,
+        name: str,
+        full_cif_names: list[str],
+        default_value: Any,
+        pretty_name: Optional[str] = None,
+        units: Optional[str] = None,
+        description: Optional[str] = None,
+        editable: bool = True,
+        uncertainty: float = np.nan,
+        free: bool = False,
+        constrained: bool = False,
+        physical_min: Optional[float] = -np.inf,
+        physical_max: Optional[float] = np.inf,
+        fit_min: Optional[float] = -np.inf,
+        fit_max: Optional[float] = np.inf,
+    ) -> None:
+        super().__init__(
+            value=value,
+            name=name,
+            value_type=float,
+            default_value=default_value,
+            pretty_name=pretty_name,
+            units=units,
+            description=description,
+            editable=editable,
+            allowed_values=None,
+            uncertainty=uncertainty,
+            free=free,
+            constrained=constrained,
+            physical_min=physical_min,
+            physical_max=physical_max,
+            fit_min=fit_min,
+            fit_max=fit_max,
+        )
+        self._full_cif_names = full_cif_names
+
+    @property
+    def full_cif_names(self):
+        return self._full_cif_names
+
+    @full_cif_names.setter
+    def full_cif_names(self, _):
+        self._readonly_error()
+
+    def from_cif(self, block: Any, idx: int = 0) -> None:
+        found_values: list[Any] = []
+        for tag in self.full_cif_names:
+            candidate = list(block.find_values(tag))
+            if candidate:
+                found_values = candidate
+                break
+        if not found_values:
+            self.value = self.default_value
+            return
+        raw = found_values[idx]
+        u = str_to_ufloat(raw)
+        self.value = u.n
+        self.uncertainty = u.s

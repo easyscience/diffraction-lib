@@ -9,6 +9,7 @@ from easydiffraction.core.guards import AttributeAccessGuardMixin
 from easydiffraction.core.guards import AttributeSetGuardMixin
 from easydiffraction.core.guards import DiagnosticsMixin
 from easydiffraction.core.guards import GuardedBase
+from easydiffraction.core.parameters import BaseDescriptor
 from easydiffraction.core.parameters import Descriptor
 from easydiffraction.core.parameters import Parameter
 
@@ -85,12 +86,12 @@ class CategoryItem(
             attr = object.__getattribute__(self, key)
         except AttributeError:
             attr = self._MISSING_ATTR
-        # If replacing or assigning a Descriptor instance
-        if isinstance(value, Descriptor):
+        # If replacing or assigning any descriptor/parameter instance
+        if isinstance(value, BaseDescriptor):
             value._parent = self
             object.__setattr__(self, key, value)
-        # If updating the value of an existing Descriptor
-        elif attr is not self._MISSING_ATTR and isinstance(attr, Descriptor):
+        # If updating the value of an existing descriptor/parameter
+        elif attr is not self._MISSING_ATTR and isinstance(attr, BaseDescriptor):
             attr.value = value
         else:
             object.__setattr__(self, key, value)

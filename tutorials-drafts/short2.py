@@ -13,20 +13,40 @@ from easydiffraction.sample_models.collections.atom_sites import AtomSites
 from easydiffraction.sample_models.components.cell import Cell
 from easydiffraction.sample_models.components.space_group import SpaceGroup
 import easydiffraction as ed
+from easydiffraction.core.parameters import BaseDescriptor, GenericDescriptor, Descriptor
+from easydiffraction.core.parameters import BaseParameter, GenericParameter, Parameter
 
-Logger.configure(mode=Logger.Mode.VERBOSE, level=Logger.Level.DEBUG)
+#Logger.configure(mode=Logger.Mode.VERBOSE, level=Logger.Level.DEBUG)
 Logger.configure(mode=Logger.Mode.COMPACT, level=Logger.Level.DEBUG)
 
+
+#bd = BaseDescriptor()
+#gd = GenericDescriptor()
+#d = Descriptor()
+
+#bp = BaseParameter()
+#gp = GenericParameter()
+#p = Parameter()
 
 project = ed.Project()
 
 
 sg = SpaceGroup()
 sg.name_h_m = 'P n m a'
-sg.it_coordinate_system_coded = 'cab'
+sg.name_h_m = 33.3
+
+sg.it_coordinate_system_code = 'cab'
 
 cell = Cell()
 cell.length_a = 5.4603
+cell.length_a = '5.4603'
+cell.length_a = -5.4603
+
+cell.lengtha = -5.4603
+
+
+
+exit()
 
 site = AtomSite()
 site.label = 'Si'
