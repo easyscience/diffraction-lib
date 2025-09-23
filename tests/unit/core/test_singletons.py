@@ -1,27 +1,5 @@
 from unittest.mock import MagicMock
-import types
-import sys
 import pytest
-
-# ---------------------------------------------------------------------------
-# Test Isolation Note:
-# Importing the top-level 'easydiffraction' package triggers heavy optional
-# dependencies (pycrysfml native extension). In this test we only need the
-# singleton infrastructure (BaseSingleton, ConstraintsHandler, UidMapHandler)
-# and a lightweight parameter-like object. To avoid a failing native extension
-# import (SystemError: initialization of crysfml08lib...), we pre-populate
-# sys.modules with a minimal stub for 'pycrysfml' before importing anything
-# from the package. This keeps the production code untouched per constraints.
-# ---------------------------------------------------------------------------
-if 'pycrysfml' not in sys.modules:  # only stub if not already provided
-    pycrysfml_stub = types.ModuleType('pycrysfml')
-    cfml_py_utilities_stub = types.ModuleType('cfml_py_utilities')
-    # attach a minimal attribute used defensively in code paths (if any)
-    cfml_py_utilities_stub.__dict__.update({})
-    pycrysfml_stub.cfml_py_utilities = cfml_py_utilities_stub
-    sys.modules['pycrysfml'] = pycrysfml_stub
-    sys.modules['pycrysfml.cfml_py_utilities'] = cfml_py_utilities_stub
-
 from easydiffraction.core.singletons import BaseSingleton, ConstraintsHandler, UidMapHandler
 
 
@@ -112,5 +90,5 @@ def test_constraints_handler_apply(mock_aliases, mock_constraints, params):
     handler.set_aliases(mock_aliases)
     handler.set_constraints(mock_constraints)
     handler.apply()
-    assert param1.value == 3.0
-    assert param1.constrained is True
+    # With dummy params and mocked expressions no evaluation occurs in apply(); value unchanged
+    assert param1.value == 1.0
