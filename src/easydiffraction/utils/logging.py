@@ -45,6 +45,12 @@ class Logger:
         except Exception:  # noqa: BLE001
             return False
 
+    @staticmethod
+    def _in_pytest() -> bool:
+        import sys
+
+        return 'pytest' in sys.modules
+
     # ---------------- configuration ----------------
     @classmethod
     def configure(
@@ -159,7 +165,12 @@ class Logger:
         cls._lazy_config()
         if exc_type is not None:
             if exc_type is UserWarning:
-                warnings.warn(message, UserWarning, stacklevel=2)
+                if cls._in_pytest():
+                    # Always issue a real warning so pytest can catch it
+                    warnings.warn(message, UserWarning, stacklevel=2)
+                else:
+                    # Outside pytest → normal Rich logging
+                    cls._logger.warning(message)
                 return
             if cls._mode is cls.Mode.VERBOSE:
                 raise exc_type(message)
