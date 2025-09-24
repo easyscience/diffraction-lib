@@ -1,3 +1,4 @@
+import easydiffraction as ed
 from easydiffraction import Experiment
 from easydiffraction import Experiments
 from easydiffraction import Logger
@@ -12,12 +13,11 @@ from easydiffraction.sample_models.collections.atom_sites import AtomSite
 from easydiffraction.sample_models.collections.atom_sites import AtomSites
 from easydiffraction.sample_models.components.cell import Cell
 from easydiffraction.sample_models.components.space_group import SpaceGroup
-import easydiffraction as ed
-from easydiffraction.core.parameters import BaseDescriptor, GenericDescriptor, Descriptor
-from easydiffraction.core.parameters import BaseParameter, GenericParameter, Parameter
+#from easydiffraction.core.parameters import BaseDescriptor, GenericDescriptor, Descriptor
+#from easydiffraction.core.parameters import BaseParameter, GenericParameter, Parameter
 
 #Logger.configure(mode=Logger.Mode.VERBOSE, level=Logger.Level.DEBUG)
-Logger.configure(mode=Logger.Mode.COMPACT, level=Logger.Level.DEBUG)
+#Logger.configure(mode=Logger.Mode.COMPACT, level=Logger.Level.DEBUG)
 
 
 #bd = BaseDescriptor()

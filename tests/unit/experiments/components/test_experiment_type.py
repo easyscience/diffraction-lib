@@ -35,8 +35,6 @@ def test_experiment_type_properties():
     )
 
     assert experiment_type.category_key == 'expt_type'
-    # Removed legacy attributes: cif_category_key, datablock_id, entry_id, and internal _locked
-    # Just validate category_key and basic descriptor integrity
     assert experiment_type.sample_form.full_cif_names[0].startswith('_expt_type.')
 
 

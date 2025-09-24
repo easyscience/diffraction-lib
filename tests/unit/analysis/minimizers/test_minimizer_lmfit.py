@@ -4,12 +4,6 @@ import os, sys
 import lmfit
 import pytest
 
-# Ensure local 'src' directory is on sys.path for direct test execution contexts
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
-SRC = os.path.join(ROOT, 'src')
-if SRC not in sys.path:
-    sys.path.insert(0, SRC)
-
 from easydiffraction.analysis.minimizers.minimizer_lmfit import LmfitMinimizer
 from easydiffraction.core.parameters import Parameter
 

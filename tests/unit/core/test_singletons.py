@@ -22,10 +22,9 @@ def params():
         def __init__(self, value, name, uid):
             self._value = value
             self.name = name
-            self.uid = uid  # provide uid attr expected by mapping logic
+            self.uid = uid
             self._constrained = False
 
-        # Provide same interface pieces the real Parameter exposes
         @property
         def value(self):
             return self._value
@@ -34,7 +33,7 @@ def params():
         def value(self, v):
             self._value = v
 
-    return DummyParam(1.0, 'param1', 'uid_param1'), DummyParam(2.0, 'param2', 'uid_param2')
+    return DummyParam(1.0, 'param1', 'uid_param1'), DummyParam(2.0, 'param2', 'uid_param2',)
 
 
 @pytest.fixture
@@ -113,5 +112,4 @@ def test_constraints_handler_apply(mock_aliases, mock_constraints, params):
     assert p1.value == 3.0  # 2 + 1
     assert p2.value == 2.0  # unchanged in this simplified path
     assert p1._constrained is True
-    # Alias2 may or may not be flagged; tolerate either to avoid flakiness
     assert getattr(p2, '_constrained', False) in (False, True)

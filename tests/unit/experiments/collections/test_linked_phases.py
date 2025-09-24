@@ -25,10 +25,8 @@ def test_linked_phases_type():
 
 def test_linked_phases_child_class():
     lps = LinkedPhases()
-    # Child class is enforced internally; create and add instance to validate
     lp = LinkedPhase(id='phaseX', scale=3.0)
     lps.add(lp)
-    # Access by id (category_entry_name)
     assert lps['phaseX'].scale.value == 3.0
 
 

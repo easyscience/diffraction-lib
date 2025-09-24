@@ -19,7 +19,6 @@ def test_constant_wavelength_instrument_initialization():
     assert isinstance(instrument.setup_wavelength, Parameter)
     assert instrument.setup_wavelength.value == 1.5406
     assert instrument.setup_wavelength.name == 'wavelength'
-    # full_cif_names replaces legacy cif_name
     assert instrument.setup_wavelength.full_cif_names == ['_instr.wavelength']
     assert instrument.setup_wavelength.units == 'Å'
 

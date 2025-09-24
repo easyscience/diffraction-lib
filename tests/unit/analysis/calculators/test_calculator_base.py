@@ -28,7 +28,6 @@ class MockCalculator(CalculatorBase):
 def mock_sample_models():
     sample_models = MagicMock()
     sample_models.get_all_params.return_value = {'param1': 1, 'param2': 2}
-    # Updated API: use `names` property instead of `get_ids()`
     sample_models.names = ['phase1', 'phase2']
     sample_models.__getitem__.side_effect = lambda key: MagicMock(apply_symmetry_constraints=MagicMock())
     return sample_models
@@ -57,7 +56,6 @@ def test_calculate_pattern(mock_constraints_handler, mock_sample_models, mock_ex
     result = mock_experiment.datastore.calc
 
     # Assertions
-    # Updated combined scale computation yields 3.5,7.0,10.5
     assert np.allclose(result, np.array([3.5, 7.0, 10.5]))
     mock_constraints_handler.return_value.apply.assert_called_once_with()
     assert mock_experiment.datastore.bkg is not None

@@ -14,9 +14,7 @@ def test_point_initialization():
     point = Point(x=1.0, y=2.0)
     assert point.x.value == 1.0
     assert point.y.value == 2.0
-    # Updated API: no separate cif_category_key / _entry_id; only category_key & entry name
     assert point.category_key == 'background'
-    # Entry name now retains original numeric type
     assert point.category_entry_name == 1.0
 
 
@@ -30,7 +28,6 @@ def test_polynomial_term_initialization():
 
 def test_line_segment_background_add_and_calculate():
     background = LineSegmentBackground()
-    # New API: must add Point instances (legacy vararg numeric form removed)
     background.add(Point(x=1.0, y=2.0))
     background.add(Point(x=3.0, y=4.0))
 

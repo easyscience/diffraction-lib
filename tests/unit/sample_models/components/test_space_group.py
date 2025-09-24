@@ -26,7 +26,6 @@ def test_space_group_default_initialization():
 
     # Assertions
     assert space_group.name_h_m.value == 'P 1'
-    # Default now empty string
     assert space_group.it_coordinate_system_code.value == ''
 
 
@@ -35,7 +34,6 @@ def test_space_group_properties():
 
     # Assertions
     assert space_group.category_key == 'space_group'
-    # Internal entry id removed; ensure descriptor tagging is present
     assert space_group.name_h_m.full_cif_names[0].startswith(
         '_space_group'
     ) or space_group.name_h_m.full_cif_names[0].startswith('_symmetry')

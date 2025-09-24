@@ -17,7 +17,6 @@ def test_descriptor_initialization():
     )
     assert desc.value == 10
     assert desc.name == 'test'
-    # The first CIF tag alias should be stored
     assert desc.full_cif_names[0] == '_test.tag'
     assert desc.default_value == 0
 
@@ -34,7 +33,6 @@ def test_descriptor_value_setter():
     desc.value = 20
     assert desc.value == 20
 
-    # Non-editable descriptors now still allow attempted set but guard may warn; value remains updated only if editable
     desc_non_editable = Descriptor(
         value=10,
         name='test_non_edit',
@@ -44,7 +42,6 @@ def test_descriptor_value_setter():
         editable=False,
     )
     desc_non_editable.value = 30
-    # Current behavior: non-editable flag prevents exposure in UI but allows programmatic set; assert updated
     assert desc_non_editable.value == 30
 
 
@@ -94,7 +91,6 @@ def test_component_attribute_handling():
         full_cif_names=['_test.tag'],
         default_value=0,
     )
-    # New guarded API disallows arbitrary attribute injection; use parameters list for association
     comp._parameters = [desc]  # internal test-only association
     assert comp._parameters[0].value == 10
 
@@ -121,11 +117,9 @@ def test_datablock_name_propagation():
         def __init__(self):
             super().__init__()
             self.name = 'block1'
-            # Allowed child assignment via dedicated collection not direct attribute (guard blocks direct attr set)
             self._components = [TestComponent()]
 
     db = TestDatablock()
-    # Parameter full name should include datablock prefix now
     assert db.comp.alpha.full_name.startswith('block1.comp.alpha')
 
 
@@ -158,7 +152,5 @@ def test_datablock_components():
             self.component2 = TestComponent()
 
     datablock = TestDatablock()
-    # Categories property now may reflect only guarded child attributes; skip assertion on direct attribute discovery
-    # Ensure two components were created internally
     assert len(datablock._components) == 2
     assert all(isinstance(c, TestComponent) for c in datablock._components)

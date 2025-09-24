@@ -88,7 +88,6 @@ def test_peak_base_properties():
     peak = PeakBase()
     assert peak.category_key == 'peak'
     assert peak.category_key == 'peak'
-    # _entry_id removed; rely on category_entry_name if needed
     assert peak.category_entry_name is None
 
 

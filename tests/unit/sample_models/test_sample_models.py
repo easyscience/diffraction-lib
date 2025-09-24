@@ -55,7 +55,6 @@ def test_sample_models_remove(mock_sample_models, mock_sample_model):
 def test_sample_models_as_cif(mock_sample_models, mock_sample_model):
     mock_sample_models.add(mock_sample_model)
     cif = mock_sample_models.as_cif
-    # Ensure at least the model name appears in CIF output; direct method mocking blocked by guards
     assert 'data_test_model' in cif or 'test_model' in cif
 
 
