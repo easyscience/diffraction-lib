@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     from easydiffraction.utils.utils import list_tutorials
     from easydiffraction.utils.utils import show_version
 
-Logger.configure(mode=Logger.Mode.VERBOSE, level=Logger.Level.DEBUG)
+Logger.configure()
 
 
 # Lazy loading of submodules and classes

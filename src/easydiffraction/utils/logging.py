@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import warnings
 from contextlib import suppress
 from enum import Enum
@@ -14,7 +15,12 @@ from rich.logging import RichHandler
 
 
 class Logger:
-    """Centralized logging with Rich formatting and two modes."""
+    """Centralized logging with Rich formatting and two modes.
+
+    Environment variables:
+    ED_LOG_MODE: set default mode ('verbose' or 'compact')
+    ED_LOG_LEVEL: set default level ('DEBUG', 'INFO', etc.)
+    """
 
     class Mode(Enum):
         """Output modes (see :class:`Logger`)."""
@@ -57,7 +63,7 @@ class Logger:
         cls,
         *,
         mode: 'Logger.Mode' | None = None,
-        level: 'Logger.Level' = Level.WARNING,
+        level: 'Logger.Level' | None = None,
         rich_tracebacks: bool | None = None,
     ) -> None:
         """Configure logger.
@@ -65,9 +71,26 @@ class Logger:
         mode: default COMPACT in Jupyter else VERBOSE
         level: minimum log level
         rich_tracebacks: override automatic choice
+
+        Environment variables:
+        ED_LOG_MODE: set default mode ('verbose' or 'compact')
+        ED_LOG_LEVEL: set default level ('DEBUG', 'INFO', etc.)
         """
+        env_mode = os.getenv('ED_LOG_MODE')
+        env_level = os.getenv('ED_LOG_LEVEL')
+
+        if mode is None and env_mode is not None:
+            with suppress(ValueError):
+                mode = cls.Mode(env_mode.lower())
+
+        if level is None and env_level is not None:
+            with suppress(KeyError):
+                level = cls.Level[env_level.upper()]
+
         if mode is None:
             mode = cls.Mode.COMPACT if cls._in_jupyter() else cls.Mode.VERBOSE
+        if level is None:
+            level = cls.Level.INFO
         cls._mode = mode
 
         if rich_tracebacks is None:
