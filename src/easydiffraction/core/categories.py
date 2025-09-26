@@ -5,6 +5,8 @@ from typing import Any
 from typing import Iterator
 from typing import Optional
 
+from typeguard import typechecked
+
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import Descriptor
 from easydiffraction.core.parameters import Parameter
@@ -299,18 +301,9 @@ class CategoryCollection(CategoryBase):
     # Public methods
     # ------------------------------------------------------------------
 
-    def add(self, item: CategoryItem | None = None, *args, **kwargs):
-        """Add an item to the collection.
-
-        Supports two forms:
-        1. ``add(existing_item)`` – direct insertion
-        2. ``add(*args, **kwargs)`` – construct child_class with the
-           provided arguments (legacy convenience used in older tests)
-        """
-        if item is None:
-            if self._child_class is None:
-                raise ValueError('child_class is not defined for this collection')
-            item = self._child_class(*args, **kwargs)
+    @typechecked
+    def add(self, item: CategoryItem):
+        """Add an item to the collection."""
         item._parent = self
         self._items[item.category_entry_name] = item
 

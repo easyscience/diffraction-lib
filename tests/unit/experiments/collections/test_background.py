@@ -59,8 +59,8 @@ def test_line_segment_background_show(capsys):
 
 def test_chebyshev_polynomial_background_add_and_calculate():
     background = ChebyshevPolynomialBackground()
-    background.add(order=0, coef=1.0)
-    background.add(order=1, coef=2.0)
+    background.add_from_args(order=0, coef=1.0)
+    background.add_from_args(order=1, coef=2.0)
 
     x_data = np.array([0.0, 0.5, 1.0])
     y_data = background.calculate(x_data)
@@ -83,8 +83,8 @@ def test_chebyshev_polynomial_background_calculate_no_terms():
 
 def test_chebyshev_polynomial_background_show(capsys):
     background = ChebyshevPolynomialBackground()
-    background.add(order=0, coef=1.0)
-    background.add(order=1, coef=2.0)
+    background.add_from_args(order=0, coef=1.0)
+    background.add_from_args(order=1, coef=2.0)
 
     background.show()
     captured = capsys.readouterr()

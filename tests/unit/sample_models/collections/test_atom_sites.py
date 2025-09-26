@@ -43,7 +43,7 @@ def atom_sites_collection():
 
 
 def test_atom_sites_add(atom_sites_collection):
-    atom_sites_collection.add(
+    atom_sites_collection.add_from_args(
         label='O1',
         type_symbol='O',
         fract_x=0.1,
@@ -71,8 +71,10 @@ def test_atom_sites_add(atom_sites_collection):
 
 
 def test_atom_sites_add_multiple(atom_sites_collection):
-    atom_sites_collection.add(label='O1', type_symbol='O', fract_x=0.1, fract_y=0.2, fract_z=0.3)
-    atom_sites_collection.add(label='C1', type_symbol='C', fract_x=0.4, fract_y=0.5, fract_z=0.6)
+    atom_sites_collection.add_from_args(label='O1', type_symbol='O', fract_x=0.1, fract_y=0.2,
+    fract_z=0.3,)
+    atom_sites_collection.add_from_args(label='C1', type_symbol='C', fract_x=0.4, fract_y=0.5,
+    fract_z=0.6,)
 
     # Assertions
     assert 'O1' in atom_sites_collection._items

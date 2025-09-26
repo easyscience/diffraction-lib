@@ -213,3 +213,5 @@ class DatablockCollection(DatablockBase, MutableMapping):
     # ------------------------------------------------------------------
 
     # TODO: Move add/remove from child classes to here
+    #  Check implementation in CategoryCollection with
+    #  item._parent = self
