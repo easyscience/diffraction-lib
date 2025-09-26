@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from collections.abc import MutableMapping
 from typing import Any
 from typing import List
@@ -13,7 +14,20 @@ from easydiffraction.core.parameters import Descriptor
 from easydiffraction.core.parameters import Parameter
 
 
-class Datablock(GuardedBase):
+class DatablockBase(GuardedBase):
+    _class_public_attrs = {
+        'parameters',
+    }
+
+    @property
+    @abstractmethod
+    def parameters(self) -> str:
+        raise NotImplementedError
+
+    # TODO: Add abstract property 'as_cif'
+
+
+class Datablock(DatablockBase):
     """Base container for sample model or experiment categories.
 
     Responsibilities:
@@ -27,8 +41,9 @@ class Datablock(GuardedBase):
     # ------------------------------------------------------------------
     _class_public_attrs = {
         'name',
-        'datablock_name',  # for compatibility with parent delegation
-    }  # extend in subclasses with real children
+        'datablock_name',
+        'categories',
+    }
 
     # ------------------------------------------------------------------
     # Initialization
@@ -59,28 +74,6 @@ class Datablock(GuardedBase):
     # Public read-only properties
     # ------------------------------------------------------------------
     @property
-    def parameters(self) -> list[Descriptor]:
-        """Return flattened list of parameters from all contained
-        categories.
-        """
-        params = []
-        for _attr_name, attr_obj in self.__dict__.items():
-            if isinstance(attr_obj, (CategoryItem, CategoryCollection)):
-                params.extend(attr_obj.parameters)
-        return params
-
-    @property
-    def categories(self) -> list[Union[CategoryItem, CategoryCollection]]:
-        """Return all component / collection category objects in the
-        datablock.
-        """
-        attr_objs = []
-        for attr_obj in self.__dict__.values():
-            if isinstance(attr_obj, (CategoryItem, CategoryCollection)):
-                attr_objs.append(attr_obj)
-        return attr_objs
-
-    @property
     def name(self) -> Optional[str]:
         """Return datablock name (may be ``None`` if unset)."""
         return self._name
@@ -94,10 +87,39 @@ class Datablock(GuardedBase):
         self._name = new_name
 
     # For compatibility with parent delegation.
-    datablock_name = name
+    @property
+    def datablock_name(self) -> Optional[str]:
+        """Return datablock name."""
+        return self.name
+
+    @property
+    def full_name(self) -> str:
+        return self.datablock_name
+
+    @property
+    def categories(self) -> list[Union[CategoryItem, CategoryCollection]]:
+        """Return all component / collection category objects in the
+        datablock.
+        """
+        attr_objs = []
+        for attr_obj in self.__dict__.values():
+            if isinstance(attr_obj, (CategoryItem, CategoryCollection)):
+                attr_objs.append(attr_obj)
+        return attr_objs
+
+    @property
+    def parameters(self) -> list[Descriptor]:
+        """Return flattened list of parameters from all contained
+        categories.
+        """
+        params = []
+        for _attr_name, attr_obj in self.__dict__.items():
+            if isinstance(attr_obj, (CategoryItem, CategoryCollection)):
+                params.extend(attr_obj.parameters)
+        return params
 
 
-class DatablockCollection(GuardedBase, MutableMapping):
+class DatablockCollection(DatablockBase, MutableMapping):
     """Handles top-level collections (e.g. SampleModels, Experiments).
 
     Each item is a Datablock.
@@ -106,7 +128,10 @@ class DatablockCollection(GuardedBase, MutableMapping):
     # ------------------------------------------------------------------
     # Class configuration
     # ------------------------------------------------------------------
-    _class_public_attrs = set()
+    _class_public_attrs = {
+        'parameters',
+        'as_cif',
+    }
 
     # ------------------------------------------------------------------
     # Initialization
@@ -147,6 +172,10 @@ class DatablockCollection(GuardedBase, MutableMapping):
     # ------------------------------------------------------------------
     # Public read-only properties
     # ------------------------------------------------------------------
+    @property
+    def full_name(self) -> str:
+        return None  # Collections do not have names
+
     @property
     def parameters(self) -> list[Descriptor]:
         params = []

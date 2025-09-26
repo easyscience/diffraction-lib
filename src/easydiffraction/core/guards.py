@@ -18,10 +18,12 @@ class DiagnosticsMixin:
     error/warning reporting.
     """
 
-    def _readonly_error(self) -> None:
+    def _readonly_error(self, key=None) -> None:
         """Error for attempts to modify a read-only attribute."""
-        caller = inspect.stack()[1].function
-        message = f'Attribute {caller} of {self.uid} is read-only.'
+        caller = key if key is not None else inspect.stack()[1].function
+        obj_type = type(self).__name__
+        obj_name = self.full_name
+        message = f"Attribute '{caller}' of '{obj_type}' ({obj_name}) is read-only"
         log.error(message, exc_type=AttributeError)
 
     def _setattr_error(self, key: str, allowed: set[str] | None = None) -> None:
@@ -42,7 +44,7 @@ class DiagnosticsMixin:
 
     def _type_warning(self, key: str, expected: type, got: Any) -> None:
         """Warning for wrong type assignment (respects Logger mode)."""
-        message = f'Got type {type(got).__name__} for {key}. Allowed: {expected.__name__}.'
+        message = f'Got type {type(got).__name__} for {key}. Allowed: {expected.__name__}'
         log.warning(message, exc_type=UserWarning)
 
     def _allowed_values_warning(self, key: str, value: Any, allowed: list[Any]) -> None:
@@ -57,7 +59,7 @@ class DiagnosticsMixin:
 
     def _range_warning(self, key: str, value: Any, min_val: Any, max_val: Any) -> None:
         """Warning for value outside allowed range."""
-        message = f'Value {value} for {key} is outside [{min_val}, {max_val}].'
+        message = f'Value {value} for {key} is outside [{min_val}, {max_val}]'
         log.warning(message, exc_type=UserWarning)
 
 
@@ -94,16 +96,32 @@ class AttributeGuardMixin:
 
         Emits a helpful error and returns False otherwise.
         """
+        # Private attributes are always allowed
         if key.startswith('_'):
             return True
+        # Check against allowed public attributes
         allowed = type(self)._merged_public_attrs
         if key not in allowed:
             self._setattr_error(key, allowed)
+            return False
+        # Check if it's a property without a setter (read-only)
+        attr = getattr(type(self), key, None)
+        if isinstance(attr, property) and attr.fset is None:
+            self._readonly_error(key)
             return False
         return True
 
 
 class GuardedBase(ABC, AttributeGuardMixin, DiagnosticsMixin):
+    _class_public_attrs = {
+        'full_name',
+    }
+
+    @property
+    @abstractmethod
+    def full_name(self) -> str:
+        raise NotImplementedError
+
     @abstractmethod
     def __str__(self) -> str:
         """Subclasses must implement human-readable representation."""

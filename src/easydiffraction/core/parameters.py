@@ -197,10 +197,6 @@ class GenericConstant(ConstantBase):
     def value(self) -> Any:
         return self._value
 
-    @value.setter
-    def value(self, _):
-        self._readonly_error()
-
     @property
     def uid(self) -> str:
         return self._uid

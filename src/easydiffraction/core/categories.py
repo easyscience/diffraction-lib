@@ -10,7 +10,36 @@ from easydiffraction.core.parameters import Descriptor
 from easydiffraction.core.parameters import Parameter
 
 
-class CategoryItem(GuardedBase):
+class CategoryBase(GuardedBase):
+    _class_public_attrs = {
+        'category_key',
+        'datablock_name',
+        'parameters',
+        'as_cif',
+    }
+
+    @property
+    @abstractmethod
+    def category_key(self) -> str:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def datablock_name(self) -> str:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def parameters(self) -> str:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def as_cif(self) -> str:
+        raise NotImplementedError
+
+
+class CategoryItem(CategoryBase):
     """Base class for logical model components.
 
     Examples:
@@ -27,8 +56,8 @@ class CategoryItem(GuardedBase):
     # Class configuration
     # ------------------------------------------------------------------
     _class_public_attrs = {
-        'datablock_name',  # TODO: Needed?
-        'category_entry_name',  # TODO: Needed?
+        'category_entry_name',
+        'as_dict',
     }
     _MISSING_ATTR = object()
 
@@ -71,6 +100,10 @@ class CategoryItem(GuardedBase):
 
     def __setattr__(self, key: str, value: Any) -> None:
         """Controlled attribute assignment with reusable guard."""
+        # To be sure that validation is done first
+        if not self._validate_setattr(key):
+            return
+        # Need to check if attribute already exists
         try:
             attr = object.__getattribute__(self, key)
         except AttributeError:
@@ -78,33 +111,22 @@ class CategoryItem(GuardedBase):
         # If replacing or assigning any descriptor/parameter instance
         if isinstance(value, (Descriptor, Parameter)):
             value._parent = self
-            super.__setattr__(self, key, value)
+            object.__setattr__(self, key, value)
         # If updating the value of an existing descriptor/parameter
         elif attr is not self._MISSING_ATTR and isinstance(attr, (Descriptor, Parameter)):
             attr.value = value
         else:
-            super.__setattr__(self, key, value)
+            object.__setattr__(self, key, value)
 
     # ------------------------------------------------------------------
     # Public read-only properties
     # ------------------------------------------------------------------
-    @property
-    def parameters(self) -> list[Descriptor]:
-        """Return all descriptor/parameter instances owned by this
-        component.
-        """
-        return [v for v in self.__dict__.values() if isinstance(v, (Descriptor, Parameter))]
-
     @property
     def datablock_name(self) -> Optional[str]:
         """Read-only datablock name (delegated to parent)."""
         if self._parent is not None:
             return getattr(self._parent, 'datablock_name', None)
         return None
-
-    @datablock_name.setter
-    def datablock_name(self, _):
-        self._readonly_error()
 
     @property
     def category_entry_name(self) -> Optional[str]:
@@ -115,9 +137,23 @@ class CategoryItem(GuardedBase):
         name = attr.value
         return name
 
-    @category_entry_name.setter
-    def category_entry_name(self, _) -> None:
-        self._readonly_error()
+    @property
+    def full_name(self) -> str:
+        parts = []
+        if self.datablock_name:
+            parts.append(self.datablock_name)
+        if self.category_key:
+            parts.append(self.category_key)
+        if self.category_entry_name:
+            parts.append(str(self.category_entry_name))
+        return '.'.join(parts)
+
+    @property
+    def parameters(self) -> list[Descriptor]:
+        """Return all descriptor/parameter instances owned by this
+        component.
+        """
+        return [v for v in self.__dict__.values() if isinstance(v, (Descriptor, Parameter))]
 
     @property
     def as_dict(self) -> dict[str, Any]:
@@ -156,7 +192,7 @@ class CategoryItem(GuardedBase):
             param.from_cif(block, idx=idx)
 
 
-class CategoryCollection(GuardedBase):
+class CategoryCollection(CategoryBase):
     """Handles loop-style category containers (e.g. AtomSites).
 
     Each item is a CategoryItem (component).
@@ -165,9 +201,7 @@ class CategoryCollection(GuardedBase):
     # ------------------------------------------------------------------
     # Class configuration
     # ------------------------------------------------------------------
-    _class_public_attrs = {
-        'datablock_name',
-    }
+    _class_public_attrs = set()
 
     # ------------------------------------------------------------------
     # Initialization
@@ -194,12 +228,17 @@ class CategoryCollection(GuardedBase):
     # Public read-only properties
     # ------------------------------------------------------------------
     @property
-    def parameters(self) -> list[Descriptor]:
-        params = []
-        for item in self._items.values():
-            if hasattr(item, 'parameters'):
-                params.extend(item.parameters)
-        return params
+    def category_key(self):
+        return self._child_class().category_key
+
+    @property
+    def full_name(self) -> str:
+        parts = []
+        if self.datablock_name:
+            parts.append(self.datablock_name)
+        if self.category_key:
+            parts.append(self.category_key)
+        return '.'.join(parts)
 
     @property
     def datablock_name(self):
@@ -210,9 +249,13 @@ class CategoryCollection(GuardedBase):
             return getattr(self._parent, 'datablock_name', None)
         return None
 
-    @datablock_name.setter
-    def datablock_name(self, _):
-        self._readonly_error()
+    @property
+    def parameters(self) -> list[Descriptor]:
+        params = []
+        for item in self._items.values():
+            if hasattr(item, 'parameters'):
+                params.extend(item.parameters)
+        return params
 
     @property
     def as_cif(self) -> str:
@@ -278,6 +321,7 @@ class CategoryCollection(GuardedBase):
         child_obj = self._child_class(*args, **kwargs)
         self.add(child_obj)
 
+    # TODO: from_cif or add_from_cif as above?
     def from_cif(self, block):
         # Derive loop size using category_entry_name first CIF tag alias
         if self._child_class is None:
