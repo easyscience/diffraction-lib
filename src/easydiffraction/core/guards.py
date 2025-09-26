@@ -19,6 +19,7 @@ class GuardedBase(ABC):
         # Reuse __str__; subclasses only override if needed
         return self.__str__()
 
+    @abstractmethod
     def __setattr__(self, key, value):
         """Subclasses must implement controlled attribute setting."""
         raise NotImplementedError
@@ -76,12 +77,14 @@ class DiagnosticsMixin:
         log.warning(message, exc_type=UserWarning)
 
 
-class AttributeAccessGuardMixin:
-    """Blocks adding unknown attributes and caches the allowed set.
+class AttributeGuardMixin:
+    """Reusable mixin enforcing controlled __setattr__ rules.
 
-    The union of ``_class_public_attrs`` across the class MRO and the
-    instance's current public ``__dict__`` keys defines what can be
-    assigned via normal attribute access.
+    - Private attributes (names starting with '_') are always allowed.
+    - Public attributes must be whitelisted in `_merged_public_attrs`,
+       which is the union of `_class_public_attrs` across the MRO.
+    - Error reporting is delegated to DiagnosticsMixin (e.g.,
+       _setattr_error).
     """
 
     _class_public_attrs: set[str] = set()
@@ -101,26 +104,16 @@ class AttributeAccessGuardMixin:
         allowed = type(self)._merged_public_attrs
         self._getattr_error(key, allowed)
 
+    def _validate_setattr(self, key: str) -> bool:
+        """Return True if assignment is allowed (private or
+        whitelisted).
 
-class AttributeSetGuardMixin:
-    """Provides a reusable guard for __setattr__ implementations.
-
-    - Private attributes (starting with '_') are always allowed.
-    - Public attributes must be in `_merged_public_attrs`.
-    - Delegates error reporting to DiagnosticsMixin._setattr_error.
-    """
-
-    def _guarded_setattr(self, key: str, value: Any) -> bool:
-        """Helper for __setattr__ implementations.
-
-        Returns True if the attribute was handled (set or error), False
-        if the caller should continue with custom logic.
+        Emits a helpful error and returns False otherwise.
         """
         if key.startswith('_'):
-            object.__setattr__(self, key, value)
             return True
         allowed = type(self)._merged_public_attrs
         if key not in allowed:
             self._setattr_error(key, allowed)
-            return True
-        return False
+            return False
+        return True

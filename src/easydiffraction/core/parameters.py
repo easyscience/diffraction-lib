@@ -41,8 +41,7 @@ from typing import TypeVar
 
 import numpy as np
 
-from easydiffraction.core.guards import AttributeAccessGuardMixin
-from easydiffraction.core.guards import AttributeSetGuardMixin
+from easydiffraction.core.guards import AttributeGuardMixin
 from easydiffraction.core.guards import DiagnosticsMixin
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.singletons import UidMapHandler
@@ -65,8 +64,7 @@ class Domain(Enum):
 # ----------------------------------------------------------------------
 class ConstantBase(
     DiagnosticsMixin,
-    AttributeAccessGuardMixin,
-    AttributeSetGuardMixin,
+    AttributeGuardMixin,
     GuardedBase,
     ABC,
 ):
@@ -113,7 +111,7 @@ class ConstantBase(
         self._allowed_values_provider = self._make_callable(allowed_values)
 
     def __setattr__(self, key: str, value: Any) -> None:
-        if self._guarded_setattr(key, value):
+        if not self._validate_setattr(key):
             return
         object.__setattr__(self, key, value)
 

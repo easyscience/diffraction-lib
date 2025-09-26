@@ -8,8 +8,7 @@ from typing import Union
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.guards import AttributeAccessGuardMixin
-from easydiffraction.core.guards import AttributeSetGuardMixin
+from easydiffraction.core.guards import AttributeGuardMixin
 from easydiffraction.core.guards import DiagnosticsMixin
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import Descriptor
@@ -18,8 +17,7 @@ from easydiffraction.core.parameters import Parameter
 
 class Datablock(
     DiagnosticsMixin,
-    AttributeAccessGuardMixin,
-    AttributeSetGuardMixin,
+    AttributeGuardMixin,
     GuardedBase,
 ):
     """Base container for sample model or experiment categories.
@@ -59,7 +57,7 @@ class Datablock(
 
     def __setattr__(self, key: str, value: Any) -> None:
         """Controlled attribute setting (with datablock propagation)."""
-        if self._guarded_setattr(key, value):
+        if not self._validate_setattr(key):
             return
         if isinstance(value, (CategoryItem, CategoryCollection)):
             value._parent = self
@@ -109,8 +107,7 @@ class Datablock(
 
 class DatablockCollection(
     DiagnosticsMixin,
-    AttributeAccessGuardMixin,
-    AttributeSetGuardMixin,
+    AttributeGuardMixin,
     GuardedBase,
     MutableMapping,
 ):
@@ -140,7 +137,7 @@ class DatablockCollection(
 
     def __setattr__(self, key: str, value: Any) -> None:
         """Controlled attribute setting (with datablock propagation)."""
-        if self._guarded_setattr(key, value):
+        if not self._validate_setattr(key):
             return
         if isinstance(value, (CategoryItem, CategoryCollection)):
             value._parent = self

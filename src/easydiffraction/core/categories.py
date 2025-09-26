@@ -5,8 +5,7 @@ from typing import Any
 from typing import Iterator
 from typing import Optional
 
-from easydiffraction.core.guards import AttributeAccessGuardMixin
-from easydiffraction.core.guards import AttributeSetGuardMixin
+from easydiffraction.core.guards import AttributeGuardMixin
 from easydiffraction.core.guards import DiagnosticsMixin
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import Descriptor
@@ -15,8 +14,7 @@ from easydiffraction.core.parameters import Parameter
 
 class CategoryItem(
     DiagnosticsMixin,
-    AttributeAccessGuardMixin,
-    AttributeSetGuardMixin,
+    AttributeGuardMixin,
     GuardedBase,
 ):
     """Base class for logical model components.
@@ -79,7 +77,7 @@ class CategoryItem(
 
     def __setattr__(self, key: str, value: Any) -> None:
         """Controlled attribute assignment with reusable guard."""
-        if self._guarded_setattr(key, value):
+        if not self._validate_setattr(key):
             return
         try:
             attr = object.__getattribute__(self, key)
@@ -168,8 +166,7 @@ class CategoryItem(
 
 class CategoryCollection(
     DiagnosticsMixin,
-    AttributeAccessGuardMixin,
-    AttributeSetGuardMixin,
+    AttributeGuardMixin,
     GuardedBase,
 ):
     """Handles loop-style category containers (e.g. AtomSites).
@@ -206,7 +203,7 @@ class CategoryCollection(
         return iter(self._items.values())
 
     def __setattr__(self, key: str, value: Any) -> None:
-        if self._guarded_setattr(key, value):
+        if not self._validate_setattr(key):
             return
         object.__setattr__(self, key, value)
 
