@@ -7,10 +7,10 @@ from abc import abstractmethod
 from typing import Optional
 
 import numpy as np
+from typeguard import typechecked
 
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import SampleFormEnum
-from easydiffraction.utils.decorators import enforce_type
 
 
 class BaseDatastore:
@@ -42,7 +42,7 @@ class BaseDatastore:
         return self._calc
 
     @calc.setter
-    @enforce_type
+    @typechecked
     def calc(self, values: np.ndarray) -> None:
         """Set calculated intensities (from
         Analysis.calculate_pattern()).

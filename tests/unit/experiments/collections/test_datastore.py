@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from typeguard import TypeCheckError
 
 from easydiffraction.experiments.datastore import DatastoreFactory
 from easydiffraction.experiments.datastore import PowderDatastore
@@ -17,11 +18,10 @@ def test_powder_datastore_init():
     assert ds.d is None
     assert ds.bkg is None
 
-
 def test_powder_datastore_calc():
     ds = PowderDatastore()
-    with pytest.raises(TypeError):
-        ds.calc = [1, 2, 3]  # Should raise TypeError because list is not allowed
+    with pytest.raises(TypeCheckError):
+        ds.calc = [1, 2, 3]  # Should raise because list is not allowed
     arr = np.array([1, 2, 3])
     ds.calc = arr
     assert np.array_equal(ds.calc, arr)

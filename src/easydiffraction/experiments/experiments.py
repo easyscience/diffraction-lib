@@ -3,6 +3,8 @@
 
 from typing import List
 
+from typeguard import typechecked
+
 from easydiffraction.core.datablocks import DatablockCollection
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
@@ -10,7 +12,6 @@ from easydiffraction.experiments.components.experiment_type import SampleFormEnu
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 from easydiffraction.experiments.experiment import BaseExperiment
 from easydiffraction.experiments.experiment import Experiment
-from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 
 
@@ -22,20 +23,24 @@ class Experiments(DatablockCollection):
         # self._experiments: Dict[str, BaseExperiment] = self._items
         self._experiments = self._datablocks  # Alias for legacy support
 
+    @typechecked
     def add(self, experiment: BaseExperiment):
         """Add a pre-built experiment instance."""
         self._add_prebuilt_experiment(experiment)
 
+    @typechecked
     def add_from_cif_path(self, cif_path: str):
         """Add a new experiment from a CIF file path."""
         experiment = Experiment(cif_path=cif_path)
         self._add_prebuilt_experiment(experiment)
 
+    @typechecked
     def add_from_cif_str(self, cif_str: str):
         """Add a new experiment from CIF file content (string)."""
         experiment = Experiment(cif_str=cif_str)
         self._add_prebuilt_experiment(experiment)
 
+    @typechecked
     def add_from_data_path(
         self,
         name: str,
@@ -56,6 +61,7 @@ class Experiments(DatablockCollection):
         )
         self._add_prebuilt_experiment(experiment)
 
+    @typechecked
     def add_without_data(
         self,
         name: str,
@@ -74,10 +80,11 @@ class Experiments(DatablockCollection):
         )
         self._add_prebuilt_experiment(experiment)
 
-    @enforce_type
+    @typechecked
     def _add_prebuilt_experiment(self, experiment: BaseExperiment):
         self._experiments[experiment.name] = experiment
 
+    @typechecked
     def remove(self, experiment_id: str) -> None:
         if experiment_id in self._experiments:
             del self._experiments[experiment_id]

@@ -1,12 +1,13 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from typeguard import typechecked
+
 from easydiffraction.core.datablocks import Datablock
 from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.sample_models.collections.atom_sites import AtomSites
 from easydiffraction.sample_models.components.cell import Cell
 from easydiffraction.sample_models.components.space_group import SpaceGroup
-from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.logging import log as logger
 from easydiffraction.utils.utils import render_cif
@@ -42,7 +43,7 @@ class BaseSampleModel(Datablock):
         return self._space_group
 
     @space_group.setter
-    @enforce_type
+    @typechecked
     def space_group(self, new_space_group: SpaceGroup):
         self._space_group = new_space_group
 
@@ -55,7 +56,7 @@ class BaseSampleModel(Datablock):
         return self._cell
 
     @cell.setter
-    @enforce_type
+    @typechecked
     def cell(self, new_cell: Cell):
         self._cell = new_cell
 
@@ -68,7 +69,7 @@ class BaseSampleModel(Datablock):
         return self._atom_sites
 
     @atom_sites.setter
-    @enforce_type
+    @typechecked
     def atom_sites(self, new_atom_sites: AtomSites):
         self._atom_sites = new_atom_sites
 

@@ -40,6 +40,7 @@ dependencies = [
   'diffpy.pdffit2', # Calculations of Pair Distribution Function (PDF), Python >=3.11,<3.14
   'diffpy.utils',   # Utilities for PDF calculations
   'uncertainties',  # Propagation of uncertainties
+  'typeguard',      # Runtime type checking
 ]
 
 [project.optional-dependencies]

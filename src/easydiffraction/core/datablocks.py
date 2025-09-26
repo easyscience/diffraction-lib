@@ -211,7 +211,5 @@ class DatablockCollection(DatablockBase, MutableMapping):
     # ------------------------------------------------------------------
     # Public methods
     # ------------------------------------------------------------------
-    def add(self, item):
-        # Insert the item using its name as key
-        self._datablocks[item.name] = item
-        item._parent = self
+
+    # TODO: Move add/remove from child classes to here

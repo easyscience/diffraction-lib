@@ -6,6 +6,7 @@ from typing import List
 from typing import Optional
 
 import numpy as np
+from typeguard import typechecked
 
 from easydiffraction.core.datablocks import Datablock
 from easydiffraction.experiments.collections.background import BackgroundFactory
@@ -22,7 +23,6 @@ from easydiffraction.experiments.components.instrument import InstrumentFactory
 from easydiffraction.experiments.components.peak import PeakFactory
 from easydiffraction.experiments.components.peak import PeakProfileTypeEnum
 from easydiffraction.experiments.datastore import DatastoreFactory
-from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_cif
@@ -47,7 +47,7 @@ class InstrumentMixin:
         return self._instrument
 
     @instrument.setter
-    @enforce_type
+    @typechecked
     def instrument(self, new_instrument: InstrumentBase):
         self._instrument = new_instrument
         self._instrument._parent = self
@@ -85,7 +85,7 @@ class BaseExperiment(Datablock):
         return self._type
 
     @type.setter
-    @enforce_type
+    @typechecked
     def type(self, new_experiment_type: ExperimentType):
         self._type = new_experiment_type
 

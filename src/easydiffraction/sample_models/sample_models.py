@@ -3,10 +3,11 @@
 
 from typing import List
 
+from typeguard import typechecked
+
 from easydiffraction.core.datablocks import DatablockCollection
 from easydiffraction.sample_models.sample_model import BaseSampleModel
 from easydiffraction.sample_models.sample_model import SampleModel
-from easydiffraction.utils.decorators import enforce_type
 from easydiffraction.utils.formatting import paragraph
 
 
@@ -26,7 +27,7 @@ class SampleModels(DatablockCollection):
     # Add / Remove methods
     # --------------------
 
-    @enforce_type
+    @typechecked
     def add(self, model: BaseSampleModel) -> None:
         """Add a pre-built SampleModel instance.
 
@@ -35,6 +36,7 @@ class SampleModels(DatablockCollection):
         """
         self._models[model.name] = model
 
+    @typechecked
     def add_from_cif_path(self, cif_path: str) -> None:
         """Create and add a model from a CIF file path.
 
@@ -44,6 +46,7 @@ class SampleModels(DatablockCollection):
         model = SampleModel(cif_path=cif_path)
         self.add(model)
 
+    @typechecked
     def add_from_cif_str(self, cif_str: str) -> None:
         """Create and add a model from CIF content (string).
 
@@ -53,6 +56,7 @@ class SampleModels(DatablockCollection):
         model = SampleModel(cif_str=cif_str)
         self.add(model)
 
+    @typechecked
     def add_minimal(self, name: str) -> None:
         """Create and add a minimal model (defaults, no atoms).
 
@@ -62,6 +66,7 @@ class SampleModels(DatablockCollection):
         model = SampleModel(name=name)
         self.add(model)
 
+    @typechecked
     def remove(self, name: str) -> None:
         """Remove a sample model by its ID.
 
