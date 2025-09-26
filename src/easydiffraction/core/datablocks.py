@@ -8,18 +8,12 @@ from typing import Union
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.guards import AttributeGuardMixin
-from easydiffraction.core.guards import DiagnosticsMixin
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import Descriptor
 from easydiffraction.core.parameters import Parameter
 
 
-class Datablock(
-    DiagnosticsMixin,
-    AttributeGuardMixin,
-    GuardedBase,
-):
+class Datablock(GuardedBase):
     """Base container for sample model or experiment categories.
 
     Responsibilities:
@@ -57,11 +51,9 @@ class Datablock(
 
     def __setattr__(self, key: str, value: Any) -> None:
         """Controlled attribute setting (with datablock propagation)."""
-        if not self._validate_setattr(key):
-            return
         if isinstance(value, (CategoryItem, CategoryCollection)):
             value._parent = self
-        object.__setattr__(self, key, value)
+        super().__setattr__(key, value)  # enforces guard
 
     # ------------------------------------------------------------------
     # Public read-only properties
@@ -105,12 +97,7 @@ class Datablock(
     datablock_name = name
 
 
-class DatablockCollection(
-    DiagnosticsMixin,
-    AttributeGuardMixin,
-    GuardedBase,
-    MutableMapping,
-):
+class DatablockCollection(GuardedBase, MutableMapping):
     """Handles top-level collections (e.g. SampleModels, Experiments).
 
     Each item is a Datablock.
@@ -137,11 +124,9 @@ class DatablockCollection(
 
     def __setattr__(self, key: str, value: Any) -> None:
         """Controlled attribute setting (with datablock propagation)."""
-        if not self._validate_setattr(key):
-            return
         if isinstance(value, (CategoryItem, CategoryCollection)):
             value._parent = self
-        object.__setattr__(self, key, value)
+        super.__setattr__(self, key, value)
 
     def __getitem__(self, name):
         return self._datablocks[name]

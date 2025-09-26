@@ -5,18 +5,12 @@ from typing import Any
 from typing import Iterator
 from typing import Optional
 
-from easydiffraction.core.guards import AttributeGuardMixin
-from easydiffraction.core.guards import DiagnosticsMixin
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import Descriptor
 from easydiffraction.core.parameters import Parameter
 
 
-class CategoryItem(
-    DiagnosticsMixin,
-    AttributeGuardMixin,
-    GuardedBase,
-):
+class CategoryItem(GuardedBase):
     """Base class for logical model components.
 
     Examples:
@@ -77,8 +71,6 @@ class CategoryItem(
 
     def __setattr__(self, key: str, value: Any) -> None:
         """Controlled attribute assignment with reusable guard."""
-        if not self._validate_setattr(key):
-            return
         try:
             attr = object.__getattribute__(self, key)
         except AttributeError:
@@ -86,12 +78,12 @@ class CategoryItem(
         # If replacing or assigning any descriptor/parameter instance
         if isinstance(value, (Descriptor, Parameter)):
             value._parent = self
-            object.__setattr__(self, key, value)
+            super.__setattr__(self, key, value)
         # If updating the value of an existing descriptor/parameter
         elif attr is not self._MISSING_ATTR and isinstance(attr, (Descriptor, Parameter)):
             attr.value = value
         else:
-            object.__setattr__(self, key, value)
+            super.__setattr__(self, key, value)
 
     # ------------------------------------------------------------------
     # Public read-only properties
@@ -164,11 +156,7 @@ class CategoryItem(
             param.from_cif(block, idx=idx)
 
 
-class CategoryCollection(
-    DiagnosticsMixin,
-    AttributeGuardMixin,
-    GuardedBase,
-):
+class CategoryCollection(GuardedBase):
     """Handles loop-style category containers (e.g. AtomSites).
 
     Each item is a CategoryItem (component).
@@ -201,11 +189,6 @@ class CategoryCollection(
 
     def __iter__(self) -> Iterator[CategoryItem]:
         return iter(self._items.values())
-
-    def __setattr__(self, key: str, value: Any) -> None:
-        if not self._validate_setattr(key):
-            return
-        object.__setattr__(self, key, value)
 
     # ------------------------------------------------------------------
     # Public read-only properties

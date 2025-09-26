@@ -31,7 +31,6 @@ from __future__ import annotations
 
 import secrets
 import string
-from abc import ABC
 from enum import Enum
 from enum import auto
 from typing import Any
@@ -41,8 +40,6 @@ from typing import TypeVar
 
 import numpy as np
 
-from easydiffraction.core.guards import AttributeGuardMixin
-from easydiffraction.core.guards import DiagnosticsMixin
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.singletons import UidMapHandler
 from easydiffraction.utils.utils import str_to_ufloat
@@ -62,12 +59,7 @@ class Domain(Enum):
 # ----------------------------------------------------------------------
 # Constant hierarchy (base + generic + CIF-aware concrete)
 # ----------------------------------------------------------------------
-class ConstantBase(
-    DiagnosticsMixin,
-    AttributeGuardMixin,
-    GuardedBase,
-    ABC,
-):
+class ConstantBase(GuardedBase):
     """Abstract root for constant-like objects."""
 
     _readonly_attributes = {
@@ -109,11 +101,6 @@ class ConstantBase(
         self._editable = editable
         self._default_value_provider = self._make_callable(default_value)
         self._allowed_values_provider = self._make_callable(allowed_values)
-
-    def __setattr__(self, key: str, value: Any) -> None:
-        if not self._validate_setattr(key):
-            return
-        object.__setattr__(self, key, value)
 
     @property
     def parameters(self) -> list:

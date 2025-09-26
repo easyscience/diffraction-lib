@@ -9,22 +9,6 @@ from typing import Any
 from easydiffraction import log
 
 
-class GuardedBase(ABC):
-    @abstractmethod
-    def __str__(self) -> str:
-        """Subclasses must implement human-readable representation."""
-        raise NotImplementedError
-
-    def __repr__(self) -> str:
-        # Reuse __str__; subclasses only override if needed
-        return self.__str__()
-
-    @abstractmethod
-    def __setattr__(self, key, value):
-        """Subclasses must implement controlled attribute setting."""
-        raise NotImplementedError
-
-
 class DiagnosticsMixin:
     """Centralized error and warning reporting for guarded objects.
 
@@ -117,3 +101,24 @@ class AttributeGuardMixin:
             self._setattr_error(key, allowed)
             return False
         return True
+
+
+class GuardedBase(ABC, AttributeGuardMixin, DiagnosticsMixin):
+    @abstractmethod
+    def __str__(self) -> str:
+        """Subclasses must implement human-readable representation."""
+        raise NotImplementedError
+
+    def __repr__(self) -> str:
+        # Reuse __str__; subclasses only override if needed
+        return self.__str__()
+
+    def __setattr__(self, key: str, value: Any) -> None:
+        """Default controlled attribute setting.
+
+        Subclasses should call `super().__setattr__` to preserve guard
+        checks before adding custom logic.
+        """
+        if not self._validate_setattr(key):
+            return
+        object.__setattr__(self, key, value)
