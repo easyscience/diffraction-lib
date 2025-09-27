@@ -7,6 +7,7 @@ from typing import Optional
 
 from typeguard import typechecked
 
+from easydiffraction import log
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import Descriptor
 from easydiffraction.core.parameters import Parameter
@@ -71,6 +72,7 @@ class CategoryItem(CategoryBase):
         identifiers.
         """
         self._parent: Optional[Any] = None
+        # TODO: should this be abstract to force subclasses to set it?
         self._category_entry_attr_name = None
 
     # ------------------------------------------------------------------
@@ -100,6 +102,7 @@ class CategoryItem(CategoryBase):
                 break
         return s
 
+    # TODO: Too complex; simplify
     def __setattr__(self, key: str, value: Any) -> None:
         """Controlled attribute assignment with reusable guard."""
         # To be sure that validation is done first
@@ -114,9 +117,24 @@ class CategoryItem(CategoryBase):
         if isinstance(value, (Descriptor, Parameter)):
             value._parent = self
             object.__setattr__(self, key, value)
-        # If updating the value of an existing descriptor/parameter
+        # Dealing with existing descriptor/parameter instance
         elif attr is not self._MISSING_ATTR and isinstance(attr, (Descriptor, Parameter)):
+            # Special pre-handling for category entry name attribute
+            if key == self._category_entry_attr_name:
+                old_name = self.category_entry_name
+                if old_name == value:
+                    log.warning('No change in name; skipping rename.')
+                    return
+                new_name = value
+                if self._parent is not None:
+                    if new_name in self._parent and self._parent[new_name] is not self:
+                        log.warning(f'Cannot rename to {new_name}: name already exists in parent.')
+                        return
+                    # Perform the replace in parent collection
+                    self._parent._replace_item(self, old_name, new_name)
+            # Update the value of the existing descriptor/parameter
             attr.value = value
+        # Setting any other attribute
         else:
             object.__setattr__(self, key, value)
 
@@ -225,6 +243,18 @@ class CategoryCollection(CategoryBase):
 
     def __iter__(self) -> Iterator[CategoryItem]:
         return iter(self._items.values())
+
+    # ------------------------------------------------------------------
+    # Private helpers
+    # ------------------------------------------------------------------
+    def _replace_item(
+        self,
+        item: CategoryItem,
+        old_name: str,
+        new_name: str,
+    ) -> None:
+        self._items.pop(old_name, None)
+        self._items[new_name] = item
 
     # ------------------------------------------------------------------
     # Public read-only properties
@@ -340,3 +370,6 @@ class CategoryCollection(CategoryBase):
             child_obj = self._child_class()
             child_obj.from_cif(block, idx=row_idx)
             self.add(child_obj)
+
+    def keys(self):
+        return self._items.keys()
