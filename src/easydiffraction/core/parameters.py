@@ -62,7 +62,7 @@ class Domain(Enum):
 class ConstantBase(GuardedBase):
     """Abstract root for constant-like objects."""
 
-    _readonly_attributes = {
+    _class_public_attrs = {
         'name',
         'pretty_name',
         'value_type',
@@ -73,7 +73,6 @@ class ConstantBase(GuardedBase):
         'default_value',
         'allowed_values',
     }
-    _class_public_attrs = _readonly_attributes
 
     @staticmethod
     def _make_callable(x):
@@ -146,15 +145,14 @@ class ConstantBase(GuardedBase):
 class GenericConstant(ConstantBase):
     """Adds runtime storage and UID to constants."""
 
-    _writable_attributes = {'value'}
-    _readonly_attributes = ConstantBase._readonly_attributes | {
+    _class_public_attrs = ConstantBase._class_public_attrs | {
+        'value',
         'uid',
         'full_name',
         'datablock_name',
         'category_key',
         'category_entry_name',
     }
-    _class_public_attrs = _readonly_attributes | _writable_attributes
 
     @staticmethod
     def _generate_uid() -> str:
@@ -261,19 +259,16 @@ class GenericDescriptor(GenericConstant):
 class GenericParameter(GenericDescriptor):
     """Parameter: refinable floats with bounds, uncertainty, flags."""
 
-    _writable_attributes = GenericDescriptor._writable_attributes | {
+    _class_public_attrs = GenericDescriptor._class_public_attrs | {
         'uncertainty',
         'free',
         'start_value',
-    }
-    _readonly_attributes = GenericDescriptor._readonly_attributes | {
         'physical_min',
         'physical_max',
         'fit_min',
         'fit_max',
         'constrained',
     }
-    _class_public_attrs = _readonly_attributes | _writable_attributes
 
     def __init__(
         self,
@@ -373,7 +368,10 @@ class GenericParameter(GenericDescriptor):
 # CIF mixin and concrete classes
 # ----------------------------------------------------------------------
 class CifMixin:
-    _readonly_attributes = {'full_cif_names', 'cif_uid'}
+    _class_public_attrs = {
+        'full_cif_names',
+        'cif_uid',
+    }
 
     def __init__(self, full_cif_names: list[str]) -> None:
         self._full_cif_names = full_cif_names
@@ -414,8 +412,7 @@ class CifMixin:
 class Descriptor(CifMixin, GenericDescriptor):
     """Concrete descriptor with CIF integration."""
 
-    _readonly_attributes = GenericDescriptor._readonly_attributes | CifMixin._readonly_attributes
-    _class_public_attrs = _readonly_attributes | GenericDescriptor._writable_attributes
+    _class_public_attrs = GenericDescriptor._class_public_attrs | CifMixin._class_public_attrs
 
     def __init__(
         self,
@@ -448,8 +445,7 @@ class Descriptor(CifMixin, GenericDescriptor):
 class Parameter(CifMixin, GenericParameter):
     """Concrete floating point parameter with CIF integration."""
 
-    _readonly_attributes = GenericParameter._readonly_attributes | CifMixin._readonly_attributes
-    _class_public_attrs = _readonly_attributes | GenericParameter._writable_attributes
+    _class_public_attrs = GenericParameter._class_public_attrs | CifMixin._class_public_attrs
 
     def __init__(
         self,
