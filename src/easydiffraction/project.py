@@ -7,9 +7,11 @@ import tempfile
 from textwrap import wrap
 from typing import List
 
+from typeguard import typechecked
 from varname import varname
 
 from easydiffraction.analysis.analysis import Analysis
+from easydiffraction.core.guards import GuardedBase
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.plotting.plotting import Plotter
@@ -119,13 +121,29 @@ class ProjectInfo:
         render_cif(cif_text, paragraph_title)
 
 
-class Project:
+class Project(GuardedBase):
     """Central API for managing a diffraction data analysis project.
 
     Provides access to sample models, experiments, analysis, and
     summary.
     """
 
+    # ------------------------------------------------------------------
+    # Class configuration
+    # ------------------------------------------------------------------
+    _class_public_attrs = {
+        'name',
+        'info',
+        'sample_models',
+        'experiments',
+        'analysis',
+        'summary',
+        'plotter',
+    }
+
+    # ------------------------------------------------------------------
+    # Initialization
+    # ------------------------------------------------------------------
     def __init__(
         self,
         name: str = 'untitled_project',
@@ -136,13 +154,32 @@ class Project:
         self.info.name = name
         self.info.title = title
         self.info.description = description
-        self.sample_models = SampleModels()
-        self.experiments = Experiments()
-        self.plotter = Plotter()
-        self.analysis = Analysis(self)
-        self.summary = Summary(self)
+        self._sample_models = SampleModels()
+        self._experiments = Experiments()
+        self._plotter = Plotter()
+        self._analysis = Analysis(self)
+        self._summary = Summary(self)
         self._saved = False
         self._varname = varname()
+
+    # ------------------------------------------------------------------
+    # Dunder methods
+    # ------------------------------------------------------------------
+    def __str__(self) -> str:
+        """Human-readable representation."""
+        class_name = self.__class__.__name__
+        project_name = self.name
+        sample_models_count = len(self.sample_models)
+        experiments_count = len(self.experiments)
+        return (
+            f"{class_name} '{project_name}' "
+            f'({sample_models_count} sample models, '
+            f'{experiments_count} experiments)'
+        )
+
+    # ------------------------------------------------------------------
+    # Public read-only properties
+    # ------------------------------------------------------------------
 
     @property
     def name(self) -> str:
@@ -150,6 +187,40 @@ class Project:
         directly.
         """
         return self.info.name
+
+    @property
+    def full_name(self) -> str:
+        return self.name
+
+    @property
+    def sample_models(self):
+        return self._sample_models
+
+    @sample_models.setter
+    @typechecked
+    def sample_models(self, sample_models: SampleModels):
+        self._sample_models = sample_models
+
+    @property
+    def experiments(self):
+        return self._experiments
+
+    @experiments.setter
+    @typechecked
+    def experiments(self, experiments: Experiments):
+        self._experiments = experiments
+
+    @property
+    def plotter(self):
+        return self._plotter
+
+    @property
+    def analysis(self):
+        return self._analysis
+
+    @property
+    def summary(self):
+        return self._summary
 
     # ------------------------------------------
     #  Project File I/O
@@ -166,18 +237,6 @@ class Project:
         # TODO: load project components from files inside dir_path
         print('Loading project is not implemented yet.')
         self._saved = True
-
-    def save_as(
-        self,
-        dir_path: str,
-        temporary: bool = False,
-    ) -> None:
-        """Save the project into a new directory."""
-        if temporary:
-            tmp: str = tempfile.gettempdir()
-            dir_path = pathlib.Path(tmp) / dir_path
-        self.info.path = dir_path
-        self.save()
 
     def save(self) -> None:
         """Save the project into the existing project directory."""
@@ -231,17 +290,17 @@ class Project:
         self.info.update_last_modified()
         self._saved = True
 
-    # ------------------------------------------
-    #  Sample Models API Convenience Methods
-    # ------------------------------------------
-
-    def set_sample_models(self, sample_models: SampleModels) -> None:
-        """Attach a collection of sample models to the project."""
-        self.sample_models = sample_models
-
-    def set_experiments(self, experiments: Experiments) -> None:
-        """Attach a collection of experiments to the project."""
-        self.experiments = experiments
+    def save_as(
+        self,
+        dir_path: str,
+        temporary: bool = False,
+    ) -> None:
+        """Save the project into a new directory."""
+        if temporary:
+            tmp: str = tempfile.gettempdir()
+            dir_path = pathlib.Path(tmp) / dir_path
+        self.info.path = dir_path
+        self.save()
 
     # ------------------------------------------
     # Plotting

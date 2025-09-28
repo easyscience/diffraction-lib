@@ -180,7 +180,7 @@ def test_project_save_as(mock_mkdir, mock_open, mock_print):
     mock_open.assert_any_call('w')
 
 
-def test_project_set_sample_models():
+def test_project_sample_models():
     with (
         patch('easydiffraction.sample_models.sample_models.SampleModels'),
         patch('easydiffraction.experiments.experiments.Experiments'),
@@ -190,13 +190,13 @@ def test_project_set_sample_models():
         project = Project()  # Directly assign the instance to a variable
 
     sample_models = MagicMock()
-    project.set_sample_models(sample_models)
+    project.sample_models = sample_models
 
     # Assertions
     assert project.sample_models == sample_models
 
 
-def test_project_set_experiments():
+def test_project_experiments():
     with (
         patch('easydiffraction.sample_models.sample_models.SampleModels'),
         patch('easydiffraction.experiments.experiments.Experiments'),
@@ -206,7 +206,7 @@ def test_project_set_experiments():
         project = Project()  # Directly assign the instance to a variable
 
     experiments = MagicMock()
-    project.set_experiments(experiments)
+    project.experiments = experiments
 
     # Assertions
     assert project.experiments == experiments
