@@ -145,13 +145,13 @@ class DatablockCollection(DatablockBase, MutableMapping):
     # ------------------------------------------------------------------
     def __str__(self) -> str:
         """Human-readable representation of this component."""
-        return f'DatablockCollection: {self.__class__.__name__} ({len(self)} items)'
+        return f'{self.__class__.__name__} collection ({len(self)} items)'
 
     def __setattr__(self, key: str, value: Any) -> None:
         """Controlled attribute setting (with datablock propagation)."""
         if isinstance(value, (CategoryItem, CategoryCollection)):
             value._parent = self
-        super.__setattr__(self, key, value)
+        super().__setattr__(key, value)  # enforces guard
 
     def __getitem__(self, name):
         return self._datablocks[name]
