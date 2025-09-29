@@ -5,24 +5,33 @@ from abc import abstractmethod
 from typing import Any
 from typing import List
 from typing import Optional
+from typing import TypeVar
 from typing import Union
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.collections import AbstractCollection
+from easydiffraction.core.collections import CollectionBase
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import Descriptor
 from easydiffraction.core.parameters import Parameter
 
+T = TypeVar('T')
+
 
 class AbstractDatablock(ABC):
+    # ------------------------------------------------------------------
+    # Class configuration
+    # ------------------------------------------------------------------
     _class_public_attrs = {
         'parameters',
     }
 
+    # ------------------------------------------------------------------
+    # Abstract API
+    # ------------------------------------------------------------------
     @property
     @abstractmethod
-    def parameters(self) -> str:
+    def parameters(self) -> list[Descriptor]:
         raise NotImplementedError
 
     # TODO: Add abstract property 'as_cif'
@@ -124,26 +133,41 @@ class DatablockItem(
 
 
 class DatablockCollection(
-    GuardedBase,
+    CollectionBase[T],
     AbstractDatablock,
-    AbstractCollection,
 ):
     """Handles top-level collections (e.g. SampleModels, Experiments).
 
     Each item is a Datablock.
     """
 
+    # ------------------------------------------------------------------
+    # Class configuration
+    # ------------------------------------------------------------------
     _class_public_attrs = {
         'as_cif',
     }
 
-    def __init__(self):
-        super().__init__(item_type=DatablockItem)
+    # ------------------------------------------------------------------
+    # Initialization
+    # ------------------------------------------------------------------
+    def __init__(self, item_type: type[T]) -> None:
+        super().__init__(item_type=item_type)
 
+    # ------------------------------------------------------------------
+    # Dunder methods
+    # ------------------------------------------------------------------
     def __str__(self) -> str:
         """Human-readable representation of this component."""
         return f'{self.__class__.__name__} collection ({len(self)} items)'
 
+    # ------------------------------------------------------------------
+    # Private helpers
+    # ------------------------------------------------------------------
+
+    # ------------------------------------------------------------------
+    # Public read-only properties
+    # ------------------------------------------------------------------
     @property
     def full_name(self) -> str:
         return None  # Collections do not have names
@@ -174,7 +198,6 @@ class DatablockCollection(
     # -----------
     # CIF methods
     # -----------
-
     @property
     def as_cif(self) -> str:
         # Concatenate as_cif of all contained datablocks

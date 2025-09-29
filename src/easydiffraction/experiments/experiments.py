@@ -13,11 +13,11 @@ from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.utils.formatting import paragraph
 
 
-class Experiments(DatablockCollection):
+class Experiments(DatablockCollection[Experiment]):
     """Collection manager for multiple Experiment instances."""
 
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__(item_type=Experiment)
 
     # --------------------
     # Add / Remove methods

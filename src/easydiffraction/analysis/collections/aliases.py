@@ -39,6 +39,6 @@ class Alias(CategoryItem):
         self.name = self.label.value
 
 
-class Aliases(CategoryCollection):
+class Aliases(CategoryCollection[Alias]):
     def __init__(self):
         super().__init__(item_type=Alias)

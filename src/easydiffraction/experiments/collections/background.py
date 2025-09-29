@@ -7,6 +7,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Type
+from typing import TypeVar
 from typing import Union
 
 import numpy as np
@@ -20,6 +21,8 @@ from easydiffraction.core.parameters import Parameter
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_table
+
+T = TypeVar('T')
 
 
 # TODO: rename to LineSegment
@@ -113,7 +116,7 @@ class PolynomialTerm(CategoryItem):
         self._category_entry_attr_name = self.order.name
 
 
-class BackgroundBase(CategoryCollection):
+class BackgroundBase(CategoryCollection[T]):
     @abstractmethod
     def calculate(self, x_data: np.ndarray) -> np.ndarray:
         pass
@@ -123,7 +126,7 @@ class BackgroundBase(CategoryCollection):
         pass
 
 
-class LineSegmentBackground(BackgroundBase):
+class LineSegmentBackground(BackgroundBase[Point]):
     _description: str = 'Linear interpolation between points'
 
     def __init__(self):
@@ -167,7 +170,7 @@ class LineSegmentBackground(BackgroundBase):
         )
 
 
-class ChebyshevPolynomialBackground(BackgroundBase):
+class ChebyshevPolynomialBackground(BackgroundBase[PolynomialTerm]):
     _description: str = 'Chebyshev polynomial background'
 
     def __init__(self):

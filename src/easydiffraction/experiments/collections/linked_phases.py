@@ -45,7 +45,7 @@ class LinkedPhase(CategoryItem):
         self.name = self.id.value
 
 
-class LinkedPhases(CategoryCollection):
+class LinkedPhases(CategoryCollection[LinkedPhase]):
     """Collection of LinkedPhase instances."""
 
     def __init__(self):

@@ -116,11 +116,13 @@ class AtomSite(CategoryItem):
             full_cif_names=['_atom_site.B_iso_or_equiv'],
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
         )
+        # TODO: how to merge _category_entry_attr_name and name into
+        #  one? Think of 'name' vs 'label' vs 'unique_name' vs 'id'
         self._category_entry_attr_name = self.label.name
         self.name = self.label.value
 
 
-class AtomSites(CategoryCollection):
+class AtomSites(CategoryCollection[AtomSite]):
     """Collection of AtomSite instances."""
 
     def __init__(self):

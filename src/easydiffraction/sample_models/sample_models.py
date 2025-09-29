@@ -10,11 +10,11 @@ from easydiffraction.sample_models.sample_model import SampleModel
 from easydiffraction.utils.formatting import paragraph
 
 
-class SampleModels(DatablockCollection):
+class SampleModels(DatablockCollection[BaseSampleModel]):
     """Collection manager for multiple SampleModel instances."""
 
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__(item_type=BaseSampleModel)
 
     # --------------------
     # Add / Remove methods

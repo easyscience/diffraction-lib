@@ -1,19 +1,26 @@
 from __future__ import annotations
 
+from abc import ABC
 from abc import abstractmethod
 from typing import Any
 from typing import Optional
+from typing import TypeVar
 
 from typeguard import typechecked
 
 from easydiffraction import log
-from easydiffraction.core.collections import AbstractCollection
+from easydiffraction.core.collections import CollectionBase
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import Descriptor
 from easydiffraction.core.parameters import Parameter
 
+T = TypeVar('T')
 
-class CategoryBase(GuardedBase):
+
+class AbstractCategory(ABC):
+    # ------------------------------------------------------------------
+    # Class configuration
+    # ------------------------------------------------------------------
     _class_public_attrs = {
         'category_key',
         'datablock_name',
@@ -21,6 +28,9 @@ class CategoryBase(GuardedBase):
         'as_cif',
     }
 
+    # ------------------------------------------------------------------
+    # Abstract API
+    # ------------------------------------------------------------------
     @property
     @abstractmethod
     def category_key(self) -> str:
@@ -42,7 +52,10 @@ class CategoryBase(GuardedBase):
         raise NotImplementedError
 
 
-class CategoryItem(CategoryBase):
+class CategoryItem(
+    GuardedBase,
+    AbstractCategory,
+):
     """Base class for logical model components.
 
     Examples:
@@ -74,21 +87,6 @@ class CategoryItem(CategoryBase):
         self._parent: Optional[Any] = None
         # TODO: should this be abstract to force subclasses to set it?
         self._category_entry_attr_name = None
-
-    # ------------------------------------------------------------------
-    # Abstract API
-    # ------------------------------------------------------------------
-    @property
-    @abstractmethod
-    def category_key(self) -> str:
-        """Category key for this component (e.g., 'cell',
-        'space_group').
-
-        Must be implemented in subclasses to specify the EasyDiffraction
-        category name. Distinct from CIF category names, which are tied
-        to descriptors.
-        """
-        raise NotImplementedError
 
     # ------------------------------------------------------------------
     # Dunder methods
@@ -137,6 +135,21 @@ class CategoryItem(CategoryBase):
         # Setting any other attribute
         else:
             object.__setattr__(self, key, value)
+
+    # ------------------------------------------------------------------
+    # Abstract API
+    # ------------------------------------------------------------------
+    @property
+    @abstractmethod
+    def category_key(self) -> str:
+        """Category key for this component (e.g., 'cell',
+        'space_group').
+
+        Must be implemented in subclasses to specify the EasyDiffraction
+        category name. Distinct from CIF category names, which are tied
+        to descriptors.
+        """
+        raise NotImplementedError
 
     # ------------------------------------------------------------------
     # Public read-only properties
@@ -212,7 +225,10 @@ class CategoryItem(CategoryBase):
             param.from_cif(block, idx=idx)
 
 
-class CategoryCollection(CategoryBase, AbstractCollection):
+class CategoryCollection(
+    CollectionBase[T],
+    AbstractCategory,
+):
     """Handles loop-style category containers (e.g. AtomSites).
 
     Each item is a CategoryItem (component).
@@ -229,9 +245,7 @@ class CategoryCollection(CategoryBase, AbstractCollection):
     # ------------------------------------------------------------------
     # Initialization
     # ------------------------------------------------------------------
-
     def __init__(self, item_type: type):
-        # self._parent: Optional[Any] = None
         super().__init__(item_type)
 
     # ------------------------------------------------------------------
@@ -278,6 +292,9 @@ class CategoryCollection(CategoryBase, AbstractCollection):
                 params.extend(item.parameters)
         return params
 
+    # -----------
+    # CIF methods
+    # -----------
     @property
     def as_cif(self) -> str:
         lines: list[str] = []
@@ -319,7 +336,6 @@ class CategoryCollection(CategoryBase, AbstractCollection):
     # ------------------------------------------------------------------
     # Public methods
     # ------------------------------------------------------------------
-
     @typechecked
     def add(self, item: CategoryItem):
         """Add an item to the collection."""

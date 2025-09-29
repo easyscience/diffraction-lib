@@ -39,7 +39,7 @@ class JointFitExperiment(CategoryItem):
         self.name = self.id.value
 
 
-class JointFitExperiments(CategoryCollection):
+class JointFitExperiments(CategoryCollection[JointFitExperiment]):
     """Collection manager for experiments that are fitted together in a
     `joint` fit.
     """

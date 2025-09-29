@@ -39,6 +39,6 @@ class Constraint(CategoryItem):
         self.name = self.lhs_alias.value
 
 
-class Constraints(CategoryCollection):
+class Constraints(CategoryCollection[Constraint]):
     def __init__(self):
         super().__init__(item_type=Constraint)

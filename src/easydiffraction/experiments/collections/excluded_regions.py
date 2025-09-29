@@ -49,7 +49,7 @@ class ExcludedRegion(CategoryItem):
         self.name = self.start.value
 
 
-class ExcludedRegions(CategoryCollection):
+class ExcludedRegions(CategoryCollection[ExcludedRegion]):
     """Collection of ExcludedRegion instances."""
 
     def __init__(self):
