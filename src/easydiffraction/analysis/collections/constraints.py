@@ -9,6 +9,7 @@ from easydiffraction.core.parameters import Descriptor
 
 class Constraint(CategoryItem):
     _class_public_attrs = {
+        'name',
         'lhs_alias',
         'rhs_expr',
     }
@@ -35,8 +36,9 @@ class Constraint(CategoryItem):
             default_value=rhs_expr,
         )
         self._category_entry_attr_name = self.lhs_alias.name
+        self.name = self.lhs_alias.value
 
 
 class Constraints(CategoryCollection):
     def __init__(self):
-        super().__init__(child_class=Constraint)
+        super().__init__(item_type=Constraint)

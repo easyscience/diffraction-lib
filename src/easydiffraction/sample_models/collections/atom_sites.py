@@ -12,6 +12,7 @@ class AtomSite(CategoryItem):
     """Represents a single atom site within the crystal structure."""
 
     _class_public_attrs = {
+        'name',
         'label',
         'type_symbol',
         'fract_x',
@@ -116,10 +117,11 @@ class AtomSite(CategoryItem):
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
         )
         self._category_entry_attr_name = self.label.name
+        self.name = self.label.value
 
 
 class AtomSites(CategoryCollection):
     """Collection of AtomSite instances."""
 
     def __init__(self):
-        super().__init__(child_class=AtomSite)
+        super().__init__(item_type=AtomSite)

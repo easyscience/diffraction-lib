@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import List
 
 from typeguard import typechecked
 
@@ -15,26 +14,20 @@ class SampleModels(DatablockCollection):
     """Collection manager for multiple SampleModel instances."""
 
     def __init__(self) -> None:
-        super().__init__()  # Initialize Collection
-        self._models = self._datablocks  # Alias for legacy support
-
-    @property
-    def names(self) -> List[str]:
-        """Return a list of all model names in the collection."""
-        return list(self._models.keys())
+        super().__init__()
 
     # --------------------
     # Add / Remove methods
     # --------------------
 
     @typechecked
-    def add(self, model: BaseSampleModel) -> None:
+    def add(self, sample_model: BaseSampleModel) -> None:
         """Add a pre-built SampleModel instance.
 
         Args:
-            model: An existing SampleModel instance to add.
+            sample_model: An existing SampleModel instance to add.
         """
-        self._models[model.name] = model
+        self[sample_model.name] = sample_model
 
     @typechecked
     def add_from_cif_path(self, cif_path: str) -> None:
@@ -43,8 +36,8 @@ class SampleModels(DatablockCollection):
         Args:
             cif_path: Path to a CIF file.
         """
-        model = SampleModel(cif_path=cif_path)
-        self.add(model)
+        sample_model = SampleModel(cif_path=cif_path)
+        self.add(sample_model)
 
     @typechecked
     def add_from_cif_str(self, cif_str: str) -> None:
@@ -53,8 +46,8 @@ class SampleModels(DatablockCollection):
         Args:
             cif_str: CIF file content.
         """
-        model = SampleModel(cif_str=cif_str)
-        self.add(model)
+        sample_model = SampleModel(cif_str=cif_str)
+        self.add(sample_model)
 
     @typechecked
     def add_minimal(self, name: str) -> None:
@@ -63,8 +56,8 @@ class SampleModels(DatablockCollection):
         Args:
             name: Identifier to assign to the new model.
         """
-        model = SampleModel(name=name)
-        self.add(model)
+        sample_model = SampleModel(name=name)
+        self.add(sample_model)
 
     @typechecked
     def remove(self, name: str) -> None:
@@ -73,21 +66,8 @@ class SampleModels(DatablockCollection):
         Args:
             name: ID of the model to remove.
         """
-        if name in self._models:
-            del self._models[name]
-
-    # -----------
-    # CIF methods
-    # -----------
-
-    @property
-    def as_cif(self) -> str:
-        """Export all sample models to CIF format.
-
-        Returns:
-            CIF string representation of all sample models.
-        """
-        return '\n'.join([model.as_cif() for model in self._models.values()])
+        if name in self:
+            del self[name]
 
     # ------------
     # Show methods
@@ -100,5 +80,18 @@ class SampleModels(DatablockCollection):
 
     def show_params(self) -> None:
         """Show parameters of all sample models in the collection."""
-        for model in self._models.values():
+        for model in self.values():
             model.show_params()
+
+    # -----------
+    # CIF methods
+    # -----------
+
+    @property
+    def as_cif(self) -> str:
+        """Export all sample models to CIF format.
+
+        Returns:
+            CIF string representation of all sample models.
+        """
+        return '\n'.join(model.as_cif() for model in self.values())

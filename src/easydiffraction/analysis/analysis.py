@@ -339,7 +339,7 @@ class Analysis:
         if strategy == 'joint' and not hasattr(self, 'joint_fit_experiments'):
             # Pre-populate all experiments with weight 0.5
             self.joint_fit_experiments = JointFitExperiments()
-            for id in self.project.experiments.ids:
+            for id in self.project.experiments.names:
                 self.joint_fit_experiments.add_from_args(id, weight=0.5)
         print(paragraph('Current fit mode changed to'))
         print(self._fit_mode)
@@ -440,7 +440,7 @@ class Analysis:
             return
 
         # Run the fitting process
-        experiment_ids = experiments.ids
+        experiment_ids = experiments.names
 
         if self.fit_mode == 'joint':
             print(
@@ -455,7 +455,7 @@ class Analysis:
                 weights=self.joint_fit_experiments,
             )
         elif self.fit_mode == 'single':
-            for expt_name in experiments.ids:
+            for expt_name in experiments.names:
                 print(
                     paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting")
                 )

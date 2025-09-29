@@ -51,7 +51,7 @@ class Summary:
         """
         print(section('Crystallographic data'))
 
-        for model in self.project.sample_models._models.values():
+        for model in self.project.sample_models.values():
             print(paragraph('Phase datablock'))
             print(f'🧩 {model.name}')
 
@@ -111,7 +111,7 @@ class Summary:
         """
         print(section('Experiments'))
 
-        for expt in self.project.experiments._experiments.values():
+        for expt in self.project.experiments.values():
             print(paragraph('Experiment datablock'))
             print(f'🔬 {expt.name}')
 

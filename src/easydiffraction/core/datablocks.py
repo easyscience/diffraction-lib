@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from abc import ABC
 from abc import abstractmethod
-from collections.abc import MutableMapping
 from typing import Any
 from typing import List
 from typing import Optional
@@ -9,12 +9,13 @@ from typing import Union
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.collections import AbstractCollection
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import Descriptor
 from easydiffraction.core.parameters import Parameter
 
 
-class DatablockBase(GuardedBase):
+class AbstractDatablock(ABC):
     _class_public_attrs = {
         'parameters',
     }
@@ -27,7 +28,10 @@ class DatablockBase(GuardedBase):
     # TODO: Add abstract property 'as_cif'
 
 
-class Datablock(DatablockBase):
+class DatablockItem(
+    GuardedBase,
+    AbstractDatablock,
+):
     """Base container for sample model or experiment categories.
 
     Responsibilities:
@@ -59,7 +63,7 @@ class Datablock(DatablockBase):
         """Human-readable representation of this component."""
         s = f"{self.__class__.__name__} '{self.name}' ({len(self.parameters)} parameters)"
         for base in type(self).__mro__:
-            if base is Datablock:
+            if base is DatablockItem:
                 s = f'{base.__name__}: {s}'
                 break
         return s
@@ -119,59 +123,27 @@ class Datablock(DatablockBase):
         return params
 
 
-class DatablockCollection(DatablockBase, MutableMapping):
+class DatablockCollection(
+    GuardedBase,
+    AbstractDatablock,
+    AbstractCollection,
+):
     """Handles top-level collections (e.g. SampleModels, Experiments).
 
     Each item is a Datablock.
     """
 
-    # ------------------------------------------------------------------
-    # Class configuration
-    # ------------------------------------------------------------------
     _class_public_attrs = {
-        'parameters',
         'as_cif',
     }
 
-    # ------------------------------------------------------------------
-    # Initialization
-    # ------------------------------------------------------------------
     def __init__(self):
-        self._parent: Optional[Any] = None
-        self._datablocks = {}
+        super().__init__(item_type=DatablockItem)
 
-    # ------------------------------------------------------------------
-    # Dunder methods
-    # ------------------------------------------------------------------
     def __str__(self) -> str:
         """Human-readable representation of this component."""
         return f'{self.__class__.__name__} collection ({len(self)} items)'
 
-    def __setattr__(self, key: str, value: Any) -> None:
-        """Controlled attribute setting (with datablock propagation)."""
-        if isinstance(value, (CategoryItem, CategoryCollection)):
-            value._parent = self
-        super().__setattr__(key, value)  # enforces guard
-
-    def __getitem__(self, name):
-        return self._datablocks[name]
-
-    def __setitem__(self, name, datablock):
-        datablock._parent = self
-        self._datablocks[name] = datablock
-
-    def __delitem__(self, name):
-        del self._datablocks[name]
-
-    def __iter__(self):
-        return iter(self._datablocks)
-
-    def __len__(self):
-        return len(self._datablocks)
-
-    # ------------------------------------------------------------------
-    # Public read-only properties
-    # ------------------------------------------------------------------
     @property
     def full_name(self) -> str:
         return None  # Collections do not have names
@@ -179,7 +151,7 @@ class DatablockCollection(DatablockBase, MutableMapping):
     @property
     def parameters(self) -> list[Descriptor]:
         params = []
-        for datablock in self._datablocks.values():
+        for datablock in self._items:
             params.extend(datablock.parameters)
         return params
 
@@ -199,19 +171,13 @@ class DatablockCollection(DatablockBase, MutableMapping):
                 params.append(param)
         return params
 
+    # -----------
+    # CIF methods
+    # -----------
+
     @property
     def as_cif(self) -> str:
         # Concatenate as_cif of all contained datablocks
         return '\n\n'.join(
-            getattr(item, 'as_cif', '')
-            for item in self._datablocks.values()
-            if hasattr(item, 'as_cif')
+            getattr(item, 'as_cif', '') for item in self._items if hasattr(item, 'as_cif')
         )
-
-    # ------------------------------------------------------------------
-    # Public methods
-    # ------------------------------------------------------------------
-
-    # TODO: Move add/remove from child classes to here
-    #  Check implementation in CategoryCollection with
-    #  item._parent = self

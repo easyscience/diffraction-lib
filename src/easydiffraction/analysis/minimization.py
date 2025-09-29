@@ -147,13 +147,13 @@ class DiffractionMinimizer:
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
 
         # Prepare weights for joint fitting
-        num_expts: int = len(experiments.ids)
+        num_expts: int = len(experiments.names)
         if weights is None:
             _weights = np.ones(num_expts)
         else:
             _weights_list: List[float] = []
-            for id in experiments.ids:
-                _weight = weights._items[id].weight.value
+            for name in experiments.names:
+                _weight = weights[name].weight.value
                 _weights_list.append(_weight)
             _weights = np.array(_weights_list, dtype=np.float64)
 
@@ -165,7 +165,7 @@ class DiffractionMinimizer:
         _weights *= num_expts / np.sum(_weights)
         residuals: List[float] = []
 
-        for experiment, weight in zip(experiments._datablocks.values(), _weights, strict=True):
+        for experiment, weight in zip(experiments.values(), _weights, strict=True):
             # Calculate the difference between measured and calculated
             # patterns
             calculator.calculate_pattern(

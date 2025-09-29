@@ -3,7 +3,7 @@
 
 from typeguard import typechecked
 
-from easydiffraction.core.datablocks import Datablock
+from easydiffraction.core.datablocks import DatablockItem
 from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.sample_models.collections.atom_sites import AtomSites
 from easydiffraction.sample_models.components.cell import Cell
@@ -13,7 +13,7 @@ from easydiffraction.utils.logging import log as logger
 from easydiffraction.utils.utils import render_cif
 
 
-class BaseSampleModel(Datablock):
+class BaseSampleModel(DatablockItem):
     """Base sample model: structure container with only a name.
 
     Wraps crystallographic information including space group, cell, and

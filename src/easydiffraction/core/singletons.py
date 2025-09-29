@@ -102,7 +102,7 @@ class ConstraintsHandler(BaseSingleton):
         Called when user registers parameter aliases like:
             alias='biso_La', param=model.atom_sites['La'].b_iso
         """
-        self._alias_to_param = aliases._items
+        self._alias_to_param = {alias.name: alias for alias in aliases}
 
     def set_constraints(self, constraints):
         """Sets the constraints and triggers parsing into internal
@@ -121,7 +121,7 @@ class ConstraintsHandler(BaseSingleton):
         """
         self._parsed_constraints = []
 
-        for expr_obj in self._constraints.values():
+        for expr_obj in self._constraints:
             lhs_alias = expr_obj.lhs_alias.value
             rhs_expr = expr_obj.rhs_expr.value
 

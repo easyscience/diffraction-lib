@@ -10,6 +10,7 @@ from easydiffraction.core.parameters import Parameter
 
 class LinkedPhase(CategoryItem):
     _class_public_attrs = {
+        'name',
         'id',
         'scale',
     }
@@ -41,10 +42,11 @@ class LinkedPhase(CategoryItem):
             description='Scale factor of the linked phase.',
         )
         self._category_entry_attr_name = self.id.name
+        self.name = self.id.value
 
 
 class LinkedPhases(CategoryCollection):
     """Collection of LinkedPhase instances."""
 
     def __init__(self):
-        super().__init__(child_class=LinkedPhase)
+        super().__init__(item_type=LinkedPhase)

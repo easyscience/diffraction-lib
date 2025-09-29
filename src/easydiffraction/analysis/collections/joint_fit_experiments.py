@@ -9,6 +9,7 @@ from easydiffraction.core.parameters import Descriptor
 
 class JointFitExperiment(CategoryItem):
     _class_public_attrs = {
+        'name',
         'id',
         'weight',
     }
@@ -35,6 +36,7 @@ class JointFitExperiment(CategoryItem):
             default_value=weight,
         )
         self._category_entry_attr_name = self.id.name
+        self.name = self.id.value
 
 
 class JointFitExperiments(CategoryCollection):
@@ -43,4 +45,4 @@ class JointFitExperiments(CategoryCollection):
     """
 
     def __init__(self):
-        super().__init__(child_class=JointFitExperiment)
+        super().__init__(item_type=JointFitExperiment)

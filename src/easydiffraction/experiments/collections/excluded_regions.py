@@ -13,6 +13,7 @@ from easydiffraction.utils.utils import render_table
 
 class ExcludedRegion(CategoryItem):
     _class_public_attrs = {
+        'name',
         'start',
         'end',
     }
@@ -45,13 +46,14 @@ class ExcludedRegion(CategoryItem):
         )
         # self._category_entry_attr_name = f'{start}-{end}'
         self._category_entry_attr_name = self.start.name
+        self.name = self.start.value
 
 
 class ExcludedRegions(CategoryCollection):
     """Collection of ExcludedRegion instances."""
 
     def __init__(self):
-        super().__init__(child_class=ExcludedRegion)
+        super().__init__(item_type=ExcludedRegion)
 
     def add(self, item: ExcludedRegion) -> None:
         """Mark excluded points in the experiment pattern when a new

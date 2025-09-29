@@ -1,5 +1,5 @@
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.datablocks import Datablock
+from easydiffraction.core.datablocks import DatablockItem
 from easydiffraction.core.parameters import Descriptor, Parameter
 
 
@@ -113,7 +113,7 @@ def test_datablock_name_propagation():
                 default_value=1.0,
             )
 
-    class TestDatablock(Datablock):
+    class TestDatablock(DatablockItem):
         def __init__(self):
             super().__init__()
             self.name = 'block1'
@@ -145,7 +145,7 @@ def test_datablock_components():
         def category_key(self):
             return 'test_category'
 
-    class TestDatablock(Datablock):
+    class TestDatablock(DatablockItem):
         def __init__(self):
             super().__init__()
             self.component1 = TestComponent()

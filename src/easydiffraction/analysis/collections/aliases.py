@@ -9,6 +9,7 @@ from easydiffraction.core.parameters import Descriptor
 
 class Alias(CategoryItem):
     _class_public_attrs = {
+        'name',
         'label',
         'param_uid',
     }
@@ -35,8 +36,9 @@ class Alias(CategoryItem):
             default_value=param_uid,
         )
         self._category_entry_attr_name = self.label.name
+        self.name = self.label.value
 
 
 class Aliases(CategoryCollection):
     def __init__(self):
-        super().__init__(child_class=Alias)
+        super().__init__(item_type=Alias)

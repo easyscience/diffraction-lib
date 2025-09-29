@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import List
-
 from typeguard import typechecked
 
 from easydiffraction.core.datablocks import DatablockCollection
@@ -20,25 +18,27 @@ class Experiments(DatablockCollection):
 
     def __init__(self) -> None:
         super().__init__()
-        # self._experiments: Dict[str, BaseExperiment] = self._items
-        self._experiments = self._datablocks  # Alias for legacy support
+
+    # --------------------
+    # Add / Remove methods
+    # --------------------
 
     @typechecked
     def add(self, experiment: BaseExperiment):
         """Add a pre-built experiment instance."""
-        self._add_prebuilt_experiment(experiment)
+        self[experiment.name] = experiment
 
     @typechecked
     def add_from_cif_path(self, cif_path: str):
         """Add a new experiment from a CIF file path."""
         experiment = Experiment(cif_path=cif_path)
-        self._add_prebuilt_experiment(experiment)
+        self.add(experiment)
 
     @typechecked
     def add_from_cif_str(self, cif_str: str):
         """Add a new experiment from CIF file content (string)."""
         experiment = Experiment(cif_str=cif_str)
-        self._add_prebuilt_experiment(experiment)
+        self.add(experiment)
 
     @typechecked
     def add_from_data_path(
@@ -59,7 +59,7 @@ class Experiments(DatablockCollection):
             radiation_probe=radiation_probe,
             scattering_type=scattering_type,
         )
-        self._add_prebuilt_experiment(experiment)
+        self.add(experiment)
 
     @typechecked
     def add_without_data(
@@ -78,29 +78,30 @@ class Experiments(DatablockCollection):
             radiation_probe=radiation_probe,
             scattering_type=scattering_type,
         )
-        self._add_prebuilt_experiment(experiment)
+        self.add(experiment)
 
     @typechecked
-    def _add_prebuilt_experiment(self, experiment: BaseExperiment):
-        self._experiments[experiment.name] = experiment
+    def remove(self, name: str) -> None:
+        if name in self:
+            del self[name]
 
-    @typechecked
-    def remove(self, experiment_id: str) -> None:
-        if experiment_id in self._experiments:
-            del self._experiments[experiment_id]
+    # ------------
+    # Show methods
+    # ------------
 
     def show_names(self) -> None:
         print(paragraph('Defined experiments' + ' 🔬'))
-        print(self.ids)
-
-    @property
-    def ids(self) -> List[str]:
-        return list(self._experiments.keys())
+        print(self.names)
 
     def show_params(self) -> None:
-        for exp in self._experiments.values():
-            print(exp)
+        for exp in self.values():
+            exp.show_params()
+
+    # -----------
+    # CIF methods
+    # -----------
 
     @property
     def as_cif(self) -> str:
-        return '\n\n'.join([exp.as_cif() for exp in self._experiments.values()])
+        # TODO: It is different from SampleModel.as_cif. Check it.
+        return '\n\n'.join([exp.as_cif() for exp in self.values()])

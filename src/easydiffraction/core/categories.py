@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from typing import Any
-from typing import Iterator
 from typing import Optional
 
 from typeguard import typechecked
 
 from easydiffraction import log
+from easydiffraction.core.collections import AbstractCollection
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import Descriptor
 from easydiffraction.core.parameters import Parameter
@@ -212,7 +212,7 @@ class CategoryItem(CategoryBase):
             param.from_cif(block, idx=idx)
 
 
-class CategoryCollection(CategoryBase):
+class CategoryCollection(CategoryBase, AbstractCollection):
     """Handles loop-style category containers (e.g. AtomSites).
 
     Each item is a CategoryItem (component).
@@ -221,47 +221,36 @@ class CategoryCollection(CategoryBase):
     # ------------------------------------------------------------------
     # Class configuration
     # ------------------------------------------------------------------
-    _class_public_attrs = set()
+    _class_public_attrs = {
+        'parameters',
+        'as_cif',
+    }
 
     # ------------------------------------------------------------------
     # Initialization
     # ------------------------------------------------------------------
-    def __init__(self, child_class=None):
-        self._parent: Optional[Any] = None
-        self._items = {}
-        self._child_class = child_class
+
+    def __init__(self, item_type: type):
+        # self._parent: Optional[Any] = None
+        super().__init__(item_type)
 
     # ------------------------------------------------------------------
     # Dunder methods
     # ------------------------------------------------------------------
     def __str__(self) -> str:
         """Human-readable representation of this component."""
-        return f'CategoryCollection: {self.__class__.__name__} ({len(self._items)} sites)'
-
-    def __getitem__(self, key: str) -> CategoryItem:
-        return self._items[key]
-
-    def __iter__(self) -> Iterator[CategoryItem]:
-        return iter(self._items.values())
+        return f'{self.__class__.__name__} collection ({len(self)} sites)'
 
     # ------------------------------------------------------------------
     # Private helpers
     # ------------------------------------------------------------------
-    def _replace_item(
-        self,
-        item: CategoryItem,
-        old_name: str,
-        new_name: str,
-    ) -> None:
-        self._items.pop(old_name, None)
-        self._items[new_name] = item
 
     # ------------------------------------------------------------------
     # Public read-only properties
     # ------------------------------------------------------------------
     @property
     def category_key(self):
-        return self._child_class().category_key
+        return self._item_type().category_key
 
     @property
     def full_name(self) -> str:
@@ -284,7 +273,7 @@ class CategoryCollection(CategoryBase):
     @property
     def parameters(self) -> list[Descriptor]:
         params = []
-        for item in self._items.values():
+        for item in self.values():
             if hasattr(item, 'parameters'):
                 params.extend(item.parameters)
         return params
@@ -292,9 +281,9 @@ class CategoryCollection(CategoryBase):
     @property
     def as_cif(self) -> str:
         lines: list[str] = []
-        if self._items:
+        if self:
             # Header from first item attributes that expose CIF tags
-            first_item = next(iter(self._items.values()))
+            first_item = next(iter(self.values()))
             tag_attr_pairs: list[tuple[str, str]] = []  # (tag, attr_name)
             for attr_name in dir(first_item):
                 if attr_name.startswith('_'):
@@ -312,7 +301,7 @@ class CategoryCollection(CategoryBase):
             header = '\n'.join(t for t, _ in tag_attr_pairs)
             lines.append(header)
             # Rows
-            for item in self._items.values():
+            for item in self.values():
                 values: list[str] = []
                 for _, attr_name in tag_attr_pairs:
                     attr_obj = getattr(item, attr_name)
@@ -335,25 +324,25 @@ class CategoryCollection(CategoryBase):
     def add(self, item: CategoryItem):
         """Add an item to the collection."""
         item._parent = self
-        self._items[item.category_entry_name] = item
+        self[item.category_entry_name] = item
 
     def add_from_args(self, *args, **kwargs):
         """Create and add a new child instance from the provided
         arguments.
         """
-        child_obj = self._child_class(*args, **kwargs)
+        child_obj = self._item_type(*args, **kwargs)
         self.add(child_obj)
 
     # TODO: from_cif or add_from_cif as above?
     def from_cif(self, block):
         # Derive loop size using category_entry_name first CIF tag alias
-        if self._child_class is None:
+        if self._item_type is None:
             raise ValueError('Child class is not defined.')
         # TODO: Find a better way and then remove TODO in the AtomSite
         #  class
         # Create a temporary instance to access category_entry_name
         # attribute used as ID column for the items in this collection
-        child_obj = self._child_class()
+        child_obj = self._item_type()
         entry_attr = getattr(child_obj, child_obj._category_entry_attr_name)
         # Try to find the value(s) from the CIF block iterating over
         # the possible cif names in order of preference.
@@ -367,9 +356,6 @@ class CategoryCollection(CategoryBase):
         # If values found, delegate to child class to parse each
         # row and add to collection
         for row_idx in range(size):
-            child_obj = self._child_class()
+            child_obj = self._item_type()
             child_obj.from_cif(block, idx=row_idx)
             self.add(child_obj)
-
-    def keys(self):
-        return self._items.keys()

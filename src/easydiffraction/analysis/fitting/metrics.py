@@ -141,7 +141,7 @@ def get_reliability_inputs(
     y_obs_all = []
     y_calc_all = []
     y_err_all = []
-    for experiment in experiments._datablocks.values():
+    for experiment in experiments.values():
         calculator.calculate_pattern(sample_models, experiment)
         y_calc = experiment.datastore.calc
         y_meas = experiment.datastore.meas

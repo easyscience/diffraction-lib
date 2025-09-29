@@ -8,7 +8,7 @@ from typing import Optional
 import numpy as np
 from typeguard import typechecked
 
-from easydiffraction.core.datablocks import Datablock
+from easydiffraction.core.datablocks import DatablockItem
 from easydiffraction.experiments.collections.background import BackgroundFactory
 from easydiffraction.experiments.collections.background import BackgroundTypeEnum
 from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
@@ -53,7 +53,7 @@ class InstrumentMixin:
         self._instrument._parent = self
 
 
-class BaseExperiment(Datablock):
+class BaseExperiment(DatablockItem):
     """Base class for all experiments with only core attributes.
 
     Wraps experiment type, instrument and datastore.

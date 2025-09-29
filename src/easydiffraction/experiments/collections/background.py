@@ -25,6 +25,7 @@ from easydiffraction.utils.utils import render_table
 # TODO: rename to LineSegment
 class Point(CategoryItem):
     _class_public_attrs = {
+        'name',
         'x',
         'y',
     }
@@ -59,6 +60,7 @@ class Point(CategoryItem):
         )
         # self._category_entry_attr_name = str(x)
         self._category_entry_attr_name = self.x.name
+        self.name = self.x.value
 
 
 class PolynomialTerm(CategoryItem):
@@ -125,16 +127,16 @@ class LineSegmentBackground(BackgroundBase):
     _description: str = 'Linear interpolation between points'
 
     def __init__(self):
-        super().__init__(child_class=Point)
+        super().__init__(item_type=Point)
 
     def calculate(self, x_data: np.ndarray) -> np.ndarray:
         """Interpolate background points over x_data."""
-        if not self._items:
+        if not self:
             print(warning('No background points found. Setting background to zero.'))
             return np.zeros_like(x_data)
 
-        background_x = np.array([point.x.value for point in self._items.values()])
-        background_y = np.array([point.y.value for point in self._items.values()])
+        background_x = np.array([point.x.value for point in self.values()])
+        background_y = np.array([point.y.value for point in self.values()])
         interp_func = interp1d(
             background_x,
             background_y,
@@ -169,7 +171,7 @@ class ChebyshevPolynomialBackground(BackgroundBase):
     _description: str = 'Chebyshev polynomial background'
 
     def __init__(self):
-        super().__init__(child_class=PolynomialTerm)
+        super().__init__(item_type=PolynomialTerm)
 
     def calculate(self, x_data: np.ndarray) -> np.ndarray:
         """Evaluate polynomial background over x_data."""
