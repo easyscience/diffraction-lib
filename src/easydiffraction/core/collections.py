@@ -36,6 +36,7 @@ class CollectionBase(GuardedBase, Generic[T]):
     """
 
     def __init__(self, item_type: type[T]) -> None:
+        super().__init__()
         self._parent: Optional[Any] = None
         self._items: list[Any] = []
         self._index: dict[str, Any] = {}
