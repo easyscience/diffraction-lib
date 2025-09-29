@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import gzip
 import pickle  # noqa: S403 - trusted internal pickle file (package data only)
 from pathlib import Path
