@@ -6,6 +6,7 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 from typing import Any
+from typing import Generic
 from typing import Optional
 from typing import TypeVar
 
@@ -17,7 +18,7 @@ from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import Descriptor
 from easydiffraction.core.parameters import Parameter
 
-T = TypeVar('T')
+CategoryItemT = TypeVar('CategoryItemT', bound='CategoryItem')
 
 
 class AbstractCategory(ABC):
@@ -87,6 +88,7 @@ class CategoryItem(
         """Initialize component with unset datablock and entry
         identifiers.
         """
+        super().__init__()
         self._parent: Optional[Any] = None
         # TODO: should this be abstract to force subclasses to set it?
         self._category_entry_attr_name = None
@@ -229,8 +231,9 @@ class CategoryItem(
 
 
 class CategoryCollection(
-    CollectionBase[T],
+    CollectionBase[CategoryItemT],
     AbstractCategory,
+    Generic[CategoryItemT],
 ):
     """Handles loop-style category containers (e.g. AtomSites).
 
@@ -248,7 +251,7 @@ class CategoryCollection(
     # ------------------------------------------------------------------
     # Initialization
     # ------------------------------------------------------------------
-    def __init__(self, item_type: type):
+    def __init__(self, item_type: type[CategoryItemT]) -> None:
         super().__init__(item_type)
 
     # ------------------------------------------------------------------
@@ -266,7 +269,7 @@ class CategoryCollection(
     # Public read-only properties
     # ------------------------------------------------------------------
     @property
-    def category_key(self):
+    def category_key(self) -> str:
         return self._item_type().category_key
 
     @property
@@ -279,7 +282,7 @@ class CategoryCollection(
         return '.'.join(parts)
 
     @property
-    def datablock_name(self):
+    def datablock_name(self) -> Optional[str]:
         """Read-only datablock name (delegated to parent if
         available).
         """
@@ -340,12 +343,12 @@ class CategoryCollection(
     # Public methods
     # ------------------------------------------------------------------
     @typechecked
-    def add(self, item: CategoryItem):
+    def add(self, item: CategoryItemT) -> None:
         """Add an item to the collection."""
         item._parent = self
         self[item.category_entry_name] = item
 
-    def add_from_args(self, *args, **kwargs):
+    def add_from_args(self, *args, **kwargs) -> None:
         """Create and add a new child instance from the provided
         arguments.
         """

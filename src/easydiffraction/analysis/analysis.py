@@ -126,8 +126,8 @@ class Analysis:
         )
 
     def show_fittable_params(self) -> None:
-        sample_models_params = self.project.sample_models.get_fittable_params()
-        experiments_params = self.project.experiments.get_fittable_params()
+        sample_models_params = self.project.sample_models.fittable_parameters
+        experiments_params = self.project.experiments.fittable_parameters
 
         if not sample_models_params and not experiments_params:
             print(warning('No fittable parameters found.'))
@@ -177,8 +177,8 @@ class Analysis:
         )
 
     def show_free_params(self) -> None:
-        sample_models_params = self.project.sample_models.get_free_params()
-        experiments_params = self.project.experiments.get_free_params()
+        sample_models_params = self.project.sample_models.free_parameters
+        experiments_params = self.project.experiments.free_parameters
         free_params = sample_models_params + experiments_params
 
         if not free_params:

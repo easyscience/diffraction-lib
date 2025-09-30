@@ -38,10 +38,9 @@ class CollectionBase(GuardedBase, Generic[T]):
     def __init__(self, item_type: type[T]) -> None:
         super().__init__()
         self._parent: Optional[Any] = None
-        self._items: list[Any] = []
-        self._index: dict[str, Any] = {}
-        # TODO: item_type seems can be replaced by using TypeVar T
-        self._item_type = item_type
+        self._items: list[T] = []
+        self._index: dict[str, T] = {}
+        self._item_type: type[T] = item_type
 
     def __setattr__(self, key: str, value: Any) -> None:
         """Controlled attribute setting (with parent propagation)."""
@@ -66,7 +65,7 @@ class CollectionBase(GuardedBase, Generic[T]):
         self._items.append(item)
         self._rebuild_index()
 
-    def __delitem__(self, name):
+    def __delitem__(self, name: str) -> None:
         # Remove from _items by name
         for i, item in enumerate(self._items):
             if item.name == name:

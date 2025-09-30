@@ -44,7 +44,7 @@ class DiffractionMinimizer:
             calculator: The calculator to use for pattern generation.
             weights: Optional weights for joint fitting.
         """
-        params = sample_models.get_free_params() + experiments.get_free_params()
+        params = sample_models.free_parameters + experiments.free_parameters
 
         if not params:
             print('⚠️ No parameters selected for fitting.')
@@ -114,9 +114,7 @@ class DiffractionMinimizer:
         Returns:
             List of free parameters.
         """
-        free_params: List[Parameter] = (
-            sample_models.get_free_params() + experiments.get_free_params()
-        )
+        free_params: List[Parameter] = sample_models.free_parameters + experiments.free_parameters
         return free_params
 
     def _residual_function(

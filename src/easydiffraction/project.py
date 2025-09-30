@@ -193,12 +193,12 @@ class Project(GuardedBase):
         return self.name
 
     @property
-    def sample_models(self):
+    def sample_models(self) -> SampleModels:
         return self._sample_models
 
     @sample_models.setter
     @typechecked
-    def sample_models(self, sample_models: SampleModels):
+    def sample_models(self, sample_models: SampleModels) -> None:
         self._sample_models = sample_models
 
     @property

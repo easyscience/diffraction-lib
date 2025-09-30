@@ -3,7 +3,9 @@
 
 from abc import abstractmethod
 from enum import Enum
+from typing import Any
 from typing import Dict
+from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Type
@@ -22,7 +24,7 @@ from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_table
 
-T = TypeVar('T')
+BackgroundItemT = TypeVar('BackgroundItemT', bound=CategoryItem)
 
 
 # TODO: rename to LineSegment
@@ -116,7 +118,7 @@ class PolynomialTerm(CategoryItem):
         self._category_entry_attr_name = self.order.name
 
 
-class BackgroundBase(CategoryCollection[T]):
+class BackgroundBase(CategoryCollection[BackgroundItemT], Generic[BackgroundItemT]):
     @abstractmethod
     def calculate(self, x_data: np.ndarray) -> np.ndarray:
         pass
@@ -221,7 +223,7 @@ class BackgroundTypeEnum(str, Enum):
 
 class BackgroundFactory:
     BT = BackgroundTypeEnum
-    _supported: Dict[BT, Type[BackgroundBase]] = {
+    _supported: Dict[BT, Type[BackgroundBase[Any]]] = {
         BT.LINE_SEGMENT: LineSegmentBackground,
         BT.CHEBYSHEV: ChebyshevPolynomialBackground,
     }
@@ -230,7 +232,7 @@ class BackgroundFactory:
     def create(
         cls,
         background_type: Optional[BackgroundTypeEnum] = None,
-    ) -> BackgroundBase:
+    ) -> BackgroundBase[Any]:
         if background_type is None:
             background_type = BackgroundTypeEnum.default()
 

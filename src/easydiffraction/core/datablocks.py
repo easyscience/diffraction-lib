@@ -5,8 +5,9 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 from typing import Any
-from typing import List
+from typing import Generic
 from typing import Optional
 from typing import TypeVar
 from typing import Union
@@ -15,10 +16,12 @@ from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
 from easydiffraction.core.collections import CollectionBase
 from easydiffraction.core.guards import GuardedBase
-from easydiffraction.core.parameters import Descriptor
-from easydiffraction.core.parameters import Parameter
 
-T = TypeVar('T')
+if TYPE_CHECKING:
+    from easydiffraction.core.parameters import Descriptor
+    from easydiffraction.core.parameters import Parameter
+
+DatablockItemT = TypeVar('DatablockItemT', bound='DatablockItem')
 
 
 class AbstractDatablock(ABC):
@@ -36,6 +39,22 @@ class AbstractDatablock(ABC):
     @abstractmethod
     def parameters(self) -> list[Descriptor]:
         raise NotImplementedError
+
+    @property
+    def fittable_parameters(self) -> list[Parameter]:
+        params = []
+        for param in self.parameters:
+            if hasattr(param, 'constrained') and not param.constrained:
+                params.append(param)
+        return params
+
+    @property
+    def free_parameters(self) -> list[Parameter]:
+        params = []
+        for param in self.fittable_parameters:
+            if param.free:
+                params.append(param)
+        return params
 
     # TODO: Add abstract property 'as_cif'
 
@@ -65,6 +84,7 @@ class DatablockItem(
     # Initialization
     # ------------------------------------------------------------------
     def __init__(self) -> None:
+        super().__init__()
         self._parent: Optional[Any] = None
         self._name = None  # set later via property
 
@@ -136,8 +156,9 @@ class DatablockItem(
 
 
 class DatablockCollection(
-    CollectionBase[T],
+    CollectionBase[DatablockItemT],
     AbstractDatablock,
+    Generic[DatablockItemT],
 ):
     """Handles top-level collections (e.g. SampleModels, Experiments).
 
@@ -154,7 +175,7 @@ class DatablockCollection(
     # ------------------------------------------------------------------
     # Initialization
     # ------------------------------------------------------------------
-    def __init__(self, item_type: type[T]) -> None:
+    def __init__(self, item_type: type[DatablockItemT]) -> None:
         super().__init__(item_type=item_type)
 
     # ------------------------------------------------------------------
@@ -178,24 +199,8 @@ class DatablockCollection(
     @property
     def parameters(self) -> list[Descriptor]:
         params = []
-        for datablock in self._items:
+        for datablock in self:
             params.extend(datablock.parameters)
-        return params
-
-    # TODO: Need refactoring to updated API
-    def get_fittable_params(self) -> List[Parameter]:
-        params = []
-        for param in self.parameters:
-            if isinstance(param, Parameter) and not param.constrained:
-                params.append(param)
-        return params
-
-    # TODO: Need refactoring to updated API
-    def get_free_params(self) -> List[Parameter]:
-        params = []
-        for param in self.get_fittable_params():
-            if param.free:
-                params.append(param)
         return params
 
     # -----------
