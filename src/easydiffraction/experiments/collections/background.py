@@ -5,7 +5,6 @@ from abc import abstractmethod
 from enum import Enum
 from typing import Any
 from typing import Dict
-from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Type
@@ -118,7 +117,7 @@ class PolynomialTerm(CategoryItem):
         self._category_entry_attr_name = self.order.name
 
 
-class BackgroundBase(CategoryCollection[BackgroundItemT], Generic[BackgroundItemT]):
+class BackgroundBase(CategoryCollection[BackgroundItemT]):
     @abstractmethod
     def calculate(self, x_data: np.ndarray) -> np.ndarray:
         pass

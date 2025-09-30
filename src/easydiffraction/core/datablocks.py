@@ -7,7 +7,6 @@ from abc import ABC
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Generic
 from typing import Optional
 from typing import TypeVar
 from typing import Union
@@ -155,11 +154,7 @@ class DatablockItem(
         return params
 
 
-class DatablockCollection(
-    CollectionBase[DatablockItemT],
-    AbstractDatablock,
-    Generic[DatablockItemT],
-):
+class DatablockCollection(CollectionBase[DatablockItemT], AbstractDatablock):
     """Handles top-level collections (e.g. SampleModels, Experiments).
 
     Each item is a Datablock.

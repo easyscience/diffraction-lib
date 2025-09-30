@@ -6,7 +6,6 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 from typing import Any
-from typing import Generic
 from typing import Optional
 from typing import TypeVar
 
@@ -233,7 +232,6 @@ class CategoryItem(
 class CategoryCollection(
     CollectionBase[CategoryItemT],
     AbstractCategory,
-    Generic[CategoryItemT],
 ):
     """Handles loop-style category containers (e.g. AtomSites).
 

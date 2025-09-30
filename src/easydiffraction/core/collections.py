@@ -12,10 +12,13 @@ from typing import TypeVar
 
 from easydiffraction.core.guards import GuardedBase
 
-T = TypeVar('T')
+CollectionItemT = TypeVar('CollectionItemT')
 
 
-class CollectionBase(GuardedBase, Generic[T]):
+class CollectionBase(
+    GuardedBase,
+    Generic[CollectionItemT],
+):
     """Base class for collections of named items.
 
     Internally, items are stored in a list to ensure safety and
@@ -35,25 +38,25 @@ class CollectionBase(GuardedBase, Generic[T]):
     - __iter__, keys, values, items: O(n) iteration over items.
     """
 
-    def __init__(self, item_type: type[T]) -> None:
+    def __init__(self, item_type: type[CollectionItemT]) -> None:
         super().__init__()
         self._parent: Optional[Any] = None
-        self._items: list[T] = []
-        self._index: dict[str, T] = {}
-        self._item_type: type[T] = item_type
+        self._items: list[CollectionItemT] = []
+        self._index: dict[str, CollectionItemT] = {}
+        self._item_type: type[CollectionItemT] = item_type
 
     def __setattr__(self, key: str, value: Any) -> None:
         """Controlled attribute setting (with parent propagation)."""
         super().__setattr__(key, value)  # enforces guard
 
-    def __getitem__(self, name: str) -> T:
+    def __getitem__(self, name: str) -> CollectionItemT:
         try:
             return self._index[name]
         except KeyError:
             self._rebuild_index()
             return self._index[name]
 
-    def __setitem__(self, name: str, item: T) -> None:
+    def __setitem__(self, name: str, item: CollectionItemT) -> None:
         item._parent = self
         # Check if item with same name exists; if so, replace it
         for i, existing_item in enumerate(self._items):
@@ -74,7 +77,7 @@ class CollectionBase(GuardedBase, Generic[T]):
                 return
         raise KeyError(name)
 
-    def __iter__(self) -> Iterator[T]:
+    def __iter__(self) -> Iterator[CollectionItemT]:
         return iter(self._items)
 
     def __len__(self) -> int:
@@ -89,10 +92,10 @@ class CollectionBase(GuardedBase, Generic[T]):
     def keys(self) -> Iterator[str]:
         return (item.name for item in self._items)
 
-    def values(self) -> Iterator[T]:
+    def values(self) -> Iterator[CollectionItemT]:
         return (item for item in self._items)
 
-    def items(self) -> Iterator[tuple[str, T]]:
+    def items(self) -> Iterator[tuple[str, CollectionItemT]]:
         return ((item.name, item) for item in self._items)
 
     @property
