@@ -276,7 +276,7 @@ class GuardedBase(ABC):
         self._assign_attr(key, value)
 
     def __str__(self) -> str:
-        return self._log_name
+        return f'<{self._log_name}>'
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -366,7 +366,7 @@ class Identity:
             return value
 
         # Climb to parent if available
-        parent = getattr(self._owner, "_parent", None)
+        parent = getattr(self._owner, "__dict__", {}).get("_parent")
         if parent and hasattr(parent, "_identity"):
             return parent._identity._resolve_up(attr, visited)
         return None
@@ -397,10 +397,24 @@ class Identity:
 
     @property
     def full_name(self):
-        parts = [p for p in 
-                 [self.datablock_entry_name, self.category_code, self.category_entry_name] 
-                 if p]
+        """Return hierarchical identity including parameter name if available."""
+        parts = [
+            str(p)
+            for p in [
+                self.datablock_entry_name,
+                self.category_code,
+                self.category_entry_name,
+            ]
+            if p is not None
+        ]
+
+        # If the owner is a Parameter/Descriptor, append its name
+        owner = getattr(self, "_owner", None)
+        if owner and hasattr(owner, "name") and owner.name is not None:
+            parts.append(str(owner.name))
+
         return ".".join(parts) if parts else "UNSET"
+
 
 # ---------------------------------------------------------------------
 # parameters.py
@@ -457,7 +471,7 @@ class GenericDescriptorBase(ValidatedBase):
         self._uid: str = self._generate_uid()
 
     def __str__(self) -> str:
-        return f'{self._log_name} = {self.value!r}'
+        return f'<{self._log_name} = {self.value!r}>'
 
     @property
     def description(self) -> str:
@@ -508,6 +522,7 @@ class GenericDescriptorFloat(GenericDescriptorBase):
 
     def __str__(self) -> str:
         s: str = super().__str__()
+        s = s[1:-1]  # strip <>
         if self.units:
             s += f' {self.units}'
         return f'<{s}>'
@@ -539,6 +554,7 @@ class GenericParameter(GenericDescriptorFloat):
 
     def __str__(self) -> str:
         s = GenericDescriptorBase.__str__(self)
+        s = s[1:-1]  # strip <>
         if self.uncertainty is not None:
             s += f' ± {self.uncertainty}'
         if self.units is not None:
@@ -887,6 +903,7 @@ class Cell(CategoryItem):
         super().__init__()
         self._length_b: Parameter = Parameter(
             name='length_b',
+            description='Length of the b axis of the unit cell.',
             validator=RangeValidator(ge=0, le=1000, default=10.0),
             value=length_b,
             units='Å',
@@ -1239,174 +1256,214 @@ class SampleModels(DatablockCollection):
 # Example usage
 # ---------------------------------------------------------------------
 if __name__ == '__main__':
+    log.info('-------- Cell --------')
+
     c = Cell()
-    log.info(c.length_b)  # type: ignore
-
+    assert c.length_b.value == 10.0
     c = Cell(length_b=-8.8)
-    log.info(c.length_b)  # type: ignore
-
+    assert c.length_b.value == 10.0
     c = Cell(length_b='7.7')  # type: ignore
-    log.info(c.length_b)  # type: ignore
-
+    assert c.length_b.value == 10.0
     c = Cell(length_b=6.6)
-    log.info(c.length_b)  # type: ignore
-
+    assert c.length_b.value == 6.6
     c.length_b.value = -5.5
-    log.info(c.length_b)  # type: ignore
-
+    assert c.length_b.value == 6.6
     c.length_b = -4.4
-    log.info(c.length_b)  # type: ignore
-
+    assert c.length_b.value == 6.6
     c.length_b = 3.3
-    log.info(c.length_b)  # type: ignore
-
+    assert c.length_b.value == 3.3
     c.length_b = 2222.2
-    log.info(c.length_b)  # type: ignore
-
+    assert c.length_b.value == 3.3
     c.length_b.free = 'qwe'  # type: ignore
-    log.info(c.length_b.free)  # type: ignore
-
+    assert c.length_b.free is False
     c.length_b.fre = 'fre'  # type: ignore
-    log.info(c.length_b.fre)  # type: ignore
-
+    assert getattr(c.length_b, 'fre', None) is None
     c.length_b.qwe = 'qwe'  # type: ignore
-    log.info(c.length_b.qwe)  # type: ignore
-
+    assert getattr(c.length_b, 'qwe', None) is None
     c.length_b.description = 'desc'  # type: ignore
-    log.info(c.length_b.description)  # type: ignore
-
-    log.info(f'c.length_b._public_readonly_attrs: {c.length_b._public_readonly_attrs()}')
-    log.info(f'c.length_b._public_writable_attrs: {c.length_b._public_writable_attrs()}')
-
+    assert c.length_b.description == 'Length of the b axis of the unit cell.'  # type: ignore
+    assert c.length_b._public_readonly_attrs() == {
+        'constrained', 'units', 'uid', 'name', 'start_value', 'parameters', 'as_cif', 'description'
+        }
+    assert c.length_b._public_writable_attrs() == {
+        'value', 'fit_max', 'free', 'uncertainty', 'fit_min'
+    }
     c.qwe = 'qwe'
-    log.info(c.qwe)  # type: ignore
+    assert getattr(c.length_b, 'qwe', None) is None
+    assert c.length_b._cif_handler.names == ['_cell.length_b']
+    assert len(c.length_b._minimizer_uid) == 16
+    assert(c.parameters[0].value == 3.3)  # type: ignore
 
-    log.info(c)
-
-    log.info(c.length_b._cif_handler.names)
-
-    log.info(c.length_b._minimizer_uid)
-
-    log.info(c.parameters)  # type: ignore
-    log.info(c)  # type: ignore
-
+    log.info(f'-------- SpaceGroup --------')
 
     sg = SpaceGroup()
+    assert sg.name_h_m.value == 'P 1'
     sg = SpaceGroup(name_h_m='qwe')
+    assert sg.name_h_m.value == 'P 1'
     sg = SpaceGroup(name_h_m='P b n m', it_coordinate_system_code='cab')
+    assert sg.name_h_m.value == 'P 1'
+    assert sg.it_coordinate_system_code.value == 'cab' # TODO: Should be ''
     sg = SpaceGroup(name_h_m='P n m a', it_coordinate_system_code='cab')
-
+    assert sg.name_h_m.value == 'P n m a'
+    assert sg.it_coordinate_system_code.value == 'cab'
     sg.name_h_m = 34.9
-
+    assert sg.name_h_m.value == 'P n m a'
     sg.name_h_m = 'P 1'
+    assert sg.name_h_m.value == 'P 1'
 
-    log.debug(f'-------- AtomSites --------')
+    log.info(f'-------- AtomSites --------')
 
     s1 = AtomSite(label='La', type_symbol='La')
+    assert s1.label.value == 'La'
+    assert s1.type_symbol.value == 'Tb'
     s2 = AtomSite(label='Si', type_symbol='Si')
+    assert s2.label.value == 'Si'
+    assert s2.type_symbol.value == 'Si'
     sites = AtomSites()
+    assert len(sites) == 0
     sites.add(s1)
     sites.add(s2)
-    log.info(sites)
-    for site in sites:
-        log.info(site)
+    assert len(sites) == 2
     s1.label = 'Tb'
-    for site in sites:
-        log.info(site)
-
-    log.debug(f"sites.keys(): {list(sites.keys())}")
-    log.debug(f"sites['Tb']: {sites['Tb']}")
-    log.debug(f"sites['Tb'].fract_x: {sites['Tb'].fract_x}")
-
-
+    assert s1.label.value == 'Tb'
+    assert list(sites.keys()) == ['Tb', 'Si']
+    assert sites['Tb'] is s1
+    assert sites['Tb'].fract_x.value == 0.0
     s2.fract_x.value = 0.123
-    log.info(s2.fract_x)
-
+    assert s2.fract_x.value == 0.123
     s2.fract_x = 0.456
-    log.info(s2.fract_x)
-
+    assert s2.fract_x.value == 0.456
     sites['Tb'].fract_x = 0.789
-    log.info(s1)
-
+    assert sites['Tb'].fract_x.value == 0.789
     sites['Tb'].qwe = 'qwe'  # type: ignore
+    assert getattr(sites['Tb'], 'qwe', None) is None
     sites.abc = 'abc'  # type: ignore
-
+    assert getattr(sites, 'abc', None) is None
     sites['Tb'].label = 'a b c'
+    assert sites['Tb'].label.value == 'Tb'
 
+    assert c._identity.full_name == 'cell'
+    assert c.length_b._identity.full_name == 'cell.length_b'
+    assert sites._identity.full_name == 'UNSET' # ???
+    assert sites['Tb']._identity.full_name == 'atom_site.Tb'
+    assert sites['Tb'].fract_x._identity.full_name == 'atom_site.Tb.fract_x'
+    assert sites['Tb']._label.value == 'Tb'
+    assert sites['Tb'].label.value == 'Tb'
+    assert sites['Tb'].name is None
 
-    log.info(f"c._identity.full_name: {c._identity.full_name}")
-    log.info(f"c.length_b._identity.full_name: {c.length_b._identity.full_name}")
-
-    log.info(f"sites._identity.full_name: {sites._identity.full_name}")
-    log.info(f"sites['Tb']._identity.full_name: {sites['Tb']._identity.full_name}")
-    log.info(f"sites['Tb'].fract_x._identity.full_name: {sites['Tb'].fract_x._identity.full_name}")
-
-    log.info(f"sites['Tb']._label: {sites['Tb']._label}")
-    log.info(f"sites['Tb'].label: {sites['Tb'].label}")
-    log.info(f"sites['Tb'].label.value: {sites['Tb'].label.value}")
-    log.info(f"sites['Tb'].name: {sites['Tb'].name}")
-
-    log.debug(f'-------- SampleModel --------')
+    log.info(f'-------- SampleModel --------')
 
     model = SampleModel(name='lbco')
-    log.info(model)
-
+    assert model.name == 'lbco'
+    assert model.cell.length_b.value == 10.0
+    assert len(model.atom_sites) == 0
     model.atom_sites.add(s1)
     model.atom_sites.add(s2)
-    log.info(f'model.atom_sites: {model.atom_sites}')
-    for site in model.atom_sites:
-        log.info(site)
+    assert len(model.atom_sites) == 2
+    assert model.atom_sites.names == ['Tb', 'Si']
+    assert model.atom_sites._items[0].label.value == 'Tb'
+    assert model.atom_sites._items[1].label.value == 'Si'
+    assert model.atom_sites['Tb'].fract_x._identity.full_name == 'lbco.atom_site.Tb.fract_x'
 
-    log.info(f"model.atom_sites['Tb'].fract_x._identity.full_name:"
-             f" {model.atom_sites['Tb'].fract_x._identity.full_name}")
-
-    log.debug(f'-------- SampleModels --------')
+    log.info(f'-------- SampleModels --------')
 
     models = SampleModels()
+    assert len(models) == 0
     models.add(model)
-    log.info(f'-----models" {models}')
-    for m in models:
-        log.info(m)
+    assert len(models) == 1
+    assert models._items[0].name == 'lbco'
+    assert models['lbco'].atom_sites['Tb'].fract_x._identity.full_name == 'lbco.atom_site.Tb.fract_x'
 
-    log.info(f"models['lbco'].atom_sites['Tb'].fract_x._identity.full_name:"
-             f" {models['lbco'].atom_sites['Tb'].fract_x._identity.full_name}")
-    
+    log.info(f'-------- PARENTS --------')
 
-    log.debug(f'-------- PARENTS --------')
-    log.info(f"models._parent: {models._parent}")
-    log.info(f"models['lbco']._parent: {models['lbco']._parent}")
-    
-    log.info(f"models['lbco'].cell._parent: {models['lbco'].cell._parent}")
-    log.info(f"models['lbco'].cell.length_b._parent: {models['lbco'].cell.length_b._parent}")
+    assert models._parent is None
+    assert type(models['lbco']._parent) is SampleModels
+    assert type(models['lbco'].cell._parent) is SampleModel
+    assert type(models['lbco'].cell.length_b._parent) is Cell
+    assert type(models['lbco'].atom_sites._parent) is SampleModel
+    assert type(models['lbco'].atom_sites['Tb']._parent) is AtomSites
+    assert type(models['lbco'].atom_sites['Tb'].fract_x._parent) is AtomSite
 
-    log.info(f"models['lbco'].atom_sites._parent: {models['lbco'].atom_sites._parent}")
-    log.info(f"models['lbco'].atom_sites['Tb']._parent: {models['lbco'].atom_sites['Tb']._parent}")
-    log.info(f"models['lbco'].atom_sites['Tb'].fract_x._parent: {models['lbco'].atom_sites['Tb'].fract_x._parent}")
-
-
-    log.info(f"s1._parent: {s1._parent}")
-    log.info(f"models['lbco'].atom_sites: {models['lbco'].atom_sites}")
+    assert type(s1._parent) is AtomSites
+    assert type(models['lbco'].atom_sites) is AtomSites
+    assert len(models['lbco'].atom_sites) == 2
     del models['lbco'].atom_sites['Tb']
-    log.info(f"s1._parent: {s1._parent}")
-    log.info(f"models['lbco'].atom_sites: {models['lbco'].atom_sites}")
+    assert len(models['lbco'].atom_sites) == 1
+    assert s1._parent is None
+    assert type(models['lbco'].atom_sites) is AtomSites
 
-    log.debug(f'-------- PARAMETERS --------')
-    log.info(f"models['lbco'].atom_sites['Si'].parameters: "
-             f"{models['lbco'].atom_sites['Si'].parameters}")
-    log.info(f"models['lbco'].atom_sites.parameters: {models['lbco'].atom_sites.parameters}")
-    log.info(f"models['lbco'].cell.parameters: {models['lbco'].cell.parameters}")
-    log.info(f"models['lbco'].parameters: {models['lbco'].parameters}")
-    log.info(f"models.parameters: {models.parameters}")
+    log.info(f'-------- PARAMETERS --------')
 
+    assert len(models['lbco'].atom_sites['Si'].parameters) == 9
+    assert models['lbco'].atom_sites['Si'].parameters[0].value == 'Si'
+    assert len(models['lbco'].atom_sites.parameters) == 1 # TODO: Wrong, it shows items, not parameters
+    assert len(models['lbco'].cell.parameters) == 1
+    assert len(models['lbco'].parameters) == 3 # TODO: Wrong, it shows categories, not parameters
+    assert len(models.parameters) == 1 # TODO: Wrong, it shows datablocks, not parameters
 
-    log.debug(f'-------- CIF HANDLERS --------')
+    log.info(f'-------- CIF HANDLERS --------')
 
     s3 = AtomSite(label='La', type_symbol='La')
+    assert s3.label.value == 'La'
+    assert s3.type_symbol.value == 'Tb'
+
+    assert len(models['lbco'].atom_sites) == 1
     models['lbco'].atom_sites.add(s3)
+    assert len(models['lbco'].atom_sites) == 2
+    assert models['lbco'].cell.length_b.as_cif == '_cell.length_b 10.0'
+    assert models['lbco'].cell.as_cif == '\n_cell.length_b 10.0'
 
+    assert models['lbco'].atom_sites.as_cif == """
+loop_
+_atom_site.label
+_atom_site.type_symbol
+_atom_site.fract_x
+_atom_site.fract_y
+_atom_site.fract_z
+_atom_site.Wyckoff_letter
+_atom_site.occupancy
+_atom_site.B_iso_or_equiv
+_atom_site.adp_type
+Si Si 0.456 0.0 0.0 a 1.0 0.0 Biso
+La Tb 0.0 0.0 0.0 a 1.0 0.0 Biso"""
 
-    log.info(f"models['lbco'].cell.length_b.as_cif:\n{models['lbco'].cell.length_b.as_cif}")
-    log.info(f"models['lbco'].cell.as_cif:\n{models['lbco'].cell.as_cif}")
-    log.info(f"models['lbco'].atom_sites.as_cif:\n{models['lbco'].atom_sites.as_cif}")
-    log.info(f"models['lbco']:\n{models['lbco'].as_cif}")
-    log.info(f"models:\n{models.as_cif}")
+    assert models['lbco'].as_cif =="""data_lbco
+
+_cell.length_b 10.0
+
+_space_group.name_H-M_alt "P 1"
+_space_group.IT_coordinate_system_code 
+
+loop_
+_atom_site.label
+_atom_site.type_symbol
+_atom_site.fract_x
+_atom_site.fract_y
+_atom_site.fract_z
+_atom_site.Wyckoff_letter
+_atom_site.occupancy
+_atom_site.B_iso_or_equiv
+_atom_site.adp_type
+Si Si 0.456 0.0 0.0 a 1.0 0.0 Biso
+La Tb 0.0 0.0 0.0 a 1.0 0.0 Biso"""
+
+    assert models.as_cif =="""data_lbco
+
+_cell.length_b 10.0
+
+_space_group.name_H-M_alt "P 1"
+_space_group.IT_coordinate_system_code 
+
+loop_
+_atom_site.label
+_atom_site.type_symbol
+_atom_site.fract_x
+_atom_site.fract_y
+_atom_site.fract_z
+_atom_site.Wyckoff_letter
+_atom_site.occupancy
+_atom_site.B_iso_or_equiv
+_atom_site.adp_type
+Si Si 0.456 0.0 0.0 a 1.0 0.0 Biso
+La Tb 0.0 0.0 0.0 a 1.0 0.0 Biso"""
+
