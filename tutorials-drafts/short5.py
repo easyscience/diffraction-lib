@@ -779,8 +779,11 @@ class CategoryCollection(CollectionBase):
 
     @property
     def parameters(self):
-        # Only direct items (not recursive)
-        return list(self._items)
+        """All parameters from all items in this collection."""
+        params = []
+        for item in self._items:
+            params.extend(item.parameters)
+        return params
 
     @property
     def as_cif(self) -> str:
@@ -833,11 +836,11 @@ class DatablockItem(GuardedBase):
 
     @property
     def parameters(self):
-        # Only direct attributes that are CategoryItem or CategoryCollection
+        """All parameters from all categories contained in this datablock."""
         params = []
         for v in self.__dict__.values():
             if isinstance(v, (CategoryItem, CategoryCollection)):
-                params.append(v)
+                params.extend(v.parameters)
         return params
 
     @property
@@ -864,8 +867,11 @@ class DatablockCollection(CollectionBase):
 
     @property
     def parameters(self):
-        # Only direct items (not recursive)
-        return list(self._items)
+        """All parameters from all datablocks in this collection."""
+        params = []
+        for db in self._items:
+            params.extend(db.parameters)
+        return params
 
     @property
     def as_cif(self) -> str:
@@ -933,7 +939,7 @@ class SpaceGroup(CategoryItem):
         it_coordinate_system_code: str = None,
     ) -> None:
         super().__init__()
-        self._name_h_m: Parameter = Parameter(
+        self._name_h_m: DescriptorStr = DescriptorStr(
             name='name_h_m',
             description='Hermann-Mauguin symbol of the space group.',
             validator=ListValidator(
@@ -948,7 +954,7 @@ class SpaceGroup(CategoryItem):
                 '_symmetry_space_group_name_H-M',
                 ])
         )
-        self._it_coordinate_system_code: Parameter = Parameter(
+        self._it_coordinate_system_code: DescriptorStr = DescriptorStr(
             name='it_coordinate_system_code',
             description='A qualifier identifying which setting in IT is used.',
             validator=ListValidator(
@@ -1396,10 +1402,10 @@ if __name__ == '__main__':
 
     assert len(models['lbco'].atom_sites['Si'].parameters) == 9
     assert models['lbco'].atom_sites['Si'].parameters[0].value == 'Si'
-    assert len(models['lbco'].atom_sites.parameters) == 1 # TODO: Wrong, it shows items, not parameters
+    assert len(models['lbco'].atom_sites.parameters) == 9
     assert len(models['lbco'].cell.parameters) == 1
-    assert len(models['lbco'].parameters) == 3 # TODO: Wrong, it shows categories, not parameters
-    assert len(models.parameters) == 1 # TODO: Wrong, it shows datablocks, not parameters
+    assert len(models['lbco'].parameters) == 12
+    assert len(models.parameters) == 12
 
     log.info(f'-------- CIF HANDLERS --------')
 
