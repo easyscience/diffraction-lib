@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+from cryspy.A_functions_base.database import DATABASE
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
@@ -30,6 +31,9 @@ class AtomSite(CategoryItem):
         self._label: DescriptorStr = DescriptorStr(
             name='label',
             description='Unique identifier for the atom site.',
+            # TODO: the following pattern is valid for dict key
+            #  (keywords are not checked). CIF label is less strict.
+            #  Do we need conversion between CIF and internal label?
             validator=RegexValidator(
                 pattern=r'^[A-Za-z_][A-Za-z0-9_]*$',
                 default='Si',
@@ -45,7 +49,7 @@ class AtomSite(CategoryItem):
             name='type_symbol',
             description='Chemical symbol of the atom at this site.',
             validator=ListValidator(
-                allowed_values=['Si', 'O', 'Tb', 'La', 'Ba', 'Co'],
+                allowed_values=lambda: self._type_symbol_allowed_values,
                 default='Tb',
             ),
             value=type_symbol,
@@ -99,29 +103,8 @@ class AtomSite(CategoryItem):
             description='Wyckoff letter indicating the symmetry of the '
             'atom site within the space group.',
             validator=ListValidator(
-                allowed_values=[
-                    'a',
-                    'b',
-                    'c',
-                    'd',
-                    'e',
-                    'f',
-                    'g',
-                    'h',
-                    'i',
-                    'j',
-                    'k',
-                    'l',
-                    'm',
-                    'n',
-                    'o',
-                    'p',
-                    'q',
-                    'r',
-                    's',
-                    't',
-                ],
-                default='a',
+                allowed_values=lambda: self._wyckoff_letter_allowed_values,
+                default=lambda: self._wyckoff_letter_default_value,
             ),
             value=wyckoff_letter,
             cif_handler=CifHandler(
@@ -177,6 +160,23 @@ class AtomSite(CategoryItem):
 
         self._identity.category_code = 'atom_site'
         self._identity.category_entry_name = lambda: self.label.value
+
+    @property
+    def _type_symbol_allowed_values(self):
+        return list({key[1] for key in DATABASE['Isotopes']})
+
+    @property
+    def _wyckoff_letter_allowed_values(self):
+        # TODO: Need to now current space group. How to access it? Via
+        #  parent Cell? Then letters =
+        #  list(SPACE_GROUPS[62, 'cab']['Wyckoff_positions'].keys())
+        #  Temporarily return hardcoded list:
+        return ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
+
+    @property
+    def _wyckoff_letter_default_value(self):
+        # TODO: What to pass as default?
+        return self._wyckoff_letter_allowed_values[0]
 
     @property
     def label(self):
