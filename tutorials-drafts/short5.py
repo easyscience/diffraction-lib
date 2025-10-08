@@ -255,11 +255,18 @@ class GuardedBase(ABC):
             self._diagnoser.attr_error(name, key, allowed)
 
     def __setattr__(self, key: str, value: Any):
+        # !!!!!!!!!!!!!!!!!!!!!!!!
         # Allow private attributes
+        #if key.startswith('_'):
+        #    self._assign_attr(key, value)
+        #    return
+        # Always allow internal private attributes without diagnostics
         if key.startswith('_'):
             self._assign_attr(key, value)
             return
-        
+            #object.__setattr__(self, key, value)
+            #return
+                
         # Handle public attributes with diagnostics
         cls = type(self)
         name = self._log_name
@@ -304,11 +311,13 @@ class GuardedBase(ABC):
     @classmethod
     def _public_readonly_attrs(cls) -> set[str]:
         """Public properties without a setter."""
+        #return sorted({key for key, prop in cls._iter_properties() if prop.fset is None})
         return {key for key, prop in cls._iter_properties() if prop.fset is None}
 
     @classmethod
     def _public_writable_attrs(cls) -> set[str]:
         """Public properties with a setter."""
+        #return sorted({key for key, prop in cls._iter_properties() if prop.fset is not None})
         return {key for key, prop in cls._iter_properties() if prop.fset is not None}
 
     @property
@@ -395,27 +404,6 @@ class Identity:
     def category_entry_name(self, func: Callable[[], str]) -> None:
         self._entry = func
 
-    @property
-    def full_name(self):
-        """Return hierarchical identity including parameter name if available."""
-        parts = [
-            str(p)
-            for p in [
-                self.datablock_entry_name,
-                self.category_code,
-                self.category_entry_name,
-            ]
-            if p is not None
-        ]
-
-        # If the owner is a Parameter/Descriptor, append its name
-        owner = getattr(self, "_owner", None)
-        if owner and hasattr(owner, "name") and owner.name is not None:
-            parts.append(str(owner.name))
-
-        return ".".join(parts) if parts else "UNSET"
-
-
 # ---------------------------------------------------------------------
 # parameters.py
 # ---------------------------------------------------------------------
@@ -489,6 +477,14 @@ class GenericDescriptorBase(ValidatedBase):
         return self._uid
 
     @property
+    def full_name(self):
+        parts = [self._identity.datablock_entry_name,
+                 self._identity.category_code,
+                 self._identity.category_entry_name,
+                 self.name, ]
+        return '.'.join(p for p in parts if p is not None)
+
+    @property
     def parameters(self):
         # For a single descriptor, itself is the only parameter.
         return [self]
@@ -500,7 +496,8 @@ class GenericDescriptorBase(ValidatedBase):
         value = self.value
         value = f'"{value}"' if isinstance(value, str) and ' ' in value else value
         return f'{main_key} {value}'
-    
+
+
 
 class GenericDescriptorStr(GenericDescriptorBase):
     def __init__(
@@ -744,6 +741,13 @@ class CategoryItem(GuardedBase):
         return f'<{name} ({params})>'
 
     @property
+    def full_name(self):
+        parts = [self._identity.datablock_entry_name,
+                 self._identity.category_code,
+                 self._identity.category_entry_name,]
+        return '.'.join(p for p in parts if p is not None)
+
+    @property
     def parameters(self):
         # Only direct descriptor/parameter attributes (not recursive)
         params = []
@@ -765,6 +769,7 @@ class CategoryItem(GuardedBase):
         return '\n'.join(lines)
 
 
+
 class CategoryCollection(CollectionBase):
     """Handles loop-style category containers (e.g. AtomSites).
 
@@ -776,6 +781,10 @@ class CategoryCollection(CollectionBase):
         name = self._log_name
         size = len(self)
         return f'<{name} collection ({size} items)>'
+
+    @property
+    def full_name(self):
+        return None
 
     @property
     def parameters(self):
@@ -822,6 +831,7 @@ class CategoryCollection(CollectionBase):
 
 
 
+
 # ---------------------------------------------------------------------
 # datablocks.py
 # ---------------------------------------------------------------------
@@ -833,6 +843,10 @@ class DatablockItem(GuardedBase):
         name = self._log_name
         items = self._items
         return f'<{name} ({items})>'
+
+    @property
+    def full_name(self):
+        return self._identity.datablock_entry_name
 
     @property
     def parameters(self):
@@ -853,6 +867,7 @@ class DatablockItem(GuardedBase):
         return '\n'.join(lines)
 
 
+
 class DatablockCollection(CollectionBase):
     """Handles top-level collections (e.g. SampleModels, Experiments).
 
@@ -864,6 +879,10 @@ class DatablockCollection(CollectionBase):
         name = self._log_name
         size = len(self)
         return f'<{name} collection ({size} items)>'
+
+    @property
+    def full_name(self):
+        return None
 
     @property
     def parameters(self):
@@ -895,7 +914,7 @@ class DatablockCollection(CollectionBase):
         child_obj = self._item_type(*args, **kwargs)
         self.add(child_obj)
 
-    
+
 
 # ---------------------------------------------------------------------
 # cell.py
@@ -1288,12 +1307,11 @@ if __name__ == '__main__':
     assert getattr(c.length_b, 'qwe', None) is None
     c.length_b.description = 'desc'  # type: ignore
     assert c.length_b.description == 'Length of the b axis of the unit cell.'  # type: ignore
-    assert c.length_b._public_readonly_attrs() == {
-        'constrained', 'units', 'uid', 'name', 'start_value', 'parameters', 'as_cif', 'description'
-        }
-    assert c.length_b._public_writable_attrs() == {
-        'value', 'fit_max', 'free', 'uncertainty', 'fit_min'
-    }
+    assert c.length_b._public_readonly_attrs() == {'as_cif', 'constrained', 'description',
+                                                   'full_name', 'name', 'parameters',
+                                                   'start_value', 'uid', 'units'}
+    assert c.length_b._public_writable_attrs() == {'fit_max', 'fit_min', 'free', 'uncertainty',
+                                                   'value'}
     c.qwe = 'qwe'
     assert getattr(c.length_b, 'qwe', None) is None
     assert c.length_b._cif_handler.names == ['_cell.length_b']
@@ -1348,11 +1366,6 @@ if __name__ == '__main__':
     sites['Tb'].label = 'a b c'
     assert sites['Tb'].label.value == 'Tb'
 
-    assert c._identity.full_name == 'cell'
-    assert c.length_b._identity.full_name == 'cell.length_b'
-    assert sites._identity.full_name == 'UNSET' # ???
-    assert sites['Tb']._identity.full_name == 'atom_site.Tb'
-    assert sites['Tb'].fract_x._identity.full_name == 'atom_site.Tb.fract_x'
     assert sites['Tb']._label.value == 'Tb'
     assert sites['Tb'].label.value == 'Tb'
     assert sites['Tb'].name is None
@@ -1369,7 +1382,6 @@ if __name__ == '__main__':
     assert model.atom_sites.names == ['Tb', 'Si']
     assert model.atom_sites._items[0].label.value == 'Tb'
     assert model.atom_sites._items[1].label.value == 'Si'
-    assert model.atom_sites['Tb'].fract_x._identity.full_name == 'lbco.atom_site.Tb.fract_x'
 
     log.info(f'-------- SampleModels --------')
 
@@ -1378,7 +1390,6 @@ if __name__ == '__main__':
     models.add(model)
     assert len(models) == 1
     assert models._items[0].name == 'lbco'
-    assert models['lbco'].atom_sites['Tb'].fract_x._identity.full_name == 'lbco.atom_site.Tb.fract_x'
 
     log.info(f'-------- PARENTS --------')
 
@@ -1473,3 +1484,42 @@ _atom_site.adp_type
 Si Si 0.456 0.0 0.0 a 1.0 0.0 Biso
 La Tb 0.0 0.0 0.0 a 1.0 0.0 Biso"""
 
+    log.info(f'-------- Full Names --------')
+
+    cell = Cell()
+    assert cell.full_name == 'cell'
+
+    assert cell.length_b.full_name == 'cell.length_b'
+
+    site = AtomSite(label='Tb', type_symbol='Tb')
+    assert site.full_name == 'atom_site.Tb'
+
+    sites = AtomSites() #
+    assert sites.full_name is None
+
+    sites.add(site)
+    assert site.full_name == 'atom_site.Tb'
+    assert sites['Tb'].full_name == 'atom_site.Tb'
+
+    model = SampleModel(name='lbco') #
+    assert model.full_name == 'lbco'
+
+    model.cell = cell
+    assert cell.full_name == 'lbco.cell'
+    assert cell.length_b.full_name == 'lbco.cell.length_b'
+    assert model.cell.full_name == 'lbco.cell'
+    assert model.cell.length_b.full_name == 'lbco.cell.length_b'
+
+    model.atom_sites = sites
+    assert sites.full_name is None
+    assert model.atom_sites.full_name is None
+    assert model.atom_sites['Tb'].full_name == 'lbco.atom_site.Tb'
+
+    models = SampleModels() #
+    assert models.full_name is None
+
+    models.add(model)
+    assert models['lbco'].cell.full_name == 'lbco.cell'
+    assert models['lbco'].cell.length_b.full_name == 'lbco.cell.length_b'
+    assert models['lbco'].atom_sites.full_name is None
+    assert models['lbco'].atom_sites['Tb'].full_name == 'lbco.atom_site.Tb'
