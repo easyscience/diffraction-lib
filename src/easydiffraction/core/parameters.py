@@ -71,16 +71,14 @@ class GenericDescriptorBase(ValidatedBase):
     def __str__(self) -> str:
         return f'<{self._log_name} = {self.value!r}>'
 
-    @property
-    def description(self) -> str:
-        return self._description
-
     @staticmethod
     def _generate_uid() -> str:
         length: int = 16
         return ''.join(secrets.choice(string.ascii_lowercase) for _ in range(length))
 
-    # TODO: Check following properties. Make private, etc.
+    @property
+    def description(self) -> str:
+        return self._description
 
     @property
     def uid(self):
@@ -186,11 +184,9 @@ class GenericParameter(GenericDescriptorFloat):
         return self._uncertainty
 
     @uncertainty.setter
-    # @checktype
-    def uncertainty(self, new: float) -> None:
+    @checktype
+    def uncertainty(self, new: Optional[float]) -> None:
         self._uncertainty = new
-
-    # TODO: Check following properties. Make private, etc.
 
     @property
     def fit_min(self) -> float:
