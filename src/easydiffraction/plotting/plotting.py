@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import numpy as np
+
 from easydiffraction.plotting.plotters.plotter_ascii import AsciiPlotter
 from easydiffraction.plotting.plotters.plotter_base import DEFAULT_AXES_LABELS
 from easydiffraction.plotting.plotters.plotter_base import DEFAULT_ENGINE
@@ -252,7 +254,18 @@ class Plotter:
             print(error(f'No calculated data available for experiment {expt_name}'))
             return
 
+        # Select x-axis data based on d-spacing or original x values
         x_array = pattern.d if d_spacing else pattern.x
+
+        # For asciichartpy, if x_min or x_max is not provided, center
+        # around the maximum intensity peak
+        if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
+            max_intensity_pos = np.argmax(pattern.meas)
+            half_range = 50
+            x_min = x_array[max_intensity_pos - half_range]
+            x_max = x_array[max_intensity_pos + half_range]
+
+        # Filter x, y_meas, and y_calc based on x_min and x_max
         x = self._filtered_y_array(
             y_array=x_array,
             x_array=x_array,
