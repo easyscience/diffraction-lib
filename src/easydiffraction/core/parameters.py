@@ -159,7 +159,7 @@ class GenericParameter(GenericDescriptorFloat):
         self._uncertainty: Optional[float] = uncertainty
         self._fit_min: float = -np.inf  # TODO: consider renaming
         self._fit_max: float = np.inf  # TODO: consider renaming
-        self._start_value: float = 0.0  # TODO: consider removing
+        self._start_value: float
         self._constrained: bool = False  # TODO: freeze
 
     def __str__(self) -> str:
@@ -209,17 +209,6 @@ class GenericParameter(GenericDescriptorFloat):
     @checktype
     def fit_max(self, new: float) -> None:
         self._fit_max = new
-
-    # TODO: consider removing
-    @property
-    def start_value(self) -> float:
-        return self._start_value
-
-    # TODO: consider removing
-    @start_value.setter
-    @checktype
-    def start_value(self, new: float) -> None:
-        self._start_value = new
 
     @property
     def constrained(self) -> bool:

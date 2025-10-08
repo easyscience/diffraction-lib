@@ -112,16 +112,16 @@ class FitResults:
             )  # getattr(param, 'category_entry_name', 'N/A')
             name = getattr(param, 'name', 'N/A')
             start = (
-                f'{getattr(param, "start_value", "N/A"):.4f}'
-                if param.start_value is not None
+                f'{getattr(param, "_fit_start_value", "N/A"):.4f}'
+                if param._fit_start_value is not None
                 else 'N/A'
             )
             fitted = f'{param.value:.4f}' if param.value is not None else 'N/A'
             uncertainty = f'{param.uncertainty:.4f}' if param.uncertainty is not None else 'N/A'
             units = getattr(param, 'units', 'N/A')
 
-            if param.start_value and param.value:
-                change = ((param.value - param.start_value) / param.start_value) * 100
+            if param._fit_start_value and param.value:
+                change = ((param.value - param._fit_start_value) / param._fit_start_value) * 100
                 arrow = '↑' if change > 0 else '↓'
                 relative_change = f'{abs(change):.2f} % {arrow}'
             else:

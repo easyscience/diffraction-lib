@@ -51,7 +51,7 @@ class DiffractionMinimizer:
             return None
 
         for param in params:
-            param.start_value = param.value
+            param._fit_start_value = param.value
 
         def objective_function(engine_params: Dict[str, Any]) -> np.ndarray:
             return self._residual_function(
