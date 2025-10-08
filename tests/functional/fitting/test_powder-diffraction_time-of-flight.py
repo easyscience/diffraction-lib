@@ -23,6 +23,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
         fract_x=0.125,
         fract_y=0.125,
         fract_z=0.125,
+        wyckoff_letter='a',
         b_iso=0.529,
     )
 

@@ -23,6 +23,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
         fract_x=0,
         fract_y=0,
         fract_z=0,
+        wyckoff_letter='a',
         occupancy=0.5,
         b_iso=0.1,
     )
@@ -32,6 +33,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
         fract_x=0,
         fract_y=0,
         fract_z=0,
+        wyckoff_letter='a',
         occupancy=0.5,
         b_iso=0.1,
     )
@@ -41,6 +43,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
         fract_x=0.5,
         fract_y=0.5,
         fract_z=0.5,
+        wyckoff_letter='b',
         b_iso=0.1,
     )
     model.atom_sites.add_from_args(
@@ -49,6 +52,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
         fract_x=0,
         fract_y=0.5,
         fract_z=0.5,
+        wyckoff_letter='c',
         b_iso=0.1,
     )
 
@@ -138,6 +142,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
         fract_x=0,
         fract_y=0,
         fract_z=0,
+        wyckoff_letter='a',
         b_iso=1.0,
         occupancy=0.5,
     )
@@ -147,6 +152,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
         fract_x=0,
         fract_y=0,
         fract_z=0,
+        wyckoff_letter='a',
         b_iso=1.0,
         occupancy=0.5,
     )
@@ -156,6 +162,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
         fract_x=0.5,
         fract_y=0.5,
         fract_z=0.5,
+        wyckoff_letter='b',
         b_iso=1.0,
     )
     atom_sites.add_from_args(
@@ -164,6 +171,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
         fract_x=0,
         fract_y=0.5,
         fract_z=0.5,
+        wyckoff_letter='c',
         b_iso=1.0,
     )
 

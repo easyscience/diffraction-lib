@@ -16,16 +16,17 @@ TEMP_DIR = tempfile.gettempdir()
 def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     # Set sample model
     model = SampleModel(name='pbso4')
-    model.space_group.name_h_m.value = 'P n m a'
-    model.cell.length_a.value = 8.47
-    model.cell.length_b.value = 5.39
-    model.cell.length_c.value = 6.95
+    model.space_group.name_h_m = 'P n m a'
+    model.cell.length_a = 8.47
+    model.cell.length_b = 5.39
+    model.cell.length_c = 6.95
     model.atom_sites.add_from_args(
         label='Pb',
         type_symbol='Pb',
         fract_x=0.1876,
         fract_y=0.25,
         fract_z=0.167,
+        wyckoff_letter='c',
         b_iso=1.37,
     )
     model.atom_sites.add_from_args(
@@ -34,6 +35,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         fract_x=0.0654,
         fract_y=0.25,
         fract_z=0.684,
+        wyckoff_letter='c',
         b_iso=0.3777,
     )
     model.atom_sites.add_from_args(
@@ -42,6 +44,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         fract_x=0.9082,
         fract_y=0.25,
         fract_z=0.5954,
+        wyckoff_letter='c',
         b_iso=1.9764,
     )
     model.atom_sites.add_from_args(
@@ -50,6 +53,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         fract_x=0.1935,
         fract_y=0.25,
         fract_z=0.5432,
+        wyckoff_letter='c',
         b_iso=1.4456,
     )
     model.atom_sites.add_from_args(
@@ -58,6 +62,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         fract_x=0.0811,
         fract_y=0.0272,
         fract_z=0.8086,
+        wyckoff_letter='d',
         b_iso=1.2822,
     )
 
@@ -147,6 +152,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         fract_x=0.1876,
         fract_y=0.25,
         fract_z=0.167,
+        wyckoff_letter='c',
         b_iso=1.37,
     )
     model.atom_sites.add_from_args(
@@ -155,6 +161,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         fract_x=0.0654,
         fract_y=0.25,
         fract_z=0.684,
+        wyckoff_letter='c',
         b_iso=0.3777,
     )
     model.atom_sites.add_from_args(
@@ -163,6 +170,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         fract_x=0.9082,
         fract_y=0.25,
         fract_z=0.5954,
+        wyckoff_letter='c',
         b_iso=1.9764,
     )
     model.atom_sites.add_from_args(
@@ -171,6 +179,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         fract_x=0.1935,
         fract_y=0.25,
         fract_z=0.5432,
+        wyckoff_letter='c',
         b_iso=1.4456,
     )
     model.atom_sites.add_from_args(
@@ -179,6 +188,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         fract_x=0.0811,
         fract_y=0.0272,
         fract_z=0.8086,
+        wyckoff_letter='d',
         b_iso=1.2822,
     )
 

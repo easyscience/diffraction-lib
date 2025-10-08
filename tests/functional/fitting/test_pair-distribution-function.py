@@ -19,10 +19,22 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     sample_model.space_group.it_coordinate_system_code = '1'
     sample_model.cell.length_a = 5.6018
     sample_model.atom_sites.add_from_args(
-        label='Na', type_symbol='Na', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=1.1053
+        label='Na',
+        type_symbol='Na',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        wyckoff_letter='a',
+        b_iso=1.1053,
     )
     sample_model.atom_sites.add_from_args(
-        label='Cl', type_symbol='Cl', fract_x=0.5, fract_y=0.5, fract_z=0.5, wyckoff_letter='b', b_iso=0.5708
+        label='Cl',
+        type_symbol='Cl',
+        fract_x=0.5,
+        fract_y=0.5,
+        fract_z=0.5,
+        wyckoff_letter='b',
+        b_iso=0.5708,
     )
 
     # Set experiment
@@ -59,7 +71,8 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=1.48, decimal=2)
+    chi2 = project.analysis.fit_results.reduced_chi_square
+    assert_almost_equal(chi2, desired=1.48, decimal=2)
 
 
 @pytest.mark.fast
@@ -73,7 +86,13 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     sample_model.space_group.it_coordinate_system_code = '1'
     sample_model.cell.length_a = 3.526
     sample_model.atom_sites.add_from_args(
-        label='Ni', type_symbol='Ni', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=0.4281
+        label='Ni',
+        type_symbol='Ni',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        wyckoff_letter='a',
+        b_iso=0.4281,
     )
 
     # Set experiment
@@ -108,7 +127,8 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=207.1, decimal=1)
+    chi2 = project.analysis.fit_results.reduced_chi_square
+    assert_almost_equal(chi2, desired=207.1, decimal=1)
 
 
 def test_single_fit_pdf_neutron_pd_tof_si():
@@ -164,7 +184,8 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=170.54, decimal=1)
+    chi2 = project.analysis.fit_results.reduced_chi_square
+    assert_almost_equal(chi2, desired=170.54, decimal=1)
 
 
 if __name__ == '__main__':
