@@ -13,6 +13,7 @@ from typing import Optional
 from typing import ParamSpec
 from typing import TypeVar
 from typing import Union
+import inspect
 
 from typeguard import TypeCheckError
 from typeguard import typechecked
@@ -24,12 +25,19 @@ import numpy as np
 P = ParamSpec('P')
 R = TypeVar('R')
 
-
 # ---------------------------------------------------------------------
 # decorators.py
 # ---------------------------------------------------------------------
 def checktype(func: Callable[P, R]) -> Callable[P, Optional[R]]:
     """Wrapper around @typechecked that catches and logs type errors during runtime."""
+
+    # TODO: It is not supposed to be used for attribute .value of the
+    #  GenericDescriptorBase. In there, the typecheck is done via
+    #  Validator. Consider split for typechecking and validation. But
+    #  need to cover typechecking during init, setter of parameter
+    #  and setter of parameter.value...
+
+    # TODO: Consider messaging via Diagnostics
     checked_func = typechecked(func)
 
     @wraps(func)
@@ -37,12 +45,21 @@ def checktype(func: Callable[P, R]) -> Callable[P, Optional[R]]:
         try:
             return checked_func(*args, **kwargs)
         except TypeCheckError as err:
-            message = f'Type error in {func.__qualname__}: {err}'
+            first_arg = args[0]
+            if isinstance(first_arg, GenericDescriptorBase):
+                new = args[1]
+                new_type = type(new).__name__
+                expected_type = err.args[0].split(' ')[-1]
+                unique_name = first_arg.unique_name
+                attr_name = func.__name__
+                name = f'{unique_name}.{attr_name}'
+                message = (f'Type mismatch for <{name}>. '
+                           f'Provided {new!r} ({new_type}) is not {expected_type}')
+            else:
+                message = f'Type mismatch in {func.__qualname__}: {err}'
             log.error(message, exc_type=TypeError)
-            return None
 
     return wrapper
-
 
 # ---------------------------------------------------------------------
 # diagnostic.py
@@ -90,6 +107,8 @@ class Diagnostics:
 class Validator(ABC):
     """Abstract validator base class with global strictness control."""
 
+    # TODO: Consider messaging via Diagnostics
+
     def __init__(
             self, 
             *,
@@ -133,7 +152,7 @@ class RangeValidator(Validator):
                        f'Using default {self.default!r}.')
             log.warning(message, exc_type=UserWarning)
             return self.default
-        
+
         if not isinstance(new, (float, int, np.floating, np.integer)):
             message = (f'Type mismatch for <{name}>. '
                        f'Provided {new!r} ({type(new).__name__}) is not float.')
@@ -407,6 +426,8 @@ class Identity:
 # parameters.py
 # ---------------------------------------------------------------------
 class ValidatedBase(GuardedBase):
+    _expected_type: type = Any  # TODO: not in use yet
+
     def __init__(
         self,
         *,
@@ -499,6 +520,8 @@ class GenericDescriptorBase(ValidatedBase):
 
 
 class GenericDescriptorStr(GenericDescriptorBase):
+    _expected_type = str  # TODO: not in use yet
+
     def __init__(
         self,
         **kwargs: Any,
@@ -506,7 +529,11 @@ class GenericDescriptorStr(GenericDescriptorBase):
         super().__init__(**kwargs)
 
 
+
+
 class GenericDescriptorFloat(GenericDescriptorBase):
+    _expected_type = float  # TODO: not in use yet
+
     def __init__(
         self,
         *,
@@ -523,6 +550,8 @@ class GenericDescriptorFloat(GenericDescriptorBase):
             s += f' {self.units}'
         return f'<{s}>'
 
+
+        
     @property
     def units(self) -> str:
         return self._units
@@ -1280,6 +1309,25 @@ class SampleModels(DatablockCollection):
 # Example usage
 # ---------------------------------------------------------------------
 if __name__ == '__main__':
+
+    log.info('-------- Types --------')
+
+    s1 = AtomSite(label='La', type_symbol='La')
+    s1.fract_x.value = 1.234
+    assert s1.fract_x.value == 1.234
+    s1.fract_x.value = 'xyz'
+    assert s1.fract_x.value == 1.234
+    s1.fract_x = 'qwe'
+    assert s1.fract_x.value == 1.234
+    s1 = AtomSite(label='Si', type_symbol='Si', fract_x='uuuu')
+    assert s1.fract_x.value == 0.0
+
+    assert s1.fract_x.free == False
+    s1.fract_x.free = True
+    assert s1.fract_x.free == True
+    s1.fract_x.free = 'abc'
+    assert s1.fract_x.free == True
+
     log.info('-------- Cell --------')
 
     c = Cell()
