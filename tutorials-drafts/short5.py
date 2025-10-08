@@ -6,8 +6,6 @@ import secrets
 import string
 from abc import ABC
 from abc import abstractmethod
-from enum import Enum
-from enum import auto
 from functools import wraps
 from typing import Any
 from typing import Callable
@@ -255,18 +253,11 @@ class GuardedBase(ABC):
             self._diagnoser.attr_error(name, key, allowed)
 
     def __setattr__(self, key: str, value: Any):
-        # !!!!!!!!!!!!!!!!!!!!!!!!
         # Allow private attributes
-        #if key.startswith('_'):
-        #    self._assign_attr(key, value)
-        #    return
-        # Always allow internal private attributes without diagnostics
         if key.startswith('_'):
             self._assign_attr(key, value)
             return
-            #object.__setattr__(self, key, value)
-            #return
-                
+
         # Handle public attributes with diagnostics
         cls = type(self)
         name = self._log_name
@@ -351,7 +342,7 @@ class Identity:
         *,
         owner: object,
         datablock: Callable[[], str] | None = None,
-        category: Callable[[], str] | None = None,
+        category: str | None = None,
         entry: Callable[[], str] | None = None,
     ) -> None:
         self._owner = owner
@@ -393,8 +384,8 @@ class Identity:
         return self._resolve_up("category")
 
     @category_code.setter
-    def category_code(self, func_or_value: str | Callable[[], str]) -> None:
-        self._category = func_or_value
+    def category_code(self, value: str) -> None:
+        self._category = value
 
     @property
     def category_entry_name(self):
@@ -607,8 +598,8 @@ class GenericParameter(GenericDescriptorFloat):
     @property
     def _minimizer_uid(self):
         """Return variant of uid safe for minimizer engines."""
-        return self.uid
         # return self.full_name.replace('.', '__')
+        return self.uid
 
 
 
