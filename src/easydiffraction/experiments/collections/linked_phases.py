@@ -37,9 +37,7 @@ class LinkedPhase(CategoryItem):
         self._scale = Parameter(
             name='scale',
             description='Scale factor of the linked phase.',
-            validator=RangeValidator(
-                default=1.0,
-            ),
+            validator=RangeValidator(default=1.0),
             value=scale,
             cif_handler=CifHandler(
                 names=[

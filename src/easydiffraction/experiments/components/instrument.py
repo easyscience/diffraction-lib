@@ -31,9 +31,7 @@ class ConstantWavelengthInstrument(InstrumentBase):
         self._setup_wavelength: Parameter = Parameter(
             name='wavelength',
             description='Incident neutron or X-ray wavelength',
-            validator=RangeValidator(
-                default=1.5406,
-            ),
+            validator=RangeValidator(default=1.5406),
             value=setup_wavelength,
             units='Å',
             cif_handler=CifHandler(
@@ -45,9 +43,7 @@ class ConstantWavelengthInstrument(InstrumentBase):
         self._calib_twotheta_offset: Parameter = Parameter(
             name='twotheta_offset',
             description='Instrument misalignment offset',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=calib_twotheta_offset,
             units='deg',
             cif_handler=CifHandler(
@@ -89,9 +85,7 @@ class TimeOfFlightInstrument(InstrumentBase):
         self._setup_twotheta_bank: Parameter = Parameter(
             name='twotheta_bank',
             description='Detector bank position',
-            validator=RangeValidator(
-                default=150.0,
-            ),
+            validator=RangeValidator(default=150.0),
             value=setup_twotheta_bank,
             units='deg',
             cif_handler=CifHandler(
@@ -103,9 +97,7 @@ class TimeOfFlightInstrument(InstrumentBase):
         self._calib_d_to_tof_offset: Parameter = Parameter(
             name='d_to_tof_offset',
             description='TOF offset',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=calib_d_to_tof_offset,
             units='µs',
             cif_handler=CifHandler(
@@ -117,9 +109,7 @@ class TimeOfFlightInstrument(InstrumentBase):
         self._calib_d_to_tof_linear: Parameter = Parameter(
             name='d_to_tof_linear',
             description='TOF linear conversion',
-            validator=RangeValidator(
-                default=10000.0,
-            ),
+            validator=RangeValidator(default=10000.0),
             value=calib_d_to_tof_linear,
             units='µs/Å',
             cif_handler=CifHandler(
@@ -131,9 +121,7 @@ class TimeOfFlightInstrument(InstrumentBase):
         self._calib_d_to_tof_quad: Parameter = Parameter(
             name='d_to_tof_quad',
             description='TOF quadratic correction',
-            validator=RangeValidator(
-                default=-0.00001,
-            ),
+            validator=RangeValidator(default=-0.00001),
             value=calib_d_to_tof_quad,
             units='µs/Å²',
             cif_handler=CifHandler(
@@ -145,9 +133,7 @@ class TimeOfFlightInstrument(InstrumentBase):
         self._calib_d_to_tof_recip: Parameter = Parameter(
             name='d_to_tof_recip',
             description='TOF reciprocal velocity correction',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=calib_d_to_tof_recip,
             units='µs·Å',
             cif_handler=CifHandler(

@@ -36,9 +36,7 @@ class Point(CategoryItem):
             name='x',
             description='X-coordinates used to create many straight-line segments '
             'representing the background in a calculated diffractogram.',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=x,
             cif_handler=CifHandler(
                 names=[
@@ -50,9 +48,7 @@ class Point(CategoryItem):
             name='y',  # TODO: rename to intensity
             description='Intensity used to create many straight-line segments '
             'representing the background in a calculated diffractogram',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=y,  # TODO: rename to intensity
             cif_handler=CifHandler(
                 names=[
@@ -103,9 +99,7 @@ class PolynomialTerm(CategoryItem):
         self._order = DescriptorFloat(
             name='order',
             description='Order used in a Chebyshev polynomial background term',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=order,
             cif_handler=CifHandler(
                 names=[
@@ -116,9 +110,7 @@ class PolynomialTerm(CategoryItem):
         self._coef = Parameter(
             name='coef',
             description='Coefficient used in a Chebyshev polynomial background term',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=coef,
             cif_handler=CifHandler(
                 names=[
@@ -129,13 +121,13 @@ class PolynomialTerm(CategoryItem):
 
         # Backward-compatible aliases (point to same objects)
         # TODO: Remove it
-        self.chebyshev_order = self.order
-        self.chebyshev_coef = self.coef
+        # self.chebyshev_order = self.order
+        # self.chebyshev_coef = self.coef
 
         # Entry attribute used as the identifier within the collection
         # self._category_entry_attr_name = self.order.name
         self._identity.category_code = 'background'
-        self._identity.category_entry_name = lambda: self.order.value
+        self._identity.category_entry_name = lambda: str(self.order.value)
 
     @property
     def order(self):
@@ -221,7 +213,7 @@ class ChebyshevPolynomialBackground(BackgroundBase):
             return np.zeros_like(x_data)
 
         u = (x_data - x_data.min()) / (x_data.max() - x_data.min()) * 2 - 1  # scale to [-1, 1]
-        coefs = [term.chebyshev_coef.value for term in self._items.values()]
+        coefs = [term.coef.value for term in self._items]
         y_data = chebval(u, coefs)
         return y_data
 
@@ -230,8 +222,10 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         columns_alignment = ['left', 'left']
         columns_data: List[List[Union[int, float]]] = []
         for term in self._items.values():
-            order = term.chebyshev_order.value
-            coef = term.chebyshev_coef.value
+            # order = term.chebyshev_order.value
+            # coef = term.chebyshev_coef.value
+            order = term.order.value
+            coef = term.coef.value
             columns_data.append([order, coef])
 
         print(paragraph('Chebyshev polynomial background terms'))

@@ -196,6 +196,13 @@ class BasePowderExperiment(BaseExperiment):
     def peak(self) -> str:
         return self._peak
 
+    # TODO: Check if setter is needed, or if we should re-create
+    #  peak via peak_type only and thus use private
+    #  attribute.
+    @peak.setter
+    def peak(self, value):
+        self._peak = value
+
     @property
     def linked_phases(self) -> str:
         return self._linked_phases
@@ -285,6 +292,13 @@ class PowderExperiment(
     @property
     def background(self):
         return self._background
+
+    # TODO: Check if setter is needed, or if we should re-create
+    #  background via background_type only and thus use private
+    #  attribute.
+    @background.setter
+    def background(self, value):
+        self._background = value
 
     # -------------
     # Measured data

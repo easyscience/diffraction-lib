@@ -47,11 +47,9 @@ class UidMapHandler(BaseSingleton):
         Only Descriptor or Parameter instances are allowed (not
         Components or others).
         """
-        from easydiffraction.core.parameters import Descriptor
-        from easydiffraction.core.parameters import GenericConstant
-        from easydiffraction.core.parameters import Parameter
+        from easydiffraction.core.parameters import GenericDescriptorBase
 
-        if not isinstance(parameter, (GenericConstant, Descriptor, Parameter)):
+        if not isinstance(parameter, GenericDescriptorBase):
             raise TypeError(
                 f'Cannot add object of type {type(parameter).__name__} to UID map. '
                 'Only Descriptor or Parameter instances are allowed.'
@@ -102,7 +100,7 @@ class ConstraintsHandler(BaseSingleton):
         Called when user registers parameter aliases like:
             alias='biso_La', param=model.atom_sites['La'].b_iso
         """
-        self._alias_to_param = {alias.name: alias for alias in aliases}
+        self._alias_to_param = dict(aliases.items())
 
     def set_constraints(self, constraints):
         """Sets the constraints and triggers parsing into internal

@@ -63,9 +63,7 @@ class AtomSite(CategoryItem):
         self._fract_x: Parameter = Parameter(
             name='fract_x',
             description='Fractional x-coordinate of the atom site within the unit cell.',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=fract_x,
             cif_handler=CifHandler(
                 names=[
@@ -76,9 +74,7 @@ class AtomSite(CategoryItem):
         self._fract_y: Parameter = Parameter(
             name='fract_y',
             description='Fractional y-coordinate of the atom site within the unit cell.',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=fract_y,
             cif_handler=CifHandler(
                 names=[
@@ -89,9 +85,7 @@ class AtomSite(CategoryItem):
         self._fract_z: Parameter = Parameter(
             name='fract_z',
             description='Fractional z-coordinate of the atom site within the unit cell.',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=fract_z,
             cif_handler=CifHandler(
                 names=[
@@ -119,9 +113,7 @@ class AtomSite(CategoryItem):
             name='occupancy',
             description='Occupancy of the atom site, representing the '
             'fraction of the site occupied by the atom type.',
-            validator=RangeValidator(
-                default=1.0,
-            ),
+            validator=RangeValidator(default=1.0),
             value=occupancy,
             cif_handler=CifHandler(
                 names=[
@@ -132,9 +124,7 @@ class AtomSite(CategoryItem):
         self._b_iso: Parameter = Parameter(
             name='b_iso',
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=b_iso,
             units='Å²',
             cif_handler=CifHandler(

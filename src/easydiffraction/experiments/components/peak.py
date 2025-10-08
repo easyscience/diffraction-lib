@@ -71,9 +71,7 @@ class ConstantWavelengthBroadeningMixin:
             name='broad_gauss_u',
             description='Gaussian broadening coefficient (dependent on '
             'sample size and instrument resolution)',
-            validator=RangeValidator(
-                default=0.01,
-            ),
+            validator=RangeValidator(default=0.01),
             value=0.01,
             units='deg²',
             cif_handler=CifHandler(
@@ -85,9 +83,7 @@ class ConstantWavelengthBroadeningMixin:
         self._broad_gauss_v: Parameter = Parameter(
             name='broad_gauss_v',
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
-            validator=RangeValidator(
-                default=-0.01,
-            ),
+            validator=RangeValidator(default=-0.01),
             value=-0.01,
             units='deg²',
             cif_handler=CifHandler(
@@ -99,9 +95,7 @@ class ConstantWavelengthBroadeningMixin:
         self._broad_gauss_w: Parameter = Parameter(
             name='broad_gauss_w',
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
-            validator=RangeValidator(
-                default=0.02,
-            ),
+            validator=RangeValidator(default=0.02),
             value=0.02,
             units='deg²',
             cif_handler=CifHandler(
@@ -113,9 +107,7 @@ class ConstantWavelengthBroadeningMixin:
         self._broad_lorentz_x: Parameter = Parameter(
             name='broad_lorentz_x',
             description='Lorentzian broadening coefficient (dependent on sample strain effects)',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='deg',
             cif_handler=CifHandler(
@@ -128,9 +120,7 @@ class ConstantWavelengthBroadeningMixin:
             name='broad_lorentz_y',
             description='Lorentzian broadening coefficient (dependent on '
             'microstructural defects and strain)',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='deg',
             cif_handler=CifHandler(
@@ -186,9 +176,7 @@ class TimeOfFlightBroadeningMixin:
         self._broad_gauss_sigma_0: Parameter = Parameter(
             name='gauss_sigma_0',
             description='Gaussian broadening coefficient (instrumental resolution)',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='µs²',
             cif_handler=CifHandler(
@@ -200,9 +188,7 @@ class TimeOfFlightBroadeningMixin:
         self._broad_gauss_sigma_1: Parameter = Parameter(
             name='gauss_sigma_1',
             description='Gaussian broadening coefficient (dependent on d-spacing)',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='µs/Å',
             cif_handler=CifHandler(
@@ -214,9 +200,7 @@ class TimeOfFlightBroadeningMixin:
         self._broad_gauss_sigma_2: Parameter = Parameter(
             name='gauss_sigma_2',
             description='Gaussian broadening coefficient (instrument-dependent term)',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='µs²/Å²',
             cif_handler=CifHandler(
@@ -228,9 +212,7 @@ class TimeOfFlightBroadeningMixin:
         self._broad_lorentz_gamma_0: Parameter = Parameter(
             name='lorentz_gamma_0',
             description='Lorentzian broadening coefficient (dependent on microstrain effects)',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='µs',
             cif_handler=CifHandler(
@@ -242,9 +224,7 @@ class TimeOfFlightBroadeningMixin:
         self._broad_lorentz_gamma_1: Parameter = Parameter(
             name='lorentz_gamma_1',
             description='Lorentzian broadening coefficient (dependent on d-spacing)',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='µs/Å',
             cif_handler=CifHandler(
@@ -256,9 +236,7 @@ class TimeOfFlightBroadeningMixin:
         self._broad_lorentz_gamma_2: Parameter = Parameter(
             name='lorentz_gamma_2',
             description='Lorentzian broadening coefficient (instrument-dependent term)',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='µs²/Å²',
             cif_handler=CifHandler(
@@ -271,9 +249,7 @@ class TimeOfFlightBroadeningMixin:
             name='mix_beta_0',
             description='Mixing parameter. Defines the ratio of Gaussian '
             'to Lorentzian contributions in TOF profiles',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='deg',
             cif_handler=CifHandler(
@@ -286,9 +262,7 @@ class TimeOfFlightBroadeningMixin:
             name='mix_beta_1',
             description='Mixing parameter. Defines the ratio of Gaussian '
             'to Lorentzian contributions in TOF profiles',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='deg',
             cif_handler=CifHandler(
@@ -368,9 +342,7 @@ class EmpiricalAsymmetryMixin:
         self._asym_empir_1: Parameter = Parameter(
             name='asym_empir_1',
             description='Empirical asymmetry coefficient p1',
-            validator=RangeValidator(
-                default=0.1,
-            ),
+            validator=RangeValidator(default=0.1),
             value=0.1,
             units='',
             cif_handler=CifHandler(
@@ -382,9 +354,7 @@ class EmpiricalAsymmetryMixin:
         self._asym_empir_2: Parameter = Parameter(
             name='asym_empir_2',
             description='Empirical asymmetry coefficient p2',
-            validator=RangeValidator(
-                default=0.2,
-            ),
+            validator=RangeValidator(default=0.2),
             value=0.2,
             units='',
             cif_handler=CifHandler(
@@ -396,9 +366,7 @@ class EmpiricalAsymmetryMixin:
         self._asym_empir_3: Parameter = Parameter(
             name='asym_empir_3',
             description='Empirical asymmetry coefficient p3',
-            validator=RangeValidator(
-                default=0.3,
-            ),
+            validator=RangeValidator(default=0.3),
             value=0.3,
             units='',
             cif_handler=CifHandler(
@@ -410,9 +378,7 @@ class EmpiricalAsymmetryMixin:
         self._asym_empir_4: Parameter = Parameter(
             name='asym_empir_4',
             description='Empirical asymmetry coefficient p4',
-            validator=RangeValidator(
-                default=0.4,
-            ),
+            validator=RangeValidator(default=0.4),
             value=0.4,
             units='',
             cif_handler=CifHandler(
@@ -460,9 +426,7 @@ class FcjAsymmetryMixin:
         self._asym_fcj_1: Parameter = Parameter(
             name='asym_fcj_1',
             description='FCJ asymmetry coefficient 1',
-            validator=RangeValidator(
-                default=0.01,
-            ),
+            validator=RangeValidator(default=0.01),
             value=0.01,
             units='',
             cif_handler=CifHandler(
@@ -474,9 +438,7 @@ class FcjAsymmetryMixin:
         self._asym_fcj_2: Parameter = Parameter(
             name='asym_fcj_2',
             description='FCJ asymmetry coefficient 2',
-            validator=RangeValidator(
-                default=0.02,
-            ),
+            validator=RangeValidator(default=0.02),
             value=0.02,
             units='',
             cif_handler=CifHandler(
@@ -508,9 +470,7 @@ class IkedaCarpenterAsymmetryMixin:
         self._asym_alpha_0: Parameter = Parameter(
             name='asym_alpha_0',
             description='Ikeda-Carpenter asymmetry parameter α₀',
-            validator=RangeValidator(
-                default=0.01,
-            ),
+            validator=RangeValidator(default=0.01),
             value=0.01,
             units='',
             cif_handler=CifHandler(
@@ -522,9 +482,7 @@ class IkedaCarpenterAsymmetryMixin:
         self._asym_alpha_1: Parameter = Parameter(
             name='asym_alpha_1',
             description='Ikeda-Carpenter asymmetry parameter α₁',
-            validator=RangeValidator(
-                default=0.02,
-            ),
+            validator=RangeValidator(default=0.02),
             value=0.02,
             units='',
             cif_handler=CifHandler(
@@ -546,6 +504,10 @@ class IkedaCarpenterAsymmetryMixin:
     def asym_alpha_1(self) -> Parameter:
         return self._asym_alpha_1
 
+    @asym_alpha_1.setter
+    def asym_alpha_1(self, value: float) -> None:
+        self._asym_alpha_1.value = value
+
 
 class PairDistributionFunctionBroadeningMixin:
     def _add_pair_distribution_function_broadening(self):
@@ -553,9 +515,7 @@ class PairDistributionFunctionBroadeningMixin:
             name='damp_q',
             description='Instrumental Q-resolution damping factor '
             '(affects high-r PDF peak amplitude)',
-            validator=RangeValidator(
-                default=0.05,
-            ),
+            validator=RangeValidator(default=0.05),
             value=0.05,
             units='Å⁻¹',
             cif_handler=CifHandler(
@@ -568,9 +528,7 @@ class PairDistributionFunctionBroadeningMixin:
             name='broad_q',
             description='Quadratic PDF peak broadening coefficient '
             '(thermal and model uncertainty contribution)',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='Å⁻²',
             cif_handler=CifHandler(
@@ -583,9 +541,7 @@ class PairDistributionFunctionBroadeningMixin:
             name='cutoff_q',
             description='Q-value cutoff applied to model PDF for Fourier '
             'transform (controls real-space resolution)',
-            validator=RangeValidator(
-                default=25.0,
-            ),
+            validator=RangeValidator(default=25.0),
             value=25.0,
             units='Å⁻¹',
             cif_handler=CifHandler(
@@ -597,9 +553,7 @@ class PairDistributionFunctionBroadeningMixin:
         self._sharp_delta_1: Parameter = Parameter(
             name='sharp_delta_1',
             description='PDF peak sharpening coefficient (1/r dependence)',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='Å',
             cif_handler=CifHandler(
@@ -611,9 +565,7 @@ class PairDistributionFunctionBroadeningMixin:
         self._sharp_delta_2: Parameter = Parameter(
             name='sharp_delta_2',
             description='PDF peak sharpening coefficient (1/r² dependence)',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='Å²',
             cif_handler=CifHandler(
@@ -625,9 +577,7 @@ class PairDistributionFunctionBroadeningMixin:
         self._damp_particle_diameter: Parameter = Parameter(
             name='damp_particle_diameter',
             description='Particle diameter for spherical envelope damping correction in PDF',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=0.0,
             units='Å',
             cif_handler=CifHandler(

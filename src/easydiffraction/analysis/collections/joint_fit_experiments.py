@@ -37,9 +37,7 @@ class JointFitExperiment(CategoryItem):
         self._weight: DescriptorFloat = DescriptorFloat(
             name='weight',
             description='...',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=weight,
             cif_handler=CifHandler(
                 names=[
@@ -63,7 +61,7 @@ class JointFitExperiment(CategoryItem):
 
     @property
     def weight(self):
-        return self._label
+        return self._weight
 
     @weight.setter
     def weight(self, value):

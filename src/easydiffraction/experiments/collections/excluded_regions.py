@@ -24,9 +24,7 @@ class ExcludedRegion(CategoryItem):
         self._start = DescriptorFloat(
             name='start',
             description='Start of the excluded region.',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=start,
             cif_handler=CifHandler(
                 names=[
@@ -37,9 +35,7 @@ class ExcludedRegion(CategoryItem):
         self._end = DescriptorFloat(
             name='end',
             description='End of the excluded region.',
-            validator=RangeValidator(
-                default=0.0,
-            ),
+            validator=RangeValidator(default=0.0),
             value=end,
             cif_handler=CifHandler(
                 names=[

@@ -58,6 +58,9 @@ class SpaceGroup(CategoryItem):
         )
         self._identity.category_code = 'space_group'
 
+    def _reset_it_coordinate_system_code(self):
+        self.it_coordinate_system_code = self._it_coordinate_system_code_default_value
+
     @property
     def _name_h_m_allowed_values(self):
         return ACCESIBLE_NAME_HM_SHORT
@@ -81,6 +84,7 @@ class SpaceGroup(CategoryItem):
     @name_h_m.setter
     def name_h_m(self, value):
         self._name_h_m.value = value
+        self._reset_it_coordinate_system_code()
 
     @property
     def it_coordinate_system_code(self):

@@ -14,6 +14,7 @@ import numpy as np
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.guards import Validator
 from easydiffraction.core.guards import checktype
+from easydiffraction.core.singletons import UidMapHandler
 
 if TYPE_CHECKING:
     from easydiffraction.crystallography.cif import CifHandler
@@ -70,6 +71,7 @@ class GenericDescriptorBase(ValidatedBase):
         super().__init__(**kwargs)
         self._description: str = description
         self._uid: str = self._generate_uid()
+        UidMapHandler.get().add_to_uid_map(self)
 
     def __str__(self) -> str:
         return f'<{self._log_name} = {self.value!r}>'
