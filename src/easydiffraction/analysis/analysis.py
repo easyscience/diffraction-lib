@@ -67,7 +67,7 @@ class Analysis:
                     'fittable': True,
                     'free': param.free,
                     'min': param.fit_min,
-                    'max': param.physical_max,
+                    'max': param.fit_max,
                     'uncertainty': f'{param.uncertainty:.4f}' if param.uncertainty else '',
                     'value': f'{param.value:.4f}',
                     'units': param.units,
