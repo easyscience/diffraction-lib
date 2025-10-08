@@ -129,17 +129,20 @@ class RangeValidator(Validator):
             current: Any,
     ) -> Any:
         if current is None and new is None:
-            message = f'No value provided for <{name}>. Using default {self.default!r}.'
+            message = (f'No value provided for <{name}>. '
+                       f'Using default {self.default!r}.')
             log.warning(message, exc_type=UserWarning)
             return self.default
         
         if not isinstance(new, (float, int, np.floating, np.integer)):
-            message = f'Value {new!r} ({type(new).__name__}) is not float expected for <{name}>.'
+            message = (f'Type mismatch for <{name}>. '
+                       f'Provided {new!r} ({type(new).__name__}) is not float.')
             log.error(message, exc_type=TypeError)
             return current if current is not None else self.default
         
         if (self.ge is not None and new < self.ge) or (self.le is not None and new > self.le):
-            message = f'Value {new} is outside of expected range [{self.ge}, {self.le}] for <{name}>.'
+            message = (f'Value mismatch for <{name}>. '
+                       f'Provided {new} is outside of [{self.ge}, {self.le}].')
             log.error(message, exc_type=ValueError)
             return current if current is not None else self.default
         
@@ -183,12 +186,14 @@ class ListValidator(Validator):
             current: Any,
     ) -> Any:
         if current is None and new is None:
-            message = f'No value provided for <{name}>. Using default {self.default!r}.'
+            message = (f'No value provided for <{name}>. '
+                       f'Using default {self.default!r}.')
             log.warning(message, exc_type=UserWarning)
             return self.default
         
         if new not in self.allowed_values:
-            message = f"Value {new!r} is not allowed for <{name}>."
+            message = (f'Value mismatch for <{name}>. '
+                       f'Provided {new!r} is unknown.')
             log.error(message, exc_type=ValueError)
             return current if current is not None else self.default
 
@@ -216,17 +221,20 @@ class RegexValidator(Validator):
             current: Any,
     ) -> Any:
         if current is None and new is None:
-            message = f'No value provided for <{name}>. Using default {self.default!r}.'
+            message = (f'No value provided for <{name}>. '
+                       f'Using default {self.default!r}.')
             log.warning(message, exc_type=UserWarning)
             return self.default
         
         if not isinstance(new, str):
-            message = f'Value {new} ({type(new).__name__}) is not string expected for <{name}>.'
+            message = (f'Type mismatch for <{name}>. '
+                       f'Provided {new!r} ({type(new).__name__}) is not string.')
             log.error(message, exc_type=TypeError)
             return current if current is not None else self.default
         
         if not self._regex.match(new):
-            message = f"Value {new!r} does not match pattern '{self.pattern}' for <{name}>."
+            message = (f'Value mismatch for <{name}>. '
+                       f"Provided {new!r} does not match pattern '{self.pattern}'.")
             log.error(message, exc_type=ValueError)
             return current if current is not None else self.default
 
@@ -248,7 +256,7 @@ class GuardedBase(ABC):
     def __getattr__(self, key: str):
         cls = type(self)
         if key not in cls._public_attrs():
-            name = self._log_name
+            name = self.unique_name
             allowed = cls._public_attrs()
             self._diagnoser.attr_error(name, key, allowed)
 
@@ -260,7 +268,7 @@ class GuardedBase(ABC):
 
         # Handle public attributes with diagnostics
         cls = type(self)
-        name = self._log_name
+        name = self.unique_name
 
         if key in cls._public_readonly_attrs():
             self._diagnoser.readonly_error(name, key)
@@ -410,7 +418,7 @@ class ValidatedBase(GuardedBase):
         self._name: str = name
         self._validator: Validator = validator
         self._value: Any = self._validator.validate(
-            name=self._log_name,
+            name=self.unique_name,
             new=value,
             current=None,
         )
@@ -431,7 +439,7 @@ class ValidatedBase(GuardedBase):
     @checktype
     def value(self, new: Any) -> None:
         self._value = self._validator.validate(
-            name=self._log_name,
+            name=self.unique_name,
             new=new,
             current=self._value,
         )
