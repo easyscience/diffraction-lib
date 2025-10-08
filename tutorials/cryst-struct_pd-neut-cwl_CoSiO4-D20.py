@@ -44,12 +44,54 @@ model.cell.length_c = 4.8
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add_from_args('Co1', 'Co', 0, 0, 0, wyckoff_letter='a', b_iso=0.5)
-model.atom_sites.add_from_args('Co2', 'Co', 0.279, 0.25, 0.985, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add_from_args('Si', 'Si', 0.094, 0.25, 0.429, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add_from_args('O1', 'O', 0.091, 0.25, 0.771, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add_from_args('O2', 'O', 0.448, 0.25, 0.217, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add_from_args('O3', 'O', 0.164, 0.032, 0.28, wyckoff_letter='d', b_iso=0.5)
+model.atom_sites.add_from_args(
+    label='Co1', type_symbol='Co', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=0.5
+)
+model.atom_sites.add_from_args(
+    label='Co2',
+    type_symbol='Co',
+    fract_x=0.279,
+    fract_y=0.25,
+    fract_z=0.985,
+    wyckoff_letter='c',
+    b_iso=0.5,
+)
+model.atom_sites.add_from_args(
+    label='Si',
+    type_symbol='Si',
+    fract_x=0.094,
+    fract_y=0.25,
+    fract_z=0.429,
+    wyckoff_letter='c',
+    b_iso=0.5,
+)
+model.atom_sites.add_from_args(
+    label='O1',
+    type_symbol='O',
+    fract_x=0.091,
+    fract_y=0.25,
+    fract_z=0.771,
+    wyckoff_letter='c',
+    b_iso=0.5,
+)
+model.atom_sites.add_from_args(
+    label='O2',
+    type_symbol='O',
+    fract_x=0.448,
+    fract_y=0.25,
+    fract_z=0.217,
+    wyckoff_letter='c',
+    b_iso=0.5,
+)
+model.atom_sites.add_from_args(
+    label='O3',
+    type_symbol='O',
+    fract_x=0.164,
+    fract_y=0.032,
+    fract_z=0.28,
+    wyckoff_letter='d',
+    b_iso=0.5,
+)
 
 # %% [markdown]
 # #### Symmetry Constraints
@@ -126,7 +168,7 @@ expt.background.add_from_args(x=150, y=500)
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add_from_args('cosio', scale=1.0)
+expt.linked_phases.add_from_args(id='cosio', scale=1.0)
 
 # %% [markdown]
 # ## Define Project

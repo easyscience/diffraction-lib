@@ -105,6 +105,10 @@ if __name__ == '__main__':
     assert sg.name_h_m.value == 'P n m a'
     sg.name_h_m = 'P 1'
     assert sg.name_h_m.value == 'P 1'
+    assert sg.it_coordinate_system_code.value == ''
+    sg.name_h_m = 'P n m a'
+    assert sg.name_h_m.value == 'P n m a'
+    assert sg.it_coordinate_system_code.value == 'abc'
 
     log.info(f'-------- AtomSites --------')
 

@@ -45,10 +45,38 @@ sample_model.space_group.it_coordinate_system_code = '1'
 sample_model.cell.length_a = 3.88
 
 # %%
-sample_model.atom_sites.add_from_args('La', 'La', 0, 0, 0, b_iso=0.5, occupancy=0.5)
-sample_model.atom_sites.add_from_args('Ba', 'Ba', 0, 0, 0, b_iso=0.5, occupancy=0.5)
-sample_model.atom_sites.add_from_args('Co', 'Co', 0.5, 0.5, 0.5, b_iso=0.5)
-sample_model.atom_sites.add_from_args('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
+sample_model.atom_sites.add_from_args(
+    label='La',
+    type_symbol='La',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=0.5,
+    occupancy=0.5,
+)
+sample_model.atom_sites.add_from_args(
+    label='Ba',
+    type_symbol='Ba',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=0.5,
+    occupancy=0.5,
+)
+sample_model.atom_sites.add_from_args(
+    label='Co',
+    type_symbol='Co',
+    fract_x=0.5,
+    fract_y=0.5,
+    fract_z=0.5,
+    wyckoff_letter='b',
+    b_iso=0.5,
+)
+sample_model.atom_sites.add_from_args(
+    label='O', type_symbol='O', fract_x=0, fract_y=0.5, fract_z=0.5, wyckoff_letter='c', b_iso=0.5
+)
 
 # %% [markdown]
 # ## Step 3: Define Experiment
@@ -111,11 +139,11 @@ experiment.peak.broad_gauss_v.free = True
 experiment.peak.broad_gauss_w.free = True
 experiment.peak.broad_lorentz_y.free = True
 
-experiment.background[10].y.free = True
-experiment.background[30].y.free = True
-experiment.background[50].y.free = True
-experiment.background[110].y.free = True
-experiment.background[165].y.free = True
+experiment.background['10'].y.free = True
+experiment.background['30'].y.free = True
+experiment.background['50'].y.free = True
+experiment.background['110'].y.free = True
+experiment.background['165'].y.free = True
 
 experiment.linked_phases['lbco'].scale.free = True
 
