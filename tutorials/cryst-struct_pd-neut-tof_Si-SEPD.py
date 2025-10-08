@@ -42,7 +42,14 @@ model.cell.length_a = 5.431
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add_from_args('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.5)
+model.atom_sites.add_from_args(
+    label='Si',
+    type_symbol='Si',
+    fract_x=0.125,
+    fract_y=0.125,
+    fract_z=0.125,
+    b_iso=0.5,
+)
 
 # %% [markdown]
 # ## Define Experiment
@@ -100,7 +107,7 @@ for x in range(0, 35000, 5000):
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add_from_args('si', scale=10.0)
+expt.linked_phases.add_from_args(id='si', scale=10.0)
 
 # %% [markdown]
 # ## Define Project

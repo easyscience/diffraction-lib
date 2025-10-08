@@ -42,10 +42,44 @@ model_1.cell.length_a = 3.8909
 # #### Set Atom Sites
 
 # %%
-model_1.atom_sites.add_from_args('La', 'La', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
-model_1.atom_sites.add_from_args('Ba', 'Ba', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
-model_1.atom_sites.add_from_args('Co', 'Co', 0.5, 0.5, 0.5, wyckoff_letter='b', b_iso=0.2567)
-model_1.atom_sites.add_from_args('O', 'O', 0, 0.5, 0.5, wyckoff_letter='c', b_iso=1.4041)
+model_1.atom_sites.add_from_args(
+    label='La',
+    type_symbol='La',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=0.2,
+    occupancy=0.5,
+)
+model_1.atom_sites.add_from_args(
+    label='Ba',
+    type_symbol='Ba',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=0.2,
+    occupancy=0.5,
+)
+model_1.atom_sites.add_from_args(
+    label='Co',
+    type_symbol='Co',
+    fract_x=0.5,
+    fract_y=0.5,
+    fract_z=0.5,
+    wyckoff_letter='b',
+    b_iso=0.2567,
+)
+model_1.atom_sites.add_from_args(
+    label='O',
+    type_symbol='O',
+    fract_x=0,
+    fract_y=0.5,
+    fract_z=0.5,
+    wyckoff_letter='c',
+    b_iso=1.4041,
+)
 
 # %% [markdown]
 # ### Create Sample Model 2: Si
@@ -71,11 +105,11 @@ model_2.cell.length_a = 5.43146
 
 # %%
 model_2.atom_sites.add_from_args(
-    'Si',
-    'Si',
-    0.0,
-    0.0,
-    0.0,
+    label='Si',
+    type_symbol='Si',
+    fract_x=0.0,
+    fract_y=0.0,
+    fract_z=0.0,
     wyckoff_letter='a',
     b_iso=0.0,
 )
@@ -157,8 +191,8 @@ experiment.background.add_from_args(x=110000, y=0.2)
 # #### Set Linked Phases
 
 # %%
-experiment.linked_phases.add_from_args('lbco', scale=4.0)
-experiment.linked_phases.add_from_args('si', scale=0.2)
+experiment.linked_phases.add_from_args(id='lbco', scale=4.0)
+experiment.linked_phases.add_from_args(id='si', scale=0.2)
 
 # %% [markdown]
 # ## Define Project

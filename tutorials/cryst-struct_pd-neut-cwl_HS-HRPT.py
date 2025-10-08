@@ -44,11 +44,51 @@ model.cell.length_c = 14.1
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add_from_args('Zn', 'Zn', 0, 0, 0.5, wyckoff_letter='b', b_iso=0.5)
-model.atom_sites.add_from_args('Cu', 'Cu', 0.5, 0, 0, wyckoff_letter='e', b_iso=0.5)
-model.atom_sites.add_from_args('O', 'O', 0.21, -0.21, 0.06, wyckoff_letter='h', b_iso=0.5)
-model.atom_sites.add_from_args('Cl', 'Cl', 0, 0, 0.197, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add_from_args('H', '2H', 0.13, -0.13, 0.08, wyckoff_letter='h', b_iso=0.5)
+model.atom_sites.add_from_args(
+    label='Zn',
+    type_symbol='Zn',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0.5,
+    wyckoff_letter='b',
+    b_iso=0.5,
+)
+model.atom_sites.add_from_args(
+    label='Cu',
+    type_symbol='Cu',
+    fract_x=0.5,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='e',
+    b_iso=0.5,
+)
+model.atom_sites.add_from_args(
+    label='O',
+    type_symbol='O',
+    fract_x=0.21,
+    fract_y=-0.21,
+    fract_z=0.06,
+    wyckoff_letter='h',
+    b_iso=0.5,
+)
+model.atom_sites.add_from_args(
+    label='Cl',
+    type_symbol='Cl',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0.197,
+    wyckoff_letter='c',
+    b_iso=0.5,
+)
+model.atom_sites.add_from_args(
+    label='H',
+    type_symbol='2H',
+    fract_x=0.13,
+    fract_y=-0.13,
+    fract_z=0.08,
+    wyckoff_letter='h',
+    b_iso=0.5,
+)
 
 # %% [markdown]
 # #### Symmetry constraints
@@ -122,7 +162,7 @@ expt.background.add_from_args(x=159.4116, y=500)
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add_from_args('hs', scale=0.5)
+expt.linked_phases.add_from_args(id='hs', scale=0.5)
 
 # %% [markdown]
 # ## Define Project
