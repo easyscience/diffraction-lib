@@ -63,7 +63,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     expt.peak.broad_gauss_w = 0.2
     expt.peak.broad_lorentz_x = 0
     expt.peak.broad_lorentz_y = 0
-    expt.linked_phases.add_from_args('lbco', scale=5.0)
+    expt.linked_phases.add_from_args(id='lbco', scale=5.0)
     expt.background.add_from_args(x=10, y=170)
     expt.background.add_from_args(x=165, y=170)
 
@@ -82,8 +82,8 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     model.cell.length_a.free = True
     expt.linked_phases['lbco'].scale.free = True
     expt.instrument.calib_twotheta_offset.free = True
-    expt.background[10].y.free = True
-    expt.background[165].y.free = True
+    expt.background['10'].y.free = True
+    expt.background['165'].y.free = True
 
     # Perform fit
     project.analysis.fit()
@@ -196,7 +196,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     background.add_from_args(x=150, y=173.0)
     background.add_from_args(x=165, y=171.1)
 
-    expt.linked_phases.add_from_args('lbco', scale=9.0976)
+    expt.linked_phases.add_from_args(id='lbco', scale=9.0976)
 
     # Create project
     project = Project()
@@ -343,7 +343,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     expt.background.add_from_args(x=103.4187, y=472.409)
     expt.background.add_from_args(x=121.6311, y=496.734)
     expt.background.add_from_args(x=159.4116, y=473.146)
-    expt.linked_phases.add_from_args('hs', scale=0.492)
+    expt.linked_phases.add_from_args(id='hs', scale=0.492)
 
     # Create project
     project = Project()

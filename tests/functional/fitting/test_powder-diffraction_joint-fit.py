@@ -72,7 +72,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt1.peak.broad_gauss_w = 0.386
     expt1.peak.broad_lorentz_x = 0
     expt1.peak.broad_lorentz_y = 0.0878
-    expt1.linked_phases.add_from_args('pbso4', scale=1.46)
+    expt1.linked_phases.add_from_args(id='pbso4', scale=1.46)
     expt1.background_type = 'line-segment'
     for x, y in [
         (11.0, 206.1624),
@@ -84,7 +84,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         (120.0, 244.4525),
         (153.0, 226.0595),
     ]:
-        expt1.background.add_from_args(x, y)
+        expt1.background.add_from_args(x=x, y=y)
 
     data_file = 'd1a_pbso4_second-half.dat'
     download_from_repository(data_file, destination=TEMP_DIR)
@@ -96,7 +96,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt2.peak.broad_gauss_w = 0.386
     expt2.peak.broad_lorentz_x = 0
     expt2.peak.broad_lorentz_y = 0.0878
-    expt2.linked_phases.add_from_args('pbso4', scale=1.46)
+    expt2.linked_phases.add_from_args(id='pbso4', scale=1.46)
     expt2.background_type = 'line-segment'
     for x, y in [
         (11.0, 206.1624),
@@ -108,7 +108,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         (120.0, 244.4525),
         (153.0, 226.0595),
     ]:
-        expt2.background.add_from_args(x, y)
+        expt2.background.add_from_args(x=x, y=y)
 
     # Create project
     project = Project()
@@ -197,7 +197,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt1.peak.broad_gauss_w = 0.386
     expt1.peak.broad_lorentz_x = 0
     expt1.peak.broad_lorentz_y = 0.088
-    expt1.linked_phases.add_from_args('pbso4', scale=1.5)
+    expt1.linked_phases.add_from_args(id='pbso4', scale=1.5)
     for x, y in [
         (11.0, 206.1624),
         (15.0, 194.75),
@@ -208,7 +208,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         (120.0, 244.4525),
         (153.0, 226.0595),
     ]:
-        expt1.background.add_from_args(x, y)
+        expt1.background.add_from_args(x=x, y=y)
 
     data_file = 'lab_pbso4.dat'
     download_from_repository(data_file, destination=TEMP_DIR)
@@ -224,7 +224,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt2.peak.broad_gauss_w = 0.021272
     expt2.peak.broad_lorentz_x = 0
     expt2.peak.broad_lorentz_y = 0.057691
-    expt2.linked_phases.add_from_args('pbso4', scale=0.001)
+    expt2.linked_phases.add_from_args(id='pbso4', scale=0.001)
     for x, y in [
         (11.0, 141.8516),
         (13.0, 102.8838),
@@ -235,7 +235,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         (90.0, 113.7473),
         (110.0, 132.4643),
     ]:
-        expt2.background.add_from_args(x, y)
+        expt2.background.add_from_args(x=x, y=y)
 
     # Create project
     project = Project()

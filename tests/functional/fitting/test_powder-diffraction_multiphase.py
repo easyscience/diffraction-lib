@@ -90,8 +90,8 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     expt.peak.broad_mix_beta_1 = 0.0041
     expt.peak.asym_alpha_0 = 0.0
     expt.peak.asym_alpha_1 = 0.0097
-    expt.linked_phases.add_from_args('lbco', scale=4.0)
-    expt.linked_phases.add_from_args('si', scale=0.2)
+    expt.linked_phases.add_from_args(id='lbco', scale=4.0)
+    expt.linked_phases.add_from_args(id='si', scale=0.2)
     for x in range(45000, 115000, 5000):
         expt.background.add_from_args(x=x, y=0.2)
 

@@ -46,7 +46,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     expt.peak.broad_mix_beta_1 = 0.00946
     expt.peak.asym_alpha_0 = 0.0
     expt.peak.asym_alpha_1 = 0.5971
-    expt.linked_phases.add_from_args('si', scale=14.92)
+    expt.linked_phases.add_from_args(id='si', scale=14.92)
     for x in range(0, 35000, 5000):
         expt.background.add_from_args(x=x, y=200)
     expt.show_as_cif()
@@ -156,7 +156,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     expt.peak.broad_mix_beta_1 = 0.0099
     expt.peak.asym_alpha_0 = -0.009
     expt.peak.asym_alpha_1 = 0.1085
-    expt.linked_phases.add_from_args('ncaf', scale=1.0928)
+    expt.linked_phases.add_from_args(id='ncaf', scale=1.0928)
     for x, y in [
         (9162, 465),
         (11136, 593),
@@ -187,7 +187,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         (91958, 268),
         (102712, 262),
     ]:
-        expt.background.add_from_args(x, y)
+        expt.background.add_from_args(x=x, y=y)
 
     # Create project
     project = Project()

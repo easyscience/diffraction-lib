@@ -120,7 +120,15 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     sample_model.space_group.name_h_m.value = 'F d -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
     sample_model.cell.length_a = 5.4306
-    sample_model.atom_sites.add_from_args(label='Si', type_symbol='Si', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=0.717)
+    sample_model.atom_sites.add_from_args(
+        label='Si',
+        type_symbol='Si',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        wyckoff_letter='a',
+        b_iso=0.717,
+    )
 
     # Set experiment
     data_file = 'NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr'
