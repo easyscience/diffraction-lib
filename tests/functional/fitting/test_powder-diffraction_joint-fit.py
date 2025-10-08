@@ -20,11 +20,46 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     model.cell.length_a.value = 8.47
     model.cell.length_b.value = 5.39
     model.cell.length_c.value = 6.95
-    model.atom_sites.add_from_args('Pb', 'Pb', 0.1876, 0.25, 0.167, b_iso=1.37)
-    model.atom_sites.add_from_args('S', 'S', 0.0654, 0.25, 0.684, b_iso=0.3777)
-    model.atom_sites.add_from_args('O1', 'O', 0.9082, 0.25, 0.5954, b_iso=1.9764)
-    model.atom_sites.add_from_args('O2', 'O', 0.1935, 0.25, 0.5432, b_iso=1.4456)
-    model.atom_sites.add_from_args('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
+    model.atom_sites.add_from_args(
+        label='Pb',
+        type_symbol='Pb',
+        fract_x=0.1876,
+        fract_y=0.25,
+        fract_z=0.167,
+        b_iso=1.37,
+    )
+    model.atom_sites.add_from_args(
+        label='S',
+        type_symbol='S',
+        fract_x=0.0654,
+        fract_y=0.25,
+        fract_z=0.684,
+        b_iso=0.3777,
+    )
+    model.atom_sites.add_from_args(
+        label='O1',
+        type_symbol='O',
+        fract_x=0.9082,
+        fract_y=0.25,
+        fract_z=0.5954,
+        b_iso=1.9764,
+    )
+    model.atom_sites.add_from_args(
+        label='O2',
+        type_symbol='O',
+        fract_x=0.1935,
+        fract_y=0.25,
+        fract_z=0.5432,
+        b_iso=1.4456,
+    )
+    model.atom_sites.add_from_args(
+        label='O3',
+        type_symbol='O',
+        fract_x=0.0811,
+        fract_y=0.0272,
+        fract_z=0.8086,
+        b_iso=1.2822,
+    )
 
     # Set experiments
     data_file = 'd1a_pbso4_first-half.dat'
@@ -106,11 +141,46 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     model.cell.length_a = 8.47
     model.cell.length_b = 5.39
     model.cell.length_c = 6.95
-    model.atom_sites.add_from_args('Pb', 'Pb', 0.1876, 0.25, 0.167, b_iso=1.37)
-    model.atom_sites.add_from_args('S', 'S', 0.0654, 0.25, 0.684, b_iso=0.3777)
-    model.atom_sites.add_from_args('O1', 'O', 0.9082, 0.25, 0.5954, b_iso=1.9764)
-    model.atom_sites.add_from_args('O2', 'O', 0.1935, 0.25, 0.5432, b_iso=1.4456)
-    model.atom_sites.add_from_args('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
+    model.atom_sites.add_from_args(
+        label='Pb',
+        type_symbol='Pb',
+        fract_x=0.1876,
+        fract_y=0.25,
+        fract_z=0.167,
+        b_iso=1.37,
+    )
+    model.atom_sites.add_from_args(
+        label='S',
+        type_symbol='S',
+        fract_x=0.0654,
+        fract_y=0.25,
+        fract_z=0.684,
+        b_iso=0.3777,
+    )
+    model.atom_sites.add_from_args(
+        label='O1',
+        type_symbol='O',
+        fract_x=0.9082,
+        fract_y=0.25,
+        fract_z=0.5954,
+        b_iso=1.9764,
+    )
+    model.atom_sites.add_from_args(
+        label='O2',
+        type_symbol='O',
+        fract_x=0.1935,
+        fract_y=0.25,
+        fract_z=0.5432,
+        b_iso=1.4456,
+    )
+    model.atom_sites.add_from_args(
+        label='O3',
+        type_symbol='O',
+        fract_x=0.0811,
+        fract_y=0.0272,
+        fract_z=0.8086,
+        b_iso=1.2822,
+    )
 
     # Set experiments
     data_file = 'd1a_pbso4.dat'

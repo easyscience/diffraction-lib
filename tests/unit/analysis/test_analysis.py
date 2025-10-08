@@ -149,7 +149,7 @@ def test_fit_joint_mode(mock_print, mock_fit, analysis, mock_project):
 
 @patch('builtins.print')
 def test_as_cif(mock_print, analysis):
-    cif_text = analysis.as_cif()
+    cif_text = analysis.as_cif
 
     # Assertions
     assert '_analysis.calculator_engine  cryspy' in cif_text

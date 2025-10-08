@@ -77,7 +77,7 @@ def test_project_info_as_cif():
     project_info.title = 'Test Project'
     project_info.description = 'This is a test project.'
 
-    cif = project_info.as_cif()
+    cif = project_info.as_cif
 
     # Assertions
     assert '_project.id               test_project' in cif

@@ -121,7 +121,7 @@ def test_powder_as_cif_constant_wavelength():
     ds.meas = np.array([10.0, 20.0, 30.0])
     ds.meas_su = np.array([0.1, 0.2, 0.3])
     ds.bkg = np.array([0.5, 0.5, 0.5])
-    cif = ds.as_cif()
+    cif = ds.as_cif
     assert '_pd_meas.2theta_scan' in cif
     assert '_pd_meas.intensity_total' in cif
     assert '_pd_meas.intensity_total_su' in cif
@@ -133,7 +133,7 @@ def test_powder_as_cif_time_of_flight():
     ds.meas = np.array([15.0, 25.0, 35.0])
     ds.meas_su = np.array([0.15, 0.25, 0.35])
     ds.bkg = np.array([0.4, 0.4, 0.4])
-    cif = ds.as_cif()
+    cif = ds.as_cif
     assert '_pd_meas.time_of_flight' in cif
     assert '_pd_meas.intensity_total' in cif
     assert '_pd_meas.intensity_total_su' in cif
@@ -147,7 +147,7 @@ def test_single_crystal_as_cif():
     ds.index_l = np.array([0, 0])
     ds.meas = np.array([100, 200])
     ds.meas_su = np.array([10, 20])
-    cif = ds.as_cif()
+    cif = ds.as_cif
     assert '_refln.index_h' in cif
     assert '_refln.index_k' in cif
     assert '_refln.index_l' in cif

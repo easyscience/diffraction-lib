@@ -67,7 +67,7 @@ class PdffitCalculator(CalculatorBase):
 
         # TODO: move CIF v2 -> CIF v1 conversion to a separate module
         # Convert the sample model to CIF supported by PDFfit
-        cif_string_v2 = sample_model.as_cif()
+        cif_string_v2 = sample_model.as_cif
         # convert to version 1 of CIF format
         # this means: replace all dots with underscores for
         # cases where the dot is surrounded by letters on both sides.

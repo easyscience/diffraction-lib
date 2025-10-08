@@ -17,10 +17,40 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     model = SampleModel(name='lbco')
     model.space_group.name_h_m = 'P m -3 m'
     model.cell.length_a = 3.88
-    model.atom_sites.add_from_args('La', 'La', 0, 0, 0, occupancy=0.5, b_iso=0.1)
-    model.atom_sites.add_from_args('Ba', 'Ba', 0, 0, 0, occupancy=0.5, b_iso=0.1)
-    model.atom_sites.add_from_args('Co', 'Co', 0.5, 0.5, 0.5, b_iso=0.1)
-    model.atom_sites.add_from_args('O', 'O', 0, 0.5, 0.5, b_iso=0.1)
+    model.atom_sites.add_from_args(
+        label='La',
+        type_symbol='La',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        occupancy=0.5,
+        b_iso=0.1,
+    )
+    model.atom_sites.add_from_args(
+        label='Ba',
+        type_symbol='Ba',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        occupancy=0.5,
+        b_iso=0.1,
+    )
+    model.atom_sites.add_from_args(
+        label='Co',
+        type_symbol='Co',
+        fract_x=0.5,
+        fract_y=0.5,
+        fract_z=0.5,
+        b_iso=0.1,
+    )
+    model.atom_sites.add_from_args(
+        label='O',
+        type_symbol='O',
+        fract_x=0,
+        fract_y=0.5,
+        fract_z=0.5,
+        b_iso=0.1,
+    )
 
     # Set experiment
     data_file = 'hrpt_lbco.xye'
@@ -102,10 +132,40 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     cell.length_a = 3.8909
 
     atom_sites = model.atom_sites
-    atom_sites.add_from_args('La', 'La', 0, 0, 0, b_iso=1.0, occupancy=0.5)
-    atom_sites.add_from_args('Ba', 'Ba', 0, 0, 0, b_iso=1.0, occupancy=0.5)
-    atom_sites.add_from_args('Co', 'Co', 0.5, 0.5, 0.5, b_iso=1.0)
-    atom_sites.add_from_args('O', 'O', 0, 0.5, 0.5, b_iso=1.0)
+    atom_sites.add_from_args(
+        label='La',
+        type_symbol='La',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        b_iso=1.0,
+        occupancy=0.5,
+    )
+    atom_sites.add_from_args(
+        label='Ba',
+        type_symbol='Ba',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        b_iso=1.0,
+        occupancy=0.5,
+    )
+    atom_sites.add_from_args(
+        label='Co',
+        type_symbol='Co',
+        fract_x=0.5,
+        fract_y=0.5,
+        fract_z=0.5,
+        b_iso=1.0,
+    )
+    atom_sites.add_from_args(
+        label='O',
+        type_symbol='O',
+        fract_x=0,
+        fract_y=0.5,
+        fract_z=0.5,
+        b_iso=1.0,
+    )
 
     # Set experiment
     data_file = 'hrpt_lbco.xye'
@@ -216,11 +276,51 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     model.space_group.it_coordinate_system_code = 'h'
     model.cell.length_a = 6.8615
     model.cell.length_c = 14.136
-    model.atom_sites.add_from_args('Zn', 'Zn', 0, 0, 0.5, wyckoff_letter='b', b_iso=0.1)
-    model.atom_sites.add_from_args('Cu', 'Cu', 0.5, 0, 0, wyckoff_letter='e', b_iso=1.2)
-    model.atom_sites.add_from_args('O', 'O', 0.206, -0.206, 0.061, wyckoff_letter='h', b_iso=0.7)
-    model.atom_sites.add_from_args('Cl', 'Cl', 0, 0, 0.197, wyckoff_letter='c', b_iso=1.1)
-    model.atom_sites.add_from_args('H', '2H', 0.132, -0.132, 0.09, wyckoff_letter='h', b_iso=2.3)
+    model.atom_sites.add_from_args(
+        label='Zn',
+        type_symbol='Zn',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0.5,
+        wyckoff_letter='b',
+        b_iso=0.1,
+    )
+    model.atom_sites.add_from_args(
+        label='Cu',
+        type_symbol='Cu',
+        fract_x=0.5,
+        fract_y=0,
+        fract_z=0,
+        wyckoff_letter='e',
+        b_iso=1.2,
+    )
+    model.atom_sites.add_from_args(
+        label='O',
+        type_symbol='O',
+        fract_x=0.206,
+        fract_y=-0.206,
+        fract_z=0.061,
+        wyckoff_letter='h',
+        b_iso=0.7,
+    )
+    model.atom_sites.add_from_args(
+        label='Cl',
+        type_symbol='Cl',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0.197,
+        wyckoff_letter='c',
+        b_iso=1.1,
+    )
+    model.atom_sites.add_from_args(
+        label='H',
+        type_symbol='2H',
+        fract_x=0.132,
+        fract_y=-0.132,
+        fract_z=0.09,
+        wyckoff_letter='h',
+        b_iso=2.3,
+    )
     model.apply_symmetry_constraints()
 
     # Set experiment

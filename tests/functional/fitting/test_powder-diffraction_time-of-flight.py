@@ -17,7 +17,14 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     model.space_group.name_h_m = 'F d -3 m'
     model.space_group.it_coordinate_system_code = '2'
     model.cell.length_a = 5.4315
-    model.atom_sites.add_from_args('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.529)
+    model.atom_sites.add_from_args(
+        label='Si',
+        type_symbol='Si',
+        fract_x=0.125,
+        fract_y=0.125,
+        fract_z=0.125,
+        b_iso=0.529,
+    )
 
     # Set experiment
     data_file = 'sepd_si.xye'
@@ -74,12 +81,60 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     model.space_group.name_h_m = 'I 21 3'
     model.space_group.it_coordinate_system_code = '1'
     model.cell.length_a = 10.250256
-    model.atom_sites.add_from_args('Ca', 'Ca', 0.4661, 0.0, 0.25, wyckoff_letter='b', b_iso=0.9)
-    model.atom_sites.add_from_args('Al', 'Al', 0.25171, 0.25171, 0.25171, wyckoff_letter='a', b_iso=0.66)
-    model.atom_sites.add_from_args('Na', 'Na', 0.08481, 0.08481, 0.08481, wyckoff_letter='a', b_iso=1.9)
-    model.atom_sites.add_from_args('F1', 'F', 0.1375, 0.3053, 0.1195, wyckoff_letter='c', b_iso=0.9)
-    model.atom_sites.add_from_args('F2', 'F', 0.3626, 0.3634, 0.1867, wyckoff_letter='c', b_iso=1.28)
-    model.atom_sites.add_from_args('F3', 'F', 0.4612, 0.4612, 0.4612, wyckoff_letter='a', b_iso=0.79)
+    model.atom_sites.add_from_args(
+        label='Ca',
+        type_symbol='Ca',
+        fract_x=0.4661,
+        fract_y=0.0,
+        fract_z=0.25,
+        wyckoff_letter='b',
+        b_iso=0.9,
+    )
+    model.atom_sites.add_from_args(
+        label='Al',
+        type_symbol='Al',
+        fract_x=0.25171,
+        fract_y=0.25171,
+        fract_z=0.25171,
+        wyckoff_letter='a',
+        b_iso=0.66,
+    )
+    model.atom_sites.add_from_args(
+        label='Na',
+        type_symbol='Na',
+        fract_x=0.08481,
+        fract_y=0.08481,
+        fract_z=0.08481,
+        wyckoff_letter='a',
+        b_iso=1.9,
+    )
+    model.atom_sites.add_from_args(
+        label='F1',
+        type_symbol='F',
+        fract_x=0.1375,
+        fract_y=0.3053,
+        fract_z=0.1195,
+        wyckoff_letter='c',
+        b_iso=0.9,
+    )
+    model.atom_sites.add_from_args(
+        label='F2',
+        type_symbol='F',
+        fract_x=0.3626,
+        fract_y=0.3634,
+        fract_z=0.1867,
+        wyckoff_letter='c',
+        b_iso=1.28,
+    )
+    model.atom_sites.add_from_args(
+        label='F3',
+        type_symbol='F',
+        fract_x=0.4612,
+        fract_y=0.4612,
+        fract_z=0.4612,
+        wyckoff_letter='a',
+        b_iso=0.79,
+    )
 
     # Set experiment
     data_file = 'wish_ncaf.xye'
