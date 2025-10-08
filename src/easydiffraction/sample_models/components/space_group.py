@@ -2,6 +2,12 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
+from cryspy.A_functions_base.function_2_space_group import ACCESIBLE_NAME_HM_SHORT
+from cryspy.A_functions_base.function_2_space_group import (
+    get_it_coordinate_system_codes_by_it_number,
+)
+from cryspy.A_functions_base.function_2_space_group import get_it_number_by_name_hm_short
+
 from easydiffraction.core.categories import CategoryItem
 from easydiffraction.core.guards import ListValidator
 from easydiffraction.core.parameters import DescriptorStr
@@ -20,7 +26,7 @@ class SpaceGroup(CategoryItem):
             name='name_h_m',
             description='Hermann-Mauguin symbol of the space group.',
             validator=ListValidator(
-                allowed_values=['P 1', 'P n m a', 'P m -3 m'],
+                allowed_values=lambda: self._name_h_m_allowed_values,
                 default='P 1',
             ),
             value=name_h_m,
@@ -37,8 +43,8 @@ class SpaceGroup(CategoryItem):
             name='it_coordinate_system_code',
             description='A qualifier identifying which setting in IT is used.',
             validator=ListValidator(
-                allowed_values=['1', '2', 'abc', 'cab'],
-                default='',
+                allowed_values=lambda: self._it_coordinate_system_code_allowed_values,
+                default=lambda: self._it_coordinate_system_code_default_value,
             ),
             value=it_coordinate_system_code,
             cif_handler=CifHandler(
@@ -51,6 +57,22 @@ class SpaceGroup(CategoryItem):
             ),
         )
         self._identity.category_code = 'space_group'
+
+    @property
+    def _name_h_m_allowed_values(self):
+        return ACCESIBLE_NAME_HM_SHORT
+
+    @property
+    def _it_coordinate_system_code_allowed_values(self):
+        name = self.name_h_m.value
+        it_number = get_it_number_by_name_hm_short(name)
+        codes = get_it_coordinate_system_codes_by_it_number(it_number)
+        codes = [str(code) for code in codes]
+        return codes if codes else ['']
+
+    @property
+    def _it_coordinate_system_code_default_value(self):
+        return self._it_coordinate_system_code_allowed_values[0]
 
     @property
     def name_h_m(self):

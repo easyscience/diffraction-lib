@@ -97,7 +97,7 @@ if __name__ == '__main__':
     assert sg.name_h_m.value == 'P 1'
     sg = SpaceGroup(name_h_m='P b n m', it_coordinate_system_code='cab')
     assert sg.name_h_m.value == 'P 1'
-    assert sg.it_coordinate_system_code.value == 'cab' # TODO: Should be ''
+    assert sg.it_coordinate_system_code.value == ''
     sg = SpaceGroup(name_h_m='P n m a', it_coordinate_system_code='cab')
     assert sg.name_h_m.value == 'P n m a'
     assert sg.it_coordinate_system_code.value == 'cab'
