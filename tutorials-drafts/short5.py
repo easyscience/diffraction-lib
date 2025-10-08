@@ -80,7 +80,7 @@ if __name__ == '__main__':
     assert c.length_b.description == 'Length of the b axis of the unit cell.'  # type: ignore
     assert c.length_b._public_readonly_attrs() == {'as_cif', 'constrained', 'description',
                                                    'unique_name', 'name', 'parameters',
-                                                   'start_value', 'uid', 'units'}
+                                                   'uid', 'units'}
     assert c.length_b._public_writable_attrs() == {'fit_max', 'fit_min', 'free', 'uncertainty',
                                                    'value'}
     c.qwe = 'qwe'
@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
     s1 = AtomSite(label='La', type_symbol='La')
     assert s1.label.value == 'La'
-    assert s1.type_symbol.value == 'Tb'
+    assert s1.type_symbol.value == 'La'
     s2 = AtomSite(label='Si', type_symbol='Si')
     assert s2.label.value == 'Si'
     assert s2.type_symbol.value == 'Si'
@@ -193,7 +193,7 @@ if __name__ == '__main__':
 
     s3 = AtomSite(label='La', type_symbol='La')
     assert s3.label.value == 'La'
-    assert s3.type_symbol.value == 'Tb'
+    assert s3.type_symbol.value == 'La'
 
     assert len(models['lbco'].atom_sites) == 1
     models['lbco'].atom_sites.add(s3)
@@ -219,7 +219,7 @@ _atom_site.occupancy
 _atom_site.B_iso_or_equiv
 _atom_site.adp_type
 Si Si 0.456 0.0 0.0 a 1.0 0.0 Biso
-La Tb 0.0 0.0 0.0 a 1.0 0.0 Biso"""
+La La 0.0 0.0 0.0 a 1.0 0.0 Biso"""
 
     assert models['lbco'].as_cif =="""data_lbco
 
@@ -244,7 +244,7 @@ _atom_site.occupancy
 _atom_site.B_iso_or_equiv
 _atom_site.adp_type
 Si Si 0.456 0.0 0.0 a 1.0 0.0 Biso
-La Tb 0.0 0.0 0.0 a 1.0 0.0 Biso"""
+La La 0.0 0.0 0.0 a 1.0 0.0 Biso"""
 
     assert models.as_cif =="""data_lbco
 
@@ -269,7 +269,7 @@ _atom_site.occupancy
 _atom_site.B_iso_or_equiv
 _atom_site.adp_type
 Si Si 0.456 0.0 0.0 a 1.0 0.0 Biso
-La Tb 0.0 0.0 0.0 a 1.0 0.0 Biso"""
+La La 0.0 0.0 0.0 a 1.0 0.0 Biso"""
 
     log.info(f'-------- Full Names --------')
 

@@ -65,7 +65,6 @@ class CollectionBase(GuardedBase):
     def items(self):
         return ((self._key_for(item), item) for item in self._items)
 
-    # TODO: Check if needed.
     @property
     def names(self):
         """Return a list of all item keys in the collection."""

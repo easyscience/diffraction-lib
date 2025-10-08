@@ -85,16 +85,7 @@ class DatablockCollection(CollectionBase):
         ]
         return '\n'.join(parts)
 
-    # TODO: Check following properties. Make private, etc.
-
     @typechecked
     def add(self, item) -> None:
         """Add an item to the collection."""
         self[item._identity.datablock_entry_name] = item
-
-    def add_from_args(self, *args, **kwargs) -> None:
-        """Create and add a new child instance from the provided
-        arguments.
-        """
-        child_obj = self._item_type(*args, **kwargs)
-        self.add(child_obj)

@@ -92,13 +92,12 @@ class CategoryCollection(CollectionBase):
             lines.append(line)
         return '\n'.join(lines)
 
-    # TODO: Check following properties. Make private, etc.
-
     @typechecked
     def add(self, item) -> None:
         """Add an item to the collection."""
         self[item._identity.category_entry_name] = item
 
+    @typechecked
     def add_from_args(self, *args, **kwargs) -> None:
         """Create and add a new child instance from the provided
         arguments.
