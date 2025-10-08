@@ -30,14 +30,10 @@ from easydiffraction.utils.utils import render_table
 
 
 class InstrumentMixin:
-    _class_public_attrs = {
-        'instrument',
-    }
-
     def __init__(self, *args, **kwargs):
         expt_type = kwargs.get('type')
         super().__init__(*args, **kwargs)
-        self.instrument = InstrumentFactory.create(
+        self._instrument = InstrumentFactory.create(
             scattering_type=expt_type.scattering_type.value,
             beam_mode=expt_type.beam_mode.value,
         )
@@ -59,22 +55,31 @@ class BaseExperiment(DatablockItem):
     Wraps experiment type, instrument and datastore.
     """
 
-    _class_public_attrs = {
-        'name',
-        'type',
-        'datastore',
-    }
-
     # TODO: Find better name for the attribute 'type'.
     #  1. It shadows the built-in type() function.
     #  2. It is not very clear what it refers to.
-    def __init__(self, name: str, type: ExperimentType):
-        self.name = name
-        self.type = type
-        self.datastore = DatastoreFactory.create(
+    def __init__(
+        self,
+        *,
+        name: str,
+        type: ExperimentType,
+    ):
+        super().__init__()
+        self._name = name
+        self._type = type
+        self._datastore = DatastoreFactory.create(
             sample_form=self.type.sample_form.value,
             beam_mode=self.type.beam_mode.value,
         )
+        self._identity.datablock_entry_name = lambda: self.name
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, new: str) -> None:
+        self._name = new
 
     # ---------------
     # Experiment type
@@ -84,16 +89,20 @@ class BaseExperiment(DatablockItem):
     def type(self):  # TODO: Consider another name
         return self._type
 
-    @type.setter
-    @typechecked
-    def type(self, new_experiment_type: ExperimentType):
-        self._type = new_experiment_type
+    # @type.setter
+    # @typechecked
+    # def type(self, new_experiment_type: ExperimentType):
+    #    self._type = new_experiment_type
+
+    @property
+    def datastore(self):
+        return self._datastore
 
     # ----------------
     # Misc. Need to be sorted
     # ----------------
 
-    def as_cif(
+    def as_cif_old(
         self,
         max_points: Optional[int] = None,
     ) -> str:
@@ -109,37 +118,37 @@ class BaseExperiment(DatablockItem):
         cif_lines += ['', self.type.as_cif]
 
         # Instrument setup and calibration
-        if 'instrument' in self._class_public_attrs:
+        if 'instrument' in self._public_attrs():
             cif_lines += ['', self.instrument.as_cif]
 
         # Peak profile, broadening and asymmetry
-        if 'peak' in self._class_public_attrs:
+        if 'peak' in self._public_attrs():
             cif_lines += ['', self.peak.as_cif]
 
         # Phase scale factors for powder experiments
-        if 'linked_phases' in self._class_public_attrs and self.linked_phases._items:
+        if 'linked_phases' in self._public_attrs() and self.linked_phases._items:
             cif_lines += ['', self.linked_phases.as_cif]
 
         # Crystal scale factor for single crystal experiments
-        if 'linked_crystal' in self._class_public_attrs:
+        if 'linked_crystal' in self._public_attrs():
             cif_lines += ['', self.linked_crystal.as_cif]
 
         # Background points
-        if 'background' in self._class_public_attrs and self.background._items:
+        if 'background' in self._public_attrs() and self.background._items:
             cif_lines += ['', self.background.as_cif]
 
         # Excluded regions
-        if 'excluded_regions' in self._class_public_attrs and self.excluded_regions._items:
+        if 'excluded_regions' in self._public_attrs() and self.excluded_regions._items:
             cif_lines += ['', self.excluded_regions.as_cif]
 
         # Measured data
-        if 'datastore' in self._class_public_attrs:
+        if 'datastore' in self._public_attrs():
             cif_lines += ['', self.datastore.as_cif(max_points=max_points)]
 
         return '\n'.join(cif_lines)
 
     def show_as_cif(self) -> None:
-        cif_text: str = self.as_cif(max_points=5)
+        cif_text: str = self.as_cif  # (max_points=5)
         paragraph_title: str = paragraph(f"Experiment 🔬 '{self.name}' as cif")
         render_cif(cif_text, paragraph_title)
 
@@ -151,15 +160,16 @@ class BaseExperiment(DatablockItem):
 class BasePowderExperiment(BaseExperiment):
     """Base class for all powder experiments."""
 
-    _class_public_attrs = {
-        'peak',
-        'peak_profile_type',
-        'linked_phases',
-        'excluded_regions',
-    }
+    # _public_attrs() = {
+    #    'peak',
+    #    'peak_profile_type',
+    #    'linked_phases',
+    #    'excluded_regions',
+    # }
 
     def __init__(
         self,
+        *,
         name: str,
         type: ExperimentType,
     ) -> None:
@@ -169,18 +179,30 @@ class BasePowderExperiment(BaseExperiment):
             self.type.scattering_type.value,
             self.type.beam_mode.value,
         ).value
-        self.peak = PeakFactory.create(
+        self._peak = PeakFactory.create(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
             profile_type=self._peak_profile_type,
         )
 
-        self.linked_phases: LinkedPhases = LinkedPhases()
-        self.excluded_regions: ExcludedRegions = ExcludedRegions()
+        self._linked_phases: LinkedPhases = LinkedPhases()
+        self._excluded_regions: ExcludedRegions = ExcludedRegions()
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         pass
+
+    @property
+    def peak(self) -> str:
+        return self._peak
+
+    @property
+    def linked_phases(self) -> str:
+        return self._linked_phases
+
+    @property
+    def excluded_regions(self) -> str:
+        return self._excluded_regions
 
     @property
     def peak_profile_type(self):
@@ -244,20 +266,25 @@ class PowderExperiment(
     Wraps background, peak profile, and linked phases.
     """
 
-    _class_public_attrs = {
-        'background',
-        'background_type',
-    }
+    # _public_attrs() = {
+    #    'background',
+    #    'background_type',
+    # }
 
     def __init__(
         self,
+        *,
         name: str,
         type: ExperimentType,
     ) -> None:
         super().__init__(name=name, type=type)
 
         self._background_type: BackgroundTypeEnum = BackgroundTypeEnum.default()
-        self.background = BackgroundFactory.create(background_type=self.background_type)
+        self._background = BackgroundFactory.create(background_type=self.background_type)
+
+    @property
+    def background(self):
+        return self._background
 
     # -------------
     # Measured data
@@ -415,12 +442,9 @@ class PairDistributionFunctionExperiment(BasePowderExperiment):
 class SingleCrystalExperiment(BaseExperiment):
     """Single crystal experiment class with specific attributes."""
 
-    _class_public_attrs = {
-        'linked_crystal',
-    }
-
     def __init__(
         self,
+        *,
         name: str,
         type: ExperimentType,
     ) -> None:

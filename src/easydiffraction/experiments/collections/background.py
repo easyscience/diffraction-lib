@@ -3,12 +3,8 @@
 
 from abc import abstractmethod
 from enum import Enum
-from typing import Any
-from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Type
-from typing import TypeVar
 from typing import Union
 
 import numpy as np
@@ -17,54 +13,73 @@ from scipy.interpolate import interp1d
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.parameters import Descriptor
+from easydiffraction.core.guards import RangeValidator
+from easydiffraction.core.parameters import DescriptorFloat
 from easydiffraction.core.parameters import Parameter
+from easydiffraction.crystallography.cif import CifHandler
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_table
 
-BackgroundItemT = TypeVar('BackgroundItemT', bound=CategoryItem)
-
 
 # TODO: rename to LineSegment
 class Point(CategoryItem):
-    _class_public_attrs = {
-        'name',
-        'x',
-        'y',
-    }
-
-    @property
-    def category_key(self) -> str:
-        return 'background'
-
     def __init__(
         self,
+        *,
         x: float,
         y: float,
     ):
         super().__init__()
 
-        self.x = Descriptor(
-            value=x,
+        self._x = DescriptorFloat(
             name='x',
-            value_type=float,
-            full_cif_names=['_pd_background.line_segment_X'],
-            default_value=x,
             description='X-coordinates used to create many straight-line segments '
             'representing the background in a calculated diffractogram.',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=x,
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.line_segment_X',
+                ]
+            ),
         )
-        self.y = Parameter(
-            value=y,  # TODO: rename to intensity
+        self._y = Parameter(
             name='y',  # TODO: rename to intensity
-            full_cif_names=['_pd_background.line_segment_intensity'],
-            default_value=y,
             description='Intensity used to create many straight-line segments '
             'representing the background in a calculated diffractogram',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=y,  # TODO: rename to intensity
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.line_segment_intensity',
+                ]
+            ),
         )
+
         # self._category_entry_attr_name = str(x)
-        self._category_entry_attr_name = self.x.name
-        self.name = self.x.value
+        self._identity.category_code = 'background'
+        self._identity.category_entry_name = lambda: str(self.x.value)
+
+    @property
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, value):
+        self._x.value = value
+
+    @property
+    def y(self):
+        return self._y
+
+    @y.setter
+    def y(self, value):
+        self._y.value = value
 
 
 class PolynomialTerm(CategoryItem):
@@ -76,48 +91,70 @@ class PolynomialTerm(CategoryItem):
     not break immediately. Tests should migrate to the short names.
     """
 
-    _class_public_attrs = {
-        # New canonical names
-        'order',
-        'coef',
-        # Backward compatibility (aliases)
-        'chebyshev_order',
-        'chebyshev_coef',
-    }
-
-    @property
-    def category_key(self) -> str:  # noqa: D401
-        return 'background'
-
-    def __init__(self, order: int, coef: float) -> None:
+    def __init__(
+        self,
+        *,
+        order: int,
+        coef: float,
+    ) -> None:
         super().__init__()
 
         # Canonical descriptors
-        self.order = Descriptor(
-            value=order,
+        self._order = DescriptorFloat(
             name='order',
-            value_type=int,
-            full_cif_names=['_pd_background.Chebyshev_order'],
-            default_value=order,
             description='Order used in a Chebyshev polynomial background term',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=order,
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.Chebyshev_order',
+                ]
+            ),
         )
-        self.coef = Parameter(
-            value=coef,
+        self._coef = Parameter(
             name='coef',
-            full_cif_names=['_pd_background.Chebyshev_coef'],
-            default_value=coef,
             description='Coefficient used in a Chebyshev polynomial background term',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=coef,
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.Chebyshev_coef',
+                ]
+            ),
         )
 
         # Backward-compatible aliases (point to same objects)
+        # TODO: Remove it
         self.chebyshev_order = self.order
         self.chebyshev_coef = self.coef
 
         # Entry attribute used as the identifier within the collection
-        self._category_entry_attr_name = self.order.name
+        # self._category_entry_attr_name = self.order.name
+        self._identity.category_code = 'background'
+        self._identity.category_entry_name = lambda: self.order.value
+
+    @property
+    def order(self):
+        return self._order
+
+    @order.setter
+    def order(self, value):
+        self._order.value = value
+
+    @property
+    def coef(self):
+        return self._coef
+
+    @coef.setter
+    def coef(self, value):
+        self._coef.value = value
 
 
-class BackgroundBase(CategoryCollection[BackgroundItemT]):
+class BackgroundBase(CategoryCollection):
     @abstractmethod
     def calculate(self, x_data: np.ndarray) -> np.ndarray:
         pass
@@ -127,7 +164,7 @@ class BackgroundBase(CategoryCollection[BackgroundItemT]):
         pass
 
 
-class LineSegmentBackground(BackgroundBase[Point]):
+class LineSegmentBackground(BackgroundBase):
     _description: str = 'Linear interpolation between points'
 
     def __init__(self):
@@ -171,7 +208,7 @@ class LineSegmentBackground(BackgroundBase[Point]):
         )
 
 
-class ChebyshevPolynomialBackground(BackgroundBase[PolynomialTerm]):
+class ChebyshevPolynomialBackground(BackgroundBase):
     _description: str = 'Chebyshev polynomial background'
 
     def __init__(self):
@@ -222,7 +259,7 @@ class BackgroundTypeEnum(str, Enum):
 
 class BackgroundFactory:
     BT = BackgroundTypeEnum
-    _supported: Dict[BT, Type[BackgroundBase[Any]]] = {
+    _supported = {
         BT.LINE_SEGMENT: LineSegmentBackground,
         BT.CHEBYSHEV: ChebyshevPolynomialBackground,
     }
@@ -231,7 +268,7 @@ class BackgroundFactory:
     def create(
         cls,
         background_type: Optional[BackgroundTypeEnum] = None,
-    ) -> BackgroundBase[Any]:
+    ) -> BackgroundBase:
         if background_type is None:
             background_type = BackgroundTypeEnum.default()
 

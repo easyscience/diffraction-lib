@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typeguard import typechecked
 
 from easydiffraction.core.datablocks import DatablockItem
 from easydiffraction.crystallography import crystallography as ecr
@@ -21,57 +20,62 @@ class BaseSampleModel(DatablockItem):
     class accepts only the `name`.
     """
 
-    _class_public_attrs = {
-        'space_group',
-        'cell',
-        'atom_sites',
-    }
-
-    def __init__(self, name: str):
+    def __init__(
+        self,
+        *,
+        name,
+    ) -> None:
         super().__init__()
         self._name = name
-        self.space_group = SpaceGroup()
-        self.cell = Cell()
-        self.atom_sites = AtomSites()
+        self._cell: Cell = Cell()
+        self._space_group: SpaceGroup = SpaceGroup()
+        self._atom_sites: AtomSites = AtomSites()
+        self._identity.datablock_entry_name = lambda: self.name
 
-    # -----------
-    # Space group
-    # -----------
-
-    @property
-    def space_group(self):
-        return self._space_group
-
-    @space_group.setter
-    @typechecked
-    def space_group(self, new_space_group: SpaceGroup):
-        self._space_group = new_space_group
-
-    # ----
-    # Cell
-    # ----
+    def __str__(self) -> str:
+        """Human-readable representation of this component."""
+        name = self._log_name
+        items = ', '.join(
+            f'{k}={v}'
+            for k, v in {
+                'cell': self.cell,
+                'space_group': self.space_group,
+                'atom_sites': self.atom_sites,
+            }.items()
+        )
+        return f'<{name} ({items})>'
 
     @property
-    def cell(self):
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, new: str) -> None:
+        self._name = new
+
+    @property
+    def cell(self) -> Cell:
         return self._cell
 
     @cell.setter
-    @typechecked
-    def cell(self, new_cell: Cell):
-        self._cell = new_cell
-
-    # ----------
-    # Atom sites
-    # ----------
+    def cell(self, new: Cell) -> None:
+        self._cell = new
 
     @property
-    def atom_sites(self):
+    def space_group(self) -> SpaceGroup:
+        return self._space_group
+
+    @space_group.setter
+    def space_group(self, new: SpaceGroup) -> None:
+        self._space_group = new
+
+    @property
+    def atom_sites(self) -> AtomSites:
         return self._atom_sites
 
     @atom_sites.setter
-    @typechecked
-    def atom_sites(self, new_atom_sites: AtomSites):
-        self._atom_sites = new_atom_sites
+    def atom_sites(self, new: AtomSites) -> None:
+        self._atom_sites = new
 
     # --------------------
     # Symmetry constraints
@@ -131,30 +135,6 @@ class BaseSampleModel(DatablockItem):
         self._apply_atomic_coordinates_symmetry_constraints()
         self._apply_atomic_displacement_symmetry_constraints()
 
-    # -----------
-    # CIF methods
-    # -----------
-
-    def as_cif(self) -> str:
-        """Export the sample model to CIF format.
-
-        Returns:
-            str: CIF string representation of the sample model.
-        """
-        # Data block header
-        cif_lines = [f'data_{self.name}']
-
-        # Space Group
-        cif_lines += ['', self.space_group.as_cif]
-
-        # Unit Cell
-        cif_lines += ['', self.cell.as_cif]
-
-        # Atom Sites
-        cif_lines += ['', self.atom_sites.as_cif]
-
-        return '\n'.join(cif_lines)
-
     # ------------
     # Show methods
     # ------------
@@ -175,7 +155,7 @@ class BaseSampleModel(DatablockItem):
         self.atom_sites.show()
 
     def show_as_cif(self) -> None:
-        cif_text: str = self.as_cif()
+        cif_text: str = self.as_cif
         paragraph_title: str = paragraph(f"Sample model 🧩 '{self.name}' as cif")
         render_cif(cif_text, paragraph_title)
 

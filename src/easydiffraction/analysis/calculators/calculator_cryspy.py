@@ -273,7 +273,7 @@ class CryspyCalculator(CalculatorBase):
         Returns:
             The Cryspy CIF string representation of the sample model.
         """
-        return sample_model.as_cif()
+        return sample_model.as_cif
 
     def _convert_experiment_to_cryspy_cif(
         self,
@@ -321,7 +321,8 @@ class CryspyCalculator(CalculatorBase):
                 }
             cif_lines.append('')
             for local_attr_name, engine_key_name in instrument_mapping.items():
-                attr_obj = instrument.__dict__.get(local_attr_name)
+                # attr_obj = instrument.__dict__.get(local_attr_name)
+                attr_obj = getattr(instrument, local_attr_name)
                 if attr_obj is not None:
                     cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 
@@ -347,7 +348,8 @@ class CryspyCalculator(CalculatorBase):
                 cif_lines.append('_tof_profile_peak_shape Gauss')
             cif_lines.append('')
             for local_attr_name, engine_key_name in peak_mapping.items():
-                attr_obj = peak.__dict__.get(local_attr_name)
+                # attr_obj = peak.__dict__.get(local_attr_name)
+                attr_obj = getattr(peak, local_attr_name)
                 if attr_obj is not None:
                     cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 

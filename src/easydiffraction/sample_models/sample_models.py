@@ -10,7 +10,7 @@ from easydiffraction.sample_models.sample_model import SampleModel
 from easydiffraction.utils.formatting import paragraph
 
 
-class SampleModels(DatablockCollection[BaseSampleModel]):
+class SampleModels(DatablockCollection):
     """Collection manager for multiple SampleModel instances."""
 
     def __init__(self) -> None:
@@ -19,15 +19,6 @@ class SampleModels(DatablockCollection[BaseSampleModel]):
     # --------------------
     # Add / Remove methods
     # --------------------
-
-    @typechecked
-    def add(self, sample_model: BaseSampleModel) -> None:
-        """Add a pre-built SampleModel instance.
-
-        Args:
-            sample_model: An existing SampleModel instance to add.
-        """
-        self[sample_model.name] = sample_model
 
     @typechecked
     def add_from_cif_path(self, cif_path: str) -> None:
@@ -82,16 +73,3 @@ class SampleModels(DatablockCollection[BaseSampleModel]):
         """Show parameters of all sample models in the collection."""
         for model in self.values():
             model.show_params()
-
-    # -----------
-    # CIF methods
-    # -----------
-
-    @property
-    def as_cif(self) -> str:
-        """Export all sample models to CIF format.
-
-        Returns:
-            CIF string representation of all sample models.
-        """
-        return '\n'.join(model.as_cif() for model in self.values())

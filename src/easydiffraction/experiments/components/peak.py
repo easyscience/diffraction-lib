@@ -4,7 +4,9 @@ from enum import Enum
 from typing import Optional
 
 from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.guards import RangeValidator
 from easydiffraction.core.parameters import Parameter
+from easydiffraction.crystallography.cif import CifHandler
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 
@@ -64,302 +66,633 @@ class PeakProfileTypeEnum(str, Enum):
 
 # --- Mixins ---
 class ConstantWavelengthBroadeningMixin:
-    _class_public_attrs = {
-        'broad_gauss_u',
-        'broad_gauss_v',
-        'broad_gauss_w',
-        'broad_lorentz_x',
-        'broad_lorentz_y',
-    }
-
     def _add_constant_wavelength_broadening(self) -> None:
-        self.broad_gauss_u: Parameter = Parameter(
-            value=0.01,
+        self._broad_gauss_u: Parameter = Parameter(
             name='broad_gauss_u',
-            full_cif_names=['_peak.broad_gauss_u'],
-            default_value=0.01,
-            units='deg²',
             description='Gaussian broadening coefficient (dependent on '
             'sample size and instrument resolution)',
+            validator=RangeValidator(
+                default=0.01,
+            ),
+            value=0.01,
+            units='deg²',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.broad_gauss_u',
+                ]
+            ),
         )
-        self.broad_gauss_v: Parameter = Parameter(
-            value=-0.01,
+        self._broad_gauss_v: Parameter = Parameter(
             name='broad_gauss_v',
-            full_cif_names=['_peak.broad_gauss_v'],
-            default_value=-0.01,
-            units='deg²',
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
+            validator=RangeValidator(
+                default=-0.01,
+            ),
+            value=-0.01,
+            units='deg²',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.broad_gauss_v',
+                ]
+            ),
         )
-        self.broad_gauss_w: Parameter = Parameter(
-            value=0.02,
+        self._broad_gauss_w: Parameter = Parameter(
             name='broad_gauss_w',
-            full_cif_names=['_peak.broad_gauss_w'],
-            default_value=0.02,
-            units='deg²',
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
+            validator=RangeValidator(
+                default=0.02,
+            ),
+            value=0.02,
+            units='deg²',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.broad_gauss_w',
+                ]
+            ),
         )
-        self.broad_lorentz_x: Parameter = Parameter(
-            value=0.0,
+        self._broad_lorentz_x: Parameter = Parameter(
             name='broad_lorentz_x',
-            full_cif_names=['_peak.broad_lorentz_x'],
-            default_value=0.0,
-            units='deg',
             description='Lorentzian broadening coefficient (dependent on sample strain effects)',
-        )
-        self.broad_lorentz_y: Parameter = Parameter(
+            validator=RangeValidator(
+                default=0.0,
+            ),
             value=0.0,
-            name='broad_lorentz_y',
-            full_cif_names=['_peak.broad_lorentz_y'],
-            default_value=0.0,
             units='deg',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.broad_lorentz_x',
+                ]
+            ),
+        )
+        self._broad_lorentz_y: Parameter = Parameter(
+            name='broad_lorentz_y',
             description='Lorentzian broadening coefficient (dependent on '
             'microstructural defects and strain)',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=0.0,
+            units='deg',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.broad_lorentz_y',
+                ]
+            ),
         )
+
+    @property
+    def broad_gauss_u(self) -> Parameter:
+        return self._broad_gauss_u
+
+    @broad_gauss_u.setter
+    def broad_gauss_u(self, value: float) -> None:
+        self._broad_gauss_u.value = value
+
+    @property
+    def broad_gauss_v(self) -> Parameter:
+        return self._broad_gauss_v
+
+    @broad_gauss_v.setter
+    def broad_gauss_v(self, value: float) -> None:
+        self._broad_gauss_v.value = value
+
+    @property
+    def broad_gauss_w(self) -> Parameter:
+        return self._broad_gauss_w
+
+    @broad_gauss_w.setter
+    def broad_gauss_w(self, value: float) -> None:
+        self._broad_gauss_w.value = value
+
+    @property
+    def broad_lorentz_x(self) -> Parameter:
+        return self._broad_lorentz_x
+
+    @broad_lorentz_x.setter
+    def broad_lorentz_x(self, value: float) -> None:
+        self._broad_lorentz_x.value = value
+
+    @property
+    def broad_lorentz_y(self) -> Parameter:
+        return self._broad_lorentz_y
+
+    @broad_lorentz_y.setter
+    def broad_lorentz_y(self, value: float) -> None:
+        self._broad_lorentz_y.value = value
 
 
 class TimeOfFlightBroadeningMixin:
-    _class_public_attrs = {
-        'broad_gauss_sigma_0',
-        'broad_gauss_sigma_1',
-        'broad_gauss_sigma_2',
-        'broad_lorentz_gamma_0',
-        'broad_lorentz_gamma_1',
-        'broad_lorentz_gamma_2',
-        'broad_mix_beta_0',
-        'broad_mix_beta_1',
-    }
-
     def _add_time_of_flight_broadening(self) -> None:
-        self.broad_gauss_sigma_0: Parameter = Parameter(
-            value=0.0,
+        self._broad_gauss_sigma_0: Parameter = Parameter(
             name='gauss_sigma_0',
-            full_cif_names=['_peak.gauss_sigma_0'],
-            default_value=0.0,
-            units='µs²',
             description='Gaussian broadening coefficient (instrumental resolution)',
-        )
-        self.broad_gauss_sigma_1: Parameter = Parameter(
+            validator=RangeValidator(
+                default=0.0,
+            ),
             value=0.0,
+            units='µs²',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.gauss_sigma_0',
+                ]
+            ),
+        )
+        self._broad_gauss_sigma_1: Parameter = Parameter(
             name='gauss_sigma_1',
-            full_cif_names=['_peak.gauss_sigma_1'],
-            default_value=0.0,
-            units='µs/Å',
             description='Gaussian broadening coefficient (dependent on d-spacing)',
-        )
-        self.broad_gauss_sigma_2: Parameter = Parameter(
+            validator=RangeValidator(
+                default=0.0,
+            ),
             value=0.0,
-            name='gauss_sigma_2',
-            full_cif_names=['_peak.gauss_sigma_2'],
-            default_value=0.0,
-            units='µs²/Å²',
-            description='Gaussian broadening coefficient (instrument-dependent term)',
-        )
-        self.broad_lorentz_gamma_0: Parameter = Parameter(
-            value=0.0,
-            name='lorentz_gamma_0',
-            full_cif_names=['_peak.lorentz_gamma_0'],
-            default_value=0.0,
-            units='µs',
-            description='Lorentzian broadening coefficient (dependent on microstrain effects)',
-        )
-        self.broad_lorentz_gamma_1: Parameter = Parameter(
-            value=0.0,
-            name='lorentz_gamma_1',
-            full_cif_names=['_peak.lorentz_gamma_1'],
-            default_value=0.0,
             units='µs/Å',
-            description='Lorentzian broadening coefficient (dependent on d-spacing)',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.gauss_sigma_1',
+                ]
+            ),
         )
-        self.broad_lorentz_gamma_2: Parameter = Parameter(
+        self._broad_gauss_sigma_2: Parameter = Parameter(
+            name='gauss_sigma_2',
+            description='Gaussian broadening coefficient (instrument-dependent term)',
+            validator=RangeValidator(
+                default=0.0,
+            ),
             value=0.0,
-            name='lorentz_gamma_2',
-            full_cif_names=['_peak.lorentz_gamma_2'],
-            default_value=0.0,
             units='µs²/Å²',
-            description='Lorentzian broadening coefficient (instrumental-dependent term)',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.gauss_sigma_2',
+                ]
+            ),
         )
-        self.broad_mix_beta_0: Parameter = Parameter(
+        self._broad_lorentz_gamma_0: Parameter = Parameter(
+            name='lorentz_gamma_0',
+            description='Lorentzian broadening coefficient (dependent on microstrain effects)',
+            validator=RangeValidator(
+                default=0.0,
+            ),
             value=0.0,
+            units='µs',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.lorentz_gamma_0',
+                ]
+            ),
+        )
+        self._broad_lorentz_gamma_1: Parameter = Parameter(
+            name='lorentz_gamma_1',
+            description='Lorentzian broadening coefficient (dependent on d-spacing)',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=0.0,
+            units='µs/Å',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.lorentz_gamma_1',
+                ]
+            ),
+        )
+        self._broad_lorentz_gamma_2: Parameter = Parameter(
+            name='lorentz_gamma_2',
+            description='Lorentzian broadening coefficient (instrument-dependent term)',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=0.0,
+            units='µs²/Å²',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.lorentz_gamma_2',
+                ]
+            ),
+        )
+        self._broad_mix_beta_0: Parameter = Parameter(
             name='mix_beta_0',
-            full_cif_names=['_peak.mix_beta_0'],
-            default_value=0.0,
-            units='deg',
             description='Mixing parameter. Defines the ratio of Gaussian '
             'to Lorentzian contributions in TOF profiles',
-        )
-        self.broad_mix_beta_1: Parameter = Parameter(
+            validator=RangeValidator(
+                default=0.0,
+            ),
             value=0.0,
-            name='mix_beta_1',
-            full_cif_names=['_peak.mix_beta_1'],
-            default_value=0.0,
             units='deg',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.mix_beta_0',
+                ]
+            ),
+        )
+        self._broad_mix_beta_1: Parameter = Parameter(
+            name='mix_beta_1',
             description='Mixing parameter. Defines the ratio of Gaussian '
             'to Lorentzian contributions in TOF profiles',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=0.0,
+            units='deg',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.mix_beta_1',
+                ]
+            ),
         )
+
+    @property
+    def broad_gauss_sigma_0(self) -> Parameter:
+        return self._broad_gauss_sigma_0
+
+    @broad_gauss_sigma_0.setter
+    def broad_gauss_sigma_0(self, value: float) -> None:
+        self._broad_gauss_sigma_0.value = value
+
+    @property
+    def broad_gauss_sigma_1(self) -> Parameter:
+        return self._broad_gauss_sigma_1
+
+    @broad_gauss_sigma_1.setter
+    def broad_gauss_sigma_1(self, value: float) -> None:
+        self._broad_gauss_sigma_1.value = value
+
+    @property
+    def broad_gauss_sigma_2(self) -> Parameter:
+        return self._broad_gauss_sigma_2
+
+    @broad_gauss_sigma_2.setter
+    def broad_gauss_sigma_2(self, value: float) -> None:
+        self._broad_gauss_sigma_2.value = value
+
+    @property
+    def broad_lorentz_gamma_0(self) -> Parameter:
+        return self._broad_lorentz_gamma_0
+
+    @broad_lorentz_gamma_0.setter
+    def broad_lorentz_gamma_0(self, value: float) -> None:
+        self._broad_lorentz_gamma_0.value = value
+
+    @property
+    def broad_lorentz_gamma_1(self) -> Parameter:
+        return self._broad_lorentz_gamma_1
+
+    @broad_lorentz_gamma_1.setter
+    def broad_lorentz_gamma_1(self, value: float) -> None:
+        self._broad_lorentz_gamma_1.value = value
+
+    @property
+    def broad_lorentz_gamma_2(self) -> Parameter:
+        return self._broad_lorentz_gamma_2
+
+    @broad_lorentz_gamma_2.setter
+    def broad_lorentz_gamma_2(self, value: float) -> None:
+        self._broad_lorentz_gamma_2.value = value
+
+    @property
+    def broad_mix_beta_0(self) -> Parameter:
+        return self._broad_mix_beta_0
+
+    @broad_mix_beta_0.setter
+    def broad_mix_beta_0(self, value: float) -> None:
+        self._broad_mix_beta_0.value = value
+
+    @property
+    def broad_mix_beta_1(self) -> Parameter:
+        return self._broad_mix_beta_1
+
+    @broad_mix_beta_1.setter
+    def broad_mix_beta_1(self, value: float) -> None:
+        self._broad_mix_beta_1.value = value
 
 
 class EmpiricalAsymmetryMixin:
-    _class_public_attrs = {
-        'asym_empir_1',
-        'asym_empir_2',
-        'asym_empir_3',
-        'asym_empir_4',
-    }
-
     def _add_empirical_asymmetry(self) -> None:
-        self.asym_empir_1: Parameter = Parameter(
-            value=0.1,
+        self._asym_empir_1: Parameter = Parameter(
             name='asym_empir_1',
-            full_cif_names=['_peak.asym_empir_1'],
-            default_value=0.1,
-            units='',
             description='Empirical asymmetry coefficient p1',
+            validator=RangeValidator(
+                default=0.1,
+            ),
+            value=0.1,
+            units='',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.asym_empir_1',
+                ]
+            ),
         )
-        self.asym_empir_2: Parameter = Parameter(
-            value=0.2,
+        self._asym_empir_2: Parameter = Parameter(
             name='asym_empir_2',
-            full_cif_names=['_peak.asym_empir_2'],
-            default_value=0.2,
-            units='',
             description='Empirical asymmetry coefficient p2',
+            validator=RangeValidator(
+                default=0.2,
+            ),
+            value=0.2,
+            units='',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.asym_empir_2',
+                ]
+            ),
         )
-        self.asym_empir_3: Parameter = Parameter(
-            value=0.3,
+        self._asym_empir_3: Parameter = Parameter(
             name='asym_empir_3',
-            full_cif_names=['_peak.asym_empir_3'],
-            default_value=0.3,
-            units='',
             description='Empirical asymmetry coefficient p3',
-        )
-        self.asym_empir_4: Parameter = Parameter(
-            value=0.4,
-            name='asym_empir_4',
-            full_cif_names=['_peak.asym_empir_4'],
-            default_value=0.4,
+            validator=RangeValidator(
+                default=0.3,
+            ),
+            value=0.3,
             units='',
-            description='Empirical asymmetry coefficient p4',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.asym_empir_3',
+                ]
+            ),
         )
+        self._asym_empir_4: Parameter = Parameter(
+            name='asym_empir_4',
+            description='Empirical asymmetry coefficient p4',
+            validator=RangeValidator(
+                default=0.4,
+            ),
+            value=0.4,
+            units='',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.asym_empir_4',
+                ]
+            ),
+        )
+
+    @property
+    def asym_empir_1(self) -> Parameter:
+        return self._asym_empir_1
+
+    @asym_empir_1.setter
+    def asym_empir_1(self, value: float) -> None:
+        self._asym_empir_1.value = value
+
+    @property
+    def asym_empir_2(self) -> Parameter:
+        return self._asym_empir_2
+
+    @asym_empir_2.setter
+    def asym_empir_2(self, value: float) -> None:
+        self._asym_empir_2.value = value
+
+    @property
+    def asym_empir_3(self) -> Parameter:
+        return self._asym_empir_3
+
+    @asym_empir_3.setter
+    def asym_empir_3(self, value: float) -> None:
+        self._asym_empir_3.value = value
+
+    @property
+    def asym_empir_4(self) -> Parameter:
+        return self._asym_empir_4
+
+    @asym_empir_4.setter
+    def asym_empir_4(self, value: float) -> None:
+        self._asym_empir_4.value = value
 
 
 class FcjAsymmetryMixin:
-    _class_public_attrs = {
-        'asym_fcj_1',
-        'asym_fcj_2',
-    }
-
     def _add_fcj_asymmetry(self) -> None:
-        self.asym_fcj_1: Parameter = Parameter(
-            value=0.01,
+        self._asym_fcj_1: Parameter = Parameter(
             name='asym_fcj_1',
-            full_cif_names=['_peak.asym_fcj_1'],
-            default_value=0.01,
-            units='',
             description='FCJ asymmetry coefficient 1',
-        )
-        self.asym_fcj_2: Parameter = Parameter(
-            value=0.02,
-            name='asym_fcj_2',
-            full_cif_names=['_peak.asym_fcj_2'],
-            default_value=0.02,
+            validator=RangeValidator(
+                default=0.01,
+            ),
+            value=0.01,
             units='',
-            description='FCJ asymmetry coefficient 2',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.asym_fcj_1',
+                ]
+            ),
         )
+        self._asym_fcj_2: Parameter = Parameter(
+            name='asym_fcj_2',
+            description='FCJ asymmetry coefficient 2',
+            validator=RangeValidator(
+                default=0.02,
+            ),
+            value=0.02,
+            units='',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.asym_fcj_2',
+                ]
+            ),
+        )
+
+    @property
+    def asym_fcj_1(self) -> Parameter:
+        return self._asym_fcj_1
+
+    @asym_fcj_1.setter
+    def asym_fcj_1(self, value: float) -> None:
+        self._asym_fcj_1.value = value
+
+    @property
+    def asym_fcj_2(self) -> Parameter:
+        return self._asym_fcj_2
+
+    @asym_fcj_2.setter
+    def asym_fcj_2(self, value: float) -> None:
+        self._asym_fcj_2.value = value
 
 
 class IkedaCarpenterAsymmetryMixin:
-    _class_public_attrs = {
-        'asym_alpha_0',
-        'asym_alpha_1',
-    }
-
     def _add_ikeda_carpenter_asymmetry(self) -> None:
-        self.asym_alpha_0: Parameter = Parameter(
-            value=0.01,
+        self._asym_alpha_0: Parameter = Parameter(
             name='asym_alpha_0',
-            full_cif_names=['_peak.asym_alpha_0'],
-            default_value=0.01,
-            units='',
             description='Ikeda-Carpenter asymmetry parameter α₀',
-        )
-        self.asym_alpha_1: Parameter = Parameter(
-            value=0.02,
-            name='asym_alpha_1',
-            full_cif_names=['_peak.asym_alpha_1'],
-            default_value=0.02,
+            validator=RangeValidator(
+                default=0.01,
+            ),
+            value=0.01,
             units='',
-            description='Ikeda-Carpenter asymmetry parameter α₁',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.asym_alpha_0',
+                ]
+            ),
         )
+        self._asym_alpha_1: Parameter = Parameter(
+            name='asym_alpha_1',
+            description='Ikeda-Carpenter asymmetry parameter α₁',
+            validator=RangeValidator(
+                default=0.02,
+            ),
+            value=0.02,
+            units='',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.asym_alpha_1',
+                ]
+            ),
+        )
+
+    @property
+    def asym_alpha_0(self) -> Parameter:
+        return self._asym_alpha_0
+
+    @asym_alpha_0.setter
+    def asym_alpha_0(self, value: float) -> None:
+        self._asym_alpha_0.value = value
+
+    @property
+    def asym_alpha_1(self) -> Parameter:
+        return self._asym_alpha_1
 
 
 class PairDistributionFunctionBroadeningMixin:
-    _class_public_attrs = {
-        'damp_q',
-        'broad_q',
-        'cutoff_q',
-        'sharp_delta_1',
-        'sharp_delta_2',
-        'damp_particle_diameter',
-    }
-
     def _add_pair_distribution_function_broadening(self):
-        self.damp_q = Parameter(
-            value=0.05,
+        self._damp_q: Parameter = Parameter(
             name='damp_q',
-            full_cif_names=['_peak.damp_q'],
-            default_value=0.05,
-            units='Å⁻¹',
             description='Instrumental Q-resolution damping factor '
             '(affects high-r PDF peak amplitude)',
+            validator=RangeValidator(
+                default=0.05,
+            ),
+            value=0.05,
+            units='Å⁻¹',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.damp_q',
+                ]
+            ),
         )
-        self.broad_q = Parameter(
-            value=0.0,
+        self._broad_q: Parameter = Parameter(
             name='broad_q',
-            full_cif_names=['_peak.broad_q'],
-            default_value=0.0,
-            units='Å⁻²',
             description='Quadratic PDF peak broadening coefficient '
             '(thermal and model uncertainty contribution)',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=0.0,
+            units='Å⁻²',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.broad_q',
+                ]
+            ),
         )
-        self.cutoff_q = Parameter(
-            value=25.0,
+        self._cutoff_q: Parameter = Parameter(
             name='cutoff_q',
-            full_cif_names=['_peak.cutoff_q'],
-            default_value=25.0,
-            units='Å⁻¹',
             description='Q-value cutoff applied to model PDF for Fourier '
             'transform (controls real-space resolution)',
+            validator=RangeValidator(
+                default=25.0,
+            ),
+            value=25.0,
+            units='Å⁻¹',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.cutoff_q',
+                ]
+            ),
         )
-        self.sharp_delta_1 = Parameter(
-            value=0.0,
+        self._sharp_delta_1: Parameter = Parameter(
             name='sharp_delta_1',
-            full_cif_names=['_peak.sharp_delta_1'],
-            default_value=0.0,
-            units='Å',
             description='PDF peak sharpening coefficient (1/r dependence)',
-        )
-        self.sharp_delta_2 = Parameter(
+            validator=RangeValidator(
+                default=0.0,
+            ),
             value=0.0,
-            name='sharp_delta_2',
-            full_cif_names=['_peak.sharp_delta_2'],
-            default_value=0.0,
-            units='Å²',
-            description='PDF peak sharpening coefficient (1/r² dependence)',
-        )
-        self.damp_particle_diameter = Parameter(
-            value=0.0,
-            name='damp_particle_diameter',
-            full_cif_names=['_peak.damp_particle_diameter'],
-            default_value=0.0,
             units='Å',
-            description='Particle diameter for spherical envelope damping correction in PDF',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.sharp_delta_1',
+                ]
+            ),
         )
+        self._sharp_delta_2: Parameter = Parameter(
+            name='sharp_delta_2',
+            description='PDF peak sharpening coefficient (1/r² dependence)',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=0.0,
+            units='Å²',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.sharp_delta_2',
+                ]
+            ),
+        )
+        self._damp_particle_diameter: Parameter = Parameter(
+            name='damp_particle_diameter',
+            description='Particle diameter for spherical envelope damping correction in PDF',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=0.0,
+            units='Å',
+            cif_handler=CifHandler(
+                names=[
+                    '_peak.damp_particle_diameter',
+                ]
+            ),
+        )
+
+    @property
+    def damp_q(self) -> Parameter:
+        return self._damp_q
+
+    @damp_q.setter
+    def damp_q(self, value: float) -> None:
+        self._damp_q.value = value
+
+    @property
+    def broad_q(self) -> Parameter:
+        return self._broad_q
+
+    @broad_q.setter
+    def broad_q(self, value: float) -> None:
+        self._broad_q.value = value
+
+    @property
+    def cutoff_q(self) -> Parameter:
+        return self._cutoff_q
+
+    @cutoff_q.setter
+    def cutoff_q(self, value: float) -> None:
+        self._cutoff_q.value = value
+
+    @property
+    def sharp_delta_1(self) -> Parameter:
+        return self._sharp_delta_1
+
+    @sharp_delta_1.setter
+    def sharp_delta_1(self, value: float) -> None:
+        self._sharp_delta_1.value = value
+
+    @property
+    def sharp_delta_2(self) -> Parameter:
+        return self._sharp_delta_2
+
+    @sharp_delta_2.setter
+    def sharp_delta_2(self, value: float) -> None:
+        self._sharp_delta_2.value = value
+
+    @property
+    def damp_particle_diameter(self) -> Parameter:
+        return self._damp_particle_diameter
+
+    @damp_particle_diameter.setter
+    def damp_particle_diameter(self, value: float) -> None:
+        self._damp_particle_diameter.value = value
 
 
 # --- Base peak class ---
 class PeakBase(CategoryItem):
-    @property
-    def category_key(self) -> str:
-        return 'peak'
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__()
+        self._identity.category_code = 'peak'
 
 
 # --- Derived peak classes ---

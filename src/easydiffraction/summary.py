@@ -122,19 +122,19 @@ class Summary:
                 f'{expt.type.beam_mode.value}'
             )
 
-            if 'instrument' in expt._class_public_attrs:
-                if 'setup_wavelength' in expt.instrument._class_public_attrs:
+            if 'instrument' in expt._public_attrs():
+                if 'setup_wavelength' in expt.instrument._public_attrs():
                     print(paragraph('Wavelength'))
                     print(f'{expt.instrument.setup_wavelength.value:.5f}')
-                if 'calib_twotheta_offset' in expt.instrument._class_public_attrs:
+                if 'calib_twotheta_offset' in expt.instrument._public_attrs():
                     print(paragraph('2θ offset'))
                     print(f'{expt.instrument.calib_twotheta_offset.value:.5f}')
 
-            if 'peak_profile_type' in expt._class_public_attrs:
+            if 'peak_profile_type' in expt._public_attrs():
                 print(paragraph('Profile type'))
                 print(expt.peak_profile_type)
 
-            if 'peak' in expt._class_public_attrs:
+            if 'peak' in expt._public_attrs():
                 if 'broad_gauss_u' in expt.peak:
                     print(paragraph('Peak broadening (Gaussian)'))
                     columns_alignment = ['left', 'right']

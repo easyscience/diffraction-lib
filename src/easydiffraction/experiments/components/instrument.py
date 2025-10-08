@@ -4,107 +4,198 @@
 from typing import Optional
 
 from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.guards import RangeValidator
 from easydiffraction.core.parameters import Parameter
+from easydiffraction.crystallography.cif import CifHandler
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 
 
 class InstrumentBase(CategoryItem):
-    _class_public_attrs = {
-        'setup_wavelength',
-        'calib_twotheta_offset',
-    }
-
-    @property
-    def category_key(self) -> str:
-        return 'instrument'
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__()
+        self._identity.category_code = 'instrument'
 
 
 class ConstantWavelengthInstrument(InstrumentBase):
     def __init__(
         self,
-        setup_wavelength: float = 1.5406,
-        calib_twotheta_offset: float = 0.0,
+        *,
+        setup_wavelength=None,
+        calib_twotheta_offset=None,
     ) -> None:
         super().__init__()
 
-        self.setup_wavelength: Parameter = Parameter(
-            value=setup_wavelength,
+        self._setup_wavelength: Parameter = Parameter(
             name='wavelength',
-            full_cif_names=['_instr.wavelength'],
-            default_value=1.5406,
-            units='Å',
             description='Incident neutron or X-ray wavelength',
+            validator=RangeValidator(
+                default=1.5406,
+            ),
+            value=setup_wavelength,
+            units='Å',
+            cif_handler=CifHandler(
+                names=[
+                    '_instr.wavelength',
+                ]
+            ),
         )
-        self.calib_twotheta_offset: Parameter = Parameter(
-            value=calib_twotheta_offset,
+        self._calib_twotheta_offset: Parameter = Parameter(
             name='twotheta_offset',
-            full_cif_names=['_instr.2theta_offset'],
-            default_value=0.0,
-            units='deg',
             description='Instrument misalignment offset',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=calib_twotheta_offset,
+            units='deg',
+            cif_handler=CifHandler(
+                names=[
+                    '_instr.2theta_offset',
+                ]
+            ),
         )
+
+    @property
+    def setup_wavelength(self):
+        return self._setup_wavelength
+
+    @setup_wavelength.setter
+    def setup_wavelength(self, value):
+        self._setup_wavelength.value = value
+
+    @property
+    def calib_twotheta_offset(self):
+        return self._calib_twotheta_offset
+
+    @calib_twotheta_offset.setter
+    def calib_twotheta_offset(self, value):
+        self._calib_twotheta_offset.value = value
 
 
 class TimeOfFlightInstrument(InstrumentBase):
-    _class_public_attrs = {
-        'setup_twotheta_bank',
-        'calib_d_to_tof_offset',
-        'calib_d_to_tof_linear',
-        'calib_d_to_tof_quad',
-        'calib_d_to_tof_recip',
-    }
-
     def __init__(
         self,
-        setup_twotheta_bank: float = 150.0,
-        calib_d_to_tof_offset: float = 0.0,
-        calib_d_to_tof_linear: float = 10000.0,
-        calib_d_to_tof_quad: float = -0.00001,
-        calib_d_to_tof_recip: float = 0.0,
+        *,
+        setup_twotheta_bank=None,
+        calib_d_to_tof_offset=None,
+        calib_d_to_tof_linear=None,
+        calib_d_to_tof_quad=None,
+        calib_d_to_tof_recip=None,
     ) -> None:
         super().__init__()
 
-        self.setup_twotheta_bank: Parameter = Parameter(
-            value=setup_twotheta_bank,
+        self._setup_twotheta_bank: Parameter = Parameter(
             name='twotheta_bank',
-            full_cif_names=['_instr.2theta_bank'],
-            default_value=150.0,
-            units='deg',
             description='Detector bank position',
+            validator=RangeValidator(
+                default=150.0,
+            ),
+            value=setup_twotheta_bank,
+            units='deg',
+            cif_handler=CifHandler(
+                names=[
+                    '_instr.2theta_bank',
+                ]
+            ),
         )
-        self.calib_d_to_tof_offset: Parameter = Parameter(
-            value=calib_d_to_tof_offset,
+        self._calib_d_to_tof_offset: Parameter = Parameter(
             name='d_to_tof_offset',
-            full_cif_names=['_instr.d_to_tof_offset'],
-            default_value=0.0,
-            units='µs',
             description='TOF offset',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=calib_d_to_tof_offset,
+            units='µs',
+            cif_handler=CifHandler(
+                names=[
+                    '_instr.d_to_tof_offset',
+                ]
+            ),
         )
-        self.calib_d_to_tof_linear: Parameter = Parameter(
-            value=calib_d_to_tof_linear,
+        self._calib_d_to_tof_linear: Parameter = Parameter(
             name='d_to_tof_linear',
-            full_cif_names=['_instr.d_to_tof_linear'],
-            default_value=10000.0,
-            units='µs/Å',
             description='TOF linear conversion',
+            validator=RangeValidator(
+                default=10000.0,
+            ),
+            value=calib_d_to_tof_linear,
+            units='µs/Å',
+            cif_handler=CifHandler(
+                names=[
+                    '_instr.d_to_tof_linear',
+                ]
+            ),
         )
-        self.calib_d_to_tof_quad: Parameter = Parameter(
-            value=calib_d_to_tof_quad,
+        self._calib_d_to_tof_quad: Parameter = Parameter(
             name='d_to_tof_quad',
-            full_cif_names=['_instr.d_to_tof_quad'],
-            default_value=-0.00001,
-            units='µs/Å²',
             description='TOF quadratic correction',
+            validator=RangeValidator(
+                default=-0.00001,
+            ),
+            value=calib_d_to_tof_quad,
+            units='µs/Å²',
+            cif_handler=CifHandler(
+                names=[
+                    '_instr.d_to_tof_quad',
+                ]
+            ),
         )
-        self.calib_d_to_tof_recip: Parameter = Parameter(
-            value=calib_d_to_tof_recip,
+        self._calib_d_to_tof_recip: Parameter = Parameter(
             name='d_to_tof_recip',
-            full_cif_names=['_instr.d_to_tof_recip'],
-            default_value=0.0,
-            units='µs·Å',
             description='TOF reciprocal velocity correction',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=calib_d_to_tof_recip,
+            units='µs·Å',
+            cif_handler=CifHandler(
+                names=[
+                    '_instr.d_to_tof_recip',
+                ]
+            ),
         )
+
+    @property
+    def setup_twotheta_bank(self):
+        return self._setup_twotheta_bank
+
+    @setup_twotheta_bank.setter
+    def setup_twotheta_bank(self, value):
+        self._setup_twotheta_bank.value = value
+
+    @property
+    def calib_d_to_tof_offset(self):
+        return self._calib_d_to_tof_offset
+
+    @calib_d_to_tof_offset.setter
+    def calib_d_to_tof_offset(self, value):
+        self._calib_d_to_tof_offset.value = value
+
+    @property
+    def calib_d_to_tof_linear(self):
+        return self._calib_d_to_tof_linear
+
+    @calib_d_to_tof_linear.setter
+    def calib_d_to_tof_linear(self, value):
+        self._calib_d_to_tof_linear.value = value
+
+    @property
+    def calib_d_to_tof_quad(self):
+        return self._calib_d_to_tof_quad
+
+    @calib_d_to_tof_quad.setter
+    def calib_d_to_tof_quad(self, value):
+        self._calib_d_to_tof_quad.value = value
+
+    @property
+    def calib_d_to_tof_recip(self):
+        return self._calib_d_to_tof_recip
+
+    @calib_d_to_tof_recip.setter
+    def calib_d_to_tof_recip(self, value):
+        self._calib_d_to_tof_recip.value = value
 
 
 class InstrumentFactory:

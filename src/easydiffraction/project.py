@@ -24,15 +24,22 @@ from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d
 
 
-class ProjectInfo:
+class ProjectInfo(GuardedBase):
     """Stores metadata about the project, such as name, title,
     description, and file paths.
     """
 
-    def __init__(self) -> None:
-        self._name: str = 'untitled_project'
-        self._title: str = 'Untitled Project'
-        self._description: str = ''
+    def __init__(
+        self,
+        name: str = 'untitled_project',
+        title: str = 'Untitled Project',
+        description: str = '',
+    ) -> None:
+        super().__init__()
+
+        self._name: name
+        self._title: title
+        self._description: description
         self._path: pathlib.Path = pathlib.Path.cwd()
         self._created: datetime.datetime = datetime.datetime.now()
         self._last_modified: datetime.datetime = datetime.datetime.now()
@@ -88,6 +95,9 @@ class ProjectInfo:
         """Update the last modified timestamp."""
         self._last_modified = datetime.datetime.now()
 
+    def parameters(self):
+        pass
+
     def as_cif(self) -> str:
         """Export project metadata to CIF."""
         wrapped_title: List[str] = wrap(self.title, width=46)
@@ -129,19 +139,6 @@ class Project(GuardedBase):
     """
 
     # ------------------------------------------------------------------
-    # Class configuration
-    # ------------------------------------------------------------------
-    _class_public_attrs = {
-        'name',
-        'info',
-        'sample_models',
-        'experiments',
-        'analysis',
-        'summary',
-        'plotter',
-    }
-
-    # ------------------------------------------------------------------
     # Initialization
     # ------------------------------------------------------------------
     def __init__(
@@ -150,10 +147,9 @@ class Project(GuardedBase):
         title: str = 'Untitled Project',
         description: str = '',
     ) -> None:
-        self.info: ProjectInfo = ProjectInfo()
-        self.info.name = name
-        self.info.title = title
-        self.info.description = description
+        super().__init__()
+
+        self._info: ProjectInfo = ProjectInfo(name, title, description)
         self._sample_models = SampleModels()
         self._experiments = Experiments()
         self._plotter = Plotter()
@@ -182,11 +178,15 @@ class Project(GuardedBase):
     # ------------------------------------------------------------------
 
     @property
+    def info(self) -> ProjectInfo:
+        return self._info
+
+    @property
     def name(self) -> str:
         """Convenience property to access the project's name
         directly.
         """
-        return self.info.name
+        return self._info.name
 
     @property
     def full_name(self) -> str:
@@ -222,6 +222,16 @@ class Project(GuardedBase):
     def summary(self):
         return self._summary
 
+    @property
+    def parameters(self):
+        # To be implemented: return all parameters in the project
+        return []
+
+    @property
+    def as_cif(self):
+        # To be implemented: return the entire project as a CIF string
+        return ''
+
     # ------------------------------------------
     #  Project File I/O
     # ------------------------------------------
@@ -233,30 +243,30 @@ class Project(GuardedBase):
         """
         print(paragraph(f'Loading project 📦 from {dir_path}'))
         print(dir_path)
-        self.info.path = dir_path
+        self._info.path = dir_path
         # TODO: load project components from files inside dir_path
         print('Loading project is not implemented yet.')
         self._saved = True
 
     def save(self) -> None:
         """Save the project into the existing project directory."""
-        if not self.info.path:
+        if not self._info.path:
             print(error('Project path not specified. Use save_as() to define the path first.'))
             return
 
         print(paragraph(f"Saving project 📦 '{self.name}' to"))
-        print(self.info.path.resolve())
+        print(self._info.path.resolve())
 
         # Ensure project directory exists
-        self.info.path.mkdir(parents=True, exist_ok=True)
+        self._info.path.mkdir(parents=True, exist_ok=True)
 
         # Save project info
-        with (self.info.path / 'project.cif').open('w') as f:
-            f.write(self.info.as_cif())
+        with (self._info.path / 'project.cif').open('w') as f:
+            f.write(self._info.as_cif())
             print('✅ project.cif')
 
         # Save sample models
-        sm_dir = self.info.path / 'sample_models'
+        sm_dir = self._info.path / 'sample_models'
         sm_dir.mkdir(parents=True, exist_ok=True)
         # Iterate over sample model objects (MutableMapping iter gives
         # keys)
@@ -268,7 +278,7 @@ class Project(GuardedBase):
                 print(f'✅ sample_models/{file_name}')
 
         # Save experiments
-        expt_dir = self.info.path / 'experiments'
+        expt_dir = self._info.path / 'experiments'
         expt_dir.mkdir(parents=True, exist_ok=True)
         for experiment in self.experiments.values():
             file_name: str = f'{experiment.name}.cif'
@@ -278,16 +288,16 @@ class Project(GuardedBase):
                 print(f'✅ experiments/{file_name}')
 
         # Save analysis
-        with (self.info.path / 'analysis.cif').open('w') as f:
+        with (self._info.path / 'analysis.cif').open('w') as f:
             f.write(self.analysis.as_cif())
             print('✅ analysis.cif')
 
         # Save summary
-        with (self.info.path / 'summary.cif').open('w') as f:
+        with (self._info.path / 'summary.cif').open('w') as f:
             f.write(self.summary.as_cif())
             print('✅ summary.cif')
 
-        self.info.update_last_modified()
+        self._info.update_last_modified()
         self._saved = True
 
     def save_as(
@@ -299,7 +309,7 @@ class Project(GuardedBase):
         if temporary:
             tmp: str = tempfile.gettempdir()
             dir_path = pathlib.Path(tmp) / dir_path
-        self.info.path = dir_path
+        self._info.path = dir_path
         self.save()
 
     # ------------------------------------------

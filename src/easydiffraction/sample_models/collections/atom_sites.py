@@ -1,128 +1,257 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-from typing import Optional
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.parameters import Descriptor
+from easydiffraction.core.guards import ListValidator
+from easydiffraction.core.guards import RangeValidator
+from easydiffraction.core.guards import RegexValidator
+from easydiffraction.core.parameters import DescriptorStr
 from easydiffraction.core.parameters import Parameter
+from easydiffraction.crystallography.cif import CifHandler
 
 
 class AtomSite(CategoryItem):
-    """Represents a single atom site within the crystal structure."""
-
-    _class_public_attrs = {
-        'name',
-        'label',
-        'type_symbol',
-        'fract_x',
-        'fract_y',
-        'fract_z',
-        'wyckoff_letter',
-        'occupancy',
-        'b_iso',
-        'adp_type',
-    }
-
-    @property
-    def category_key(self):
-        return 'atom_sites'
-
     def __init__(
         self,
-        label: Optional[str] = None,
-        type_symbol: Optional[str] = None,
-        fract_x: Optional[float] = None,
-        fract_y: Optional[float] = None,
-        fract_z: Optional[float] = None,
-        wyckoff_letter: Optional[str] = None,
-        occupancy: Optional[float] = None,
-        b_iso: Optional[float] = None,
-        adp_type: Optional[str] = None,
-    ):  # TODO: add support for Uiso, Uani and Bani
+        *,
+        label=None,
+        type_symbol=None,
+        fract_x=None,
+        fract_y=None,
+        fract_z=None,
+        wyckoff_letter=None,
+        occupancy=None,
+        b_iso=None,
+        adp_type=None,
+    ) -> None:
         super().__init__()
 
-        self.label = Descriptor(
-            value=label,
+        self._label: DescriptorStr = DescriptorStr(
             name='label',
-            value_type=str,
-            default_value='La',
-            full_cif_names=['_atom_site.label'],
             description='Unique identifier for the atom site.',
+            validator=RegexValidator(
+                pattern=r'^[A-Za-z_][A-Za-z0-9_]*$',
+                default='Si',
+            ),
+            value=label,
+            cif_handler=CifHandler(
+                names=[
+                    '_atom_site.label',
+                ]
+            ),
         )
-        self.type_symbol = Descriptor(
-            value=type_symbol,
+        self._type_symbol: DescriptorStr = DescriptorStr(
             name='type_symbol',
-            value_type=str,
-            default_value='La',
-            full_cif_names=['_atom_site.type_symbol'],
             description='Chemical symbol of the atom at this site.',
+            validator=ListValidator(
+                allowed_values=['Si', 'O', 'Tb', 'La', 'Ba', 'Co'],
+                default='Tb',
+            ),
+            value=type_symbol,
+            cif_handler=CifHandler(
+                names=[
+                    '_atom_site.type_symbol',
+                ]
+            ),
         )
-        self.adp_type = Descriptor(
-            value=adp_type,
-            name='adp_type',
-            value_type=str,
-            default_value='Biso',
-            full_cif_names=['_atom_site.ADP_type'],
-            description='Type of atomic displacement parameter (ADP) '
-            'used (e.g., Biso, Uiso, Uani, Bani).',
+        self._fract_x: Parameter = Parameter(
+            name='fract_x',
+            description='Fractional x-coordinate of the atom site within the unit cell.',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=fract_x,
+            cif_handler=CifHandler(
+                names=[
+                    '_atom_site.fract_x',
+                ]
+            ),
         )
-        self.wyckoff_letter = Descriptor(
-            value=wyckoff_letter,
+        self._fract_y: Parameter = Parameter(
+            name='fract_y',
+            description='Fractional y-coordinate of the atom site within the unit cell.',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=fract_y,
+            cif_handler=CifHandler(
+                names=[
+                    '_atom_site.fract_y',
+                ]
+            ),
+        )
+        self._fract_z: Parameter = Parameter(
+            name='fract_z',
+            description='Fractional z-coordinate of the atom site within the unit cell.',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=fract_z,
+            cif_handler=CifHandler(
+                names=[
+                    '_atom_site.fract_z',
+                ]
+            ),
+        )
+        self._wyckoff_letter: DescriptorStr = DescriptorStr(
             name='wyckoff_letter',
-            value_type=str,
-            default_value=None,
-            full_cif_names=['_atom_site.Wyckoff_letter', '_atom_site.Wyckoff_symbol'],
             description='Wyckoff letter indicating the symmetry of the '
             'atom site within the space group.',
+            validator=ListValidator(
+                allowed_values=[
+                    'a',
+                    'b',
+                    'c',
+                    'd',
+                    'e',
+                    'f',
+                    'g',
+                    'h',
+                    'i',
+                    'j',
+                    'k',
+                    'l',
+                    'm',
+                    'n',
+                    'o',
+                    'p',
+                    'q',
+                    'r',
+                    's',
+                    't',
+                ],
+                default='a',
+            ),
+            value=wyckoff_letter,
+            cif_handler=CifHandler(
+                names=[
+                    '_atom_site.Wyckoff_letter',
+                    '_atom_site.Wyckoff_symbol',
+                ]
+            ),
         )
-        self.fract_x = Parameter(
-            value=fract_x,
-            name='fract_x',
-            default_value=0.0,
-            full_cif_names=['_atom_site.fract_x'],
-            description='Fractional x-coordinate of the atom site within the unit cell.',
-        )
-        self.fract_y = Parameter(
-            value=fract_y,
-            name='fract_y',
-            default_value=0.0,
-            full_cif_names=['_atom_site.fract_y'],
-            description='Fractional y-coordinate of the atom site within the unit cell.',
-        )
-        self.fract_z = Parameter(
-            value=fract_z,
-            name='fract_z',
-            default_value=0.0,
-            full_cif_names=['_atom_site.fract_z'],
-            description='Fractional z-coordinate of the atom site within the unit cell.',
-        )
-        self.occupancy = Parameter(
-            value=occupancy,
+        self._occupancy: Parameter = Parameter(
             name='occupancy',
-            default_value=1.0,
-            physical_min=0.0,
-            physical_max=1.0,
-            full_cif_names=['_atom_site.occupancy'],
             description='Occupancy of the atom site, representing the '
             'fraction of the site occupied by the atom type.',
+            validator=RangeValidator(
+                default=1.0,
+            ),
+            value=occupancy,
+            cif_handler=CifHandler(
+                names=[
+                    '_atom_site.occupancy',
+                ]
+            ),
         )
-        self.b_iso = Parameter(
-            value=b_iso,
+        self._b_iso: Parameter = Parameter(
             name='b_iso',
-            units='Å²',
-            default_value=0.0,
-            physical_min=0.0,
-            full_cif_names=['_atom_site.B_iso_or_equiv'],
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=b_iso,
+            units='Å²',
+            cif_handler=CifHandler(
+                names=[
+                    '_atom_site.B_iso_or_equiv',
+                ]
+            ),
         )
-        # TODO: how to merge _category_entry_attr_name and name into
-        #  one? Think of 'name' vs 'label' vs 'unique_name' vs 'id'
-        self._category_entry_attr_name = self.label.name
-        self.name = self.label.value
+        self._adp_type: DescriptorStr = DescriptorStr(
+            name='adp_type',
+            description='Type of atomic displacement parameter (ADP) '
+            'used (e.g., Biso, Uiso, Uani, Bani).',
+            validator=ListValidator(
+                allowed_values=['Biso'],
+                default='Biso',
+            ),
+            value=adp_type,
+            cif_handler=CifHandler(
+                names=[
+                    '_atom_site.adp_type',
+                ]
+            ),
+        )
+
+        self._identity.category_code = 'atom_site'
+        self._identity.category_entry_name = lambda: self.label.value
+
+    @property
+    def label(self):
+        return self._label
+
+    @label.setter
+    def label(self, value):
+        self._label.value = value
+
+    @property
+    def type_symbol(self):
+        return self._type_symbol
+
+    @type_symbol.setter
+    def type_symbol(self, value):
+        self._type_symbol.value = value
+
+    @property
+    def adp_type(self):
+        return self._adp_type
+
+    @adp_type.setter
+    def adp_type(self, value):
+        self._adp_type.value = value
+
+    @property
+    def wyckoff_letter(self):
+        return self._wyckoff_letter
+
+    @wyckoff_letter.setter
+    def wyckoff_letter(self, value):
+        self._wyckoff_letter.value = value
+
+    @property
+    def fract_x(self):
+        return self._fract_x
+
+    @fract_x.setter
+    def fract_x(self, value):
+        self._fract_x.value = value
+
+    @property
+    def fract_y(self):
+        return self._fract_y
+
+    @fract_y.setter
+    def fract_y(self, value):
+        self._fract_y.value = value
+
+    @property
+    def fract_z(self):
+        return self._fract_z
+
+    @fract_z.setter
+    def fract_z(self, value):
+        self._fract_z.value = value
+
+    @property
+    def occupancy(self):
+        return self._occupancy
+
+    @occupancy.setter
+    def occupancy(self, value):
+        self._occupancy.value = value
+
+    @property
+    def b_iso(self):
+        return self._b_iso
+
+    @b_iso.setter
+    def b_iso(self, value):
+        self._b_iso.value = value
 
 
-class AtomSites(CategoryCollection[AtomSite]):
+class AtomSites(CategoryCollection):
     """Collection of AtomSite instances."""
 
     def __init__(self):

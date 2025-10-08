@@ -13,7 +13,7 @@ from easydiffraction.analysis.collections.constraints import Constraints
 from easydiffraction.analysis.collections.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.minimization import DiffractionMinimizer
 from easydiffraction.analysis.minimizers.minimizer_factory import MinimizerFactory
-from easydiffraction.core.parameters import Descriptor
+from easydiffraction.core.parameters import DescriptorFloat
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.singletons import ConstraintsHandler
 from easydiffraction.experiments.experiments import Experiments
@@ -38,12 +38,12 @@ class Analysis:
 
     def _get_params_as_dataframe(
         self,
-        params: List[Union[Descriptor, Parameter]],
+        params: List[Union[DescriptorFloat, Parameter]],
     ) -> pd.DataFrame:
         """Convert a list of parameters to a DataFrame.
 
         Args:
-            params: List of Descriptor or Parameter objects.
+            params: List of DescriptorFloat or Parameter objects.
 
         Returns:
             A pandas DataFrame containing parameter information.
@@ -51,11 +51,11 @@ class Analysis:
         rows = []
         for param in params:
             common_attrs = {}
-            if isinstance(param, (Descriptor, Parameter)):
+            if isinstance(param, (DescriptorFloat, Parameter)):
                 common_attrs = {
-                    'datablock': param.datablock_name,
-                    'category': param.category_key,
-                    'entry': param.category_entry_name,
+                    'datablock': param._identity.datablock_entry_name,
+                    'category': param._identity.category_code,
+                    'entry': param._identity.category_entry_name,
                     'parameter': param.name,
                     'value': param.value,
                     'units': param.units,
@@ -258,21 +258,22 @@ class Analysis:
         project_varname = self.project._varname
         for datablock_type, params in all_params.items():
             for param in params:
-                if isinstance(param, (Descriptor, Parameter)):
-                    datablock_name = param.datablock_name
-                    category_key = param.category_key
-                    category_entry_name = param.category_entry_name
+                if isinstance(param, (DescriptorFloat, Parameter)):
+                    datablock_entry_name = param._identity.datablock_entry_name
+                    category_code = param._identity.category_code
+                    category_entry_name = param._identity.category_entry_name
                     param_key = param.name
                     code_variable = (
-                        f"{project_varname}.{datablock_type}['{datablock_name}'].{category_key}"
+                        f'{project_varname}.{datablock_type}'
+                        f"['{datablock_entry_name}'].{category_code}"
                     )
                     if category_entry_name:
                         code_variable += f"['{category_entry_name}']"
                     code_variable += f'.{param_key}'
                     cif_uid = param.cif_uid
                     columns_data.append([
-                        datablock_name,
-                        category_key,
+                        datablock_entry_name,
+                        category_code,
                         category_entry_name,
                         param_key,
                         code_variable,

@@ -131,6 +131,7 @@ class Logger:
             show_path=True,
             tracebacks_show_locals=False,
             tracebacks_suppress=['easydiffraction'],
+            tracebacks_max_frames=10,  # <-- LIMIT TO LAST 5 FRAMES
             console=console,
         )
         handler.setFormatter(logging.Formatter('%(message)s'))

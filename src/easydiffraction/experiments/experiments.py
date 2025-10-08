@@ -8,12 +8,11 @@ from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
 from easydiffraction.experiments.components.experiment_type import SampleFormEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
-from easydiffraction.experiments.experiment import BaseExperiment
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.utils.formatting import paragraph
 
 
-class Experiments(DatablockCollection[Experiment]):
+class Experiments(DatablockCollection):
     """Collection manager for multiple Experiment instances."""
 
     def __init__(self) -> None:
@@ -23,10 +22,10 @@ class Experiments(DatablockCollection[Experiment]):
     # Add / Remove methods
     # --------------------
 
-    @typechecked
-    def add(self, experiment: BaseExperiment):
-        """Add a pre-built experiment instance."""
-        self[experiment.name] = experiment
+    # @typechecked
+    # def add(self, experiment: BaseExperiment):
+    #    """Add a pre-built experiment instance."""
+    #    self[experiment.name] = experiment
 
     @typechecked
     def add_from_cif_path(self, cif_path: str):
@@ -101,7 +100,7 @@ class Experiments(DatablockCollection[Experiment]):
     # CIF methods
     # -----------
 
-    @property
-    def as_cif(self) -> str:
-        # TODO: It is different from SampleModel.as_cif. Check it.
-        return '\n\n'.join([exp.as_cif() for exp in self.values()])
+    # @property
+    # def as_cif(self) -> str:
+    #    # TODO: It is different from SampleModel.as_cif. Check it.
+    #    return '\n\n'.join([exp.as_cif() for exp in self.values()])

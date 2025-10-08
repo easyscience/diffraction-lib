@@ -4,41 +4,71 @@
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.parameters import Descriptor
+from easydiffraction.core.guards import RegexValidator
+from easydiffraction.core.parameters import DescriptorStr
+from easydiffraction.crystallography.cif import CifHandler
 
 
 class Alias(CategoryItem):
-    _class_public_attrs = {
-        'name',
-        'label',
-        'param_uid',
-    }
-
-    @property
-    def category_key(self) -> str:
-        return 'alias'
-
-    def __init__(self, label: str, param_uid: str) -> None:
+    def __init__(
+        self,
+        *,
+        label: str,
+        param_uid: str,
+    ) -> None:
         super().__init__()
 
-        self.label: Descriptor = Descriptor(
-            value=label,
+        self._label: DescriptorStr = DescriptorStr(
             name='label',
-            value_type=str,
-            full_cif_names=['_alias.label'],
-            default_value=label,
+            description='...',
+            validator=RegexValidator(
+                pattern=r'^[A-Za-z_][A-Za-z0-9_]*$',
+                default='...',
+            ),
+            value=label,
+            cif_handler=CifHandler(
+                names=[
+                    '_alias.label',
+                ]
+            ),
         )
-        self.param_uid: Descriptor = Descriptor(
-            value=param_uid,
+        self._param_uid: DescriptorStr = DescriptorStr(
             name='param_uid',
-            value_type=str,
-            full_cif_names=['_alias.param_uid'],
-            default_value=param_uid,
+            description='...',
+            validator=RegexValidator(
+                pattern=r'^[A-Za-z_][A-Za-z0-9_]*$',
+                default='...',
+            ),
+            value=param_uid,
+            cif_handler=CifHandler(
+                names=[
+                    '_alias.param_uid',
+                ]
+            ),
         )
-        self._category_entry_attr_name = self.label.name
-        self.name = self.label.value
+
+        # self._category_entry_attr_name = self.label.name
+        # self.name = self.label.value
+        self._identity.category_code = 'alias'
+        self._identity.category_entry_name = lambda: self.label.value
+
+    @property
+    def label(self):
+        return self._label
+
+    @label.setter
+    def label(self, value):
+        self._label.value = value
+
+    @property
+    def param_uid(self):
+        return self._param_uid
+
+    @param_uid.setter
+    def param_uid(self, value):
+        self._param_uid.value = value
 
 
-class Aliases(CategoryCollection[Alias]):
+class Aliases(CategoryCollection):
     def __init__(self):
         super().__init__(item_type=Alias)

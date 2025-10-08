@@ -5,51 +5,72 @@ from typing import List
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.parameters import Descriptor
-from easydiffraction.core.parameters import Parameter
+from easydiffraction.core.guards import RangeValidator
+from easydiffraction.core.parameters import DescriptorFloat
+from easydiffraction.crystallography.cif import CifHandler
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_table
 
 
 class ExcludedRegion(CategoryItem):
-    _class_public_attrs = {
-        'name',
-        'start',
-        'end',
-    }
-
-    @property
-    def category_key(self) -> str:
-        return 'excluded_regions'
-
     def __init__(
         self,
+        *,
         start: float,
         end: float,
     ):
         super().__init__()
 
-        self.start = Descriptor(
-            value=start,
+        self._start = DescriptorFloat(
             name='start',
-            value_type=float,
-            full_cif_names=['_excluded_region.start'],
-            default_value=start,
             description='Start of the excluded region.',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=start,
+            cif_handler=CifHandler(
+                names=[
+                    '_excluded_region.start',
+                ]
+            ),
         )
-        self.end = Parameter(
-            value=end,
+        self._end = DescriptorFloat(
             name='end',
-            full_cif_names=['_excluded_region.end'],
-            default_value=end,
             description='End of the excluded region.',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=end,
+            cif_handler=CifHandler(
+                names=[
+                    '_excluded_region.end',
+                ]
+            ),
         )
         # self._category_entry_attr_name = f'{start}-{end}'
-        self._category_entry_attr_name = self.start.name
-        self.name = self.start.value
+        # self._category_entry_attr_name = self.start.name
+        # self.name = self.start.value
+        self._identity.category_code = 'excluded_regions'
+        self._identity.category_entry_name = lambda: self.start.value
+
+    @property
+    def start(self) -> DescriptorFloat:
+        return self._start
+
+    @start.setter
+    def start(self, value: float):
+        self._start.value = value
+
+    @property
+    def end(self) -> DescriptorFloat:
+        return self._end
+
+    @end.setter
+    def end(self, value: float):
+        self._end.value = value
 
 
-class ExcludedRegions(CategoryCollection[ExcludedRegion]):
+class ExcludedRegions(CategoryCollection):
     """Collection of ExcludedRegion instances."""
 
     def __init__(self):

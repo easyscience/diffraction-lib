@@ -28,6 +28,9 @@ import easydiffraction as ed
 # %%
 project = ed.Project()
 
+project.plotter.x_min = 38
+project.plotter.x_max = 41
+
 # %% [markdown]
 # ## Step 2: Define Sample Model
 
@@ -45,12 +48,14 @@ sample_model.space_group.it_coordinate_system_code = '1'
 sample_model.cell.length_a = 3.88
 
 # %%
-sample_model.atom_sites.add_from_args('La', 'La', 0, 0, 0, b_iso=0.5, occupancy=0.5)
-sample_model.atom_sites.add_from_args('Ba', 'Ba', 0, 0, 0, b_iso=0.5, occupancy=0.5)
-sample_model.atom_sites.add_from_args('Co', 'Co', 0.5, 0.5, 0.5, b_iso=0.5)
-sample_model.atom_sites.add_from_args('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
-
-sample_model.show_as_cif()  # TODO
+sample_model.atom_sites.add_from_args(
+    label='La', type_symbol='La', fract_x=0, fract_y=0, fract_z=0, b_iso=0.5, occupancy=0.5, wyckoff_letter='a'
+)
+sample_model.atom_sites.add_from_args(
+    label='Ba', type_symbol='Ba', fract_x=0, fract_y=0, fract_z=0, b_iso=0.5, occupancy=0.5, wyckoff_letter='a'
+)
+sample_model.atom_sites.add_from_args(label='Co', type_symbol='Co', fract_x=0.5, fract_y=0.5, fract_z=0.5, b_iso=0.5, wyckoff_letter='b')
+sample_model.atom_sites.add_from_args(label='O', type_symbol='O', fract_x=0, fract_y=0.5, fract_z=0.5, b_iso=0.5, wyckoff_letter='c')
 
 # %% [markdown]
 # ## Step 3: Define Experiment
@@ -85,16 +90,13 @@ experiment.background.add_from_args(x=10, y=170)
 experiment.background.add_from_args(x=30, y=170)
 experiment.background.add_from_args(x=50, y=170)
 experiment.background.add_from_args(x=110, y=170)
-experiment.background.add_from_args(x=165, y=170)
 
 # %%
-experiment.excluded_regions.add_from_args(start=0, end=15)
-experiment.excluded_regions.add_from_args(start=165, end=180)
+experiment.excluded_regions.add_from_args(start=0, end=5)
+experiment.excluded_regions.add_from_args(start=130, end=180)
 
 # %%
 experiment.linked_phases.add_from_args(id='lbco', scale=10.0)
-
-experiment.show_as_cif()  # TODO
 
 # %% [markdown]
 # ## Step 4: Perform Analysis
@@ -115,17 +117,21 @@ experiment.peak.broad_gauss_v.free = True
 experiment.peak.broad_gauss_w.free = True
 experiment.peak.broad_lorentz_y.free = True
 
-experiment.background[10].y.free = True
-experiment.background[30].y.free = True
-experiment.background[50].y.free = True
-experiment.background[110].y.free = True
-experiment.background[165].y.free = True
+experiment.background['10'].y.free = True
+experiment.background['30'].y.free = True
+experiment.background['50'].y.free = True
+experiment.background['110'].y.free = True
 
 experiment.linked_phases['lbco'].scale.free = True
+
+
+#sample_model.show_as_cif()
+#experiment.show_as_cif()
+#exit()
+
 
 # %%
 project.analysis.fit()
 
 # %%
-# project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
-project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)

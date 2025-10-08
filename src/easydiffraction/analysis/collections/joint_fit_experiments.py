@@ -4,42 +4,73 @@
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.parameters import Descriptor
+from easydiffraction.core.guards import RangeValidator
+from easydiffraction.core.guards import RegexValidator
+from easydiffraction.core.parameters import DescriptorFloat
+from easydiffraction.core.parameters import DescriptorStr
+from easydiffraction.crystallography.cif import CifHandler
 
 
 class JointFitExperiment(CategoryItem):
-    _class_public_attrs = {
-        'name',
-        'id',
-        'weight',
-    }
-
-    @property
-    def category_key(self) -> str:
-        return 'joint_fit_experiment'
-
-    def __init__(self, id: str, weight: float) -> None:
+    def __init__(
+        self,
+        *,
+        id: str,
+        weight: float,
+    ) -> None:
         super().__init__()
 
-        self.id: Descriptor = Descriptor(
-            value=id,  # TODO: need new name instead of id
-            name='id',
-            value_type=str,
-            full_cif_names=['_joint_fit_experiment.id'],
-            default_value=id,
+        self._id: DescriptorStr = DescriptorStr(
+            name='id',  # TODO: need new name instead of id
+            description='...',
+            validator=RegexValidator(
+                pattern=r'^[A-Za-z_][A-Za-z0-9_]*$',
+                default='...',
+            ),
+            value=id,
+            cif_handler=CifHandler(
+                names=[
+                    '_joint_fit_experiment.id',
+                ]
+            ),
         )
-        self.weight: Descriptor = Descriptor(
-            value=weight,
+        self._weight: DescriptorFloat = DescriptorFloat(
             name='weight',
-            value_type=float,
-            full_cif_names=['_joint_fit_experiment.weight'],
-            default_value=weight,
+            description='...',
+            validator=RangeValidator(
+                default=0.0,
+            ),
+            value=weight,
+            cif_handler=CifHandler(
+                names=[
+                    '_joint_fit_experiment.weight',
+                ]
+            ),
         )
-        self._category_entry_attr_name = self.id.name
-        self.name = self.id.value
+
+        # self._category_entry_attr_name = self.id.name
+        # self.name = self.id.value
+        self._identity.category_code = 'joint_fit_experiment'
+        self._identity.category_entry_name = lambda: self.id.value
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id.value = value
+
+    @property
+    def weight(self):
+        return self._label
+
+    @weight.setter
+    def weight(self, value):
+        self._weight.value = value
 
 
-class JointFitExperiments(CategoryCollection[JointFitExperiment]):
+class JointFitExperiments(CategoryCollection):
     """Collection manager for experiments that are fitted together in a
     `joint` fit.
     """
