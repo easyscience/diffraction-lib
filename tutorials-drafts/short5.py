@@ -468,7 +468,7 @@ class GenericDescriptorBase(ValidatedBase):
         return self._uid
 
     @property
-    def full_name(self):
+    def unique_name(self):
         parts = [self._identity.datablock_entry_name,
                  self._identity.category_code,
                  self._identity.category_entry_name,
@@ -598,7 +598,7 @@ class GenericParameter(GenericDescriptorFloat):
     @property
     def _minimizer_uid(self):
         """Return variant of uid safe for minimizer engines."""
-        # return self.full_name.replace('.', '__')
+        # return self.unique_name.replace('.', '__')
         return self.uid
 
 
@@ -732,7 +732,7 @@ class CategoryItem(GuardedBase):
         return f'<{name} ({params})>'
 
     @property
-    def full_name(self):
+    def unique_name(self):
         parts = [self._identity.datablock_entry_name,
                  self._identity.category_code,
                  self._identity.category_entry_name,]
@@ -774,7 +774,7 @@ class CategoryCollection(CollectionBase):
         return f'<{name} collection ({size} items)>'
 
     @property
-    def full_name(self):
+    def unique_name(self):
         return None
 
     @property
@@ -836,7 +836,7 @@ class DatablockItem(GuardedBase):
         return f'<{name} ({items})>'
 
     @property
-    def full_name(self):
+    def unique_name(self):
         return self._identity.datablock_entry_name
 
     @property
@@ -872,7 +872,7 @@ class DatablockCollection(CollectionBase):
         return f'<{name} collection ({size} items)>'
 
     @property
-    def full_name(self):
+    def unique_name(self):
         return None
 
     @property
@@ -1299,7 +1299,7 @@ if __name__ == '__main__':
     c.length_b.description = 'desc'  # type: ignore
     assert c.length_b.description == 'Length of the b axis of the unit cell.'  # type: ignore
     assert c.length_b._public_readonly_attrs() == {'as_cif', 'constrained', 'description',
-                                                   'full_name', 'name', 'parameters',
+                                                   'unique_name', 'name', 'parameters',
                                                    'start_value', 'uid', 'units'}
     assert c.length_b._public_writable_attrs() == {'fit_max', 'fit_min', 'free', 'uncertainty',
                                                    'value'}
@@ -1478,39 +1478,39 @@ La Tb 0.0 0.0 0.0 a 1.0 0.0 Biso"""
     log.info(f'-------- Full Names --------')
 
     cell = Cell()
-    assert cell.full_name == 'cell'
+    assert cell.unique_name == 'cell'
 
-    assert cell.length_b.full_name == 'cell.length_b'
+    assert cell.length_b.unique_name == 'cell.length_b'
 
     site = AtomSite(label='Tb', type_symbol='Tb')
-    assert site.full_name == 'atom_site.Tb'
+    assert site.unique_name == 'atom_site.Tb'
 
     sites = AtomSites() #
-    assert sites.full_name is None
+    assert sites.unique_name is None
 
     sites.add(site)
-    assert site.full_name == 'atom_site.Tb'
-    assert sites['Tb'].full_name == 'atom_site.Tb'
+    assert site.unique_name == 'atom_site.Tb'
+    assert sites['Tb'].unique_name == 'atom_site.Tb'
 
     model = SampleModel(name='lbco') #
-    assert model.full_name == 'lbco'
+    assert model.unique_name == 'lbco'
 
     model.cell = cell
-    assert cell.full_name == 'lbco.cell'
-    assert cell.length_b.full_name == 'lbco.cell.length_b'
-    assert model.cell.full_name == 'lbco.cell'
-    assert model.cell.length_b.full_name == 'lbco.cell.length_b'
+    assert cell.unique_name == 'lbco.cell'
+    assert cell.length_b.unique_name == 'lbco.cell.length_b'
+    assert model.cell.unique_name == 'lbco.cell'
+    assert model.cell.length_b.unique_name == 'lbco.cell.length_b'
 
     model.atom_sites = sites
-    assert sites.full_name is None
-    assert model.atom_sites.full_name is None
-    assert model.atom_sites['Tb'].full_name == 'lbco.atom_site.Tb'
+    assert sites.unique_name is None
+    assert model.atom_sites.unique_name is None
+    assert model.atom_sites['Tb'].unique_name == 'lbco.atom_site.Tb'
 
     models = SampleModels() #
-    assert models.full_name is None
+    assert models.unique_name is None
 
     models.add(model)
-    assert models['lbco'].cell.full_name == 'lbco.cell'
-    assert models['lbco'].cell.length_b.full_name == 'lbco.cell.length_b'
-    assert models['lbco'].atom_sites.full_name is None
-    assert models['lbco'].atom_sites['Tb'].full_name == 'lbco.atom_site.Tb'
+    assert models['lbco'].cell.unique_name == 'lbco.cell'
+    assert models['lbco'].cell.length_b.unique_name == 'lbco.cell.length_b'
+    assert models['lbco'].atom_sites.unique_name is None
+    assert models['lbco'].atom_sites['Tb'].unique_name == 'lbco.atom_site.Tb'
