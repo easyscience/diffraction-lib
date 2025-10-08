@@ -9,6 +9,7 @@ import warnings
 from contextlib import suppress
 from enum import Enum
 from enum import IntEnum
+from enum import auto
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -40,9 +41,16 @@ class Logger:
         ERROR = logging.ERROR
         CRITICAL = logging.CRITICAL
 
+    class Reaction(Enum):
+        """Reaction to errors (see :class:`Logger`)."""
+
+        RAISE = auto()
+        WARN = auto()
+
     _logger = logging.getLogger('easydiffraction')
     _configured = False
     _mode: 'Logger.Mode' = Mode.VERBOSE
+    _reaction: 'Logger.Reaction' = Reaction.RAISE  # TODO: not default?
 
     # ---------------- environment detection ----------------
     @staticmethod
@@ -67,6 +75,7 @@ class Logger:
         *,
         mode: 'Logger.Mode' | None = None,
         level: 'Logger.Level' | None = None,
+        reaction: 'Logger.Reaction' | None = None,
         rich_tracebacks: bool | None = None,
     ) -> None:
         """Configure logger.
@@ -81,6 +90,7 @@ class Logger:
         """
         env_mode = os.getenv('ED_LOG_MODE')
         env_level = os.getenv('ED_LOG_LEVEL')
+        env_reaction = os.getenv('ED_LOG_REACTION')
 
         if mode is None and env_mode is not None:
             with suppress(ValueError):
@@ -90,11 +100,18 @@ class Logger:
             with suppress(KeyError):
                 level = cls.Level[env_level.upper()]
 
+        if reaction is None and env_reaction is not None:
+            with suppress(KeyError):
+                reaction = cls.Reaction[env_reaction.upper()]
+
         if mode is None:
             mode = cls.Mode.COMPACT if cls._in_jupyter() else cls.Mode.VERBOSE
         if level is None:
             level = cls.Level.INFO
+        if reaction is None:
+            reaction = cls.Reaction.RAISE
         cls._mode = mode
+        cls._reaction = reaction
 
         if rich_tracebacks is None:
             rich_tracebacks = mode == cls.Mode.VERBOSE
@@ -219,7 +236,10 @@ class Logger:
 
     @classmethod
     def error(cls, message: str, exc_type: type[BaseException] = AttributeError) -> None:
-        cls.handle(message, level=cls.Level.ERROR, exc_type=exc_type)
+        if cls._reaction is cls.Reaction.RAISE:
+            cls.handle(message, level=cls.Level.ERROR, exc_type=exc_type)
+        elif cls._reaction is cls.Reaction.WARN:
+            cls.handle(message, level=cls.Level.WARNING, exc_type=UserWarning)
 
     @classmethod
     def critical(cls, message: str, exc_type: type[BaseException] = RuntimeError) -> None:
