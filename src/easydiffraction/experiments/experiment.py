@@ -175,10 +175,14 @@ class BasePowderExperiment(BaseExperiment):
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self._peak_profile_type: str = PeakProfileTypeEnum.default(
+        # self._peak_profile_type: str = PeakProfileTypeEnum.default(
+        #    self.type.scattering_type.value,
+        #    self.type.beam_mode.value,
+        # ).value
+        self._peak_profile_type: PeakProfileTypeEnum = PeakProfileTypeEnum.default(
             self.type.scattering_type.value,
             self.type.beam_mode.value,
-        ).value
+        )
         self._peak = PeakFactory.create(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
@@ -215,6 +219,7 @@ class BasePowderExperiment(BaseExperiment):
     def peak_profile_type(self):
         return self._peak_profile_type
 
+    # OLD
     @peak_profile_type.setter
     def peak_profile_type(self, new_type: str):
         if (
@@ -240,6 +245,37 @@ class BasePowderExperiment(BaseExperiment):
         self._peak_profile_type = new_type
         print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
         print(new_type)
+
+    # NEW
+    @peak_profile_type.setter
+    def peak_profile_type(self, new_type: str | PeakProfileTypeEnum):
+        if isinstance(new_type, str):
+            try:
+                new_type = PeakProfileTypeEnum(new_type)
+            except ValueError:
+                print(warning(f"Unknown peak profile type '{new_type}'"))
+                return
+
+        supported_types = list(
+            PeakFactory._supported[self.type.scattering_type.value][
+                self.type.beam_mode.value
+            ].keys()
+        )
+
+        if new_type not in supported_types:
+            print(warning(f"Unsupported peak profile '{new_type.value}'"))
+            print(f'Supported peak profiles: {supported_types}')
+            print("For more information, use 'show_supported_peak_profile_types()'")
+            return
+
+        self._peak = PeakFactory.create(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            profile_type=new_type,
+        )
+        self._peak_profile_type = new_type
+        print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
+        print(new_type.value)
 
     def show_supported_peak_profile_types(self):
         columns_headers = ['Peak profile type', 'Description']

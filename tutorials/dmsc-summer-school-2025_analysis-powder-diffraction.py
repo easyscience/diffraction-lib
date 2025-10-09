@@ -830,7 +830,7 @@ project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.get_valu
 # %% tags=["solution", "hide-input"]
 # # Create a reference to the peak profile parameters from the Si
 sim_si_peak = project_1.experiments['sim_si'].peak
-project_2.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+project_2.experiments['sim_lbco'].peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0 = sim_si_peak.broad_gauss_sigma_0.value
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1 = sim_si_peak.broad_gauss_sigma_1.value
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2 = sim_si_peak.broad_gauss_sigma_2.value
