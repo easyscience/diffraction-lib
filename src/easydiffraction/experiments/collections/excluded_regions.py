@@ -101,11 +101,7 @@ class ExcludedRegions(CategoryCollection):
         #  etc. Consider using parameter names as column headers
         columns_headers: List[str] = ['start', 'end']
         columns_alignment = ['left', 'left']
-        columns_data: List[List[float]] = []
-        for region in self._items.values():
-            start = region.start.value
-            end = region.end.value
-            columns_data.append([start, end])
+        columns_data: List[List[float]] = [[r.start.value, r.end.value] for r in self._items]
 
         print(paragraph('Excluded regions'))
         render_table(

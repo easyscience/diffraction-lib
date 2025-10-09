@@ -186,11 +186,7 @@ class LineSegmentBackground(BackgroundBase):
     def show(self) -> None:
         columns_headers: List[str] = ['X', 'Intensity']
         columns_alignment = ['left', 'left']
-        columns_data: List[List[float]] = []
-        for point in self._items.values():
-            x = point.x.value
-            y = point.y.value
-            columns_data.append([x, y])
+        columns_data: List[List[float]] = [[p.x.value, p.y.value] for p in self._items]
 
         print(paragraph('Line-segment background points'))
         render_table(
@@ -220,13 +216,9 @@ class ChebyshevPolynomialBackground(BackgroundBase):
     def show(self) -> None:
         columns_headers: List[str] = ['Order', 'Coefficient']
         columns_alignment = ['left', 'left']
-        columns_data: List[List[Union[int, float]]] = []
-        for term in self._items.values():
-            # order = term.chebyshev_order.value
-            # coef = term.chebyshev_coef.value
-            order = term.order.value
-            coef = term.coef.value
-            columns_data.append([order, coef])
+        columns_data: List[List[Union[int, float]]] = [
+            [t.order.value, t.coef.value] for t in self._items
+        ]
 
         print(paragraph('Chebyshev polynomial background terms'))
         render_table(
