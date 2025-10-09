@@ -117,9 +117,9 @@ class Summary:
 
             print(paragraph('Experiment type'))
             print(
-                f'{expt.type.sample_form.value.value}, '
-                f'{expt.type.radiation_probe.value.value}, '
-                f'{expt.type.beam_mode.value.value}'
+                f'{expt.type.sample_form.value}, '
+                f'{expt.type.radiation_probe.value}, '
+                f'{expt.type.beam_mode.value}'
             )
 
             if 'instrument' in expt._public_attrs():

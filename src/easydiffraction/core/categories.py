@@ -77,6 +77,8 @@ class CategoryCollection(CollectionBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
+        if not self:
+            return ''  # Empty collection
         lines: list[str] = ['']
         # Add header using the first item
         first_item = list(self.values())[0]

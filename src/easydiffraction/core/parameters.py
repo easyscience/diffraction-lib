@@ -232,6 +232,12 @@ class DescriptorStr(GenericDescriptorStr):
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
 
+    # TODO: Find a better place for this. Duplicated in DescriptorFloat
+    #  and Parameter.
+    @property
+    def cif_uid(self) -> str:
+        return self.unique_name
+
 
 class DescriptorFloat(GenericDescriptorFloat):
     def __init__(
@@ -243,6 +249,12 @@ class DescriptorFloat(GenericDescriptorFloat):
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
 
+    # TODO: Find a better place for this. Duplicated in DescriptorStr
+    #  and Parameter.
+    @property
+    def cif_uid(self) -> str:
+        return self.unique_name
+
 
 class Parameter(GenericParameter):
     def __init__(
@@ -253,3 +265,9 @@ class Parameter(GenericParameter):
     ) -> None:
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
+
+    # TODO: Find a better place for this. Duplicated in DescriptorFloat
+    #  and DescriptorStr.
+    @property
+    def cif_uid(self) -> str:
+        return self.unique_name

@@ -389,7 +389,7 @@ class Analysis:
         self.calculator.calculate_pattern(sample_models, experiment)
 
     def show_constraints(self) -> None:
-        constraints_dict = self.constraints._items
+        constraints_dict = dict(self.constraints)
 
         if not self.constraints._items:
             print(warning('No constraints defined.'))

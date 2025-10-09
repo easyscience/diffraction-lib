@@ -54,6 +54,11 @@ class ProjectInfo(GuardedBase):
         self._name = value
 
     @property
+    def unique_name(self) -> str:
+        """Unique name for GuardedBase diagnostics."""
+        return self.name
+
+    @property
     def title(self) -> str:
         """Return the project title."""
         return self._title
@@ -274,7 +279,7 @@ class Project(GuardedBase):
             file_name: str = f'{model.name}.cif'
             file_path = sm_dir / file_name
             with file_path.open('w') as f:
-                f.write(model.as_cif())
+                f.write(model.as_cif)
                 print(f'✅ sample_models/{file_name}')
 
         # Save experiments
@@ -284,7 +289,7 @@ class Project(GuardedBase):
             file_name: str = f'{experiment.name}.cif'
             file_path = expt_dir / file_name
             with file_path.open('w') as f:
-                f.write(experiment.as_cif())
+                f.write(experiment.as_cif)
                 print(f'✅ experiments/{file_name}')
 
         # Save analysis
