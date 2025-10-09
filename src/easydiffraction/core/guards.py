@@ -54,7 +54,7 @@ def checktype(func: Callable[P, R]) -> Callable[P, Optional[R]]:
                 name = f'{unique_name}.{attr_name}'
                 message = (
                     f'Type mismatch for <{name}>. '
-                    f'Provided {new!r} ({new_type}) is not {expected_type}'
+                    f'Provided {new!r} ({new_type}) is not {expected_type}.'
                 )
             else:
                 message = f'Type mismatch in {func.__qualname__}: {err}'
@@ -111,21 +111,27 @@ class RangeValidator(Validator):
             log.debug(message)
             return self.default
 
+        keep_current = current is not None
+        if keep_current:
+            extra_info = f' Keeping current {current!r}.'
+        else:
+            extra_info = f' Using default {self.default!r}.'
+
         if not isinstance(new, (float, int, np.floating, np.integer)):
             message = (
                 f'Type mismatch for <{name}>. '
-                f'Provided {new!r} ({type(new).__name__}) is not float.'
+                f'Provided {new!r} ({type(new).__name__}) is not float.{extra_info}'
             )
             log.error(message, exc_type=TypeError)
-            return current if current is not None else self.default
+            return current if keep_current else self.default
 
         if (self.ge is not None and new < self.ge) or (self.le is not None and new > self.le):
             message = (
                 f'Value mismatch for <{name}>. '
-                f'Provided {new} is outside of [{self.ge}, {self.le}].'
+                f'Provided {new} is outside of [{self.ge}, {self.le}].{extra_info}'
             )
             log.error(message, exc_type=ValueError)
-            return current if current is not None else self.default
+            return current if keep_current else self.default
 
         log.debug(f'Setting <{name}> to validated {new!r}.')
         return new
@@ -171,10 +177,16 @@ class ListValidator(Validator):
             log.debug(message)
             return self.default
 
+        keep_current = current is not None
+        if keep_current:
+            extra_info = f' Keeping current {current!r}.'
+        else:
+            extra_info = f' Using default {self.default!r}.'
+
         if new not in self.allowed_values:
-            message = f'Value mismatch for <{name}>. Provided {new!r} is unknown.'
+            message = f'Value mismatch for <{name}>. Provided {new!r} is unknown.{extra_info}'
             log.error(message, exc_type=ValueError)
-            return current if current is not None else self.default
+            return current if keep_current else self.default
 
         log.debug(f'Setting <{name}> to validated {new!r}.')
         return new
@@ -203,21 +215,27 @@ class RegexValidator(Validator):
             log.debug(message)
             return self.default
 
+        keep_current = current is not None
+        if keep_current:
+            extra_info = f' Keeping current {current!r}.'
+        else:
+            extra_info = f' Using default {self.default!r}.'
+
         if not isinstance(new, str):
             message = (
                 f'Type mismatch for <{name}>. '
-                f'Provided {new!r} ({type(new).__name__}) is not string.'
+                f'Provided {new!r} ({type(new).__name__}) is not string.{extra_info}'
             )
             log.error(message, exc_type=TypeError)
-            return current if current is not None else self.default
+            return current if keep_current else self.default
 
         if not self._regex.match(new):
             message = (
                 f'Value mismatch for <{name}>. '
-                f"Provided {new!r} does not match pattern '{self.pattern}'."
+                f"Provided {new!r} does not match pattern '{self.pattern}'.{extra_info}"
             )
             log.error(message, exc_type=ValueError)
-            return current if current is not None else self.default
+            return current if keep_current else self.default
 
         log.debug(f'Setting <{name}> to validated {new!r}.')
         return new
