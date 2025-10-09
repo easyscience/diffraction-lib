@@ -16,11 +16,11 @@ PYTHONIOENCODING = "utf-8"
 
 # Unix/macOS
 [target.unix.activation.env]
-PYTHONPATH = "src${PYTHONPATH:+:${PYTHONPATH}}" # removes ":" if needed
+PYTHONPATH = "${PIXI_PROJECT_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 
 # Windows
 [target.win.activation.env]
-PYTHONPATH = "src;%PYTHONPATH%"
+PYTHONPATH = "${PIXI_PROJECT_ROOT}/src;%PYTHONPATH%"
 
 ###########
 # WORKSPACE

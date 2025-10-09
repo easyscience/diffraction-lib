@@ -105,7 +105,8 @@ class Logger:
                 reaction = cls.Reaction[env_reaction.upper()]
 
         if mode is None:
-            mode = cls.Mode.COMPACT if cls._in_jupyter() else cls.Mode.VERBOSE
+            # Default to VERBOSE even in Jupyter unless explicitly set
+            mode = cls.Mode.VERBOSE
         if level is None:
             level = cls.Level.INFO
         if reaction is None:
@@ -123,15 +124,36 @@ class Logger:
 
         from rich.console import Console
 
-        console = Console(width=120)
+        # Enable rich tracebacks inside Jupyter environments
+        if cls._in_jupyter():
+            from rich import traceback
+
+            traceback.install(
+                show_locals=False,
+                suppress=['easydiffraction'],
+                # max_frames=10 if mode == cls.Mode.VERBOSE else 1,
+                # word_wrap=False,
+                # extra_lines=0,  # no extra context lines
+                # locals_max_length=0,  # no local vars shown
+                # locals_max_string=0,  # no local string previews
+            )
+        console = Console(
+            width=120,
+            # color_system="truecolor",
+            force_jupyter=False,
+            # force_terminal=False,
+            # force_interactive=True,
+            # legacy_windows=False,
+            # soft_wrap=True,
+        )
         handler = RichHandler(
             rich_tracebacks=rich_tracebacks,
             markup=True,
-            show_time=True,
-            show_path=True,
+            show_time=False,
+            show_path=False,
             tracebacks_show_locals=False,
             tracebacks_suppress=['easydiffraction'],
-            tracebacks_max_frames=10,  # <-- LIMIT TO LAST 5 FRAMES
+            tracebacks_max_frames=10,
             console=console,
         )
         handler.setFormatter(logging.Formatter('%(message)s'))
@@ -162,6 +184,8 @@ class Logger:
 
             sys.excepthook = _aligned_excepthook  # type: ignore[assignment]
         elif mode == cls.Mode.COMPACT:
+            import sys
+
             if not hasattr(cls, '_orig_excepthook'):
                 cls._orig_excepthook = sys.excepthook  # type: ignore[attr-defined]
 
@@ -170,13 +194,43 @@ class Logger:
                 exc: BaseException,
                 _tb: TracebackType | None,
             ) -> None:
+                # Use Rich logger to keep formatting in terminal
                 cls._logger.error(str(exc))
                 raise SystemExit(1)
 
             sys.excepthook = _compact_excepthook  # type: ignore[assignment]
+
+            # Disable Jupyter/IPython tracebacks properly
+            cls._install_jupyter_traceback_suppressor()
         else:
             if hasattr(cls, '_orig_excepthook'):
                 sys.excepthook = cls._orig_excepthook  # type: ignore[attr-defined]
+
+    @classmethod
+    def _install_jupyter_traceback_suppressor(cls) -> None:
+        """Install traceback suppressor in Jupyter, safely and lint-
+        clean.
+        """
+        try:
+            from IPython import get_ipython
+
+            ip = get_ipython()
+            if ip is not None:
+
+                def _suppress_jupyter_traceback(
+                    _shell,
+                    _etype,
+                    _evalue,
+                    _tb,
+                    _tb_offset=None,
+                ):
+                    cls._logger.error(str(_evalue))
+                    return None
+
+                ip.set_custom_exc((BaseException,), _suppress_jupyter_traceback)
+        except Exception as err:
+            msg = f'Failed to install Jupyter traceback suppressor: {err!r}'
+            cls._logger.debug(msg)
 
     # ---------------- helpers ----------------
     @classmethod

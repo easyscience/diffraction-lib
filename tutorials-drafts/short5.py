@@ -78,7 +78,8 @@ if __name__ == '__main__':
     assert getattr(c.length_b, 'qwe', None) is None
     c.length_b.description = 'desc'  # type: ignore
     assert c.length_b.description == 'Length of the b axis of the unit cell.'  # type: ignore
-    assert c.length_b._public_readonly_attrs() == {'as_cif', 'constrained', 'description',
+    assert c.length_b._public_readonly_attrs() == {'as_cif', 'cif_uid', 'constrained',
+                                                   'description',
                                                    'unique_name', 'name', 'parameters',
                                                    'uid', 'units'}
     assert c.length_b._public_writable_attrs() == {'fit_max', 'fit_min', 'free', 'uncertainty',
