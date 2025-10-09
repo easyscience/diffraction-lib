@@ -37,9 +37,9 @@ class ProjectInfo(GuardedBase):
     ) -> None:
         super().__init__()
 
-        self._name: name
-        self._title: title
-        self._description: description
+        self._name = name
+        self._title = title
+        self._description = description
         self._path: pathlib.Path = pathlib.Path.cwd()
         self._created: datetime.datetime = datetime.datetime.now()
         self._last_modified: datetime.datetime = datetime.datetime.now()

@@ -61,8 +61,8 @@ class Summary:
             print(paragraph('Cell parameters'))
             columns_alignment: List[str] = ['left', 'right']
             cell_data = [
-                [k.replace('length_', '').replace('angle_', ''), f'{v:.5f}']
-                for k, v in model.cell.as_dict.items()
+                [p.name.replace('length_', '').replace('angle_', ''), f'{p.value:.5f}']
+                for p in model.cell.parameters
             ]
             render_table(
                 columns_alignment=columns_alignment,
@@ -71,13 +71,13 @@ class Summary:
 
             print(paragraph('Atom sites'))
             columns_headers = [
-                'Label',
-                'Type',
-                'fract_x',
-                'fract_y',
-                'fract_z',
-                'Occupancy',
-                'B_iso',
+                'label',
+                'type',
+                'x',
+                'y',
+                'z',
+                'occ',
+                'Biso',
             ]
             columns_alignment = [
                 'left',
@@ -117,9 +117,9 @@ class Summary:
 
             print(paragraph('Experiment type'))
             print(
-                f'{expt.type.sample_form.value}, '
-                f'{expt.type.radiation_probe.value}, '
-                f'{expt.type.beam_mode.value}'
+                f'{expt.type.sample_form.value.value}, '
+                f'{expt.type.radiation_probe.value.value}, '
+                f'{expt.type.beam_mode.value.value}'
             )
 
             if 'instrument' in expt._public_attrs():
@@ -135,7 +135,7 @@ class Summary:
                 print(expt.peak_profile_type)
 
             if 'peak' in expt._public_attrs():
-                if 'broad_gauss_u' in expt.peak:
+                if 'broad_gauss_u' in expt.peak._public_attrs():
                     print(paragraph('Peak broadening (Gaussian)'))
                     columns_alignment = ['left', 'right']
                     columns_data = [
@@ -147,7 +147,7 @@ class Summary:
                         columns_alignment=columns_alignment,
                         columns_data=columns_data,
                     )
-                if 'broad_lorentz_x' in expt.peak:
+                if 'broad_lorentz_x' in expt.peak._public_attrs():
                     print(paragraph('Peak broadening (Lorentzian)'))
                     columns_alignment = ['left', 'right']
                     columns_data = [
