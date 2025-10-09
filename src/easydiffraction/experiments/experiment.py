@@ -160,13 +160,6 @@ class BaseExperiment(DatablockItem):
 class BasePowderExperiment(BaseExperiment):
     """Base class for all powder experiments."""
 
-    # _public_attrs() = {
-    #    'peak',
-    #    'peak_profile_type',
-    #    'linked_phases',
-    #    'excluded_regions',
-    # }
-
     def __init__(
         self,
         *,
@@ -246,7 +239,7 @@ class BasePowderExperiment(BaseExperiment):
         print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
         print(new_type)
 
-    # NEW
+    # TODO: Compare with above and decide which one to keep
     @peak_profile_type.setter
     def peak_profile_type(self, new_type: str | PeakProfileTypeEnum):
         if isinstance(new_type, str):
