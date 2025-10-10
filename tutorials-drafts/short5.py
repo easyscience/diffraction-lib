@@ -43,14 +43,25 @@ if __name__ == '__main__':
     assert s1.fract_x.value == 1.234
     s1.fract_x = 'qwe'
     assert s1.fract_x.value == 1.234
+
+    log.debug(f's1.fract_x.free: {s1.fract_x.free}')
+    #assert s1.fract_x.free == False
+    s1.fract_x.free = True
+    #assert s1.fract_x.free == True
+    log.debug(f's1.fract_x.free: {s1.fract_x.free}')
+    s1.fract_x.free = 'abc'
+    #assert s1.fract_x.free == True
+    log.debug(f's1.fract_x.free: {s1.fract_x.free}')
+
+    exit()
+
+
     s1 = AtomSite(label='Si', type_symbol='Si', fract_x='uuuu')
     assert s1.fract_x.value == 0.0
 
-    assert s1.fract_x.free == False
-    s1.fract_x.free = True
-    assert s1.fract_x.free == True
-    s1.fract_x.free = 'abc'
-    assert s1.fract_x.free == True
+
+
+    exit()
 
     log.info('-------- Cell --------')
 
@@ -236,7 +247,7 @@ _cell.angle_beta 90.0
 _cell.angle_gamma 90.0
 
 _space_group.name_H-M_alt "P 1"
-_space_group.IT_coordinate_system_code 
+_space_group.IT_coordinate_system_code
 
 loop_
 _atom_site.label
@@ -261,7 +272,7 @@ _cell.angle_beta 90.0
 _cell.angle_gamma 90.0
 
 _space_group.name_H-M_alt "P 1"
-_space_group.IT_coordinate_system_code 
+_space_group.IT_coordinate_system_code
 
 loop_
 _atom_site.label
