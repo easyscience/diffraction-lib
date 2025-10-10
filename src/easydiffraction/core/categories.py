@@ -3,11 +3,10 @@
 
 from __future__ import annotations
 
-from typeguard import typechecked
-
 from easydiffraction.core.collections import CollectionBase
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import GenericDescriptorBase
+from easydiffraction.core.validation import checktype
 
 
 class CategoryItem(GuardedBase):
@@ -22,20 +21,15 @@ class CategoryItem(GuardedBase):
     @property
     def unique_name(self):
         parts = [
-            self._identity.datablock_entry_name,
-            self._identity.category_code,
-            self._identity.category_entry_name,
+            self.identity.datablock_entry_name,
+            self.identity.category_code,
+            self.identity.category_entry_name,
         ]
-        return '.'.join(p for p in parts if p is not None)
+        return '.'.join(filter(None, parts))
 
     @property
     def parameters(self):
-        # Only direct descriptor/parameter attributes (not recursive)
-        params = []
-        for v in self.__dict__.values():
-            if isinstance(v, GenericDescriptorBase):
-                params.append(v)
-        return params
+        return [v for v in vars(self).values() if isinstance(v, GenericDescriptorBase)]
 
     @property
     def as_cif(self) -> str:
@@ -97,12 +91,12 @@ class CategoryCollection(CollectionBase):
             lines.append(line)
         return '\n'.join(lines)
 
-    @typechecked
+    @checktype
     def add(self, item) -> None:
         """Add an item to the collection."""
         self[item._identity.category_entry_name] = item
 
-    @typechecked
+    @checktype
     def add_from_args(self, *args, **kwargs) -> None:
         """Create and add a new child instance from the provided
         arguments.

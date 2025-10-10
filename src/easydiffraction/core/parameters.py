@@ -3,101 +3,104 @@
 
 from __future__ import annotations
 
-import secrets
-import string
-from typing import TYPE_CHECKING
+import uuid
 from typing import Any
-from typing import Optional
+from typing import final
 
 import numpy as np
 
+from easydiffraction.core.diagnostics import Diagnostics
 from easydiffraction.core.guards import GuardedBase
-from easydiffraction.core.guards import Validator
-from easydiffraction.core.guards import checktype
-from easydiffraction.core.singletons import UidMapHandler
-
-if TYPE_CHECKING:
-    from easydiffraction.crystallography.cif import CifHandler
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.validation import TypeValidator
 
 
-class ValidatedBase(GuardedBase):
-    _expected_type: type = Any  # TODO: not in use yet
+class GenericDescriptorBase(GuardedBase):
+    """..."""
+
+    _BOOL_SPEC_TEMPLATE = AttributeSpec(
+        type_=bool,
+        default=False,
+    )
 
     def __init__(
         self,
         *,
+        value_spec: AttributeSpec,
         name: str,
-        validator: Validator,
-        value: Any,
-    ) -> None:
+        description: str = None,
+    ):
         super().__init__()
-        self._name: str = name
-        self._validator: Validator = validator
-        self._value: Any = self._validator.validate(
+
+        expected_type = getattr(self, '_value_type', None)
+
+        if expected_type:
+            user_type = (
+                value_spec._type_validator.expected_type
+                if value_spec._type_validator is not None
+                else None
+            )
+            if user_type and user_type is not expected_type:
+                Diagnostics.type_override_error(
+                    type(self).__name__,
+                    expected_type,
+                    user_type,
+                )
+            else:
+                # Enforce descriptor's own type if not already defined
+                value_spec._type_validator = TypeValidator(expected_type)
+
+        self._value_spec = value_spec
+        self._name = name
+        self._description = description
+        self._uid: str = self._generate_uid()
+        # UidMapHandler.get().add_to_uid_map(self)
+
+        # Initial validated states
+        self._value = self._value_spec.validated(
+            value_spec.value,
             name=self.unique_name,
-            new=value,
-            current=None,
         )
 
-    @property
-    def _log_name(self) -> str:
-        return f'{type(self).__name__} {self.name}'
+    def __str__(self) -> str:
+        return f'<{self.unique_name} = {self.value!r}>'
+
+    @staticmethod
+    def _generate_uid() -> str:
+        # 7b: Use uuid4().hex[:8]
+        return uuid.uuid4().hex[:8]
 
     @property
     def name(self) -> str:
         return self._name
 
     @property
-    def value(self) -> Any:
+    def unique_name(self):
+        # 7c: Use filter(None, [...])
+        parts = [
+            self.identity.datablock_entry_name,
+            self.identity.category_code,
+            self.identity.category_entry_name,
+            self.name,
+        ]
+        return '.'.join(filter(None, parts))
+
+    @property
+    def value(self):
         return self._value
 
     @value.setter
-    @checktype
-    def value(self, new: Any) -> None:
-        self._value = self._validator.validate(
+    def value(self, v):
+        self._value = self._value_spec.validated(
+            v,
             name=self.unique_name,
-            new=new,
             current=self._value,
         )
 
-
-class GenericDescriptorBase(ValidatedBase):
-    def __init__(
-        self,
-        *,
-        description: str = '',
-        **kwargs: Any,
-    ) -> None:
-        super().__init__(**kwargs)
-        self._description: str = description
-        self._uid: str = self._generate_uid()
-        UidMapHandler.get().add_to_uid_map(self)
-
-    def __str__(self) -> str:
-        return f'<{self._log_name} = {self.value!r}>'
-
-    @staticmethod
-    def _generate_uid() -> str:
-        length: int = 16
-        return ''.join(secrets.choice(string.ascii_lowercase) for _ in range(length))
-
     @property
-    def description(self) -> str:
+    def description(self):
         return self._description
-
-    @property
-    def uid(self):
-        return self._uid
-
-    @property
-    def unique_name(self):
-        parts = [
-            self._identity.datablock_entry_name,
-            self._identity.category_code,
-            self._identity.category_entry_name,
-            self.name,
-        ]
-        return '.'.join(p for p in parts if p is not None)
 
     @property
     def parameters(self):
@@ -113,8 +116,9 @@ class GenericDescriptorBase(ValidatedBase):
         return f'{main_key} {value}'
 
 
+@final
 class GenericDescriptorStr(GenericDescriptorBase):
-    _expected_type = str  # TODO: not in use yet
+    _value_type = str
 
     def __init__(
         self,
@@ -123,8 +127,9 @@ class GenericDescriptorStr(GenericDescriptorBase):
         super().__init__(**kwargs)
 
 
+@final
 class GenericDescriptorFloat(GenericDescriptorBase):
-    _expected_type = float  # TODO: not in use yet
+    _value_type = float
 
     def __init__(
         self,
@@ -148,22 +153,30 @@ class GenericDescriptorFloat(GenericDescriptorBase):
 
 
 class GenericParameter(GenericDescriptorFloat):
-    """Numeric parameter with runtime validation and safe assignment."""
+    """..."""
 
     def __init__(
         self,
-        *,
-        free: bool = False,
-        uncertainty: Optional[float] = None,
         **kwargs: Any,
-    ) -> None:
+    ):
         super().__init__(**kwargs)
-        self._free: bool = free
-        self._uncertainty: Optional[float] = uncertainty
-        self._fit_min: float = -np.inf  # TODO: consider renaming
-        self._fit_max: float = np.inf  # TODO: consider renaming
-        self._start_value: float
-        self._constrained: bool = False  # TODO: freeze
+
+        # Initial validated states
+        self._free_spec = self._BOOL_SPEC_TEMPLATE
+        self._free = self._free_spec.default
+        self._uncertainty_spec = AttributeSpec(
+            type_=float,
+            content_validator=RangeValidator(ge=0),
+        )
+        self._uncertainty = self._uncertainty_spec.default
+        self._fit_min_spec = AttributeSpec(type_=float, default=-np.inf)
+        self._fit_min = self._fit_min_spec.default
+        self._fit_max_spec = AttributeSpec(type_=float, default=np.inf)
+        self._fit_max = self._fit_max_spec.default
+        self._start_value_spec = AttributeSpec(type_=float, default=0.0)
+        self._start_value = self._start_value_spec.default
+        self._constrained_spec = self._BOOL_SPEC_TEMPLATE
+        self._constrained = self._constrained_spec.default
 
     def __str__(self) -> str:
         s = GenericDescriptorBase.__str__(self)
@@ -176,50 +189,89 @@ class GenericParameter(GenericDescriptorFloat):
         return f'<{s}>'
 
     @property
-    def free(self) -> bool:
-        return self._free
-
-    @free.setter
-    @checktype
-    def free(self, new: bool) -> None:
-        self._free = new
-
-    @property
-    def uncertainty(self) -> Optional[float]:
-        return self._uncertainty
-
-    @uncertainty.setter
-    @checktype
-    def uncertainty(self, new: Optional[float]) -> None:
-        self._uncertainty = new
-
-    @property
-    def fit_min(self) -> float:
-        return -np.inf
-
-    @fit_min.setter
-    @checktype
-    def fit_min(self, new: float) -> None:
-        self._fit_min = new
-
-    @property
-    def fit_max(self) -> float:
-        return np.inf
-
-    @fit_max.setter
-    @checktype
-    def fit_max(self, new: float) -> None:
-        self._fit_max = new
-
-    @property
-    def constrained(self) -> bool:
-        return self._constrained
-
-    @property
     def _minimizer_uid(self):
         """Return variant of uid safe for minimizer engines."""
         # return self.unique_name.replace('.', '__')
         return self.uid
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def unique_name(self):
+        parts = [
+            self.identity.datablock_entry_name,
+            self.identity.category_code,
+            self.identity.category_entry_name,
+            self.name,
+        ]
+        return '.'.join(filter(None, parts))
+
+    @property
+    def constrained(self):
+        return self._constrained
+
+    @property
+    def free(self):
+        return self._free
+
+    @free.setter
+    def free(self, v):
+        self._free = self._free_spec.validated(
+            v, name=f'{self.unique_name}.free', current=self._free
+        )
+
+    @property
+    def uncertainty(self):
+        return self._free
+
+    @uncertainty.setter
+    def uncertainty(self, v):
+        self._uncertainty = self._uncertainty_spec.validated(
+            v, name=f'{self.unique_name}.uncertainty', current=self._uncertainty
+        )
+
+    @property
+    def fit_min(self):
+        return self._fit_min
+
+    @fit_min.setter
+    def fit_min(self, v):
+        self._fit_min = self._fit_min_spec.validated(
+            v, name=f'{self.unique_name}.fit_min', current=self._fit_min
+        )
+
+    @property
+    def fit_max(self):
+        return self._fit_max
+
+    @fit_max.setter
+    def fit_max(self, v):
+        self._fit_max = self._fit_max_spec.validated(
+            v, name=f'{self.unique_name}.fit_max', current=self._fit_max
+        )
+
+
+class CifHandler:
+    def __init__(self, *, names: list[str]) -> None:
+        self._names = names
+        self._owner = None  # will be linked later
+
+    def attach(self, owner):
+        """Attach handler to its owning descriptor or parameter."""
+        self._owner = owner
+
+    @property
+    def names(self):
+        return self._names
+
+    @property
+    def uid(self) -> str | None:
+        """Return CIF UID derived from the owner's unique name."""
+        if self._owner is None:
+            return None
+        return self._owner.unique_name
 
 
 class DescriptorStr(GenericDescriptorStr):
@@ -231,12 +283,7 @@ class DescriptorStr(GenericDescriptorStr):
     ) -> None:
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
-
-    # TODO: Find a better place for this. Duplicated in DescriptorFloat
-    #  and Parameter.
-    @property
-    def cif_uid(self) -> str:
-        return self.unique_name
+        self._cif_handler.attach(self)
 
 
 class DescriptorFloat(GenericDescriptorFloat):
@@ -248,12 +295,7 @@ class DescriptorFloat(GenericDescriptorFloat):
     ) -> None:
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
-
-    # TODO: Find a better place for this. Duplicated in DescriptorStr
-    #  and Parameter.
-    @property
-    def cif_uid(self) -> str:
-        return self.unique_name
+        self._cif_handler.attach(self)
 
 
 class Parameter(GenericParameter):
@@ -265,9 +307,4 @@ class Parameter(GenericParameter):
     ) -> None:
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
-
-    # TODO: Find a better place for this. Duplicated in DescriptorFloat
-    #  and DescriptorStr.
-    @property
-    def cif_uid(self) -> str:
-        return self.unique_name
+        self._cif_handler.attach(self)

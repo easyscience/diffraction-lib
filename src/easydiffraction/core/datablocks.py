@@ -18,12 +18,12 @@ class DatablockItem(GuardedBase):
     def __str__(self) -> str:
         """Human-readable representation of this component."""
         name = self._log_name
-        items = self._items
+        items = getattr(self, '_items', None)
         return f'<{name} ({items})>'
 
     @property
     def unique_name(self):
-        return self._identity.datablock_entry_name
+        return self.identity.datablock_entry_name
 
     @property
     def parameters(self):
@@ -31,7 +31,7 @@ class DatablockItem(GuardedBase):
         datablock.
         """
         params = []
-        for v in self.__dict__.values():
+        for v in vars(self).values():
             if isinstance(v, (CategoryItem, CategoryCollection)):
                 params.extend(v.parameters)
         return params
@@ -39,8 +39,8 @@ class DatablockItem(GuardedBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
-        lines = [f'data_{self._identity.datablock_entry_name}']
-        for category in self.__dict__.values():
+        lines = [f'data_{self.identity.datablock_entry_name}']
+        for category in vars(self).values():
             if isinstance(category, (CategoryItem, CategoryCollection)):
                 lines.append(category.as_cif)
         return '\n'.join(lines)
