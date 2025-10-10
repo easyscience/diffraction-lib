@@ -1,11 +1,13 @@
 import difflib
+import functools
 import re
-import secrets
-import string
+import uuid
 from abc import ABC
 from abc import abstractmethod
+from types import SimpleNamespace
 from typing import Any
 from typing import Callable
+from typing import final
 
 import numpy as np
 from typeguard import TypeCheckError
@@ -28,7 +30,9 @@ class Diagnostics:
     guidance.
     """
 
-    # ==== Configuration / definition diagnostics ====
+    # ==============================================================
+    # Configuration / definition diagnostics
+    # ==============================================================
 
     @staticmethod
     def type_override_error(cls_name: str, expected, got):
@@ -39,7 +43,9 @@ class Diagnostics:
         )
         Diagnostics._log_error(msg, exc_type=TypeError)
 
-    # ==== Attribute diagnostics ====
+    # ==============================================================
+    # Attribute diagnostics
+    # ==============================================================
 
     @staticmethod
     def readonly_error(
@@ -59,13 +65,16 @@ class Diagnostics:
         label='Allowed',
     ):
         suggestion = Diagnostics._build_suggestion(key, allowed)
+        # Use consistent (label) logic for allowed
         hint = suggestion or Diagnostics._build_allowed(allowed, label=label)
         Diagnostics._log_error(
             f"Unknown attribute '{key}' of <{name}>.{hint}",
             exc_type=AttributeError,
         )
 
-    # ==== Validation diagnostics ====
+    # ==============================================================
+    # Validation diagnostics
+    # ==============================================================
 
     @staticmethod
     def type_mismatch(
@@ -108,7 +117,7 @@ class Diagnostics:
     ):
         msg = f'Value mismatch for <{name}>. Provided {value!r} is unknown.'
         if allowed is not None:
-            msg += Diagnostics._build_allowed(allowed)
+            msg += Diagnostics._build_allowed(allowed, label='Allowed values')
         Diagnostics._log_error_with_fallback(
             msg, current=current, default=default, exc_type=TypeError
         )
@@ -137,7 +146,9 @@ class Diagnostics:
         stage_info = f' ({stage})' if stage else ''
         Diagnostics._log_debug(f'Value {value!r} for <{name}> passed validation{stage_info}.')
 
-    # ==== Helper log methods ====
+    # ==============================================================
+    # Helper log methods
+    # ==============================================================
 
     @staticmethod
     def _log_error(msg, exc_type=Exception):
@@ -160,7 +171,9 @@ class Diagnostics:
     def _log_debug(msg):
         log.debug(message=msg)
 
-    # ==== Suggestion and allowed value helpers ====
+    # ==============================================================
+    # Suggestion and allowed value helpers
+    # ==============================================================
 
     @staticmethod
     def _suggest(key: str, allowed: set[str]):
@@ -198,24 +211,46 @@ class Diagnostics:
 # types and content, implemented below.
 
 
-def checktype(func):
-    """Minimal wrapper to perform runtime type checking and log
-    errors.
+def checktype(func=None, *, context=None):
+    """Minimal wrapper to perform runtime type checking and log errors.
+    Optionally prepends context to log message.
     """
-    checked_func = typechecked(func)
 
-    def wrapper(*args, **kwargs):
-        try:
-            return checked_func(*args, **kwargs)
-        except TypeCheckError as err:
-            log.error(message=str(err), exc_type=TypeError)
-            return None
+    def decorator(f):
+        checked_func = typechecked(f)
 
-    return wrapper
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            try:
+                return checked_func(*args, **kwargs)
+            except TypeCheckError as err:
+                msg = str(err)
+                if context:
+                    msg = f'{context}: {msg}'
+                log.error(message=msg, exc_type=TypeError)
+                return None
+
+        return wrapper
+
+    if func is None:
+        return decorator
+    return decorator(func)
 
 
-# Advanced runtime custom validators for both Parameter attribute types
-# and content, which are writable for the user.
+# ==============================================================
+# Validation stages (enum/constant)
+# ==============================================================
+class ValidationStage:
+    TYPE = 'type'
+    RANGE = 'range'
+    MEMBERSHIP = 'membership'
+    REGEX = 'regex'
+    CUSTOM = 'custom'
+
+
+# ==============================================================
+# Advanced runtime custom validators for Parameter types/content
+# ==============================================================
 
 
 class BaseValidator(ABC):
@@ -252,8 +287,7 @@ class TypeValidator(BaseValidator):
                 default=default,
             )
             return self._fallback(current, default)
-        Diagnostics.validated(name, value, stage='type')
-
+        Diagnostics.validated(name, value, stage=ValidationStage.TYPE)
         return value
 
 
@@ -273,7 +307,8 @@ class RangeValidator(BaseValidator):
         if current is None and value is None:
             Diagnostics.none_value(name, default)
             return default
-        if not isinstance(value, (int, float, np.number)):
+        # 3b: Add numeric type check
+        if not isinstance(value, (int, float, np.integer, np.floating, np.number)):
             Diagnostics.type_mismatch(
                 name,
                 value,
@@ -292,11 +327,11 @@ class RangeValidator(BaseValidator):
                 default=default,
             )
             return self._fallback(current, default)
-        Diagnostics.validated(name, value, stage='range')
+        Diagnostics.validated(name, value, stage=ValidationStage.RANGE)
         return value
 
 
-class ChoiceValidator(BaseValidator):
+class MembershipValidator(BaseValidator):
     """Ensures that a value belongs to a predefined list of allowed
     choices.
     """
@@ -323,7 +358,7 @@ class ChoiceValidator(BaseValidator):
                 default=default,
             )
             return self._fallback(current, default)
-        Diagnostics.validated(name, value, stage='choice')
+        Diagnostics.validated(name, value, stage=ValidationStage.MEMBERSHIP)
         return value
 
 
@@ -357,8 +392,22 @@ class RegexValidator(BaseValidator):
                 default=default,
             )
             return self._fallback(current, default)
-        Diagnostics.validated(name, value, stage='regex')
+        Diagnostics.validated(name, value, stage=ValidationStage.REGEX)
         return value
+
+
+# 3d: CombinedValidator
+class CombinedValidator(BaseValidator):
+    """Chains multiple validators sequentially."""
+
+    def __init__(self, *validators):
+        self._validators = validators
+
+    def validated(self, value, name, default=None, current=None):
+        val = value
+        for validator in self._validators:
+            val = validator.validated(val, name, default=default, current=current)
+        return val
 
 
 # ---------------------- Identity ---------------------- #
@@ -399,8 +448,8 @@ class Identity:
 
         # Climb to parent if available
         parent = getattr(self._owner, '__dict__', {}).get('_parent')
-        if parent and hasattr(parent, '_identity'):
-            return parent._identity._resolve_up(attr, visited)
+        if parent and hasattr(parent, 'identity'):
+            return parent.identity._resolve_up(attr, visited)
         return None
 
     @property
@@ -436,8 +485,10 @@ class GuardedBase(ABC):
     linkage.
     """
 
+    # 5b: Use class-level diagnoser
+    _diagnoser = Diagnostics()
+
     def __init__(self):
-        self._diagnoser = Diagnostics()
         self._identity = Identity(owner=self)
 
     def __str__(self) -> str:
@@ -450,7 +501,7 @@ class GuardedBase(ABC):
         cls = type(self)
         allowed = cls._public_attrs()
         if key not in allowed:
-            self._diagnoser.attr_error(
+            type(self)._diagnoser.attr_error(
                 self.unique_name,
                 key,
                 allowed,
@@ -467,7 +518,7 @@ class GuardedBase(ABC):
         cls = type(self)
         # Prevent modification of read-only attributes
         if key in cls._public_readonly_attrs():
-            self._diagnoser.readonly_error(
+            cls._diagnoser.readonly_error(
                 self.unique_name,
                 key,
             )
@@ -476,7 +527,7 @@ class GuardedBase(ABC):
         # Show writable attributes only as allowed
         if key not in cls._public_attrs():
             allowed = cls._public_writable_attrs()
-            self._diagnoser.attr_error(
+            cls._diagnoser.attr_error(
                 self.unique_name,
                 key,
                 allowed,
@@ -494,12 +545,12 @@ class GuardedBase(ABC):
 
     @classmethod
     def _iter_properties(cls):
-        """Iterate over all public properties defined in the class
-        hierarchy.
+        """Iterate over all public properties defined in the
+        class hierarchy.
 
         Yields:
             tuple[str, property]: Each (key, property) pair for public
-                attributes.
+            attributes.
         """
         for base in cls.mro():
             for key, attr in base.__dict__.items():
@@ -522,7 +573,12 @@ class GuardedBase(ABC):
         """Public properties with a setter."""
         return {key for key, prop in cls._iter_properties() if prop.fset is not None}
 
-    # TODO: Check if needed
+    def _allowed_attrs(self, writable_only=False):
+        cls = type(self)
+        if writable_only:
+            return cls._public_writable_attrs()
+        return cls._public_attrs()
+
     @property
     def _log_name(self):
         return type(self).__name__
@@ -530,6 +586,15 @@ class GuardedBase(ABC):
     @property
     def unique_name(self):
         return type(self).__name__
+
+    @property
+    def identity(self):
+        """Expose a limited read-only view of identity attributes."""
+        return SimpleNamespace(
+            datablock_entry_name=self._identity.datablock_entry_name,
+            category_code=self._identity.category_code,
+            category_entry_name=self._identity.category_entry_name,
+        )
 
     @property
     @abstractmethod
@@ -583,6 +648,8 @@ class AttributeSpec:
                 default=self.default,
                 current=current,
             )
+        # 6b: Call Diagnostics.validated after full validation
+        Diagnostics.validated(name, val, stage='full')
         return val
 
 
@@ -641,8 +708,8 @@ class GenericDescriptorBase(GuardedBase):
 
     @staticmethod
     def _generate_uid() -> str:
-        length: int = 16
-        return ''.join(secrets.choice(string.ascii_lowercase) for _ in range(length))
+        # 7b: Use uuid4().hex[:8]
+        return uuid.uuid4().hex[:8]
 
     @property
     def name(self) -> str:
@@ -650,13 +717,14 @@ class GenericDescriptorBase(GuardedBase):
 
     @property
     def unique_name(self):
+        # 7c: Use filter(None, [...])
         parts = [
-            self._identity.datablock_entry_name,
-            self._identity.category_code,
-            self._identity.category_entry_name,
+            self.identity.datablock_entry_name,
+            self.identity.category_code,
+            self.identity.category_entry_name,
             self.name,
         ]
-        return '.'.join(p for p in parts if p is not None)
+        return '.'.join(filter(None, parts))
 
     @property
     def value(self):
@@ -688,6 +756,7 @@ class GenericDescriptorBase(GuardedBase):
         return f'{main_key} {value}'
 
 
+@final
 class GenericDescriptorStr(GenericDescriptorBase):
     _value_type = str
 
@@ -698,6 +767,7 @@ class GenericDescriptorStr(GenericDescriptorBase):
         super().__init__(**kwargs)
 
 
+@final
 class GenericDescriptorFloat(GenericDescriptorBase):
     _value_type = float
 
@@ -771,12 +841,12 @@ class GenericParameter(GenericDescriptorFloat):
     @property
     def unique_name(self):
         parts = [
-            self._identity.datablock_entry_name,
-            self._identity.category_code,
-            self._identity.category_entry_name,
+            self.identity.datablock_entry_name,
+            self.identity.category_code,
+            self.identity.category_entry_name,
             self.name,
         ]
-        return '.'.join(p for p in parts if p is not None)
+        return '.'.join(filter(None, parts))
 
     @property
     def constrained(self):
@@ -963,11 +1033,11 @@ class CategoryItem(GuardedBase):
     @property
     def unique_name(self):
         parts = [
-            self._identity.datablock_entry_name,
-            self._identity.category_code,
-            self._identity.category_entry_name,
+            self.identity.datablock_entry_name,
+            self.identity.category_code,
+            self.identity.category_entry_name,
         ]
-        return '.'.join(p for p in parts if p is not None)
+        return '.'.join(filter(None, parts))
 
     @property
     def parameters(self):
@@ -1047,18 +1117,19 @@ class CategoryCollection(CollectionBase):
         self.add(child_obj)
 
 
+# 8a: use vars(self) instead of __dict__ for DatablockItem
 class DatablockItem(GuardedBase):
     """Base class for items in a datablock collection."""
 
     def __str__(self) -> str:
         """Human-readable representation of this component."""
         name = self._log_name
-        items = self._items
+        items = getattr(self, '_items', None)
         return f'<{name} ({items})>'
 
     @property
     def unique_name(self):
-        return self._identity.datablock_entry_name
+        return self.identity.datablock_entry_name
 
     @property
     def parameters(self):
@@ -1066,7 +1137,7 @@ class DatablockItem(GuardedBase):
         datablock.
         """
         params = []
-        for v in self.__dict__.values():
+        for v in vars(self).values():
             if isinstance(v, (CategoryItem, CategoryCollection)):
                 params.extend(v.parameters)
         return params
@@ -1074,8 +1145,8 @@ class DatablockItem(GuardedBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
-        lines = [f'data_{self._identity.datablock_entry_name}']
-        for category in self.__dict__.values():
+        lines = [f'data_{self.identity.datablock_entry_name}']
+        for category in vars(self).values():
             if isinstance(category, (CategoryItem, CategoryCollection)):
                 lines.append(category.as_cif)
         return '\n'.join(lines)
