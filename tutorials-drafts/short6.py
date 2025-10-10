@@ -28,6 +28,17 @@ class Diagnostics:
     guidance.
     """
 
+    # ==== Configuration / definition diagnostics ====
+
+    @staticmethod
+    def type_override_error(cls_name: str, expected, got):
+        msg = (
+            f'Invalid type override in <{cls_name}>. '
+            f'Descriptor enforces `{expected.__name__}`, '
+            f'but AttributeSpec defines `{got.__name__}`.'
+        )
+        Diagnostics._log_error(msg, exc_type=TypeError)
+
     # ==== Attribute diagnostics ====
 
     @staticmethod
@@ -567,7 +578,10 @@ class AttributeSpec:
             )
         if self._content_validator:
             val = self._content_validator.validated(
-                val, name, default=self.default, current=current
+                val,
+                name,
+                default=self.default,
+                current=current,
             )
         return val
 
@@ -591,6 +605,24 @@ class GenericDescriptorBase(GuardedBase):
         description: str = None,
     ):
         super().__init__()
+
+        expected_type = getattr(self, '_value_type', None)
+
+        if expected_type:
+            user_type = (
+                value_spec._type_validator.expected_type
+                if value_spec._type_validator is not None
+                else None
+            )
+            if user_type and user_type is not expected_type:
+                Diagnostics.type_override_error(
+                    type(self).__name__,
+                    expected_type,
+                    user_type,
+                )
+            else:
+                # Enforce descriptor's own type if not already defined
+                value_spec._type_validator = TypeValidator(expected_type)
 
         self._value_spec = value_spec
         self._name = name
@@ -657,7 +689,7 @@ class GenericDescriptorBase(GuardedBase):
 
 
 class GenericDescriptorStr(GenericDescriptorBase):
-    _expected_type = str  # TODO: not in use yet
+    _value_type = str
 
     def __init__(
         self,
@@ -667,7 +699,7 @@ class GenericDescriptorStr(GenericDescriptorBase):
 
 
 class GenericDescriptorFloat(GenericDescriptorBase):
-    _expected_type = float  # TODO: not in use yet
+    _value_type = float
 
     def __init__(
         self,
@@ -794,10 +826,22 @@ class GenericParameter(GenericDescriptorFloat):
 class CifHandler:
     def __init__(self, *, names: list[str]) -> None:
         self._names = names
+        self._owner = None  # will be linked later
+
+    def attach(self, owner):
+        """Attach handler to its owning descriptor or parameter."""
+        self._owner = owner
 
     @property
     def names(self):
         return self._names
+
+    @property
+    def uid(self) -> str | None:
+        """Return CIF UID derived from the owner's unique name."""
+        if self._owner is None:
+            return None
+        return self._owner.unique_name
 
 
 class DescriptorStr(GenericDescriptorStr):
@@ -809,12 +853,7 @@ class DescriptorStr(GenericDescriptorStr):
     ) -> None:
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
-
-    # TODO: Find a better place for this. Duplicated in DescriptorFloat
-    #  and Parameter.
-    @property
-    def cif_uid(self) -> str:
-        return self.unique_name
+        self._cif_handler.attach(self)
 
 
 class DescriptorFloat(GenericDescriptorFloat):
@@ -826,12 +865,7 @@ class DescriptorFloat(GenericDescriptorFloat):
     ) -> None:
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
-
-    # TODO: Find a better place for this. Duplicated in DescriptorStr
-    #  and Parameter.
-    @property
-    def cif_uid(self) -> str:
-        return self.unique_name
+        self._cif_handler.attach(self)
 
 
 class Parameter(GenericParameter):
@@ -843,15 +877,78 @@ class Parameter(GenericParameter):
     ) -> None:
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
-
-    # TODO: Find a better place for this. Duplicated in DescriptorFloat
-    #  and DescriptorStr.
-    @property
-    def cif_uid(self) -> str:
-        return self.unique_name
+        self._cif_handler.attach(self)
 
 
 # ---------------------- ... ---------------------- #
+
+
+class CollectionBase(GuardedBase):
+    def __init__(self, item_type) -> None:
+        super().__init__()
+        self._items: list = []
+        self._index: dict = {}
+        self._item_type = item_type
+
+    def __getitem__(self, name: str):
+        try:
+            return self._index[name]
+        except KeyError:
+            self._rebuild_index()
+            return self._index[name]
+
+    def __setitem__(self, name: str, item) -> None:
+        # Check if item with same identity exists; if so, replace it
+        for i, existing_item in enumerate(self._items):
+            if existing_item._identity.category_entry_name == name:
+                self._items[i] = item
+                self._rebuild_index()
+                return
+        # Otherwise append new item
+        item._parent = self  # Explicitly set the parent for the item
+        self._items.append(item)
+        self._rebuild_index()
+
+    def __delitem__(self, name: str) -> None:
+        # Remove from _items by identity entry name
+        for i, item in enumerate(self._items):
+            if item._identity.category_entry_name == name:
+                object.__setattr__(item, '_parent', None)  # Unlink the parent before removal
+                del self._items[i]
+                self._rebuild_index()
+                return
+        raise KeyError(name)
+
+    def __iter__(self):
+        return iter(self._items)
+
+    def __len__(self) -> int:
+        return len(self._items)
+
+    def _key_for(self, item):
+        """Private helper to get the key for an item."""
+        return item._identity.category_entry_name or item._identity.datablock_entry_name
+
+    def _rebuild_index(self) -> None:
+        self._index.clear()
+        for item in self._items:
+            key = self._key_for(item)
+            if key:
+                self._index[key] = item
+
+    def keys(self):
+        return (self._key_for(item) for item in self._items)
+
+    def values(self):
+        return (item for item in self._items)
+
+    def items(self):
+        return ((self._key_for(item), item) for item in self._items)
+
+    @property
+    def names(self):
+        """Return a list of all item keys in the collection."""
+        return list(self.keys())
 
 
 class CategoryItem(GuardedBase):
@@ -874,7 +971,7 @@ class CategoryItem(GuardedBase):
 
     @property
     def parameters(self):
-        return [v for v in self.__dict__.values() if isinstance(v, Parameter)]
+        return [v for v in self.__dict__.values() if isinstance(v, GenericDescriptorBase)]
 
     @property
     def as_cif(self) -> str:
@@ -889,6 +986,149 @@ class CategoryItem(GuardedBase):
         return '\n'.join(lines)
 
 
+class CategoryCollection(CollectionBase):
+    """Handles loop-style category containers (e.g. AtomSites).
+
+    Each item is a CategoryItem (component).
+    """
+
+    def __str__(self) -> str:
+        """Human-readable representation of this component."""
+        name = self._log_name
+        size = len(self)
+        return f'<{name} collection ({size} items)>'
+
+    @property
+    def unique_name(self):
+        return None
+
+    @property
+    def parameters(self):
+        """All parameters from all items in this collection."""
+        params = []
+        for item in self._items:
+            params.extend(item.parameters)
+        return params
+
+    @property
+    def as_cif(self) -> str:
+        """Return CIF representation of this object."""
+        if not self:
+            return ''  # Empty collection
+        lines: list[str] = ['']
+        # Add header using the first item
+        first_item = list(self.values())[0]
+        lines.append('loop_')
+        for param in first_item.parameters:
+            tags = param._cif_handler.names
+            main_key = tags[0]
+            lines.append(main_key)
+        # Add data from all items one by one
+        for item in self.values():
+            line = []
+            for param in item.parameters:
+                value = param.value
+                line.append(str(value))
+            line = ' '.join(line)
+            lines.append(line)
+        return '\n'.join(lines)
+
+    @typechecked
+    def add(self, item) -> None:
+        """Add an item to the collection."""
+        self[item._identity.category_entry_name] = item
+
+    @typechecked
+    def add_from_args(self, *args, **kwargs) -> None:
+        """Create and add a new child instance from the provided
+        arguments.
+        """
+        child_obj = self._item_type(*args, **kwargs)
+        self.add(child_obj)
+
+
+class DatablockItem(GuardedBase):
+    """Base class for items in a datablock collection."""
+
+    def __str__(self) -> str:
+        """Human-readable representation of this component."""
+        name = self._log_name
+        items = self._items
+        return f'<{name} ({items})>'
+
+    @property
+    def unique_name(self):
+        return self._identity.datablock_entry_name
+
+    @property
+    def parameters(self):
+        """All parameters from all categories contained in this
+        datablock.
+        """
+        params = []
+        for v in self.__dict__.values():
+            if isinstance(v, (CategoryItem, CategoryCollection)):
+                params.extend(v.parameters)
+        return params
+
+    @property
+    def as_cif(self) -> str:
+        """Return CIF representation of this object."""
+        lines = [f'data_{self._identity.datablock_entry_name}']
+        for category in self.__dict__.values():
+            if isinstance(category, (CategoryItem, CategoryCollection)):
+                lines.append(category.as_cif)
+        return '\n'.join(lines)
+
+
+class DatablockCollection(CollectionBase):
+    """Handles top-level collections (e.g. SampleModels, Experiments).
+
+    Each item is a DatablockItem.
+    """
+
+    def __str__(self) -> str:
+        """Human-readable representation of this component."""
+        name = self._log_name
+        size = len(self)
+        return f'<{name} collection ({size} items)>'
+
+    @property
+    def unique_name(self):
+        return None
+
+    @property
+    def parameters(self):
+        """All parameters from all datablocks in this collection."""
+        params = []
+        for db in self._items:
+            params.extend(db.parameters)
+        return params
+
+    # was in class AbstractDatablock(ABC):
+    @property
+    def fittable_parameters(self) -> list:
+        return [p for p in self.parameters if isinstance(p, Parameter) and not p.constrained]
+
+    # was in class AbstractDatablock(ABC):
+    @property
+    def free_parameters(self) -> list:
+        return [p for p in self.fittable_parameters if p.free]
+
+    @property
+    def as_cif(self) -> str:
+        """Return CIF representation of this object."""
+        parts = [
+            datablock.as_cif for datablock in self.values() if isinstance(datablock, DatablockItem)
+        ]
+        return '\n'.join(parts)
+
+    @typechecked
+    def add(self, item) -> None:
+        """Add an item to the collection."""
+        self[item._identity.datablock_entry_name] = item
+
+
 class Cell(CategoryItem):
     def __init__(self, *, length_a=None):
         super().__init__()
@@ -896,7 +1136,7 @@ class Cell(CategoryItem):
         self._length_a = Parameter(
             value_spec=AttributeSpec(
                 value=length_a,
-                type_=float,
+                type_=str,
                 default=10.0,
                 content_validator=RangeValidator(ge=0, le=1000),
             ),
@@ -958,3 +1198,5 @@ if __name__ == '__main__':
 
     log.info(c.as_cif)
     log.info(c.length_a.as_cif)
+
+    log.info(c.length_a._cif_handler.uid)
