@@ -1,5 +1,13 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Peak category entry point (public facade).
+
+End users should import Peak classes from this module. Internals live
+under the package
+`easydiffraction.experiments.components.peak_profiles` and are
+re-exported here for a stable and readable API.
+"""
+
 from easydiffraction.experiments.components.peak_profiles.base import PeakBase
 from easydiffraction.experiments.components.peak_profiles.base import PeakFactory
 
