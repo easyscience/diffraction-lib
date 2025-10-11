@@ -3,11 +3,11 @@
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorStr
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RegexValidator
+from easydiffraction.io.cif.handler import CifHandler
 
 
 class Constraint(CategoryItem):

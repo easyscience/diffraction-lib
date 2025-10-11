@@ -4,13 +4,13 @@ from enum import Enum
 from typing import Optional
 
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
+from easydiffraction.io.cif.handler import CifHandler
 
 
 class PeakProfileTypeEnum(str, Enum):

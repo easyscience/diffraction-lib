@@ -138,8 +138,8 @@ class Diagnostics:
 
     @staticmethod
     def validated(name, value, stage: str | None = None):
-        stage_info = f' ({stage})' if stage else ''
-        Diagnostics._log_debug(f'Value {value!r} for <{name}> passed validation{stage_info}.')
+        stage_info = f' {stage}' if stage else ''
+        Diagnostics._log_debug(f'Value {value!r} for <{name}> passed{stage_info} validation.')
 
     # ==============================================================
     # Helper log methods

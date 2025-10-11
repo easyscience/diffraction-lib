@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import secrets
 import string
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import final
 
@@ -17,6 +18,9 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import TypeValidator
+
+if TYPE_CHECKING:
+    from easydiffraction.io.cif.handler import CifHandler
 
 
 class GenericDescriptorBase(GuardedBase):
@@ -259,27 +263,6 @@ class GenericParameter(GenericDescriptorFloat):
         self._fit_max = self._fit_max_spec.validated(
             v, name=f'{self.unique_name}.fit_max', current=self._fit_max
         )
-
-
-class CifHandler:
-    def __init__(self, *, names: list[str]) -> None:
-        self._names = names
-        self._owner = None  # will be linked later
-
-    def attach(self, owner):
-        """Attach handler to its owning descriptor or parameter."""
-        self._owner = owner
-
-    @property
-    def names(self):
-        return self._names
-
-    @property
-    def uid(self) -> str | None:
-        """Return CIF UID derived from the owner's unique name."""
-        if self._owner is None:
-            return None
-        return self._owner.unique_name
 
 
 class DescriptorStr(GenericDescriptorStr):

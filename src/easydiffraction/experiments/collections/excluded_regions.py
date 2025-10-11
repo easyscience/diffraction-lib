@@ -5,11 +5,11 @@ from typing import List
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorFloat
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_table
 

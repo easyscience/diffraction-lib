@@ -8,11 +8,11 @@ from cryspy.A_functions_base.function_2_space_group import (
 from cryspy.A_functions_base.function_2_space_group import get_it_number_by_name_hm_short
 
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorStr
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import MembershipValidator
+from easydiffraction.io.cif.handler import CifHandler
 
 
 class SpaceGroup(CategoryItem):

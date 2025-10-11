@@ -80,7 +80,7 @@ if __name__ == '__main__':
     c.qwe = 'qwe'
     assert getattr(c.length_b, 'qwe', None) is None
     assert c.length_b._cif_handler.names == ['_cell.length_b']
-    assert len(c.length_b._minimizer_uid) == 8
+    assert len(c.length_b._minimizer_uid) == 16
     assert(c.parameters[1].value == 3.3)  # type: ignore
 
     log.info(f'-------- SpaceGroup --------')
