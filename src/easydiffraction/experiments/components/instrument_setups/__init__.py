@@ -1,11 +1,13 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Instrument category entry point (public facade).
+"""Internal implementation package for the Instrument category.
 
-End users should import Instrument classes from this module. Internals
-live under the package
-`easydiffraction.experiments.components.instrument_setups` and are
-re-exported here for a stable and readable API.
+Split by beam mode/domain. Public consumers should import from the
+category entry point
+`easydiffraction.experiments.components.instrument`.
+
+Re-exports are provided for contributor discoverability and focused
+tests.
 """
 
 from easydiffraction.experiments.components.instrument_setups.base import InstrumentBase
