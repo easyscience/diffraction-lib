@@ -1,11 +1,12 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Background collection entry point (public facade).
+"""Internal implementation package for the Background category.
 
-End users should import Background classes from this module. Internals
-live under the package
-`easydiffraction.experiments.collections.background_types` and are
-re-exported here for a stable and readable API.
+Public consumers should import from the entry point
+`easydiffraction.experiments.collections.background`.
+
+Re-exports are provided for contributor discoverability and focused
+tests.
 """
 
 from easydiffraction.experiments.collections.background_types.base import BackgroundBase

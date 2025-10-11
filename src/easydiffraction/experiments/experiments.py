@@ -22,11 +22,6 @@ class Experiments(DatablockCollection):
     # Add / Remove methods
     # --------------------
 
-    # @typechecked
-    # def add(self, experiment: BaseExperiment):
-    #    """Add a pre-built experiment instance."""
-    #    self[experiment.name] = experiment
-
     @typechecked
     def add_from_cif_path(self, cif_path: str):
         """Add a new experiment from a CIF file path."""
