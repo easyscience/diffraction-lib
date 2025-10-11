@@ -39,7 +39,7 @@ class Identity:
 
         # Climb to parent if available
         parent = getattr(self._owner, '__dict__', {}).get('_parent')
-        if parent and hasattr(parent, 'identity'):
+        if parent and hasattr(parent, '_identity'):
             return parent._identity._resolve_up(attr, visited)
         return None
 
