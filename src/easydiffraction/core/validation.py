@@ -6,6 +6,7 @@ import re
 from abc import ABC
 from abc import abstractmethod
 from enum import Enum
+from enum import auto
 
 import numpy as np
 from typeguard import TypeCheckError
@@ -70,12 +71,16 @@ def checktype(func=None, *, context=None):
 # ==============================================================
 # Validation stages (enum/constant)
 # ==============================================================
-class ValidationStage:
-    TYPE = 'type'
-    RANGE = 'range'
-    MEMBERSHIP = 'membership'
-    REGEX = 'regex'
-    CUSTOM = 'custom'
+class ValidationStage(Enum):
+    """Phases of validation for diagnostic logging."""
+
+    TYPE = auto()
+    RANGE = auto()
+    MEMBERSHIP = auto()
+    REGEX = auto()
+
+    def __str__(self):
+        return self.name.lower()
 
 
 # ==============================================================
@@ -94,7 +99,11 @@ class BaseValidator(ABC):
         """
         raise NotImplementedError
 
-    def _fallback(self, current=None, default=None):
+    def _fallback(
+        self,
+        current=None,
+        default=None,
+    ):
         return current if current is not None else default
 
 
@@ -108,11 +117,25 @@ class TypeValidator(BaseValidator):
         else:
             raise TypeError(f'TypeValidator expected a DataTypes member, got {expected_type!r}')
 
-    def validated(self, value, name, default=None, current=None):
+    def validated(
+        self,
+        value,
+        name,
+        default=None,
+        current=None,
+        allow_none=False,
+    ):
+        # Fresh initialization, use default
         if current is None and value is None:
-            Diagnostics.none_value(name, default)
+            Diagnostics.no_value(name, default)
             return default
 
+        # Explicit None (allowed)
+        if value is None and allow_none:
+            Diagnostics.none_value(name)
+            return None
+
+        # Normal type validation
         if not isinstance(value, self.expected_type.value):
             Diagnostics.type_mismatch(
                 name,
@@ -123,14 +146,23 @@ class TypeValidator(BaseValidator):
             )
             return self._fallback(current, default)
 
-        Diagnostics.validated(name, value, stage=ValidationStage.TYPE)
+        Diagnostics.validated(
+            name,
+            value,
+            stage=ValidationStage.TYPE,
+        )
         return value
 
 
 class RangeValidator(BaseValidator):
     """Ensures a numeric value lies within [ge, le]."""
 
-    def __init__(self, *, ge=-np.inf, le=np.inf):
+    def __init__(
+        self,
+        *,
+        ge=-np.inf,
+        le=np.inf,
+    ):
         self.ge, self.le = ge, le
 
     def validated(
@@ -140,10 +172,6 @@ class RangeValidator(BaseValidator):
         default=None,
         current=None,
     ):
-        if current is None and value is None:
-            Diagnostics.none_value(name, default)
-            return default
-
         if not (self.ge <= value <= self.le):
             Diagnostics.range_mismatch(
                 name,
@@ -155,40 +183,11 @@ class RangeValidator(BaseValidator):
             )
             return self._fallback(current, default)
 
-        Diagnostics.validated(name, value, stage=ValidationStage.RANGE)
-        return value
-
-
-class MembershipValidatorOld(BaseValidator):
-    """Ensures that a value belongs to a predefined list of allowed
-    choices.
-    """
-
-    def __init__(self, allowed):
-        self.allowed = list(allowed)
-
-    def validated(
-        self,
-        value,
-        name,
-        default=None,
-        current=None,
-    ):
-        if current is None and value is None:
-            Diagnostics.none_value(name, default)
-            return default
-
-        if value not in self.allowed:
-            Diagnostics.choice_mismatch(
-                name,
-                value,
-                self.allowed,
-                current=current,
-                default=default,
-            )
-            return self._fallback(current, default)
-
-        Diagnostics.validated(name, value, stage=ValidationStage.MEMBERSHIP)
+        Diagnostics.validated(
+            name,
+            value,
+            stage=ValidationStage.RANGE,
+        )
         return value
 
 
@@ -214,10 +213,6 @@ class MembershipValidator(BaseValidator):
         # Dynamically evaluate allowed if callable (e.g. lambda)
         allowed_values = self.allowed() if callable(self.allowed) else self.allowed
 
-        if current is None and value is None:
-            Diagnostics.none_value(name, default)
-            return default
-
         if value not in allowed_values:
             Diagnostics.choice_mismatch(
                 name,
@@ -228,7 +223,11 @@ class MembershipValidator(BaseValidator):
             )
             return self._fallback(current, default)
 
-        Diagnostics.validated(name, value, stage=ValidationStage.MEMBERSHIP)
+        Diagnostics.validated(
+            name,
+            value,
+            stage=ValidationStage.MEMBERSHIP,
+        )
         return value
 
 
@@ -240,11 +239,13 @@ class RegexValidator(BaseValidator):
     def __init__(self, pattern):
         self.pattern = re.compile(pattern)
 
-    def validated(self, value, name, default=None, current=None):
-        if current is None and value is None:
-            Diagnostics.none_value(name, default)
-            return default
-
+    def validated(
+        self,
+        value,
+        name,
+        default=None,
+        current=None,
+    ):
         if not self.pattern.fullmatch(value):
             Diagnostics.regex_mismatch(
                 name,
@@ -255,22 +256,12 @@ class RegexValidator(BaseValidator):
             )
             return self._fallback(current, default)
 
-        Diagnostics.validated(name, value, stage=ValidationStage.REGEX)
+        Diagnostics.validated(
+            name,
+            value,
+            stage=ValidationStage.REGEX,
+        )
         return value
-
-
-# 3d: CombinedValidator
-class CombinedValidator(BaseValidator):
-    """Chains multiple validators sequentially."""
-
-    def __init__(self, *validators):
-        self._validators = validators
-
-    def validated(self, value, name, default=None, current=None):
-        val = value
-        for validator in self._validators:
-            val = validator.validated(val, name, default=default, current=current)
-        return val
 
 
 class AttributeSpec:
@@ -283,45 +274,41 @@ class AttributeSpec:
         type_=None,
         default=None,
         content_validator=None,
+        allow_none: bool = False,
     ):
         self.value = value
         self.default = default
+        self.allow_none = allow_none
         self._type_validator = TypeValidator(type_) if type_ else None
         self._content_validator = content_validator
 
-    def validated_old(self, value, name, current=None):
+    def validated(
+        self,
+        value,
+        name,
+        current=None,
+    ):
         val = value
-        if self._type_validator:
-            val = self._type_validator.validated(
-                val,
-                name,
-                default=self.default,
-                current=current,
-            )
-        if self._content_validator:
-            val = self._content_validator.validated(
-                val,
-                name,
-                default=self.default,
-                current=current,
-            )
-        # 6b: Call Diagnostics.validated after full validation
-        Diagnostics.validated(name, val, stage='full')
-        return val
-
-    def validated(self, value, name, current=None):
         # Evaluate callable defaults dynamically
         default = self.default() if callable(self.default) else self.default
 
-        val = value
+        # Type validation
         if self._type_validator:
             val = self._type_validator.validated(
                 val,
                 name,
                 default=default,
                 current=current,
+                allow_none=self.allow_none,
             )
-        if self._content_validator:
+
+        # Skip further validation: Special case for None
+        if val is None and self.allow_none:
+            Diagnostics.none_value_skip_range(name)
+            return None
+
+        # Content validation
+        if self._content_validator and val is not None:
             val = self._content_validator.validated(
                 val,
                 name,
@@ -329,5 +316,4 @@ class AttributeSpec:
                 current=current,
             )
 
-        Diagnostics.validated(name, val, stage='full')
         return val

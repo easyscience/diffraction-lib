@@ -123,8 +123,18 @@ class Diagnostics:
         )
 
     @staticmethod
-    def none_value(name, default):
+    def no_value(name, default):
         Diagnostics._log_debug(f'No value provided for <{name}>. Using default {default!r}.')
+
+    @staticmethod
+    def none_value(name):
+        Diagnostics._log_debug(f'Using `None` explicitly provided for <{name}>.')
+
+    @staticmethod
+    def none_value_skip_range(name):
+        Diagnostics._log_debug(
+            f'Skipping range validation as `None` is explicitly provided for <{name}>.'
+        )
 
     @staticmethod
     def validated(name, value, stage: str | None = None):

@@ -174,6 +174,7 @@ class GenericParameter(GenericDescriptorFloat):
         self._uncertainty_spec = AttributeSpec(
             type_=DataTypes.NUMERIC,
             content_validator=RangeValidator(ge=0),
+            allow_none=True,
         )
         self._uncertainty = self._uncertainty_spec.default
         self._fit_min_spec = AttributeSpec(type_=DataTypes.NUMERIC, default=-np.inf)
