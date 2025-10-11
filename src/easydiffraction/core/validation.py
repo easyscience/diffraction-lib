@@ -102,15 +102,18 @@ class TypeValidator(BaseValidator):
     """Ensures a value is of the expected Python type."""
 
     def __init__(self, expected_type: DataTypes):
-        self.expected_type = expected_type.expected_type
-        self.expected_label = str(expected_type)
+        if isinstance(expected_type, DataTypes):
+            self.expected_type = expected_type
+            self.expected_label = str(expected_type)
+        else:
+            raise TypeError(f'TypeValidator expected a DataTypes member, got {expected_type!r}')
 
     def validated(self, value, name, default=None, current=None):
         if current is None and value is None:
             Diagnostics.none_value(name, default)
             return default
 
-        if not isinstance(value, self.expected_type):
+        if not isinstance(value, self.expected_type.value):
             Diagnostics.type_mismatch(
                 name,
                 value,

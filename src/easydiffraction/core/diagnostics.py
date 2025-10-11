@@ -19,9 +19,8 @@ class Diagnostics:
         """Report an invalid DataTypes override between descriptor and
         AttributeSpec.
         """
-        expected_label = str(expected) if hasattr(expected, 'name') else str(expected)
-        got_label = str(got) if hasattr(got, 'name') else str(got)
-
+        expected_label = str(expected)
+        got_label = str(got)
         msg = (
             f'Invalid type override in <{cls_name}>. '
             f'Descriptor enforces `{expected_label}`, '
