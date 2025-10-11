@@ -4,9 +4,10 @@
 from enum import Enum
 
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.guards import ListValidator
+from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorStr
-from easydiffraction.crystallography.cif import CifHandler
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import MembershipValidator
 
 
 class SampleFormEnum(str, Enum):
@@ -84,11 +85,14 @@ class ExperimentType(CategoryItem):
             name='sample_form',
             description='Specifies whether the diffraction data corresponds to '
             'powder diffraction or single crystal diffraction',
-            validator=ListValidator(
-                allowed_values=[member.value for member in SampleFormEnum],
+            value_spec=AttributeSpec(
+                value=sample_form,
+                type_=str,
                 default=SampleFormEnum.default(),
+                content_validator=MembershipValidator(
+                    allowed=[member.value for member in SampleFormEnum]
+                ),
             ),
-            value=sample_form,
             cif_handler=CifHandler(
                 names=[
                     '_expt_type.sample_form',
@@ -100,11 +104,14 @@ class ExperimentType(CategoryItem):
             name='beam_mode',
             description='Defines whether the measurement is performed with a '
             'constant wavelength (CW) or time-of-flight (TOF) method',
-            validator=ListValidator(
-                allowed_values=[member.value for member in BeamModeEnum],
+            value_spec=AttributeSpec(
+                value=beam_mode,
+                type_=str,
                 default=BeamModeEnum.default(),
+                content_validator=MembershipValidator(
+                    allowed=[member.value for member in BeamModeEnum]
+                ),
             ),
-            value=beam_mode,
             cif_handler=CifHandler(
                 names=[
                     '_expt_type.beam_mode',
@@ -114,11 +121,14 @@ class ExperimentType(CategoryItem):
         self._radiation_probe: DescriptorStr = DescriptorStr(
             name='radiation_probe',
             description='Specifies whether the measurement uses neutrons or X-rays',
-            validator=ListValidator(
-                allowed_values=[member.value for member in RadiationProbeEnum],
+            value_spec=AttributeSpec(
+                value=radiation_probe,
+                type_=str,
                 default=RadiationProbeEnum.default(),
+                content_validator=MembershipValidator(
+                    allowed=[member.value for member in RadiationProbeEnum]
+                ),
             ),
-            value=radiation_probe,
             cif_handler=CifHandler(
                 names=[
                     '_expt_type.radiation_probe',
@@ -130,11 +140,14 @@ class ExperimentType(CategoryItem):
             description='Specifies whether the experiment uses Bragg scattering '
             '(for conventional structure refinement) or total scattering '
             '(for pair distribution function analysis - PDF)',
-            validator=ListValidator(
-                allowed_values=[member.value for member in ScatteringTypeEnum],
+            value_spec=AttributeSpec(
+                value=scattering_type,
+                type_=str,
                 default=ScatteringTypeEnum.default(),
+                content_validator=MembershipValidator(
+                    allowed=[member.value for member in ScatteringTypeEnum]
+                ),
             ),
-            value=scattering_type,
             cif_handler=CifHandler(
                 names=[
                     '_expt_type.scattering_type',

@@ -21,9 +21,9 @@ class CategoryItem(GuardedBase):
     @property
     def unique_name(self):
         parts = [
-            self.identity.datablock_entry_name,
-            self.identity.category_code,
-            self.identity.category_entry_name,
+            self._identity.datablock_entry_name,
+            self._identity.category_code,
+            self._identity.category_entry_name,
         ]
         return '.'.join(filter(None, parts))
 

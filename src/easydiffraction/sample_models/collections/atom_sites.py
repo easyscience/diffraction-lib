@@ -5,12 +5,13 @@ from cryspy.A_functions_base.database import DATABASE
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.guards import ListValidator
-from easydiffraction.core.guards import RangeValidator
-from easydiffraction.core.guards import RegexValidator
+from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorStr
 from easydiffraction.core.parameters import Parameter
-from easydiffraction.crystallography.cif import CifHandler
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import MembershipValidator
+from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.validation import RegexValidator
 
 
 class AtomSite(CategoryItem):
@@ -32,14 +33,15 @@ class AtomSite(CategoryItem):
         self._label: DescriptorStr = DescriptorStr(
             name='label',
             description='Unique identifier for the atom site.',
-            # TODO: the following pattern is valid for dict key
-            #  (keywords are not checked). CIF label is less strict.
-            #  Do we need conversion between CIF and internal label?
-            validator=RegexValidator(
-                pattern=r'^[A-Za-z_][A-Za-z0-9_]*$',
+            value_spec=AttributeSpec(
+                value=label,
+                type_=str,
                 default='Si',
+                # TODO: the following pattern is valid for dict key
+                #  (keywords are not checked). CIF label is less strict.
+                #  Do we need conversion between CIF and internal label?
+                content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            value=label,
             cif_handler=CifHandler(
                 names=[
                     '_atom_site.label',
@@ -49,11 +51,12 @@ class AtomSite(CategoryItem):
         self._type_symbol: DescriptorStr = DescriptorStr(
             name='type_symbol',
             description='Chemical symbol of the atom at this site.',
-            validator=ListValidator(
-                allowed_values=lambda: self._type_symbol_allowed_values,
+            value_spec=AttributeSpec(
+                value=type_symbol,
+                type_=str,
                 default='Tb',
+                content_validator=MembershipValidator(allowed=self._type_symbol_allowed_values),
             ),
-            value=type_symbol,
             cif_handler=CifHandler(
                 names=[
                     '_atom_site.type_symbol',
@@ -63,8 +66,12 @@ class AtomSite(CategoryItem):
         self._fract_x: Parameter = Parameter(
             name='fract_x',
             description='Fractional x-coordinate of the atom site within the unit cell.',
-            validator=RangeValidator(default=0.0),
-            value=fract_x,
+            value_spec=AttributeSpec(
+                value=fract_x,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
             cif_handler=CifHandler(
                 names=[
                     '_atom_site.fract_x',
@@ -74,8 +81,12 @@ class AtomSite(CategoryItem):
         self._fract_y: Parameter = Parameter(
             name='fract_y',
             description='Fractional y-coordinate of the atom site within the unit cell.',
-            validator=RangeValidator(default=0.0),
-            value=fract_y,
+            value_spec=AttributeSpec(
+                value=fract_y,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
             cif_handler=CifHandler(
                 names=[
                     '_atom_site.fract_y',
@@ -85,8 +96,12 @@ class AtomSite(CategoryItem):
         self._fract_z: Parameter = Parameter(
             name='fract_z',
             description='Fractional z-coordinate of the atom site within the unit cell.',
-            validator=RangeValidator(default=0.0),
-            value=fract_z,
+            value_spec=AttributeSpec(
+                value=fract_z,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
             cif_handler=CifHandler(
                 names=[
                     '_atom_site.fract_z',
@@ -97,11 +112,12 @@ class AtomSite(CategoryItem):
             name='wyckoff_letter',
             description='Wyckoff letter indicating the symmetry of the '
             'atom site within the space group.',
-            validator=ListValidator(
-                allowed_values=lambda: self._wyckoff_letter_allowed_values,
-                default=lambda: self._wyckoff_letter_default_value,
+            value_spec=AttributeSpec(
+                value=wyckoff_letter,
+                type_=str,
+                default=self._wyckoff_letter_default_value,
+                content_validator=MembershipValidator(allowed=self._wyckoff_letter_allowed_values),
             ),
-            value=wyckoff_letter,
             cif_handler=CifHandler(
                 names=[
                     '_atom_site.Wyckoff_letter',
@@ -113,8 +129,12 @@ class AtomSite(CategoryItem):
             name='occupancy',
             description='Occupancy of the atom site, representing the '
             'fraction of the site occupied by the atom type.',
-            validator=RangeValidator(default=1.0),
-            value=occupancy,
+            value_spec=AttributeSpec(
+                value=occupancy,
+                type_=float,
+                default=1.0,
+                content_validator=RangeValidator(),
+            ),
             cif_handler=CifHandler(
                 names=[
                     '_atom_site.occupancy',
@@ -124,8 +144,12 @@ class AtomSite(CategoryItem):
         self._b_iso: Parameter = Parameter(
             name='b_iso',
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
-            validator=RangeValidator(default=0.0),
-            value=b_iso,
+            value_spec=AttributeSpec(
+                value=b_iso,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
             units='Å²',
             cif_handler=CifHandler(
                 names=[
@@ -137,11 +161,12 @@ class AtomSite(CategoryItem):
             name='adp_type',
             description='Type of atomic displacement parameter (ADP) '
             'used (e.g., Biso, Uiso, Uani, Bani).',
-            validator=ListValidator(
-                allowed_values=['Biso'],
+            value_spec=AttributeSpec(
+                value=adp_type,
+                type_=str,
                 default='Biso',
+                content_validator=MembershipValidator(allowed=['Biso']),
             ),
-            value=adp_type,
             cif_handler=CifHandler(
                 names=[
                     '_atom_site.adp_type',

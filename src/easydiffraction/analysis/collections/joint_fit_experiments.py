@@ -4,11 +4,12 @@
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.guards import RangeValidator
-from easydiffraction.core.guards import RegexValidator
+from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorFloat
 from easydiffraction.core.parameters import DescriptorStr
-from easydiffraction.crystallography.cif import CifHandler
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.validation import RegexValidator
 
 
 class JointFitExperiment(CategoryItem):
@@ -23,11 +24,12 @@ class JointFitExperiment(CategoryItem):
         self._id: DescriptorStr = DescriptorStr(
             name='id',  # TODO: need new name instead of id
             description='...',
-            validator=RegexValidator(
-                pattern=r'^[A-Za-z_][A-Za-z0-9_]*$',
+            value_spec=AttributeSpec(
+                value=id,
+                type_=str,
                 default='...',
+                content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            value=id,
             cif_handler=CifHandler(
                 names=[
                     '_joint_fit_experiment.id',
@@ -37,8 +39,12 @@ class JointFitExperiment(CategoryItem):
         self._weight: DescriptorFloat = DescriptorFloat(
             name='weight',
             description='...',
-            validator=RangeValidator(default=0.0),
-            value=weight,
+            value_spec=AttributeSpec(
+                value=weight,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
             cif_handler=CifHandler(
                 names=[
                     '_joint_fit_experiment.weight',

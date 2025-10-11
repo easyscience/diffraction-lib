@@ -4,11 +4,12 @@
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.guards import RangeValidator
-from easydiffraction.core.guards import RegexValidator
+from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorStr
 from easydiffraction.core.parameters import Parameter
-from easydiffraction.crystallography.cif import CifHandler
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.validation import RegexValidator
 
 
 class LinkedPhase(CategoryItem):
@@ -23,11 +24,12 @@ class LinkedPhase(CategoryItem):
         self._id = DescriptorStr(
             name='id',
             description='Identifier of the linked phase.',
-            validator=RegexValidator(
-                pattern=r'^[A-Za-z_][A-Za-z0-9_]*$',
+            value_spec=AttributeSpec(
+                value=id,
+                type_=str,
                 default='Si',
+                content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            value=id,
             cif_handler=CifHandler(
                 names=[
                     '_pd_phase_block.id',
@@ -37,8 +39,12 @@ class LinkedPhase(CategoryItem):
         self._scale = Parameter(
             name='scale',
             description='Scale factor of the linked phase.',
-            validator=RangeValidator(default=1.0),
-            value=scale,
+            value_spec=AttributeSpec(
+                value=scale,
+                type_=float,
+                default=1.0,
+                content_validator=RangeValidator(),
+            ),
             cif_handler=CifHandler(
                 names=[
                     '_pd_phase_block.scale',

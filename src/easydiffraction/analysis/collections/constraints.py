@@ -4,9 +4,10 @@
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.guards import RegexValidator
+from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorStr
-from easydiffraction.crystallography.cif import CifHandler
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import RegexValidator
 
 
 class Constraint(CategoryItem):
@@ -21,11 +22,12 @@ class Constraint(CategoryItem):
         self._lhs_alias: DescriptorStr = DescriptorStr(
             name='lhs_alias',
             description='...',
-            validator=RegexValidator(
-                pattern=r'.*',
+            value_spec=AttributeSpec(
+                value=lhs_alias,
+                type_=str,
                 default='...',
+                content_validator=RegexValidator(pattern=r'.*'),
             ),
-            value=lhs_alias,
             cif_handler=CifHandler(
                 names=[
                     '_constraint.lhs_alias',
@@ -35,11 +37,12 @@ class Constraint(CategoryItem):
         self._rhs_expr: DescriptorStr = DescriptorStr(
             name='rhs_expr',
             description='...',
-            validator=RegexValidator(
-                pattern=r'.*',
+            value_spec=AttributeSpec(
+                value=rhs_expr,
+                type_=str,
                 default='...',
+                content_validator=RegexValidator(pattern=r'.*'),
             ),
-            value=rhs_expr,
             cif_handler=CifHandler(
                 names=[
                     '_constraint.rhs_expr',

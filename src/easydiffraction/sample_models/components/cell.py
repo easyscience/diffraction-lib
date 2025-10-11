@@ -4,9 +4,10 @@
 from typing import Optional
 
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.guards import RangeValidator
+from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import Parameter
-from easydiffraction.crystallography.cif import CifHandler
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import RangeValidator
 
 
 class Cell(CategoryItem):
@@ -25,48 +26,72 @@ class Cell(CategoryItem):
         self._length_a: Parameter = Parameter(
             name='length_a',
             description='Length of the a axis of the unit cell.',
-            validator=RangeValidator(ge=0, le=1000, default=10.0),
-            value=length_a,
+            value_spec=AttributeSpec(
+                value=length_a,
+                type_=float,
+                default=10.0,
+                content_validator=RangeValidator(ge=0, le=1000),
+            ),
             units='Å',
             cif_handler=CifHandler(names=['_cell.length_a']),
         )
         self._length_b: Parameter = Parameter(
             name='length_b',
             description='Length of the b axis of the unit cell.',
-            validator=RangeValidator(ge=0, le=1000, default=10.0),
-            value=length_b,
+            value_spec=AttributeSpec(
+                value=length_b,
+                type_=float,
+                default=10.0,
+                content_validator=RangeValidator(ge=0, le=1000),
+            ),
             units='Å',
             cif_handler=CifHandler(names=['_cell.length_b']),
         )
         self._length_c: Parameter = Parameter(
             name='length_c',
             description='Length of the c axis of the unit cell.',
-            validator=RangeValidator(ge=0, le=1000, default=10.0),
-            value=length_c,
+            value_spec=AttributeSpec(
+                value=length_c,
+                type_=float,
+                default=10.0,
+                content_validator=RangeValidator(ge=0, le=1000),
+            ),
             units='Å',
             cif_handler=CifHandler(names=['_cell.length_c']),
         )
         self._angle_alpha: Parameter = Parameter(
             name='angle_alpha',
             description='Angle between edges b and c.',
-            validator=RangeValidator(ge=0, le=180, default=90.0),
-            value=angle_alpha,
+            value_spec=AttributeSpec(
+                value=angle_alpha,
+                type_=float,
+                default=90.0,
+                content_validator=RangeValidator(ge=0, le=180),
+            ),
             units='deg',
             cif_handler=CifHandler(names=['_cell.angle_alpha']),
         )
         self._angle_beta: Parameter = Parameter(
             name='angle_beta',
             description='Angle between edges a and c.',
-            validator=RangeValidator(ge=0, le=180, default=90.0),
-            value=angle_beta,
+            value_spec=AttributeSpec(
+                value=angle_beta,
+                type_=float,
+                default=90.0,
+                content_validator=RangeValidator(ge=0, le=180),
+            ),
             units='deg',
             cif_handler=CifHandler(names=['_cell.angle_beta']),
         )
         self._angle_gamma: Parameter = Parameter(
             name='angle_gamma',
             description='Angle between edges a and b.',
-            validator=RangeValidator(ge=0, le=180, default=90.0),
-            value=angle_gamma,
+            value_spec=AttributeSpec(
+                value=angle_gamma,
+                type_=float,
+                default=90.0,
+                content_validator=RangeValidator(ge=0, le=180),
+            ),
             units='deg',
             cif_handler=CifHandler(names=['_cell.angle_gamma']),
         )

@@ -5,9 +5,10 @@ from typing import List
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.guards import RangeValidator
+from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorFloat
-from easydiffraction.crystallography.cif import CifHandler
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import RangeValidator
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_table
 
@@ -24,8 +25,12 @@ class ExcludedRegion(CategoryItem):
         self._start = DescriptorFloat(
             name='start',
             description='Start of the excluded region.',
-            validator=RangeValidator(default=0.0),
-            value=start,
+            value_spec=AttributeSpec(
+                value=start,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
             cif_handler=CifHandler(
                 names=[
                     '_excluded_region.start',
@@ -35,8 +40,12 @@ class ExcludedRegion(CategoryItem):
         self._end = DescriptorFloat(
             name='end',
             description='End of the excluded region.',
-            validator=RangeValidator(default=0.0),
-            value=end,
+            value_spec=AttributeSpec(
+                value=end,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
             cif_handler=CifHandler(
                 names=[
                     '_excluded_region.end',

@@ -3,7 +3,6 @@
 
 from abc import ABC
 from abc import abstractmethod
-from types import SimpleNamespace
 
 from easydiffraction.core.diagnostics import Diagnostics
 from easydiffraction.core.identity import Identity
@@ -116,14 +115,14 @@ class GuardedBase(ABC):
     def unique_name(self):
         return type(self).__name__
 
-    @property
-    def identity(self):
-        """Expose a limited read-only view of identity attributes."""
-        return SimpleNamespace(
-            datablock_entry_name=self._identity.datablock_entry_name,
-            category_code=self._identity.category_code,
-            category_entry_name=self._identity.category_entry_name,
-        )
+    # @property
+    # def identity(self):
+    #    """Expose a limited read-only view of identity attributes."""
+    #    return SimpleNamespace(
+    #        datablock_entry_name=self._identity.datablock_entry_name,
+    #        category_code=self._identity.category_code,
+    #        category_entry_name=self._identity.category_entry_name,
+    #    )
 
     @property
     @abstractmethod

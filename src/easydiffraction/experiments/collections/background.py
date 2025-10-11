@@ -13,10 +13,11 @@ from scipy.interpolate import interp1d
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.guards import RangeValidator
+from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorFloat
 from easydiffraction.core.parameters import Parameter
-from easydiffraction.crystallography.cif import CifHandler
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import RangeValidator
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_table
@@ -36,8 +37,12 @@ class Point(CategoryItem):
             name='x',
             description='X-coordinates used to create many straight-line segments '
             'representing the background in a calculated diffractogram.',
-            validator=RangeValidator(default=0.0),
-            value=x,
+            value_spec=AttributeSpec(
+                value=x,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
             cif_handler=CifHandler(
                 names=[
                     '_pd_background.line_segment_X',
@@ -48,8 +53,12 @@ class Point(CategoryItem):
             name='y',  # TODO: rename to intensity
             description='Intensity used to create many straight-line segments '
             'representing the background in a calculated diffractogram',
-            validator=RangeValidator(default=0.0),
-            value=y,  # TODO: rename to intensity
+            value_spec=AttributeSpec(
+                value=y,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),  # TODO: rename to intensity
             cif_handler=CifHandler(
                 names=[
                     '_pd_background.line_segment_intensity',
@@ -99,8 +108,12 @@ class PolynomialTerm(CategoryItem):
         self._order = DescriptorFloat(
             name='order',
             description='Order used in a Chebyshev polynomial background term',
-            validator=RangeValidator(default=0.0),
-            value=order,
+            value_spec=AttributeSpec(
+                value=order,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
             cif_handler=CifHandler(
                 names=[
                     '_pd_background.Chebyshev_order',
@@ -110,8 +123,12 @@ class PolynomialTerm(CategoryItem):
         self._coef = Parameter(
             name='coef',
             description='Coefficient used in a Chebyshev polynomial background term',
-            validator=RangeValidator(default=0.0),
-            value=coef,
+            value_spec=AttributeSpec(
+                value=coef,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
             cif_handler=CifHandler(
                 names=[
                     '_pd_background.Chebyshev_coef',

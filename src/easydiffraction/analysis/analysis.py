@@ -270,7 +270,7 @@ class Analysis:
                     if category_entry_name:
                         code_variable += f"['{category_entry_name}']"
                     code_variable += f'.{param_key}'
-                    cif_uid = param.cif_uid
+                    cif_uid = param._cif_handler.uid
                     columns_data.append([
                         datablock_entry_name,
                         category_code,

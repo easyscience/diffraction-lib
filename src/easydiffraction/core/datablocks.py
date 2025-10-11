@@ -23,7 +23,7 @@ class DatablockItem(GuardedBase):
 
     @property
     def unique_name(self):
-        return self.identity.datablock_entry_name
+        return self._identity.datablock_entry_name
 
     @property
     def parameters(self):
@@ -39,7 +39,7 @@ class DatablockItem(GuardedBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
-        lines = [f'data_{self.identity.datablock_entry_name}']
+        lines = [f'data_{self._identity.datablock_entry_name}']
         for category in vars(self).values():
             if isinstance(category, (CategoryItem, CategoryCollection)):
                 lines.append(category.as_cif)

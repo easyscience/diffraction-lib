@@ -141,7 +141,7 @@ class RangeValidator(BaseValidator):
         return value
 
 
-class MembershipValidator(BaseValidator):
+class MembershipValidatorOld(BaseValidator):
     """Ensures that a value belongs to a predefined list of allowed
     choices.
     """
@@ -168,6 +168,40 @@ class MembershipValidator(BaseValidator):
                 default=default,
             )
             return self._fallback(current, default)
+        Diagnostics.validated(name, value, stage=ValidationStage.MEMBERSHIP)
+        return value
+
+
+class MembershipValidator(BaseValidator):
+    """Ensures that a value belongs to a predefined list of allowed
+    choices.
+
+    `allowed` can be a static iterable or a callable returning allowed
+    values.
+    """
+
+    def __init__(self, allowed):
+        # Do not convert immediately to list — may be callable
+        self.allowed = allowed
+
+    def validated(self, value, name, default=None, current=None):
+        # Dynamically evaluate allowed if callable (e.g. lambda)
+        allowed_values = self.allowed() if callable(self.allowed) else self.allowed
+
+        if current is None and value is None:
+            Diagnostics.none_value(name, default)
+            return default
+
+        if value not in allowed_values:
+            Diagnostics.choice_mismatch(
+                name,
+                value,
+                allowed_values,
+                current=current,
+                default=default,
+            )
+            return self._fallback(current, default)
+
         Diagnostics.validated(name, value, stage=ValidationStage.MEMBERSHIP)
         return value
 
@@ -236,7 +270,7 @@ class AttributeSpec:
         self._type_validator = TypeValidator(type_) if type_ else None
         self._content_validator = content_validator
 
-    def validated(self, value, name, current=None):
+    def validated_old(self, value, name, current=None):
         val = value
         if self._type_validator:
             val = self._type_validator.validated(
@@ -253,5 +287,28 @@ class AttributeSpec:
                 current=current,
             )
         # 6b: Call Diagnostics.validated after full validation
+        Diagnostics.validated(name, val, stage='full')
+        return val
+
+    def validated(self, value, name, current=None):
+        # Evaluate callable defaults dynamically
+        default = self.default() if callable(self.default) else self.default
+
+        val = value
+        if self._type_validator:
+            val = self._type_validator.validated(
+                val,
+                name,
+                default=default,
+                current=current,
+            )
+        if self._content_validator:
+            val = self._content_validator.validated(
+                val,
+                name,
+                default=default,
+                current=current,
+            )
+
         Diagnostics.validated(name, val, stage='full')
         return val

@@ -9,9 +9,10 @@ from cryspy.A_functions_base.function_2_space_group import (
 from cryspy.A_functions_base.function_2_space_group import get_it_number_by_name_hm_short
 
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.guards import ListValidator
+from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorStr
-from easydiffraction.crystallography.cif import CifHandler
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import MembershipValidator
 
 
 class SpaceGroup(CategoryItem):
@@ -25,11 +26,14 @@ class SpaceGroup(CategoryItem):
         self._name_h_m: DescriptorStr = DescriptorStr(
             name='name_h_m',
             description='Hermann-Mauguin symbol of the space group.',
-            validator=ListValidator(
-                allowed_values=lambda: self._name_h_m_allowed_values,
+            value_spec=AttributeSpec(
+                value=name_h_m,
+                type_=str,
                 default='P 1',
+                content_validator=MembershipValidator(
+                    allowed=lambda: self._name_h_m_allowed_values
+                ),
             ),
-            value=name_h_m,
             cif_handler=CifHandler(
                 names=[
                     '_space_group.name_H-M_alt',
@@ -42,11 +46,14 @@ class SpaceGroup(CategoryItem):
         self._it_coordinate_system_code: DescriptorStr = DescriptorStr(
             name='it_coordinate_system_code',
             description='A qualifier identifying which setting in IT is used.',
-            validator=ListValidator(
-                allowed_values=lambda: self._it_coordinate_system_code_allowed_values,
+            value_spec=AttributeSpec(
+                value=it_coordinate_system_code,
+                type_=str,
                 default=lambda: self._it_coordinate_system_code_default_value,
+                content_validator=MembershipValidator(
+                    allowed=lambda: self._it_coordinate_system_code_allowed_values
+                ),
             ),
-            value=it_coordinate_system_code,
             cif_handler=CifHandler(
                 names=[
                     '_space_group.IT_coordinate_system_code',
@@ -59,7 +66,7 @@ class SpaceGroup(CategoryItem):
         self._identity.category_code = 'space_group'
 
     def _reset_it_coordinate_system_code(self):
-        self.it_coordinate_system_code = self._it_coordinate_system_code_default_value
+        self._it_coordinate_system_code.value = self._it_coordinate_system_code_default_value
 
     @property
     def _name_h_m_allowed_values(self):

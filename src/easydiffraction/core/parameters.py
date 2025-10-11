@@ -11,6 +11,7 @@ import numpy as np
 
 from easydiffraction.core.diagnostics import Diagnostics
 from easydiffraction.core.guards import GuardedBase
+from easydiffraction.core.singletons import UidMapHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import TypeValidator
@@ -55,7 +56,7 @@ class GenericDescriptorBase(GuardedBase):
         self._name = name
         self._description = description
         self._uid: str = self._generate_uid()
-        # UidMapHandler.get().add_to_uid_map(self)
+        UidMapHandler.get().add_to_uid_map(self)
 
         # Initial validated states
         self._value = self._value_spec.validated(
@@ -68,8 +69,11 @@ class GenericDescriptorBase(GuardedBase):
 
     @staticmethod
     def _generate_uid() -> str:
-        # 7b: Use uuid4().hex[:8]
         return uuid.uuid4().hex[:8]
+
+    @property
+    def uid(self):
+        return self._uid
 
     @property
     def name(self) -> str:
@@ -79,9 +83,9 @@ class GenericDescriptorBase(GuardedBase):
     def unique_name(self):
         # 7c: Use filter(None, [...])
         parts = [
-            self.identity.datablock_entry_name,
-            self.identity.category_code,
-            self.identity.category_entry_name,
+            self._identity.datablock_entry_name,
+            self._identity.category_code,
+            self._identity.category_entry_name,
             self.name,
         ]
         return '.'.join(filter(None, parts))
@@ -201,9 +205,9 @@ class GenericParameter(GenericDescriptorFloat):
     @property
     def unique_name(self):
         parts = [
-            self.identity.datablock_entry_name,
-            self.identity.category_code,
-            self.identity.category_entry_name,
+            self._identity.datablock_entry_name,
+            self._identity.category_code,
+            self._identity.category_entry_name,
             self.name,
         ]
         return '.'.join(filter(None, parts))

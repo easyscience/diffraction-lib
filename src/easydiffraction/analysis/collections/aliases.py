@@ -4,9 +4,10 @@
 
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.guards import RegexValidator
+from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorStr
-from easydiffraction.crystallography.cif import CifHandler
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import RegexValidator
 
 
 class Alias(CategoryItem):
@@ -21,11 +22,12 @@ class Alias(CategoryItem):
         self._label: DescriptorStr = DescriptorStr(
             name='label',
             description='...',
-            validator=RegexValidator(
-                pattern=r'^[A-Za-z_][A-Za-z0-9_]*$',
+            value_spec=AttributeSpec(
+                value=label,
+                type_=str,
                 default='...',
+                content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            value=label,
             cif_handler=CifHandler(
                 names=[
                     '_alias.label',
@@ -35,11 +37,12 @@ class Alias(CategoryItem):
         self._param_uid: DescriptorStr = DescriptorStr(
             name='param_uid',
             description='...',
-            validator=RegexValidator(
-                pattern=r'^[A-Za-z_][A-Za-z0-9_]*$',
+            value_spec=AttributeSpec(
+                value=param_uid,
+                type_=str,
                 default='...',
+                content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            value=param_uid,
             cif_handler=CifHandler(
                 names=[
                     '_alias.param_uid',

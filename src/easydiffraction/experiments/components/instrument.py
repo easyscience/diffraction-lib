@@ -4,9 +4,10 @@
 from typing import Optional
 
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.guards import RangeValidator
+from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import Parameter
-from easydiffraction.crystallography.cif import CifHandler
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import RangeValidator
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
 
@@ -31,8 +32,12 @@ class ConstantWavelengthInstrument(InstrumentBase):
         self._setup_wavelength: Parameter = Parameter(
             name='wavelength',
             description='Incident neutron or X-ray wavelength',
-            validator=RangeValidator(default=1.5406),
-            value=setup_wavelength,
+            value_spec=AttributeSpec(
+                value=setup_wavelength,
+                type_=float,
+                default=1.5406,
+                content_validator=RangeValidator(),
+            ),
             units='Å',
             cif_handler=CifHandler(
                 names=[
@@ -43,8 +48,12 @@ class ConstantWavelengthInstrument(InstrumentBase):
         self._calib_twotheta_offset: Parameter = Parameter(
             name='twotheta_offset',
             description='Instrument misalignment offset',
-            validator=RangeValidator(default=0.0),
-            value=calib_twotheta_offset,
+            value_spec=AttributeSpec(
+                value=calib_twotheta_offset,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
             units='deg',
             cif_handler=CifHandler(
                 names=[
@@ -85,8 +94,12 @@ class TimeOfFlightInstrument(InstrumentBase):
         self._setup_twotheta_bank: Parameter = Parameter(
             name='twotheta_bank',
             description='Detector bank position',
-            validator=RangeValidator(default=150.0),
-            value=setup_twotheta_bank,
+            value_spec=AttributeSpec(
+                value=setup_twotheta_bank,
+                type_=float,
+                default=150.0,
+                content_validator=RangeValidator(),
+            ),
             units='deg',
             cif_handler=CifHandler(
                 names=[
@@ -97,8 +110,12 @@ class TimeOfFlightInstrument(InstrumentBase):
         self._calib_d_to_tof_offset: Parameter = Parameter(
             name='d_to_tof_offset',
             description='TOF offset',
-            validator=RangeValidator(default=0.0),
-            value=calib_d_to_tof_offset,
+            value_spec=AttributeSpec(
+                value=calib_d_to_tof_offset,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
             units='µs',
             cif_handler=CifHandler(
                 names=[
@@ -109,8 +126,12 @@ class TimeOfFlightInstrument(InstrumentBase):
         self._calib_d_to_tof_linear: Parameter = Parameter(
             name='d_to_tof_linear',
             description='TOF linear conversion',
-            validator=RangeValidator(default=10000.0),
-            value=calib_d_to_tof_linear,
+            value_spec=AttributeSpec(
+                value=calib_d_to_tof_linear,
+                type_=float,
+                default=10000.0,
+                content_validator=RangeValidator(),
+            ),
             units='µs/Å',
             cif_handler=CifHandler(
                 names=[
@@ -121,8 +142,12 @@ class TimeOfFlightInstrument(InstrumentBase):
         self._calib_d_to_tof_quad: Parameter = Parameter(
             name='d_to_tof_quad',
             description='TOF quadratic correction',
-            validator=RangeValidator(default=-0.00001),
-            value=calib_d_to_tof_quad,
+            value_spec=AttributeSpec(
+                value=calib_d_to_tof_quad,
+                type_=float,
+                default=-0.00001,
+                content_validator=RangeValidator(),
+            ),
             units='µs/Å²',
             cif_handler=CifHandler(
                 names=[
@@ -133,8 +158,12 @@ class TimeOfFlightInstrument(InstrumentBase):
         self._calib_d_to_tof_recip: Parameter = Parameter(
             name='d_to_tof_recip',
             description='TOF reciprocal velocity correction',
-            validator=RangeValidator(default=0.0),
-            value=calib_d_to_tof_recip,
+            value_spec=AttributeSpec(
+                value=calib_d_to_tof_recip,
+                type_=float,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
             units='µs·Å',
             cif_handler=CifHandler(
                 names=[
