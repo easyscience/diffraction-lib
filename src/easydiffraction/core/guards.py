@@ -40,6 +40,9 @@ class GuardedBase(ABC):
         # Always allow private or special attributes without diagnostics
         if key.startswith('_'):
             object.__setattr__(self, key, value)
+            # Also maintain parent linkage for nested objects
+            if key != '_parent' and isinstance(value, GuardedBase):
+                object.__setattr__(value, '_parent', self)
             return
 
         # Handle public attributes with diagnostics
