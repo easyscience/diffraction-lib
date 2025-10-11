@@ -49,7 +49,8 @@ sample_model.cell.length_a = 3.88
 
 # %%
 sample_model.atom_sites.add_from_args(
-    label='La', type_symbol='La', fract_x=0, fract_y=0, fract_z=0, b_iso=0.5, occupancy=0.5, wyckoff_letter='a'
+    label='La', type_symbol='La', fract_x=0., fract_y=0., fract_z=0, b_iso=0.5, occupancy=0.5,
+    wyckoff_letter='a'
 )
 sample_model.atom_sites.add_from_args(
     label='Ba', type_symbol='Ba', fract_x=0, fract_y=0, fract_z=0, b_iso=0.5, occupancy=0.5, wyckoff_letter='a'

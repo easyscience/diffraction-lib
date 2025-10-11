@@ -20,7 +20,6 @@ class Cell(CategoryItem):
         self._length_a = Parameter(
             value_spec=AttributeSpec(
                 value=length_a,
-                type_=str,
                 default=10.0,
                 content_validator=RangeValidator(ge=0, le=1000),
             ),

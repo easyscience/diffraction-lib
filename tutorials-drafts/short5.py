@@ -4,14 +4,7 @@ from typing import Optional
 from typing import ParamSpec
 from typing import TypeVar
 
-from easydiffraction.core.categories import CategoryItem, CategoryCollection
-from easydiffraction.core.datablocks import DatablockItem, DatablockCollection
-from easydiffraction.core.guards import RangeValidator, \
-    ListValidator, RegexValidator
-from easydiffraction.core.parameters import DescriptorStr, Parameter
-from easydiffraction.crystallography.cif import CifHandler
 from easydiffraction.utils.logging import log  # type: ignore
-#from easydiffraction.sample_models.components.cell import Cell # type: ignore
 
 from easydiffraction.sample_models.components.cell import Cell  # type: ignore
 from easydiffraction.sample_models.components.space_group import SpaceGroup  # type: ignore
@@ -19,7 +12,6 @@ from easydiffraction.sample_models.collections.atom_sites import AtomSite, AtomS
 
 from easydiffraction.sample_models.sample_model import BaseSampleModel, SampleModel
 from easydiffraction.sample_models.sample_models import SampleModels
-
 
 from easydiffraction.analysis.collections.constraints import Constraint
 from easydiffraction.analysis.collections.constraints import Constraints
@@ -44,24 +36,14 @@ if __name__ == '__main__':
     s1.fract_x = 'qwe'
     assert s1.fract_x.value == 1.234
 
-    log.debug(f's1.fract_x.free: {s1.fract_x.free}')
-    #assert s1.fract_x.free == False
+    assert s1.fract_x.free == False
     s1.fract_x.free = True
-    #assert s1.fract_x.free == True
-    log.debug(f's1.fract_x.free: {s1.fract_x.free}')
+    assert s1.fract_x.free == True
     s1.fract_x.free = 'abc'
-    #assert s1.fract_x.free == True
-    log.debug(f's1.fract_x.free: {s1.fract_x.free}')
-
-    exit()
-
+    assert s1.fract_x.free == True
 
     s1 = AtomSite(label='Si', type_symbol='Si', fract_x='uuuu')
     assert s1.fract_x.value == 0.0
-
-
-
-    exit()
 
     log.info('-------- Cell --------')
 
@@ -89,7 +71,7 @@ if __name__ == '__main__':
     assert getattr(c.length_b, 'qwe', None) is None
     c.length_b.description = 'desc'  # type: ignore
     assert c.length_b.description == 'Length of the b axis of the unit cell.'  # type: ignore
-    assert c.length_b._public_readonly_attrs() == {'as_cif', 'cif_uid', 'constrained',
+    assert c.length_b._public_readonly_attrs() == {'as_cif', 'constrained',
                                                    'description',
                                                    'unique_name', 'name', 'parameters',
                                                    'uid', 'units'}
@@ -98,7 +80,7 @@ if __name__ == '__main__':
     c.qwe = 'qwe'
     assert getattr(c.length_b, 'qwe', None) is None
     assert c.length_b._cif_handler.names == ['_cell.length_b']
-    assert len(c.length_b._minimizer_uid) == 16
+    assert len(c.length_b._minimizer_uid) == 8
     assert(c.parameters[1].value == 3.3)  # type: ignore
 
     log.info(f'-------- SpaceGroup --------')
@@ -237,6 +219,8 @@ _atom_site.adp_type
 Si Si 0.456 0.0 0.0 a 1.0 0.0 Biso
 La La 0.0 0.0 0.0 a 1.0 0.0 Biso"""
 
+    print(models['lbco'].as_cif)
+
     assert models['lbco'].as_cif =="""data_lbco
 
 _cell.length_a 10.0
@@ -247,7 +231,7 @@ _cell.angle_beta 90.0
 _cell.angle_gamma 90.0
 
 _space_group.name_H-M_alt "P 1"
-_space_group.IT_coordinate_system_code
+_space_group.IT_coordinate_system_code 
 
 loop_
 _atom_site.label
@@ -272,7 +256,7 @@ _cell.angle_beta 90.0
 _cell.angle_gamma 90.0
 
 _space_group.name_H-M_alt "P 1"
-_space_group.IT_coordinate_system_code
+_space_group.IT_coordinate_system_code 
 
 loop_
 _atom_site.label
