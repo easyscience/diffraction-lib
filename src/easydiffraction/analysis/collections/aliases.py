@@ -1,12 +1,12 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-
 from easydiffraction.core.categories import CategoryCollection
 from easydiffraction.core.categories import CategoryItem
 from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorStr
 from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RegexValidator
 
 
@@ -24,7 +24,7 @@ class Alias(CategoryItem):
             description='...',
             value_spec=AttributeSpec(
                 value=label,
-                type_=str,
+                type_=DataTypes.STRING,
                 default='...',
                 content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
@@ -39,7 +39,7 @@ class Alias(CategoryItem):
             description='...',
             value_spec=AttributeSpec(
                 value=param_uid,
-                type_=str,
+                type_=DataTypes.STRING,
                 default='...',
                 content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),

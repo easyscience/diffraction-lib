@@ -16,10 +16,16 @@ class Diagnostics:
 
     @staticmethod
     def type_override_error(cls_name: str, expected, got):
+        """Report an invalid DataTypes override between descriptor and
+        AttributeSpec.
+        """
+        expected_label = str(expected) if hasattr(expected, 'name') else str(expected)
+        got_label = str(got) if hasattr(got, 'name') else str(got)
+
         msg = (
             f'Invalid type override in <{cls_name}>. '
-            f'Descriptor enforces `{expected.__name__}`, '
-            f'but AttributeSpec defines `{got.__name__}`.'
+            f'Descriptor enforces `{expected_label}`, '
+            f'but AttributeSpec defines `{got_label}`.'
         )
         Diagnostics._log_error(msg, exc_type=TypeError)
 

@@ -13,6 +13,7 @@ from easydiffraction.core.diagnostics import Diagnostics
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.singletons import UidMapHandler
 from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import TypeValidator
 
@@ -21,7 +22,7 @@ class GenericDescriptorBase(GuardedBase):
     """..."""
 
     _BOOL_SPEC_TEMPLATE = AttributeSpec(
-        type_=bool,
+        type_=DataTypes.BOOL,
         default=False,
     )
 
@@ -122,7 +123,7 @@ class GenericDescriptorBase(GuardedBase):
 
 @final
 class GenericDescriptorStr(GenericDescriptorBase):
-    _value_type = str
+    _value_type = DataTypes.STRING
 
     def __init__(
         self,
@@ -133,7 +134,7 @@ class GenericDescriptorStr(GenericDescriptorBase):
 
 @final
 class GenericDescriptorFloat(GenericDescriptorBase):
-    _value_type = float
+    _value_type = DataTypes.NUMERIC
 
     def __init__(
         self,
@@ -169,15 +170,15 @@ class GenericParameter(GenericDescriptorFloat):
         self._free_spec = self._BOOL_SPEC_TEMPLATE
         self._free = self._free_spec.default
         self._uncertainty_spec = AttributeSpec(
-            type_=float,
+            type_=DataTypes.NUMERIC,
             content_validator=RangeValidator(ge=0),
         )
         self._uncertainty = self._uncertainty_spec.default
-        self._fit_min_spec = AttributeSpec(type_=float, default=-np.inf)
+        self._fit_min_spec = AttributeSpec(type_=DataTypes.NUMERIC, default=-np.inf)
         self._fit_min = self._fit_min_spec.default
-        self._fit_max_spec = AttributeSpec(type_=float, default=np.inf)
+        self._fit_max_spec = AttributeSpec(type_=DataTypes.NUMERIC, default=np.inf)
         self._fit_max = self._fit_max_spec.default
-        self._start_value_spec = AttributeSpec(type_=float, default=0.0)
+        self._start_value_spec = AttributeSpec(type_=DataTypes.NUMERIC, default=0.0)
         self._start_value = self._start_value_spec.default
         self._constrained_spec = self._BOOL_SPEC_TEMPLATE
         self._constrained = self._constrained_spec.default

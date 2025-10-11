@@ -17,6 +17,7 @@ from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorFloat
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
@@ -39,7 +40,7 @@ class Point(CategoryItem):
             'representing the background in a calculated diffractogram.',
             value_spec=AttributeSpec(
                 value=x,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -55,7 +56,7 @@ class Point(CategoryItem):
             'representing the background in a calculated diffractogram',
             value_spec=AttributeSpec(
                 value=y,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),  # TODO: rename to intensity
@@ -110,7 +111,7 @@ class PolynomialTerm(CategoryItem):
             description='Order used in a Chebyshev polynomial background term',
             value_spec=AttributeSpec(
                 value=order,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -125,7 +126,7 @@ class PolynomialTerm(CategoryItem):
             description='Coefficient used in a Chebyshev polynomial background term',
             value_spec=AttributeSpec(
                 value=coef,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),

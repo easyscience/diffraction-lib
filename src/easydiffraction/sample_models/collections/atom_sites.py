@@ -9,6 +9,7 @@ from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorStr
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
@@ -35,7 +36,7 @@ class AtomSite(CategoryItem):
             description='Unique identifier for the atom site.',
             value_spec=AttributeSpec(
                 value=label,
-                type_=str,
+                type_=DataTypes.STRING,
                 default='Si',
                 # TODO: the following pattern is valid for dict key
                 #  (keywords are not checked). CIF label is less strict.
@@ -53,7 +54,7 @@ class AtomSite(CategoryItem):
             description='Chemical symbol of the atom at this site.',
             value_spec=AttributeSpec(
                 value=type_symbol,
-                type_=str,
+                type_=DataTypes.STRING,
                 default='Tb',
                 content_validator=MembershipValidator(allowed=self._type_symbol_allowed_values),
             ),
@@ -68,7 +69,7 @@ class AtomSite(CategoryItem):
             description='Fractional x-coordinate of the atom site within the unit cell.',
             value_spec=AttributeSpec(
                 value=fract_x,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -83,7 +84,7 @@ class AtomSite(CategoryItem):
             description='Fractional y-coordinate of the atom site within the unit cell.',
             value_spec=AttributeSpec(
                 value=fract_y,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -98,7 +99,7 @@ class AtomSite(CategoryItem):
             description='Fractional z-coordinate of the atom site within the unit cell.',
             value_spec=AttributeSpec(
                 value=fract_z,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -114,7 +115,7 @@ class AtomSite(CategoryItem):
             'atom site within the space group.',
             value_spec=AttributeSpec(
                 value=wyckoff_letter,
-                type_=str,
+                type_=DataTypes.STRING,
                 default=self._wyckoff_letter_default_value,
                 content_validator=MembershipValidator(allowed=self._wyckoff_letter_allowed_values),
             ),
@@ -131,7 +132,7 @@ class AtomSite(CategoryItem):
             'fraction of the site occupied by the atom type.',
             value_spec=AttributeSpec(
                 value=occupancy,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=1.0,
                 content_validator=RangeValidator(),
             ),
@@ -146,7 +147,7 @@ class AtomSite(CategoryItem):
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
             value_spec=AttributeSpec(
                 value=b_iso,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -163,7 +164,7 @@ class AtomSite(CategoryItem):
             'used (e.g., Biso, Uiso, Uani, Bani).',
             value_spec=AttributeSpec(
                 value=adp_type,
-                type_=str,
+                type_=DataTypes.STRING,
                 default='Biso',
                 content_validator=MembershipValidator(allowed=['Biso']),
             ),

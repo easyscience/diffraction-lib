@@ -7,6 +7,7 @@ from easydiffraction.core.categories import CategoryItem
 from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
@@ -34,7 +35,7 @@ class ConstantWavelengthInstrument(InstrumentBase):
             description='Incident neutron or X-ray wavelength',
             value_spec=AttributeSpec(
                 value=setup_wavelength,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=1.5406,
                 content_validator=RangeValidator(),
             ),
@@ -50,7 +51,7 @@ class ConstantWavelengthInstrument(InstrumentBase):
             description='Instrument misalignment offset',
             value_spec=AttributeSpec(
                 value=calib_twotheta_offset,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -96,7 +97,7 @@ class TimeOfFlightInstrument(InstrumentBase):
             description='Detector bank position',
             value_spec=AttributeSpec(
                 value=setup_twotheta_bank,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=150.0,
                 content_validator=RangeValidator(),
             ),
@@ -112,7 +113,7 @@ class TimeOfFlightInstrument(InstrumentBase):
             description='TOF offset',
             value_spec=AttributeSpec(
                 value=calib_d_to_tof_offset,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -128,7 +129,7 @@ class TimeOfFlightInstrument(InstrumentBase):
             description='TOF linear conversion',
             value_spec=AttributeSpec(
                 value=calib_d_to_tof_linear,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=10000.0,
                 content_validator=RangeValidator(),
             ),
@@ -144,7 +145,7 @@ class TimeOfFlightInstrument(InstrumentBase):
             description='TOF quadratic correction',
             value_spec=AttributeSpec(
                 value=calib_d_to_tof_quad,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=-0.00001,
                 content_validator=RangeValidator(),
             ),
@@ -160,7 +161,7 @@ class TimeOfFlightInstrument(InstrumentBase):
             description='TOF reciprocal velocity correction',
             value_spec=AttributeSpec(
                 value=calib_d_to_tof_recip,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),

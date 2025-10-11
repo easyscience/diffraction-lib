@@ -5,6 +5,7 @@ import functools
 import re
 from abc import ABC
 from abc import abstractmethod
+from enum import Enum
 
 import numpy as np
 from typeguard import TypeCheckError
@@ -12,6 +13,26 @@ from typeguard import typechecked
 
 from easydiffraction.core.diagnostics import Diagnostics
 from easydiffraction.utils.logging import log
+
+# ==============================================================
+# Shared constants
+# ==============================================================
+
+
+class DataTypes(Enum):
+    NUMERIC = (int, float, np.integer, np.floating, np.number)
+    STRING = (str,)
+    BOOL = (bool,)
+    ANY = (object,)  # fallback for unconstrained
+
+    def __str__(self):
+        return self.name.lower()
+
+    @property
+    def expected_type(self):
+        """Convenience alias for tuple of allowed Python types."""
+        return self.value
+
 
 # Runtime type checking decorator for validating those methods
 # annotated with type hints, which are writable for the user, and
@@ -80,23 +101,25 @@ class BaseValidator(ABC):
 class TypeValidator(BaseValidator):
     """Ensures a value is of the expected Python type."""
 
-    def __init__(self, expected_type):
-        self.expected_type = expected_type
+    def __init__(self, expected_type: DataTypes):
+        self.expected_type = expected_type.expected_type
+        self.expected_label = str(expected_type)
 
     def validated(self, value, name, default=None, current=None):
         if current is None and value is None:
             Diagnostics.none_value(name, default)
             return default
+
         if not isinstance(value, self.expected_type):
-            expected_type = f'{self.expected_type.__name__}'
             Diagnostics.type_mismatch(
                 name,
                 value,
-                expected_type,
+                expected_type=self.expected_label,
                 current=current,
                 default=default,
             )
             return self._fallback(current, default)
+
         Diagnostics.validated(name, value, stage=ValidationStage.TYPE)
         return value
 
@@ -117,16 +140,7 @@ class RangeValidator(BaseValidator):
         if current is None and value is None:
             Diagnostics.none_value(name, default)
             return default
-        # 3b: Add numeric type check
-        if not isinstance(value, (int, float, np.integer, np.floating, np.number)):
-            Diagnostics.type_mismatch(
-                name,
-                value,
-                expected_type='numeric',
-                current=current,
-                default=default,
-            )
-            return self._fallback(current, default)
+
         if not (self.ge <= value <= self.le):
             Diagnostics.range_mismatch(
                 name,
@@ -137,6 +151,7 @@ class RangeValidator(BaseValidator):
                 default=default,
             )
             return self._fallback(current, default)
+
         Diagnostics.validated(name, value, stage=ValidationStage.RANGE)
         return value
 
@@ -159,6 +174,7 @@ class MembershipValidatorOld(BaseValidator):
         if current is None and value is None:
             Diagnostics.none_value(name, default)
             return default
+
         if value not in self.allowed:
             Diagnostics.choice_mismatch(
                 name,
@@ -168,6 +184,7 @@ class MembershipValidatorOld(BaseValidator):
                 default=default,
             )
             return self._fallback(current, default)
+
         Diagnostics.validated(name, value, stage=ValidationStage.MEMBERSHIP)
         return value
 
@@ -184,7 +201,13 @@ class MembershipValidator(BaseValidator):
         # Do not convert immediately to list — may be callable
         self.allowed = allowed
 
-    def validated(self, value, name, default=None, current=None):
+    def validated(
+        self,
+        value,
+        name,
+        default=None,
+        current=None,
+    ):
         # Dynamically evaluate allowed if callable (e.g. lambda)
         allowed_values = self.allowed() if callable(self.allowed) else self.allowed
 
@@ -218,15 +241,7 @@ class RegexValidator(BaseValidator):
         if current is None and value is None:
             Diagnostics.none_value(name, default)
             return default
-        if not isinstance(value, str):
-            Diagnostics.type_mismatch(
-                name,
-                value,
-                expected_type='str',
-                current=current,
-                default=default,
-            )
-            return self._fallback(current, default)
+
         if not self.pattern.fullmatch(value):
             Diagnostics.regex_mismatch(
                 name,
@@ -236,6 +251,7 @@ class RegexValidator(BaseValidator):
                 default=default,
             )
             return self._fallback(current, default)
+
         Diagnostics.validated(name, value, stage=ValidationStage.REGEX)
         return value
 

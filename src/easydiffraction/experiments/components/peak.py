@@ -7,6 +7,7 @@ from easydiffraction.core.categories import CategoryItem
 from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.experiments.components.experiment_type import BeamModeEnum
 from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
@@ -74,7 +75,7 @@ class ConstantWavelengthBroadeningMixin:
             'sample size and instrument resolution)',
             value_spec=AttributeSpec(
                 value=0.01,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.01,
                 content_validator=RangeValidator(),
             ),
@@ -90,7 +91,7 @@ class ConstantWavelengthBroadeningMixin:
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
             value_spec=AttributeSpec(
                 value=-0.01,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=-0.01,
                 content_validator=RangeValidator(),
             ),
@@ -106,7 +107,7 @@ class ConstantWavelengthBroadeningMixin:
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
             value_spec=AttributeSpec(
                 value=0.02,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.02,
                 content_validator=RangeValidator(),
             ),
@@ -122,7 +123,7 @@ class ConstantWavelengthBroadeningMixin:
             description='Lorentzian broadening coefficient (dependent on sample strain effects)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -139,7 +140,7 @@ class ConstantWavelengthBroadeningMixin:
             'microstructural defects and strain)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -199,7 +200,7 @@ class TimeOfFlightBroadeningMixin:
             description='Gaussian broadening coefficient (instrumental resolution)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -215,7 +216,7 @@ class TimeOfFlightBroadeningMixin:
             description='Gaussian broadening coefficient (dependent on d-spacing)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -231,7 +232,7 @@ class TimeOfFlightBroadeningMixin:
             description='Gaussian broadening coefficient (instrument-dependent term)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -247,7 +248,7 @@ class TimeOfFlightBroadeningMixin:
             description='Lorentzian broadening coefficient (dependent on microstrain effects)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -263,7 +264,7 @@ class TimeOfFlightBroadeningMixin:
             description='Lorentzian broadening coefficient (dependent on d-spacing)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -279,7 +280,7 @@ class TimeOfFlightBroadeningMixin:
             description='Lorentzian broadening coefficient (instrument-dependent term)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -296,7 +297,7 @@ class TimeOfFlightBroadeningMixin:
             'to Lorentzian contributions in TOF profiles',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -313,7 +314,7 @@ class TimeOfFlightBroadeningMixin:
             'to Lorentzian contributions in TOF profiles',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -397,7 +398,7 @@ class EmpiricalAsymmetryMixin:
             description='Empirical asymmetry coefficient p1',
             value_spec=AttributeSpec(
                 value=0.1,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.1,
                 content_validator=RangeValidator(),
             ),
@@ -413,7 +414,7 @@ class EmpiricalAsymmetryMixin:
             description='Empirical asymmetry coefficient p2',
             value_spec=AttributeSpec(
                 value=0.2,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.2,
                 content_validator=RangeValidator(),
             ),
@@ -429,7 +430,7 @@ class EmpiricalAsymmetryMixin:
             description='Empirical asymmetry coefficient p3',
             value_spec=AttributeSpec(
                 value=0.3,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.3,
                 content_validator=RangeValidator(),
             ),
@@ -445,7 +446,7 @@ class EmpiricalAsymmetryMixin:
             description='Empirical asymmetry coefficient p4',
             value_spec=AttributeSpec(
                 value=0.4,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.4,
                 content_validator=RangeValidator(),
             ),
@@ -497,7 +498,7 @@ class FcjAsymmetryMixin:
             description='FCJ asymmetry coefficient 1',
             value_spec=AttributeSpec(
                 value=0.01,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.01,
                 content_validator=RangeValidator(),
             ),
@@ -513,7 +514,7 @@ class FcjAsymmetryMixin:
             description='FCJ asymmetry coefficient 2',
             value_spec=AttributeSpec(
                 value=0.02,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.02,
                 content_validator=RangeValidator(),
             ),
@@ -549,7 +550,7 @@ class IkedaCarpenterAsymmetryMixin:
             description='Ikeda-Carpenter asymmetry parameter α₀',
             value_spec=AttributeSpec(
                 value=0.01,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.01,
                 content_validator=RangeValidator(),
             ),
@@ -565,7 +566,7 @@ class IkedaCarpenterAsymmetryMixin:
             description='Ikeda-Carpenter asymmetry parameter α₁',
             value_spec=AttributeSpec(
                 value=0.02,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.02,
                 content_validator=RangeValidator(),
             ),
@@ -602,7 +603,7 @@ class PairDistributionFunctionBroadeningMixin:
             '(affects high-r PDF peak amplitude)',
             value_spec=AttributeSpec(
                 value=0.05,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.05,
                 content_validator=RangeValidator(),
             ),
@@ -619,7 +620,7 @@ class PairDistributionFunctionBroadeningMixin:
             '(thermal and model uncertainty contribution)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -636,7 +637,7 @@ class PairDistributionFunctionBroadeningMixin:
             'transform (controls real-space resolution)',
             value_spec=AttributeSpec(
                 value=25.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=25.0,
                 content_validator=RangeValidator(),
             ),
@@ -652,7 +653,7 @@ class PairDistributionFunctionBroadeningMixin:
             description='PDF peak sharpening coefficient (1/r dependence)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -668,7 +669,7 @@ class PairDistributionFunctionBroadeningMixin:
             description='PDF peak sharpening coefficient (1/r² dependence)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -684,7 +685,7 @@ class PairDistributionFunctionBroadeningMixin:
             description='Particle diameter for spherical envelope damping correction in PDF',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),

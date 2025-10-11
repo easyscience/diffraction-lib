@@ -8,6 +8,7 @@ from easydiffraction.core.categories import CategoryItem
 from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorFloat
 from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_table
@@ -27,7 +28,7 @@ class ExcludedRegion(CategoryItem):
             description='Start of the excluded region.',
             value_spec=AttributeSpec(
                 value=start,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -42,7 +43,7 @@ class ExcludedRegion(CategoryItem):
             description='End of the excluded region.',
             value_spec=AttributeSpec(
                 value=end,
-                type_=float,
+                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),

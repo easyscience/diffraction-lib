@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-
 from cryspy.A_functions_base.function_2_space_group import ACCESIBLE_NAME_HM_SHORT
 from cryspy.A_functions_base.function_2_space_group import (
     get_it_coordinate_system_codes_by_it_number,
@@ -12,6 +11,7 @@ from easydiffraction.core.categories import CategoryItem
 from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorStr
 from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import MembershipValidator
 
 
@@ -28,7 +28,7 @@ class SpaceGroup(CategoryItem):
             description='Hermann-Mauguin symbol of the space group.',
             value_spec=AttributeSpec(
                 value=name_h_m,
-                type_=str,
+                type_=DataTypes.STRING,
                 default='P 1',
                 content_validator=MembershipValidator(
                     allowed=lambda: self._name_h_m_allowed_values
@@ -48,7 +48,7 @@ class SpaceGroup(CategoryItem):
             description='A qualifier identifying which setting in IT is used.',
             value_spec=AttributeSpec(
                 value=it_coordinate_system_code,
-                type_=str,
+                type_=DataTypes.STRING,
                 default=lambda: self._it_coordinate_system_code_default_value,
                 content_validator=MembershipValidator(
                     allowed=lambda: self._it_coordinate_system_code_allowed_values

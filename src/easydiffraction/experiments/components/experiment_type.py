@@ -7,6 +7,7 @@ from easydiffraction.core.categories import CategoryItem
 from easydiffraction.core.parameters import CifHandler
 from easydiffraction.core.parameters import DescriptorStr
 from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import MembershipValidator
 
 
@@ -87,7 +88,7 @@ class ExperimentType(CategoryItem):
             'powder diffraction or single crystal diffraction',
             value_spec=AttributeSpec(
                 value=sample_form,
-                type_=str,
+                type_=DataTypes.STRING,
                 default=SampleFormEnum.default(),
                 content_validator=MembershipValidator(
                     allowed=[member.value for member in SampleFormEnum]
@@ -106,7 +107,7 @@ class ExperimentType(CategoryItem):
             'constant wavelength (CW) or time-of-flight (TOF) method',
             value_spec=AttributeSpec(
                 value=beam_mode,
-                type_=str,
+                type_=DataTypes.STRING,
                 default=BeamModeEnum.default(),
                 content_validator=MembershipValidator(
                     allowed=[member.value for member in BeamModeEnum]
@@ -123,7 +124,7 @@ class ExperimentType(CategoryItem):
             description='Specifies whether the measurement uses neutrons or X-rays',
             value_spec=AttributeSpec(
                 value=radiation_probe,
-                type_=str,
+                type_=DataTypes.STRING,
                 default=RadiationProbeEnum.default(),
                 content_validator=MembershipValidator(
                     allowed=[member.value for member in RadiationProbeEnum]
@@ -142,7 +143,7 @@ class ExperimentType(CategoryItem):
             '(for pair distribution function analysis - PDF)',
             value_spec=AttributeSpec(
                 value=scattering_type,
-                type_=str,
+                type_=DataTypes.STRING,
                 default=ScatteringTypeEnum.default(),
                 content_validator=MembershipValidator(
                     allowed=[member.value for member in ScatteringTypeEnum]
