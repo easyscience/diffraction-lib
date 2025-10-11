@@ -3,7 +3,8 @@
 
 from __future__ import annotations
 
-import uuid
+import secrets
+import string
 from typing import Any
 from typing import final
 
@@ -69,8 +70,9 @@ class GenericDescriptorBase(GuardedBase):
         return f'<{self.unique_name} = {self.value!r}>'
 
     @staticmethod
-    def _generate_uid() -> str:
-        return uuid.uuid4().hex[:8]
+    def _generate_uid(length: int = 16) -> str:
+        letters = string.ascii_lowercase
+        return ''.join(secrets.choice(letters) for _ in range(length))
 
     @property
     def uid(self):
