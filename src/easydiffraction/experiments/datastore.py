@@ -9,8 +9,8 @@ from typing import Optional
 import numpy as np
 from typeguard import typechecked
 
-from easydiffraction.experiments.components.experiment_type import BeamModeEnum
-from easydiffraction.experiments.components.experiment_type import SampleFormEnum
+from easydiffraction.experiments.enums import BeamModeEnum
+from easydiffraction.experiments.enums import SampleFormEnum
 
 
 class BaseDatastore:

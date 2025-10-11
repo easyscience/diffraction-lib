@@ -6,8 +6,8 @@ from abc import abstractmethod
 
 import numpy as np
 
-from easydiffraction.experiments.components.experiment_type import BeamModeEnum
-from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
+from easydiffraction.experiments.enums import BeamModeEnum
+from easydiffraction.experiments.enums import ScatteringTypeEnum
 from easydiffraction.utils.utils import is_notebook
 
 DEFAULT_ENGINE = 'plotly' if is_notebook() else 'asciichartpy'

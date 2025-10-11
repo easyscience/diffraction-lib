@@ -12,7 +12,7 @@ from varname import varname
 
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guards import GuardedBase
-from easydiffraction.experiments.components.experiment_type import BeamModeEnum
+from easydiffraction.experiments.enums import BeamModeEnum
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.plotting.plotting import Plotter
 from easydiffraction.sample_models.sample_models import SampleModels

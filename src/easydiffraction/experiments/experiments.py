@@ -4,10 +4,10 @@
 from typeguard import typechecked
 
 from easydiffraction.core.datablocks import DatablockCollection
-from easydiffraction.experiments.components.experiment_type import BeamModeEnum
-from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
-from easydiffraction.experiments.components.experiment_type import SampleFormEnum
-from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
+from easydiffraction.experiments.enums import BeamModeEnum
+from easydiffraction.experiments.enums import RadiationProbeEnum
+from easydiffraction.experiments.enums import SampleFormEnum
+from easydiffraction.experiments.enums import ScatteringTypeEnum
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.utils.formatting import paragraph
 

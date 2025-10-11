@@ -8,8 +8,8 @@ from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
-from easydiffraction.experiments.components.experiment_type import BeamModeEnum
-from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
+from easydiffraction.experiments.enums import BeamModeEnum
+from easydiffraction.experiments.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
 
 
