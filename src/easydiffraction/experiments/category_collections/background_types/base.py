@@ -157,36 +157,23 @@ class BackgroundFactory:
     BT = BackgroundTypeEnum
 
     @classmethod
-    def _supported_map(cls) -> dict:
-        # Lazy import to avoid circulars
-        from easydiffraction.experiments.collections.background_types.chebyshev import (
-            ChebyshevPolynomialBackground,
-        )
-        from easydiffraction.experiments.collections.background_types.line_segment import (
-            LineSegmentBackground,
-        )
-
-        return {
-            cls.BT.LINE_SEGMENT: LineSegmentBackground,
-            cls.BT.CHEBYSHEV: ChebyshevPolynomialBackground,
-        }
-
-    @classmethod
     def create(
         cls,
         background_type: Optional[BackgroundTypeEnum] = None,
     ) -> BackgroundBase:
+        from easydiffraction.experiments.category_collections.background_types.registry import (
+            SUPPORTED_BACKGROUNDS,
+        )
+
         if background_type is None:
             background_type = BackgroundTypeEnum.default()
 
-        supported = cls._supported_map()
-        if background_type not in supported:
-            supported_types = list(supported.keys())
-
+        if background_type not in SUPPORTED_BACKGROUNDS:
+            supported_types = list(SUPPORTED_BACKGROUNDS.keys())
             raise ValueError(
                 f"Unsupported background type: '{background_type}'.\n"
                 f' Supported background types: {[bt.value for bt in supported_types]}'
             )
 
-        background_class = supported[background_type]
+        background_class = SUPPORTED_BACKGROUNDS[background_type]
         return background_class()

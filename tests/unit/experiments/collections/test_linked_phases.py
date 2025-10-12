@@ -1,5 +1,5 @@
-from easydiffraction.experiments.collections.linked_phases import LinkedPhase
-from easydiffraction.experiments.collections.linked_phases import LinkedPhases
+from easydiffraction.experiments.category_collections.linked_phases import LinkedPhase
+from easydiffraction.experiments.category_collections.linked_phases import LinkedPhases
 
 
 def test_linked_phase_category_key():

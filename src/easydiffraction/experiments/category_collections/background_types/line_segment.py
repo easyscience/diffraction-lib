@@ -5,8 +5,8 @@ from typing import List
 
 from scipy.interpolate import interp1d
 
-from easydiffraction.experiments.collections.background_types.base import BackgroundBase
-from easydiffraction.experiments.collections.background_types.base import Point
+from easydiffraction.experiments.category_collections.background_types.base import BackgroundBase
+from easydiffraction.experiments.category_collections.background_types.base import Point
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_table

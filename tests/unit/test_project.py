@@ -1,16 +1,15 @@
 import datetime
-import os
 import pathlib
 import time
-from unittest.mock import MagicMock, ANY
+from unittest.mock import MagicMock
 from unittest.mock import patch
 
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.project import Project
-from easydiffraction.project import ProjectInfo
+from easydiffraction.project.project import Project
+from easydiffraction.project.project_info import ProjectInfo
 from easydiffraction.sample_models.sample_models import SampleModels
-from easydiffraction.summary import Summary
+from easydiffraction.summary.summary import Summary
 
 
 def _normalize_posix(p: pathlib.Path) -> str:

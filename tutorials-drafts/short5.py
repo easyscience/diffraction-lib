@@ -14,8 +14,8 @@ from easydiffraction.sample_models.sample_model import SampleModel
 from easydiffraction.sample_models.sample_model_types.base import BaseSampleModel
 from easydiffraction.sample_models.sample_models import SampleModels
 
-from easydiffraction.analysis.collections.constraints import Constraint
-from easydiffraction.analysis.collections.constraints import Constraints
+from easydiffraction.analysis.category_collections.constraints import Constraint
+from easydiffraction.analysis.category_collections.constraints import Constraints
 
 P = ParamSpec('P')
 R = TypeVar('R')

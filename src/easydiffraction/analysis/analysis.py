@@ -8,9 +8,9 @@ from typing import Union
 import pandas as pd
 
 from easydiffraction.analysis.calculators.calculator_factory import CalculatorFactory
-from easydiffraction.analysis.collections.aliases import Aliases
-from easydiffraction.analysis.collections.constraints import Constraints
-from easydiffraction.analysis.collections.joint_fit_experiments import JointFitExperiments
+from easydiffraction.analysis.category_collections.aliases import Aliases
+from easydiffraction.analysis.category_collections.constraints import Constraints
+from easydiffraction.analysis.category_collections.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.minimization import DiffractionMinimizer
 from easydiffraction.analysis.minimizers.minimizer_factory import MinimizerFactory
 from easydiffraction.core.parameters import DescriptorFloat

@@ -6,8 +6,8 @@ from typing import Union
 
 from numpy.polynomial.chebyshev import chebval
 
-from easydiffraction.experiments.collections.background_types.base import BackgroundBase
-from easydiffraction.experiments.collections.background_types.base import PolynomialTerm
+from easydiffraction.experiments.category_collections.background_types.base import BackgroundBase
+from easydiffraction.experiments.category_collections.background_types.base import PolynomialTerm
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_table
