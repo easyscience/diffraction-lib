@@ -9,20 +9,11 @@ from typing import Sequence
 import numpy as np
 
 
-def _format_value(value) -> str:
+def format_value(value) -> str:
     """Format a single CIF value, quoting strings with whitespace."""
     if isinstance(value, str) and (' ' in value or '\t' in value):
         return f'"{value}"'
     return str(value)
-
-
-def format_scalar(value) -> str:
-    """Public helper to format a scalar CIF value consistently.
-
-    - Quotes strings that contain whitespace.
-    - Leaves numbers as-is.
-    """
-    return _format_value(value)
 
 
 def param_to_cif(param) -> str:
@@ -32,7 +23,7 @@ def param_to_cif(param) -> str:
     """
     tags: Sequence[str] = param._cif_handler.names  # type: ignore[attr-defined]
     main_key: str = tags[0]
-    return f'{main_key} {_format_value(param.value)}'
+    return f'{main_key} {format_value(param.value)}'
 
 
 def category_item_to_cif(item) -> str:
@@ -66,7 +57,7 @@ def category_collection_to_cif(collection) -> str:
 
     # Rows
     for item in collection.values():
-        row_vals = [_format_value(p.value) for p in item.parameters]
+        row_vals = [format_value(p.value) for p in item.parameters]
         lines.append(' '.join(row_vals))
 
     return '\n'.join(lines)
@@ -195,11 +186,11 @@ def experiment_to_cif(experiment) -> str:
 
 def analysis_to_cif(analysis) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
-    cur_min = format_scalar(analysis.current_minimizer)
+    cur_min = format_value(analysis.current_minimizer)
     lines: list[str] = []
-    lines.append(f'_analysis.calculator_engine  {format_scalar(analysis.current_calculator)}')
+    lines.append(f'_analysis.calculator_engine  {format_value(analysis.current_calculator)}')
     lines.append(f'_analysis.fitting_engine  {cur_min}')
-    lines.append(f'_analysis.fit_mode  {format_scalar(analysis.fit_mode)}')
+    lines.append(f'_analysis.fit_mode  {format_value(analysis.fit_mode)}')
     lines.append('')
     lines.append(analysis.aliases.as_cif)
     lines.append('')
