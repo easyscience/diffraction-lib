@@ -10,7 +10,7 @@ import numpy as np
 from easydiffraction.experiments.collections.background import BackgroundFactory
 from easydiffraction.experiments.collections.background import BackgroundTypeEnum
 from easydiffraction.experiments.experiment_types.base import BasePowderExperiment
-from easydiffraction.experiments.experiment_types.base import InstrumentMixin
+from easydiffraction.experiments.experiment_types.instrument_mixin import InstrumentMixin
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_table

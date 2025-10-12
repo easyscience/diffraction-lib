@@ -6,13 +6,9 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
-from typeguard import typechecked
-
 from easydiffraction.core.datablocks import DatablockItem
 from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
-from easydiffraction.experiments.components.instrument import InstrumentBase
-from easydiffraction.experiments.components.instrument import InstrumentFactory
 from easydiffraction.experiments.components.peak import PeakFactory
 from easydiffraction.experiments.components.peak import PeakProfileTypeEnum
 from easydiffraction.experiments.datastore import DatastoreFactory
@@ -24,26 +20,6 @@ from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
     from easydiffraction.experiments.components.experiment_type import ExperimentType
-
-
-class InstrumentMixin:
-    def __init__(self, *args, **kwargs):
-        expt_type = kwargs.get('type')
-        super().__init__(*args, **kwargs)
-        self._instrument = InstrumentFactory.create(
-            scattering_type=expt_type.scattering_type.value,
-            beam_mode=expt_type.beam_mode.value,
-        )
-
-    @property
-    def instrument(self):
-        return self._instrument
-
-    @instrument.setter
-    @typechecked
-    def instrument(self, new_instrument: InstrumentBase):
-        self._instrument = new_instrument
-        self._instrument._parent = self
 
 
 class BaseExperiment(DatablockItem):

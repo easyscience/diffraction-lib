@@ -3,7 +3,8 @@ from unittest.mock import patch
 
 import pytest
 
-from easydiffraction.sample_models.sample_model import BaseSampleModel, SampleModel
+from easydiffraction.sample_models.sample_model import SampleModel
+from easydiffraction.sample_models.sample_model_types.base import BaseSampleModel
 from easydiffraction.sample_models.sample_models import SampleModels
 
 

@@ -1,163 +1,200 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+from __future__ import annotations
 
+from typing import Optional
 
-from easydiffraction.core.datablocks import DatablockItem
-from easydiffraction.crystallography import crystallography as ecr
-from easydiffraction.sample_models.collections.atom_sites import AtomSites
-from easydiffraction.sample_models.components.cell import Cell
-from easydiffraction.sample_models.components.space_group import SpaceGroup
-from easydiffraction.utils.formatting import paragraph
+import gemmi
+
+from easydiffraction.sample_models.sample_model_types.base import BaseSampleModel
 from easydiffraction.utils.logging import log as logger
-from easydiffraction.utils.utils import render_cif
 
 
-class BaseSampleModel(DatablockItem):
-    """Base sample model: structure container with only a name.
+class SampleModelFactory:
+    """Factory for creating `BaseSampleModel` instances with validated
+    arguments.
 
-    Wraps crystallographic information including space group, cell, and
-    atomic sites. Creation from CIF is handled by the factory; this base
-    class accepts only the `name`.
+    Valid argument combinations are mutually exclusive:
+    - name (minimal model with defaults)
+    - cif_path (CIF file path; name must not be provided)
+    - cif_str (CIF content as string; name must not be provided)
+
+    Any other combination is considered invalid.
     """
 
-    def __init__(
-        self,
+    VALID_ARG_SETS = (
+        frozenset({'name'}),
+        frozenset({'cif_path'}),
+        frozenset({'cif_str'}),
+    )
+
+    @classmethod
+    def _validate_args(
+        cls,
         *,
-        name,
+        name: Optional[str] = None,
+        cif_path: Optional[str] = None,
+        cif_str: Optional[str] = None,
     ) -> None:
-        super().__init__()
-        self._name = name
-        self._cell: Cell = Cell()
-        self._space_group: SpaceGroup = SpaceGroup()
-        self._atom_sites: AtomSites = AtomSites()
-        self._identity.datablock_entry_name = lambda: self.name
-
-    def __str__(self) -> str:
-        """Human-readable representation of this component."""
-        name = self._log_name
-        items = ', '.join(
-            f'{k}={v}'
-            for k, v in {
-                'cell': self.cell,
-                'space_group': self.space_group,
-                'atom_sites': self.atom_sites,
-            }.items()
+        present = frozenset(
+            k
+            for k, v in {'name': name, 'cif_path': cif_path, 'cif_str': cif_str}.items()
+            if v is not None
         )
-        return f'<{name} ({items})>'
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @name.setter
-    def name(self, new: str) -> None:
-        self._name = new
-
-    @property
-    def cell(self) -> Cell:
-        return self._cell
-
-    @cell.setter
-    def cell(self, new: Cell) -> None:
-        self._cell = new
-
-    @property
-    def space_group(self) -> SpaceGroup:
-        return self._space_group
-
-    @space_group.setter
-    def space_group(self, new: SpaceGroup) -> None:
-        self._space_group = new
-
-    @property
-    def atom_sites(self) -> AtomSites:
-        return self._atom_sites
-
-    @atom_sites.setter
-    def atom_sites(self, new: AtomSites) -> None:
-        self._atom_sites = new
-
-    # --------------------
-    # Symmetry constraints
-    # --------------------
-
-    def _apply_cell_symmetry_constraints(self):
-        dummy_cell = {
-            'lattice_a': self.cell.length_a.value,
-            'lattice_b': self.cell.length_b.value,
-            'lattice_c': self.cell.length_c.value,
-            'angle_alpha': self.cell.angle_alpha.value,
-            'angle_beta': self.cell.angle_beta.value,
-            'angle_gamma': self.cell.angle_gamma.value,
-        }
-        space_group_name = self.space_group.name_h_m.value
-        ecr.apply_cell_symmetry_constraints(cell=dummy_cell, name_hm=space_group_name)
-        self.cell.length_a.value = dummy_cell['lattice_a']
-        self.cell.length_b.value = dummy_cell['lattice_b']
-        self.cell.length_c.value = dummy_cell['lattice_c']
-        self.cell.angle_alpha.value = dummy_cell['angle_alpha']
-        self.cell.angle_beta.value = dummy_cell['angle_beta']
-        self.cell.angle_gamma.value = dummy_cell['angle_gamma']
-
-    def _apply_atomic_coordinates_symmetry_constraints(self):
-        space_group_name = self.space_group.name_h_m.value
-        space_group_coord_code = self.space_group.it_coordinate_system_code.value
-        for atom in self.atom_sites:
-            dummy_atom = {
-                'fract_x': atom.fract_x.value,
-                'fract_y': atom.fract_y.value,
-                'fract_z': atom.fract_z.value,
-            }
-            wl = atom.wyckoff_letter.value
-            if not wl:
-                # TODO: Decide how to handle this case
-                #  For now, we just skip applying constraints if wyckoff
-                #  letter is not set. Alternatively, could raise an
-                #  error or warning
-                #  print(f"Warning: Wyckoff letter is not ...")
-                #  raise ValueError("Wyckoff letter is not ...")
-                continue
-            ecr.apply_atom_site_symmetry_constraints(
-                atom_site=dummy_atom,
-                name_hm=space_group_name,
-                coord_code=space_group_coord_code,
-                wyckoff_letter=wl,
+        if present not in cls.VALID_ARG_SETS:
+            # Build helpful error message
+            combos = ['(' + ', '.join(sorted(spec)) + ')' for spec in cls.VALID_ARG_SETS]
+            allowed = ', '.join(combos)
+            raise ValueError(
+                'Invalid argument combination for SampleModel creation. '
+                f'Provided={sorted(present)}. Allowed combinations: {allowed}. '
+                "Note: Do not pass 'name' together with 'cif_path' or 'cif_str' "
+                'since CIF contains the model name.'
             )
-            atom.fract_x.value = dummy_atom['fract_x']
-            atom.fract_y.value = dummy_atom['fract_y']
-            atom.fract_z.value = dummy_atom['fract_z']
 
-    def _apply_atomic_displacement_symmetry_constraints(self):
-        pass
+    @classmethod
+    def create(
+        cls,
+        *,
+        name: Optional[str] = None,
+        cif_path: Optional[str] = None,
+        cif_str: Optional[str] = None,
+    ) -> BaseSampleModel:
+        """Create a `BaseSampleModel` using a validated argument
+        combination.
 
-    def apply_symmetry_constraints(self):
-        self._apply_cell_symmetry_constraints()
-        self._apply_atomic_coordinates_symmetry_constraints()
-        self._apply_atomic_displacement_symmetry_constraints()
+        Args:
+            name: Model identifier for a minimal model (no atoms by
+                default).
+            cif_path: Path to a CIF file used to build the model.
+            cif_str: CIF content used to build the model.
 
-    # ------------
-    # Show methods
-    # ------------
+        Returns:
+            A constructed `BaseSampleModel` instance.
 
-    def show_structure(self):
-        """Show an ASCII projection of the structure on a 2D plane."""
-        print(paragraph(f"Sample model 🧩 '{self.name}' structure view"))
-        print('Not implemented yet.')
-
-    def show_params(self):
-        """Display structural parameters (space group, unit cell, atomic
-        sites).
+        Raises:
+            ValueError: If the argument combination is invalid.
         """
-        print(f'\nSampleModel ID: {self.name}')
-        print(f'Space group: {self.space_group.name_h_m}')
-        print(f'Cell parameters: {self.cell.as_dict}')
-        print('Atom sites:')
-        self.atom_sites.show()
+        cls._validate_args(
+            name=name,
+            cif_path=cif_path,
+            cif_str=cif_str,
+        )
+        if name is not None:
+            return BaseSampleModel(name=name)
+        if cif_path is not None:
+            return cls._create_from_cif_path(cif_path)
+        if cif_str is not None:
+            return cls._create_from_cif_str(cif_str)
+        # Defensive: Should be unreachable due to validation above
+        raise ValueError('No valid arguments provided to create SampleModel.')
 
-    def show_as_cif(self) -> None:
-        cif_text: str = self.as_cif
-        paragraph_title: str = paragraph(f"Sample model 🧩 '{self.name}' as cif")
-        render_cif(cif_text, paragraph_title)
+    # -------------------------------
+    # Private creation helper methods
+    # -------------------------------
+
+    @classmethod
+    def _create_from_cif_path(
+        cls,
+        cif_path: str,
+    ) -> BaseSampleModel:
+        # Parse CIF and build model
+        doc = cls._read_cif_document_from_path(cif_path)
+        block = cls._pick_first_structural_block(doc)
+        return cls._create_model_from_block(block)
+
+    @classmethod
+    def _create_from_cif_str(
+        cls,
+        cif_str: str,
+    ) -> BaseSampleModel:
+        # Parse CIF string and build model
+        doc = cls._read_cif_document_from_string(cif_str)
+        block = cls._pick_first_structural_block(doc)
+        return cls._create_model_from_block(block)
+
+    # -------------
+    # gemmi helpers
+    # -------------
+
+    @staticmethod
+    def _read_cif_document_from_path(path: str) -> gemmi.cif.Document:
+        return gemmi.cif.read_file(path)
+
+    @staticmethod
+    def _read_cif_document_from_string(text: str) -> gemmi.cif.Document:
+        return gemmi.cif.read_string(text)
+
+    @staticmethod
+    def _has_structural_content(block: gemmi.cif.Block) -> bool:
+        # Basic heuristics: atom_site loop or full set of cell params
+        loop = block.find_loop('_atom_site.fract_x')
+        if loop is not None:
+            return True
+        required_cell = [
+            '_cell.length_a',
+            '_cell.length_b',
+            '_cell.length_c',
+            '_cell.angle_alpha',
+            '_cell.angle_beta',
+            '_cell.angle_gamma',
+        ]
+        return all(block.find_value(tag) for tag in required_cell)
+
+    @classmethod
+    def _pick_first_structural_block(
+        cls,
+        doc: gemmi.cif.Document,
+    ) -> gemmi.cif.Block:
+        # Prefer blocks with atom_site loop; else first block with cell
+        for block in doc:
+            if cls._has_structural_content(block):
+                return block
+        # As a fallback, return the sole or first block
+        try:
+            return doc.sole_block()
+        except Exception:
+            return doc[0]
+
+    @classmethod
+    def _create_model_from_block(
+        cls,
+        block: gemmi.cif.Block,
+    ) -> BaseSampleModel:
+        name = cls._extract_name_from_block(block)
+        model = BaseSampleModel(name=name)
+        cls._set_space_group_from_cif_block(model, block)
+        cls._set_cell_from_cif_block(model, block)
+        cls._set_atom_sites_from_cif_block(model, block)
+        return model
+
+    @classmethod
+    def _extract_name_from_block(cls, block: gemmi.cif.Block) -> str:
+        return block.name or 'model'
+
+    @classmethod
+    def _set_space_group_from_cif_block(
+        cls,
+        model: BaseSampleModel,
+        block: gemmi.cif.Block,
+    ) -> None:
+        model.space_group.from_cif(block)
+
+    @classmethod
+    def _set_cell_from_cif_block(
+        cls,
+        model: BaseSampleModel,
+        block: gemmi.cif.Block,
+    ) -> None:
+        model.cell.from_cif(block)
+
+    @classmethod
+    def _set_atom_sites_from_cif_block(
+        cls,
+        model: BaseSampleModel,
+        block: gemmi.cif.Block,
+    ) -> None:
+        model.atom_sites.from_cif(block)
 
 
 class SampleModel:
@@ -171,7 +208,6 @@ class SampleModel:
 
     def __new__(cls, **kwargs):
         # Lazy import to avoid circular import at module load time
-        from easydiffraction.sample_models.sample_model_factory import SampleModelFactory
 
         try:
             return SampleModelFactory.create(**kwargs)

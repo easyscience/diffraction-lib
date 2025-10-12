@@ -10,7 +10,8 @@ from easydiffraction.sample_models.components.cell import Cell  # type: ignore
 from easydiffraction.sample_models.components.space_group import SpaceGroup  # type: ignore
 from easydiffraction.sample_models.collections.atom_sites import AtomSite, AtomSites  # type: ignore
 
-from easydiffraction.sample_models.sample_model import BaseSampleModel, SampleModel
+from easydiffraction.sample_models.sample_model import SampleModel
+from easydiffraction.sample_models.sample_model_types.base import BaseSampleModel
 from easydiffraction.sample_models.sample_models import SampleModels
 
 from easydiffraction.analysis.collections.constraints import Constraint
