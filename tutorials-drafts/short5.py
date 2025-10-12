@@ -6,8 +6,8 @@ from typing import TypeVar
 
 from easydiffraction.utils.logging import log  # type: ignore
 
-from easydiffraction.sample_models.components.cell import Cell  # type: ignore
-from easydiffraction.sample_models.components.space_group import SpaceGroup  # type: ignore
+from easydiffraction.sample_models.category_items.cell import Cell  # type: ignore
+from easydiffraction.sample_models.category_items.space_group import SpaceGroup  # type: ignore
 from easydiffraction.sample_models.collections.atom_sites import AtomSite, AtomSites  # type: ignore
 
 from easydiffraction.sample_models.sample_model import SampleModel

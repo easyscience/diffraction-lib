@@ -6,7 +6,7 @@
 This package hosts the implementation details for the Peak category,
 split by beam mode/domain. Public consumers should import Peak concepts
 from the category entry point
-`easydiffraction.experiments.components.peak`.
+`easydiffraction.experiments.category_items.peak`.
 
 Re-exports are provided here to make internals discoverable for
 contributors and focused tests (e.g., mixins), while keeping end-user

@@ -4,7 +4,7 @@
 
 End users should import Instrument classes from this module. Internals
 live under the package
-`easydiffraction.experiments.components.instrument_setups` and are
+`easydiffraction.experiments.category_items.instrument_setups` and are
 re-exported here for a stable and readable API.
 """
 

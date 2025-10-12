@@ -4,7 +4,7 @@
 
 End users should import Peak classes from this module. Internals live
 under the package
-`easydiffraction.experiments.components.peak_profiles` and are
+`easydiffraction.experiments.category_items.peak_profiles` and are
 re-exported here for a stable and readable API.
 """
 

@@ -4,7 +4,7 @@
 
 Split by beam mode/domain. Public consumers should import from the
 category entry point
-`easydiffraction.experiments.components.instrument`.
+`easydiffraction.experiments.category_items.instrument`.
 
 Re-exports are provided for contributor discoverability and focused
 tests.

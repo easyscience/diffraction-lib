@@ -11,8 +11,8 @@ from easydiffraction.experiments.collections.linked_phases import LinkedPhase
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
 from easydiffraction.sample_models.collections.atom_sites import AtomSite
 from easydiffraction.sample_models.collections.atom_sites import AtomSites
-from easydiffraction.sample_models.components.cell import Cell
-from easydiffraction.sample_models.components.space_group import SpaceGroup
+from easydiffraction.sample_models.category_items.cell import Cell
+from easydiffraction.sample_models.category_items.space_group import SpaceGroup
 #from easydiffraction.core.parameters import BaseDescriptor, GenericDescriptor, Descriptor
 #from easydiffraction.core.parameters import BaseParameter, GenericParameter, Parameter
 

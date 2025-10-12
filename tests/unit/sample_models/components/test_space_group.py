@@ -1,4 +1,4 @@
-from easydiffraction.sample_models.components.space_group import SpaceGroup
+from easydiffraction.sample_models.category_items.space_group import SpaceGroup
 
 
 def test_space_group_initialization():

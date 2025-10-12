@@ -1,4 +1,4 @@
-from easydiffraction.sample_models.components.cell import Cell
+from easydiffraction.sample_models.category_items.cell import Cell
 
 
 def test_cell_initialization():
