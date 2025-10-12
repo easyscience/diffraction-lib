@@ -264,8 +264,8 @@ force-single-line = true
 '*test_*.py' = ['S101'] # allow asserts in test files
 
 [tool.ruff.lint.pycodestyle]
-max-line-length = 99 # https://peps.python.org/pep-0008/#maximum-line-length
-max-doc-length = 72  # https://peps.python.org/pep-0008/#maximum-line-length
+max-line-length = 100 #99# https://peps.python.org/pep-0008/#maximum-line-length
+max-doc-length = 72   # https://peps.python.org/pep-0008/#maximum-line-length
 
 [tool.ruff.lint.pydocstyle]
 convention = 'google'
