@@ -4,8 +4,8 @@
 
 End users should import Background classes from this module. Internals
 live under the package
-`easydiffraction.experiments.collections.background_types` and are
-re-exported here for a stable and readable API.
+`easydiffraction.experiments.category_collections.background_types`
+and are re-exported here for a stable and readable API.
 """
 
 from easydiffraction.experiments.collections.background_types.base import BackgroundBase

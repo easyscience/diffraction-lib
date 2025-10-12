@@ -13,7 +13,7 @@ def mock_sample_model():
     with (
         patch('easydiffraction.sample_models.category_items.space_group.SpaceGroup') as mock_space_group,
         patch('easydiffraction.sample_models.category_items.cell.Cell') as mock_cell,
-        patch('easydiffraction.sample_models.collections.atom_sites.AtomSites') as mock_atom_sites,
+        patch('easydiffraction.sample_models.category_collections.atom_sites.AtomSites') as mock_atom_sites,
     ):
         space_group = mock_space_group.return_value
         cell = mock_cell.return_value

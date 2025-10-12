@@ -2,7 +2,7 @@ import pytest
 
 from easydiffraction.sample_models.category_items.cell import Cell
 from easydiffraction.sample_models.category_items.space_group import SpaceGroup
-from easydiffraction.sample_models.collections.atom_sites import AtomSites
+from easydiffraction.sample_models.category_collections.atom_sites import AtomSites
 from easydiffraction.core.parameters import Descriptor, Parameter
 from easydiffraction import SampleModel, SampleModels
 

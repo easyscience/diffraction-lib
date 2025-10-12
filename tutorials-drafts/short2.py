@@ -9,8 +9,8 @@ from easydiffraction.experiments.collections.background import LineSegmentBackgr
 from easydiffraction.experiments.collections.background import Point
 from easydiffraction.experiments.collections.linked_phases import LinkedPhase
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
-from easydiffraction.sample_models.collections.atom_sites import AtomSite
-from easydiffraction.sample_models.collections.atom_sites import AtomSites
+from easydiffraction.sample_models.category_collections.atom_sites import AtomSite
+from easydiffraction.sample_models.category_collections.atom_sites import AtomSites
 from easydiffraction.sample_models.category_items.cell import Cell
 from easydiffraction.sample_models.category_items.space_group import SpaceGroup
 #from easydiffraction.core.parameters import BaseDescriptor, GenericDescriptor, Descriptor

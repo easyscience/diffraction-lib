@@ -1,9 +1,9 @@
 from easydiffraction import paragraph
 from easydiffraction.core.datablocks import DatablockItem
 from easydiffraction.crystallography import crystallography as ecr
+from easydiffraction.sample_models.category_collections.atom_sites import AtomSites
 from easydiffraction.sample_models.category_items.cell import Cell
 from easydiffraction.sample_models.category_items.space_group import SpaceGroup
-from easydiffraction.sample_models.collections.atom_sites import AtomSites
 from easydiffraction.utils.utils import render_cif
 
 

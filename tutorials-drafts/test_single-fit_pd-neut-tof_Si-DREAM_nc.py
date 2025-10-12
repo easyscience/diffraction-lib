@@ -30,7 +30,7 @@ sample_model.space_group.it_coordinate_system_code = '1'
 sample_model.cell.length_a = 5.46872800  # 5.43146
 
 # %%
-from easydiffraction.sample_models.collections.atom_sites import AtomSite
+from easydiffraction.sample_models.category_collections.atom_sites import AtomSite
 
 sample_model.atom_sites.add(
     AtomSite(

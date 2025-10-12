@@ -8,7 +8,7 @@ from easydiffraction.utils.logging import log  # type: ignore
 
 from easydiffraction.sample_models.category_items.cell import Cell  # type: ignore
 from easydiffraction.sample_models.category_items.space_group import SpaceGroup  # type: ignore
-from easydiffraction.sample_models.collections.atom_sites import AtomSite, AtomSites  # type: ignore
+from easydiffraction.sample_models.category_collections.atom_sites import AtomSite, AtomSites  # type: ignore
 
 from easydiffraction.sample_models.sample_model import SampleModel
 from easydiffraction.sample_models.sample_model_types.base import BaseSampleModel

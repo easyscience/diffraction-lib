@@ -45,7 +45,8 @@ class DatablockItem(GuardedBase):
 
 
 class DatablockCollection(CollectionBase):
-    """Handles top-level collections (e.g. SampleModels, Experiments).
+    """Handles top-level category collections (e.g. SampleModels,
+    Experiments).
 
     Each item is a DatablockItem.
     """

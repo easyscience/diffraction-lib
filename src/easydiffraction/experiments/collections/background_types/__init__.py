@@ -3,7 +3,7 @@
 """Internal implementation package for the Background category.
 
 Public consumers should import from the entry point
-`easydiffraction.experiments.collections.background`.
+`easydiffraction.experiments.category_collections.background`.
 
 Re-exports are provided for contributor discoverability and focused
 tests.

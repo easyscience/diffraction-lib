@@ -1,6 +1,6 @@
 from easydiffraction.analysis.collections.joint_fit_experiments import JointFitExperiment
 
-# filepath: src/easydiffraction/analysis/collections/test_joint_fit_experiments.py
+# filepath: src/easydiffraction/analysis/category_collections/test_joint_fit_experiments.py
 
 
 def test_joint_fit_experiment_initialization():

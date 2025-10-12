@@ -6,8 +6,8 @@ from easydiffraction import SampleModel
 from easydiffraction import SampleModels
 from easydiffraction.experiments.collections.linked_phases import LinkedPhase
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
-from easydiffraction.sample_models.collections.atom_sites import AtomSite
-from easydiffraction.sample_models.collections.atom_sites import AtomSites
+from easydiffraction.sample_models.category_collections.atom_sites import AtomSite
+from easydiffraction.sample_models.category_collections.atom_sites import AtomSites
 from easydiffraction.sample_models.category_items.cell import Cell
 from easydiffraction.sample_models.category_items.space_group import SpaceGroup
 
