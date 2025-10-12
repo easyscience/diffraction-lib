@@ -7,10 +7,10 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from easydiffraction.core.datablocks import DatablockItem
+from easydiffraction.experiments.category_items.peak import PeakFactory
+from easydiffraction.experiments.category_items.peak import PeakProfileTypeEnum
 from easydiffraction.experiments.collections.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.collections.linked_phases import LinkedPhases
-from easydiffraction.experiments.components.peak import PeakFactory
-from easydiffraction.experiments.components.peak import PeakProfileTypeEnum
 from easydiffraction.experiments.datastore import DatastoreFactory
 from easydiffraction.io.cif.serialize import experiment_to_cif
 from easydiffraction.utils.formatting import paragraph
@@ -19,7 +19,7 @@ from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
-    from easydiffraction.experiments.components.experiment_type import ExperimentType
+    from easydiffraction.experiments.category_items.experiment_type import ExperimentType
 
 
 class BaseExperiment(DatablockItem):

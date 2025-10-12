@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from easydiffraction.experiments.components.experiment_type import ExperimentType
+from easydiffraction.experiments.category_items.experiment_type import ExperimentType
 from easydiffraction.experiments.enums import BeamModeEnum
 from easydiffraction.experiments.enums import RadiationProbeEnum
 from easydiffraction.experiments.enums import SampleFormEnum

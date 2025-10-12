@@ -4,11 +4,11 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from easydiffraction.experiments.components.experiment_type import BeamModeEnum
-from easydiffraction.experiments.components.experiment_type import ExperimentType
-from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
-from easydiffraction.experiments.components.experiment_type import SampleFormEnum
-from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
+from easydiffraction.experiments.category_items.experiment_type import BeamModeEnum
+from easydiffraction.experiments.category_items.experiment_type import ExperimentType
+from easydiffraction.experiments.category_items.experiment_type import RadiationProbeEnum
+from easydiffraction.experiments.category_items.experiment_type import SampleFormEnum
+from easydiffraction.experiments.category_items.experiment_type import ScatteringTypeEnum
 from easydiffraction.experiments.experiment import BaseExperiment
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.experiments.experiment import ExperimentFactory

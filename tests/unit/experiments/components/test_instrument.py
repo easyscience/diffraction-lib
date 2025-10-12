@@ -1,10 +1,10 @@
 import pytest
 
 from easydiffraction.core.parameters import Parameter
-from easydiffraction.experiments.components.instrument import ConstantWavelengthInstrument
-from easydiffraction.experiments.components.instrument import InstrumentBase
-from easydiffraction.experiments.components.instrument import InstrumentFactory
-from easydiffraction.experiments.components.instrument import TimeOfFlightInstrument
+from easydiffraction.experiments.category_items.instrument import ConstantWavelengthInstrument
+from easydiffraction.experiments.category_items.instrument import InstrumentBase
+from easydiffraction.experiments.category_items.instrument import InstrumentFactory
+from easydiffraction.experiments.category_items.instrument import TimeOfFlightInstrument
 
 
 def test_instrument_base_properties():

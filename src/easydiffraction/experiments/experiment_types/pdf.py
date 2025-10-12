@@ -11,7 +11,7 @@ from easydiffraction.experiments.experiment_types.base import BasePowderExperime
 from easydiffraction.utils.formatting import paragraph
 
 if TYPE_CHECKING:
-    from easydiffraction.experiments.components.experiment_type import ExperimentType
+    from easydiffraction.experiments.category_items.experiment_type import ExperimentType
 
 
 class PairDistributionFunctionExperiment(BasePowderExperiment):

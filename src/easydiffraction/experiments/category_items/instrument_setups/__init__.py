@@ -10,12 +10,12 @@ Re-exports are provided for contributor discoverability and focused
 tests.
 """
 
-from easydiffraction.experiments.components.instrument_setups.base import InstrumentBase
-from easydiffraction.experiments.components.instrument_setups.base import InstrumentFactory
-from easydiffraction.experiments.components.instrument_setups.cw import (
+from easydiffraction.experiments.category_items.instrument_setups.base import InstrumentBase
+from easydiffraction.experiments.category_items.instrument_setups.base import InstrumentFactory
+from easydiffraction.experiments.category_items.instrument_setups.cw import (
     ConstantWavelengthInstrument,
 )
-from easydiffraction.experiments.components.instrument_setups.tof import TimeOfFlightInstrument
+from easydiffraction.experiments.category_items.instrument_setups.tof import TimeOfFlightInstrument
 
 __all__ = [
     'InstrumentBase',

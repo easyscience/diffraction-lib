@@ -24,10 +24,10 @@ class InstrumentFactory:
     @classmethod
     def _supported_map(cls) -> dict:
         # Lazy import to avoid circulars
-        from easydiffraction.experiments.components.instrument_setups.cw import (
+        from easydiffraction.experiments.category_items.instrument_setups.cw import (
             ConstantWavelengthInstrument,
         )
-        from easydiffraction.experiments.components.instrument_setups.tof import (
+        from easydiffraction.experiments.category_items.instrument_setups.tof import (
             TimeOfFlightInstrument,
         )
 

@@ -1,12 +1,14 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from easydiffraction.experiments.components.peak_profiles.base import PeakBase
-from easydiffraction.experiments.components.peak_profiles.cw_mixins import (
+from easydiffraction.experiments.category_items.peak_profiles.base import PeakBase
+from easydiffraction.experiments.category_items.peak_profiles.cw_mixins import (
     ConstantWavelengthBroadeningMixin,
 )
-from easydiffraction.experiments.components.peak_profiles.cw_mixins import EmpiricalAsymmetryMixin
-from easydiffraction.experiments.components.peak_profiles.cw_mixins import FcjAsymmetryMixin
+from easydiffraction.experiments.category_items.peak_profiles.cw_mixins import (
+    EmpiricalAsymmetryMixin,
+)
+from easydiffraction.experiments.category_items.peak_profiles.cw_mixins import FcjAsymmetryMixin
 
 
 class ConstantWavelengthPseudoVoigt(

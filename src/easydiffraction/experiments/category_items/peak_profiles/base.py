@@ -27,25 +27,25 @@ class PeakFactory:
         # Lazy import to avoid circular imports between
         # base and cw/tof/pdf modules
         if cls._supported is None:
-            from easydiffraction.experiments.components.peak_profiles.cw import (
+            from easydiffraction.experiments.category_items.peak_profiles.cw import (
                 ConstantWavelengthPseudoVoigt as CwPv,
             )
-            from easydiffraction.experiments.components.peak_profiles.cw import (
+            from easydiffraction.experiments.category_items.peak_profiles.cw import (
                 ConstantWavelengthSplitPseudoVoigt as CwSpv,
             )
-            from easydiffraction.experiments.components.peak_profiles.cw import (
+            from easydiffraction.experiments.category_items.peak_profiles.cw import (
                 ConstantWavelengthThompsonCoxHastings as CwTch,
             )
-            from easydiffraction.experiments.components.peak_profiles.pdf import (
+            from easydiffraction.experiments.category_items.peak_profiles.pdf import (
                 PairDistributionFunctionGaussianDampedSinc as PdfGds,
             )
-            from easydiffraction.experiments.components.peak_profiles.tof import (
+            from easydiffraction.experiments.category_items.peak_profiles.tof import (
                 TimeOfFlightPseudoVoigt as TofPv,
             )
-            from easydiffraction.experiments.components.peak_profiles.tof import (
+            from easydiffraction.experiments.category_items.peak_profiles.tof import (
                 TimeOfFlightPseudoVoigtBackToBack as TofBtb,
             )
-            from easydiffraction.experiments.components.peak_profiles.tof import (
+            from easydiffraction.experiments.category_items.peak_profiles.tof import (
                 TimeOfFlightPseudoVoigtIkedaCarpenter as TofIc,
             )
 

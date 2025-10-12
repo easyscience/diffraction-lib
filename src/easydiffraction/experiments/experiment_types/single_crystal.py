@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 from easydiffraction.experiments.experiment_types.base import BaseExperiment
 
 if TYPE_CHECKING:
-    from easydiffraction.experiments.components.experiment_type import ExperimentType
+    from easydiffraction.experiments.category_items.experiment_type import ExperimentType
 
 
 class SingleCrystalExperiment(BaseExperiment):

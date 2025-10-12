@@ -8,25 +8,27 @@ under the package
 re-exported here for a stable and readable API.
 """
 
-from easydiffraction.experiments.components.peak_profiles.base import PeakBase
-from easydiffraction.experiments.components.peak_profiles.base import PeakFactory
+from easydiffraction.experiments.category_items.peak_profiles.base import PeakBase
+from easydiffraction.experiments.category_items.peak_profiles.base import PeakFactory
 
 # Re-export concrete classes for public API stability
-from easydiffraction.experiments.components.peak_profiles.cw import ConstantWavelengthPseudoVoigt
-from easydiffraction.experiments.components.peak_profiles.cw import (
+from easydiffraction.experiments.category_items.peak_profiles.cw import (
+    ConstantWavelengthPseudoVoigt,
+)
+from easydiffraction.experiments.category_items.peak_profiles.cw import (
     ConstantWavelengthSplitPseudoVoigt,
 )
-from easydiffraction.experiments.components.peak_profiles.cw import (
+from easydiffraction.experiments.category_items.peak_profiles.cw import (
     ConstantWavelengthThompsonCoxHastings,
 )
-from easydiffraction.experiments.components.peak_profiles.pdf import (
+from easydiffraction.experiments.category_items.peak_profiles.pdf import (
     PairDistributionFunctionGaussianDampedSinc,
 )
-from easydiffraction.experiments.components.peak_profiles.tof import TimeOfFlightPseudoVoigt
-from easydiffraction.experiments.components.peak_profiles.tof import (
+from easydiffraction.experiments.category_items.peak_profiles.tof import TimeOfFlightPseudoVoigt
+from easydiffraction.experiments.category_items.peak_profiles.tof import (
     TimeOfFlightPseudoVoigtBackToBack,
 )
-from easydiffraction.experiments.components.peak_profiles.tof import (
+from easydiffraction.experiments.category_items.peak_profiles.tof import (
     TimeOfFlightPseudoVoigtIkedaCarpenter,
 )
 from easydiffraction.experiments.enums import PeakProfileTypeEnum

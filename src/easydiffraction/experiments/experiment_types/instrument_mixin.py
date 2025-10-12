@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typeguard import typechecked
 
-from easydiffraction.experiments.components.instrument_setups import InstrumentBase
-from easydiffraction.experiments.components.instrument_setups import InstrumentFactory
+from easydiffraction.experiments.category_items.instrument_setups import InstrumentBase
+from easydiffraction.experiments.category_items.instrument_setups import InstrumentFactory
 
 
 class InstrumentMixin:

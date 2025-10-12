@@ -1,19 +1,19 @@
 import pytest
 
 from easydiffraction.core.parameters import Parameter
-from easydiffraction.experiments.components.peak_profiles.cw_mixins import ConstantWavelengthBroadeningMixin
-from easydiffraction.experiments.components.peak import ConstantWavelengthPseudoVoigt
-from easydiffraction.experiments.components.peak import ConstantWavelengthSplitPseudoVoigt
-from easydiffraction.experiments.components.peak import ConstantWavelengthThompsonCoxHastings
-from easydiffraction.experiments.components.peak_profiles.cw_mixins import EmpiricalAsymmetryMixin
-from easydiffraction.experiments.components.peak_profiles.cw_mixins import FcjAsymmetryMixin
-from easydiffraction.experiments.components.peak_profiles.tof_mixins import IkedaCarpenterAsymmetryMixin
-from easydiffraction.experiments.components.peak import PeakBase
-from easydiffraction.experiments.components.peak import PeakFactory
-from easydiffraction.experiments.components.peak_profiles.tof_mixins import TimeOfFlightBroadeningMixin
-from easydiffraction.experiments.components.peak import TimeOfFlightPseudoVoigt
-from easydiffraction.experiments.components.peak import TimeOfFlightPseudoVoigtBackToBack
-from easydiffraction.experiments.components.peak import TimeOfFlightPseudoVoigtIkedaCarpenter
+from easydiffraction.experiments.category_items.peak_profiles.cw_mixins import ConstantWavelengthBroadeningMixin
+from easydiffraction.experiments.category_items.peak import ConstantWavelengthPseudoVoigt
+from easydiffraction.experiments.category_items.peak import ConstantWavelengthSplitPseudoVoigt
+from easydiffraction.experiments.category_items.peak import ConstantWavelengthThompsonCoxHastings
+from easydiffraction.experiments.category_items.peak_profiles.cw_mixins import EmpiricalAsymmetryMixin
+from easydiffraction.experiments.category_items.peak_profiles.cw_mixins import FcjAsymmetryMixin
+from easydiffraction.experiments.category_items.peak_profiles.tof_mixins import IkedaCarpenterAsymmetryMixin
+from easydiffraction.experiments.category_items.peak import PeakBase
+from easydiffraction.experiments.category_items.peak import PeakFactory
+from easydiffraction.experiments.category_items.peak_profiles.tof_mixins import TimeOfFlightBroadeningMixin
+from easydiffraction.experiments.category_items.peak import TimeOfFlightPseudoVoigt
+from easydiffraction.experiments.category_items.peak import TimeOfFlightPseudoVoigtBackToBack
+from easydiffraction.experiments.category_items.peak import TimeOfFlightPseudoVoigtIkedaCarpenter
 
 
 # --- Tests for Mixins ---

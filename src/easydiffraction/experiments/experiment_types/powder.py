@@ -16,7 +16,7 @@ from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
-    from easydiffraction.experiments.components.experiment_type import ExperimentType
+    from easydiffraction.experiments.category_items.experiment_type import ExperimentType
 
 
 class PowderExperiment(InstrumentMixin, BasePowderExperiment):
