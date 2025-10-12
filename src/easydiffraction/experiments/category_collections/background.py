@@ -13,12 +13,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from typing import Optional
 
-from easydiffraction.experiments.category_collections.background_types import BackgroundTypeEnum
+from easydiffraction.experiments.category_collections.background_types.enums import (
+    BackgroundTypeEnum,
+)
 
 if TYPE_CHECKING:
-    from easydiffraction.experiments.category_collections.background_types.base import (
-        BackgroundBase,
-    )
+    from easydiffraction.experiments.category_collections.background_types import BackgroundBase
 
 
 class BackgroundFactory:

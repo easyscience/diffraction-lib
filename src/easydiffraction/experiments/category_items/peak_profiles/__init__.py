@@ -14,8 +14,8 @@ imports stable.
 """
 
 # Core base and factory
-from easydiffraction.experiments.category_items.peak_profiles.base import PeakBase
-from easydiffraction.experiments.category_items.peak_profiles.base import PeakFactory
+from easydiffraction.experiments.category_items.peak import PeakBase
+from easydiffraction.experiments.category_items.peak import PeakFactory
 
 # Concrete peak profiles
 from easydiffraction.experiments.category_items.peak_profiles.cw import (
@@ -58,8 +58,6 @@ from easydiffraction.experiments.category_items.peak_profiles.tof_mixins import 
 
 __all__ = [
     # Base / factory
-    'PeakBase',
-    'PeakFactory',
     # Concrete profiles
     'ConstantWavelengthPseudoVoigt',
     'ConstantWavelengthSplitPseudoVoigt',
@@ -75,4 +73,6 @@ __all__ = [
     'TimeOfFlightBroadeningMixin',
     'IkedaCarpenterAsymmetryMixin',
     'PairDistributionFunctionBroadeningMixin',
+    'PeakBase',
+    'PeakFactory',
 ]
