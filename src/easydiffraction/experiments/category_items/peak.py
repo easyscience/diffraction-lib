@@ -31,7 +31,7 @@ from easydiffraction.experiments.category_items.peak_profiles.tof import (
 from easydiffraction.experiments.category_items.peak_profiles.tof import (
     TimeOfFlightPseudoVoigtIkedaCarpenter,
 )
-from easydiffraction.experiments.enums import PeakProfileTypeEnum
+from easydiffraction.experiments.experiment_types.enums import PeakProfileTypeEnum
 
 __all__ = [
     'PeakBase',

@@ -86,11 +86,11 @@ class ExcludedRegions(CategoryCollection):
         """Mark excluded points in the experiment pattern when a new
         region is added.
         """
-        # Call parent add first
+        # 1. Call parent add first
 
         super().add(item)
 
-        # Now add extra behavior specific to ExcludedRegions
+        # 2. Now add extra behavior specific to ExcludedRegions
 
         datastore = self._parent.datastore
 

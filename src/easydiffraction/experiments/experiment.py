@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.experiments.category_items.experiment_type import ExperimentType
-from easydiffraction.experiments.enums import BeamModeEnum
-from easydiffraction.experiments.enums import RadiationProbeEnum
-from easydiffraction.experiments.enums import SampleFormEnum
-from easydiffraction.experiments.enums import ScatteringTypeEnum
 from easydiffraction.experiments.experiment_types import PairDistributionFunctionExperiment
 from easydiffraction.experiments.experiment_types import PowderExperiment
 from easydiffraction.experiments.experiment_types import SingleCrystalExperiment
+from easydiffraction.experiments.experiment_types.enums import BeamModeEnum
+from easydiffraction.experiments.experiment_types.enums import RadiationProbeEnum
+from easydiffraction.experiments.experiment_types.enums import SampleFormEnum
+from easydiffraction.experiments.experiment_types.enums import ScatteringTypeEnum
 
 
 class ExperimentFactory:

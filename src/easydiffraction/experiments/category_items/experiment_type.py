@@ -6,10 +6,10 @@ from easydiffraction.core.parameters import DescriptorStr
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import MembershipValidator
-from easydiffraction.experiments.enums import BeamModeEnum
-from easydiffraction.experiments.enums import RadiationProbeEnum
-from easydiffraction.experiments.enums import SampleFormEnum
-from easydiffraction.experiments.enums import ScatteringTypeEnum
+from easydiffraction.experiments.experiment_types.enums import BeamModeEnum
+from easydiffraction.experiments.experiment_types.enums import RadiationProbeEnum
+from easydiffraction.experiments.experiment_types.enums import SampleFormEnum
+from easydiffraction.experiments.experiment_types.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
 
 

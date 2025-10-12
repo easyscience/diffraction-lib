@@ -4,9 +4,9 @@
 from typing import Optional
 
 from easydiffraction.core.categories import CategoryItem
-from easydiffraction.experiments.enums import BeamModeEnum
-from easydiffraction.experiments.enums import PeakProfileTypeEnum
-from easydiffraction.experiments.enums import ScatteringTypeEnum
+from easydiffraction.experiments.experiment_types.enums import BeamModeEnum
+from easydiffraction.experiments.experiment_types.enums import PeakProfileTypeEnum
+from easydiffraction.experiments.experiment_types.enums import ScatteringTypeEnum
 
 
 class PeakBase(CategoryItem):

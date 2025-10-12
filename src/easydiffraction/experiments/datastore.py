@@ -8,8 +8,8 @@ from typing import Optional
 
 from typeguard import typechecked
 
-from easydiffraction.experiments.enums import BeamModeEnum
-from easydiffraction.experiments.enums import SampleFormEnum
+from easydiffraction.experiments.experiment_types.enums import BeamModeEnum
+from easydiffraction.experiments.experiment_types.enums import SampleFormEnum
 from easydiffraction.io.cif.serialize import datastore_to_cif
 
 if TYPE_CHECKING:

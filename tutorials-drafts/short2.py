@@ -6,7 +6,7 @@ from easydiffraction import Project
 from easydiffraction import SampleModel
 from easydiffraction import SampleModels
 from easydiffraction.experiments.category_collections.background import LineSegmentBackground
-from easydiffraction.experiments.category_collections.background import Point
+from easydiffraction.experiments.category_collections.background_types import Point
 from easydiffraction.experiments.category_collections.linked_phases import LinkedPhase
 from easydiffraction.experiments.category_collections.linked_phases import LinkedPhases
 from easydiffraction.sample_models.category_collections.atom_sites import AtomSite

@@ -1,16 +1,81 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 from typing import List
 from typing import Union
 
+import numpy as np
 from numpy.polynomial.chebyshev import chebval
 
+from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.parameters import DescriptorFloat
+from easydiffraction.core.parameters import Parameter
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import DataTypes
+from easydiffraction.core.validation import RangeValidator
 from easydiffraction.experiments.category_collections.background_types.base import BackgroundBase
-from easydiffraction.experiments.category_collections.background_types.base import PolynomialTerm
+from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_table
+
+
+class PolynomialTerm(CategoryItem):
+    """Chebyshev polynomial term.
+
+    New public attribute names: ``order`` and ``coef`` replacing the
+    longer ``chebyshev_order`` / ``chebyshev_coef``. Backward-compatible
+    aliases are kept so existing serialized data / external code does
+    not break immediately. Tests should migrate to the short names.
+    """
+
+    def __init__(self, *, order: int, coef: float) -> None:
+        super().__init__()
+
+        # Canonical descriptors
+        self._order = DescriptorFloat(
+            name='order',
+            description='Order used in a Chebyshev polynomial background term',
+            value_spec=AttributeSpec(
+                value=order,
+                type_=DataTypes.NUMERIC,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_pd_background.Chebyshev_order']),
+        )
+        self._coef = Parameter(
+            name='coef',
+            description='Coefficient used in a Chebyshev polynomial background term',
+            value_spec=AttributeSpec(
+                value=coef,
+                type_=DataTypes.NUMERIC,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_pd_background.Chebyshev_coef']),
+        )
+
+        self._identity.category_code = 'background'
+        self._identity.category_entry_name = lambda: str(self.order.value)
+
+    @property
+    def order(self):
+        return self._order
+
+    @order.setter
+    def order(self, value):
+        self._order.value = value
+
+    @property
+    def coef(self):
+        return self._coef
+
+    @coef.setter
+    def coef(self, value):
+        self._coef.value = value
 
 
 class ChebyshevPolynomialBackground(BackgroundBase):
@@ -23,8 +88,6 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         """Evaluate polynomial background over x_data."""
         if not self._items:
             print(warning('No background points found. Setting background to zero.'))
-            import numpy as np
-
             return np.zeros_like(x_data)
 
         u = (x_data - x_data.min()) / (x_data.max() - x_data.min()) * 2 - 1

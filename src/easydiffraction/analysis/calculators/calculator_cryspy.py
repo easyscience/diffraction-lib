@@ -12,8 +12,8 @@ from typing import Union
 import numpy as np
 
 from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
-from easydiffraction.experiments.enums import BeamModeEnum
 from easydiffraction.experiments.experiment import Experiment
+from easydiffraction.experiments.experiment_types.enums import BeamModeEnum
 from easydiffraction.sample_models.sample_model import SampleModel
 
 try:

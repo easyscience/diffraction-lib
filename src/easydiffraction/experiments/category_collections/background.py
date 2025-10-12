@@ -8,28 +8,53 @@ live under the package
 and are re-exported here for a stable and readable API.
 """
 
-from easydiffraction.experiments.category_collections.background_types.base import BackgroundBase
-from easydiffraction.experiments.category_collections.background_types.base import (
-    BackgroundFactory,
-)
-from easydiffraction.experiments.category_collections.background_types.base import (
-    BackgroundTypeEnum,
-)
-from easydiffraction.experiments.category_collections.background_types.base import Point
-from easydiffraction.experiments.category_collections.background_types.base import PolynomialTerm
-from easydiffraction.experiments.category_collections.background_types.chebyshev import (
-    ChebyshevPolynomialBackground,
-)
-from easydiffraction.experiments.category_collections.background_types.line_segment import (
-    LineSegmentBackground,
-)
+from __future__ import annotations
 
-__all__ = [
-    'BackgroundBase',
-    'BackgroundFactory',
-    'BackgroundTypeEnum',
-    'Point',
-    'PolynomialTerm',
-    'LineSegmentBackground',
-    'ChebyshevPolynomialBackground',
-]
+from typing import TYPE_CHECKING
+from typing import Optional
+
+from easydiffraction.experiments.category_collections.background_types import BackgroundTypeEnum
+
+if TYPE_CHECKING:
+    from easydiffraction.experiments.category_collections.background_types.base import (
+        BackgroundBase,
+    )
+
+
+class BackgroundFactory:
+    BT = BackgroundTypeEnum
+
+    @classmethod
+    def _supported_map(cls) -> dict:
+        # Lazy import to avoid circulars
+        from easydiffraction.experiments.category_collections.background_types.chebyshev import (
+            ChebyshevPolynomialBackground,
+        )
+        from easydiffraction.experiments.category_collections.background_types.line_segment import (
+            LineSegmentBackground,
+        )
+
+        return {
+            cls.BT.LINE_SEGMENT: LineSegmentBackground,
+            cls.BT.CHEBYSHEV: ChebyshevPolynomialBackground,
+        }
+
+    @classmethod
+    def create(
+        cls,
+        background_type: Optional[BackgroundTypeEnum] = None,
+    ) -> BackgroundBase:
+        if background_type is None:
+            background_type = BackgroundTypeEnum.default()
+
+        supported = cls._supported_map()
+        if background_type not in supported:
+            supported_types = list(supported.keys())
+
+            raise ValueError(
+                f"Unsupported background type: '{background_type}'.\n"
+                f' Supported background types: {[bt.value for bt in supported_types]}'
+            )
+
+        background_class = supported[background_type]
+        return background_class()

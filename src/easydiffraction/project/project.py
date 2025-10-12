@@ -9,7 +9,7 @@ from varname import varname
 
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guards import GuardedBase
-from easydiffraction.experiments.enums import BeamModeEnum
+from easydiffraction.experiments.experiment_types.enums import BeamModeEnum
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.plotting.plotting import Plotter
