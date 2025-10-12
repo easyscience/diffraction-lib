@@ -18,7 +18,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import TypeValidator
-from easydiffraction.io.cif.serialize import param_to_cif_line
+from easydiffraction.io.cif.serialize import param_to_cif
 
 if TYPE_CHECKING:
     from easydiffraction.io.cif.handler import CifHandler
@@ -121,7 +121,7 @@ class GenericDescriptorBase(GuardedBase):
 
     @property
     def as_cif(self) -> str:
-        return param_to_cif_line(self)
+        return param_to_cif(self)
 
 
 @final

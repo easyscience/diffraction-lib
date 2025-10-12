@@ -10,6 +10,8 @@ from easydiffraction.core.categories import CategoryItem
 from easydiffraction.core.collections import CollectionBase
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import Parameter
+from easydiffraction.io.cif.serialize import datablock_collection_to_cif
+from easydiffraction.io.cif.serialize import datablock_item_to_cif
 
 
 class DatablockItem(GuardedBase):
@@ -39,24 +41,7 @@ class DatablockItem(GuardedBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
-        # Header
-        lines = [f'data_{self._identity.datablock_entry_name}']
-
-        # Item Categories first
-        lines += [
-            category.as_cif
-            for category in vars(self).values()
-            if isinstance(category, CategoryItem) and category.as_cif
-        ]
-
-        # Then Collection Categories
-        lines += [
-            category.as_cif
-            for category in vars(self).values()
-            if isinstance(category, CategoryCollection) and category.as_cif
-        ]
-
-        return '\n\n'.join(lines)
+        return datablock_item_to_cif(self)
 
 
 class DatablockCollection(CollectionBase):
@@ -96,10 +81,7 @@ class DatablockCollection(CollectionBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
-        parts = [
-            datablock.as_cif for datablock in self.values() if isinstance(datablock, DatablockItem)
-        ]
-        return '\n'.join(parts)
+        return datablock_collection_to_cif(self)
 
     @typechecked
     def add(self, item) -> None:

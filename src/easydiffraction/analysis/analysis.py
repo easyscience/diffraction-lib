@@ -471,22 +471,9 @@ class Analysis:
         self.fit_results = self.fitter.results
 
     def as_cif(self):
-        from easydiffraction.io.cif.serialize import format_scalar
+        from easydiffraction.io.cif.serialize import analysis_to_cif
 
-        current_minimizer = format_scalar(self.current_minimizer)
-
-        lines = []
-        lines.append(f'_analysis.calculator_engine  {format_scalar(self.current_calculator)}')
-        lines.append(f'_analysis.fitting_engine  {current_minimizer}')
-        lines.append(f'_analysis.fit_mode  {format_scalar(self.fit_mode)}')
-
-        lines.append('')
-        lines.append(self.aliases.as_cif)
-
-        lines.append('')
-        lines.append(self.constraints.as_cif)
-
-        return '\n'.join(lines)
+        return analysis_to_cif(self)
 
     def show_as_cif(self) -> None:
         cif_text: str = self.as_cif()

@@ -192,4 +192,6 @@ class Summary:
         """Export the final fitted data and analysis results as CIF
         format.
         """
-        return 'To be added...'
+        from easydiffraction.io.cif.serialize import summary_to_cif
+
+        return summary_to_cif(self)

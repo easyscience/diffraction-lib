@@ -9,6 +9,7 @@ from easydiffraction.experiments.enums import RadiationProbeEnum
 from easydiffraction.experiments.enums import SampleFormEnum
 from easydiffraction.experiments.enums import ScatteringTypeEnum
 from easydiffraction.experiments.experiment import Experiment
+from easydiffraction.io.cif.serialize import experiments_to_cif
 from easydiffraction.utils.formatting import paragraph
 
 
@@ -94,8 +95,6 @@ class Experiments(DatablockCollection):
     # -----------
     # CIF methods
     # -----------
-
-    # @property
-    # def as_cif(self) -> str:
-    #    # TODO: It is different from SampleModel.as_cif. Check it.
-    #    return '\n\n'.join([exp.as_cif() for exp in self.values()])
+    @property
+    def as_cif(self) -> str:
+        return experiments_to_cif(self)

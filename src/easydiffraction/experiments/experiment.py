@@ -21,6 +21,7 @@ from easydiffraction.experiments.enums import BeamModeEnum
 from easydiffraction.experiments.enums import RadiationProbeEnum
 from easydiffraction.experiments.enums import SampleFormEnum
 from easydiffraction.experiments.enums import ScatteringTypeEnum
+from easydiffraction.io.cif.serialize import experiment_to_cif
 from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_cif
@@ -89,9 +90,7 @@ class BaseExperiment(DatablockItem):
 
     @property
     def as_cif(self) -> str:
-        experiment_cif = super().as_cif
-        datastore_cif = self.datastore.as_cif
-        return f'{experiment_cif}\n\n{datastore_cif}'
+        return experiment_to_cif(self)
 
     def show_as_cif(self) -> None:
         experiment_cif = super().as_cif

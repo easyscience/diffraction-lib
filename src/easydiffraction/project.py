@@ -4,8 +4,6 @@
 import datetime
 import pathlib
 import tempfile
-from textwrap import wrap
-from typing import List
 
 from typeguard import typechecked
 from varname import varname
@@ -14,6 +12,8 @@ from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.experiments.enums import BeamModeEnum
 from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.io.cif.serialize import project_info_to_cif
+from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.plotting.plotting import Plotter
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.summary import Summary
@@ -105,30 +105,7 @@ class ProjectInfo(GuardedBase):
 
     def as_cif(self) -> str:
         """Export project metadata to CIF."""
-        wrapped_title: List[str] = wrap(self.title, width=46)
-        wrapped_description: List[str] = wrap(self.description, width=46)
-
-        title_str: str = f"_project.title            '{wrapped_title[0]}'"
-        for line in wrapped_title[1:]:
-            title_str += f"\n{' ' * 27}'{line}'"
-
-        if wrapped_description:
-            base_indent: str = '_project.description      '
-            indent_spaces: str = ' ' * len(base_indent)
-            formatted_description: str = f"{base_indent}'{wrapped_description[0]}"
-            for line in wrapped_description[1:]:
-                formatted_description += f'\n{indent_spaces}{line}'
-            formatted_description += "'"
-        else:
-            formatted_description: str = "_project.description      ''"
-
-        return (
-            f'_project.id               {self.name}\n'
-            f'{title_str}\n'
-            f'{formatted_description}\n'
-            f"_project.created          '{self._created.strftime('%d %b %Y %H:%M:%S')}'\n"
-            f"_project.last_modified    '{self._last_modified.strftime('%d %b %Y %H:%M:%S')}'\n"
-        )
+        return project_info_to_cif(self)
 
     def show_as_cif(self) -> None:
         cif_text: str = self.as_cif()
@@ -234,8 +211,8 @@ class Project(GuardedBase):
 
     @property
     def as_cif(self):
-        # To be implemented: return the entire project as a CIF string
-        return ''
+        # Concatenate sections using centralized CIF serializers
+        return project_to_cif(self)
 
     # ------------------------------------------
     #  Project File I/O
