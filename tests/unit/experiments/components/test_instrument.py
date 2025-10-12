@@ -2,7 +2,8 @@ import pytest
 
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.experiments.category_items.instrument import ConstantWavelengthInstrument, \
-    InstrumentBase, InstrumentFactory
+    InstrumentFactory
+from easydiffraction.experiments.category_items.instrument_setups import InstrumentBase
 from easydiffraction.experiments.category_items.instrument import TimeOfFlightInstrument
 
 

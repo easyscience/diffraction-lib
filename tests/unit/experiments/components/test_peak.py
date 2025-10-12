@@ -3,7 +3,8 @@ import pytest
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.experiments.category_items.peak_profiles.cw_mixins import ConstantWavelengthBroadeningMixin
 from easydiffraction.experiments.category_items.peak import ConstantWavelengthPseudoVoigt, \
-    PeakBase, PeakFactory
+    PeakFactory
+from easydiffraction.experiments.category_items.peak_profiles import PeakBase
 from easydiffraction.experiments.category_items.peak import ConstantWavelengthSplitPseudoVoigt
 from easydiffraction.experiments.category_items.peak import ConstantWavelengthThompsonCoxHastings
 from easydiffraction.experiments.category_items.peak_profiles.cw_mixins import EmpiricalAsymmetryMixin

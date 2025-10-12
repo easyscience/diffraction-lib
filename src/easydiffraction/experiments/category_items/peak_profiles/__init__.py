@@ -14,8 +14,8 @@ imports stable.
 """
 
 # Core base and factory
-from easydiffraction.experiments.category_items.peak import PeakBase
 from easydiffraction.experiments.category_items.peak import PeakFactory
+from easydiffraction.experiments.category_items.peak_profiles.base import PeakBase
 
 # Concrete peak profiles
 from easydiffraction.experiments.category_items.peak_profiles.cw import (

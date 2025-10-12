@@ -3,17 +3,9 @@
 
 from typing import Optional
 
-from easydiffraction.core.categories import CategoryItem
 from easydiffraction.experiments.experiment_types.enums import BeamModeEnum
 from easydiffraction.experiments.experiment_types.enums import PeakProfileTypeEnum
 from easydiffraction.experiments.experiment_types.enums import ScatteringTypeEnum
-
-
-class PeakBase(CategoryItem):
-    def __init__(self) -> None:
-        super().__init__()
-        # Ensure category identity is set for all peak subclasses
-        self._identity.category_code = 'peak'
 
 
 class PeakFactory:

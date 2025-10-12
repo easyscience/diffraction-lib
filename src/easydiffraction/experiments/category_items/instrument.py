@@ -10,18 +10,15 @@ re-exported here for a stable and readable API.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from typing import Optional
 from typing import Type
 
-from easydiffraction.core.categories import CategoryItem
 from easydiffraction.experiments.experiment_types.enums import BeamModeEnum
 from easydiffraction.experiments.experiment_types.enums import ScatteringTypeEnum
 
-
-class InstrumentBase(CategoryItem):
-    def __init__(self) -> None:
-        super().__init__()
-        self._identity.category_code = 'instrument'
+if TYPE_CHECKING:
+    from easydiffraction.experiments.category_items.instrument_setups import InstrumentBase
 
 
 class InstrumentFactory:

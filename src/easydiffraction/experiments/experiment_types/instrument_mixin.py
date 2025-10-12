@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from typeguard import typechecked
 
-from easydiffraction.experiments.category_items.instrument import InstrumentBase
 from easydiffraction.experiments.category_items.instrument import InstrumentFactory
+
+if TYPE_CHECKING:
+    from easydiffraction.experiments.category_items.instrument_setups import InstrumentBase
 
 
 class InstrumentMixin:
