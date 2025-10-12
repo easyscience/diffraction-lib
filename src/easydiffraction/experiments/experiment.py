@@ -66,7 +66,7 @@ class ExperimentFactory:
         """
         # Check for valid argument combinations
         user_args = [k for k, v in kwargs.items() if v is not None]
-        if not cls.is_valid_args(user_args):
+        if not cls._is_valid_args(user_args):
             raise ValueError(f'Invalid argument combination: {user_args}')
 
         # Validate enum arguments if provided
@@ -152,7 +152,7 @@ class ExperimentFactory:
         )
 
     @staticmethod
-    def is_valid_args(user_args):
+    def _is_valid_args(user_args):
         """Validate user argument set against allowed combinations.
 
         Returns True if the argument set matches any valid combination,

@@ -99,8 +99,8 @@ class PowderExperiment(InstrumentMixin, BasePowderExperiment):
 
     @background_type.setter
     def background_type(self, new_type):
-        if new_type not in BackgroundFactory._supported:
-            supported_types = list(BackgroundFactory._supported.keys())
+        if new_type not in BackgroundFactory._supported_map():
+            supported_types = list(BackgroundFactory._supported_map().keys())
             print(warning(f"Unknown background type '{new_type}'"))
             print(f'Supported background types: {supported_types}')
             print("For more information, use 'show_supported_background_types()'")
@@ -114,7 +114,7 @@ class PowderExperiment(InstrumentMixin, BasePowderExperiment):
         columns_headers = ['Background type', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
-        for bt in BackgroundFactory._supported:
+        for bt in BackgroundFactory._supported_map():
             columns_data.append([bt.value, bt.description()])
 
         print(paragraph('Supported background types'))
