@@ -1,16 +1,19 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-
 from __future__ import annotations
 
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 from typing import Optional
 
-import numpy as np
 from typeguard import typechecked
 
 from easydiffraction.experiments.enums import BeamModeEnum
 from easydiffraction.experiments.enums import SampleFormEnum
+from easydiffraction.io.cif.serialize import datastore_to_cif
+
+if TYPE_CHECKING:
+    import numpy as np
 
 
 class BaseDatastore:
@@ -62,61 +65,19 @@ class BaseDatastore:
         """
         pass
 
-    def as_cif(self, max_points: Optional[int] = None) -> str:
+    @property
+    def as_cif(self) -> str:
         """Generate a CIF-formatted string representing the datastore
         data.
-
-        Args:
-            max_points (Optional[int]): Maximum number of points to
-                include from start and end. If the total points exceed
-                twice this number, data in the middle is truncated with
-                '...'.
-
-        Returns:
-            str: CIF-formatted string of the data. Empty string if no
-                data available.
         """
-        cif_lines = ['loop_']
+        return datastore_to_cif(self)
 
-        # Add CIF tags from mapping
-        mapping = self._cif_mapping()
-        for cif_key in mapping.values():
-            cif_lines.append(cif_key)
-
-        # Collect data arrays according to mapping keys
-        data_arrays = []
-        for attr_name in mapping:
-            attr_array = getattr(self, attr_name, None)
-            if attr_array is None:
-                data_arrays.append(np.array([]))
-            else:
-                data_arrays.append(attr_array)
-
-        # Return empty string if no data
-        if not data_arrays or not data_arrays[0].size:
-            return ''
-
-        # Determine number of points in the first data array
-        n_points = len(data_arrays[0])
-
-        # Function to format a single row of data
-        def _format_row(i: int) -> str:
-            return ' '.join(str(data_arrays[j][i]) for j in range(len(data_arrays)))
-
-        # Add data lines, applying max_points truncation if needed
-        if max_points is not None and n_points > 2 * max_points:
-            for i in range(max_points):
-                cif_lines.append(_format_row(i))
-            cif_lines.append('...')
-            for i in range(-max_points, 0):
-                cif_lines.append(_format_row(i))
-        else:
-            for i in range(n_points):
-                cif_lines.append(_format_row(i))
-
-        cif_str = '\n'.join(cif_lines)
-
-        return cif_str
+    @property
+    def as_truncated_cif(self) -> str:
+        """Generate a CIF-formatted string representing the datastore
+        data.
+        """
+        return datastore_to_cif(self, max_points=5)
 
 
 class PowderDatastore(BaseDatastore):

@@ -2,8 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from abc import abstractmethod
-from typing import List
-from typing import Optional
 
 import numpy as np
 from typeguard import typechecked
@@ -81,80 +79,30 @@ class BaseExperiment(DatablockItem):
     def name(self, new: str) -> None:
         self._name = new
 
-    # ---------------
-    # Experiment type
-    # ---------------
-
     @property
     def type(self):  # TODO: Consider another name
         return self._type
-
-    # @type.setter
-    # @typechecked
-    # def type(self, new_experiment_type: ExperimentType):
-    #    self._type = new_experiment_type
 
     @property
     def datastore(self):
         return self._datastore
 
-    # ----------------
-    # Misc. Need to be sorted
-    # ----------------
-
-    def as_cif_old(
-        self,
-        max_points: Optional[int] = None,
-    ) -> str:
-        """Export the sample model to CIF format.
-
-        Returns:
-            str: CIF string representation of the experiment.
-        """
-        # Data block header
-        cif_lines: List[str] = [f'data_{self.name}']
-
-        # Experiment type
-        cif_lines += ['', self.type.as_cif]
-
-        # Instrument setup and calibration
-        if 'instrument' in self._public_attrs():
-            cif_lines += ['', self.instrument.as_cif]
-
-        # Peak profile, broadening and asymmetry
-        if 'peak' in self._public_attrs():
-            cif_lines += ['', self.peak.as_cif]
-
-        # Phase scale factors for powder experiments
-        if 'linked_phases' in self._public_attrs() and self.linked_phases._items:
-            cif_lines += ['', self.linked_phases.as_cif]
-
-        # Crystal scale factor for single crystal experiments
-        if 'linked_crystal' in self._public_attrs():
-            cif_lines += ['', self.linked_crystal.as_cif]
-
-        # Background points
-        if 'background' in self._public_attrs() and self.background._items:
-            cif_lines += ['', self.background.as_cif]
-
-        # Excluded regions
-        if 'excluded_regions' in self._public_attrs() and self.excluded_regions._items:
-            cif_lines += ['', self.excluded_regions.as_cif]
-
-        # Measured data
-        if 'datastore' in self._public_attrs():
-            cif_lines += ['', self.datastore.as_cif(max_points=max_points)]
-
-        return '\n'.join(cif_lines)
+    @property
+    def as_cif(self) -> str:
+        experiment_cif = super().as_cif
+        datastore_cif = self.datastore.as_cif
+        return f'{experiment_cif}\n\n{datastore_cif}'
 
     def show_as_cif(self) -> None:
-        cif_text: str = self.as_cif  # (max_points=5)
+        experiment_cif = super().as_cif
+        datastore_cif = self.datastore.as_truncated_cif
+        cif_text: str = f'{experiment_cif}\n\n{datastore_cif}'
         paragraph_title: str = paragraph(f"Experiment 🔬 '{self.name}' as cif")
         render_cif(cif_text, paragraph_title)
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        pass
+        raise NotImplementedError()
 
 
 class BasePowderExperiment(BaseExperiment):
@@ -168,10 +116,6 @@ class BasePowderExperiment(BaseExperiment):
     ) -> None:
         super().__init__(name=name, type=type)
 
-        # self._peak_profile_type: str = PeakProfileTypeEnum.default(
-        #    self.type.scattering_type.value,
-        #    self.type.beam_mode.value,
-        # ).value
         self._peak_profile_type: PeakProfileTypeEnum = PeakProfileTypeEnum.default(
             self.type.scattering_type.value,
             self.type.beam_mode.value,
@@ -211,33 +155,6 @@ class BasePowderExperiment(BaseExperiment):
     @property
     def peak_profile_type(self):
         return self._peak_profile_type
-
-    # OLD
-    @peak_profile_type.setter
-    def peak_profile_type(self, new_type: str):
-        if (
-            new_type
-            not in PeakFactory._supported[self.type.scattering_type.value][
-                self.type.beam_mode.value
-            ]
-        ):
-            supported_types = list(
-                PeakFactory._supported[self.type.scattering_type.value][
-                    self.type.beam_mode.value
-                ].keys()
-            )
-            print(warning(f"Unsupported peak profile '{new_type}'"))
-            print(f'Supported peak profiles: {supported_types}')
-            print("For more information, use 'show_supported_peak_profile_types()'")
-            return
-        self.peak = PeakFactory.create(
-            scattering_type=self.type.scattering_type.value,
-            beam_mode=self.type.beam_mode.value,
-            profile_type=new_type,
-        )
-        self._peak_profile_type = new_type
-        print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
-        print(new_type)
 
     # TODO: Compare with above and decide which one to keep
     @peak_profile_type.setter
@@ -301,11 +218,6 @@ class PowderExperiment(
 
     Wraps background, peak profile, and linked phases.
     """
-
-    # _public_attrs() = {
-    #    'background',
-    #    'background_type',
-    # }
 
     def __init__(
         self,

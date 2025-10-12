@@ -7,6 +7,8 @@ from easydiffraction.core.collections import CollectionBase
 from easydiffraction.core.guards import GuardedBase
 from easydiffraction.core.parameters import GenericDescriptorBase
 from easydiffraction.core.validation import checktype
+from easydiffraction.io.cif.serialize import category_collection_to_cif
+from easydiffraction.io.cif.serialize import category_item_to_cif
 
 
 class CategoryItem(GuardedBase):
@@ -34,14 +36,7 @@ class CategoryItem(GuardedBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
-        lines: list[str] = ['']
-        for param in self.parameters:
-            tags = param._cif_handler.names
-            main_key = tags[0]
-            value = param.value
-            value = f'"{value}"' if isinstance(value, str) and ' ' in value else value
-            lines.append(f'{main_key} {value}')
-        return '\n'.join(lines)
+        return category_item_to_cif(self)
 
 
 class CategoryCollection(CollectionBase):
@@ -71,25 +66,7 @@ class CategoryCollection(CollectionBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
-        if not self:
-            return ''  # Empty collection
-        lines: list[str] = ['']
-        # Add header using the first item
-        first_item = list(self.values())[0]
-        lines.append('loop_')
-        for param in first_item.parameters:
-            tags = param._cif_handler.names
-            main_key = tags[0]
-            lines.append(main_key)
-        # Add data from all items one by one
-        for item in self.values():
-            line = []
-            for param in item.parameters:
-                value = param.value
-                line.append(str(value))
-            line = ' '.join(line)
-            lines.append(line)
-        return '\n'.join(lines)
+        return category_collection_to_cif(self)
 
     @checktype
     def add(self, item) -> None:

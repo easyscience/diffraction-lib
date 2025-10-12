@@ -39,11 +39,24 @@ class DatablockItem(GuardedBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
+        # Header
         lines = [f'data_{self._identity.datablock_entry_name}']
-        for category in vars(self).values():
-            if isinstance(category, (CategoryItem, CategoryCollection)):
-                lines.append(category.as_cif)
-        return '\n'.join(lines)
+
+        # Item Categories first
+        lines += [
+            category.as_cif
+            for category in vars(self).values()
+            if isinstance(category, CategoryItem) and category.as_cif
+        ]
+
+        # Then Collection Categories
+        lines += [
+            category.as_cif
+            for category in vars(self).values()
+            if isinstance(category, CategoryCollection) and category.as_cif
+        ]
+
+        return '\n\n'.join(lines)
 
 
 class DatablockCollection(CollectionBase):

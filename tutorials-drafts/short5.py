@@ -197,16 +197,14 @@ if __name__ == '__main__':
     models['lbco'].atom_sites.add(s3)
     assert len(models['lbco'].atom_sites) == 2
     assert models['lbco'].cell.length_b.as_cif == '_cell.length_b 10.0'
-    assert models['lbco'].cell.as_cif == """
-_cell.length_a 10.0
+    assert models['lbco'].cell.as_cif == """_cell.length_a 10.0
 _cell.length_b 10.0
 _cell.length_c 10.0
 _cell.angle_alpha 90.0
 _cell.angle_beta 90.0
 _cell.angle_gamma 90.0"""
 
-    assert models['lbco'].atom_sites.as_cif == """
-loop_
+    assert models['lbco'].atom_sites.as_cif == """loop_
 _atom_site.label
 _atom_site.type_symbol
 _atom_site.fract_x

@@ -12,7 +12,7 @@ from easydiffraction import download_from_repository
 TEMP_DIR = tempfile.gettempdir()
 
 
-def test_single_fit_neutron_pd_cwl_lbco() -> None:
+def single_fit_neutron_pd_cwl_lbco() -> None:
     # Set sample model
     model = SampleModel(name='lbco')
     model.space_group.name_h_m = 'P m -3 m'
@@ -71,6 +71,8 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     expt.background.add_from_args(x=10, y=170)
     expt.background.add_from_args(x=165, y=170)
 
+    expt.show_as_cif()
+
     # Create project
     project = Project()
     project.sample_models.add(model)
@@ -124,4 +126,4 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=1.3, decimal=1)
 
 
-test_single_fit_neutron_pd_cwl_lbco()
+single_fit_neutron_pd_cwl_lbco()
