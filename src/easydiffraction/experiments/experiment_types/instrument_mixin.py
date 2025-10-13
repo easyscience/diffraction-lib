@@ -7,7 +7,7 @@ from typeguard import typechecked
 from easydiffraction.experiments.category_items.instrument import InstrumentFactory
 
 if TYPE_CHECKING:
-    from easydiffraction.experiments.category_items.instrument_setups import InstrumentBase
+    from easydiffraction.experiments.category_items.instrument_setups.base import InstrumentBase
 
 
 class InstrumentMixin:

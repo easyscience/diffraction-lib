@@ -18,7 +18,7 @@ from easydiffraction.experiments.experiment_types.enums import BeamModeEnum
 from easydiffraction.experiments.experiment_types.enums import ScatteringTypeEnum
 
 if TYPE_CHECKING:
-    from easydiffraction.experiments.category_items.instrument_setups import InstrumentBase
+    from easydiffraction.experiments.category_items.instrument_setups.base import InstrumentBase
 
 
 class InstrumentFactory:

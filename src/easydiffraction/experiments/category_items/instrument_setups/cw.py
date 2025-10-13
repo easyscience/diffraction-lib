@@ -5,7 +5,7 @@ from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
-from easydiffraction.experiments.category_items.instrument_setups import InstrumentBase
+from easydiffraction.experiments.category_items.instrument_setups.base import InstrumentBase
 from easydiffraction.io.cif.handler import CifHandler
 
 
