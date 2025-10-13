@@ -233,7 +233,7 @@ class GenericParameter(GenericDescriptorFloat):
 
     @property
     def uncertainty(self):
-        return self._free
+        return self._uncertainty
 
     @uncertainty.setter
     def uncertainty(self, v):
