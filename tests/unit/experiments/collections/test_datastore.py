@@ -3,8 +3,8 @@ import pytest
 from typeguard import TypeCheckError
 
 from easydiffraction.experiments.datastore import DatastoreFactory
-from easydiffraction.experiments.datastore import PowderDatastore
-from easydiffraction.experiments.datastore import SingleCrystalDatastore
+from easydiffraction.experiments.datastore_types.pd import PowderDatastore
+from easydiffraction.experiments.datastore_types.sg import SingleCrystalDatastore
 
 
 def test_powder_datastore_init():
