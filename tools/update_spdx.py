@@ -49,6 +49,15 @@ def update_spdx_header(file_path: Path):
         insert_pos += 1
         new_lines.insert(insert_pos, '\n')
 
+    # Ensure empty line after license
+    # Find index of license line
+    for i, line in enumerate(new_lines):
+        if line.strip() == LICENSE_TEXT:
+            # If last line or next line is not blank, insert one
+            if i == len(new_lines) - 1 or new_lines[i + 1].strip() != '':
+                new_lines.insert(i + 1, '\n')
+            break
+
     with file_path.open('w', encoding='utf-8') as f:
         f.writelines(new_lines)
 
