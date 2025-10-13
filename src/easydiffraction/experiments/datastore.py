@@ -5,8 +5,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from easydiffraction.experiments.datastore_types.pd import PowderDatastore
-from easydiffraction.experiments.datastore_types.sg import SingleCrystalDatastore
+from easydiffraction.experiments.datastore_types.powder import PowderDatastore
+from easydiffraction.experiments.datastore_types.single_crystal import SingleCrystalDatastore
 from easydiffraction.experiments.experiment_types.enums import BeamModeEnum
 from easydiffraction.experiments.experiment_types.enums import SampleFormEnum
 
