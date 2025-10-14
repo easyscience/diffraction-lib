@@ -88,7 +88,7 @@ class ValidationStage(Enum):
 # ==============================================================
 
 
-class BaseValidator(ABC):
+class ValidatorBase(ABC):
     """Abstract base class for all validators."""
 
     @abstractmethod
@@ -107,7 +107,7 @@ class BaseValidator(ABC):
         return current if current is not None else default
 
 
-class TypeValidator(BaseValidator):
+class TypeValidator(ValidatorBase):
     """Ensures a value is of the expected Python type."""
 
     def __init__(self, expected_type: DataTypes):
@@ -154,7 +154,7 @@ class TypeValidator(BaseValidator):
         return value
 
 
-class RangeValidator(BaseValidator):
+class RangeValidator(ValidatorBase):
     """Ensures a numeric value lies within [ge, le]."""
 
     def __init__(
@@ -191,7 +191,7 @@ class RangeValidator(BaseValidator):
         return value
 
 
-class MembershipValidator(BaseValidator):
+class MembershipValidator(ValidatorBase):
     """Ensures that a value belongs to a predefined list of allowed
     choices.
 
@@ -231,7 +231,7 @@ class MembershipValidator(BaseValidator):
         return value
 
 
-class RegexValidator(BaseValidator):
+class RegexValidator(ValidatorBase):
     """Ensures that a string value matches a given regular
     expression.
     """

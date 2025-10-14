@@ -1,21 +1,20 @@
 from __future__ import annotations
 
-from typing import Optional
 from typing import ParamSpec
 from typing import TypeVar
 
 from easydiffraction.utils.logging import log  # type: ignore
 
-from easydiffraction.sample_models.category_items.cell import Cell  # type: ignore
-from easydiffraction.sample_models.category_items.space_group import SpaceGroup  # type: ignore
-from easydiffraction.sample_models.category_collections.atom_sites import AtomSite, AtomSites  # type: ignore
+from easydiffraction.sample_models.categories.cell import Cell  # type: ignore
+from easydiffraction.sample_models.categories.space_group import SpaceGroup  # type: ignore
+from easydiffraction.sample_models.categories.atom_sites import AtomSite, AtomSites  # type: ignore
 
-from easydiffraction.sample_models.sample_model import SampleModel
-from easydiffraction.sample_models.sample_model_types.base import BaseSampleModel
+from easydiffraction.sample_models.sample_model.factory import SampleModel
+from easydiffraction.sample_models.sample_model.base import SampleModelBase
 from easydiffraction.sample_models.sample_models import SampleModels
 
-from easydiffraction.analysis.category_collections.constraints import Constraint
-from easydiffraction.analysis.category_collections.constraints import Constraints
+from easydiffraction.analysis.categories.constraints import Constraint
+from easydiffraction.analysis.categories.constraints import Constraints
 
 P = ParamSpec('P')
 R = TypeVar('R')
@@ -165,9 +164,9 @@ if __name__ == '__main__':
 
     assert models._parent is None
     assert type(models['lbco']._parent) is SampleModels
-    assert type(models['lbco'].cell._parent) is BaseSampleModel
+    assert type(models['lbco'].cell._parent) is SampleModelBase
     assert type(models['lbco'].cell.length_b._parent) is Cell
-    assert type(models['lbco'].atom_sites._parent) is BaseSampleModel
+    assert type(models['lbco'].atom_sites._parent) is SampleModelBase
     assert type(models['lbco'].atom_sites['Tb']._parent) is AtomSites
     assert type(models['lbco'].atom_sites['Tb'].fract_x._parent) is AtomSite
 

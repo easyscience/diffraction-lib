@@ -4,7 +4,7 @@ import os, sys
 import lmfit
 import pytest
 
-from easydiffraction.analysis.minimizers.minimizer_lmfit import LmfitMinimizer
+from easydiffraction.analysis.minimizers.lmfit import LmfitMinimizer
 from easydiffraction.core.parameters import Parameter
 
 

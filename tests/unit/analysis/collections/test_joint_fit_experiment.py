@@ -1,4 +1,4 @@
-from easydiffraction.analysis.category_collections.joint_fit_experiments import JointFitExperiment
+from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiment
 
 # filepath: src/easydiffraction/analysis/category_collections/test_joint_fit_experiments.py
 

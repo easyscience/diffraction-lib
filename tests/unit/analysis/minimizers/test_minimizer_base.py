@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 import pytest
 
-from easydiffraction.analysis.fit_support.reporting import FitResults
-from easydiffraction.analysis.minimizers.minimizer_base import MinimizerBase
+from easydiffraction.analysis.fit_helpers.reporting import FitResults
+from easydiffraction.analysis.minimizers.base import MinimizerBase
 
 
 # Mock subclass of MinimizerBase to test its methods

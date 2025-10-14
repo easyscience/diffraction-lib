@@ -4,12 +4,12 @@ from easydiffraction import Logger
 from easydiffraction import Project
 from easydiffraction import SampleModel
 from easydiffraction import SampleModels
-from easydiffraction.experiments.category_collections.linked_phases import LinkedPhase
-from easydiffraction.experiments.category_collections.linked_phases import LinkedPhases
-from easydiffraction.sample_models.category_collections.atom_sites import AtomSite
-from easydiffraction.sample_models.category_collections.atom_sites import AtomSites
-from easydiffraction.sample_models.category_items.cell import Cell
-from easydiffraction.sample_models.category_items.space_group import SpaceGroup
+from easydiffraction.experiments.categories.linked_phases import LinkedPhase
+from easydiffraction.experiments.categories.linked_phases import LinkedPhases
+from easydiffraction.sample_models.categories.atom_sites import AtomSite
+from easydiffraction.sample_models.categories.atom_sites import AtomSites
+from easydiffraction.sample_models.categories.cell import Cell
+from easydiffraction.sample_models.categories.space_group import SpaceGroup
 
 Logger.configure(mode=Logger.Mode.LOG, level=Logger.Level.DEBUG)
 # Logger.configure(mode=Logger.Mode.RAISE, level=Logger.Level.DEBUG)

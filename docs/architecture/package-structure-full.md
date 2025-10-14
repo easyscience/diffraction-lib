@@ -5,17 +5,17 @@
 ├── 📁 analysis
 │   ├── 📁 calculators
 │   │   ├── 📄 __init__.py
-│   │   ├── 📄 calculator_base.py
+│   │   ├── 📄 base.py
 │   │   │   └── 🏷️ class CalculatorBase
-│   │   ├── 📄 calculator_crysfml.py
+│   │   ├── 📄 crysfml.py
 │   │   │   └── 🏷️ class CrysfmlCalculator
-│   │   ├── 📄 calculator_cryspy.py
+│   │   ├── 📄 cryspy.py
 │   │   │   └── 🏷️ class CryspyCalculator
-│   │   ├── 📄 calculator_factory.py
+│   │   ├── 📄 factory.py
 │   │   │   └── 🏷️ class CalculatorFactory
-│   │   └── 📄 calculator_pdffit.py
+│   │   └── 📄 pdffit.py
 │   │       └── 🏷️ class PdffitCalculator
-│   ├── 📁 category_collections
+│   ├── 📁 categories
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 aliases.py
 │   │   │   ├── 🏷️ class Alias
@@ -26,22 +26,22 @@
 │   │   └── 📄 joint_fit_experiments.py
 │   │       ├── 🏷️ class JointFitExperiment
 │   │       └── 🏷️ class JointFitExperiments
-│   ├── 📁 fit_support
+│   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 metrics.py
 │   │   ├── 📄 reporting.py
 │   │   │   └── 🏷️ class FitResults
 │   │   └── 📄 tracking.py
-│   │       └── 🏷️ class FittingProgressTracker
+│   │       └── 🏷️ class FitProgressTracker
 │   ├── 📁 minimizers
 │   │   ├── 📄 __init__.py
-│   │   ├── 📄 minimizer_base.py
+│   │   ├── 📄 base.py
 │   │   │   └── 🏷️ class MinimizerBase
-│   │   ├── 📄 minimizer_dfols.py
+│   │   ├── 📄 dfols.py
 │   │   │   └── 🏷️ class DfolsMinimizer
-│   │   ├── 📄 minimizer_factory.py
+│   │   ├── 📄 factory.py
 │   │   │   └── 🏷️ class MinimizerFactory
-│   │   └── 📄 minimizer_lmfit.py
+│   │   └── 📄 lmfit.py
 │   │       └── 🏷️ class LmfitMinimizer
 │   ├── 📄 __init__.py
 │   ├── 📄 analysis.py
@@ -68,20 +68,20 @@
 │   │   └── 🏷️ class Identity
 │   ├── 📄 parameters.py
 │   │   ├── 🏷️ class GenericDescriptorBase
-│   │   ├── 🏷️ class GenericDescriptorStr
-│   │   ├── 🏷️ class GenericDescriptorFloat
+│   │   ├── 🏷️ class GenericStringDescriptor
+│   │   ├── 🏷️ class GenericNumericDescriptor
 │   │   ├── 🏷️ class GenericParameter
-│   │   ├── 🏷️ class DescriptorStr
-│   │   ├── 🏷️ class DescriptorFloat
+│   │   ├── 🏷️ class StringDescriptor
+│   │   ├── 🏷️ class NumericDescriptor
 │   │   └── 🏷️ class Parameter
 │   ├── 📄 singletons.py
-│   │   ├── 🏷️ class BaseSingleton
+│   │   ├── 🏷️ class SingletonBase
 │   │   ├── 🏷️ class UidMapHandler
 │   │   └── 🏷️ class ConstraintsHandler
 │   └── 📄 validation.py
 │       ├── 🏷️ class DataTypes
 │       ├── 🏷️ class ValidationStage
-│       ├── 🏷️ class BaseValidator
+│       ├── 🏷️ class ValidatorBase
 │       ├── 🏷️ class TypeValidator
 │       ├── 🏷️ class RangeValidator
 │       ├── 🏷️ class MembershipValidator
@@ -92,8 +92,8 @@
 │   ├── 📄 crystallography.py
 │   └── 📄 space_groups.py
 ├── 📁 experiments
-│   ├── 📁 category_collections
-│   │   ├── 📁 background_types
+│   ├── 📁 categories
+│   │   ├── 📁 background
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 base.py
 │   │   │   │   └── 🏷️ class BackgroundBase
@@ -102,90 +102,88 @@
 │   │   │   │   └── 🏷️ class ChebyshevPolynomialBackground
 │   │   │   ├── 📄 enums.py
 │   │   │   │   └── 🏷️ class BackgroundTypeEnum
+│   │   │   ├── 📄 factory.py
+│   │   │   │   └── 🏷️ class BackgroundFactory
 │   │   │   └── 📄 line_segment.py
-│   │   │       ├── 🏷️ class Point
+│   │   │       ├── 🏷️ class LineSegment
 │   │   │       └── 🏷️ class LineSegmentBackground
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 background.py
-│   │   │   └── 🏷️ class BackgroundFactory
-│   │   ├── 📄 excluded_regions.py
-│   │   │   ├── 🏷️ class ExcludedRegion
-│   │   │   └── 🏷️ class ExcludedRegions
-│   │   └── 📄 linked_phases.py
-│   │       ├── 🏷️ class LinkedPhase
-│   │       └── 🏷️ class LinkedPhases
-│   ├── 📁 category_items
-│   │   ├── 📁 instrument_setups
+│   │   ├── 📁 instrument
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 base.py
 │   │   │   │   └── 🏷️ class InstrumentBase
-│   │   │   ├── 📄 cw.py
-│   │   │   │   └── 🏷️ class ConstantWavelengthInstrument
+│   │   │   ├── 📄 cwl.py
+│   │   │   │   └── 🏷️ class CwlInstrument
+│   │   │   ├── 📄 factory.py
+│   │   │   │   └── 🏷️ class InstrumentFactory
 │   │   │   └── 📄 tof.py
-│   │   │       └── 🏷️ class TimeOfFlightInstrument
-│   │   ├── 📁 peak_profiles
+│   │   │       └── 🏷️ class TofInstrument
+│   │   ├── 📁 peak
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 base.py
 │   │   │   │   └── 🏷️ class PeakBase
-│   │   │   ├── 📄 cw.py
-│   │   │   │   ├── 🏷️ class ConstantWavelengthPseudoVoigt
-│   │   │   │   ├── 🏷️ class ConstantWavelengthSplitPseudoVoigt
-│   │   │   │   └── 🏷️ class ConstantWavelengthThompsonCoxHastings
-│   │   │   ├── 📄 cw_mixins.py
-│   │   │   │   ├── 🏷️ class ConstantWavelengthBroadeningMixin
+│   │   │   ├── 📄 cwl.py
+│   │   │   │   ├── 🏷️ class CwlPseudoVoigt
+│   │   │   │   ├── 🏷️ class CwlSplitPseudoVoigt
+│   │   │   │   └── 🏷️ class CwlThompsonCoxHastings
+│   │   │   ├── 📄 cwl_mixins.py
+│   │   │   │   ├── 🏷️ class CwlBroadeningMixin
 │   │   │   │   ├── 🏷️ class EmpiricalAsymmetryMixin
 │   │   │   │   └── 🏷️ class FcjAsymmetryMixin
-│   │   │   ├── 📄 pdf.py
-│   │   │   │   └── 🏷️ class PairDistributionFunctionGaussianDampedSinc
-│   │   │   ├── 📄 pdf_mixins.py
-│   │   │   │   └── 🏷️ class PairDistributionFunctionBroadeningMixin
+│   │   │   ├── 📄 factory.py
+│   │   │   │   └── 🏷️ class PeakFactory
 │   │   │   ├── 📄 tof.py
-│   │   │   │   ├── 🏷️ class TimeOfFlightPseudoVoigt
-│   │   │   │   ├── 🏷️ class TimeOfFlightPseudoVoigtIkedaCarpenter
-│   │   │   │   └── 🏷️ class TimeOfFlightPseudoVoigtBackToBack
-│   │   │   └── 📄 tof_mixins.py
-│   │   │       ├── 🏷️ class TimeOfFlightBroadeningMixin
-│   │   │       └── 🏷️ class IkedaCarpenterAsymmetryMixin
+│   │   │   │   ├── 🏷️ class TofPseudoVoigt
+│   │   │   │   ├── 🏷️ class TofPseudoVoigtIkedaCarpenter
+│   │   │   │   └── 🏷️ class TofPseudoVoigtBackToBack
+│   │   │   ├── 📄 tof_mixins.py
+│   │   │   │   ├── 🏷️ class TofBroadeningMixin
+│   │   │   │   └── 🏷️ class IkedaCarpenterAsymmetryMixin
+│   │   │   ├── 📄 total.py
+│   │   │   │   └── 🏷️ class TotalGaussianDampedSinc
+│   │   │   └── 📄 total_mixins.py
+│   │   │       └── 🏷️ class TotalBroadeningMixin
 │   │   ├── 📄 __init__.py
+│   │   ├── 📄 excluded_regions.py
+│   │   │   ├── 🏷️ class ExcludedRegion
+│   │   │   └── 🏷️ class ExcludedRegions
 │   │   ├── 📄 experiment_type.py
 │   │   │   └── 🏷️ class ExperimentType
-│   │   ├── 📄 instrument.py
-│   │   │   └── 🏷️ class InstrumentFactory
-│   │   └── 📄 peak.py
-│   │       └── 🏷️ class PeakFactory
-│   ├── 📁 datastore_types
+│   │   └── 📄 linked_phases.py
+│   │       ├── 🏷️ class LinkedPhase
+│   │       └── 🏷️ class LinkedPhases
+│   ├── 📁 datastore
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
-│   │   │   └── 🏷️ class BaseDatastore
-│   │   ├── 📄 powder.py
-│   │   │   └── 🏷️ class PowderDatastore
-│   │   └── 📄 single_crystal.py
-│   │       └── 🏷️ class SingleCrystalDatastore
-│   ├── 📁 experiment_types
+│   │   │   └── 🏷️ class DatastoreBase
+│   │   ├── 📄 factory.py
+│   │   │   └── 🏷️ class DatastoreFactory
+│   │   ├── 📄 pd.py
+│   │   │   └── 🏷️ class PdDatastore
+│   │   └── 📄 sc.py
+│   │       └── 🏷️ class ScDatastore
+│   ├── 📁 experiment
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
-│   │   │   ├── 🏷️ class BaseExperiment
-│   │   │   └── 🏷️ class BasePowderExperiment
+│   │   │   ├── 🏷️ class ExperimentBase
+│   │   │   └── 🏷️ class PdExperimentBase
+│   │   ├── 📄 bragg_pd.py
+│   │   │   └── 🏷️ class BraggPdExperiment
+│   │   ├── 📄 bragg_sc.py
+│   │   │   └── 🏷️ class BraggScExperiment
 │   │   ├── 📄 enums.py
 │   │   │   ├── 🏷️ class SampleFormEnum
 │   │   │   ├── 🏷️ class ScatteringTypeEnum
 │   │   │   ├── 🏷️ class RadiationProbeEnum
 │   │   │   ├── 🏷️ class BeamModeEnum
 │   │   │   └── 🏷️ class PeakProfileTypeEnum
+│   │   ├── 📄 factory.py
+│   │   │   ├── 🏷️ class ExperimentFactory
+│   │   │   └── 🏷️ class Experiment
 │   │   ├── 📄 instrument_mixin.py
 │   │   │   └── 🏷️ class InstrumentMixin
-│   │   ├── 📄 pdf.py
-│   │   │   └── 🏷️ class PairDistributionFunctionExperiment
-│   │   ├── 📄 powder.py
-│   │   │   └── 🏷️ class PowderExperiment
-│   │   └── 📄 single_crystal.py
-│   │       └── 🏷️ class SingleCrystalExperiment
+│   │   └── 📄 total_pd.py
+│   │       └── 🏷️ class TotalPdExperiment
 │   ├── 📄 __init__.py
-│   ├── 📄 datastore.py
-│   │   └── 🏷️ class DatastoreFactory
-│   ├── 📄 experiment.py
-│   │   ├── 🏷️ class ExperimentFactory
-│   │   └── 🏷️ class Experiment
 │   └── 📄 experiments.py
 │       └── 🏷️ class Experiments
 ├── 📁 io
@@ -213,25 +211,23 @@
 │   └── 📄 project_info.py
 │       └── 🏷️ class ProjectInfo
 ├── 📁 sample_models
-│   ├── 📁 category_collections
+│   ├── 📁 categories
 │   │   ├── 📄 __init__.py
-│   │   └── 📄 atom_sites.py
-│   │       ├── 🏷️ class AtomSite
-│   │       └── 🏷️ class AtomSites
-│   ├── 📁 category_items
-│   │   ├── 📄 __init__.py
+│   │   ├── 📄 atom_sites.py
+│   │   │   ├── 🏷️ class AtomSite
+│   │   │   └── 🏷️ class AtomSites
 │   │   ├── 📄 cell.py
 │   │   │   └── 🏷️ class Cell
 │   │   └── 📄 space_group.py
 │   │       └── 🏷️ class SpaceGroup
-│   ├── 📁 sample_model_types
+│   ├── 📁 sample_model
 │   │   ├── 📄 __init__.py
-│   │   └── 📄 base.py
-│   │       └── 🏷️ class BaseSampleModel
+│   │   ├── 📄 base.py
+│   │   │   └── 🏷️ class SampleModelBase
+│   │   └── 📄 factory.py
+│   │       ├── 🏷️ class SampleModelFactory
+│   │       └── 🏷️ class SampleModel
 │   ├── 📄 __init__.py
-│   ├── 📄 sample_model.py
-│   │   ├── 🏷️ class SampleModelFactory
-│   │   └── 🏷️ class SampleModel
 │   └── 📄 sample_models.py
 │       └── 🏷️ class SampleModels
 ├── 📁 summary

@@ -5,27 +5,27 @@
 ├── 📁 analysis
 │   ├── 📁 calculators
 │   │   ├── 📄 __init__.py
-│   │   ├── 📄 calculator_base.py
-│   │   ├── 📄 calculator_crysfml.py
-│   │   ├── 📄 calculator_cryspy.py
-│   │   ├── 📄 calculator_factory.py
-│   │   └── 📄 calculator_pdffit.py
-│   ├── 📁 category_collections
+│   │   ├── 📄 base.py
+│   │   ├── 📄 crysfml.py
+│   │   ├── 📄 cryspy.py
+│   │   ├── 📄 factory.py
+│   │   └── 📄 pdffit.py
+│   ├── 📁 categories
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 aliases.py
 │   │   ├── 📄 constraints.py
 │   │   └── 📄 joint_fit_experiments.py
-│   ├── 📁 fit_support
+│   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 metrics.py
 │   │   ├── 📄 reporting.py
 │   │   └── 📄 tracking.py
 │   ├── 📁 minimizers
 │   │   ├── 📄 __init__.py
-│   │   ├── 📄 minimizer_base.py
-│   │   ├── 📄 minimizer_dfols.py
-│   │   ├── 📄 minimizer_factory.py
-│   │   └── 📄 minimizer_lmfit.py
+│   │   ├── 📄 base.py
+│   │   ├── 📄 dfols.py
+│   │   ├── 📄 factory.py
+│   │   └── 📄 lmfit.py
 │   ├── 📄 __init__.py
 │   ├── 📄 analysis.py
 │   ├── 📄 calculation.py
@@ -46,52 +46,50 @@
 │   ├── 📄 crystallography.py
 │   └── 📄 space_groups.py
 ├── 📁 experiments
-│   ├── 📁 category_collections
-│   │   ├── 📁 background_types
+│   ├── 📁 categories
+│   │   ├── 📁 background
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 base.py
 │   │   │   ├── 📄 chebyshev.py
 │   │   │   ├── 📄 enums.py
+│   │   │   ├── 📄 factory.py
 │   │   │   └── 📄 line_segment.py
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 background.py
-│   │   ├── 📄 excluded_regions.py
-│   │   └── 📄 linked_phases.py
-│   ├── 📁 category_items
-│   │   ├── 📁 instrument_setups
+│   │   ├── 📁 instrument
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 base.py
-│   │   │   ├── 📄 cw.py
+│   │   │   ├── 📄 cwl.py
+│   │   │   ├── 📄 factory.py
 │   │   │   └── 📄 tof.py
-│   │   ├── 📁 peak_profiles
+│   │   ├── 📁 peak
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 base.py
-│   │   │   ├── 📄 cw.py
-│   │   │   ├── 📄 cw_mixins.py
-│   │   │   ├── 📄 pdf.py
-│   │   │   ├── 📄 pdf_mixins.py
+│   │   │   ├── 📄 cwl.py
+│   │   │   ├── 📄 cwl_mixins.py
+│   │   │   ├── 📄 factory.py
 │   │   │   ├── 📄 tof.py
-│   │   │   └── 📄 tof_mixins.py
+│   │   │   ├── 📄 tof_mixins.py
+│   │   │   ├── 📄 total.py
+│   │   │   └── 📄 total_mixins.py
 │   │   ├── 📄 __init__.py
+│   │   ├── 📄 excluded_regions.py
 │   │   ├── 📄 experiment_type.py
-│   │   ├── 📄 instrument.py
-│   │   └── 📄 peak.py
-│   ├── 📁 datastore_types
+│   │   └── 📄 linked_phases.py
+│   ├── 📁 datastore
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
-│   │   ├── 📄 powder.py
-│   │   └── 📄 single_crystal.py
-│   ├── 📁 experiment_types
+│   │   ├── 📄 factory.py
+│   │   ├── 📄 pd.py
+│   │   └── 📄 sc.py
+│   ├── 📁 experiment
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
+│   │   ├── 📄 bragg_pd.py
+│   │   ├── 📄 bragg_sc.py
 │   │   ├── 📄 enums.py
+│   │   ├── 📄 factory.py
 │   │   ├── 📄 instrument_mixin.py
-│   │   ├── 📄 pdf.py
-│   │   ├── 📄 powder.py
-│   │   └── 📄 single_crystal.py
+│   │   └── 📄 total_pd.py
 │   ├── 📄 __init__.py
-│   ├── 📄 datastore.py
-│   ├── 📄 experiment.py
 │   └── 📄 experiments.py
 ├── 📁 io
 │   └── 📁 cif
@@ -110,18 +108,16 @@
 │   ├── 📄 project.py
 │   └── 📄 project_info.py
 ├── 📁 sample_models
-│   ├── 📁 category_collections
+│   ├── 📁 categories
 │   │   ├── 📄 __init__.py
-│   │   └── 📄 atom_sites.py
-│   ├── 📁 category_items
-│   │   ├── 📄 __init__.py
+│   │   ├── 📄 atom_sites.py
 │   │   ├── 📄 cell.py
 │   │   └── 📄 space_group.py
-│   ├── 📁 sample_model_types
+│   ├── 📁 sample_model
 │   │   ├── 📄 __init__.py
-│   │   └── 📄 base.py
+│   │   ├── 📄 base.py
+│   │   └── 📄 factory.py
 │   ├── 📄 __init__.py
-│   ├── 📄 sample_model.py
 │   └── 📄 sample_models.py
 ├── 📁 summary
 │   ├── 📄 __init__.py

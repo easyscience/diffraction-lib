@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from easydiffraction.sample_models.sample_model import SampleModel
-from easydiffraction.sample_models.sample_model_types.base import BaseSampleModel
+from easydiffraction.sample_models.sample_model.base import SampleModelBase
 from easydiffraction.sample_models.sample_models import SampleModels
 
 
@@ -68,7 +68,7 @@ def test_sample_models_show_names(mock_print, mock_sample_models, mock_sample_mo
     mock_print.assert_called_with(['test_model'])
 
 
-@patch.object(BaseSampleModel, 'show_params', autospec=True)
+@patch.object(SampleModelBase, 'show_params', autospec=True)
 def test_sample_models_show_params(mock_show_params, mock_sample_models, mock_sample_model):
     mock_sample_models.add(mock_sample_model)
     mock_sample_models.show_params()
@@ -96,7 +96,7 @@ def test_sample_models_add_from_cif_path(monkeypatch):
 
     def fake_create(**kwargs):  # type: ignore[no-untyped-def]
         created['kwargs'] = kwargs
-        return BaseSampleModel(name='dummy_from_path')
+        return SampleModelBase(name='dummy_from_path')
 
     monkeypatch.setattr(
         'easydiffraction.sample_models.sample_model_factory.SampleModelFactory.create',
@@ -114,7 +114,7 @@ def test_sample_models_add_from_cif_str(monkeypatch):
 
     def fake_create(**kwargs):  # type: ignore[no-untyped-def]
         created['kwargs'] = kwargs
-        return BaseSampleModel(name='dummy_from_str')
+        return SampleModelBase(name='dummy_from_str')
 
     monkeypatch.setattr(
         'easydiffraction.sample_models.sample_model_factory.SampleModelFactory.create',

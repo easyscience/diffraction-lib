@@ -10,10 +10,10 @@ from typing import TypeVar
 
 from asteval import Interpreter
 
-T = TypeVar('T', bound='BaseSingleton')
+T = TypeVar('T', bound='SingletonBase')
 
 
-class BaseSingleton:
+class SingletonBase:
     """Base class to implement Singleton pattern.
 
     Ensures only one shared instance of a class is ever created. Useful
@@ -30,7 +30,7 @@ class BaseSingleton:
         return cls._instance
 
 
-class UidMapHandler(BaseSingleton):
+class UidMapHandler(SingletonBase):
     """Global handler to manage UID-to-Parameter object mapping."""
 
     def __init__(self) -> None:
@@ -73,7 +73,7 @@ class UidMapHandler(BaseSingleton):
 
 # TODO: Implement changing atrr '.constrained' back to False
 #  when removing constraints
-class ConstraintsHandler(BaseSingleton):
+class ConstraintsHandler(SingletonBase):
     """Manages user-defined parameter constraints using aliases and
     expressions.
 

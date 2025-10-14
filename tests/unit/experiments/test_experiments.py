@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from easydiffraction.experiments.experiment import BaseExperiment
+from easydiffraction.experiments.experiment import ExperimentBase
 from easydiffraction.experiments.experiments import Experiments
 
 
-class ConcreteBaseExperiment(BaseExperiment):
+class ConcreteBaseExperiment(ExperimentBase):
     """Concrete implementation of BaseExperiment for testing."""
 
     def _load_ascii_data_to_experiment(self, data_path):
@@ -23,7 +23,7 @@ def test_experiments_initialization():
 
 def test_experiments_add_prebuilt_experiment():
     experiments = Experiments()
-    mock_experiment = MagicMock(spec=BaseExperiment)
+    mock_experiment = MagicMock(spec=ExperimentBase)
     mock_experiment.name = 'TestExperiment'
 
     experiments.add(experiment=mock_experiment)
@@ -51,7 +51,7 @@ def test_experiments_add_from_data_path():
 
 def test_experiments_remove():
     experiments = Experiments()
-    mock_experiment = MagicMock(spec=BaseExperiment)
+    mock_experiment = MagicMock(spec=ExperimentBase)
     mock_experiment.name = 'TestExperiment'
 
     experiments.add(experiment=mock_experiment)
@@ -63,7 +63,7 @@ def test_experiments_remove():
 
 def test_experiments_show_names(capsys):
     experiments = Experiments()
-    mock_experiment = MagicMock(spec=BaseExperiment)
+    mock_experiment = MagicMock(spec=ExperimentBase)
     mock_experiment.name = 'TestExperiment'
 
     experiments.add(experiment=mock_experiment)
@@ -76,7 +76,7 @@ def test_experiments_show_names(capsys):
 
 def test_experiments_as_cif():
     experiments = Experiments()
-    mock_experiment = MagicMock(spec=BaseExperiment)
+    mock_experiment = MagicMock(spec=ExperimentBase)
     mock_experiment.name = 'TestExperiment'
     mock_experiment.as_cif.return_value = 'mock_cif_content'
 

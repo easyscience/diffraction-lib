@@ -4,7 +4,7 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
+from easydiffraction.analysis.calculators.base import CalculatorBase
 
 
 # Mock subclass of CalculatorBase to test its concrete methods

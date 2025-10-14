@@ -7,13 +7,13 @@ from typing import Union
 
 import pandas as pd
 
-from easydiffraction.analysis.calculators.calculator_factory import CalculatorFactory
-from easydiffraction.analysis.category_collections.aliases import Aliases
-from easydiffraction.analysis.category_collections.constraints import Constraints
-from easydiffraction.analysis.category_collections.joint_fit_experiments import JointFitExperiments
+from easydiffraction.analysis.calculators.factory import CalculatorFactory
+from easydiffraction.analysis.categories.aliases import Aliases
+from easydiffraction.analysis.categories.constraints import Constraints
+from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.fitting import Fitter
-from easydiffraction.analysis.minimizers.minimizer_factory import MinimizerFactory
-from easydiffraction.core.parameters import DescriptorFloat
+from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.singletons import ConstraintsHandler
 from easydiffraction.experiments.experiments import Experiments
@@ -38,7 +38,7 @@ class Analysis:
 
     def _get_params_as_dataframe(
         self,
-        params: List[Union[DescriptorFloat, Parameter]],
+        params: List[Union[NumericDescriptor, Parameter]],
     ) -> pd.DataFrame:
         """Convert a list of parameters to a DataFrame.
 
@@ -51,7 +51,7 @@ class Analysis:
         rows = []
         for param in params:
             common_attrs = {}
-            if isinstance(param, (DescriptorFloat, Parameter)):
+            if isinstance(param, (NumericDescriptor, Parameter)):
                 common_attrs = {
                     'datablock': param._identity.datablock_entry_name,
                     'category': param._identity.category_code,
@@ -258,7 +258,7 @@ class Analysis:
         project_varname = self.project._varname
         for datablock_type, params in all_params.items():
             for param in params:
-                if isinstance(param, (DescriptorFloat, Parameter)):
+                if isinstance(param, (NumericDescriptor, Parameter)):
                     datablock_entry_name = param._identity.datablock_entry_name
                     category_code = param._identity.category_code
                     category_entry_name = param._identity.category_entry_name

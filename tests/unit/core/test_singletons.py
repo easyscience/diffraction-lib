@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 import pytest
-from easydiffraction.core.singletons import BaseSingleton, ConstraintsHandler, UidMapHandler
+from easydiffraction.core.singletons import SingletonBase, ConstraintsHandler, UidMapHandler
 
 
 @pytest.fixture(autouse=True)
@@ -66,7 +66,7 @@ def mock_constraints():
 
 
 def test_base_singleton():
-    class TestSingleton(BaseSingleton):
+    class TestSingleton(SingletonBase):
         pass
 
     instance1 = TestSingleton.get()

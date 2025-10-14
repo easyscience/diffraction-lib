@@ -5,8 +5,8 @@
 from typeguard import typechecked
 
 from easydiffraction.core.datablocks import DatablockCollection
-from easydiffraction.sample_models.sample_model import SampleModel
-from easydiffraction.sample_models.sample_model_types.base import BaseSampleModel
+from easydiffraction.sample_models.sample_model.base import SampleModelBase
+from easydiffraction.sample_models.sample_model.factory import SampleModel
 from easydiffraction.utils.formatting import paragraph
 
 
@@ -14,7 +14,7 @@ class SampleModels(DatablockCollection):
     """Collection manager for multiple SampleModel instances."""
 
     def __init__(self) -> None:
-        super().__init__(item_type=BaseSampleModel)
+        super().__init__(item_type=SampleModelBase)
 
     # --------------------
     # Add / Remove methods

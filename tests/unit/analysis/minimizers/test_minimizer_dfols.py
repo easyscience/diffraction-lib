@@ -4,7 +4,7 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from easydiffraction.analysis.minimizers.minimizer_dfols import DfolsMinimizer
+from easydiffraction.analysis.minimizers.dfols import DfolsMinimizer
 
 
 @pytest.fixture

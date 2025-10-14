@@ -1,5 +1,5 @@
 from easydiffraction.core.parameters import Descriptor
-from easydiffraction.experiments.category_items.experiment_type import ExperimentType
+from easydiffraction.experiments.categories.experiment_type import ExperimentType
 
 
 def test_experiment_type_initialization():

@@ -7,7 +7,6 @@ import secrets
 import string
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import final
 
 import numpy as np
 
@@ -124,8 +123,7 @@ class GenericDescriptorBase(GuardedBase):
         return param_to_cif(self)
 
 
-@final
-class GenericDescriptorStr(GenericDescriptorBase):
+class GenericStringDescriptor(GenericDescriptorBase):
     _value_type = DataTypes.STRING
 
     def __init__(
@@ -135,8 +133,7 @@ class GenericDescriptorStr(GenericDescriptorBase):
         super().__init__(**kwargs)
 
 
-@final
-class GenericDescriptorFloat(GenericDescriptorBase):
+class GenericNumericDescriptor(GenericDescriptorBase):
     _value_type = DataTypes.NUMERIC
 
     def __init__(
@@ -160,7 +157,7 @@ class GenericDescriptorFloat(GenericDescriptorBase):
         return self._units
 
 
-class GenericParameter(GenericDescriptorFloat):
+class GenericParameter(GenericNumericDescriptor):
     """..."""
 
     def __init__(
@@ -262,7 +259,7 @@ class GenericParameter(GenericDescriptorFloat):
         )
 
 
-class DescriptorStr(GenericDescriptorStr):
+class StringDescriptor(GenericStringDescriptor):
     def __init__(
         self,
         *,
@@ -274,7 +271,7 @@ class DescriptorStr(GenericDescriptorStr):
         self._cif_handler.attach(self)
 
 
-class DescriptorFloat(GenericDescriptorFloat):
+class NumericDescriptor(GenericNumericDescriptor):
     def __init__(
         self,
         *,

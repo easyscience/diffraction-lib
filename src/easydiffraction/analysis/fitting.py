@@ -9,15 +9,15 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
-from easydiffraction.analysis.fit_support.metrics import get_reliability_inputs
-from easydiffraction.analysis.minimizers.minimizer_factory import MinimizerFactory
+from easydiffraction.analysis.calculators.base import CalculatorBase
+from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
+from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModels
 
 if TYPE_CHECKING:
-    from easydiffraction.analysis.fit_support.reporting import FitResults
+    from easydiffraction.analysis.fit_helpers.reporting import FitResults
 
 
 class Fitter:

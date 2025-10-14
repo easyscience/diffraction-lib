@@ -3,12 +3,12 @@ import pytest
 from typeguard import TypeCheckError
 
 from easydiffraction.experiments.datastore import DatastoreFactory
-from easydiffraction.experiments.datastore_types.powder import PowderDatastore
-from easydiffraction.experiments.datastore_types.single_crystal import SingleCrystalDatastore
+from easydiffraction.experiments.datastore.pd import PdDatastore
+from easydiffraction.experiments.datastore.sc import ScDatastore
 
 
 def test_powder_datastore_init():
-    ds = PowderDatastore(beam_mode='constant wavelength')
+    ds = PdDatastore(beam_mode='constant wavelength')
     assert ds.meas is None
     assert ds.meas_su is None
     assert ds.calc is None
@@ -19,7 +19,7 @@ def test_powder_datastore_init():
     assert ds.bkg is None
 
 def test_powder_datastore_calc():
-    ds = PowderDatastore()
+    ds = PdDatastore()
     with pytest.raises(TypeCheckError):
         ds.calc = [1, 2, 3]  # Should raise because list is not allowed
     arr = np.array([1, 2, 3])
@@ -28,7 +28,7 @@ def test_powder_datastore_calc():
 
 
 def test_single_crystal_datastore_init():
-    ds = SingleCrystalDatastore()
+    ds = ScDatastore()
     assert ds.meas is None
     assert ds.meas_su is None
     assert ds.calc is None
@@ -41,23 +41,23 @@ def test_single_crystal_datastore_init():
 
 def test_datastore_factory_create_powder():
     ds = DatastoreFactory.create(sample_form='powder')
-    assert isinstance(ds, PowderDatastore)
+    assert isinstance(ds, PdDatastore)
 
 
 def test_datastore_factory_create_single_crystal():
     ds = DatastoreFactory.create(sample_form='single crystal')
-    assert isinstance(ds, SingleCrystalDatastore)
+    assert isinstance(ds, ScDatastore)
 
 
 def test_datastore_factory_create_powder_time_of_flight():
     ds = DatastoreFactory.create(sample_form='powder', beam_mode='time-of-flight')
-    assert isinstance(ds, PowderDatastore)
+    assert isinstance(ds, PdDatastore)
     assert ds.beam_mode == 'time-of-flight'
 
 
 def test_datastore_factory_create_powder_constant_wavelength():
     ds = DatastoreFactory.create(sample_form='powder', beam_mode='constant wavelength')
-    assert isinstance(ds, PowderDatastore)
+    assert isinstance(ds, PdDatastore)
     assert ds.beam_mode == 'constant wavelength'
 
 
@@ -116,7 +116,7 @@ def test_datastore_factory_cif_mapping_single_crystal():
 
 
 def test_powder_as_cif_constant_wavelength():
-    ds = PowderDatastore(beam_mode='constant wavelength')
+    ds = PdDatastore(beam_mode='constant wavelength')
     ds.x = np.array([1.0, 2.0, 3.0])
     ds.meas = np.array([10.0, 20.0, 30.0])
     ds.meas_su = np.array([0.1, 0.2, 0.3])
@@ -128,7 +128,7 @@ def test_powder_as_cif_constant_wavelength():
 
 
 def test_powder_as_cif_time_of_flight():
-    ds = PowderDatastore(beam_mode='time-of-flight')
+    ds = PdDatastore(beam_mode='time-of-flight')
     ds.x = np.array([0.5, 1.0, 1.5])
     ds.meas = np.array([15.0, 25.0, 35.0])
     ds.meas_su = np.array([0.15, 0.25, 0.35])
@@ -140,7 +140,7 @@ def test_powder_as_cif_time_of_flight():
 
 
 def test_single_crystal_as_cif():
-    ds = SingleCrystalDatastore()
+    ds = ScDatastore()
     ds.sin_theta_over_lambda = np.array([0.1, 0.2])
     ds.index_h = np.array([1, 0])
     ds.index_k = np.array([0, 1])
@@ -156,7 +156,7 @@ def test_single_crystal_as_cif():
 
 
 def test_as_cif_truncation():
-    ds = PowderDatastore()
+    ds = PdDatastore()
     ds.x = np.arange(10)
     ds.meas = np.arange(10) * 10
     ds.meas_su = np.arange(10) * 0.1

@@ -3,10 +3,10 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from easydiffraction.experiments.category_collections.background import BackgroundFactory
-from easydiffraction.experiments.category_collections.background import ChebyshevPolynomialBackground
-from easydiffraction.experiments.category_collections.background import LineSegmentBackground
-from easydiffraction.experiments.category_collections.background_types import Point, PolynomialTerm
+from easydiffraction.experiments.categories.background import BackgroundFactory
+from easydiffraction.experiments.categories.background import ChebyshevPolynomialBackground
+from easydiffraction.experiments.categories.background import LineSegmentBackground
+from easydiffraction.experiments.categories.background import Point, PolynomialTerm
 
 
 def test_point_initialization():

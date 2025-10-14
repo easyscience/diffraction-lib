@@ -2,12 +2,12 @@ from unittest.mock import Mock
 
 import numpy as np
 
-from easydiffraction.analysis.fit_support.metrics import calculate_r_factor
-from easydiffraction.analysis.fit_support.metrics import calculate_r_factor_squared
-from easydiffraction.analysis.fit_support.metrics import calculate_rb_factor
-from easydiffraction.analysis.fit_support.metrics import calculate_reduced_chi_square
-from easydiffraction.analysis.fit_support.metrics import calculate_weighted_r_factor
-from easydiffraction.analysis.fit_support.metrics import get_reliability_inputs
+from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
+from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squared
+from easydiffraction.analysis.fit_helpers.metrics import calculate_rb_factor
+from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
+from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_factor
+from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
 
 
 def test_calculate_r_factor():

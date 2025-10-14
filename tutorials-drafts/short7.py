@@ -1,20 +1,21 @@
 import os
 import tempfile
 
-import pytest
 from numpy.testing import assert_almost_equal
 
-from easydiffraction import Experiment
 from easydiffraction import Project
-from easydiffraction import SampleModel
 from easydiffraction import download_from_repository
 
 TEMP_DIR = tempfile.gettempdir()
 
 
 def single_fit_neutron_pd_cwl_lbco() -> None:
+    # Create project
+    project = Project()
+
     # Set sample model
-    model = SampleModel(name='lbco')
+    project.sample_models.add_minimal(name='lbco')
+    model = project.sample_models['lbco']
     model.space_group.name_h_m = 'P m -3 m'
     model.cell.length_a = 3.88
     model.atom_sites.add_from_args(
@@ -59,7 +60,8 @@ def single_fit_neutron_pd_cwl_lbco() -> None:
     # Set experiment
     data_file = 'hrpt_lbco.xye'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt = Experiment(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
+    project.experiments.add_from_data_path(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
+    expt = project.experiments['hrpt']
     expt.instrument.setup_wavelength = 1.494
     expt.instrument.calib_twotheta_offset = 0
     expt.peak.broad_gauss_u = 0.1
@@ -73,10 +75,6 @@ def single_fit_neutron_pd_cwl_lbco() -> None:
 
     expt.show_as_cif()
 
-    # Create project
-    project = Project()
-    project.sample_models.add(model)
-    project.experiments.add(expt)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
@@ -121,6 +119,9 @@ def single_fit_neutron_pd_cwl_lbco() -> None:
 
     # Perform fit
     project.analysis.fit()
+
+    # Show chart
+    project.plot_meas_vs_calc(expt_name='hrpt')
 
     # Compare fit quality
     assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=1.3, decimal=1)

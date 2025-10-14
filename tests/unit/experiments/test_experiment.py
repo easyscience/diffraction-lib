@@ -4,16 +4,16 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from easydiffraction.experiments.category_items.experiment_type import BeamModeEnum
-from easydiffraction.experiments.category_items.experiment_type import ExperimentType
-from easydiffraction.experiments.category_items.experiment_type import RadiationProbeEnum
-from easydiffraction.experiments.category_items.experiment_type import SampleFormEnum
-from easydiffraction.experiments.category_items.experiment_type import ScatteringTypeEnum
-from easydiffraction.experiments.experiment import BaseExperiment
+from easydiffraction.experiments.categories.experiment_type import BeamModeEnum
+from easydiffraction.experiments.categories.experiment_type import ExperimentType
+from easydiffraction.experiments.categories.experiment_type import RadiationProbeEnum
+from easydiffraction.experiments.categories.experiment_type import SampleFormEnum
+from easydiffraction.experiments.categories.experiment_type import ScatteringTypeEnum
+from easydiffraction.experiments.experiment import ExperimentBase
 from easydiffraction.experiments.experiment import Experiment
 from easydiffraction.experiments.experiment import ExperimentFactory
-from easydiffraction.experiments.experiment import PowderExperiment
-from easydiffraction.experiments.experiment import SingleCrystalExperiment
+from easydiffraction.experiments.experiment import BraggPdExperiment
+from easydiffraction.experiments.experiment import BraggScExperiment
 
 
 @pytest.fixture
@@ -26,7 +26,7 @@ def expt_type():
     )
 
 
-class ConcreteBaseExperiment(BaseExperiment):
+class ConcreteBaseExperiment(ExperimentBase):
     """Concrete implementation of BaseExperiment for testing."""
 
     def _load_ascii_data_to_experiment(self, data_path):
@@ -36,7 +36,7 @@ class ConcreteBaseExperiment(BaseExperiment):
         pass
 
 
-class ConcreteSingleCrystalExperiment(SingleCrystalExperiment):
+class ConcreteScExperiment(BraggScExperiment):
     """Concrete implementation of SingleCrystalExperiment for
     testing."""
 
@@ -51,7 +51,7 @@ def test_base_experiment_initialization(expt_type):
 
 
 def test_powder_experiment_initialization(expt_type):
-    experiment = PowderExperiment(name='PowderTest', type=expt_type)
+    experiment = BraggPdExperiment(name='PowderTest', type=expt_type)
     assert experiment.name == 'PowderTest'
     assert experiment.type == expt_type
     assert experiment.background is not None
@@ -60,7 +60,7 @@ def test_powder_experiment_initialization(expt_type):
 
 
 def test_powder_experiment_load_ascii_data(expt_type):
-    experiment = PowderExperiment(name='PowderTest', type=expt_type)
+    experiment = BraggPdExperiment(name='PowderTest', type=expt_type)
     experiment.datastore = MagicMock()
     mock_data = np.array([[1.0, 2.0, 0.1], [2.0, 3.0, 0.2]])
     with patch('numpy.loadtxt', return_value=mock_data):
@@ -71,14 +71,14 @@ def test_powder_experiment_load_ascii_data(expt_type):
 
 
 def test_single_crystal_experiment_initialization(expt_type):
-    experiment = ConcreteSingleCrystalExperiment(name='SingleCrystalTest', type=expt_type)
+    experiment = ConcreteScExperiment(name='SingleCrystalTest', type=expt_type)
     assert experiment.name == 'SingleCrystalTest'
     assert experiment.type == expt_type
     assert experiment.linked_crystal is None
 
 
 def test_single_crystal_experiment_show_meas_chart(expt_type):
-    experiment = ConcreteSingleCrystalExperiment(name='SingleCrystalTest', type=expt_type)
+    experiment = ConcreteScExperiment(name='SingleCrystalTest', type=expt_type)
     with patch('builtins.print') as mock_print:
         experiment.show_meas_chart()
         mock_print.assert_called_once_with('Showing measured data chart is not implemented yet.')
@@ -92,7 +92,7 @@ def test_experiment_factory_create_powder():
         radiation_probe=RadiationProbeEnum.default().value,
         scattering_type=ScatteringTypeEnum.default().value,
     )
-    assert isinstance(experiment, PowderExperiment)
+    assert isinstance(experiment, BraggPdExperiment)
     assert experiment.name == 'PowderTest'
 
 
@@ -104,7 +104,7 @@ def no_test_experiment_factory_create_single_crystal():
         beam_mode=BeamModeEnum.default().value,
         radiation_probe=RadiationProbeEnum.default().value,
     )
-    assert isinstance(experiment, SingleCrystalExperiment)
+    assert isinstance(experiment, BraggScExperiment)
     assert experiment.name == 'SingleCrystalTest'
 
 
@@ -118,7 +118,7 @@ def test_experiment_method():
             radiation_probe=RadiationProbeEnum.default().value,
             data_path='mock_path',
         )
-    assert isinstance(experiment, PowderExperiment)
+    assert isinstance(experiment, BraggPdExperiment)
     assert experiment.name == 'ExperimentTest'
     assert np.array_equal(experiment.datastore.x, mock_data[:, 0])
     assert np.array_equal(experiment.datastore.meas, mock_data[:, 1])

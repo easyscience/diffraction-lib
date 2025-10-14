@@ -1,24 +1,24 @@
 import pytest
 
 from easydiffraction.core.parameters import Parameter
-from easydiffraction.experiments.category_items.peak_profiles.cw_mixins import ConstantWavelengthBroadeningMixin
-from easydiffraction.experiments.category_items.peak import ConstantWavelengthPseudoVoigt, \
+from easydiffraction.experiments.categories.peak.cwl_mixins import CwlBroadeningMixin
+from easydiffraction.experiments.categories.peak import ConstantWavelengthPseudoVoigt, \
     PeakFactory
-from easydiffraction.experiments.category_items.peak_profiles import PeakBase
-from easydiffraction.experiments.category_items.peak import ConstantWavelengthSplitPseudoVoigt
-from easydiffraction.experiments.category_items.peak import ConstantWavelengthThompsonCoxHastings
-from easydiffraction.experiments.category_items.peak_profiles.cw_mixins import EmpiricalAsymmetryMixin
-from easydiffraction.experiments.category_items.peak_profiles.cw_mixins import FcjAsymmetryMixin
-from easydiffraction.experiments.category_items.peak_profiles.tof_mixins import IkedaCarpenterAsymmetryMixin
-from easydiffraction.experiments.category_items.peak_profiles.tof_mixins import TimeOfFlightBroadeningMixin
-from easydiffraction.experiments.category_items.peak import TimeOfFlightPseudoVoigt
-from easydiffraction.experiments.category_items.peak import TimeOfFlightPseudoVoigtBackToBack
-from easydiffraction.experiments.category_items.peak import TimeOfFlightPseudoVoigtIkedaCarpenter
+from easydiffraction.experiments.categories.peak import PeakBase
+from easydiffraction.experiments.categories.peak import ConstantWavelengthSplitPseudoVoigt
+from easydiffraction.experiments.categories.peak import ConstantWavelengthThompsonCoxHastings
+from easydiffraction.experiments.categories.peak.cwl_mixins import EmpiricalAsymmetryMixin
+from easydiffraction.experiments.categories.peak.cwl_mixins import FcjAsymmetryMixin
+from easydiffraction.experiments.categories.peak import IkedaCarpenterAsymmetryMixin
+from easydiffraction.experiments.categories.peak import TimeOfFlightBroadeningMixin
+from easydiffraction.experiments.categories.peak import TimeOfFlightPseudoVoigt
+from easydiffraction.experiments.categories.peak import TimeOfFlightPseudoVoigtBackToBack
+from easydiffraction.experiments.categories.peak import TimeOfFlightPseudoVoigtIkedaCarpenter
 
 
 # --- Tests for Mixins ---
 def test_constant_wavelength_broadening_mixin():
-    class TestClass(ConstantWavelengthBroadeningMixin):
+    class TestClass(CwlBroadeningMixin):
         def __init__(self):
             self._add_constant_wavelength_broadening()
 

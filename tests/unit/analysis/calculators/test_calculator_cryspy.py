@@ -4,7 +4,7 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from easydiffraction.analysis.calculators.calculator_cryspy import CryspyCalculator
+from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
 
 
 @pytest.fixture

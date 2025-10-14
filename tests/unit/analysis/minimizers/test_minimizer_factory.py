@@ -2,9 +2,9 @@ from unittest.mock import patch
 
 import pytest
 
-from easydiffraction.analysis.minimizers.minimizer_dfols import DfolsMinimizer
-from easydiffraction.analysis.minimizers.minimizer_factory import MinimizerFactory
-from easydiffraction.analysis.minimizers.minimizer_lmfit import LmfitMinimizer
+from easydiffraction.analysis.minimizers.dfols import DfolsMinimizer
+from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+from easydiffraction.analysis.minimizers.lmfit import LmfitMinimizer
 
 
 def test_list_available_minimizers():
