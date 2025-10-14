@@ -15,11 +15,11 @@
 │   │   ├── 📄 aliases.py
 │   │   ├── 📄 constraints.py
 │   │   └── 📄 joint_fit_experiments.py
-│   ├── 📁 fitting
+│   ├── 📁 fit_support
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 metrics.py
-│   │   ├── 📄 progress_tracker.py
-│   │   └── 📄 results.py
+│   │   ├── 📄 reporting.py
+│   │   └── 📄 tracking.py
 │   ├── 📁 minimizers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 minimizer_base.py
@@ -29,7 +29,7 @@
 │   ├── 📄 __init__.py
 │   ├── 📄 analysis.py
 │   ├── 📄 calculation.py
-│   └── 📄 minimization.py
+│   └── 📄 fitting.py
 ├── 📁 core
 │   ├── 📄 __init__.py
 │   ├── 📄 categories.py
@@ -79,8 +79,8 @@
 │   ├── 📁 datastore_types
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
-│   │   ├── 📄 pd.py
-│   │   └── 📄 sg.py
+│   │   ├── 📄 powder.py
+│   │   └── 📄 single_crystal.py
 │   ├── 📁 experiment_types
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py

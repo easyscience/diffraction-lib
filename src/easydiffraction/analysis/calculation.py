@@ -11,12 +11,12 @@ from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModels
 
 
-class DiffractionCalculator:
+class Calculator:
     """Invokes calculation engines for pattern generation."""
 
     def __init__(self, engine: str = 'cryspy') -> None:
-        """Initialize the DiffractionCalculator with a specified backend
-        engine.
+        """Initialize the diffraction calculator with a specified
+        backend engine.
 
         Args:
             engine: Type of the calculation engine to use.

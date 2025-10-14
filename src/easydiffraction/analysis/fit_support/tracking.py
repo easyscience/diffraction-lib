@@ -15,7 +15,7 @@ except ImportError:
     display = None
     clear_output = None
 
-from easydiffraction.analysis.fitting.metrics import calculate_reduced_chi_square
+from easydiffraction.analysis.fit_support.metrics import calculate_reduced_chi_square
 from easydiffraction.utils.utils import is_notebook
 from easydiffraction.utils.utils import render_table
 

@@ -11,8 +11,8 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction.analysis.fitting.progress_tracker import FittingProgressTracker
-from easydiffraction.analysis.fitting.results import FitResults
+from easydiffraction.analysis.fit_support.reporting import FitResults
+from easydiffraction.analysis.fit_support.tracking import FittingProgressTracker
 
 
 class MinimizerBase(ABC):

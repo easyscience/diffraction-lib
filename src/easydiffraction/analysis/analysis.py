@@ -11,7 +11,7 @@ from easydiffraction.analysis.calculators.calculator_factory import CalculatorFa
 from easydiffraction.analysis.category_collections.aliases import Aliases
 from easydiffraction.analysis.category_collections.constraints import Constraints
 from easydiffraction.analysis.category_collections.joint_fit_experiments import JointFitExperiments
-from easydiffraction.analysis.minimization import DiffractionMinimizer
+from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.minimizer_factory import MinimizerFactory
 from easydiffraction.core.parameters import DescriptorFloat
 from easydiffraction.core.parameters import Parameter
@@ -34,7 +34,7 @@ class Analysis:
         self.calculator = Analysis._calculator  # Default calculator shared by project
         self._calculator_key: str = 'cryspy'  # Added to track the current calculator
         self._fit_mode: str = 'single'
-        self.fitter = DiffractionMinimizer('lmfit (leastsq)')
+        self.fitter = Fitter('lmfit (leastsq)')
 
     def _get_params_as_dataframe(
         self,
@@ -324,7 +324,7 @@ class Analysis:
 
     @current_minimizer.setter
     def current_minimizer(self, selection: str) -> None:
-        self.fitter = DiffractionMinimizer(selection)
+        self.fitter = Fitter(selection)
         print(paragraph('Current minimizer changed to'))
         print(self.current_minimizer)
 

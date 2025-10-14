@@ -10,17 +10,17 @@ from typing import Optional
 import numpy as np
 
 from easydiffraction.analysis.calculators.calculator_base import CalculatorBase
-from easydiffraction.analysis.fitting.metrics import get_reliability_inputs
+from easydiffraction.analysis.fit_support.metrics import get_reliability_inputs
 from easydiffraction.analysis.minimizers.minimizer_factory import MinimizerFactory
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModels
 
 if TYPE_CHECKING:
-    from easydiffraction.analysis.fitting.results import FitResults
+    from easydiffraction.analysis.fit_support.reporting import FitResults
 
 
-class DiffractionMinimizer:
+class Fitter:
     """Handles the fitting workflow using a pluggable minimizer."""
 
     def __init__(self, selection: str = 'lmfit (leastsq)') -> None:

@@ -26,13 +26,13 @@
 │   │   └── 📄 joint_fit_experiments.py
 │   │       ├── 🏷️ class JointFitExperiment
 │   │       └── 🏷️ class JointFitExperiments
-│   ├── 📁 fitting
+│   ├── 📁 fit_support
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 metrics.py
-│   │   ├── 📄 progress_tracker.py
-│   │   │   └── 🏷️ class FittingProgressTracker
-│   │   └── 📄 results.py
-│   │       └── 🏷️ class FitResults
+│   │   ├── 📄 reporting.py
+│   │   │   └── 🏷️ class FitResults
+│   │   └── 📄 tracking.py
+│   │       └── 🏷️ class FittingProgressTracker
 │   ├── 📁 minimizers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 minimizer_base.py
@@ -47,9 +47,9 @@
 │   ├── 📄 analysis.py
 │   │   └── 🏷️ class Analysis
 │   ├── 📄 calculation.py
-│   │   └── 🏷️ class DiffractionCalculator
-│   └── 📄 minimization.py
-│       └── 🏷️ class DiffractionMinimizer
+│   │   └── 🏷️ class Calculator
+│   └── 📄 fitting.py
+│       └── 🏷️ class Fitter
 ├── 📁 core
 │   ├── 📄 __init__.py
 │   ├── 📄 categories.py
@@ -157,9 +157,9 @@
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
 │   │   │   └── 🏷️ class BaseDatastore
-│   │   ├── 📄 pd.py
+│   │   ├── 📄 powder.py
 │   │   │   └── 🏷️ class PowderDatastore
-│   │   └── 📄 sg.py
+│   │   └── 📄 single_crystal.py
 │   │       └── 🏷️ class SingleCrystalDatastore
 │   ├── 📁 experiment_types
 │   │   ├── 📄 __init__.py

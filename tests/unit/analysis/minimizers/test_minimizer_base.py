@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from easydiffraction.analysis.fitting.results import FitResults
+from easydiffraction.analysis.fit_support.reporting import FitResults
 from easydiffraction.analysis.minimizers.minimizer_base import MinimizerBase
 
 

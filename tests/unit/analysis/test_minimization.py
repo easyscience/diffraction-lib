@@ -4,7 +4,7 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from easydiffraction.analysis.minimization import DiffractionMinimizer
+from easydiffraction.analysis.fitting import Fitter
 
 
 @pytest.fixture
@@ -64,7 +64,7 @@ def diffraction_minimizer(mock_minimizer):
         'easydiffraction.analysis.minimizers.minimizer_factory.MinimizerFactory.create_minimizer',
         return_value=mock_minimizer,
     ):
-        return DiffractionMinimizer(selection='lmfit (leastsq)')
+        return Fitter(selection='lmfit (leastsq)')
 
 
 def test_fit_no_params(
