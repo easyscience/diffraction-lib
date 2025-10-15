@@ -1,20 +1,37 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
 import numpy as np
 
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
-
-
-# Module under test: easydiffraction.analysis.calculators.cryspy
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
 
 def test_module_import():
     import easydiffraction.analysis.calculators.cryspy as MUT
-    expected_module_name = "easydiffraction.analysis.calculators.cryspy"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert MUT.__name__ == "easydiffraction.analysis.calculators.cryspy"
+
+
+def test_cryspy_calculator_engine_flag_and_converters():
+    # These tests avoid requiring real cryspy by not invoking heavy paths
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+
+    calc = CryspyCalculator()
+    # engine_imported is boolean (may be False if cryspy not installed)
+    assert isinstance(calc.engine_imported, bool)
+
+    # Converters should just delegate/format without external deps
+    class DummySample:
+        @property
+        def as_cif(self):
+            return "data_x"
+
+    class DummyType:
+        class BeamMode:
+            def __init__(self, v):
+                self.value = v
+
+        def __init__(self, v):
+            self.beam_mode = self.BeamMode(v)
+
+    class DummyExperiment:
+        def __init__(self):
+            self.name = "E"
+            self.type = DummyType(type("E", (), {"CONSTANT_WAVELENGTH": "cw"}) if False else type("Enum", (), {}) )
+
+    # _convert_sample_model_to_cryspy_cif returns input as_cif
+    assert calc._convert_sample_model_to_cryspy_cif(DummySample()) == "data_x"

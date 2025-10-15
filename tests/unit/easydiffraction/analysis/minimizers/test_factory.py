@@ -14,23 +14,33 @@ def test_minimizer_factory_unknown_raises():
     except ValueError as e:
         assert 'Unknown minimizer' in str(e)
     else:
-        assert False, 'Expected ValueError'# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+        assert False, 'Expected ValueError'
 
 
-# Module under test: easydiffraction.analysis.minimizers.factory
+def test_minimizer_factory_create_known_and_register(monkeypatch):
+    from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+    from easydiffraction.analysis.minimizers.base import MinimizerBase
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
+    # Create a known minimizer instance (lmfit (leastsq) exists)
+    m = MinimizerFactory.create_minimizer('lmfit (leastsq)')
+    assert isinstance(m, MinimizerBase)
 
-def test_module_import():
-    import easydiffraction.analysis.minimizers.factory as MUT
-    expected_module_name = "easydiffraction.analysis.minimizers.factory"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    # Register a custom minimizer and create it
+    class Custom(MinimizerBase):
+        def _prepare_solver_args(self, parameters):
+            return {}
+
+        def _run_solver(self, objective_function, **kwargs):
+            return None
+
+        def _sync_result_to_parameters(self, raw_result, parameters):
+            pass
+
+        def _check_success(self, raw_result):
+            return True
+
+    MinimizerFactory.register_minimizer(
+        name='custom-test', minimizer_cls=Custom, method=None, description='x'
+    )
+    created = MinimizerFactory.create_minimizer('custom-test')
+    assert isinstance(created, Custom)
