@@ -6,7 +6,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
-from easydiffraction.core.datablocks import DatablockItem
+from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.experiments.categories.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.categories.linked_phases import LinkedPhases
 from easydiffraction.experiments.categories.peak.factory import PeakFactory

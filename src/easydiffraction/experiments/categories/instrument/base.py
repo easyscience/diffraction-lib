@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.category import CategoryItem
 
 
 class InstrumentBase(CategoryItem):

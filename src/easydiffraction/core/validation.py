@@ -12,7 +12,7 @@ import numpy as np
 from typeguard import TypeCheckError
 from typeguard import typechecked
 
-from easydiffraction.core.diagnostics import Diagnostics
+from easydiffraction.core.diagnostic import Diagnostics
 from easydiffraction.utils.logging import log
 
 # ==============================================================

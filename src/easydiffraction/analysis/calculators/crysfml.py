@@ -9,9 +9,9 @@ from typing import Union
 import numpy as np
 
 from easydiffraction.analysis.calculators.base import CalculatorBase
-from easydiffraction.experiments.experiment.factory import Experiment
+from easydiffraction.experiments.experiment.base import ExperimentBase
 from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.sample_models.sample_models import SampleModel
+from easydiffraction.sample_models.sample_model.base import SampleModelBase
 from easydiffraction.sample_models.sample_models import SampleModels
 
 try:
@@ -54,7 +54,7 @@ class CrysfmlCalculator(CalculatorBase):
     def _calculate_single_model_pattern(
         self,
         sample_model: SampleModels,
-        experiment: Experiment,
+        experiment: ExperimentBase,
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
         """Calculates the diffraction pattern using Crysfml for the
@@ -105,8 +105,8 @@ class CrysfmlCalculator(CalculatorBase):
     def _crysfml_dict(
         self,
         sample_model: SampleModels,
-        experiment: Experiment,
-    ) -> Dict[str, Union[Experiment, SampleModel]]:
+        experiment: ExperimentBase,
+    ) -> Dict[str, Union[ExperimentBase, SampleModelBase]]:
         """Converts the sample model and experiment into a dictionary
         format for Crysfml.
 
@@ -127,7 +127,7 @@ class CrysfmlCalculator(CalculatorBase):
 
     def _convert_sample_model_to_dict(
         self,
-        sample_model: SampleModel,
+        sample_model: SampleModelBase,
     ) -> Dict[str, Any]:
         """Converts a sample model into a dictionary format.
 
@@ -167,7 +167,7 @@ class CrysfmlCalculator(CalculatorBase):
 
     def _convert_experiment_to_dict(
         self,
-        experiment: Experiment,
+        experiment: ExperimentBase,
     ) -> Dict[str, Any]:
         """Converts an experiment into a dictionary format.
 

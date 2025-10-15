@@ -3,12 +3,13 @@
 
 from typeguard import typechecked
 
-from easydiffraction.core.datablocks import DatablockCollection
+from easydiffraction.core.datablock import DatablockCollection
+from easydiffraction.experiments.experiment.base import ExperimentBase
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiment.enums import RadiationProbeEnum
 from easydiffraction.experiments.experiment.enums import SampleFormEnum
 from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
-from easydiffraction.experiments.experiment.factory import Experiment
+from easydiffraction.experiments.experiment.factory import ExperimentFactory
 from easydiffraction.utils.formatting import paragraph
 
 
@@ -16,7 +17,7 @@ class Experiments(DatablockCollection):
     """Collection manager for multiple Experiment instances."""
 
     def __init__(self) -> None:
-        super().__init__(item_type=Experiment)
+        super().__init__(item_type=ExperimentBase)
 
     # --------------------
     # Add / Remove methods
@@ -25,13 +26,13 @@ class Experiments(DatablockCollection):
     @typechecked
     def add_from_cif_path(self, cif_path: str):
         """Add a new experiment from a CIF file path."""
-        experiment = Experiment(cif_path=cif_path)
+        experiment = ExperimentFactory.create(cif_path=cif_path)
         self.add(experiment)
 
     @typechecked
     def add_from_cif_str(self, cif_str: str):
         """Add a new experiment from CIF file content (string)."""
-        experiment = Experiment(cif_str=cif_str)
+        experiment = ExperimentFactory.create(cif_str=cif_str)
         self.add(experiment)
 
     @typechecked
@@ -45,7 +46,7 @@ class Experiments(DatablockCollection):
         scattering_type: str = ScatteringTypeEnum.default().value,
     ):
         """Add a new experiment from a data file path."""
-        experiment = Experiment(
+        experiment = ExperimentFactory.create(
             name=name,
             data_path=data_path,
             sample_form=sample_form,
@@ -65,7 +66,7 @@ class Experiments(DatablockCollection):
         scattering_type: str = ScatteringTypeEnum.default().value,
     ):
         """Add a new experiment without any data file."""
-        experiment = Experiment(
+        experiment = ExperimentFactory.create(
             name=name,
             sample_form=sample_form,
             beam_mode=beam_mode,

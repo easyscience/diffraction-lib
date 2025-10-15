@@ -8,7 +8,7 @@ from typing import List
 import numpy as np
 from scipy.interpolate import interp1d
 
-from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec

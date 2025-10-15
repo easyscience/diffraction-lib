@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from easydiffraction.core.factory import FactoryBase
 from easydiffraction.experiments.categories.experiment_type import ExperimentType
 from easydiffraction.experiments.experiment import BraggPdExperiment
 from easydiffraction.experiments.experiment import BraggScExperiment
@@ -11,42 +12,23 @@ from easydiffraction.experiments.experiment.enums import SampleFormEnum
 from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 
 
-class ExperimentFactory:
+class ExperimentFactory(FactoryBase):
     """Creates Experiment instances with only relevant attributes."""
 
-    _valid_arg_sets = [
+    _ALLOWED_ARG_SPECS = [
+        {'required': ['cif_path'], 'optional': []},
+        {'required': ['cif_str'], 'optional': []},
         {
-            'required': ['cif_path'],
-            'optional': [],
-        },
-        {
-            'required': ['cif_str'],
-            'optional': [],
-        },
-        {
-            'required': [
-                'name',
-                'data_path',
-            ],
-            'optional': [
-                'sample_form',
-                'beam_mode',
-                'radiation_probe',
-                'scattering_type',
-            ],
+            'required': ['name', 'data_path'],
+            'optional': ['sample_form', 'beam_mode', 'radiation_probe', 'scattering_type'],
         },
         {
             'required': ['name'],
-            'optional': [
-                'sample_form',
-                'beam_mode',
-                'radiation_probe',
-                'scattering_type',
-            ],
+            'optional': ['sample_form', 'beam_mode', 'radiation_probe', 'scattering_type'],
         },
     ]
 
-    _supported = {
+    _SUPPORTED = {
         ScatteringTypeEnum.BRAGG: {
             SampleFormEnum.POWDER: BraggPdExperiment,
             SampleFormEnum.SINGLE_CRYSTAL: BraggScExperiment,
@@ -58,16 +40,12 @@ class ExperimentFactory:
 
     @classmethod
     def create(cls, **kwargs):
-        """Main factory method for creating an experiment instance.
-
-        Validates argument combinations and dispatches to the
-        appropriate creation method. Raises ValueError if arguments are
-        invalid or no valid dispatch is found.
+        """Create an `ExperimentBase` using a validated argument
+        combination.
         """
         # Check for valid argument combinations
-        user_args = [k for k, v in kwargs.items() if v is not None]
-        if not cls._is_valid_args(user_args):
-            raise ValueError(f'Invalid argument combination: {user_args}')
+        user_args = {k for k, v in kwargs.items() if v is not None}
+        cls._validate_args(user_args, cls._ALLOWED_ARG_SPECS, cls.__name__)
 
         # Validate enum arguments if provided
         if 'sample_form' in kwargs:
@@ -81,13 +59,17 @@ class ExperimentFactory:
 
         # Dispatch to the appropriate creation method
         if 'cif_path' in kwargs:
-            return cls._create_from_cif_path(kwargs)
+            return cls._create_from_cif_path(kwargs['cif_path'])
         elif 'cif_str' in kwargs:
-            return cls._create_from_cif_str(kwargs)
+            return cls._create_from_cif_str(kwargs['cif_str'])
         elif 'data_path' in kwargs:
             return cls._create_from_data_path(kwargs)
         elif 'name' in kwargs:
             return cls._create_without_data(kwargs)
+
+    # -------------------------------
+    # Private creation helper methods
+    # -------------------------------
 
     @staticmethod
     def _create_from_cif_path(cif_path):
@@ -117,7 +99,7 @@ class ExperimentFactory:
         expt_type = cls._make_experiment_type(kwargs)
         scattering_type = expt_type.scattering_type.value
         sample_form = expt_type.sample_form.value
-        expt_class = cls._supported[scattering_type][sample_form]
+        expt_class = cls._SUPPORTED[scattering_type][sample_form]
         expt_name = kwargs['name']
         expt_obj = expt_class(name=expt_name, type=expt_type)
         data_path = kwargs['data_path']
@@ -134,7 +116,7 @@ class ExperimentFactory:
         expt_type = cls._make_experiment_type(kwargs)
         scattering_type = expt_type.scattering_type.value
         sample_form = expt_type.sample_form.value
-        expt_class = cls._supported[scattering_type][sample_form]
+        expt_class = cls._SUPPORTED[scattering_type][sample_form]
         expt_name = kwargs['name']
         expt_obj = expt_class(name=expt_name, type=expt_type)
         return expt_obj
@@ -166,14 +148,3 @@ class ExperimentFactory:
             if required.issubset(user_arg_set) and user_arg_set <= (required | optional):
                 return True
         return False
-
-
-class Experiment:
-    """User-facing API for creating an experiment.
-
-    Accepts keyword arguments and delegates validation and creation to
-    ExperimentFactory.
-    """
-
-    def __new__(cls, **kwargs):
-        return ExperimentFactory.create(**kwargs)

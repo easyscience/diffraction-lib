@@ -9,8 +9,8 @@ from typing import Optional
 import numpy as np
 
 from easydiffraction.analysis.calculators.base import CalculatorBase
-from easydiffraction.experiments.experiment.factory import Experiment
-from easydiffraction.sample_models.sample_model.factory import SampleModel
+from easydiffraction.experiments.experiment.base import ExperimentBase
+from easydiffraction.sample_models.sample_model.base import SampleModelBase
 
 try:
     from diffpy.pdffit2 import PdfFit
@@ -51,8 +51,8 @@ class PdffitCalculator(CalculatorBase):
 
     def _calculate_single_model_pattern(
         self,
-        sample_model: SampleModel,
-        experiment: Experiment,
+        sample_model: SampleModelBase,
+        experiment: ExperimentBase,
         called_by_minimizer: bool = False,
     ):
         # Intentionally unused, required by public API/signature

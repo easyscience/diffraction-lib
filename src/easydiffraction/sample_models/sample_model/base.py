@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction import paragraph
-from easydiffraction.core.datablocks import DatablockItem
+from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.sample_models.categories.atom_sites import AtomSites
 from easydiffraction.sample_models.categories.cell import Cell

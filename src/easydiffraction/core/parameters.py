@@ -10,8 +10,8 @@ from typing import Any
 
 import numpy as np
 
-from easydiffraction.core.diagnostics import Diagnostics
-from easydiffraction.core.guards import GuardedBase
+from easydiffraction.core.diagnostic import Diagnostics
+from easydiffraction.core.guard import GuardedBase
 from easydiffraction.core.singletons import UidMapHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes

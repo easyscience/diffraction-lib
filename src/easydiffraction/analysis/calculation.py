@@ -6,7 +6,7 @@ from typing import List
 from typing import Optional
 
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
-from easydiffraction.experiments.experiment.factory import Experiment
+from easydiffraction.experiments.experiment.base import ExperimentBase
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModels
 
@@ -54,7 +54,7 @@ class Calculator:
     def calculate_pattern(
         self,
         sample_models: SampleModels,
-        experiment: Experiment,
+        experiment: ExperimentBase,
     ) -> None:
         """Calculate diffraction pattern based on sample models and
         experiment. The calculated pattern is stored within the

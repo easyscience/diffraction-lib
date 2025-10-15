@@ -12,9 +12,9 @@ from typing import Union
 import numpy as np
 
 from easydiffraction.analysis.calculators.base import CalculatorBase
+from easydiffraction.experiments.experiment.base import ExperimentBase
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
-from easydiffraction.experiments.experiment.factory import Experiment
-from easydiffraction.sample_models.sample_model.factory import SampleModel
+from easydiffraction.sample_models.sample_model.base import SampleModelBase
 
 try:
     import cryspy
@@ -49,8 +49,8 @@ class CryspyCalculator(CalculatorBase):
 
     def calculate_structure_factors(
         self,
-        sample_model: SampleModel,
-        experiment: Experiment,
+        sample_model: SampleModelBase,
+        experiment: ExperimentBase,
     ) -> None:
         """Raises a NotImplementedError as HKL calculation is not
         implemented.
@@ -65,8 +65,8 @@ class CryspyCalculator(CalculatorBase):
 
     def _calculate_single_model_pattern(
         self,
-        sample_model: SampleModel,
-        experiment: Experiment,
+        sample_model: SampleModelBase,
+        experiment: ExperimentBase,
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
         """Calculates the diffraction pattern using Cryspy for the given
@@ -141,8 +141,8 @@ class CryspyCalculator(CalculatorBase):
 
     def _recreate_cryspy_dict(
         self,
-        sample_model: SampleModel,
-        experiment: Experiment,
+        sample_model: SampleModelBase,
+        experiment: ExperimentBase,
     ) -> Dict[str, Any]:
         """Recreates the Cryspy dictionary for the given sample model
         and experiment.
@@ -231,8 +231,8 @@ class CryspyCalculator(CalculatorBase):
 
     def _recreate_cryspy_obj(
         self,
-        sample_model: SampleModel,
-        experiment: Experiment,
+        sample_model: SampleModelBase,
+        experiment: ExperimentBase,
     ) -> Any:
         """Recreates the Cryspy object for the given sample model and
         experiment.
@@ -263,7 +263,7 @@ class CryspyCalculator(CalculatorBase):
 
     def _convert_sample_model_to_cryspy_cif(
         self,
-        sample_model: SampleModel,
+        sample_model: SampleModelBase,
     ) -> str:
         """Converts a sample model to a Cryspy CIF string.
 
@@ -277,7 +277,7 @@ class CryspyCalculator(CalculatorBase):
 
     def _convert_experiment_to_cryspy_cif(
         self,
-        experiment: Experiment,
+        experiment: ExperimentBase,
         linked_phase: Any,
     ) -> str:
         """Converts an experiment to a Cryspy CIF string.

@@ -4,9 +4,9 @@
 
 from typeguard import typechecked
 
-from easydiffraction.core.datablocks import DatablockCollection
+from easydiffraction.core.datablock import DatablockCollection
 from easydiffraction.sample_models.sample_model.base import SampleModelBase
-from easydiffraction.sample_models.sample_model.factory import SampleModel
+from easydiffraction.sample_models.sample_model.factory import SampleModelFactory
 from easydiffraction.utils.formatting import paragraph
 
 
@@ -27,7 +27,7 @@ class SampleModels(DatablockCollection):
         Args:
             cif_path: Path to a CIF file.
         """
-        sample_model = SampleModel(cif_path=cif_path)
+        sample_model = SampleModelFactory.create(cif_path=cif_path)
         self.add(sample_model)
 
     @typechecked
@@ -37,7 +37,7 @@ class SampleModels(DatablockCollection):
         Args:
             cif_str: CIF file content.
         """
-        sample_model = SampleModel(cif_str=cif_str)
+        sample_model = SampleModelFactory.create(cif_str=cif_str)
         self.add(sample_model)
 
     @typechecked
@@ -47,7 +47,7 @@ class SampleModels(DatablockCollection):
         Args:
             name: Identifier to assign to the new model.
         """
-        sample_model = SampleModel(name=name)
+        sample_model = SampleModelFactory.create(name=name)
         self.add(sample_model)
 
     @typechecked

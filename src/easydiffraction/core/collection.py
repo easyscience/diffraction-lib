@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from easydiffraction.core.guards import GuardedBase
+from easydiffraction.core.guard import GuardedBase
 
 
 class CollectionBase(GuardedBase):

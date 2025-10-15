@@ -52,17 +52,19 @@
 │       └── 🏷️ class Fitter
 ├── 📁 core
 │   ├── 📄 __init__.py
-│   ├── 📄 categories.py
+│   ├── 📄 category.py
 │   │   ├── 🏷️ class CategoryItem
 │   │   └── 🏷️ class CategoryCollection
-│   ├── 📄 collections.py
+│   ├── 📄 collection.py
 │   │   └── 🏷️ class CollectionBase
-│   ├── 📄 datablocks.py
+│   ├── 📄 datablock.py
 │   │   ├── 🏷️ class DatablockItem
 │   │   └── 🏷️ class DatablockCollection
-│   ├── 📄 diagnostics.py
+│   ├── 📄 diagnostic.py
 │   │   └── 🏷️ class Diagnostics
-│   ├── 📄 guards.py
+│   ├── 📄 factory.py
+│   │   └── 🏷️ class FactoryBase
+│   ├── 📄 guard.py
 │   │   └── 🏷️ class GuardedBase
 │   ├── 📄 identity.py
 │   │   └── 🏷️ class Identity
@@ -177,8 +179,7 @@
 │   │   │   ├── 🏷️ class BeamModeEnum
 │   │   │   └── 🏷️ class PeakProfileTypeEnum
 │   │   ├── 📄 factory.py
-│   │   │   ├── 🏷️ class ExperimentFactory
-│   │   │   └── 🏷️ class Experiment
+│   │   │   └── 🏷️ class ExperimentFactory
 │   │   ├── 📄 instrument_mixin.py
 │   │   │   └── 🏷️ class InstrumentMixin
 │   │   └── 📄 total_pd.py
@@ -225,8 +226,7 @@
 │   │   ├── 📄 base.py
 │   │   │   └── 🏷️ class SampleModelBase
 │   │   └── 📄 factory.py
-│   │       ├── 🏷️ class SampleModelFactory
-│   │       └── 🏷️ class SampleModel
+│   │       └── 🏷️ class SampleModelFactory
 │   ├── 📄 __init__.py
 │   └── 📄 sample_models.py
 │       └── 🏷️ class SampleModels

@@ -6,7 +6,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import Any
 
-from easydiffraction.core.categories import CategoryCollection
+from easydiffraction.core.category import CategoryCollection
 
 
 class BackgroundBase(CategoryCollection):

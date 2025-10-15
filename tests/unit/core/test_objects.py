@@ -1,5 +1,5 @@
-from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.datablocks import DatablockItem
+from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.core.parameters import Descriptor, Parameter
 
 

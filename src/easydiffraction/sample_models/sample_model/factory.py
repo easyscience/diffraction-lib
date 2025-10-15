@@ -3,92 +3,36 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 import gemmi
 
+from easydiffraction.core.factory import FactoryBase
 from easydiffraction.sample_models.sample_model.base import SampleModelBase
-from easydiffraction.utils.logging import log as logger
 
 
-class SampleModelFactory:
-    """Factory for creating `BaseSampleModel` instances with validated
-    arguments.
+class SampleModelFactory(FactoryBase):
+    """Creates SampleModel instances with only relevant attributes."""
 
-    Valid argument combinations are mutually exclusive:
-    - name (minimal model with defaults)
-    - cif_path (CIF file path; name must not be provided)
-    - cif_str (CIF content as string; name must not be provided)
-
-    Any other combination is considered invalid.
-    """
-
-    VALID_ARG_SETS = (
-        frozenset({'name'}),
-        frozenset({'cif_path'}),
-        frozenset({'cif_str'}),
-    )
+    _ALLOWED_ARG_SPECS = [
+        {'required': ['name'], 'optional': []},
+        {'required': ['cif_path'], 'optional': []},
+        {'required': ['cif_str'], 'optional': []},
+    ]
 
     @classmethod
-    def _validate_args(
-        cls,
-        *,
-        name: Optional[str] = None,
-        cif_path: Optional[str] = None,
-        cif_str: Optional[str] = None,
-    ) -> None:
-        present = frozenset(
-            k
-            for k, v in {'name': name, 'cif_path': cif_path, 'cif_str': cif_str}.items()
-            if v is not None
-        )
-        if present not in cls.VALID_ARG_SETS:
-            # Build helpful error message
-            combos = ['(' + ', '.join(sorted(spec)) + ')' for spec in cls.VALID_ARG_SETS]
-            allowed = ', '.join(combos)
-            raise ValueError(
-                'Invalid argument combination for SampleModel creation. '
-                f'Provided={sorted(present)}. Allowed combinations: {allowed}. '
-                "Note: Do not pass 'name' together with 'cif_path' or 'cif_str' "
-                'since CIF contains the model name.'
-            )
-
-    @classmethod
-    def create(
-        cls,
-        *,
-        name: Optional[str] = None,
-        cif_path: Optional[str] = None,
-        cif_str: Optional[str] = None,
-    ) -> SampleModelBase:
-        """Create a `BaseSampleModel` using a validated argument
+    def create(cls, **kwargs) -> SampleModelBase:
+        """Create a `SampleModelBase` using a validated argument
         combination.
-
-        Args:
-            name: Model identifier for a minimal model (no atoms by
-                default).
-            cif_path: Path to a CIF file used to build the model.
-            cif_str: CIF content used to build the model.
-
-        Returns:
-            A constructed `BaseSampleModel` instance.
-
-        Raises:
-            ValueError: If the argument combination is invalid.
         """
-        cls._validate_args(
-            name=name,
-            cif_path=cif_path,
-            cif_str=cif_str,
-        )
-        if name is not None:
-            return SampleModelBase(name=name)
-        if cif_path is not None:
-            return cls._create_from_cif_path(cif_path)
-        if cif_str is not None:
-            return cls._create_from_cif_str(cif_str)
-        # Defensive: Should be unreachable due to validation above
-        raise ValueError('No valid arguments provided to create SampleModel.')
+        # Check for valid argument combinations
+        user_args = {k for k, v in kwargs.items() if v is not None}
+        cls._validate_args(user_args, cls._ALLOWED_ARG_SPECS, cls.__name__)
+
+        if 'cif_path' in kwargs:
+            return cls._create_from_cif_path(kwargs['cif_path'])
+        elif 'cif_str' in kwargs:
+            return cls._create_from_cif_str(kwargs['cif_str'])
+        elif 'name' in kwargs:
+            return SampleModelBase(name=kwargs['name'])
 
     # -------------------------------
     # Private creation helper methods
@@ -196,25 +140,3 @@ class SampleModelFactory:
         block: gemmi.cif.Block,
     ) -> None:
         model.atom_sites.from_cif(block)
-
-
-class SampleModel:
-    """User-facing API for creating a sample model.
-
-    Use keyword-only arguments:
-    - `name` for a minimal, empty model
-    - `cif_path` to load from a CIF file
-    - `cif_str` to load from CIF content
-    """
-
-    def __new__(cls, **kwargs):
-        # Lazy import to avoid circular import at module load time
-
-        try:
-            return SampleModelFactory.create(**kwargs)
-        except TypeError:
-            logger.error(
-                f'Invalid argument(s) for SampleModel: {kwargs}. '
-                f"Did you mean 'name', 'cif_path', or 'cif_str'?",
-                exc_type=TypeError,
-            )

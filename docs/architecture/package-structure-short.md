@@ -32,11 +32,12 @@
 │   └── 📄 fitting.py
 ├── 📁 core
 │   ├── 📄 __init__.py
-│   ├── 📄 categories.py
-│   ├── 📄 collections.py
-│   ├── 📄 datablocks.py
-│   ├── 📄 diagnostics.py
-│   ├── 📄 guards.py
+│   ├── 📄 category.py
+│   ├── 📄 collection.py
+│   ├── 📄 datablock.py
+│   ├── 📄 diagnostic.py
+│   ├── 📄 factory.py
+│   ├── 📄 guard.py
 │   ├── 📄 identity.py
 │   ├── 📄 parameters.py
 │   ├── 📄 singletons.py

@@ -107,8 +107,8 @@ def datablock_item_to_cif(datablock) -> str:
     Emits a data_ header and then concatenates category CIF sections.
     """
     # Local imports to avoid import-time cycles
-    from easydiffraction.core.categories import CategoryCollection
-    from easydiffraction.core.categories import CategoryItem
+    from easydiffraction.core.category import CategoryCollection
+    from easydiffraction.core.category import CategoryItem
 
     header = f'data_{datablock._identity.datablock_entry_name}'
     parts: list[str] = [header]

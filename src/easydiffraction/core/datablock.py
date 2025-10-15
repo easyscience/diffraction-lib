@@ -5,10 +5,10 @@ from __future__ import annotations
 
 from typeguard import typechecked
 
-from easydiffraction.core.categories import CategoryCollection
-from easydiffraction.core.categories import CategoryItem
-from easydiffraction.core.collections import CollectionBase
-from easydiffraction.core.guards import GuardedBase
+from easydiffraction.core.category import CategoryCollection
+from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.collection import CollectionBase
+from easydiffraction.core.guard import GuardedBase
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.io.cif.serialize import datablock_collection_to_cif
 from easydiffraction.io.cif.serialize import datablock_item_to_cif

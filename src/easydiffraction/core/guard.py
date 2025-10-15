@@ -4,7 +4,7 @@
 from abc import ABC
 from abc import abstractmethod
 
-from easydiffraction.core.diagnostics import Diagnostics
+from easydiffraction.core.diagnostic import Diagnostics
 from easydiffraction.core.identity import Identity
 
 

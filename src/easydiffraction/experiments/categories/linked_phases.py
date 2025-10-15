@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from easydiffraction.core.categories import CategoryCollection
-from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.category import CategoryCollection
+from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec

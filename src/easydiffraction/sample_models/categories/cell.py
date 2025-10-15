@@ -3,7 +3,7 @@
 
 from typing import Optional
 
-from easydiffraction.core.categories import CategoryItem
+from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
