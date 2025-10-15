@@ -3,9 +3,9 @@ import tempfile
 
 from numpy.testing import assert_almost_equal
 
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 TEMP_DIR = tempfile.gettempdir()
@@ -13,7 +13,7 @@ TEMP_DIR = tempfile.gettempdir()
 
 def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     # Set sample models
-    model_1 = SampleModel(name='lbco')
+    model_1 = SampleModelFactory.create(name='lbco')
     model_1.space_group.name_h_m = 'P m -3 m'
     model_1.space_group.it_coordinate_system_code = '1'
     model_1.cell.length_a = 3.8909
@@ -56,7 +56,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
         b_iso=1.4041,
     )
 
-    model_2 = SampleModel(name='si')
+    model_2 = SampleModelFactory.create(name='si')
     model_2.space_group.name_h_m = 'F d -3 m'
     model_2.space_group.it_coordinate_system_code = '2'
     model_2.cell.length_a = 5.43146
@@ -73,7 +73,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     # Set experiment
     data_file = 'mcstas_lbco-si.xys'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt = Experiment(
+    expt = ExperimentFactory.create(
         name='mcstas',
         data_path=os.path.join(TEMP_DIR, data_file),
         beam_mode='time-of-flight',

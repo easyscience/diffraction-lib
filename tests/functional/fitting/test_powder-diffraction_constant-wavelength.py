@@ -4,9 +4,9 @@ import tempfile
 import pytest
 from numpy.testing import assert_almost_equal
 
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 TEMP_DIR = tempfile.gettempdir()
@@ -14,7 +14,7 @@ TEMP_DIR = tempfile.gettempdir()
 
 def test_single_fit_neutron_pd_cwl_lbco() -> None:
     # Set sample model
-    model = SampleModel(name='lbco')
+    model = SampleModelFactory.create(name='lbco')
     model.space_group.name_h_m = 'P m -3 m'
     model.cell.length_a = 3.88
     model.atom_sites.add_from_args(
@@ -59,7 +59,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     # Set experiment
     data_file = 'hrpt_lbco.xye'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt = Experiment(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
+    expt = ExperimentFactory.create(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
     expt.instrument.setup_wavelength = 1.494
     expt.instrument.calib_twotheta_offset = 0
     expt.peak.broad_gauss_u = 0.1
@@ -127,7 +127,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
 @pytest.mark.fast
 def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Set sample model
-    model = SampleModel(name='lbco')
+    model = SampleModelFactory.create(name='lbco')
 
     space_group = model.space_group
     space_group.name_h_m = 'P m -3 m'
@@ -179,7 +179,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     data_file = 'hrpt_lbco.xye'
     download_from_repository(data_file, destination=TEMP_DIR)
 
-    expt = Experiment(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
+    expt = ExperimentFactory.create(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
 
     instrument = expt.instrument
     instrument.setup_wavelength = 1.494
@@ -279,7 +279,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
 
 def test_fit_neutron_pd_cwl_hs() -> None:
     # Set sample model
-    model = SampleModel(name='hs')
+    model = SampleModelFactory.create(name='hs')
     model.space_group.name_h_m = 'R -3 m'
     model.space_group.it_coordinate_system_code = 'h'
     model.cell.length_a = 6.8615
@@ -334,7 +334,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     # Set experiment
     data_file = 'hrpt_hs.xye'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt = Experiment(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
+    expt = ExperimentFactory.create(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
     expt.instrument.setup_wavelength = 1.89
     expt.instrument.calib_twotheta_offset = 0.0
     expt.peak.broad_gauss_u = 0.1579
