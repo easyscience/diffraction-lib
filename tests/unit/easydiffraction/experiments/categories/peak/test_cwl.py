@@ -1,20 +1,27 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
-import numpy as np
+def test_cwl_peak_classes_expose_expected_parameters_and_category():
+    from easydiffraction.experiments.categories.peak.cwl import (
+        CwlPseudoVoigt,
+        CwlSplitPseudoVoigt,
+        CwlThompsonCoxHastings,
+    )
 
-# expected vs actual helpers
+    pv = CwlPseudoVoigt()
+    spv = CwlSplitPseudoVoigt()
+    tch = CwlThompsonCoxHastings()
 
-def _assert_equal(expected, actual):
-    assert expected == actual
+    # Category code set by PeakBase
+    for obj in (pv, spv, tch):
+        assert obj._identity.category_code == 'peak'
 
+    # Broadening parameters added by CwlBroadeningMixin
+    for obj in (pv, spv, tch):
+        names = {p.name for p in obj.parameters}
+        assert {'broad_gauss_u', 'broad_gauss_v', 'broad_gauss_w', 'broad_lorentz_x', 'broad_lorentz_y'}.issubset(names)
 
-# Module under test: easydiffraction.experiments.categories.peak.cwl
+    # EmpiricalAsymmetry added only for split PV
+    names_spv = {p.name for p in spv.parameters}
+    assert {'asym_empir_1', 'asym_empir_2', 'asym_empir_3', 'asym_empir_4'}.issubset(names_spv)
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
-    import easydiffraction.experiments.categories.peak.cwl as MUT
-    expected_module_name = "easydiffraction.experiments.categories.peak.cwl"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    # FCJ asymmetry for TCH
+    names_tch = {p.name for p in tch.parameters}
+    assert {'asym_fcj_1', 'asym_fcj_2'}.issubset(names_tch)

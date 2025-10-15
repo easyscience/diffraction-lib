@@ -1,20 +1,26 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
 import numpy as np
 
-# expected vs actual helpers
 
-def _assert_equal(expected, actual):
-    assert expected == actual
+def test_line_segment_background_calculate_and_cif():
+    from easydiffraction.experiments.categories.background.line_segment import (
+        LineSegment,
+        LineSegmentBackground,
+    )
 
+    bkg = LineSegmentBackground()
+    # No points -> zeros
+    x = np.array([0.0, 1.0, 2.0])
+    y0 = bkg.calculate(x)
+    assert np.allclose(y0, [0.0, 0.0, 0.0])
 
-# Module under test: easydiffraction.experiments.categories.background.line_segment
+    # Add two points -> linear interpolation
+    p1 = LineSegment(x=0.0, y=0.0)
+    p2 = LineSegment(x=2.0, y=4.0)
+    bkg.add(p1)
+    bkg.add(p2)
+    y = bkg.calculate(x)
+    assert np.allclose(y, [0.0, 2.0, 4.0])
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
-    import easydiffraction.experiments.categories.background.line_segment as MUT
-    expected_module_name = "easydiffraction.experiments.categories.background.line_segment"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    # CIF loop has correct header and rows
+    cif = bkg.as_cif
+    assert 'loop_' in cif and '_pd_background.line_segment_X' in cif and '_pd_background.line_segment_intensity' in cif

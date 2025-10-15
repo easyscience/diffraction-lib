@@ -1,20 +1,23 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
 import numpy as np
 
-# expected vs actual helpers
 
-def _assert_equal(expected, actual):
-    assert expected == actual
+def test_chebyshev_background_calculate_and_cif():
+    from easydiffraction.experiments.categories.background.chebyshev import (
+        ChebyshevPolynomialBackground,
+        PolynomialTerm,
+    )
 
+    cb = ChebyshevPolynomialBackground()
+    x = np.linspace(0.0, 1.0, 5)
 
-# Module under test: easydiffraction.experiments.categories.background.chebyshev
+    # Empty background -> zeros
+    y0 = cb.calculate(x)
+    assert np.allclose(y0, 0.0)
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
-    import easydiffraction.experiments.categories.background.chebyshev as MUT
-    expected_module_name = "easydiffraction.experiments.categories.background.chebyshev"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    # Add two terms and verify CIF contains expected tags
+    t0 = PolynomialTerm(order=0, coef=1.0)
+    t1 = PolynomialTerm(order=1, coef=0.5)
+    cb.add(t0)
+    cb.add(t1)
+    cif = cb.as_cif
+    assert '_pd_background.Chebyshev_order' in cif and '_pd_background.Chebyshev_coef' in cif

@@ -1,20 +1,6 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
-
-
-# Module under test: easydiffraction.experiments.categories.background.enums
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
+def test_background_enum_default_and_descriptions():
     import easydiffraction.experiments.categories.background.enums as MUT
-    expected_module_name = "easydiffraction.experiments.categories.background.enums"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+
+    assert MUT.BackgroundTypeEnum.default() == MUT.BackgroundTypeEnum.LINE_SEGMENT
+    assert MUT.BackgroundTypeEnum.LINE_SEGMENT.description() == 'Linear interpolation between points'
+    assert MUT.BackgroundTypeEnum.CHEBYSHEV.description() == 'Chebyshev polynomial background'

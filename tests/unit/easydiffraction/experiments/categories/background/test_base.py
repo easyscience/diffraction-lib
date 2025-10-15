@@ -1,20 +1,59 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
 import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+import pytest
 
 
-# Module under test: easydiffraction.experiments.categories.background.base
+def test_background_base_minimal_impl_and_collection_cif():
+    from easydiffraction.experiments.categories.background.base import BackgroundBase
+    from easydiffraction.core.category import CategoryItem
+    from easydiffraction.core.collection import CollectionBase
+    from easydiffraction.core.parameters import Parameter
+    from easydiffraction.core.validation import AttributeSpec, DataTypes
+    from easydiffraction.io.cif.handler import CifHandler
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
+    class ConstantBackground(CategoryItem):
+        def __init__(self, name: str, value: float):
+            # CategoryItem doesn't define __init__; call GuardedBase via super()
+            super().__init__()
+            self._identity.category_code = 'background'
+            self._identity.category_entry_name = name
+            self._level = Parameter(
+                name='level',
+                value_spec=AttributeSpec(value=value, type_=DataTypes.NUMERIC, default=0.0),
+                cif_handler=CifHandler(names=['_bkg.level']),
+            )
 
-def test_module_import():
-    import easydiffraction.experiments.categories.background.base as MUT
-    expected_module_name = "easydiffraction.experiments.categories.background.base"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+        def calculate(self, x_data):
+            return np.full_like(np.asarray(x_data), fill_value=self._level.value, dtype=float)
+
+        def show(self):
+            # No-op for tests
+            return None
+
+    class BackgroundCollection(BackgroundBase):
+        def __init__(self):
+            # Initialize underlying collection with the item type
+            CollectionBase.__init__(self, item_type=ConstantBackground)
+
+        def calculate(self, x_data):
+            x = np.asarray(x_data)
+            total = np.zeros_like(x, dtype=float)
+            for item in self.values():
+                total += item.calculate(x)
+            return total
+
+        def show(self) -> None:  # pragma: no cover - trivial
+            return None
+
+    coll = BackgroundCollection()
+    a = ConstantBackground('a', 1.0)
+    b = ConstantBackground('b', 2.0)
+    coll.add(a)
+    coll.add(b)
+
+    # calculate sums two backgrounds externally (out of scope), here just verify item.calculate
+    x = np.array([0.0, 1.0, 2.0])
+    assert np.allclose(a.calculate(x), [1.0, 1.0, 1.0])
+
+    # CIF of collection is loop with header tag and two rows
+    cif = coll.as_cif
+    assert 'loop_' in cif and '_bkg.level' in cif and '1.0' in cif and '2.0' in cif

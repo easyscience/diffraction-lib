@@ -1,20 +1,51 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
+import builtins
 import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
 
 
-# Module under test: easydiffraction.core.guard
+def test_guard_allows_only_declared_public_properties_and_links_parent(monkeypatch):
+    from easydiffraction.core.guard import GuardedBase
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
+    class Child(GuardedBase):
+        @property
+        def parameters(self):
+            return []
 
-def test_module_import():
-    import easydiffraction.core.guard as MUT
-    expected_module_name = "easydiffraction.core.guard"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+        @property
+        def as_cif(self) -> str:
+            return ""
+
+        @property
+        def value(self):
+            return getattr(self, '_value', 0)
+
+        @value.setter
+        def value(self, v):
+            self._assign_attr('_value', v)
+
+    class Parent(GuardedBase):
+        def __init__(self):
+            super().__init__()
+            self._child = Child()
+
+        @property
+        def child(self):
+            return self._child
+
+        @property
+        def parameters(self):
+            return []
+
+        @property
+        def as_cif(self) -> str:
+            return ""
+
+    p = Parent()
+    # Writable property on child should set and link parent
+    p.child.value = 3
+    assert p.child.value == 3
+    # Private assign links parent automatically
+    assert getattr(p.child, '_parent') is p
+
+    # Unknown attribute should raise AttributeError under current logging mode
+    with pytest.raises(AttributeError):
+        setattr(p.child, 'unknown_attr', 1)

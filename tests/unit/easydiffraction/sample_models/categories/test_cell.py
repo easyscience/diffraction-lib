@@ -1,20 +1,40 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
 import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
 
 
-# Module under test: easydiffraction.sample_models.categories.cell
+def test_cell_defaults_and_overrides():
+    from easydiffraction.sample_models.categories.cell import Cell
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
+    c = Cell()
+    # Defaults from AttributeSpec in implementation
+    assert pytest.approx(c.length_a.value) == 10.0
+    assert pytest.approx(c.length_b.value) == 10.0
+    assert pytest.approx(c.length_c.value) == 10.0
+    assert pytest.approx(c.angle_alpha.value) == 90.0
+    assert pytest.approx(c.angle_beta.value) == 90.0
+    assert pytest.approx(c.angle_gamma.value) == 90.0
 
-def test_module_import():
-    import easydiffraction.sample_models.categories.cell as MUT
-    expected_module_name = "easydiffraction.sample_models.categories.cell"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    # Override through constructor
+    c2 = Cell(length_a=12.3, angle_beta=100.0)
+    assert pytest.approx(c2.length_a.value) == 12.3
+    assert pytest.approx(c2.angle_beta.value) == 100.0
+
+
+def test_cell_setters_apply_validation_and_units():
+    from easydiffraction.sample_models.categories.cell import Cell
+
+    c = Cell()
+    # Set valid values within range
+    c.length_a = 5.5
+    c.angle_gamma = 120.0
+    assert pytest.approx(c.length_a.value) == 5.5
+    assert pytest.approx(c.angle_gamma.value) == 120.0
+    # Check units are preserved on parameter objects
+    assert c.length_a.units == 'Å'
+    assert c.angle_gamma.units == 'deg'
+
+
+def test_cell_identity_category_code():
+    from easydiffraction.sample_models.categories.cell import Cell
+
+    c = Cell()
+    assert c._identity.category_code == 'cell'

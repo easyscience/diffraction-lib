@@ -1,47 +1,32 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+import re
 
 
-# Module under test: easydiffraction.utils.formatting
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
-    import easydiffraction.utils.formatting as MUT
-    expected_module_name = "easydiffraction.utils.formatting"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+def _strip_ansi(s: str) -> str:
+    return re.sub(r"\x1b\[[0-9;]*m", "", s)
 
 
 def test_chapter_uppercase_and_length():
-    import easydiffraction.utils.formatting as MUT
+    import easydiffraction.utils.formatting as F
     title = "Intro"
-    s = MUT.chapter(title)
-    assert title.upper() in s and len(s) > len(title)
+    s = _strip_ansi(F.chapter(title))
+    # chapter uses box drawing SYMBOL = '═'
+    assert "═" in s and title.upper() in s
 
 
 def test_section_formatting_contains_markers():
-    import easydiffraction.utils.formatting as MUT
-    s = MUT.section("part")
+    import easydiffraction.utils.formatting as F
+    s = _strip_ansi(F.section("part"))
     assert "*** PART ***" in s.upper()
 
 
 def test_paragraph_preserves_quotes():
-    import easydiffraction.utils.formatting as MUT
-    s = MUT.paragraph("Hello 'World'")
-    # quoted part should appear verbatim
+    import easydiffraction.utils.formatting as F
+    s = _strip_ansi(F.paragraph("Hello 'World'"))
     assert "'World'" in s
 
 
 def test_error_warning_info_prefixes():
-    import easydiffraction.utils.formatting as MUT
-    assert "Error" in MUT.error("x")
-    assert "Warning" in MUT.warning("x")
-    assert "Info" in MUT.info("x")
+    import easydiffraction.utils.formatting as F
+    assert "Error" in _strip_ansi(F.error("x"))
+    assert "Warning" in _strip_ansi(F.warning("x"))
+    assert "Info" in _strip_ansi(F.info("x"))

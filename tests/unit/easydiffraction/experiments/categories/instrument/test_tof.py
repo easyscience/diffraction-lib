@@ -1,20 +1,41 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
 import numpy as np
 
-# expected vs actual helpers
 
-def _assert_equal(expected, actual):
-    assert expected == actual
+def test_tof_instrument_defaults_and_setters_and_parameters_and_cif():
+    from easydiffraction.experiments.categories.instrument.tof import TofInstrument
 
+    inst = TofInstrument()
 
-# Module under test: easydiffraction.experiments.categories.instrument.tof
+    # Defaults
+    assert np.isclose(inst.setup_twotheta_bank.value, 150.0)
+    assert np.isclose(inst.calib_d_to_tof_offset.value, 0.0)
+    assert np.isclose(inst.calib_d_to_tof_linear.value, 10000.0)
+    assert np.isclose(inst.calib_d_to_tof_quad.value, -0.00001)
+    assert np.isclose(inst.calib_d_to_tof_recip.value, 0.0)
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
+    # Setters
+    inst.setup_twotheta_bank = 160.0
+    inst.calib_d_to_tof_offset = 1.0
+    inst.calib_d_to_tof_linear = 9000.0
+    inst.calib_d_to_tof_quad = -2e-5
+    inst.calib_d_to_tof_recip = 0.5
 
-def test_module_import():
-    import easydiffraction.experiments.categories.instrument.tof as MUT
-    expected_module_name = "easydiffraction.experiments.categories.instrument.tof"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert np.isclose(inst.setup_twotheta_bank.value, 160.0)
+    assert np.isclose(inst.calib_d_to_tof_offset.value, 1.0)
+    assert np.isclose(inst.calib_d_to_tof_linear.value, 9000.0)
+    assert np.isclose(inst.calib_d_to_tof_quad.value, -2e-5)
+    assert np.isclose(inst.calib_d_to_tof_recip.value, 0.5)
+
+    # Parameters exposure via CategoryItem.parameters
+    names = {p.name for p in inst.parameters}
+    assert {
+        'twotheta_bank',
+        'd_to_tof_offset',
+        'd_to_tof_linear',
+        'd_to_tof_quad',
+        'd_to_tof_recip',
+    }.issubset(names)
+
+    # CIF representation of the item should include tags in separate lines
+    cif = inst.as_cif
+    assert '_instr.2theta_bank' in cif and '_instr.d_to_tof_linear' in cif

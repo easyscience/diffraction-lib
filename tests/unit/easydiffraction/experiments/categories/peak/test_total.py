@@ -1,20 +1,28 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
 import numpy as np
 
-# expected vs actual helpers
 
-def _assert_equal(expected, actual):
-    assert expected == actual
+def test_total_gaussian_damped_sinc_parameters_and_setters():
+    from easydiffraction.experiments.categories.peak.total import TotalGaussianDampedSinc
 
+    p = TotalGaussianDampedSinc()
+    assert p._identity.category_code == 'peak'
+    names = {param.name for param in p.parameters}
+    assert {
+        'damp_q', 'broad_q', 'cutoff_q', 'sharp_delta_1', 'sharp_delta_2', 'damp_particle_diameter'
+    }.issubset(names)
 
-# Module under test: easydiffraction.experiments.categories.peak.total
+    # Setters update values
+    p.damp_q = 0.1
+    p.broad_q = 0.2
+    p.cutoff_q = 30.0
+    p.sharp_delta_1 = 1.0
+    p.sharp_delta_2 = 2.0
+    p.damp_particle_diameter = 50.0
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
-    import easydiffraction.experiments.categories.peak.total as MUT
-    expected_module_name = "easydiffraction.experiments.categories.peak.total"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    vals = {param.name: param.value for param in p.parameters}
+    assert np.isclose(vals['damp_q'], 0.1)
+    assert np.isclose(vals['broad_q'], 0.2)
+    assert np.isclose(vals['cutoff_q'], 30.0)
+    assert np.isclose(vals['sharp_delta_1'], 1.0)
+    assert np.isclose(vals['sharp_delta_2'], 2.0)
+    assert np.isclose(vals['damp_particle_diameter'], 50.0)

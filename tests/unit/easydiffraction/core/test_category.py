@@ -1,17 +1,7 @@
 from easydiffraction.core.category import CategoryCollection, CategoryItem
-from easydiffraction.core.parameters import GenericDescriptorBase
+from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec, DataTypes
-from easydiffraction.io.cif.serialize import category_item_to_cif
-
-
-class SimpleDescriptor(GenericDescriptorBase):
-    _value_type = DataTypes.STRING
-    def __init__(self, name, value):
-        super().__init__(
-            name=name,
-            description='',
-            value_spec=AttributeSpec(value=value, type_=DataTypes.STRING, default=''),
-        )
+from easydiffraction.io.cif.handler import CifHandler
 
 
 class SimpleItem(CategoryItem):
@@ -19,10 +9,26 @@ class SimpleItem(CategoryItem):
         super().__init__()
         self._identity.category_code = 'simple'
         self._identity.category_entry_name = entry_name
-        # Assign as private attributes to bypass GuardedBase writable checks,
-        # and expose via properties below.
-        object.__setattr__(self, '_a', SimpleDescriptor('a', 'x'))
-        object.__setattr__(self, '_b', SimpleDescriptor('b', 'y'))
+        object.__setattr__(
+            self,
+            '_a',
+            StringDescriptor(
+                name='a',
+                description='',
+                value_spec=AttributeSpec(value='x', type_=DataTypes.STRING, default=''),
+                cif_handler=CifHandler(names=['_simple.a']),
+            ),
+        )
+        object.__setattr__(
+            self,
+            '_b',
+            StringDescriptor(
+                name='b',
+                description='',
+                value_spec=AttributeSpec(value='y', type_=DataTypes.STRING, default=''),
+                cif_handler=CifHandler(names=['_simple.b']),
+            ),
+        )
 
     @property
     def a(self):
@@ -52,24 +58,5 @@ def test_category_collection_str_and_cif_calls():
     c.add(SimpleItem('n2'))
     s = str(c)
     assert 'collection' in s and '2 items' in s
-    # as_cif delegates to serializer; calling it ensures code path executed
-    _ = c.as_cif# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
-
-
-# Module under test: easydiffraction.core.category
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
-    import easydiffraction.core.category as MUT
-    expected_module_name = "easydiffraction.core.category"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    # as_cif delegates to serializer; should be a string (possibly empty)
+    assert isinstance(c.as_cif, str)

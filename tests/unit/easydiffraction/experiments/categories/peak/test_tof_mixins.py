@@ -1,20 +1,32 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
 import numpy as np
 
-# expected vs actual helpers
 
-def _assert_equal(expected, actual):
-    assert expected == actual
+def test_tof_broadening_and_asymmetry_mixins():
+    from easydiffraction.experiments.categories.peak.base import PeakBase
+    from easydiffraction.experiments.categories.peak.tof_mixins import (
+        TofBroadeningMixin,
+        IkedaCarpenterAsymmetryMixin,
+    )
 
+    class TofPeak(PeakBase, TofBroadeningMixin, IkedaCarpenterAsymmetryMixin):
+        def __init__(self):
+            super().__init__()
+            self._add_time_of_flight_broadening()
+            self._add_ikeda_carpenter_asymmetry()
 
-# Module under test: easydiffraction.experiments.categories.peak.tof_mixins
+    p = TofPeak()
+    names = {param.name for param in p.parameters}
+    # Broadening
+    assert {
+        'gauss_sigma_0', 'gauss_sigma_1', 'gauss_sigma_2',
+        'lorentz_gamma_0', 'lorentz_gamma_1', 'lorentz_gamma_2',
+        'mix_beta_0', 'mix_beta_1',
+    }.issubset(names)
+    # Asymmetry
+    assert {'asym_alpha_0', 'asym_alpha_1'}.issubset(names)
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
-    import easydiffraction.experiments.categories.peak.tof_mixins as MUT
-    expected_module_name = "easydiffraction.experiments.categories.peak.tof_mixins"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    # Verify setters update values
+    p.broad_gauss_sigma_0 = 1.0
+    p.asym_alpha_1 = 0.5
+    assert np.isclose(p.broad_gauss_sigma_0.value, 1.0)
+    assert np.isclose(p.asym_alpha_1.value, 0.5)

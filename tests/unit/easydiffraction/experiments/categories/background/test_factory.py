@@ -1,20 +1,21 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
 import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
 
 
-# Module under test: easydiffraction.experiments.categories.background.factory
+def test_background_factory_default_and_errors():
+    from easydiffraction.experiments.categories.background.factory import BackgroundFactory
+    from easydiffraction.experiments.categories.background.enums import BackgroundTypeEnum
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
+    # Default should produce a LineSegmentBackground
+    obj = BackgroundFactory.create()
+    assert obj.__class__.__name__.endswith('LineSegmentBackground')
 
-def test_module_import():
-    import easydiffraction.experiments.categories.background.factory as MUT
-    expected_module_name = "easydiffraction.experiments.categories.background.factory"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    # Explicit type
+    obj2 = BackgroundFactory.create(BackgroundTypeEnum.CHEBYSHEV)
+    assert obj2.__class__.__name__.endswith('ChebyshevPolynomialBackground')
+
+    # Unsupported enum (fake) should raise ValueError
+    class FakeEnum:
+        value = 'x'
+
+    with pytest.raises(ValueError):
+        BackgroundFactory.create(FakeEnum)  # type: ignore[arg-type]

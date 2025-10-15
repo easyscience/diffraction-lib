@@ -1,20 +1,12 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
-import numpy as np
+def test_linked_phases_add_and_cif_headers():
+    from easydiffraction.experiments.categories.linked_phases import LinkedPhase, LinkedPhases
 
-# expected vs actual helpers
+    lp = LinkedPhase(id='Si', scale=2.0)
+    assert lp.id.value == 'Si' and lp.scale.value == 2.0
 
-def _assert_equal(expected, actual):
-    assert expected == actual
+    coll = LinkedPhases()
+    coll.add(lp)
 
-
-# Module under test: easydiffraction.experiments.categories.linked_phases
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
-    import easydiffraction.experiments.categories.linked_phases as MUT
-    expected_module_name = "easydiffraction.experiments.categories.linked_phases"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    # CIF loop header presence
+    cif = coll.as_cif
+    assert 'loop_' in cif and '_pd_phase_block.id' in cif and '_pd_phase_block.scale' in cif

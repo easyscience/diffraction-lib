@@ -1,20 +1,36 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
 import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
 
 
-# Module under test: easydiffraction.experiments.categories.peak.factory
+def test_peak_factory_default_and_combinations_and_errors():
+    from easydiffraction.experiments.categories.peak.factory import PeakFactory
+    from easydiffraction.experiments.experiment.enums import BeamModeEnum, ScatteringTypeEnum, PeakProfileTypeEnum
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
+    # Defaults -> valid object for default enums
+    p = PeakFactory.create()
+    assert p._identity.category_code == 'peak'
 
-def test_module_import():
-    import easydiffraction.experiments.categories.peak.factory as MUT
-    expected_module_name = "easydiffraction.experiments.categories.peak.factory"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    # Explicit valid combos
+    p1 = PeakFactory.create(ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH, PeakProfileTypeEnum.PSEUDO_VOIGT)
+    assert p1.__class__.__name__ == 'CwlPseudoVoigt'
+    p2 = PeakFactory.create(ScatteringTypeEnum.BRAGG, BeamModeEnum.TIME_OF_FLIGHT, PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER)
+    assert p2.__class__.__name__ == 'TofPseudoVoigtIkedaCarpenter'
+    p3 = PeakFactory.create(ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH, PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC)
+    assert p3.__class__.__name__ == 'TotalGaussianDampedSinc'
+
+    # Invalid scattering type
+    class FakeST:
+        pass
+    with pytest.raises(ValueError):
+        PeakFactory.create(FakeST, BeamModeEnum.CONSTANT_WAVELENGTH, PeakProfileTypeEnum.PSEUDO_VOIGT)  # type: ignore[arg-type]
+
+    # Invalid beam mode
+    class FakeBM:
+        pass
+    with pytest.raises(ValueError):
+        PeakFactory.create(ScatteringTypeEnum.BRAGG, FakeBM, PeakProfileTypeEnum.PSEUDO_VOIGT)  # type: ignore[arg-type]
+
+    # Invalid profile type
+    class FakePPT:
+        pass
+    with pytest.raises(ValueError):
+        PeakFactory.create(ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH, FakePPT)  # type: ignore[arg-type]
