@@ -1,20 +1,26 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
 import numpy as np
+import pytest
 
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
-
-
-# Module under test: easydiffraction.analysis.calculators.crysfml
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
 
 def test_module_import():
     import easydiffraction.analysis.calculators.crysfml as MUT
-    expected_module_name = "easydiffraction.analysis.calculators.crysfml"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert MUT.__name__ == "easydiffraction.analysis.calculators.crysfml"
+
+
+def test_crysfml_engine_flag_and_structure_factors_raises():
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+
+    calc = CrysfmlCalculator()
+    # engine_imported is a boolean flag; it may be False in our env
+    assert isinstance(calc.engine_imported, bool)
+    with pytest.raises(NotImplementedError):
+        calc.calculate_structure_factors(sample_models=None, experiments=None)
+
+
+def test_crysfml_adjust_pattern_length_truncates():
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+
+    calc = CrysfmlCalculator()
+    long = list(range(10))
+    out = calc._adjust_pattern_length(long, target_length=4)
+    assert out == [0, 1, 2, 3]

@@ -1,4 +1,3 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
 import importlib
 import types
 import pytest
@@ -10,9 +9,6 @@ def _assert_equal(expected, actual):
 
 
 # Module under test: easydiffraction.plotting.plotters.plotter_base
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
 
 def test_module_import():
     import easydiffraction.plotting.plotters.plotter_base as MUT

@@ -1,20 +1,32 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
+import types
+
 import pytest
-import numpy as np
 
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+from easydiffraction.core.diagnostic import Diagnostics
 
 
-# Module under test: easydiffraction.core.diagnostic
+class DummyLogger:
+    def __init__(self):
+        self.last = None
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
+    def error(self, message, exc_type):
+        self.last = ("error", message, exc_type)
 
-def test_module_import():
-    import easydiffraction.core.diagnostic as MUT
-    expected_module_name = "easydiffraction.core.diagnostic"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    def debug(self, message):
+        self.last = ("debug", message)
+
+
+def test_diagnostics_error_and_debug_monkeypatch(monkeypatch: pytest.MonkeyPatch):
+    dummy = DummyLogger()
+    # Patch module-level log used by Diagnostics
+    import easydiffraction.core.diagnostic as diag_mod
+
+    monkeypatch.setattr(diag_mod, "log", dummy, raising=True)
+
+    Diagnostics.no_value("x", default=1)
+    assert dummy.last[0] == "debug"
+
+    Diagnostics.type_mismatch("x", value=3, expected_type=int)
+    kind, msg, exc = dummy.last
+    assert kind == "error"
+    assert issubclass(exc, TypeError)

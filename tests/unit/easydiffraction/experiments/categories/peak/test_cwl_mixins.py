@@ -1,20 +1,29 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+from easydiffraction.experiments.categories.peak.cwl import (
+    CwlPseudoVoigt,
+    CwlSplitPseudoVoigt,
+    CwlThompsonCoxHastings,
+)
 
 
-# Module under test: easydiffraction.experiments.categories.peak.cwl_mixins
+def test_cwl_pseudo_voigt_params_exist_and_settable():
+    peak = CwlPseudoVoigt()
+    # Created by _add_constant_wavelength_broadening
+    assert peak.broad_gauss_u.name == "broad_gauss_u"
+    peak.broad_gauss_u = 0.123
+    assert peak.broad_gauss_u.value == 0.123
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
 
-def test_module_import():
-    import easydiffraction.experiments.categories.peak.cwl_mixins as MUT
-    expected_module_name = "easydiffraction.experiments.categories.peak.cwl_mixins"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+def test_cwl_split_pseudo_voigt_adds_empirical_asymmetry():
+    peak = CwlSplitPseudoVoigt()
+    # Has broadening and empirical asymmetry params
+    assert peak.broad_gauss_w.name == "broad_gauss_w"
+    assert peak.asym_empir_1.name == "asym_empir_1"
+    peak.asym_empir_2 = 0.345
+    assert peak.asym_empir_2.value == 0.345
+
+
+def test_cwl_tch_adds_fcj_asymmetry():
+    peak = CwlThompsonCoxHastings()
+    assert peak.asym_fcj_1.name == "asym_fcj_1"
+    peak.asym_fcj_2 = 0.456
+    assert peak.asym_fcj_2.value == 0.456

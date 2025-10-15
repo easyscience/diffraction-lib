@@ -1,20 +1,9 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+from easydiffraction.experiments.categories.instrument.cwl import CwlInstrument
 
 
-# Module under test: easydiffraction.experiments.categories.instrument.cwl
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
-    import easydiffraction.experiments.categories.instrument.cwl as MUT
-    expected_module_name = "easydiffraction.experiments.categories.instrument.cwl"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+def test_cwl_instrument_parameters_settable():
+    instr = CwlInstrument()
+    instr.setup_wavelength = 2.0
+    instr.calib_twotheta_offset = 0.1
+    assert instr.setup_wavelength.value == 2.0
+    assert instr.calib_twotheta_offset.value == 0.1

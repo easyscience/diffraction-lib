@@ -1,20 +1,13 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
 import pytest
-import numpy as np
 
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+from easydiffraction.sample_models.sample_model.factory import SampleModelFactory
 
 
-# Module under test: easydiffraction.sample_models.sample_model.factory
+def test_create_minimal_by_name():
+    m = SampleModelFactory.create(name="abc")
+    assert m.name == "abc"
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
 
-def test_module_import():
-    import easydiffraction.sample_models.sample_model.factory as MUT
-    expected_module_name = "easydiffraction.sample_models.sample_model.factory"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+def test_invalid_arg_combo_raises():
+    with pytest.raises(ValueError):
+        SampleModelFactory.create(name=None, cif_path=None)

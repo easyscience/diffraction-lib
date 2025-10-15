@@ -1,20 +1,10 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+from easydiffraction.experiments.categories.peak.base import PeakBase
 
 
-# Module under test: easydiffraction.experiments.categories.peak.base
+def test_peak_base_identity_code():
+    class DummyPeak(PeakBase):
+        def __init__(self):
+            super().__init__()
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
-    import easydiffraction.experiments.categories.peak.base as MUT
-    expected_module_name = "easydiffraction.experiments.categories.peak.base"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    p = DummyPeak()
+    assert p._identity.category_code == "peak"

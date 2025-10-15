@@ -38,7 +38,6 @@ def test_summary_show_report_prints_sections(capsys):
     assert "CRYSTALLOGRAPHIC DATA" in out
     assert "EXPERIMENTS" in out
     assert "FITTING" in out
-# Auto-generated scaffold. Replace TODOs with concrete tests.
 import pytest
 import numpy as np
 
@@ -49,9 +48,6 @@ def _assert_equal(expected, actual):
 
 
 # Module under test: easydiffraction.summary.summary
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
 
 def test_module_import():
     import easydiffraction.summary.summary as MUT

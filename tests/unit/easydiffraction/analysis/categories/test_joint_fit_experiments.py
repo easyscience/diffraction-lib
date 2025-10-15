@@ -1,20 +1,14 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+from easydiffraction.analysis.categories.joint_fit_experiments import (
+    JointFitExperiment,
+    JointFitExperiments,
+)
 
 
-# Module under test: easydiffraction.analysis.categories.joint_fit_experiments
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
-    import easydiffraction.analysis.categories.joint_fit_experiments as MUT
-    expected_module_name = "easydiffraction.analysis.categories.joint_fit_experiments"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+def test_joint_fit_experiment_and_collection():
+    j = JointFitExperiment(id="ex1", weight=0.5)
+    assert j.id.value == "ex1"
+    assert j.weight.value == 0.5
+    coll = JointFitExperiments()
+    coll.add(j)
+    assert "ex1" in coll.names
+    assert coll["ex1"].weight.value == 0.5

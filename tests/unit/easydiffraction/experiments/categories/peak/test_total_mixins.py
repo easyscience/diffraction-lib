@@ -1,20 +1,9 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+from easydiffraction.experiments.categories.peak.total import TotalGaussianDampedSinc
 
 
-# Module under test: easydiffraction.experiments.categories.peak.total_mixins
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
-    import easydiffraction.experiments.categories.peak.total_mixins as MUT
-    expected_module_name = "easydiffraction.experiments.categories.peak.total_mixins"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+def test_total_gaussian_damped_sinc_params():
+    peak = TotalGaussianDampedSinc()
+    assert peak.damp_q.name == "damp_q"
+    peak.damp_q = 0.12
+    assert peak.damp_q.value == 0.12
+    assert peak.broad_q.name == "broad_q"

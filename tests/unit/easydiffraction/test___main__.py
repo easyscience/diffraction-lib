@@ -1,4 +1,3 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
 import pytest
 from typer.testing import CliRunner
 
@@ -12,9 +11,6 @@ def _assert_equal(expected, actual):
 
 
 # Module under test: easydiffraction.__main__
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
 
 def test_module_import():
     import easydiffraction.__main__ as MUT

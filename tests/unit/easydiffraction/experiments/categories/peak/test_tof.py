@@ -1,20 +1,24 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+from easydiffraction.experiments.categories.peak.tof import (
+    TofPseudoVoigt,
+    TofPseudoVoigtBackToBack,
+    TofPseudoVoigtIkedaCarpenter,
+)
 
 
-# Module under test: easydiffraction.experiments.categories.peak.tof
+def test_tof_pseudo_voigt_has_broadening_params():
+    peak = TofPseudoVoigt()
+    assert peak.broad_gauss_sigma_0.name == "gauss_sigma_0"
+    peak.broad_gauss_sigma_2 = 1.23
+    assert peak.broad_gauss_sigma_2.value == 1.23
 
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
 
-def test_module_import():
-    import easydiffraction.experiments.categories.peak.tof as MUT
-    expected_module_name = "easydiffraction.experiments.categories.peak.tof"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+def test_tof_back_to_back_adds_ikeda_carpenter():
+    peak = TofPseudoVoigtBackToBack()
+    assert peak.asym_alpha_0.name == "asym_alpha_0"
+    peak.asym_alpha_1 = 0.77
+    assert peak.asym_alpha_1.value == 0.77
+
+
+def test_tof_ikeda_carpenter_has_mix_beta():
+    peak = TofPseudoVoigtIkedaCarpenter()
+    assert peak.broad_mix_beta_0.name == "mix_beta_0"

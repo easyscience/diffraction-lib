@@ -1,20 +1,54 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
 import numpy as np
 
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
-
-
-# Module under test: easydiffraction.analysis.calculators.base
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
 
 def test_module_import():
     import easydiffraction.analysis.calculators.base as MUT
-    expected_module_name = "easydiffraction.analysis.calculators.base"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert MUT.__name__ == "easydiffraction.analysis.calculators.base"
+
+
+def test_calculator_base_get_valid_linked_phases_filters_missing():
+    from easydiffraction.analysis.calculators.base import CalculatorBase
+
+    class DummyCalc(CalculatorBase):
+        @property
+        def name(self):
+            return "dummy"
+
+        @property
+        def engine_imported(self):
+            return True
+
+        def calculate_structure_factors(self, sample_model, experiment):
+            pass
+
+        def _calculate_single_model_pattern(self, sample_model, experiment, called_by_minimizer):
+            return np.zeros_like(experiment.datastore.x)
+
+    class DummyLinked:
+        def __init__(self, entry_name):
+            self._identity = type("I", (), {"category_entry_name": entry_name})
+            self.scale = type("S", (), {"value": 1.0})
+            self.id = type("ID", (), {"value": entry_name})
+
+    class DummyStore:
+        def __init__(self, n=5):
+            self.x = np.arange(n, dtype=float)
+
+    class DummyExperiment:
+        def __init__(self, linked):
+            self.linked_phases = linked
+            self.datastore = DummyStore()
+            def _public():
+                return []
+            self._public_attrs = _public
+
+    class DummySampleModels(dict):
+        @property
+        def names(self):
+            return list(self.keys())
+
+    calc = DummyCalc()
+    expt = DummyExperiment([DummyLinked("present"), DummyLinked("absent")])
+    sm = DummySampleModels({"present": object()})
+    valid = calc._get_valid_linked_phases(sm, expt)
+    assert len(valid) == 1 and valid[0]._identity.category_entry_name == "present"

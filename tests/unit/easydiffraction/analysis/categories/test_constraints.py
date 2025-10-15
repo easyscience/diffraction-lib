@@ -1,20 +1,10 @@
-# Auto-generated scaffold. Replace TODOs with concrete tests.
-import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+from easydiffraction.analysis.categories.constraints import Constraint, Constraints
 
 
-# Module under test: easydiffraction.analysis.categories.constraints
-
-# TODO: Replace with real, small tests per class/method.
-# Keep names explicit: expected_*, actual_*; compare in a single assert.
-
-def test_module_import():
-    import easydiffraction.analysis.categories.constraints as MUT
-    expected_module_name = "easydiffraction.analysis.categories.constraints"
-    actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+def test_constraint_creation_and_collection():
+    c = Constraint(lhs_alias="a", rhs_expr="b + c")
+    assert c.lhs_alias.value == "a"
+    coll = Constraints()
+    coll.add(c)
+    assert "a" in coll.names
+    assert coll["a"].rhs_expr.value == "b + c"
