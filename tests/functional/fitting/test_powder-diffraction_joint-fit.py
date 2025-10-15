@@ -4,9 +4,9 @@ import tempfile
 import pytest
 from numpy.testing import assert_almost_equal
 
-from easydiffraction import ExperimentFactory
+from easydiffraction import Experiment
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import SampleModel
 from easydiffraction import download_from_repository
 
 TEMP_DIR = tempfile.gettempdir()
@@ -15,7 +15,7 @@ TEMP_DIR = tempfile.gettempdir()
 @pytest.mark.fast
 def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     # Set sample model
-    model = SampleModelFactory.create(name='pbso4')
+    model = SampleModel(name='pbso4')
     model.space_group.name_h_m = 'P n m a'
     model.cell.length_a = 8.47
     model.cell.length_b = 5.39
@@ -69,7 +69,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     # Set experiments
     data_file = 'd1a_pbso4_first-half.dat'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt1 = ExperimentFactory.create(name='npd1', data_path=os.path.join(TEMP_DIR, data_file))
+    expt1 = Experiment(name='npd1', data_path=os.path.join(TEMP_DIR, data_file))
     expt1.instrument.setup_wavelength = 1.91
     expt1.instrument.calib_twotheta_offset = -0.1406
     expt1.peak.broad_gauss_u = 0.139
@@ -93,7 +93,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
 
     data_file = 'd1a_pbso4_second-half.dat'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt2 = ExperimentFactory.create(name='npd2', data_path=os.path.join(TEMP_DIR, data_file))
+    expt2 = Experiment(name='npd2', data_path=os.path.join(TEMP_DIR, data_file))
     expt2.instrument.setup_wavelength = 1.91
     expt2.instrument.calib_twotheta_offset = -0.1406
     expt2.peak.broad_gauss_u = 0.139
@@ -141,7 +141,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
 @pytest.mark.fast
 def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Set sample model
-    model = SampleModelFactory.create(name='pbso4')
+    model = SampleModel(name='pbso4')
     model.space_group.name_h_m = 'P n m a'
     model.cell.length_a = 8.47
     model.cell.length_b = 5.39
@@ -195,7 +195,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Set experiments
     data_file = 'd1a_pbso4.dat'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt1 = ExperimentFactory.create(
+    expt1 = Experiment(
         name='npd',
         data_path=os.path.join(TEMP_DIR, data_file),
         radiation_probe='neutron',
@@ -222,7 +222,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
 
     data_file = 'lab_pbso4.dat'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt2 = ExperimentFactory.create(
+    expt2 = Experiment(
         name='xrd',
         data_path=os.path.join(TEMP_DIR, data_file),
         radiation_probe='xray',

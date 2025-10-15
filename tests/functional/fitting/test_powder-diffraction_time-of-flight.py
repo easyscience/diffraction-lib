@@ -3,9 +3,9 @@ import tempfile
 
 from numpy.testing import assert_almost_equal
 
-from easydiffraction import ExperimentFactory
+from easydiffraction import Experiment
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import SampleModel
 from easydiffraction import download_from_repository
 
 TEMP_DIR = tempfile.gettempdir()
@@ -13,7 +13,7 @@ TEMP_DIR = tempfile.gettempdir()
 
 def test_single_fit_neutron_pd_tof_si() -> None:
     # Set sample model
-    model = SampleModelFactory.create(name='si')
+    model = SampleModel(name='si')
     model.space_group.name_h_m = 'F d -3 m'
     model.space_group.it_coordinate_system_code = '2'
     model.cell.length_a = 5.4315
@@ -30,7 +30,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     # Set experiment
     data_file = 'sepd_si.xye'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt = ExperimentFactory.create(
+    expt = Experiment(
         name='sepd',
         data_path=os.path.join(TEMP_DIR, data_file),
         beam_mode='time-of-flight',
@@ -78,7 +78,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
 def test_single_fit_neutron_pd_tof_ncaf() -> None:
     # Set sample model
-    model = SampleModelFactory.create(name='ncaf')
+    model = SampleModel(name='ncaf')
     model.space_group.name_h_m = 'I 21 3'
     model.space_group.it_coordinate_system_code = '1'
     model.cell.length_a = 10.250256
@@ -140,7 +140,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     # Set experiment
     data_file = 'wish_ncaf.xye'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt = ExperimentFactory.create(
+    expt = Experiment(
         name='wish',
         data_path=os.path.join(TEMP_DIR, data_file),
         beam_mode='time-of-flight',
