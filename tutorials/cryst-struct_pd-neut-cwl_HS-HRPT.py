@@ -9,9 +9,9 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 # %% [markdown]
@@ -23,7 +23,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel(name='hs')
+model = SampleModelFactory.create(name='hs')
 
 # %% [markdown]
 # #### Set Space Group
@@ -125,7 +125,7 @@ download_from_repository('hrpt_hs.xye', destination='data')
 # #### Create Experiment
 
 # %%
-expt = Experiment(name='hrpt', data_path='data/hrpt_hs.xye')
+expt = ExperimentFactory.create(name='hrpt', data_path='data/hrpt_hs.xye')
 
 # %% [markdown]
 # #### Set Instrument

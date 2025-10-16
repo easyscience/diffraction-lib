@@ -12,9 +12,9 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 # %% [markdown]
@@ -26,7 +26,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel(name='ncaf')
+model = SampleModelFactory.create(name='ncaf')
 
 # %% [markdown]
 # #### Set Space Group
@@ -124,14 +124,14 @@ download_from_repository(
 # #### Create Experiment
 
 # %%
-expt56 = Experiment(
+expt56 = ExperimentFactory.create(
     name='wish_5_6',
     data_path='data/wish_ncaf_5_6.xys',
     beam_mode='time-of-flight',
 )
 
 # %%
-expt47 = Experiment(
+expt47 = ExperimentFactory.create(
     name='wish_4_7',
     data_path='data/wish_ncaf_4_7.xys',
     beam_mode='time-of-flight',

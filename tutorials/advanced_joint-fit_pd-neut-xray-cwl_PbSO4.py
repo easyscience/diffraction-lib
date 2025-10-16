@@ -15,9 +15,9 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 # %% [markdown]
@@ -29,7 +29,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel(name='pbso4')
+model = SampleModelFactory.create(name='pbso4')
 
 # %% [markdown]
 # #### Set Space Group
@@ -113,7 +113,7 @@ download_from_repository('d1a_pbso4.dat', destination='data')
 # #### Create Experiment
 
 # %%
-expt1 = Experiment(
+expt1 = ExperimentFactory.create(
     name='npd',
     data_path='data/d1a_pbso4.dat',
     radiation_probe='neutron',
@@ -179,7 +179,7 @@ download_from_repository('lab_pbso4.dat', destination='data')
 # #### Create Experiment
 
 # %%
-expt2 = Experiment(
+expt2 = ExperimentFactory.create(
     name='xrd',
     data_path='data/lab_pbso4.dat',
     radiation_probe='xray',

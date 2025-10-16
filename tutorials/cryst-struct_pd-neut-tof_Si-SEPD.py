@@ -9,9 +9,9 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 # %% [markdown]
@@ -23,7 +23,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel(name='si')
+model = SampleModelFactory.create(name='si')
 
 # %% [markdown]
 # #### Set Space Group
@@ -66,7 +66,9 @@ download_from_repository('sepd_si.xye', destination='data')
 # #### Create Experiment
 
 # %%
-expt = Experiment(name='sepd', data_path='data/sepd_si.xye', beam_mode='time-of-flight')
+expt = ExperimentFactory.create(
+    name='sepd', data_path='data/sepd_si.xye', beam_mode='time-of-flight'
+)
 
 # %% [markdown]
 # #### Set Instrument

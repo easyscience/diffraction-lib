@@ -9,9 +9,9 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 # %% [markdown]
@@ -23,7 +23,7 @@ from easydiffraction import download_from_repository
 # ### Create Sample Model 1: LBCO
 
 # %%
-model_1 = SampleModel(name='lbco')
+model_1 = SampleModelFactory.create(name='lbco')
 
 # %% [markdown]
 # #### Set Space Group
@@ -85,7 +85,7 @@ model_1.atom_sites.add_from_args(
 # ### Create Sample Model 2: Si
 
 # %%
-model_2 = SampleModel(name='si')
+model_2 = SampleModelFactory.create(name='si')
 
 # %% [markdown]
 # #### Set Space Group
@@ -129,7 +129,7 @@ download_from_repository('mcstas_lbco-si.xye', destination='data')
 # #### Create Experiment
 
 # %%
-experiment = Experiment(
+experiment = ExperimentFactory.create(
     name='mcstas',
     data_path='data/mcstas_lbco-si.xye',
     sample_form='powder',

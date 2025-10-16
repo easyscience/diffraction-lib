@@ -9,9 +9,9 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 # %% [markdown]
@@ -23,7 +23,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel(name='cosio')
+model = SampleModelFactory.create(name='cosio')
 
 # %% [markdown]
 # #### Set Space Group
@@ -128,7 +128,7 @@ download_from_repository('co2sio4_d20.xye', destination='data')
 # #### Create Experiment
 
 # %%
-expt = Experiment(name='d20', data_path='data/co2sio4_d20.xye')
+expt = ExperimentFactory.create(name='d20', data_path='data/co2sio4_d20.xye')
 
 # %% [markdown]
 # #### Set Instrument
