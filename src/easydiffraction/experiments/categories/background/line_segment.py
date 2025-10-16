@@ -1,5 +1,9 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Line-segment background model.
+
+Interpolate user-specified points to form a background curve.
+"""
 
 from __future__ import annotations
 
@@ -22,6 +26,8 @@ from easydiffraction.utils.utils import render_table
 
 
 class LineSegment(CategoryItem):
+    """Single background control point for interpolation."""
+
     def __init__(self, *, x: float, y: float):
         super().__init__()
 
@@ -99,6 +105,7 @@ class LineSegmentBackground(BackgroundBase):
         return y_data
 
     def show(self) -> None:
+        """Print a table of control points (x, intensity)."""
         columns_headers: List[str] = ['X', 'Intensity']
         columns_alignment = ['left', 'left']
         columns_data: List[List[float]] = [[p.x.value, p.y.value] for p in self._items]

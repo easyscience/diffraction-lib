@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Project metadata container used by Project."""
 
 import datetime
 import pathlib
@@ -87,6 +88,7 @@ class ProjectInfo(GuardedBase):
         self._last_modified = datetime.datetime.now()
 
     def parameters(self):
+        """Placeholder for parameter listing."""
         pass
 
     def as_cif(self) -> str:
@@ -94,6 +96,7 @@ class ProjectInfo(GuardedBase):
         return project_info_to_cif(self)
 
     def show_as_cif(self) -> None:
+        """Pretty-print CIF via shared utilities."""
         cif_text: str = self.as_cif()
         paragraph_title: str = paragraph(f"Project 📦 '{self.name}' info as cif")
         render_cif(cif_text, paragraph_title)

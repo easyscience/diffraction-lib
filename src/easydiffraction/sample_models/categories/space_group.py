@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Space group category for crystallographic sample models."""
 
 from cryspy.A_functions_base.function_2_space_group import ACCESIBLE_NAME_HM_SHORT
 from cryspy.A_functions_base.function_2_space_group import (
@@ -16,6 +17,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class SpaceGroup(CategoryItem):
+    """Space group with Hermann–Mauguin symbol and IT code."""
+
     def __init__(
         self,
         *,
@@ -86,6 +89,7 @@ class SpaceGroup(CategoryItem):
 
     @property
     def name_h_m(self):
+        """Descriptor for Hermann–Mauguin symbol."""
         return self._name_h_m
 
     @name_h_m.setter
@@ -95,6 +99,7 @@ class SpaceGroup(CategoryItem):
 
     @property
     def it_coordinate_system_code(self):
+        """Descriptor for IT coordinate system code."""
         return self._it_coordinate_system_code
 
     @it_coordinate_system_code.setter

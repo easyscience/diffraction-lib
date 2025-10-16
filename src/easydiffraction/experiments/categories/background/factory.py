@@ -20,10 +20,15 @@ if TYPE_CHECKING:
 
 
 class BackgroundFactory:
+    """Create background collections by type."""
+
     BT = BackgroundTypeEnum
 
     @classmethod
     def _supported_map(cls) -> dict:
+        """Return mapping of enum values to concrete background
+        classes.
+        """
         # Lazy import to avoid circulars
         from easydiffraction.experiments.categories.background.chebyshev import (
             ChebyshevPolynomialBackground,
@@ -42,6 +47,10 @@ class BackgroundFactory:
         cls,
         background_type: Optional[BackgroundTypeEnum] = None,
     ) -> BackgroundBase:
+        """Instantiate a background collection of requested type.
+
+        If type is None, the default enum value is used.
+        """
         if background_type is None:
             background_type = BackgroundTypeEnum.default()
 

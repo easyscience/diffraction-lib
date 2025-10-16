@@ -162,8 +162,9 @@ close-quotes-on-newline = true
 # https://interrogate.readthedocs.io/en/latest/
 
 [tool.interrogate]
-fail-under = 35 # Temporarily reduce to allow gradual improvement
+fail-under = 35                  # Temporarily reduce to allow gradual improvement
 verbose = 1
+exclude = ["src/**/__init__.py"]
 
 #######################################
 # Configuration for coverage/pytest-cov

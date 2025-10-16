@@ -1,5 +1,10 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Lightweight runtime validation utilities.
+
+Provides DataTypes, type/content validators, and AttributeSpec used by
+descriptors and parameters. Only documentation was added here.
+"""
 
 import functools
 import re
@@ -42,9 +47,10 @@ class DataTypes(Enum):
 
 
 def checktype(func=None, *, context=None):
-    """Minimal wrapper to perform runtime type checking and log errors.
+    """Runtime type check decorator using typeguard.
 
-    Optionally prepends context to log message.
+    When a TypeCheckError occurs, the error is logged and None is
+    returned. If context is provided, it is added to the message.
     """
 
     def decorator(f):
@@ -104,11 +110,12 @@ class ValidatorBase(ABC):
         current=None,
         default=None,
     ):
+        """Return current if set, else default."""
         return current if current is not None else default
 
 
 class TypeValidator(ValidatorBase):
-    """Ensures a value is of the expected Python type."""
+    """Ensure a value is of the expected Python type."""
 
     def __init__(self, expected_type: DataTypes):
         if isinstance(expected_type, DataTypes):
@@ -125,6 +132,10 @@ class TypeValidator(ValidatorBase):
         current=None,
         allow_none=False,
     ):
+        """Validate type and return value or fallback.
+
+        If allow_none is True, None bypasses content checks.
+        """
         # Fresh initialization, use default
         if current is None and value is None:
             Diagnostics.no_value(name, default)
@@ -155,7 +166,7 @@ class TypeValidator(ValidatorBase):
 
 
 class RangeValidator(ValidatorBase):
-    """Ensures a numeric value lies within [ge, le]."""
+    """Ensure a numeric value lies within [ge, le]."""
 
     def __init__(
         self,
@@ -172,6 +183,7 @@ class RangeValidator(ValidatorBase):
         default=None,
         current=None,
     ):
+        """Validate range and return value or fallback."""
         if not (self.ge <= value <= self.le):
             Diagnostics.range_mismatch(
                 name,
@@ -192,11 +204,9 @@ class RangeValidator(ValidatorBase):
 
 
 class MembershipValidator(ValidatorBase):
-    """Ensures that a value belongs to a predefined list of allowed
-    choices.
+    """Ensure that a value is among allowed choices.
 
-    `allowed` can be a static iterable or a callable returning allowed
-    values.
+    `allowed` may be an iterable or a callable returning a collection.
     """
 
     def __init__(self, allowed):
@@ -210,6 +220,7 @@ class MembershipValidator(ValidatorBase):
         default=None,
         current=None,
     ):
+        """Validate membership and return value or fallback."""
         # Dynamically evaluate allowed if callable (e.g. lambda)
         allowed_values = self.allowed() if callable(self.allowed) else self.allowed
 
@@ -232,9 +243,7 @@ class MembershipValidator(ValidatorBase):
 
 
 class RegexValidator(ValidatorBase):
-    """Ensures that a string value matches a given regular
-    expression.
-    """
+    """Ensure that a string matches a given regular expression."""
 
     def __init__(self, pattern):
         self.pattern = re.compile(pattern)
@@ -246,6 +255,7 @@ class RegexValidator(ValidatorBase):
         default=None,
         current=None,
     ):
+        """Validate regex and return value or fallback."""
         if not self.pattern.fullmatch(value):
             Diagnostics.regex_mismatch(
                 name,
@@ -265,7 +275,7 @@ class RegexValidator(ValidatorBase):
 
 
 class AttributeSpec:
-    """Holds metadata and validators for a single attribute."""
+    """Hold metadata and validators for a single attribute."""
 
     def __init__(
         self,
@@ -288,6 +298,11 @@ class AttributeSpec:
         name,
         current=None,
     ):
+        """Validate through type and content validators.
+
+        Returns validated value, possibly default or current if errors
+        occur. None may short-circuit further checks when allowed.
+        """
         val = value
         # Evaluate callable defaults dynamically
         default = self.default() if callable(self.default) else self.default

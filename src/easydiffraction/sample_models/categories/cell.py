@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Unit cell parameters category for sample models."""
 
 from typing import Optional
 
@@ -12,6 +13,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class Cell(CategoryItem):
+    """Unit cell with lengths a, b, c and angles alpha, beta, gamma."""
+
     def __init__(
         self,
         *,
@@ -101,6 +104,7 @@ class Cell(CategoryItem):
 
     @property
     def length_a(self):
+        """Descriptor for a-axis length in Å."""
         return self._length_a
 
     @length_a.setter
@@ -109,6 +113,7 @@ class Cell(CategoryItem):
 
     @property
     def length_b(self):
+        """Descriptor for b-axis length in Å."""
         return self._length_b
 
     @length_b.setter
@@ -117,6 +122,7 @@ class Cell(CategoryItem):
 
     @property
     def length_c(self):
+        """Descriptor for c-axis length in Å."""
         return self._length_c
 
     @length_c.setter
@@ -125,6 +131,7 @@ class Cell(CategoryItem):
 
     @property
     def angle_alpha(self):
+        """Descriptor for angle alpha in degrees."""
         return self._angle_alpha
 
     @angle_alpha.setter
@@ -133,6 +140,7 @@ class Cell(CategoryItem):
 
     @property
     def angle_beta(self):
+        """Descriptor for angle beta in degrees."""
         return self._angle_beta
 
     @angle_beta.setter
@@ -141,6 +149,7 @@ class Cell(CategoryItem):
 
     @property
     def angle_gamma(self):
+        """Descriptor for angle gamma in degrees."""
         return self._angle_gamma
 
     @angle_gamma.setter

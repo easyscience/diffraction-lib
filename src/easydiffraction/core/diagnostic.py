@@ -1,5 +1,10 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Diagnostics helpers for logging validation messages.
+
+This module centralizes human-friendly error and debug logs for
+attribute validation and configuration checks.
+"""
 
 import difflib
 
@@ -7,9 +12,7 @@ from easydiffraction import log
 
 
 class Diagnostics:
-    """Centralized logger for attribute errors and validation
-    guidance.
-    """
+    """Centralized logger for attribute errors and validation hints."""
 
     # ==============================================================
     # Configuration / definition diagnostics
@@ -17,8 +20,9 @@ class Diagnostics:
 
     @staticmethod
     def type_override_error(cls_name: str, expected, got):
-        """Report an invalid DataTypes override between descriptor and
-        AttributeSpec.
+        """Report an invalid DataTypes override.
+
+        Used when descriptor and AttributeSpec types conflict.
         """
         expected_label = str(expected)
         got_label = str(got)
@@ -38,6 +42,7 @@ class Diagnostics:
         name: str,
         key: str | None = None,
     ):
+        """Log an attempt to change a read-only attribute."""
         Diagnostics._log_error(
             f"Cannot modify read-only attribute '{key}' of <{name}>.",
             exc_type=AttributeError,
@@ -50,6 +55,9 @@ class Diagnostics:
         allowed: set[str],
         label='Allowed',
     ):
+        """Log access to an unknown attribute and suggest closest
+        key.
+        """
         suggestion = Diagnostics._build_suggestion(key, allowed)
         # Use consistent (label) logic for allowed
         hint = suggestion or Diagnostics._build_allowed(allowed, label=label)
@@ -70,6 +78,7 @@ class Diagnostics:
         current=None,
         default=None,
     ):
+        """Log a type mismatch and keep current or default value."""
         got_type = type(value).__name__
         msg = (
             f'Type mismatch for <{name}>. '
@@ -88,6 +97,7 @@ class Diagnostics:
         current=None,
         default=None,
     ):
+        """Log range violation for a numeric value."""
         msg = f'Value mismatch for <{name}>. Provided {value!r} outside [{ge}, {le}].'
         Diagnostics._log_error_with_fallback(
             msg, current=current, default=default, exc_type=TypeError
@@ -101,6 +111,7 @@ class Diagnostics:
         current=None,
         default=None,
     ):
+        """Log an invalid choice against allowed values."""
         msg = f'Value mismatch for <{name}>. Provided {value!r} is unknown.'
         if allowed is not None:
             msg += Diagnostics._build_allowed(allowed, label='Allowed values')
@@ -116,6 +127,7 @@ class Diagnostics:
         current=None,
         default=None,
     ):
+        """Log a regex mismatch with the expected pattern."""
         msg = (
             f"Value mismatch for <{name}>. Provided {value!r} does not match pattern '{pattern}'."
         )
@@ -125,20 +137,24 @@ class Diagnostics:
 
     @staticmethod
     def no_value(name, default):
+        """Log that default will be used due to missing value."""
         Diagnostics._log_debug(f'No value provided for <{name}>. Using default {default!r}.')
 
     @staticmethod
     def none_value(name):
+        """Log explicit None provided by a user."""
         Diagnostics._log_debug(f'Using `None` explicitly provided for <{name}>.')
 
     @staticmethod
     def none_value_skip_range(name):
+        """Log that range validation is skipped due to None."""
         Diagnostics._log_debug(
             f'Skipping range validation as `None` is explicitly provided for <{name}>.'
         )
 
     @staticmethod
     def validated(name, value, stage: str | None = None):
+        """Log that a value passed a validation stage."""
         stage_info = f' {stage}' if stage else ''
         Diagnostics._log_debug(f'Value {value!r} for <{name}> passed{stage_info} validation.')
 
@@ -148,6 +164,7 @@ class Diagnostics:
 
     @staticmethod
     def _log_error(msg, exc_type=Exception):
+        """Emit an error-level message via shared logger."""
         log.error(message=msg, exc_type=exc_type)
 
     @staticmethod
@@ -157,6 +174,7 @@ class Diagnostics:
         default=None,
         exc_type=Exception,
     ):
+        """Emit an error message and mention kept or default value."""
         if current is not None:
             msg += f' Keeping current {current!r}.'
         else:
@@ -165,6 +183,7 @@ class Diagnostics:
 
     @staticmethod
     def _log_debug(msg):
+        """Emit a debug-level message via shared logger."""
         log.debug(message=msg)
 
     # ==============================================================
@@ -173,6 +192,7 @@ class Diagnostics:
 
     @staticmethod
     def _suggest(key: str, allowed: set[str]):
+        """Suggest closest allowed key using string similarity."""
         if not allowed:
             return None
         # Return the allowed key with smallest Levenshtein distance

@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Plotting facade for measured and calculated patterns."""
 
 import numpy as np
 
@@ -16,6 +17,8 @@ from easydiffraction.utils.utils import render_table
 
 
 class Plotter:
+    """User-facing plotting facade backed by concrete plotters."""
+
     def __init__(self):
         # Plotting engine
         self._engine = DEFAULT_ENGINE
@@ -129,6 +132,7 @@ class Plotter:
         x_max=None,
         d_spacing=False,
     ):
+        """Plot measured pattern using current engine."""
         if pattern.x is None:
             error(f'No data available for experiment {expt_name}')
             return
@@ -186,6 +190,7 @@ class Plotter:
         x_max=None,
         d_spacing=False,
     ):
+        """Plot calculated pattern using current engine."""
         if pattern.x is None:
             error(f'No data available for experiment {expt_name}')
             return
@@ -244,6 +249,7 @@ class Plotter:
         show_residual=False,
         d_spacing=False,
     ):
+        """Plot measured and calculated series and optional residual."""
         if pattern.x is None:
             print(error(f'No data available for experiment {expt_name}'))
             return
@@ -336,6 +342,8 @@ class Plotter:
 
 
 class PlotterFactory:
+    """Factory for plotter implementations."""
+
     _SUPPORTED_ENGINES_DICT = {
         'asciichartpy': {
             'description': 'Console ASCII line charts',
@@ -349,12 +357,14 @@ class PlotterFactory:
 
     @classmethod
     def supported_engines(cls):
+        """Return list of supported engine names."""
         keys = cls._SUPPORTED_ENGINES_DICT.keys()
         engines = list(keys)
         return engines
 
     @classmethod
     def create_plotter(cls, engine_name):
+        """Create a concrete plotter by engine name."""
         config = cls._SUPPORTED_ENGINES_DICT.get(engine_name)
         if not config:
             supported_engines = cls.supported_engines()

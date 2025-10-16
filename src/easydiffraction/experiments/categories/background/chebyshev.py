@@ -1,5 +1,9 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Chebyshev polynomial background model.
+
+Provides a collection of polynomial terms and evaluation helpers.
+"""
 
 from __future__ import annotations
 
@@ -96,6 +100,7 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         return y_data
 
     def show(self) -> None:
+        """Print a table of polynomial orders and coefficients."""
         columns_headers: List[str] = ['Order', 'Coefficient']
         columns_alignment = ['left', 'left']
         columns_data: List[List[Union[int, float]]] = [

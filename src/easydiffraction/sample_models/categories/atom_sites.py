@@ -1,5 +1,10 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Atom site category.
+
+Defines AtomSite items and AtomSites collection used in sample models.
+Only documentation was added; behavior remains unchanged.
+"""
 
 from cryspy.A_functions_base.database import DATABASE
 
@@ -16,6 +21,12 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class AtomSite(CategoryItem):
+    """Single atom site with fractional coordinates and ADP.
+
+    Attributes are represented by descriptors to support validation and
+    CIF serialization.
+    """
+
     def __init__(
         self,
         *,
@@ -197,6 +208,7 @@ class AtomSite(CategoryItem):
 
     @property
     def label(self):
+        """Label descriptor for the site (unique key)."""
         return self._label
 
     @label.setter
@@ -205,6 +217,7 @@ class AtomSite(CategoryItem):
 
     @property
     def type_symbol(self):
+        """Chemical symbol descriptor (e.g. 'Si')."""
         return self._type_symbol
 
     @type_symbol.setter
@@ -213,6 +226,7 @@ class AtomSite(CategoryItem):
 
     @property
     def adp_type(self):
+        """ADP type descriptor (e.g. 'Biso')."""
         return self._adp_type
 
     @adp_type.setter
@@ -221,6 +235,7 @@ class AtomSite(CategoryItem):
 
     @property
     def wyckoff_letter(self):
+        """Wyckoff letter descriptor (space-group position)."""
         return self._wyckoff_letter
 
     @wyckoff_letter.setter
@@ -229,6 +244,7 @@ class AtomSite(CategoryItem):
 
     @property
     def fract_x(self):
+        """Fractional x coordinate descriptor."""
         return self._fract_x
 
     @fract_x.setter
@@ -237,6 +253,7 @@ class AtomSite(CategoryItem):
 
     @property
     def fract_y(self):
+        """Fractional y coordinate descriptor."""
         return self._fract_y
 
     @fract_y.setter
@@ -245,6 +262,7 @@ class AtomSite(CategoryItem):
 
     @property
     def fract_z(self):
+        """Fractional z coordinate descriptor."""
         return self._fract_z
 
     @fract_z.setter
@@ -253,6 +271,7 @@ class AtomSite(CategoryItem):
 
     @property
     def occupancy(self):
+        """Occupancy descriptor (0..1)."""
         return self._occupancy
 
     @occupancy.setter
@@ -261,6 +280,7 @@ class AtomSite(CategoryItem):
 
     @property
     def b_iso(self):
+        """Isotropic ADP descriptor in Å²."""
         return self._b_iso
 
     @b_iso.setter

@@ -1,13 +1,16 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Identity helpers to build CIF-like hierarchical names.
+
+Used by containers and items to expose datablock/category/entry names
+without tight coupling.
+"""
 
 from typing import Callable
 
 
 class Identity:
-    """Hierarchical identity resolver for datablock/category/entry
-    relationships.
-    """
+    """Resolve datablock/category/entry relationships lazily."""
 
     def __init__(
         self,
@@ -45,24 +48,30 @@ class Identity:
 
     @property
     def datablock_entry_name(self):
+        """Datablock entry name or None if not set."""
         return self._resolve_up('datablock_entry')
 
     @datablock_entry_name.setter
     def datablock_entry_name(self, func: callable):
+        """Set callable returning datablock entry name."""
         self._datablock_entry = func
 
     @property
     def category_code(self):
+        """Category code like 'atom_site' or 'background'."""
         return self._resolve_up('category_code')
 
     @category_code.setter
     def category_code(self, value: str):
+        """Set category code value."""
         self._category_code = value
 
     @property
     def category_entry_name(self):
+        """Category entry name or None if not set."""
         return self._resolve_up('category_entry')
 
     @category_entry_name.setter
     def category_entry_name(self, func: callable):
+        """Set callable returning category entry name."""
         self._category_entry = func

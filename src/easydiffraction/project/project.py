@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Project facade to orchestrate models, experiments, and analysis."""
 
 import pathlib
 import tempfile
@@ -70,6 +71,7 @@ class Project(GuardedBase):
 
     @property
     def info(self) -> ProjectInfo:
+        """Project metadata container."""
         return self._info
 
     @property
@@ -85,6 +87,7 @@ class Project(GuardedBase):
 
     @property
     def sample_models(self) -> SampleModels:
+        """Collection of sample models in the project."""
         return self._sample_models
 
     @sample_models.setter
@@ -94,6 +97,7 @@ class Project(GuardedBase):
 
     @property
     def experiments(self):
+        """Collection of experiments in the project."""
         return self._experiments
 
     @experiments.setter
@@ -103,23 +107,28 @@ class Project(GuardedBase):
 
     @property
     def plotter(self):
+        """Plotting facade bound to the project."""
         return self._plotter
 
     @property
     def analysis(self):
+        """Analysis entry-point bound to the project."""
         return self._analysis
 
     @property
     def summary(self):
+        """Summary report builder bound to the project."""
         return self._summary
 
     @property
     def parameters(self):
+        """Return parameters from all components (TBD)."""
         # To be implemented: return all parameters in the project
         return []
 
     @property
     def as_cif(self):
+        """Export whole project as CIF text."""
         # Concatenate sections using centralized CIF serializers
         return project_to_cif(self)
 
