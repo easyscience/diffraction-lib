@@ -6,9 +6,6 @@ from typer.testing import CliRunner
 runner = CliRunner()
 
 
-# Module under test: easydiffraction.__main__
-
-
 def test_module_import():
     import easydiffraction.__main__ as MUT
 

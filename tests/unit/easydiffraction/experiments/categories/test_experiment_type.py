@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-# Module under test: easydiffraction.experiments.categories.experiment_type
-
-
 def test_module_import():
     import easydiffraction.experiments.categories.experiment_type as MUT
 

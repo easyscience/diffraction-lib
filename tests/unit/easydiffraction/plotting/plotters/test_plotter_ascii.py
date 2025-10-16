@@ -3,8 +3,6 @@
 
 import numpy as np
 
-# Module under test: easydiffraction.plotting.plotters.plotter_ascii
-
 
 def test_module_import():
     import easydiffraction.plotting.plotters.plotter_ascii as MUT

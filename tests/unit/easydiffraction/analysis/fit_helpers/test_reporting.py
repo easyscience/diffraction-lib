@@ -2,16 +2,12 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-def _assert_equal(expected, actual):
-    assert expected == actual
-
-
 def test_module_import():
     import easydiffraction.analysis.fit_helpers.reporting as MUT
 
     expected_module_name = 'easydiffraction.analysis.fit_helpers.reporting'
     actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert expected_module_name == actual_module_name
 
 
 def test_fitresults_display_results_prints_and_table(capsys, monkeypatch):

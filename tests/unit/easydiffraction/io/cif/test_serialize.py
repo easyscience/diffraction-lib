@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-# Module under test: easydiffraction.io.cif.serialize
-
-
 def test_module_import():
     import easydiffraction.io.cif.serialize as MUT
 

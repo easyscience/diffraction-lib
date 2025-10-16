@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-# Module under test: easydiffraction.plotting.plotting
-
-
 def test_module_import():
     import easydiffraction.plotting.plotting as MUT
 

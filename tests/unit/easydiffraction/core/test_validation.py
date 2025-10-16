@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-# Module under test: easydiffraction.core.validation
-
-
 def test_module_import():
     import easydiffraction.core.validation as MUT
 

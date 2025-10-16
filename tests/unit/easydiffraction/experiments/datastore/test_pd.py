@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-# Module under test: easydiffraction.experiments.datastore.pd
-
-
 def test_module_import():
     import easydiffraction.experiments.datastore.pd as MUT
 

@@ -3,22 +3,13 @@
 
 import numpy as np
 
-# expected vs actual helpers
-
-
-def _assert_equal(expected, actual):
-    assert expected == actual
-
-
-# Module under test: easydiffraction.analysis.fit_helpers.tracking
-
 
 def test_module_import():
     import easydiffraction.analysis.fit_helpers.tracking as MUT
 
     expected_module_name = 'easydiffraction.analysis.fit_helpers.tracking'
     actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert expected_module_name == actual_module_name
 
 
 def test_tracker_terminal_flow_prints_and_updates_best(monkeypatch, capsys):

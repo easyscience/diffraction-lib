@@ -2,22 +2,12 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-# expected vs actual helpers
-
-
-def _assert_equal(expected, actual):
-    assert expected == actual
-
-
-# Module under test: easydiffraction.analysis.calculation
-
-
 def test_module_import():
     import easydiffraction.analysis.calculation as MUT
 
     expected_module_name = 'easydiffraction.analysis.calculation'
     actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert expected_module_name == actual_module_name
 
 
 def test_calculator_wrapper_set_and_calls(monkeypatch):

@@ -11,7 +11,12 @@ from pathlib import Path
 
 import pytest
 
-TUTORIALS = list(Path('tutorials').rglob('*.py'))
+# Mark this module as 'functional' so it's excluded by default
+# (see pytest.ini)
+pytestmark = pytest.mark.functional
+
+# Discover tutorial scripts, excluding temporary checkpoint files
+TUTORIALS = [p for p in Path('tutorials').rglob('*.py') if '.ipynb_checkpoints' not in p.parts]
 
 
 @pytest.mark.parametrize('script_path', TUTORIALS)

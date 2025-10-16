@@ -3,8 +3,6 @@
 
 import pytest
 
-# Module under test: easydiffraction.core.factory
-
 
 def test_module_import():
     import easydiffraction.core.factory as MUT

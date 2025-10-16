@@ -3,8 +3,6 @@
 
 import importlib
 
-# Module under test: easydiffraction.plotting.plotters.plotter_base
-
 
 def test_module_import():
     import easydiffraction.plotting.plotters.plotter_base as MUT

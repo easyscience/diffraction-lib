@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-# Module under test: easydiffraction.project.project
-
-
 def test_module_import():
     import easydiffraction.project.project as MUT
 

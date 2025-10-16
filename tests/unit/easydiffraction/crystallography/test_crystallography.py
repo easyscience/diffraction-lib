@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-# Module under test: easydiffraction.crystallography.crystallography
-
-
 def test_module_import():
     import easydiffraction.crystallography.crystallography as MUT
 
