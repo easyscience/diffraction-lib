@@ -66,8 +66,6 @@ class Alias(CategoryItem):
             ),
         )
 
-        # self._category_entry_attr_name = self.label.name
-        # self.name = self.label.value
         self._identity.category_code = 'alias'
         self._identity.category_entry_name = lambda: self.label.value
 

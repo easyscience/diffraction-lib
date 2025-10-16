@@ -64,8 +64,6 @@ class JointFitExperiment(CategoryItem):
             ),
         )
 
-        # self._category_entry_attr_name = self.id.name
-        # self.name = self.id.value
         self._identity.category_code = 'joint_fit_experiment'
         self._identity.category_entry_name = lambda: self.id.value
 

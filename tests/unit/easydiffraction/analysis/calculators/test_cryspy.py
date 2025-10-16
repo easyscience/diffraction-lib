@@ -21,20 +21,5 @@ def test_cryspy_calculator_engine_flag_and_converters():
         def as_cif(self):
             return 'data_x'
 
-    class DummyType:
-        class BeamMode:
-            def __init__(self, v):
-                self.value = v
-
-        def __init__(self, v):
-            self.beam_mode = self.BeamMode(v)
-
-    class DummyExperiment:
-        def __init__(self):
-            self.name = 'E'
-            self.type = DummyType(
-                type('E', (), {'CONSTANT_WAVELENGTH': 'cw'}) if False else type('Enum', (), {})
-            )
-
     # _convert_sample_model_to_cryspy_cif returns input as_cif
     assert calc._convert_sample_model_to_cryspy_cif(DummySample()) == 'data_x'

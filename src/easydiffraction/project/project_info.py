@@ -91,10 +91,12 @@ class ProjectInfo(GuardedBase):
         """Placeholder for parameter listing."""
         pass
 
+    # TODO: Consider moving to io.cif.serialize
     def as_cif(self) -> str:
         """Export project metadata to CIF."""
         return project_info_to_cif(self)
 
+    # TODO: Consider moving to io.cif.serialize
     def show_as_cif(self) -> None:
         """Pretty-print CIF via shared utilities."""
         cif_text: str = self.as_cif()

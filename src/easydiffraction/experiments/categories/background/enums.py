@@ -7,6 +7,7 @@ from __future__ import annotations
 from enum import Enum
 
 
+# TODO: Consider making EnumBase class with: default, description, ...
 class BackgroundTypeEnum(str, Enum):
     """Supported background model types."""
 

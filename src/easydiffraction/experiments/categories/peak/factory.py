@@ -8,6 +8,7 @@ from easydiffraction.experiments.experiment.enums import PeakProfileTypeEnum
 from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 
 
+# TODO: Consider inheriting from FactoryBase
 class PeakFactory:
     """Factory for creating peak profile objects.
 

@@ -3,7 +3,6 @@
 
 import pytest
 
-# Module under test: easydiffraction.experiments.experiment.factory
 
 
 def test_module_import():

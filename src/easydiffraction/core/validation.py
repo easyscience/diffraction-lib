@@ -40,6 +40,10 @@ class DataTypes(Enum):
         return self.value
 
 
+# ==============================================================
+# Runtime type checking decorator
+# ==============================================================
+
 # Runtime type checking decorator for validating those methods
 # annotated with type hints, which are writable for the user, and
 # which are not covered by custom validators for Parameter attribute
@@ -77,6 +81,8 @@ def checktype(func=None, *, context=None):
 # ==============================================================
 # Validation stages (enum/constant)
 # ==============================================================
+
+
 class ValidationStage(Enum):
     """Phases of validation for diagnostic logging."""
 
@@ -272,6 +278,11 @@ class RegexValidator(ValidatorBase):
             stage=ValidationStage.REGEX,
         )
         return value
+
+
+# ==============================================================
+# Attribute specification holding metadata and validators
+# ==============================================================
 
 
 class AttributeSpec:

@@ -75,6 +75,8 @@ class SampleModelFactory(FactoryBase):
         block = cls._pick_first_structural_block(doc)
         return cls._create_model_from_block(block)
 
+    # TODO: Move to io.cif.parse?
+
     # -------------
     # gemmi helpers
     # -------------

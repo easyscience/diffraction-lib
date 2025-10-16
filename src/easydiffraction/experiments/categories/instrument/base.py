@@ -1,3 +1,8 @@
+"""Instrument category base definitions for CWL/TOF instruments.
+
+This module provides the shared parent used by concrete instrument
+implementations under the instrument category.
+"""
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -14,5 +19,6 @@ class InstrumentBase(CategoryItem):
     """
 
     def __init__(self) -> None:
+        """Initialize instrument base and set category code."""
         super().__init__()
         self._identity.category_code = 'instrument'

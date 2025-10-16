@@ -47,14 +47,9 @@ def test_summary_show_report_prints_sections(capsys):
     assert 'FITTING' in out
 
 
-# expected vs actual helpers
 
 
-def _assert_equal(expected, actual):
-    assert expected == actual
 
-
-# Module under test: easydiffraction.summary.summary
 
 
 def test_module_import():
@@ -62,4 +57,4 @@ def test_module_import():
 
     expected_module_name = 'easydiffraction.summary.summary'
     actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert expected_module_name == actual_module_name

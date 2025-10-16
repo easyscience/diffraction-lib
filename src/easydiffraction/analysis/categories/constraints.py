@@ -61,8 +61,7 @@ class Constraint(CategoryItem):
                 ]
             ),
         )
-        # self._category_entry_attr_name = self.lhs_alias.name
-        # self.name = self.lhs_alias.value
+
         self._identity.category_code = 'constraint'
         self._identity.category_entry_name = lambda: self.lhs_alias.value
 

@@ -28,6 +28,7 @@ class BackgroundBase(CategoryCollection):
         """
         pass
 
+    # TODO: Consider moving to CategoryCollection
     @abstractmethod
     def show(self) -> None:
         """Print a human-readable view of background components."""

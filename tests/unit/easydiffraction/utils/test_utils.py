@@ -4,7 +4,6 @@
 import numpy as np
 import pytest
 
-# Module under test: easydiffraction.utils.utils
 
 
 def test_module_import():

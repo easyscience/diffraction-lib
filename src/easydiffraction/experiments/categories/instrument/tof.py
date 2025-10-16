@@ -124,30 +124,30 @@ class TofInstrument(InstrumentBase):
 
     @property
     def calib_d_to_tof_linear(self):
-        """Linear d→TOF conversion coefficient (µs/Å)."""
+        """Linear d to TOF conversion coefficient (µs/Å)."""
         return self._calib_d_to_tof_linear
 
     @calib_d_to_tof_linear.setter
     def calib_d_to_tof_linear(self, value):
-        """Set linear d→TOF coefficient (µs/Å)."""
+        """Set linear d to TOF coefficient (µs/Å)."""
         self._calib_d_to_tof_linear.value = value
 
     @property
     def calib_d_to_tof_quad(self):
-        """Quadratic d→TOF correction coefficient (µs/Å²)."""
+        """Quadratic d to TOF correction coefficient (µs/Å²)."""
         return self._calib_d_to_tof_quad
 
     @calib_d_to_tof_quad.setter
     def calib_d_to_tof_quad(self, value):
-        """Set quadratic d→TOF correction (µs/Å²)."""
+        """Set quadratic d to TOF correction (µs/Å²)."""
         self._calib_d_to_tof_quad.value = value
 
     @property
     def calib_d_to_tof_recip(self):
-        """Reciprocal-velocity d→TOF correction (µs·Å)."""
+        """Reciprocal-velocity d to TOF correction (µs·Å)."""
         return self._calib_d_to_tof_recip
 
     @calib_d_to_tof_recip.setter
     def calib_d_to_tof_recip(self, value):
-        """Set reciprocal-velocity d→TOF correction (µs·Å)."""
+        """Set reciprocal-velocity d to TOF correction (µs·Å)."""
         self._calib_d_to_tof_recip.value = value
