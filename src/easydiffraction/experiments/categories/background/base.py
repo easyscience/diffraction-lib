@@ -10,10 +10,25 @@ from easydiffraction.core.category import CategoryCollection
 
 
 class BackgroundBase(CategoryCollection):
+    """Abstract base for background subcategories in experiments.
+
+    Concrete implementations provide parameterized background models and
+    compute background intensities on the experiment grid.
+    """
+
     @abstractmethod
     def calculate(self, x_data: Any) -> Any:
+        """Compute background values for the provided x grid.
+
+        Args:
+            x_data: X positions (e.g. 2θ, TOF) at which to evaluate.
+
+        Returns:
+            Background intensity array aligned with ``x_data``.
+        """
         pass
 
     @abstractmethod
     def show(self) -> None:
+        """Print a human-readable view of background components."""
         pass

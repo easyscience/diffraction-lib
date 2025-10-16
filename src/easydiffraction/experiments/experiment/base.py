@@ -45,25 +45,39 @@ class ExperimentBase(DatablockItem):
 
     @property
     def name(self) -> str:
+        """Human-readable name of the experiment."""
         return self._name
 
     @name.setter
     def name(self, new: str) -> None:
+        """Rename the experiment.
+
+        Args:
+            new: New name for this experiment.
+        """
         self._name = new
 
     @property
     def type(self):  # TODO: Consider another name
+        """Experiment type descriptor (sample form, probe, beam
+        mode).
+        """
         return self._type
 
     @property
     def datastore(self):
+        """Data container with x, y, error, calc and background
+        arrays.
+        """
         return self._datastore
 
     @property
     def as_cif(self) -> str:
+        """Serialize this experiment to a CIF fragment."""
         return experiment_to_cif(self)
 
     def show_as_cif(self) -> None:
+        """Pretty-print the experiment and datastore as CIF text."""
         experiment_cif = super().as_cif
         datastore_cif = self.datastore.as_truncated_cif
         cif_text: str = f'{experiment_cif}\n\n{datastore_cif}'
@@ -72,6 +86,11 @@ class ExperimentBase(DatablockItem):
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+        """Load ASCII data from file into the experiment datastore.
+
+        Args:
+            data_path: Path to the ASCII file to load.
+        """
         raise NotImplementedError()
 
 
@@ -101,30 +120,50 @@ class PdExperimentBase(ExperimentBase):
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+        """Load powder diffraction data from an ASCII file.
+
+        Args:
+            data_path: Path to data file with columns compatible with
+                the beam mode (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
+        """
         pass
 
     @property
     def peak(self) -> str:
+        """Peak category object with profile parameters and mixins."""
         return self._peak
 
     @peak.setter
     def peak(self, value):
+        """Replace the peak model used for this powder experiment.
+
+        Args:
+            value: New peak object created by the `PeakFactory`.
+        """
         self._peak = value
 
     @property
     def linked_phases(self) -> str:
+        """Collection of phases linked to this experiment."""
         return self._linked_phases
 
     @property
     def excluded_regions(self) -> str:
+        """Collection of excluded regions for the x-grid."""
         return self._excluded_regions
 
     @property
     def peak_profile_type(self):
+        """Currently selected peak profile type enum."""
         return self._peak_profile_type
 
     @peak_profile_type.setter
     def peak_profile_type(self, new_type: str | PeakProfileTypeEnum):
+        """Change the active peak profile type, if supported.
+
+        Args:
+            new_type: New profile type as enum or its string value.
+        """
         if isinstance(new_type, str):
             try:
                 new_type = PeakProfileTypeEnum(new_type)
@@ -154,6 +193,7 @@ class PdExperimentBase(ExperimentBase):
         print(new_type.value)
 
     def show_supported_peak_profile_types(self):
+        """Print available peak profile types for this experiment."""
         columns_headers = ['Peak profile type', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
@@ -172,5 +212,6 @@ class PdExperimentBase(ExperimentBase):
         )
 
     def show_current_peak_profile_type(self):
+        """Print the currently selected peak profile type."""
         print(paragraph('Current peak profile type'))
         print(self.peak_profile_type)

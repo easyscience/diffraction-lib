@@ -1,5 +1,11 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Factory for creating sample models from simple inputs or CIF.
+
+Supports three argument combinations: ``name``, ``cif_path``, or
+``cif_str``. Returns a minimal ``SampleModelBase`` populated from CIF
+when provided, or an empty model with the given name.
+"""
 
 from __future__ import annotations
 
@@ -10,7 +16,7 @@ from easydiffraction.sample_models.sample_model.base import SampleModelBase
 
 
 class SampleModelFactory(FactoryBase):
-    """Creates SampleModel instances with only relevant attributes."""
+    """Create ``SampleModelBase`` instances from supported inputs."""
 
     _ALLOWED_ARG_SPECS = [
         {'required': ['name'], 'optional': []},
@@ -20,8 +26,17 @@ class SampleModelFactory(FactoryBase):
 
     @classmethod
     def create(cls, **kwargs) -> SampleModelBase:
-        """Create a `SampleModelBase` using a validated argument
-        combination.
+        """Create a model based on a validated argument combination.
+
+        Keyword Args:
+            name: Name of the sample model to create.
+            cif_path: Path to a CIF file to parse.
+            cif_str: Raw CIF string to parse.
+            **kwargs: Extra args are ignored if None; only the above
+                three keys are supported.
+
+        Returns:
+            SampleModelBase: A populated or empty model instance.
         """
         # Check for valid argument combinations
         user_args = {k for k, v in kwargs.items() if v is not None}
@@ -43,6 +58,7 @@ class SampleModelFactory(FactoryBase):
         cls,
         cif_path: str,
     ) -> SampleModelBase:
+        """Create a model by reading and parsing a CIF file."""
         # Parse CIF and build model
         doc = cls._read_cif_document_from_path(cif_path)
         block = cls._pick_first_structural_block(doc)
@@ -53,6 +69,7 @@ class SampleModelFactory(FactoryBase):
         cls,
         cif_str: str,
     ) -> SampleModelBase:
+        """Create a model by parsing a CIF string."""
         # Parse CIF string and build model
         doc = cls._read_cif_document_from_string(cif_str)
         block = cls._pick_first_structural_block(doc)
@@ -64,14 +81,17 @@ class SampleModelFactory(FactoryBase):
 
     @staticmethod
     def _read_cif_document_from_path(path: str) -> gemmi.cif.Document:
+        """Read a CIF document from a file path."""
         return gemmi.cif.read_file(path)
 
     @staticmethod
     def _read_cif_document_from_string(text: str) -> gemmi.cif.Document:
+        """Read a CIF document from a raw text string."""
         return gemmi.cif.read_string(text)
 
     @staticmethod
     def _has_structural_content(block: gemmi.cif.Block) -> bool:
+        """Return True if the CIF block contains structural content."""
         # Basic heuristics: atom_site loop or full set of cell params
         loop = block.find_loop('_atom_site.fract_x')
         if loop is not None:
@@ -91,6 +111,7 @@ class SampleModelFactory(FactoryBase):
         cls,
         doc: gemmi.cif.Document,
     ) -> gemmi.cif.Block:
+        """Pick the most likely structural block from a CIF document."""
         # Prefer blocks with atom_site loop; else first block with cell
         for block in doc:
             if cls._has_structural_content(block):
@@ -106,6 +127,7 @@ class SampleModelFactory(FactoryBase):
         cls,
         block: gemmi.cif.Block,
     ) -> SampleModelBase:
+        """Build a model instance from a single CIF block."""
         name = cls._extract_name_from_block(block)
         model = SampleModelBase(name=name)
         cls._set_space_group_from_cif_block(model, block)
@@ -115,6 +137,7 @@ class SampleModelFactory(FactoryBase):
 
     @classmethod
     def _extract_name_from_block(cls, block: gemmi.cif.Block) -> str:
+        """Extract a model name from the CIF block name."""
         return block.name or 'model'
 
     @classmethod
@@ -123,6 +146,7 @@ class SampleModelFactory(FactoryBase):
         model: SampleModelBase,
         block: gemmi.cif.Block,
     ) -> None:
+        """Populate the model's space group from a CIF block."""
         model.space_group.from_cif(block)
 
     @classmethod
@@ -131,6 +155,7 @@ class SampleModelFactory(FactoryBase):
         model: SampleModelBase,
         block: gemmi.cif.Block,
     ) -> None:
+        """Populate the model's unit cell from a CIF block."""
         model.cell.from_cif(block)
 
     @classmethod
@@ -139,4 +164,5 @@ class SampleModelFactory(FactoryBase):
         model: SampleModelBase,
         block: gemmi.cif.Block,
     ) -> None:
+        """Populate the model's atom sites from a CIF block."""
         model.atom_sites.from_cif(block)

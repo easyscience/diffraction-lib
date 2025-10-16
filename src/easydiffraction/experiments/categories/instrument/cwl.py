@@ -53,16 +53,20 @@ class CwlInstrument(InstrumentBase):
 
     @property
     def setup_wavelength(self):
+        """Incident wavelength parameter (Å)."""
         return self._setup_wavelength
 
     @setup_wavelength.setter
     def setup_wavelength(self, value):
+        """Set incident wavelength value (Å)."""
         self._setup_wavelength.value = value
 
     @property
     def calib_twotheta_offset(self):
+        """Instrument misalignment two-theta offset (deg)."""
         return self._calib_twotheta_offset
 
     @calib_twotheta_offset.setter
     def calib_twotheta_offset(self, value):
+        """Set two-theta offset value (deg)."""
         self._calib_twotheta_offset.value = value

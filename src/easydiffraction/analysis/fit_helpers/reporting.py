@@ -14,6 +14,13 @@ from easydiffraction.utils.utils import render_table
 
 
 class FitResults:
+    """Container for results of a single optimization run.
+
+    Holds success flag, chi-square metrics, iteration counts, timing,
+    and parameter objects. Provides a printer to summarize key
+    indicators and a table of fitted parameters.
+    """
+
     def __init__(
         self,
         success: bool = False,
@@ -27,6 +34,22 @@ class FitResults:
         fitting_time: Optional[float] = None,
         **kwargs: Any,
     ) -> None:
+        """Initialize FitResults with the given parameters.
+
+        Args:
+            success: Indicates if the fit was successful.
+            parameters: List of parameters used in the fit.
+            chi_square: Chi-square value of the fit.
+            reduced_chi_square: Reduced chi-square value of the fit.
+            message: Message related to the fit.
+            iterations: Number of iterations performed.
+            engine_result: Result from the fitting engine.
+            starting_parameters: Initial parameters for the fit.
+            fitting_time: Time taken for the fitting process.
+            **kwargs: Additional engine-specific fields. If ``redchi``
+                is provided and ``reduced_chi_square`` is not set, it is
+                used as the reduced chi-square value.
+        """
         self.success: bool = success
         self.parameters: List[Any] = parameters if parameters is not None else []
         self.chi_square: Optional[float] = chi_square
@@ -54,6 +77,15 @@ class FitResults:
         f_obs: Optional[List[float]] = None,
         f_calc: Optional[List[float]] = None,
     ) -> None:
+        """Render a human-readable summary of the fit.
+
+        Args:
+            y_obs: Observed intensities for pattern R-factor metrics.
+            y_calc: Calculated intensities for pattern R-factor metrics.
+            y_err: Standard deviations of observed intensities for wR.
+            f_obs: Observed structure-factor magnitudes for Bragg R.
+            f_calc: Calculated structure-factor magnitudes for Bragg R.
+        """
         status_icon = '✅' if self.success else '❌'
         rf = rf2 = wr = br = None
         if y_obs is not None and y_calc is not None:

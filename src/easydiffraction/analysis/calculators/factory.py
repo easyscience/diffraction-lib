@@ -17,6 +17,14 @@ from easydiffraction.utils.utils import render_table
 
 
 class CalculatorFactory:
+    """Factory for creating calculation engine instances.
+
+    The factory exposes discovery helpers to list and show available
+    calculators in the current environment and a creator that returns an
+    instantiated calculator or ``None`` if the requested one is not
+    available.
+    """
+
     _potential_calculators: Dict[str, Dict[str, Union[str, Type[CalculatorBase]]]] = {
         'crysfml': {
             'description': 'CrysFML library for crystallographic calculations',
@@ -36,6 +44,14 @@ class CalculatorFactory:
     def _supported_calculators(
         cls,
     ) -> Dict[str, Dict[str, Union[str, Type[CalculatorBase]]]]:
+        """Return calculators whose engines are importable.
+
+        This filters the list of potential calculators by instantiating
+        their classes and checking the ``engine_imported`` property.
+
+        Returns:
+            Mapping from calculator name to its config dict.
+        """
         return {
             name: cfg
             for name, cfg in cls._potential_calculators.items()
@@ -44,10 +60,16 @@ class CalculatorFactory:
 
     @classmethod
     def list_supported_calculators(cls) -> List[str]:
+        """List names of calculators available in the environment.
+
+        Returns:
+            List of calculator identifiers, e.g. ``["crysfml", ...]``.
+        """
         return list(cls._supported_calculators().keys())
 
     @classmethod
     def show_supported_calculators(cls) -> None:
+        """Pretty-print supported calculators and their descriptions."""
         columns_headers: List[str] = ['Calculator', 'Description']
         columns_alignment = ['left', 'left']
         columns_data: List[List[str]] = []
@@ -64,6 +86,14 @@ class CalculatorFactory:
 
     @classmethod
     def create_calculator(cls, calculator_name: str) -> Optional[CalculatorBase]:
+        """Create a calculator instance by name.
+
+        Args:
+            calculator_name: Identifier of the calculator to create.
+
+        Returns:
+            A calculator instance or ``None`` if unknown or unsupported.
+        """
         config = cls._supported_calculators().get(calculator_name)
         if not config:
             print(error(f"Unknown calculator '{calculator_name}'"))

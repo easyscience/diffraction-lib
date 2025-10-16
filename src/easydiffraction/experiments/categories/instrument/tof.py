@@ -104,40 +104,50 @@ class TofInstrument(InstrumentBase):
 
     @property
     def setup_twotheta_bank(self):
+        """Detector bank two-theta position (deg)."""
         return self._setup_twotheta_bank
 
     @setup_twotheta_bank.setter
     def setup_twotheta_bank(self, value):
+        """Set detector bank two-theta position (deg)."""
         self._setup_twotheta_bank.value = value
 
     @property
     def calib_d_to_tof_offset(self):
+        """TOF offset calibration parameter (µs)."""
         return self._calib_d_to_tof_offset
 
     @calib_d_to_tof_offset.setter
     def calib_d_to_tof_offset(self, value):
+        """Set TOF offset (µs)."""
         self._calib_d_to_tof_offset.value = value
 
     @property
     def calib_d_to_tof_linear(self):
+        """Linear d→TOF conversion coefficient (µs/Å)."""
         return self._calib_d_to_tof_linear
 
     @calib_d_to_tof_linear.setter
     def calib_d_to_tof_linear(self, value):
+        """Set linear d→TOF coefficient (µs/Å)."""
         self._calib_d_to_tof_linear.value = value
 
     @property
     def calib_d_to_tof_quad(self):
+        """Quadratic d→TOF correction coefficient (µs/Å²)."""
         return self._calib_d_to_tof_quad
 
     @calib_d_to_tof_quad.setter
     def calib_d_to_tof_quad(self, value):
+        """Set quadratic d→TOF correction (µs/Å²)."""
         self._calib_d_to_tof_quad.value = value
 
     @property
     def calib_d_to_tof_recip(self):
+        """Reciprocal-velocity d→TOF correction (µs·Å)."""
         return self._calib_d_to_tof_recip
 
     @calib_d_to_tof_recip.setter
     def calib_d_to_tof_recip(self, value):
+        """Set reciprocal-velocity d→TOF correction (µs·Å)."""
         self._calib_d_to_tof_recip.value = value

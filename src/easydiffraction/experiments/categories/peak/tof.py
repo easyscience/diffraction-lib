@@ -10,6 +10,8 @@ class TofPseudoVoigt(
     PeakBase,
     TofBroadeningMixin,
 ):
+    """Time-of-flight pseudo-Voigt peak shape."""
+
     def __init__(self) -> None:
         super().__init__()
         self._add_time_of_flight_broadening()
@@ -20,6 +22,8 @@ class TofPseudoVoigtIkedaCarpenter(
     TofBroadeningMixin,
     IkedaCarpenterAsymmetryMixin,
 ):
+    """TOF pseudo-Voigt with Ikeda–Carpenter asymmetry."""
+
     def __init__(self) -> None:
         super().__init__()
         self._add_time_of_flight_broadening()
@@ -31,6 +35,8 @@ class TofPseudoVoigtBackToBack(
     TofBroadeningMixin,
     IkedaCarpenterAsymmetryMixin,
 ):
+    """TOF back-to-back pseudo-Voigt with asymmetry."""
+
     def __init__(self) -> None:
         super().__init__()
         self._add_time_of_flight_broadening()

@@ -42,8 +42,11 @@ def format_cell(
 
 
 class FitProgressTracker:
-    """Tracks and reports the reduced chi-square during the optimization
-    process.
+    """Track and report reduced chi-square during optimization.
+
+    The tracker keeps iteration counters, remembers the best observed
+    reduced chi-square and when it occurred, and can display progress as
+    a table in notebooks or a text UI in terminals.
     """
 
     def __init__(self) -> None:
@@ -59,6 +62,7 @@ class FitProgressTracker:
         self._display_handle: Optional[DisplayHandle] = None
 
     def reset(self) -> None:
+        """Reset internal state before a new optimization run."""
         self._iteration = 0
         self._previous_chi2 = None
         self._last_chi2 = None
@@ -72,15 +76,14 @@ class FitProgressTracker:
         residuals: np.ndarray,
         parameters: List[float],
     ) -> np.ndarray:
-        """Track chi-square progress during the optimization process.
+        """Update progress with current residuals and parameters.
 
-        Parameters:
-            residuals (np.ndarray): Array of residuals between measured
-                and calculated data.
-            parameters (list): List of free parameters being fitted.
+        Args:
+            residuals: Residuals between measured and calculated data.
+            parameters: Current free parameters being fitted.
 
         Returns:
-            np.ndarray: Residuals unchanged, for optimizer consumption.
+            Residuals unchanged, for optimizer consumption.
         """
         self._iteration += 1
 
@@ -133,28 +136,39 @@ class FitProgressTracker:
 
     @property
     def best_chi2(self) -> Optional[float]:
+        """Best recorded reduced chi-square value or None."""
         return self._best_chi2
 
     @property
     def best_iteration(self) -> Optional[int]:
+        """Iteration index at which the best chi-square was observed."""
         return self._best_iteration
 
     @property
     def iteration(self) -> int:
+        """Current iteration counter."""
         return self._iteration
 
     @property
     def fitting_time(self) -> Optional[float]:
+        """Elapsed time of the last run in seconds, if available."""
         return self._fitting_time
 
     def start_timer(self) -> None:
+        """Begin timing of a fit run."""
         self._start_time = time.perf_counter()
 
     def stop_timer(self) -> None:
+        """Stop timing and store elapsed time for the run."""
         self._end_time = time.perf_counter()
         self._fitting_time = self._end_time - self._start_time
 
     def start_tracking(self, minimizer_name: str) -> None:
+        """Initialize display and headers and announce the minimizer.
+
+        Args:
+            minimizer_name: Name of the minimizer used for the run.
+        """
         print(f"🚀 Starting fit process with '{minimizer_name}'...")
         print('📈 Goodness-of-fit (reduced χ²) change:')
 
@@ -189,6 +203,11 @@ class FitProgressTracker:
             print('╞' + '╪'.join(['═' * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + '╡')
 
     def add_tracking_info(self, row: List[str]) -> None:
+        """Append a formatted row to the progress display.
+
+        Args:
+            row: Columns corresponding to DEFAULT_HEADERS.
+        """
         if is_notebook() and display is not None:
             # Add row to DataFrame
             self._df_rows.append(row)
@@ -214,6 +233,7 @@ class FitProgressTracker:
             print(formatted_row)
 
     def finish_tracking(self) -> None:
+        """Finalize progress display and print best result summary."""
         # Add last iteration as last row
         row: List[str] = [
             str(self._last_iteration),

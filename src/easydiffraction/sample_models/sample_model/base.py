@@ -11,11 +11,12 @@ from easydiffraction.utils.utils import render_cif
 
 
 class SampleModelBase(DatablockItem):
-    """Base sample model: structure container with only a name.
+    """Base sample model and container for structural information.
 
-    Wraps crystallographic information including space group, cell, and
-    atomic sites. Creation from CIF is handled by the factory; this base
-    class accepts only the `name`.
+    Holds space group, unit cell and atom-site categories. The
+    factory is responsible for creating rich instances from CIF;
+    this base accepts just the ``name`` and exposes helpers for
+    applying symmetry.
     """
 
     def __init__(
@@ -45,34 +46,46 @@ class SampleModelBase(DatablockItem):
 
     @property
     def name(self) -> str:
+        """Model name.
+
+        Returns:
+            The user-facing identifier for this model.
+        """
         return self._name
 
     @name.setter
     def name(self, new: str) -> None:
+        """Update model name."""
         self._name = new
 
     @property
     def cell(self) -> Cell:
+        """Unit-cell category object."""
         return self._cell
 
     @cell.setter
     def cell(self, new: Cell) -> None:
+        """Replace the unit-cell category object."""
         self._cell = new
 
     @property
     def space_group(self) -> SpaceGroup:
+        """Space-group category object."""
         return self._space_group
 
     @space_group.setter
     def space_group(self, new: SpaceGroup) -> None:
+        """Replace the space-group category object."""
         self._space_group = new
 
     @property
     def atom_sites(self) -> AtomSites:
+        """Atom-sites collection for this model."""
         return self._atom_sites
 
     @atom_sites.setter
     def atom_sites(self, new: AtomSites) -> None:
+        """Replace the atom-sites collection."""
         self._atom_sites = new
 
     # --------------------
@@ -80,6 +93,7 @@ class SampleModelBase(DatablockItem):
     # --------------------
 
     def _apply_cell_symmetry_constraints(self):
+        """Apply symmetry rules to unit-cell parameters in place."""
         dummy_cell = {
             'lattice_a': self.cell.length_a.value,
             'lattice_b': self.cell.length_b.value,
@@ -98,6 +112,9 @@ class SampleModelBase(DatablockItem):
         self.cell.angle_gamma.value = dummy_cell['angle_gamma']
 
     def _apply_atomic_coordinates_symmetry_constraints(self):
+        """Apply symmetry rules to fractional coordinates of atom
+        sites.
+        """
         space_group_name = self.space_group.name_h_m.value
         space_group_coord_code = self.space_group.it_coordinate_system_code.value
         for atom in self.atom_sites:
@@ -126,9 +143,13 @@ class SampleModelBase(DatablockItem):
             atom.fract_z.value = dummy_atom['fract_z']
 
     def _apply_atomic_displacement_symmetry_constraints(self):
+        """Placeholder for ADP symmetry constraints (not
+        implemented).
+        """
         pass
 
     def apply_symmetry_constraints(self):
+        """Apply all available symmetry constraints to this model."""
         self._apply_cell_symmetry_constraints()
         self._apply_atomic_coordinates_symmetry_constraints()
         self._apply_atomic_displacement_symmetry_constraints()
@@ -143,7 +164,7 @@ class SampleModelBase(DatablockItem):
         print('Not implemented yet.')
 
     def show_params(self):
-        """Display structural parameters (space group, unit cell, atomic
+        """Display structural parameters (space group, cell, atom
         sites).
         """
         print(f'\nSampleModel ID: {self.name}')
@@ -153,6 +174,9 @@ class SampleModelBase(DatablockItem):
         self.atom_sites.show()
 
     def show_as_cif(self) -> None:
+        """Render the CIF text for this model in a terminal-friendly
+        view.
+        """
         cif_text: str = self.as_cif
         paragraph_title: str = paragraph(f"Sample model 🧩 '{self.name}' as cif")
         render_cif(cif_text, paragraph_title)

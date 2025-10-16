@@ -5,6 +5,8 @@ from easydiffraction.core.category import CategoryItem
 
 
 class PeakBase(CategoryItem):
+    """Base class for peak profile categories."""
+
     def __init__(self) -> None:
         super().__init__()
         self._identity.category_code = 'peak'

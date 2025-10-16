@@ -11,6 +11,8 @@ class CwlPseudoVoigt(
     PeakBase,
     CwlBroadeningMixin,
 ):
+    """Constant-wavelength pseudo-Voigt peak shape."""
+
     def __init__(self) -> None:
         super().__init__()
         self._add_constant_wavelength_broadening()
@@ -21,6 +23,8 @@ class CwlSplitPseudoVoigt(
     CwlBroadeningMixin,
     EmpiricalAsymmetryMixin,
 ):
+    """Split pseudo-Voigt (empirical asymmetry) for CWL mode."""
+
     def __init__(self) -> None:
         super().__init__()
         self._add_constant_wavelength_broadening()
@@ -32,6 +36,8 @@ class CwlThompsonCoxHastings(
     CwlBroadeningMixin,
     FcjAsymmetryMixin,
 ):
+    """Thompson–Cox–Hastings with FCJ asymmetry for CWL mode."""
+
     def __init__(self) -> None:
         super().__init__()
         self._add_constant_wavelength_broadening()

@@ -9,6 +9,13 @@ from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 
 
 class PeakFactory:
+    """Create peak profile objects for given scattering/beam mode.
+
+    Lazily imports concrete implementations to avoid circular imports
+    and selects the appropriate class based on the requested profile
+    type.
+    """
+
     ST = ScatteringTypeEnum
     BM = BeamModeEnum
     PPT = PeakProfileTypeEnum

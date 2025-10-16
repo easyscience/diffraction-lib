@@ -1,11 +1,9 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Instrument category entry point (public facade).
+"""Factory for instrument category items.
 
-End users should import Instrument classes from this module. Internals
-live under the package
-`easydiffraction.experiments.category_items.instrument_setups` and are
-re-exported here for a stable and readable API.
+Provides a stable entry point for creating instrument objects from the
+experiment's scattering type and beam mode.
 """
 
 from __future__ import annotations
@@ -22,6 +20,12 @@ if TYPE_CHECKING:
 
 
 class InstrumentFactory:
+    """Create instrument instances for supported modes.
+
+    The factory hides implementation details and lazy-loads concrete
+    instrument classes to avoid circular imports.
+    """
+
     ST = ScatteringTypeEnum
     BM = BeamModeEnum
 

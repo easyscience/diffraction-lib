@@ -14,6 +14,12 @@ if TYPE_CHECKING:
 
 
 class InstrumentMixin:
+    """Mixin that wires an experiment to an instrument category.
+
+    Creates a default instrument via `InstrumentFactory` using the
+    experiment type (scattering type and beam mode) at initialization.
+    """
+
     def __init__(self, *args, **kwargs):
         expt_type = kwargs.get('type')
         super().__init__(*args, **kwargs)
@@ -24,10 +30,17 @@ class InstrumentMixin:
 
     @property
     def instrument(self):
+        """Instrument category object associated with the experiment."""
         return self._instrument
 
     @instrument.setter
     @typechecked
     def instrument(self, new_instrument: InstrumentBase):
+        """Replace the instrument and re-parent it to this experiment.
+
+        Args:
+            new_instrument: Instrument instance compatible with the
+                experiment type.
+        """
         self._instrument = new_instrument
         self._instrument._parent = self
