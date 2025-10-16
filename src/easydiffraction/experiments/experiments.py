@@ -1,45 +1,53 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Dict
-from typing import List
+from typeguard import typechecked
 
-from easydiffraction.core.objects import Collection
-from easydiffraction.experiments.components.experiment_type import BeamModeEnum
-from easydiffraction.experiments.components.experiment_type import RadiationProbeEnum
-from easydiffraction.experiments.components.experiment_type import SampleFormEnum
-from easydiffraction.experiments.components.experiment_type import ScatteringTypeEnum
-from easydiffraction.experiments.experiment import BaseExperiment
-from easydiffraction.experiments.experiment import Experiment
-from easydiffraction.utils.decorators import enforce_type
+from easydiffraction.core.datablock import DatablockCollection
+from easydiffraction.experiments.experiment.base import ExperimentBase
+from easydiffraction.experiments.experiment.enums import BeamModeEnum
+from easydiffraction.experiments.experiment.enums import RadiationProbeEnum
+from easydiffraction.experiments.experiment.enums import SampleFormEnum
+from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
+from easydiffraction.experiments.experiment.factory import ExperimentFactory
 from easydiffraction.utils.formatting import paragraph
 
 
-class Experiments(Collection):
-    """Collection manager for multiple Experiment instances."""
+class Experiments(DatablockCollection):
+    """Collection of Experiment data blocks.
 
-    @property
-    def _child_class(self):
-        return BaseExperiment
+    Provides convenience constructors for common creation patterns and
+    helper methods for simple presentation of collection contents.
+    """
 
     def __init__(self) -> None:
-        super().__init__()
-        self._experiments: Dict[str, BaseExperiment] = self._items  # Alias for legacy support
+        super().__init__(item_type=ExperimentBase)
 
-    def add(self, experiment: BaseExperiment):
-        """Add a pre-built experiment instance."""
-        self._add_prebuilt_experiment(experiment)
+    # --------------------
+    # Add / Remove methods
+    # --------------------
 
+    @typechecked
     def add_from_cif_path(self, cif_path: str):
-        """Add a new experiment from a CIF file path."""
-        experiment = Experiment(cif_path=cif_path)
-        self._add_prebuilt_experiment(experiment)
+        """Add an experiment from a CIF file path.
 
+        Args:
+            cif_path: Path to a CIF document.
+        """
+        experiment = ExperimentFactory.create(cif_path=cif_path)
+        self.add(experiment)
+
+    @typechecked
     def add_from_cif_str(self, cif_str: str):
-        """Add a new experiment from CIF file content (string)."""
-        experiment = Experiment(cif_str=cif_str)
-        self._add_prebuilt_experiment(experiment)
+        """Add an experiment from a CIF string.
 
+        Args:
+            cif_str: Full CIF document as a string.
+        """
+        experiment = ExperimentFactory.create(cif_str=cif_str)
+        self.add(experiment)
+
+    @typechecked
     def add_from_data_path(
         self,
         name: str,
@@ -49,8 +57,17 @@ class Experiments(Collection):
         radiation_probe: str = RadiationProbeEnum.default().value,
         scattering_type: str = ScatteringTypeEnum.default().value,
     ):
-        """Add a new experiment from a data file path."""
-        experiment = Experiment(
+        """Add an experiment from a data file path.
+
+        Args:
+            name: Experiment identifier.
+            data_path: Path to the measured data file.
+            sample_form: Sample form (powder or single crystal).
+            beam_mode: Beam mode (constant wavelength or TOF).
+            radiation_probe: Radiation probe (neutron or xray).
+            scattering_type: Scattering type (bragg or total).
+        """
+        experiment = ExperimentFactory.create(
             name=name,
             data_path=data_path,
             sample_form=sample_form,
@@ -58,8 +75,9 @@ class Experiments(Collection):
             radiation_probe=radiation_probe,
             scattering_type=scattering_type,
         )
-        self._add_prebuilt_experiment(experiment)
+        self.add(experiment)
 
+    @typechecked
     def add_without_data(
         self,
         name: str,
@@ -68,35 +86,40 @@ class Experiments(Collection):
         radiation_probe: str = RadiationProbeEnum.default().value,
         scattering_type: str = ScatteringTypeEnum.default().value,
     ):
-        """Add a new experiment without any data file."""
-        experiment = Experiment(
+        """Add an experiment without associating a data file.
+
+        Args:
+            name: Experiment identifier.
+            sample_form: Sample form (powder or single crystal).
+            beam_mode: Beam mode (constant wavelength or TOF).
+            radiation_probe: Radiation probe (neutron or xray).
+            scattering_type: Scattering type (bragg or total).
+        """
+        experiment = ExperimentFactory.create(
             name=name,
             sample_form=sample_form,
             beam_mode=beam_mode,
             radiation_probe=radiation_probe,
             scattering_type=scattering_type,
         )
-        self._add_prebuilt_experiment(experiment)
+        self.add(experiment)
 
-    @enforce_type
-    def _add_prebuilt_experiment(self, experiment: BaseExperiment):
-        self._experiments[experiment.name] = experiment
+    @typechecked
+    def remove(self, name: str) -> None:
+        """Remove an experiment by name if it exists."""
+        if name in self:
+            del self[name]
 
-    def remove(self, experiment_id: str) -> None:
-        if experiment_id in self._experiments:
-            del self._experiments[experiment_id]
+    # ------------
+    # Show methods
+    # ------------
 
     def show_names(self) -> None:
+        """Print the list of experiment names."""
         print(paragraph('Defined experiments' + ' 🔬'))
-        print(self.ids)
-
-    @property
-    def ids(self) -> List[str]:
-        return list(self._experiments.keys())
+        print(self.names)
 
     def show_params(self) -> None:
-        for exp in self._experiments.values():
-            print(exp)
-
-    def as_cif(self) -> str:
-        return '\n\n'.join([exp.as_cif() for exp in self._experiments.values()])
+        """Print parameters for each experiment in the collection."""
+        for exp in self.values():
+            exp.show_params()

@@ -24,7 +24,11 @@ DEFAULT_COLORS = {
 
 
 class PlotlyPlotter(PlotterBase):
+    """Interactive plotter using Plotly for notebooks and browsers."""
+
     pio.templates.default = 'plotly_dark' if darkdetect.isDark() else 'plotly_white'
+    if is_pycharm():
+        pio.renderers.default = 'browser'
 
     def _get_trace(self, x, y, label):
         mode = SERIES_CONFIG[label]['mode']
@@ -51,6 +55,16 @@ class PlotlyPlotter(PlotterBase):
         title,
         height=None,
     ):
+        """Render an interactive Plotly figure.
+
+        Args:
+            x: 1D array-like of x-axis values.
+            y_series: Sequence of y arrays to plot.
+            labels: Series identifiers corresponding to y_series.
+            axes_labels: Pair of strings for the x and y titles.
+            title: Figure title.
+            height: Ignored; Plotly auto-sizes based on renderer.
+        """
         # Intentionally unused; accepted for API compatibility
         del height
         data = []
@@ -105,14 +119,13 @@ class PlotlyPlotter(PlotterBase):
             layout=layout,
         )
 
-        # Format the axes ticks
-        # Keeps decimals for small numbers;
-        # groups thousands for large ones
+        # Format the axes ticks.
+        # Keeps decimals for small numbers; groups thousands for large
+        # ones
         fig.update_xaxes(tickformat=',.6~g', separatethousands=True)
         fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
 
         # Show the figure
-
         if is_pycharm() or display is None or HTML is None:
             fig.show(config=config)
         else:

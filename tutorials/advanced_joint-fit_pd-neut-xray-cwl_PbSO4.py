@@ -15,9 +15,9 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 # %% [markdown]
@@ -29,7 +29,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel('pbso4')
+model = SampleModelFactory.create(name='pbso4')
 
 # %% [markdown]
 # #### Set Space Group
@@ -49,11 +49,51 @@ model.cell.length_c = 6.95
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Pb', 'Pb', 0.1876, 0.25, 0.167, b_iso=1.37)
-model.atom_sites.add('S', 'S', 0.0654, 0.25, 0.684, b_iso=0.3777)
-model.atom_sites.add('O1', 'O', 0.9082, 0.25, 0.5954, b_iso=1.9764)
-model.atom_sites.add('O2', 'O', 0.1935, 0.25, 0.5432, b_iso=1.4456)
-model.atom_sites.add('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
+model.atom_sites.add_from_args(
+    label='Pb',
+    type_symbol='Pb',
+    fract_x=0.1876,
+    fract_y=0.25,
+    fract_z=0.167,
+    wyckoff_letter='c',
+    b_iso=1.37,
+)
+model.atom_sites.add_from_args(
+    label='S',
+    type_symbol='S',
+    fract_x=0.0654,
+    fract_y=0.25,
+    fract_z=0.684,
+    wyckoff_letter='c',
+    b_iso=0.3777,
+)
+model.atom_sites.add_from_args(
+    label='O1',
+    type_symbol='O',
+    fract_x=0.9082,
+    fract_y=0.25,
+    fract_z=0.5954,
+    wyckoff_letter='c',
+    b_iso=1.9764,
+)
+model.atom_sites.add_from_args(
+    label='O2',
+    type_symbol='O',
+    fract_x=0.1935,
+    fract_y=0.25,
+    fract_z=0.5432,
+    wyckoff_letter='c',
+    b_iso=1.4456,
+)
+model.atom_sites.add_from_args(
+    label='O3',
+    type_symbol='O',
+    fract_x=0.0811,
+    fract_y=0.0272,
+    fract_z=0.8086,
+    wyckoff_letter='d',
+    b_iso=1.2822,
+)
 
 
 # %% [markdown]
@@ -73,7 +113,7 @@ download_from_repository('d1a_pbso4.dat', destination='data')
 # #### Create Experiment
 
 # %%
-expt1 = Experiment(
+expt1 = ExperimentFactory.create(
     name='npd',
     data_path='data/d1a_pbso4.dat',
     radiation_probe='neutron',
@@ -119,13 +159,13 @@ for x, y in [
     (120.0, 244.4525),
     (153.0, 226.0595),
 ]:
-    expt1.background.add(x, y)
+    expt1.background.add_from_args(x=x, y=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt1.linked_phases.add('pbso4', scale=1.5)
+expt1.linked_phases.add_from_args(id='pbso4', scale=1.5)
 
 # %% [markdown]
 # ### Experiment 2: xrd
@@ -139,7 +179,7 @@ download_from_repository('lab_pbso4.dat', destination='data')
 # #### Create Experiment
 
 # %%
-expt2 = Experiment(
+expt2 = ExperimentFactory.create(
     name='xrd',
     data_path='data/lab_pbso4.dat',
     radiation_probe='xray',
@@ -183,13 +223,13 @@ for x, y in [
     (4, 54.552),
     (5, -20.661),
 ]:
-    expt2.background.add(x, y)
+    expt2.background.add_from_args(order=x, coef=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt2.linked_phases.add('pbso4', scale=0.001)
+expt2.linked_phases.add_from_args(id='pbso4', scale=0.001)
 
 # %% [markdown]
 # ## Define Project

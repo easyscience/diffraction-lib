@@ -1,11 +1,14 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import os
 import tempfile
 
 from numpy.testing import assert_almost_equal
 
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 TEMP_DIR = tempfile.gettempdir()
@@ -13,25 +16,67 @@ TEMP_DIR = tempfile.gettempdir()
 
 def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     # Set sample models
-    model_1 = SampleModel('lbco')
+    model_1 = SampleModelFactory.create(name='lbco')
     model_1.space_group.name_h_m = 'P m -3 m'
     model_1.space_group.it_coordinate_system_code = '1'
     model_1.cell.length_a = 3.8909
-    model_1.atom_sites.add('La', 'La', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
-    model_1.atom_sites.add('Ba', 'Ba', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
-    model_1.atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, wyckoff_letter='b', b_iso=0.2567)
-    model_1.atom_sites.add('O', 'O', 0, 0.5, 0.5, wyckoff_letter='c', b_iso=1.4041)
+    model_1.atom_sites.add_from_args(
+        label='La',
+        type_symbol='La',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        wyckoff_letter='a',
+        b_iso=0.2,
+        occupancy=0.5,
+    )
+    model_1.atom_sites.add_from_args(
+        label='Ba',
+        type_symbol='Ba',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        wyckoff_letter='a',
+        b_iso=0.2,
+        occupancy=0.5,
+    )
+    model_1.atom_sites.add_from_args(
+        label='Co',
+        type_symbol='Co',
+        fract_x=0.5,
+        fract_y=0.5,
+        fract_z=0.5,
+        wyckoff_letter='b',
+        b_iso=0.2567,
+    )
+    model_1.atom_sites.add_from_args(
+        label='O',
+        type_symbol='O',
+        fract_x=0,
+        fract_y=0.5,
+        fract_z=0.5,
+        wyckoff_letter='c',
+        b_iso=1.4041,
+    )
 
-    model_2 = SampleModel('si')
+    model_2 = SampleModelFactory.create(name='si')
     model_2.space_group.name_h_m = 'F d -3 m'
     model_2.space_group.it_coordinate_system_code = '2'
     model_2.cell.length_a = 5.43146
-    model_2.atom_sites.add('Si', 'Si', 0.0, 0.0, 0.0, wyckoff_letter='a', b_iso=0.0)
+    model_2.atom_sites.add_from_args(
+        label='Si',
+        type_symbol='Si',
+        fract_x=0.0,
+        fract_y=0.0,
+        fract_z=0.0,
+        wyckoff_letter='a',
+        b_iso=0.0,
+    )
 
     # Set experiment
     data_file = 'mcstas_lbco-si.xys'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt = Experiment(
+    expt = ExperimentFactory.create(
         name='mcstas',
         data_path=os.path.join(TEMP_DIR, data_file),
         beam_mode='time-of-flight',
@@ -48,10 +93,10 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     expt.peak.broad_mix_beta_1 = 0.0041
     expt.peak.asym_alpha_0 = 0.0
     expt.peak.asym_alpha_1 = 0.0097
-    expt.linked_phases.add('lbco', scale=4.0)
-    expt.linked_phases.add('si', scale=0.2)
+    expt.linked_phases.add_from_args(id='lbco', scale=4.0)
+    expt.linked_phases.add_from_args(id='si', scale=0.2)
     for x in range(45000, 115000, 5000):
-        expt.background.add(x=x, y=0.2)
+        expt.background.add_from_args(x=x, y=0.2)
 
     # Create project
     project = Project()
@@ -60,7 +105,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     project.experiments.add(expt)
 
     # Exclude regions from fitting
-    project.experiments['mcstas'].excluded_regions.add(start=108000, end=200000)
+    project.experiments['mcstas'].excluded_regions.add_from_args(start=108000, end=200000)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'

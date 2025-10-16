@@ -30,13 +30,13 @@ project.plotter.engine = 'plotly'
 # ## Add Sample Model
 
 # %%
-project.sample_models.add(name='ni')
+project.sample_models.add_minimal(name='ni')
 
 # %%
 project.sample_models['ni'].space_group.name_h_m = 'F m -3 m'
 project.sample_models['ni'].space_group.it_coordinate_system_code = '1'
 project.sample_models['ni'].cell.length_a = 3.52387
-project.sample_models['ni'].atom_sites.add(
+project.sample_models['ni'].atom_sites.add_from_args(
     label='Ni',
     type_symbol='Ni',
     fract_x=0.0,
@@ -63,7 +63,7 @@ project.experiments.add_from_data_path(
 )
 
 # %%
-project.experiments['pdf'].linked_phases.add(id='ni', scale=1.0)
+project.experiments['pdf'].linked_phases.add_from_args(id='ni', scale=1.0)
 project.experiments['pdf'].peak.damp_q = 0
 project.experiments['pdf'].peak.broad_q = 0.03
 project.experiments['pdf'].peak.cutoff_q = 27.0

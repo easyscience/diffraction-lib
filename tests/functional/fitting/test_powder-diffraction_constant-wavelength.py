@@ -1,12 +1,15 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import os
 import tempfile
 
 import pytest
 from numpy.testing import assert_almost_equal
 
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 TEMP_DIR = tempfile.gettempdir()
@@ -14,18 +17,52 @@ TEMP_DIR = tempfile.gettempdir()
 
 def test_single_fit_neutron_pd_cwl_lbco() -> None:
     # Set sample model
-    model = SampleModel('lbco')
+    model = SampleModelFactory.create(name='lbco')
     model.space_group.name_h_m = 'P m -3 m'
     model.cell.length_a = 3.88
-    model.atom_sites.add('La', 'La', 0, 0, 0, occupancy=0.5, b_iso=0.1)
-    model.atom_sites.add('Ba', 'Ba', 0, 0, 0, occupancy=0.5, b_iso=0.1)
-    model.atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, b_iso=0.1)
-    model.atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=0.1)
+    model.atom_sites.add_from_args(
+        label='La',
+        type_symbol='La',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        wyckoff_letter='a',
+        occupancy=0.5,
+        b_iso=0.1,
+    )
+    model.atom_sites.add_from_args(
+        label='Ba',
+        type_symbol='Ba',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        wyckoff_letter='a',
+        occupancy=0.5,
+        b_iso=0.1,
+    )
+    model.atom_sites.add_from_args(
+        label='Co',
+        type_symbol='Co',
+        fract_x=0.5,
+        fract_y=0.5,
+        fract_z=0.5,
+        wyckoff_letter='b',
+        b_iso=0.1,
+    )
+    model.atom_sites.add_from_args(
+        label='O',
+        type_symbol='O',
+        fract_x=0,
+        fract_y=0.5,
+        fract_z=0.5,
+        wyckoff_letter='c',
+        b_iso=0.1,
+    )
 
     # Set experiment
     data_file = 'hrpt_lbco.xye'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt = Experiment(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
+    expt = ExperimentFactory.create(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
     expt.instrument.setup_wavelength = 1.494
     expt.instrument.calib_twotheta_offset = 0
     expt.peak.broad_gauss_u = 0.1
@@ -33,9 +70,9 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     expt.peak.broad_gauss_w = 0.2
     expt.peak.broad_lorentz_x = 0
     expt.peak.broad_lorentz_y = 0
-    expt.linked_phases.add('lbco', scale=5.0)
-    expt.background.add(x=10, y=170)
-    expt.background.add(x=165, y=170)
+    expt.linked_phases.add_from_args(id='lbco', scale=5.0)
+    expt.background.add_from_args(x=10, y=170)
+    expt.background.add_from_args(x=165, y=170)
 
     # Create project
     project = Project()
@@ -93,7 +130,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
 @pytest.mark.fast
 def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Set sample model
-    model = SampleModel('lbco')
+    model = SampleModelFactory.create(name='lbco')
 
     space_group = model.space_group
     space_group.name_h_m = 'P m -3 m'
@@ -102,16 +139,50 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     cell.length_a = 3.8909
 
     atom_sites = model.atom_sites
-    atom_sites.add('La', 'La', 0, 0, 0, b_iso=1.0, occupancy=0.5)
-    atom_sites.add('Ba', 'Ba', 0, 0, 0, b_iso=1.0, occupancy=0.5)
-    atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, b_iso=1.0)
-    atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=1.0)
+    atom_sites.add_from_args(
+        label='La',
+        type_symbol='La',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        wyckoff_letter='a',
+        b_iso=1.0,
+        occupancy=0.5,
+    )
+    atom_sites.add_from_args(
+        label='Ba',
+        type_symbol='Ba',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        wyckoff_letter='a',
+        b_iso=1.0,
+        occupancy=0.5,
+    )
+    atom_sites.add_from_args(
+        label='Co',
+        type_symbol='Co',
+        fract_x=0.5,
+        fract_y=0.5,
+        fract_z=0.5,
+        wyckoff_letter='b',
+        b_iso=1.0,
+    )
+    atom_sites.add_from_args(
+        label='O',
+        type_symbol='O',
+        fract_x=0,
+        fract_y=0.5,
+        fract_z=0.5,
+        wyckoff_letter='c',
+        b_iso=1.0,
+    )
 
     # Set experiment
     data_file = 'hrpt_lbco.xye'
     download_from_repository(data_file, destination=TEMP_DIR)
 
-    expt = Experiment(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
+    expt = ExperimentFactory.create(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
 
     instrument = expt.instrument
     instrument.setup_wavelength = 1.494
@@ -125,18 +196,18 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     peak.broad_lorentz_y = 0.0797
 
     background = expt.background
-    background.add(x=10, y=174.3)
-    background.add(x=20, y=159.8)
-    background.add(x=30, y=167.9)
-    background.add(x=50, y=166.1)
-    background.add(x=70, y=172.3)
-    background.add(x=90, y=171.1)
-    background.add(x=110, y=172.4)
-    background.add(x=130, y=182.5)
-    background.add(x=150, y=173.0)
-    background.add(x=165, y=171.1)
+    background.add_from_args(x=10, y=174.3)
+    background.add_from_args(x=20, y=159.8)
+    background.add_from_args(x=30, y=167.9)
+    background.add_from_args(x=50, y=166.1)
+    background.add_from_args(x=70, y=172.3)
+    background.add_from_args(x=90, y=171.1)
+    background.add_from_args(x=110, y=172.4)
+    background.add_from_args(x=130, y=182.5)
+    background.add_from_args(x=150, y=173.0)
+    background.add_from_args(x=165, y=171.1)
 
-    expt.linked_phases.add('lbco', scale=9.0976)
+    expt.linked_phases.add_from_args(id='lbco', scale=9.0976)
 
     # Create project
     project = Project()
@@ -182,14 +253,18 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # ------------ 2nd fitting ------------
 
     # Set aliases for parameters
-    project.analysis.aliases.add(label='biso_La', param_uid=atom_sites['La'].b_iso.uid)
-    project.analysis.aliases.add(label='biso_Ba', param_uid=atom_sites['Ba'].b_iso.uid)
-    project.analysis.aliases.add(label='occ_La', param_uid=atom_sites['La'].occupancy.uid)
-    project.analysis.aliases.add(label='occ_Ba', param_uid=atom_sites['Ba'].occupancy.uid)
+    project.analysis.aliases.add_from_args(label='biso_La', param_uid=atom_sites['La'].b_iso.uid)
+    project.analysis.aliases.add_from_args(label='biso_Ba', param_uid=atom_sites['Ba'].b_iso.uid)
+    project.analysis.aliases.add_from_args(
+        label='occ_La', param_uid=atom_sites['La'].occupancy.uid
+    )
+    project.analysis.aliases.add_from_args(
+        label='occ_Ba', param_uid=atom_sites['Ba'].occupancy.uid
+    )
 
     # Set constraints
-    project.analysis.constraints.add(lhs_alias='biso_Ba', rhs_expr='biso_La')
-    project.analysis.constraints.add(lhs_alias='occ_Ba', rhs_expr='1 - occ_La')
+    project.analysis.constraints.add_from_args(lhs_alias='biso_Ba', rhs_expr='biso_La')
+    project.analysis.constraints.add_from_args(lhs_alias='occ_Ba', rhs_expr='1 - occ_La')
 
     # Apply constraints
     project.analysis.apply_constraints()
@@ -211,22 +286,62 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
 
 def test_fit_neutron_pd_cwl_hs() -> None:
     # Set sample model
-    model = SampleModel('hs')
+    model = SampleModelFactory.create(name='hs')
     model.space_group.name_h_m = 'R -3 m'
     model.space_group.it_coordinate_system_code = 'h'
     model.cell.length_a = 6.8615
     model.cell.length_c = 14.136
-    model.atom_sites.add('Zn', 'Zn', 0, 0, 0.5, wyckoff_letter='b', b_iso=0.1)
-    model.atom_sites.add('Cu', 'Cu', 0.5, 0, 0, wyckoff_letter='e', b_iso=1.2)
-    model.atom_sites.add('O', 'O', 0.206, -0.206, 0.061, wyckoff_letter='h', b_iso=0.7)
-    model.atom_sites.add('Cl', 'Cl', 0, 0, 0.197, wyckoff_letter='c', b_iso=1.1)
-    model.atom_sites.add('H', '2H', 0.132, -0.132, 0.09, wyckoff_letter='h', b_iso=2.3)
+    model.atom_sites.add_from_args(
+        label='Zn',
+        type_symbol='Zn',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0.5,
+        wyckoff_letter='b',
+        b_iso=0.1,
+    )
+    model.atom_sites.add_from_args(
+        label='Cu',
+        type_symbol='Cu',
+        fract_x=0.5,
+        fract_y=0,
+        fract_z=0,
+        wyckoff_letter='e',
+        b_iso=1.2,
+    )
+    model.atom_sites.add_from_args(
+        label='O',
+        type_symbol='O',
+        fract_x=0.206,
+        fract_y=-0.206,
+        fract_z=0.061,
+        wyckoff_letter='h',
+        b_iso=0.7,
+    )
+    model.atom_sites.add_from_args(
+        label='Cl',
+        type_symbol='Cl',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0.197,
+        wyckoff_letter='c',
+        b_iso=1.1,
+    )
+    model.atom_sites.add_from_args(
+        label='H',
+        type_symbol='2H',
+        fract_x=0.132,
+        fract_y=-0.132,
+        fract_z=0.09,
+        wyckoff_letter='h',
+        b_iso=2.3,
+    )
     model.apply_symmetry_constraints()
 
     # Set experiment
     data_file = 'hrpt_hs.xye'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt = Experiment(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
+    expt = ExperimentFactory.create(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
     expt.instrument.setup_wavelength = 1.89
     expt.instrument.calib_twotheta_offset = 0.0
     expt.peak.broad_gauss_u = 0.1579
@@ -234,16 +349,16 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     expt.peak.broad_gauss_w = 0.3498
     expt.peak.broad_lorentz_x = 0.2927
     expt.peak.broad_lorentz_y = 0
-    expt.background.add(x=4.4196, y=648.413)
-    expt.background.add(x=6.6207, y=523.788)
-    expt.background.add(x=10.4918, y=454.938)
-    expt.background.add(x=15.4634, y=435.913)
-    expt.background.add(x=45.6041, y=472.972)
-    expt.background.add(x=74.6844, y=486.606)
-    expt.background.add(x=103.4187, y=472.409)
-    expt.background.add(x=121.6311, y=496.734)
-    expt.background.add(x=159.4116, y=473.146)
-    expt.linked_phases.add('hs', scale=0.492)
+    expt.background.add_from_args(x=4.4196, y=648.413)
+    expt.background.add_from_args(x=6.6207, y=523.788)
+    expt.background.add_from_args(x=10.4918, y=454.938)
+    expt.background.add_from_args(x=15.4634, y=435.913)
+    expt.background.add_from_args(x=45.6041, y=472.972)
+    expt.background.add_from_args(x=74.6844, y=486.606)
+    expt.background.add_from_args(x=103.4187, y=472.409)
+    expt.background.add_from_args(x=121.6311, y=496.734)
+    expt.background.add_from_args(x=159.4116, y=473.146)
+    expt.linked_phases.add_from_args(id='hs', scale=0.492)
 
     # Create project
     project = Project()

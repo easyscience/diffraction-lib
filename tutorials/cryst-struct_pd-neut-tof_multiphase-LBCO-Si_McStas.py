@@ -9,9 +9,9 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 # %% [markdown]
@@ -23,7 +23,7 @@ from easydiffraction import download_from_repository
 # ### Create Sample Model 1: LBCO
 
 # %%
-model_1 = SampleModel('lbco')
+model_1 = SampleModelFactory.create(name='lbco')
 
 # %% [markdown]
 # #### Set Space Group
@@ -42,16 +42,50 @@ model_1.cell.length_a = 3.8909
 # #### Set Atom Sites
 
 # %%
-model_1.atom_sites.add('La', 'La', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
-model_1.atom_sites.add('Ba', 'Ba', 0, 0, 0, wyckoff_letter='a', b_iso=0.2, occupancy=0.5)
-model_1.atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, wyckoff_letter='b', b_iso=0.2567)
-model_1.atom_sites.add('O', 'O', 0, 0.5, 0.5, wyckoff_letter='c', b_iso=1.4041)
+model_1.atom_sites.add_from_args(
+    label='La',
+    type_symbol='La',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=0.2,
+    occupancy=0.5,
+)
+model_1.atom_sites.add_from_args(
+    label='Ba',
+    type_symbol='Ba',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=0.2,
+    occupancy=0.5,
+)
+model_1.atom_sites.add_from_args(
+    label='Co',
+    type_symbol='Co',
+    fract_x=0.5,
+    fract_y=0.5,
+    fract_z=0.5,
+    wyckoff_letter='b',
+    b_iso=0.2567,
+)
+model_1.atom_sites.add_from_args(
+    label='O',
+    type_symbol='O',
+    fract_x=0,
+    fract_y=0.5,
+    fract_z=0.5,
+    wyckoff_letter='c',
+    b_iso=1.4041,
+)
 
 # %% [markdown]
 # ### Create Sample Model 2: Si
 
 # %%
-model_2 = SampleModel('si')
+model_2 = SampleModelFactory.create(name='si')
 
 # %% [markdown]
 # #### Set Space Group
@@ -70,12 +104,12 @@ model_2.cell.length_a = 5.43146
 # #### Set Atom Sites
 
 # %%
-model_2.atom_sites.add(
-    'Si',
-    'Si',
-    0.0,
-    0.0,
-    0.0,
+model_2.atom_sites.add_from_args(
+    label='Si',
+    type_symbol='Si',
+    fract_x=0.0,
+    fract_y=0.0,
+    fract_z=0.0,
     wyckoff_letter='a',
     b_iso=0.0,
 )
@@ -95,7 +129,7 @@ download_from_repository('mcstas_lbco-si.xye', destination='data')
 # #### Create Experiment
 
 # %%
-experiment = Experiment(
+experiment = ExperimentFactory.create(
     name='mcstas',
     data_path='data/mcstas_lbco-si.xye',
     sample_form='powder',
@@ -139,26 +173,26 @@ experiment.background_type = 'line-segment'
 # Add background points.
 
 # %%
-experiment.background.add(x=45000, y=0.2)
-experiment.background.add(x=50000, y=0.2)
-experiment.background.add(x=55000, y=0.2)
-experiment.background.add(x=65000, y=0.2)
-experiment.background.add(x=70000, y=0.2)
-experiment.background.add(x=75000, y=0.2)
-experiment.background.add(x=80000, y=0.2)
-experiment.background.add(x=85000, y=0.2)
-experiment.background.add(x=90000, y=0.2)
-experiment.background.add(x=95000, y=0.2)
-experiment.background.add(x=100000, y=0.2)
-experiment.background.add(x=105000, y=0.2)
-experiment.background.add(x=110000, y=0.2)
+experiment.background.add_from_args(x=45000, y=0.2)
+experiment.background.add_from_args(x=50000, y=0.2)
+experiment.background.add_from_args(x=55000, y=0.2)
+experiment.background.add_from_args(x=65000, y=0.2)
+experiment.background.add_from_args(x=70000, y=0.2)
+experiment.background.add_from_args(x=75000, y=0.2)
+experiment.background.add_from_args(x=80000, y=0.2)
+experiment.background.add_from_args(x=85000, y=0.2)
+experiment.background.add_from_args(x=90000, y=0.2)
+experiment.background.add_from_args(x=95000, y=0.2)
+experiment.background.add_from_args(x=100000, y=0.2)
+experiment.background.add_from_args(x=105000, y=0.2)
+experiment.background.add_from_args(x=110000, y=0.2)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-experiment.linked_phases.add('lbco', scale=4.0)
-experiment.linked_phases.add('si', scale=0.2)
+experiment.linked_phases.add_from_args(id='lbco', scale=4.0)
+experiment.linked_phases.add_from_args(id='si', scale=0.2)
 
 # %% [markdown]
 # ## Define Project
@@ -208,8 +242,8 @@ project.plot_meas(expt_name='mcstas')
 # Add excluded regions.
 
 # %%
-experiment.excluded_regions.add(start=0, end=40000)
-experiment.excluded_regions.add(start=108000, end=200000)
+experiment.excluded_regions.add_from_args(start=0, end=40000)
+experiment.excluded_regions.add_from_args(start=108000, end=200000)
 
 # %% [markdown]
 # Show excluded regions.

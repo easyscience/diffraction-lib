@@ -1,11 +1,14 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import os
 import tempfile
 
 from numpy.testing import assert_almost_equal
 
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 TEMP_DIR = tempfile.gettempdir()
@@ -13,16 +16,24 @@ TEMP_DIR = tempfile.gettempdir()
 
 def test_single_fit_neutron_pd_tof_si() -> None:
     # Set sample model
-    model = SampleModel('si')
+    model = SampleModelFactory.create(name='si')
     model.space_group.name_h_m = 'F d -3 m'
     model.space_group.it_coordinate_system_code = '2'
     model.cell.length_a = 5.4315
-    model.atom_sites.add('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.529)
+    model.atom_sites.add_from_args(
+        label='Si',
+        type_symbol='Si',
+        fract_x=0.125,
+        fract_y=0.125,
+        fract_z=0.125,
+        wyckoff_letter='a',
+        b_iso=0.529,
+    )
 
     # Set experiment
     data_file = 'sepd_si.xye'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt = Experiment(
+    expt = ExperimentFactory.create(
         name='sepd',
         data_path=os.path.join(TEMP_DIR, data_file),
         beam_mode='time-of-flight',
@@ -39,9 +50,9 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     expt.peak.broad_mix_beta_1 = 0.00946
     expt.peak.asym_alpha_0 = 0.0
     expt.peak.asym_alpha_1 = 0.5971
-    expt.linked_phases.add('si', scale=14.92)
+    expt.linked_phases.add_from_args(id='si', scale=14.92)
     for x in range(0, 35000, 5000):
-        expt.background.add(x=x, y=200)
+        expt.background.add_from_args(x=x, y=200)
     expt.show_as_cif()
 
     # Create project
@@ -70,21 +81,69 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
 def test_single_fit_neutron_pd_tof_ncaf() -> None:
     # Set sample model
-    model = SampleModel('ncaf')
+    model = SampleModelFactory.create(name='ncaf')
     model.space_group.name_h_m = 'I 21 3'
     model.space_group.it_coordinate_system_code = '1'
     model.cell.length_a = 10.250256
-    model.atom_sites.add('Ca', 'Ca', 0.4661, 0.0, 0.25, wyckoff_letter='b', b_iso=0.9)
-    model.atom_sites.add('Al', 'Al', 0.25171, 0.25171, 0.25171, wyckoff_letter='a', b_iso=0.66)
-    model.atom_sites.add('Na', 'Na', 0.08481, 0.08481, 0.08481, wyckoff_letter='a', b_iso=1.9)
-    model.atom_sites.add('F1', 'F', 0.1375, 0.3053, 0.1195, wyckoff_letter='c', b_iso=0.9)
-    model.atom_sites.add('F2', 'F', 0.3626, 0.3634, 0.1867, wyckoff_letter='c', b_iso=1.28)
-    model.atom_sites.add('F3', 'F', 0.4612, 0.4612, 0.4612, wyckoff_letter='a', b_iso=0.79)
+    model.atom_sites.add_from_args(
+        label='Ca',
+        type_symbol='Ca',
+        fract_x=0.4661,
+        fract_y=0.0,
+        fract_z=0.25,
+        wyckoff_letter='b',
+        b_iso=0.9,
+    )
+    model.atom_sites.add_from_args(
+        label='Al',
+        type_symbol='Al',
+        fract_x=0.25171,
+        fract_y=0.25171,
+        fract_z=0.25171,
+        wyckoff_letter='a',
+        b_iso=0.66,
+    )
+    model.atom_sites.add_from_args(
+        label='Na',
+        type_symbol='Na',
+        fract_x=0.08481,
+        fract_y=0.08481,
+        fract_z=0.08481,
+        wyckoff_letter='a',
+        b_iso=1.9,
+    )
+    model.atom_sites.add_from_args(
+        label='F1',
+        type_symbol='F',
+        fract_x=0.1375,
+        fract_y=0.3053,
+        fract_z=0.1195,
+        wyckoff_letter='c',
+        b_iso=0.9,
+    )
+    model.atom_sites.add_from_args(
+        label='F2',
+        type_symbol='F',
+        fract_x=0.3626,
+        fract_y=0.3634,
+        fract_z=0.1867,
+        wyckoff_letter='c',
+        b_iso=1.28,
+    )
+    model.atom_sites.add_from_args(
+        label='F3',
+        type_symbol='F',
+        fract_x=0.4612,
+        fract_y=0.4612,
+        fract_z=0.4612,
+        wyckoff_letter='a',
+        b_iso=0.79,
+    )
 
     # Set experiment
     data_file = 'wish_ncaf.xye'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt = Experiment(
+    expt = ExperimentFactory.create(
         name='wish',
         data_path=os.path.join(TEMP_DIR, data_file),
         beam_mode='time-of-flight',
@@ -101,7 +160,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     expt.peak.broad_mix_beta_1 = 0.0099
     expt.peak.asym_alpha_0 = -0.009
     expt.peak.asym_alpha_1 = 0.1085
-    expt.linked_phases.add('ncaf', scale=1.0928)
+    expt.linked_phases.add_from_args(id='ncaf', scale=1.0928)
     for x, y in [
         (9162, 465),
         (11136, 593),
@@ -132,7 +191,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         (91958, 268),
         (102712, 262),
     ]:
-        expt.background.add(x, y)
+        expt.background.add_from_args(x=x, y=y)
 
     # Create project
     project = Project()

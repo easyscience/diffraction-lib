@@ -5,18 +5,18 @@ from typing import Any
 from typing import List
 from typing import Optional
 
-from easydiffraction.analysis.calculators.calculator_factory import CalculatorFactory
-from easydiffraction.experiments.experiment import Experiment
+from easydiffraction.analysis.calculators.factory import CalculatorFactory
+from easydiffraction.experiments.experiment.base import ExperimentBase
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModels
 
 
-class DiffractionCalculator:
+class Calculator:
     """Invokes calculation engines for pattern generation."""
 
     def __init__(self, engine: str = 'cryspy') -> None:
-        """Initialize the DiffractionCalculator with a specified backend
-        engine.
+        """Initialize the diffraction calculator with a specified
+        backend engine.
 
         Args:
             engine: Type of the calculation engine to use.
@@ -54,7 +54,7 @@ class DiffractionCalculator:
     def calculate_pattern(
         self,
         sample_models: SampleModels,
-        experiment: Experiment,
+        experiment: ExperimentBase,
     ) -> None:
         """Calculate diffraction pattern based on sample models and
         experiment. The calculated pattern is stored within the

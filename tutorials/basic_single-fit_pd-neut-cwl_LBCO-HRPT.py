@@ -91,7 +91,7 @@ project.plotter.engine = 'plotly'
 # #### Add Sample Model
 
 # %%
-project.sample_models.add(name='lbco')
+project.sample_models.add_minimal(name='lbco')
 
 # %% [markdown]
 # #### Show Defined Sample Models
@@ -126,7 +126,7 @@ project.sample_models['lbco'].cell.length_a = 3.88
 # Add atom sites to the sample model.
 
 # %%
-project.sample_models['lbco'].atom_sites.add(
+project.sample_models['lbco'].atom_sites.add_from_args(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -136,7 +136,7 @@ project.sample_models['lbco'].atom_sites.add(
     b_iso=0.5,
     occupancy=0.5,
 )
-project.sample_models['lbco'].atom_sites.add(
+project.sample_models['lbco'].atom_sites.add_from_args(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -146,7 +146,7 @@ project.sample_models['lbco'].atom_sites.add(
     b_iso=0.5,
     occupancy=0.5,
 )
-project.sample_models['lbco'].atom_sites.add(
+project.sample_models['lbco'].atom_sites.add_from_args(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -155,7 +155,7 @@ project.sample_models['lbco'].atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.5,
 )
-project.sample_models['lbco'].atom_sites.add(
+project.sample_models['lbco'].atom_sites.add_from_args(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -295,11 +295,11 @@ project.experiments['hrpt'].background_type = 'line-segment'
 # Add background points.
 
 # %%
-project.experiments['hrpt'].background.add(x=10, y=170)
-project.experiments['hrpt'].background.add(x=30, y=170)
-project.experiments['hrpt'].background.add(x=50, y=170)
-project.experiments['hrpt'].background.add(x=110, y=170)
-project.experiments['hrpt'].background.add(x=165, y=170)
+project.experiments['hrpt'].background.add_from_args(x=10, y=170)
+project.experiments['hrpt'].background.add_from_args(x=30, y=170)
+project.experiments['hrpt'].background.add_from_args(x=50, y=170)
+project.experiments['hrpt'].background.add_from_args(x=110, y=170)
+project.experiments['hrpt'].background.add_from_args(x=165, y=170)
 
 # %% [markdown]
 # Show current background points.
@@ -313,7 +313,7 @@ project.experiments['hrpt'].background.show()
 # Link the sample model defined in the previous step to the experiment.
 
 # %%
-project.experiments['hrpt'].linked_phases.add(id='lbco', scale=10.0)
+project.experiments['hrpt'].linked_phases.add_from_args(id='lbco', scale=10.0)
 
 # %% [markdown]
 # #### Show Experiment as CIF
@@ -564,11 +564,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Set aliases for parameters.
 
 # %%
-project.analysis.aliases.add(
+project.analysis.aliases.add_from_args(
     label='biso_La',
     param_uid=project.sample_models['lbco'].atom_sites['La'].b_iso.uid,
 )
-project.analysis.aliases.add(
+project.analysis.aliases.add_from_args(
     label='biso_Ba',
     param_uid=project.sample_models['lbco'].atom_sites['Ba'].b_iso.uid,
 )
@@ -577,7 +577,7 @@ project.analysis.aliases.add(
 # Set constraints.
 
 # %%
-project.analysis.constraints.add(lhs_alias='biso_Ba', rhs_expr='biso_La')
+project.analysis.constraints.add_from_args(lhs_alias='biso_Ba', rhs_expr='biso_La')
 
 # %% [markdown]
 # Show defined constraints.
@@ -632,11 +632,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Set more aliases for parameters.
 
 # %%
-project.analysis.aliases.add(
+project.analysis.aliases.add_from_args(
     label='occ_La',
     param_uid=project.sample_models['lbco'].atom_sites['La'].occupancy.uid,
 )
-project.analysis.aliases.add(
+project.analysis.aliases.add_from_args(
     label='occ_Ba',
     param_uid=project.sample_models['lbco'].atom_sites['Ba'].occupancy.uid,
 )
@@ -645,7 +645,7 @@ project.analysis.aliases.add(
 # Set more constraints.
 
 # %%
-project.analysis.constraints.add(
+project.analysis.constraints.add_from_args(
     lhs_alias='occ_Ba',
     rhs_expr='1 - occ_La',
 )
@@ -702,6 +702,7 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %% [markdown]
 # #### Show Project Summary
+
 
 # %%
 project.summary.show_report()

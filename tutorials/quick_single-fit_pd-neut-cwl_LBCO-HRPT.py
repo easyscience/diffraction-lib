@@ -32,7 +32,7 @@ project = ed.Project()
 # ## Step 2: Define Sample Model
 
 # %%
-project.sample_models.add(name='lbco')
+project.sample_models.add_minimal(name='lbco')
 
 # %%
 sample_model = project.sample_models['lbco']
@@ -45,10 +45,38 @@ sample_model.space_group.it_coordinate_system_code = '1'
 sample_model.cell.length_a = 3.88
 
 # %%
-sample_model.atom_sites.add('La', 'La', 0, 0, 0, b_iso=0.5, occupancy=0.5)
-sample_model.atom_sites.add('Ba', 'Ba', 0, 0, 0, b_iso=0.5, occupancy=0.5)
-sample_model.atom_sites.add('Co', 'Co', 0.5, 0.5, 0.5, b_iso=0.5)
-sample_model.atom_sites.add('O', 'O', 0, 0.5, 0.5, b_iso=0.5)
+sample_model.atom_sites.add_from_args(
+    label='La',
+    type_symbol='La',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=0.5,
+    occupancy=0.5,
+)
+sample_model.atom_sites.add_from_args(
+    label='Ba',
+    type_symbol='Ba',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=0.5,
+    occupancy=0.5,
+)
+sample_model.atom_sites.add_from_args(
+    label='Co',
+    type_symbol='Co',
+    fract_x=0.5,
+    fract_y=0.5,
+    fract_z=0.5,
+    wyckoff_letter='b',
+    b_iso=0.5,
+)
+sample_model.atom_sites.add_from_args(
+    label='O', type_symbol='O', fract_x=0, fract_y=0.5, fract_z=0.5, wyckoff_letter='c', b_iso=0.5
+)
 
 # %% [markdown]
 # ## Step 3: Define Experiment
@@ -79,18 +107,18 @@ experiment.peak.broad_gauss_w = 0.1
 experiment.peak.broad_lorentz_y = 0.1
 
 # %%
-experiment.background.add(x=10, y=170)
-experiment.background.add(x=30, y=170)
-experiment.background.add(x=50, y=170)
-experiment.background.add(x=110, y=170)
-experiment.background.add(x=165, y=170)
+experiment.background.add_from_args(x=10, y=170)
+experiment.background.add_from_args(x=30, y=170)
+experiment.background.add_from_args(x=50, y=170)
+experiment.background.add_from_args(x=110, y=170)
+experiment.background.add_from_args(x=165, y=170)
 
 # %%
-experiment.excluded_regions.add(start=0, end=5)
-experiment.excluded_regions.add(start=165, end=180)
+experiment.excluded_regions.add_from_args(start=0, end=5)
+experiment.excluded_regions.add_from_args(start=165, end=180)
 
 # %%
-experiment.linked_phases.add(id='lbco', scale=10.0)
+experiment.linked_phases.add_from_args(id='lbco', scale=10.0)
 
 # %% [markdown]
 # ## Step 4: Perform Analysis

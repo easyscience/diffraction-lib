@@ -46,32 +46,32 @@ def apply_cell_symmetry_constraints(
         a = cell['lattice_a']
         cell['lattice_b'] = a
         cell['lattice_c'] = a
-        cell['angle_alpha'] = 90
-        cell['angle_beta'] = 90
-        cell['angle_gamma'] = 90
+        cell['angle_alpha'] = 90.0
+        cell['angle_beta'] = 90.0
+        cell['angle_gamma'] = 90.0
 
     elif crystal_system == 'tetragonal':
         a = cell['lattice_a']
         cell['lattice_b'] = a
-        cell['angle_alpha'] = 90
-        cell['angle_beta'] = 90
-        cell['angle_gamma'] = 90
+        cell['angle_alpha'] = 90.0
+        cell['angle_beta'] = 90.0
+        cell['angle_gamma'] = 90.0
 
     elif crystal_system == 'orthorhombic':
-        cell['angle_alpha'] = 90
-        cell['angle_beta'] = 90
-        cell['angle_gamma'] = 90
+        cell['angle_alpha'] = 90.0
+        cell['angle_beta'] = 90.0
+        cell['angle_gamma'] = 90.0
 
     elif crystal_system in {'hexagonal', 'trigonal'}:
         a = cell['lattice_a']
         cell['lattice_b'] = a
-        cell['angle_alpha'] = 90
-        cell['angle_beta'] = 90
-        cell['angle_gamma'] = 120
+        cell['angle_alpha'] = 90.0
+        cell['angle_beta'] = 90.0
+        cell['angle_gamma'] = 120.0
 
     elif crystal_system == 'monoclinic':
-        cell['angle_alpha'] = 90
-        cell['angle_gamma'] = 90
+        cell['angle_alpha'] = 90.0
+        cell['angle_gamma'] = 90.0
 
     elif crystal_system == 'triclinic':
         pass  # No constraints to apply

@@ -52,6 +52,7 @@ cards:
   - group: Coverage
     type: codecov
     title: Unit test coverage (Codecov)
+    flag: unittests
     enabled: true
 
   - group: Coverage

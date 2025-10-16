@@ -9,9 +9,9 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 # %% [markdown]
@@ -23,7 +23,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel('hs')
+model = SampleModelFactory.create(name='hs')
 
 # %% [markdown]
 # #### Set Space Group
@@ -35,6 +35,7 @@ model.space_group.it_coordinate_system_code = 'h'
 # %% [markdown]
 # #### Set Unit Cell
 
+
 # %%
 model.cell.length_a = 6.9
 model.cell.length_c = 14.1
@@ -43,11 +44,51 @@ model.cell.length_c = 14.1
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Zn', 'Zn', 0, 0, 0.5, wyckoff_letter='b', b_iso=0.5)
-model.atom_sites.add('Cu', 'Cu', 0.5, 0, 0, wyckoff_letter='e', b_iso=0.5)
-model.atom_sites.add('O', 'O', 0.21, -0.21, 0.06, wyckoff_letter='h', b_iso=0.5)
-model.atom_sites.add('Cl', 'Cl', 0, 0, 0.197, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add('H', '2H', 0.13, -0.13, 0.08, wyckoff_letter='h', b_iso=0.5)
+model.atom_sites.add_from_args(
+    label='Zn',
+    type_symbol='Zn',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0.5,
+    wyckoff_letter='b',
+    b_iso=0.5,
+)
+model.atom_sites.add_from_args(
+    label='Cu',
+    type_symbol='Cu',
+    fract_x=0.5,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='e',
+    b_iso=0.5,
+)
+model.atom_sites.add_from_args(
+    label='O',
+    type_symbol='O',
+    fract_x=0.21,
+    fract_y=-0.21,
+    fract_z=0.06,
+    wyckoff_letter='h',
+    b_iso=0.5,
+)
+model.atom_sites.add_from_args(
+    label='Cl',
+    type_symbol='Cl',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0.197,
+    wyckoff_letter='c',
+    b_iso=0.5,
+)
+model.atom_sites.add_from_args(
+    label='H',
+    type_symbol='2H',
+    fract_x=0.13,
+    fract_y=-0.13,
+    fract_z=0.08,
+    wyckoff_letter='h',
+    b_iso=0.5,
+)
 
 # %% [markdown]
 # #### Symmetry constraints
@@ -84,7 +125,7 @@ download_from_repository('hrpt_hs.xye', destination='data')
 # #### Create Experiment
 
 # %%
-expt = Experiment(name='hrpt', data_path='data/hrpt_hs.xye')
+expt = ExperimentFactory.create(name='hrpt', data_path='data/hrpt_hs.xye')
 
 # %% [markdown]
 # #### Set Instrument
@@ -107,21 +148,21 @@ expt.peak.broad_lorentz_y = 0
 # #### Set Background
 
 # %%
-expt.background.add(x=4.4196, y=500)
-expt.background.add(x=6.6207, y=500)
-expt.background.add(x=10.4918, y=500)
-expt.background.add(x=15.4634, y=500)
-expt.background.add(x=45.6041, y=500)
-expt.background.add(x=74.6844, y=500)
-expt.background.add(x=103.4187, y=500)
-expt.background.add(x=121.6311, y=500)
-expt.background.add(x=159.4116, y=500)
+expt.background.add_from_args(x=4.4196, y=500)
+expt.background.add_from_args(x=6.6207, y=500)
+expt.background.add_from_args(x=10.4918, y=500)
+expt.background.add_from_args(x=15.4634, y=500)
+expt.background.add_from_args(x=45.6041, y=500)
+expt.background.add_from_args(x=74.6844, y=500)
+expt.background.add_from_args(x=103.4187, y=500)
+expt.background.add_from_args(x=121.6311, y=500)
+expt.background.add_from_args(x=159.4116, y=500)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add('hs', scale=0.5)
+expt.linked_phases.add_from_args(id='hs', scale=0.5)
 
 # %% [markdown]
 # ## Define Project

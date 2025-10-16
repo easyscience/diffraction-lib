@@ -9,9 +9,9 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import SampleModelFactory
 from easydiffraction import download_from_repository
 
 # %% [markdown]
@@ -23,7 +23,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel('si')
+model = SampleModelFactory.create(name='si')
 
 # %% [markdown]
 # #### Set Space Group
@@ -42,7 +42,14 @@ model.cell.length_a = 5.431
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.5)
+model.atom_sites.add_from_args(
+    label='Si',
+    type_symbol='Si',
+    fract_x=0.125,
+    fract_y=0.125,
+    fract_z=0.125,
+    b_iso=0.5,
+)
 
 # %% [markdown]
 # ## Define Experiment
@@ -59,7 +66,9 @@ download_from_repository('sepd_si.xye', destination='data')
 # #### Create Experiment
 
 # %%
-expt = Experiment(name='sepd', data_path='data/sepd_si.xye', beam_mode='time-of-flight')
+expt = ExperimentFactory.create(
+    name='sepd', data_path='data/sepd_si.xye', beam_mode='time-of-flight'
+)
 
 # %% [markdown]
 # #### Set Instrument
@@ -94,13 +103,13 @@ expt.peak.asym_alpha_1 = 0.5971
 # %%
 expt.background_type = 'line-segment'
 for x in range(0, 35000, 5000):
-    expt.background.add(x=x, y=200)
+    expt.background.add_from_args(x=x, y=200)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add('si', scale=10.0)
+expt.linked_phases.add_from_args(id='si', scale=10.0)
 
 # %% [markdown]
 # ## Define Project
