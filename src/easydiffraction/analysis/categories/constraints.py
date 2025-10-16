@@ -1,10 +1,10 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
 """Simple symbolic constraint between parameters.
 
 Represents an equation of the form ``lhs_alias = rhs_expr`` where
 ``rhs_expr`` is evaluated elsewhere by the analysis engine.
 """
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
-# SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem

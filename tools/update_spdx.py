@@ -19,57 +19,64 @@ LICENSE_TEXT = '# SPDX-License-Identifier: BSD-3-Clause'
 def update_spdx_header(file_path: Path):
     # Use Path.open to satisfy lint rule PTH123.
     with file_path.open('r', encoding='utf-8') as f:
-        lines = f.readlines()
+        original_lines = f.readlines()
 
-    # Patterns to match existing SPDX lines
+    # Regexes for SPDX lines
     copy_re = re.compile(r'^#\s*SPDX-FileCopyrightText:.*$')
     lic_re = re.compile(r'^#\s*SPDX-License-Identifier:.*$')
 
-    new_lines = []
-    found_copy = False
-    found_lic = False
+    # 1) Preserve any leading shebang / coding cookie lines
+    prefix = []
+    body_start = 0
+    if original_lines:
+        # Shebang line like "#!/usr/bin/env python3"
+        if original_lines[0].startswith('#!'):
+            prefix.append(original_lines[0])
+            body_start = 1
+        # PEP 263 coding cookie on first or second line
+        # e.g. "# -*- coding: utf-8 -*-" or "# coding: utf-8"
+        for _ in range(2):  # at most one more line to inspect
+            if body_start < len(original_lines):
+                line = original_lines[body_start]
+                if re.match(r'^#.*coding[:=]\s*[-\w.]+', line):
+                    prefix.append(line)
+                    body_start += 1
+                else:
+                    break
 
-    for line in lines:
-        if copy_re.match(line):
-            new_lines.append(COPYRIGHT_TEXT + '\n')
-            found_copy = True
-        elif lic_re.match(line):
-            new_lines.append(LICENSE_TEXT + '\n')
-            found_lic = True
-        else:
-            new_lines.append(line)
+    # 2) Work on the remaining body
+    body = original_lines[body_start:]
 
-    # If not found, insert at top
-    insert_pos = 0
-    if not found_copy:
-        new_lines.insert(insert_pos, COPYRIGHT_TEXT + '\n')
-        insert_pos += 1
-    if not found_lic:
-        new_lines.insert(insert_pos, LICENSE_TEXT + '\n')
-        insert_pos += 1
-        new_lines.insert(insert_pos, '\n')
+    # Remove any existing SPDX lines anywhere in the body
+    body = [ln for ln in body if not (copy_re.match(ln) or lic_re.match(ln))]
 
-    # Ensure empty line after license
-    insert_after = None
-    for i, line in enumerate(new_lines):
-        if line.strip() == LICENSE_TEXT:
-            if i + 1 < len(new_lines):
-                next_line = new_lines[i + 1].lstrip()
-                # Add newline if next line starts with import, from, or
-                # docstring
-                if (
-                    next_line
-                    and not next_line.startswith(('#', '\n'))
-                    and next_line.startswith(('from ', 'import ', '"', "'"))
-                ):
-                    insert_after = i + 1
-            else:
-                # License is the last line, append newline
-                new_lines.append('\n')
-            break
+    # Strip leading blank lines in the body so header is tight
+    while body and not body[0].strip():
+        body.pop(0)
 
-    if insert_after is not None:
-        new_lines.insert(insert_after, '\n')
+    # 3) Build canonical SPDX block: two lines + exactly one blank
+    spdx_block = [
+        COPYRIGHT_TEXT + '\n',
+        LICENSE_TEXT + '\n',
+        '\n',
+    ]
+
+    # 4) New content: prefix + SPDX + body
+    new_lines = prefix + spdx_block + body
+
+    # 5) Normalize: collapse any extra blank lines immediately after
+    #    LICENSE to exactly one. This keeps the script idempotent.
+    # Find the index of LICENSE we just inserted (prefix may be 0, 1,
+    # or 2 lines)
+    lic_idx = len(prefix) + 1  # spdx_block[1] is the license line
+    # Ensure exactly one blank line after LICENSE
+    # Remove all blank lines after lic_idx, then insert a single blank.
+    j = lic_idx + 1
+    # Remove any number of blank lines following
+    while j < len(new_lines) and not new_lines[j].strip():
+        new_lines.pop(j)
+    # Insert exactly one blank line at this position
+    new_lines.insert(j, '\n')
 
     with file_path.open('w', encoding='utf-8') as f:
         f.writelines(new_lines)

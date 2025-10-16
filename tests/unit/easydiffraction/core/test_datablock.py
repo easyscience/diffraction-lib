@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-
 def test_datablock_collection_add_and_filters_with_real_parameters():
     from easydiffraction.core.category import CategoryItem
     from easydiffraction.core.datablock import DatablockCollection

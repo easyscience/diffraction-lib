@@ -1,11 +1,11 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
 """Experiment type descriptor (form, beam, probe, scattering).
 
 This lightweight container stores the categorical attributes defining
 an experiment configuration and handles CIF serialization via
 ``CifHandler``.
 """
-# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
-# SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import StringDescriptor

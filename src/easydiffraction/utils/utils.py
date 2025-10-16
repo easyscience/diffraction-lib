@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-import importlib
 import io
 import json
 import os
@@ -10,6 +9,7 @@ import urllib.request
 import zipfile
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
+from importlib.util import find_spec
 from typing import List
 from typing import Optional
 from urllib.parse import urlparse
@@ -409,7 +409,7 @@ def is_colab() -> bool:
         bool: True if running in Google Colab PyCharm, False otherwise.
     """
     try:
-        return importlib.util.find_spec('google.colab') is not None
+        return find_spec('google.colab') is not None
     except ModuleNotFoundError:
         return False
 

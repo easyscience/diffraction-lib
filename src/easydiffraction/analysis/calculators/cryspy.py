@@ -160,6 +160,8 @@ class CryspyCalculator(CalculatorBase):
         cryspy_model_id = f'crystal_{sample_model.name}'
         cryspy_model_dict = cryspy_dict[cryspy_model_id]
 
+        # Update sample model parameters
+
         # Cell
         cryspy_cell = cryspy_model_dict['unit_cell_parameters']
         cryspy_cell[0] = sample_model.cell.length_a.value
@@ -186,15 +188,18 @@ class CryspyCalculator(CalculatorBase):
         for idx, atom_site in enumerate(sample_model.atom_sites):
             cryspy_biso[idx] = atom_site.b_iso.value
 
-        # ---------- Update experiment parameters ----------
+        # Update experiment parameters
+
         if experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
             cryspy_expt_name = f'pd_{experiment.name}'
             cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
+
             # Instrument
             cryspy_expt_dict['offset_ttheta'][0] = np.deg2rad(
                 experiment.instrument.calib_twotheta_offset.value
             )
             cryspy_expt_dict['wavelength'][0] = experiment.instrument.setup_wavelength.value
+
             # Peak
             cryspy_resolution = cryspy_expt_dict['resolution_parameters']
             cryspy_resolution[0] = experiment.peak.broad_gauss_u.value
@@ -206,6 +211,7 @@ class CryspyCalculator(CalculatorBase):
         elif experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
             cryspy_expt_name = f'tof_{experiment.name}'
             cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
+
             # Instrument
             cryspy_expt_dict['zero'][0] = experiment.instrument.calib_d_to_tof_offset.value
             cryspy_expt_dict['dtt1'][0] = experiment.instrument.calib_d_to_tof_linear.value
@@ -213,6 +219,7 @@ class CryspyCalculator(CalculatorBase):
             cryspy_expt_dict['ttheta_bank'] = np.deg2rad(
                 experiment.instrument.setup_twotheta_bank.value
             )
+
             # Peak
             cryspy_sigma = cryspy_expt_dict['profile_sigmas']
             cryspy_sigma[0] = experiment.peak.broad_gauss_sigma_0.value
