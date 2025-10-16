@@ -4,11 +4,17 @@ __pycache__
 .coverage
 .pyc
 
+# PyTest
+.pytest_cache
+
 # MyPy
 .mypy_cache
 
 # Pixi
 .pixi
+
+# Ruff
+.ruff_cache
 
 # Jupyter Notebooks
 .ipynb_checkpoints
