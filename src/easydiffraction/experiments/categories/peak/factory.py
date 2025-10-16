@@ -9,11 +9,11 @@ from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 
 
 class PeakFactory:
-    """Create peak profile objects for given scattering/beam mode.
+    """Factory for creating peak profile objects.
 
-    Lazily imports concrete implementations to avoid circular imports
-    and selects the appropriate class based on the requested profile
-    type.
+    Lazily imports implementations to avoid circular dependencies and
+    selects the appropriate class based on scattering type, beam mode
+    and requested profile type.
     """
 
     ST = ScatteringTypeEnum
@@ -23,6 +23,11 @@ class PeakFactory:
 
     @classmethod
     def _supported_map(cls):
+        """Return nested mapping of supported profile classes.
+
+        Structure:
+            ``{ScatteringType: {BeamMode: {ProfileType: Class}}}``.
+        """
         # Lazy import to avoid circular imports between
         # base and cw/tof/pdf modules
         if cls._supported is None:
@@ -75,6 +80,21 @@ class PeakFactory:
         beam_mode: Optional[BeamModeEnum] = None,
         profile_type: Optional[PeakProfileTypeEnum] = None,
     ):
+        """Instantiate a peak profile for the given configuration.
+
+        Args:
+            scattering_type: Bragg or Total. Defaults to library
+                default.
+            beam_mode: CW or TOF. Defaults to library default.
+            profile_type: Concrete profile within the mode. If omitted,
+                a sensible default is chosen based on the other args.
+
+        Returns:
+            A newly created peak profile object.
+
+        Raises:
+            ValueError: If a requested option is not supported.
+        """
         if beam_mode is None:
             beam_mode = BeamModeEnum.default()
         if scattering_type is None:

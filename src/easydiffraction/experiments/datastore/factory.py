@@ -1,5 +1,8 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Factory for experiment datastores based on sample form and beam
+mode.
+"""
 
 from __future__ import annotations
 
@@ -15,6 +18,8 @@ if TYPE_CHECKING:
 
 
 class DatastoreFactory:
+    """Create PD or SC datastores depending on sample form."""
+
     _supported = {
         'powder': PdDatastore,
         'single crystal': ScDatastore,

@@ -50,13 +50,26 @@ def update_spdx_header(file_path: Path):
         new_lines.insert(insert_pos, '\n')
 
     # Ensure empty line after license
-    # Find index of license line
+    insert_after = None
     for i, line in enumerate(new_lines):
         if line.strip() == LICENSE_TEXT:
-            # If last line or next line is not blank, insert one
-            if i == len(new_lines) - 1 or new_lines[i + 1].strip() != '':
-                new_lines.insert(i + 1, '\n')
+            if i + 1 < len(new_lines):
+                next_line = new_lines[i + 1].lstrip()
+                # Add newline if next line starts with import, from, or
+                # docstring
+                if (
+                    next_line
+                    and not next_line.startswith(('#', '\n'))
+                    and next_line.startswith(('from ', 'import ', '"', "'"))
+                ):
+                    insert_after = i + 1
+            else:
+                # License is the last line, append newline
+                new_lines.append('\n')
             break
+
+    if insert_after is not None:
+        new_lines.insert(insert_after, '\n')
 
     with file_path.open('w', encoding='utf-8') as f:
         f.writelines(new_lines)

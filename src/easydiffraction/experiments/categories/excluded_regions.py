@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Exclude ranges of x from fitting/plotting (masked regions)."""
 
 from typing import List
 
@@ -15,6 +16,8 @@ from easydiffraction.utils.utils import render_table
 
 
 class ExcludedRegion(CategoryItem):
+    """Closed interval [start, end] to be excluded."""
+
     def __init__(
         self,
         *,
@@ -83,8 +86,8 @@ class ExcludedRegions(CategoryCollection):
         super().__init__(item_type=ExcludedRegion)
 
     def add(self, item: ExcludedRegion) -> None:
-        """Mark excluded points in the experiment pattern when a new
-        region is added.
+        """Mark excluded points in the pattern when a region is
+        added.
         """
         # 1. Call parent add first
 
@@ -106,6 +109,7 @@ class ExcludedRegions(CategoryCollection):
         datastore.meas_su = datastore.full_meas_su[~datastore.excluded]
 
     def show(self) -> None:
+        """Print a table of excluded [start, end] intervals."""
         # TODO: Consider moving this to the base class
         #  to avoid code duplication with implementations in Background,
         #  etc. Consider using parameter names as column headers

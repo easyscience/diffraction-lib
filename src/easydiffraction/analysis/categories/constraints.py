@@ -1,3 +1,8 @@
+"""Simple symbolic constraint between parameters.
+
+Represents an equation of the form ``lhs_alias = rhs_expr`` where
+``rhs_expr`` is evaluated elsewhere by the analysis engine.
+"""
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -11,6 +16,13 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class Constraint(CategoryItem):
+    """Single constraint item.
+
+    Args:
+        lhs_alias: Left-hand side alias name being constrained.
+        rhs_expr: Right-hand side expression as a string.
+    """
+
     def __init__(
         self,
         *,
@@ -56,21 +68,36 @@ class Constraint(CategoryItem):
 
     @property
     def lhs_alias(self):
+        """Alias name on the left-hand side of the equation."""
         return self._lhs_alias
 
     @lhs_alias.setter
     def lhs_alias(self, value):
+        """Set the left-hand side alias.
+
+        Args:
+            value: New alias string.
+        """
         self._lhs_alias.value = value
 
     @property
     def rhs_expr(self):
+        """Right-hand side expression string."""
         return self._rhs_expr
 
     @rhs_expr.setter
     def rhs_expr(self, value):
+        """Set the right-hand side expression.
+
+        Args:
+            value: New expression string.
+        """
         self._rhs_expr.value = value
 
 
 class Constraints(CategoryCollection):
+    """Collection of :class:`Constraint` items."""
+
     def __init__(self):
+        """Create an empty constraints collection."""
         super().__init__(item_type=Constraint)

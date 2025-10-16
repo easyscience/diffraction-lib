@@ -20,9 +20,9 @@ if TYPE_CHECKING:
 
 
 class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
-    """Powder experiment class with specific attributes.
+    """Powder diffraction experiment.
 
-    Wraps background, peak profile, and linked phases.
+    Wraps background model, peak profile and linked phases for Bragg PD.
     """
 
     def __init__(
@@ -49,11 +49,11 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
     # -------------
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Loads x, y, sy values from an ASCII data file into the
-        experiment.
+        """Load (x, y, sy) data from an ASCII file into the datastore.
 
-        The file must be structured as:
-            x  y  sy
+        The file format is space/column separated with 2 or 3 columns:
+        ``x y [sy]``. If ``sy`` is missing, it is approximated as
+        ``sqrt(y)`` with small values clamped to ``1.0``.
         """
         try:
             data = np.loadtxt(data_path)
@@ -93,10 +93,16 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
 
     @property
     def background_type(self):
+        """Current background type enum value."""
         return self._background_type
 
     @background_type.setter
     def background_type(self, new_type):
+        """Set and apply a new background type.
+
+        Falls back to printing supported types if the new value is not
+        supported.
+        """
         if new_type not in BackgroundFactory._supported_map():
             supported_types = list(BackgroundFactory._supported_map().keys())
             print(warning(f"Unknown background type '{new_type}'"))
@@ -109,6 +115,7 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
         print(new_type)
 
     def show_supported_background_types(self):
+        """Print a table of supported background types."""
         columns_headers = ['Background type', 'Description']
         columns_alignment = ['left', 'left']
         columns_data = []
@@ -123,5 +130,6 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
         )
 
     def show_current_background_type(self):
+        """Print the currently used background type."""
         print(paragraph('Current background type'))
         print(self.background_type)

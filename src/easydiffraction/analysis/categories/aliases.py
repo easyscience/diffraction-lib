@@ -1,3 +1,8 @@
+"""Alias category for mapping friendly names to parameter UIDs.
+
+Defines a small record type used by analysis configuration to refer to
+parameters via readable labels instead of raw unique identifiers.
+"""
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -11,6 +16,17 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class Alias(CategoryItem):
+    """Single alias entry.
+
+    Maps a human-readable ``label`` to a concrete ``param_uid`` used by
+    the engine.
+
+    Args:
+        label: Alias label. Must match ``^[A-Za-z_][A-Za-z0-9_]*$``.
+        param_uid: Target parameter uid. Same identifier pattern as
+            ``label``.
+    """
+
     def __init__(
         self,
         *,
@@ -57,21 +73,36 @@ class Alias(CategoryItem):
 
     @property
     def label(self):
+        """Alias label descriptor."""
         return self._label
 
     @label.setter
     def label(self, value):
+        """Set alias label.
+
+        Args:
+            value: New label.
+        """
         self._label.value = value
 
     @property
     def param_uid(self):
+        """Parameter uid descriptor the alias points to."""
         return self._param_uid
 
     @param_uid.setter
     def param_uid(self, value):
+        """Set the parameter uid.
+
+        Args:
+            value: New uid.
+        """
         self._param_uid.value = value
 
 
 class Aliases(CategoryCollection):
+    """Collection of :class:`Alias` items."""
+
     def __init__(self):
+        """Create an empty collection of aliases."""
         super().__init__(item_type=Alias)

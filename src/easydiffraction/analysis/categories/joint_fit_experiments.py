@@ -1,3 +1,8 @@
+"""Joint-fit experiment weighting configuration.
+
+Stores per-experiment weights to be used when multiple experiments are
+fitted simultaneously.
+"""
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -13,6 +18,13 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class JointFitExperiment(CategoryItem):
+    """A single joint-fit entry.
+
+    Args:
+        id: Experiment identifier used in the fit session.
+        weight: Relative weight factor in the combined objective.
+    """
+
     def __init__(
         self,
         *,
@@ -59,25 +71,36 @@ class JointFitExperiment(CategoryItem):
 
     @property
     def id(self):
+        """Experiment identifier descriptor."""
         return self._id
 
     @id.setter
     def id(self, value):
+        """Set the experiment identifier.
+
+        Args:
+            value: New id string.
+        """
         self._id.value = value
 
     @property
     def weight(self):
+        """Weight factor descriptor."""
         return self._weight
 
     @weight.setter
     def weight(self, value):
+        """Set the weight factor.
+
+        Args:
+            value: New weight value.
+        """
         self._weight.value = value
 
 
 class JointFitExperiments(CategoryCollection):
-    """Collection manager for experiments that are fitted together in a
-    `joint` fit.
-    """
+    """Collection of :class:`JointFitExperiment` items."""
 
     def __init__(self):
+        """Create an empty joint-fit experiments collection."""
         super().__init__(item_type=JointFitExperiment)

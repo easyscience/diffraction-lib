@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Time-of-flight peak profile classes."""
 
 from easydiffraction.experiments.categories.peak.base import PeakBase
 from easydiffraction.experiments.categories.peak.tof_mixins import IkedaCarpenterAsymmetryMixin

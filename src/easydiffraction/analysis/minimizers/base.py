@@ -16,9 +16,14 @@ from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
 
 
 class MinimizerBase(ABC):
-    """Abstract base class for minimizer implementations.
+    """Abstract base for concrete minimizers.
 
-    Provides shared logic and structure for concrete minimizers.
+    Contract:
+    - Subclasses must implement ``_prepare_solver_args``,
+        ``_run_solver``, ``_sync_result_to_parameters`` and
+        ``_check_success``.
+    - The ``fit`` method orchestrates the full workflow and returns
+        :class:`FitResults`.
     """
 
     def __init__(
@@ -39,18 +44,29 @@ class MinimizerBase(ABC):
         self.tracker: FitProgressTracker = FitProgressTracker()
 
     def _start_tracking(self, minimizer_name: str) -> None:
+        """Initialize progress tracking and timer.
+
+        Args:
+            minimizer_name: Human-readable name shown in progress.
+        """
         self.tracker.reset()
         self.tracker.start_tracking(minimizer_name)
         self.tracker.start_timer()
 
     def _stop_tracking(self) -> None:
+        """Stop timer and finalize tracking."""
         self.tracker.stop_timer()
         self.tracker.finish_tracking()
 
     @abstractmethod
     def _prepare_solver_args(self, parameters: List[Any]) -> Dict[str, Any]:
-        """Prepare the solver arguments directly from the list of free
-        parameters.
+        """Prepare keyword-arguments for the underlying solver.
+
+        Args:
+            parameters: List of free parameters to be fitted.
+
+        Returns:
+            Mapping of keyword arguments to pass into ``_run_solver``.
         """
         pass
 
@@ -60,6 +76,7 @@ class MinimizerBase(ABC):
         objective_function: Callable[..., Any],
         engine_parameters: Dict[str, Any],
     ) -> Any:
+        """Execute the concrete solver and return its raw result."""
         pass
 
     @abstractmethod
@@ -68,6 +85,9 @@ class MinimizerBase(ABC):
         raw_result: Any,
         parameters: List[Any],
     ) -> None:
+        """Copy values from ``raw_result`` back to ``parameters`` in-
+        place.
+        """
         pass
 
     def _finalize_fit(
@@ -75,6 +95,15 @@ class MinimizerBase(ABC):
         parameters: List[Any],
         raw_result: Any,
     ) -> FitResults:
+        """Build :class:`FitResults` and store it on ``self.result``.
+
+        Args:
+            parameters: Parameters after the solver finished.
+            raw_result: Backend-specific solver output object.
+
+        Returns:
+            FitResults: Aggregated outcome of the fit.
+        """
         self._sync_result_to_parameters(parameters, raw_result)
         success = self._check_success(raw_result)
         self.result = FitResults(
@@ -89,10 +118,7 @@ class MinimizerBase(ABC):
 
     @abstractmethod
     def _check_success(self, raw_result: Any) -> bool:
-        """Determine whether the fit was successful.
-
-        This must be implemented by concrete minimizers.
-        """
+        """Determine whether the fit was successful."""
         pass
 
     def fit(
@@ -100,6 +126,16 @@ class MinimizerBase(ABC):
         parameters: List[Any],
         objective_function: Callable[..., Any],
     ) -> FitResults:
+        """Run the full minimization workflow.
+
+        Args:
+            parameters: Free parameters to optimize.
+            objective_function: Callable returning residuals for a given
+                set of engine arguments.
+
+        Returns:
+            FitResults with success flag, best chi2 and timing.
+        """
         minimizer_name = self.name or 'Unnamed Minimizer'
         if self.method is not None:
             minimizer_name += f' ({self.method})'
@@ -123,6 +159,7 @@ class MinimizerBase(ABC):
         experiments: Any,
         calculator: Any,
     ) -> np.ndarray:
+        """Default objective helper computing residuals array."""
         return self._compute_residuals(
             engine_params,
             parameters,
@@ -138,6 +175,7 @@ class MinimizerBase(ABC):
         experiments: Any,
         calculator: Any,
     ) -> Callable[[Dict[str, Any]], np.ndarray]:
+        """Return a closure capturing problem context for the solver."""
         return lambda engine_params: self._objective_function(
             engine_params,
             parameters,

@@ -9,8 +9,8 @@ from easydiffraction.core.category import CategoryItem
 class InstrumentBase(CategoryItem):
     """Base class for instrument category items.
 
-    Provides the common identity code and serves as a parent for
-    concrete instrument definitions (CWL/TOF).
+    This class sets the common ``category_code`` and is used as a base
+    for concrete CWL/TOF instrument definitions.
     """
 
     def __init__(self) -> None:

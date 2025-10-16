@@ -1,3 +1,9 @@
+"""Experiment type descriptor (form, beam, probe, scattering).
+
+This lightweight container stores the categorical attributes defining
+an experiment configuration and handles CIF serialization via
+``CifHandler``.
+"""
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -14,6 +20,15 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class ExperimentType(CategoryItem):
+    """Container of categorical attributes defining experiment flavor.
+
+    Args:
+        sample_form: Powder or Single crystal.
+        beam_mode: Constant wavelength (CW) or time-of-flight (TOF).
+        radiation_probe: Neutrons or X-rays.
+        scattering_type: Bragg or Total.
+    """
+
     def __init__(
         self,
         *,
@@ -102,32 +117,40 @@ class ExperimentType(CategoryItem):
 
     @property
     def sample_form(self):
+        """Sample form descriptor (powder/single crystal)."""
         return self._sample_form
 
     @sample_form.setter
     def sample_form(self, value):
+        """Set sample form value."""
         self._sample_form.value = value
 
     @property
     def beam_mode(self):
+        """Beam mode descriptor (CW/TOF)."""
         return self._beam_mode
 
     @beam_mode.setter
     def beam_mode(self, value):
+        """Set beam mode value."""
         self._beam_mode.value = value
 
     @property
     def radiation_probe(self):
+        """Radiation probe descriptor (neutrons/X-rays)."""
         return self._radiation_probe
 
     @radiation_probe.setter
     def radiation_probe(self, value):
+        """Set radiation probe value."""
         self._radiation_probe.value = value
 
     @property
     def scattering_type(self):
+        """Scattering type descriptor (Bragg/Total)."""
         return self._scattering_type
 
     @scattering_type.setter
     def scattering_type(self, value):
+        """Set scattering type value."""
         self._scattering_type.value = value

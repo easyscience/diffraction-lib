@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Linked phases allow combining phases with scale factors."""
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
@@ -13,6 +14,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class LinkedPhase(CategoryItem):
+    """Link to a phase by id with a scale factor."""
+
     def __init__(
         self,
         *,
@@ -58,18 +61,22 @@ class LinkedPhase(CategoryItem):
 
     @property
     def id(self) -> StringDescriptor:
+        """Identifier of the linked phase."""
         return self._id
 
     @id.setter
     def id(self, value: str):
+        """Set the linked phase identifier."""
         self._id.value = value
 
     @property
     def scale(self) -> Parameter:
+        """Scale factor parameter."""
         return self._scale
 
     @scale.setter
     def scale(self, value: float):
+        """Set scale factor value."""
         self._scale.value = value
 
 
@@ -77,4 +84,5 @@ class LinkedPhases(CategoryCollection):
     """Collection of LinkedPhase instances."""
 
     def __init__(self):
+        """Create an empty collection of linked phases."""
         super().__init__(item_type=LinkedPhase)
