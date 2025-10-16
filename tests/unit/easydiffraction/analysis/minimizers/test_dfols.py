@@ -1,10 +1,13 @@
-import types
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import numpy as np
 
 
 def test_module_import():
     import easydiffraction.analysis.minimizers.dfols as MUT
-    assert MUT.__name__ == "easydiffraction.analysis.minimizers.dfols"
+
+    assert MUT.__name__ == 'easydiffraction.analysis.minimizers.dfols'
 
 
 def test_dfols_prepare_run_and_sync(monkeypatch):
@@ -33,12 +36,12 @@ def test_dfols_prepare_run_and_sync(monkeypatch):
         assert isinstance(bounds, tuple) and all(isinstance(b, np.ndarray) for b in bounds)
         return FakeRes()
 
-    monkeypatch.setattr(mod, "solve", fake_solve)
+    monkeypatch.setattr(mod, 'solve', fake_solve)
 
     minim = DfolsMinimizer(max_iterations=10)
     params = [P(1.0, lo=0.0, hi=5.0), P(2.0, lo=1.0, hi=6.0)]
     kwargs = minim._prepare_solver_args(params)
-    assert set(kwargs.keys()) == {"x0", "bounds"}
+    assert set(kwargs.keys()) == {'x0', 'bounds'}
     res = minim._run_solver(lambda p: np.array([0.0]), **kwargs)
     # Sync back values and check success flag handling
     minim._sync_result_to_parameters(params, res)

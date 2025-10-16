@@ -1,29 +1,24 @@
-import pytest
-import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
 
 
 # Module under test: easydiffraction.experiments.categories.experiment_type
 
+
 def test_module_import():
     import easydiffraction.experiments.categories.experiment_type as MUT
-    expected_module_name = "easydiffraction.experiments.categories.experiment_type"
+
+    expected_module_name = 'easydiffraction.experiments.categories.experiment_type'
     actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert expected_module_name == actual_module_name
 
 
 def test_experiment_type_properties_and_validation(monkeypatch):
     from easydiffraction.experiments.categories.experiment_type import ExperimentType
-    from easydiffraction.experiments.experiment.enums import (
-        BeamModeEnum,
-        RadiationProbeEnum,
-        SampleFormEnum,
-        ScatteringTypeEnum,
-    )
+    from easydiffraction.experiments.experiment.enums import BeamModeEnum
+    from easydiffraction.experiments.experiment.enums import RadiationProbeEnum
+    from easydiffraction.experiments.experiment.enums import SampleFormEnum
+    from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
     from easydiffraction.utils.logging import log
 
     log.configure(reaction=log.Reaction.WARN)
@@ -41,5 +36,5 @@ def test_experiment_type_properties_and_validation(monkeypatch):
     assert et.scattering_type.value == ScatteringTypeEnum.BRAGG.value
 
     # try invalid value should fall back to previous (membership validator)
-    et.sample_form = "invalid"
+    et.sample_form = 'invalid'
     assert et.sample_form.value == SampleFormEnum.POWDER.value

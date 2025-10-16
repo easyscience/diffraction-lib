@@ -1,23 +1,22 @@
-import pytest
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import numpy as np
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
-
 
 # Module under test: easydiffraction.plotting.plotters.plotter_ascii
 
+
 def test_module_import():
     import easydiffraction.plotting.plotters.plotter_ascii as MUT
-    expected_module_name = "easydiffraction.plotting.plotters.plotter_ascii"
+
+    expected_module_name = 'easydiffraction.plotting.plotters.plotter_ascii'
     actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert expected_module_name == actual_module_name
 
 
 def test_ascii_plotter_plot_minimal(capsys):
     from easydiffraction.plotting.plotters.plotter_ascii import AsciiPlotter
+
     x = np.array([0.0, 1.0, 2.0])
     y = np.array([1.0, 2.0, 3.0])
     p = AsciiPlotter()

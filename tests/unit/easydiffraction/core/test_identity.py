@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
+
 def test_identity_direct_and_parent_resolution():
     from easydiffraction.core.identity import Identity
 
@@ -7,10 +11,10 @@ def test_identity_direct_and_parent_resolution():
             if parent is not None:
                 self._parent = parent
 
-    parent = Node(name="cat")
+    parent = Node(name='cat')
     child = Node(parent=parent)
-    assert parent._identity.category_code == "cat"
-    assert child._identity.category_code == "cat"
+    assert parent._identity.category_code == 'cat'
+    assert child._identity.category_code == 'cat'
 
 
 def test_identity_cycle_safe_resolution():

@@ -1,11 +1,14 @@
-import pytest
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
 
 
 def test_datablock_collection_add_and_filters_with_real_parameters():
-    from easydiffraction.core.datablock import DatablockCollection, DatablockItem
     from easydiffraction.core.category import CategoryItem
+    from easydiffraction.core.datablock import DatablockCollection
+    from easydiffraction.core.datablock import DatablockItem
     from easydiffraction.core.parameters import Parameter
-    from easydiffraction.core.validation import AttributeSpec, DataTypes
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.validation import DataTypes
     from easydiffraction.io.cif.handler import CifHandler
 
     class Cat(CategoryItem):

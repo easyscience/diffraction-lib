@@ -1,20 +1,17 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import importlib
-import types
-import pytest
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
-
 
 # Module under test: easydiffraction.plotting.plotters.plotter_base
 
+
 def test_module_import():
     import easydiffraction.plotting.plotters.plotter_base as MUT
-    expected_module_name = "easydiffraction.plotting.plotters.plotter_base"
+
+    expected_module_name = 'easydiffraction.plotting.plotters.plotter_base'
     actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert expected_module_name == actual_module_name
 
 
 def test_default_engine_switches_with_notebook(monkeypatch):
@@ -34,7 +31,8 @@ def test_default_engine_switches_with_notebook(monkeypatch):
 
 def test_default_axes_labels_keys_present():
     import easydiffraction.plotting.plotters.plotter_base as pb
-    from easydiffraction.experiments.experiment.enums import BeamModeEnum, ScatteringTypeEnum
+    from easydiffraction.experiments.experiment.enums import BeamModeEnum
+    from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 
     assert (ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH) in pb.DEFAULT_AXES_LABELS
     assert (ScatteringTypeEnum.BRAGG, BeamModeEnum.TIME_OF_FLIGHT) in pb.DEFAULT_AXES_LABELS

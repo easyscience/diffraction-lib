@@ -1,10 +1,13 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import numpy as np
-import pytest
 
 
 def test_module_import():
     import easydiffraction.analysis.minimizers.base as MUT
-    assert MUT.__name__ == "easydiffraction.analysis.minimizers.base"
+
+    assert MUT.__name__ == 'easydiffraction.analysis.minimizers.base'
 
 
 def test_minimizer_base_fit_flow_and_finalize():
@@ -20,17 +23,17 @@ def test_minimizer_base_fit_flow_and_finalize():
 
     class DummyMinimizer(MinimizerBase):
         def __init__(self):
-            super().__init__(name="dummy", method="m", max_iterations=5)
+            super().__init__(name='dummy', method='m', max_iterations=5)
             self.synced = False
 
         def _prepare_solver_args(self, parameters):
             # Make sure parameters list is received
             assert isinstance(parameters, list)
-            return {"engine_parameters": {"ok": True}}
+            return {'engine_parameters': {'ok': True}}
 
         def _run_solver(self, objective_function, **kwargs):
             # Exercise calling of the provided objective
-            residuals = objective_function(kwargs.get("engine_parameters"))
+            residuals = objective_function(kwargs.get('engine_parameters'))
             # Update tracker so finish_tracking has valid metrics
             self.tracker.track(residuals=np.array(residuals), parameters=[1])
             return DummyResult(success=True)
@@ -42,12 +45,14 @@ def test_minimizer_base_fit_flow_and_finalize():
                 parameters[0].value = 42
 
         def _check_success(self, raw_result):
-            return getattr(raw_result, "success", False)
+            return getattr(raw_result, 'success', False)
 
         # Provide residuals implementation used by _objective_function
-        def _compute_residuals(self, engine_params, parameters, sample_models, experiments, calculator):
+        def _compute_residuals(
+            self, engine_params, parameters, sample_models, experiments, calculator
+        ):
             # Minimal residuals; verify engine params passed through
-            assert engine_params == {"ok": True}
+            assert engine_params == {'ok': True}
             return np.array([0.0, 0.0])
 
     minim = DummyMinimizer()
@@ -88,11 +93,15 @@ def test_minimizer_base_create_objective_function_uses_compute_residuals():
         def _check_success(self, raw_result):
             return True
 
-        def _compute_residuals(self, engine_params, parameters, sample_models, experiments, calculator):
+        def _compute_residuals(
+            self, engine_params, parameters, sample_models, experiments, calculator
+        ):
             # Return a deterministic vector to assert against
             return np.array([1.0, 2.0, 3.0])
 
     m = M()
-    f = m._create_objective_function(parameters=[], sample_models=None, experiments=None, calculator=None)
+    f = m._create_objective_function(
+        parameters=[], sample_models=None, experiments=None, calculator=None
+    )
     out = f({})
     assert np.allclose(out, np.array([1.0, 2.0, 3.0]))

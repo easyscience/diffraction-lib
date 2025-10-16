@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
+
 def test_show_params_empty_branches(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
@@ -5,9 +9,11 @@ def test_show_params_empty_branches(capsys):
         @property
         def parameters(self):
             return []
+
         @property
         def fittable_parameters(self):
             return []
+
         @property
         def free_parameters(self):
             return []
@@ -15,7 +21,7 @@ def test_show_params_empty_branches(capsys):
     class P:
         sample_models = Empty()
         experiments = Empty()
-        _varname = "proj"
+        _varname = 'proj'
 
     a = Analysis(project=P())
 
@@ -27,4 +33,8 @@ def test_show_params_empty_branches(capsys):
     a.show_free_params()
 
     out = capsys.readouterr().out
-    assert "No parameters found" in out or "No fittable parameters" in out or "No free parameters" in out
+    assert (
+        'No parameters found' in out
+        or 'No fittable parameters' in out
+        or 'No free parameters' in out
+    )

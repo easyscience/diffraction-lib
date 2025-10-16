@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import numpy as np
 
 
@@ -6,14 +9,14 @@ def test_datastore_to_cif_empty_returns_empty_string():
 
     class DS:
         def _cif_mapping(self):
-            return {"x": "_x", "y": "_y"}
+            return {'x': '_x', 'y': '_y'}
 
         # x, y absent or empty should yield empty CIF
         x = np.array([])
         y = np.array([])
 
     out = MUT.datastore_to_cif(DS())
-    assert out == ""
+    assert out == ''
 
 
 def test_datastore_to_cif_writes_rows_and_respects_max_points():
@@ -25,35 +28,36 @@ def test_datastore_to_cif_writes_rows_and_respects_max_points():
             self.y = np.arange(n) + 100
 
         def _cif_mapping(self):
-            return {"x": "_x", "y": "_y"}
+            return {'x': '_x', 'y': '_y'}
 
     # Small dataset: no ellipsis
     ds_small = DS(3)
     out_small = MUT.datastore_to_cif(ds_small)
-    assert out_small.splitlines()[0] == "loop_"
-    assert "_x" in out_small and "_y" in out_small
-    assert "0 100" in out_small and "2 102" in out_small
+    assert out_small.splitlines()[0] == 'loop_'
+    assert '_x' in out_small and '_y' in out_small
+    assert '0 100' in out_small and '2 102' in out_small
 
     # Larger dataset with max_points enforced
     ds_large = DS(10)
     out_large = MUT.datastore_to_cif(ds_large, max_points=2)
     lines = out_large.splitlines()
-    assert "..." in lines
+    assert '...' in lines
     # First two rows and last two rows present
-    assert "0 100" in out_large and "1 101" in out_large
-    assert "8 108" in out_large and "9 109" in out_large
+    assert '0 100' in out_large and '1 101' in out_large
+    assert '8 108' in out_large and '9 109' in out_large
 
 
 def test_datablock_item_to_cif_includes_item_and_collection():
     import easydiffraction.io.cif.serialize as MUT
-    from easydiffraction.core.category import CategoryCollection, CategoryItem
+    from easydiffraction.core.category import CategoryCollection
+    from easydiffraction.core.category import CategoryItem
     from easydiffraction.io.cif.handler import CifHandler
 
     class Item(CategoryItem):
         def __init__(self, val):
             super().__init__()
-            self._p = type("P", (), {})()
-            self._p._cif_handler = CifHandler(names=["_aa"])  # noqa: SLF001
+            self._p = type('P', (), {})()
+            self._p._cif_handler = CifHandler(names=['_aa'])  # noqa: SLF001
             self._p.value = val
 
         @property
@@ -66,17 +70,17 @@ def test_datablock_item_to_cif_includes_item_and_collection():
 
     class DB:
         def __init__(self):
-            self._identity = type("I", (), {"datablock_entry_name": "block1"})()
+            self._identity = type('I', (), {'datablock_entry_name': 'block1'})()
             # one CategoryItem-like
             self.item = Item(42)
             # one CategoryCollection-like
             self.coll = CategoryCollection(item_type=Item)
-            self.coll["row1"] = Item(7)
+            self.coll['row1'] = Item(7)
 
     out = MUT.datablock_item_to_cif(DB())
-    assert out.startswith("data_block1")
-    assert "_aa 42" in out
-    assert "loop_" in out and "_aa" in out and "7" in out
+    assert out.startswith('data_block1')
+    assert '_aa 42' in out
+    assert 'loop_' in out and '_aa' in out and '7' in out
 
 
 def test_datablock_collection_to_cif_concatenates_blocks():
@@ -90,21 +94,21 @@ def test_datablock_collection_to_cif_concatenates_blocks():
         def as_cif(self):
             return self._t
 
-    coll = {"a": B("A"), "b": B("B")}
+    coll = {'a': B('A'), 'b': B('B')}
     out = MUT.datablock_collection_to_cif(coll)
-    assert out == "A\n\nB"
+    assert out == 'A\n\nB'
 
 
 def test_project_info_to_cif_contains_core_fields():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.project.project_info import ProjectInfo
 
-    info = ProjectInfo(name="p1", title="My Title", description="Some description text")
+    info = ProjectInfo(name='p1', title='My Title', description='Some description text')
     out = MUT.project_info_to_cif(info)
-    assert "_project.id               p1" in out
-    assert "_project.title" in out and "My Title" in out
-    assert "_project.description" in out
-    assert "_project.created" in out and "_project.last_modified" in out
+    assert '_project.id               p1' in out
+    assert '_project.title' in out and 'My Title' in out
+    assert '_project.description' in out
+    assert '_project.created' in out and '_project.last_modified' in out
 
 
 def test_experiment_to_cif_with_and_without_data():
@@ -120,7 +124,7 @@ def test_experiment_to_cif_with_and_without_data():
 
     class Exp:
         def __init__(self, data_text):
-            self._identity = type("I", (), {"datablock_entry_name": "expA"})()
+            self._identity = type('I', (), {'datablock_entry_name': 'expA'})()
             self.datastore = DS(data_text)
             # Minimal CategoryItem to be picked up by datablock_item_to_cif
             from easydiffraction.core.category import CategoryItem
@@ -129,8 +133,8 @@ def test_experiment_to_cif_with_and_without_data():
             class Item(CategoryItem):
                 def __init__(self):
                     super().__init__()
-                    self._p = type("P", (), {})()
-                    self._p._cif_handler = CifHandler(names=["_k"])  # noqa: SLF001
+                    self._p = type('P', (), {})()
+                    self._p._cif_handler = CifHandler(names=['_k'])  # noqa: SLF001
                     self._p.value = 1
 
                 @property
@@ -143,11 +147,11 @@ def test_experiment_to_cif_with_and_without_data():
 
             self.item = Item()
 
-    out_with = MUT.experiment_to_cif(Exp("loop_\n_x\n1"))
-    assert out_with.startswith("data_expA") and "loop_" in out_with
+    out_with = MUT.experiment_to_cif(Exp('loop_\n_x\n1'))
+    assert out_with.startswith('data_expA') and 'loop_' in out_with
 
-    out_without = MUT.experiment_to_cif(Exp(""))
-    assert out_without.startswith("data_expA") and out_without.endswith("_k 1")
+    out_without = MUT.experiment_to_cif(Exp(''))
+    assert out_without.startswith('data_expA') and out_without.endswith('_k 1')
 
 
 def test_analysis_to_cif_renders_all_sections():
@@ -162,16 +166,16 @@ def test_analysis_to_cif_renders_all_sections():
             return self._t
 
     class A:
-        current_calculator = "cryspy engine"
-        current_minimizer = "lmfit (leastsq)"
-        fit_mode = "single"
-        aliases = Obj("ALIASES")
-        constraints = Obj("CONSTRAINTS")
+        current_calculator = 'cryspy engine'
+        current_minimizer = 'lmfit (leastsq)'
+        fit_mode = 'single'
+        aliases = Obj('ALIASES')
+        constraints = Obj('CONSTRAINTS')
 
     out = MUT.analysis_to_cif(A())
     lines = out.splitlines()
-    assert lines[0].startswith("_analysis.calculator_engine")
-    assert "\"cryspy engine\"" in lines[0]
-    assert lines[1].startswith("_analysis.fitting_engine") and "\"lmfit (leastsq)\"" in lines[1]
-    assert lines[2].startswith("_analysis.fit_mode") and "single" in lines[2]
-    assert "ALIASES" in out and "CONSTRAINTS" in out
+    assert lines[0].startswith('_analysis.calculator_engine')
+    assert '"cryspy engine"' in lines[0]
+    assert lines[1].startswith('_analysis.fitting_engine') and '"lmfit (leastsq)"' in lines[1]
+    assert lines[2].startswith('_analysis.fit_mode') and 'single' in lines[2]
+    assert 'ALIASES' in out and 'CONSTRAINTS' in out

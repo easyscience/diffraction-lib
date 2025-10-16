@@ -1,27 +1,25 @@
-import pytest
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 from typer.testing import CliRunner
 
-
 runner = CliRunner()
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
 
 
 # Module under test: easydiffraction.__main__
 
+
 def test_module_import():
     import easydiffraction.__main__ as MUT
-    expected_module_name = "easydiffraction.__main__"
+
+    expected_module_name = 'easydiffraction.__main__'
     actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert expected_module_name == actual_module_name
 
 
 def test_cli_version_invokes_show_version(monkeypatch, capsys):
-    import easydiffraction.__main__ as main_mod
     import easydiffraction as ed
+    import easydiffraction.__main__ as main_mod
 
     called = {'ok': False}
 
@@ -38,14 +36,15 @@ def test_cli_version_invokes_show_version(monkeypatch, capsys):
 
 def test_cli_help_shows_and_exits_zero():
     import easydiffraction.__main__ as main_mod
+
     result = runner.invoke(main_mod.app, ['--help'])
     assert result.exit_code == 0
     assert 'EasyDiffraction command-line interface' in result.stdout
 
 
 def test_cli_subcommands_call_utils(monkeypatch):
-    import easydiffraction.__main__ as main_mod
     import easydiffraction as ed
+    import easydiffraction.__main__ as main_mod
 
     logs = []
     monkeypatch.setattr(ed, 'list_tutorials', lambda: logs.append('LIST'))

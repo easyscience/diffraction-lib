@@ -1,4 +1,6 @@
-import builtins
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import pytest
 
 
@@ -12,7 +14,7 @@ def test_guard_allows_only_declared_public_properties_and_links_parent(monkeypat
 
         @property
         def as_cif(self) -> str:
-            return ""
+            return ''
 
         @property
         def value(self):
@@ -37,15 +39,15 @@ def test_guard_allows_only_declared_public_properties_and_links_parent(monkeypat
 
         @property
         def as_cif(self) -> str:
-            return ""
+            return ''
 
     p = Parent()
     # Writable property on child should set and link parent
     p.child.value = 3
     assert p.child.value == 3
     # Private assign links parent automatically
-    assert getattr(p.child, '_parent') is p
+    assert p.child._parent is p
 
     # Unknown attribute should raise AttributeError under current logging mode
     with pytest.raises(AttributeError):
-        setattr(p.child, 'unknown_attr', 1)
+        p.child.unknown_attr = 1

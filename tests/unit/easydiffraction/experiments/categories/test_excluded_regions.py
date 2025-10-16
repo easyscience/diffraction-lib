@@ -1,9 +1,14 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import numpy as np
 
 
 def test_excluded_regions_add_updates_datastore_and_cif():
     from types import SimpleNamespace
-    from easydiffraction.experiments.categories.excluded_regions import ExcludedRegion, ExcludedRegions
+
+    from easydiffraction.experiments.categories.excluded_regions import ExcludedRegion
+    from easydiffraction.experiments.categories.excluded_regions import ExcludedRegions
 
     # Minimal fake datastore
     full_x = np.array([0.0, 1.0, 2.0, 3.0])

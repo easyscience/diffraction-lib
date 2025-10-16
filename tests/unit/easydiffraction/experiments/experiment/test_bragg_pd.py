@@ -1,17 +1,16 @@
-import io
-import os
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import numpy as np
 import pytest
 
 from easydiffraction.experiments.categories.background.enums import BackgroundTypeEnum
 from easydiffraction.experiments.categories.experiment_type import ExperimentType
 from easydiffraction.experiments.experiment.bragg_pd import BraggPdExperiment
-from easydiffraction.experiments.experiment.enums import (
-    BeamModeEnum,
-    RadiationProbeEnum,
-    SampleFormEnum,
-    ScatteringTypeEnum,
-)
+from easydiffraction.experiments.experiment.enums import BeamModeEnum
+from easydiffraction.experiments.experiment.enums import RadiationProbeEnum
+from easydiffraction.experiments.experiment.enums import SampleFormEnum
+from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 
 
 def _mk_type_powder_cwl_bragg():
@@ -24,7 +23,7 @@ def _mk_type_powder_cwl_bragg():
 
 
 def test_background_defaults_and_change():
-    expt = BraggPdExperiment(name="e1", type=_mk_type_powder_cwl_bragg())
+    expt = BraggPdExperiment(name='e1', type=_mk_type_powder_cwl_bragg())
     # default background type
     assert expt.background_type == BackgroundTypeEnum.default()
 
@@ -33,15 +32,15 @@ def test_background_defaults_and_change():
     assert expt.background_type == BackgroundTypeEnum.CHEBYSHEV
 
     # unknown type keeps previous type and prints warnings (no raise)
-    expt.background_type = "not-a-type"  # invalid string
+    expt.background_type = 'not-a-type'  # invalid string
     assert expt.background_type == BackgroundTypeEnum.CHEBYSHEV
 
 
 def test_load_ascii_data_rounds_and_defaults_sy(tmp_path: pytest.TempPathFactory):
-    expt = BraggPdExperiment(name="e1", type=_mk_type_powder_cwl_bragg())
+    expt = BraggPdExperiment(name='e1', type=_mk_type_powder_cwl_bragg())
 
     # Case 1: provide only two columns -> sy defaults to sqrt(y) and min clipped to 1.0
-    p = tmp_path / "data2col.dat"
+    p = tmp_path / 'data2col.dat'
     x = np.array([1.123456, 2.987654, 3.5])
     y = np.array([0.0, 4.0, 9.0])
     data = np.column_stack([x, y])
@@ -58,7 +57,7 @@ def test_load_ascii_data_rounds_and_defaults_sy(tmp_path: pytest.TempPathFactory
     assert expt.datastore.excluded.shape == expt.datastore.x.shape
 
     # Case 2: three columns provided -> sy taken from file and clipped
-    p3 = tmp_path / "data3col.dat"
+    p3 = tmp_path / 'data3col.dat'
     sy = np.array([0.0, 1e-5, 0.2])  # first two should clip to 1.0
     data3 = np.column_stack([x, y, sy])
     np.savetxt(p3, data3)
@@ -67,7 +66,7 @@ def test_load_ascii_data_rounds_and_defaults_sy(tmp_path: pytest.TempPathFactory
     assert np.allclose(expt.datastore.meas_su, expected_sy3)
 
     # Case 3: invalid shape -> currently triggers an exception (IndexError on shape[1])
-    pinv = tmp_path / "invalid.dat"
+    pinv = tmp_path / 'invalid.dat'
     np.savetxt(pinv, np.ones((5, 1)))
     with pytest.raises(Exception):
         expt._load_ascii_data_to_experiment(str(pinv))

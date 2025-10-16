@@ -1,11 +1,14 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import numpy as np
 
 
 def test_chebyshev_background_calculate_and_cif():
     from easydiffraction.experiments.categories.background.chebyshev import (
         ChebyshevPolynomialBackground,
-        PolynomialTerm,
     )
+    from easydiffraction.experiments.categories.background.chebyshev import PolynomialTerm
 
     cb = ChebyshevPolynomialBackground()
     x = np.linspace(0.0, 1.0, 5)

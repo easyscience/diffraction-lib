@@ -1,10 +1,14 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import pytest
 
 
 def test_uid_map_handler_singleton_and_add_and_replace_uid():
-    from easydiffraction.core.singletons import UidMapHandler
     from easydiffraction.core.parameters import NumericDescriptor
-    from easydiffraction.core.validation import AttributeSpec, DataTypes
+    from easydiffraction.core.singletons import UidMapHandler
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.validation import DataTypes
     from easydiffraction.io.cif.handler import CifHandler
 
     h1 = UidMapHandler.get()
@@ -35,6 +39,7 @@ def test_uid_map_handler_singleton_and_add_and_replace_uid():
 
 def test_uid_map_handler_rejects_non_descriptor():
     from easydiffraction.core.singletons import UidMapHandler
+
     h = UidMapHandler.get()
     with pytest.raises(TypeError):
         h.add_to_uid_map(object())

@@ -1,4 +1,5 @@
-import numpy as np
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
 
 
 def _assert_equal(expected, actual):
@@ -7,7 +8,8 @@ def _assert_equal(expected, actual):
 
 def test_module_import():
     import easydiffraction.analysis.fit_helpers.reporting as MUT
-    expected_module_name = "easydiffraction.analysis.fit_helpers.reporting"
+
+    expected_module_name = 'easydiffraction.analysis.fit_helpers.reporting'
     actual_module_name = MUT.__name__
     _assert_equal(expected_module_name, actual_module_name)
 
@@ -16,12 +18,12 @@ def test_fitresults_display_results_prints_and_table(capsys, monkeypatch):
     # Arrange: build a minimal fake parameter object with required attributes
     class Identity:
         def __init__(self):
-            self.datablock_entry_name = "db"
-            self.category_code = "cat"
-            self.category_entry_name = "entry"
+            self.datablock_entry_name = 'db'
+            self.category_code = 'cat'
+            self.category_entry_name = 'entry'
 
     class Param:
-        def __init__(self, start, value, uncertainty, name="p", units="u"):
+        def __init__(self, start, value, uncertainty, name='p', units='u'):
             self._identity = Identity()
             self._fit_start_value = start
             self.value = value
@@ -31,7 +33,7 @@ def test_fitresults_display_results_prints_and_table(capsys, monkeypatch):
 
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
 
-    params = [Param(start=1.0, value=1.2, uncertainty=0.05, name="a", units="arb")]
+    params = [Param(start=1.0, value=1.2, uncertainty=0.05, name='a', units='arb')]
 
     # Act: create results and display with all metrics available
     fr = FitResults(
@@ -51,13 +53,13 @@ def test_fitresults_display_results_prints_and_table(capsys, monkeypatch):
 
     # Assert: key lines printed and a table rendered
     out = capsys.readouterr().out
-    assert "Fit results" in out
-    assert "Success: True" in out
-    assert "reduced χ²" in out
-    assert "R-factor (Rf)" in out
-    assert "R-factor squared (Rf²)" in out
-    assert "Weighted R-factor (wR)" in out
-    assert "Bragg R-factor (BR)" in out
-    assert "Fitted parameters:" in out
+    assert 'Fit results' in out
+    assert 'Success: True' in out
+    assert 'reduced χ²' in out
+    assert 'R-factor (Rf)' in out
+    assert 'R-factor squared (Rf²)' in out
+    assert 'Weighted R-factor (wR)' in out
+    assert 'Bragg R-factor (BR)' in out
+    assert 'Fitted parameters:' in out
     # Table border from tabulate fancy_outline
-    assert "╒" in out or "+" in out
+    assert '╒' in out or '+' in out

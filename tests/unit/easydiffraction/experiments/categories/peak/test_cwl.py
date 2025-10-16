@@ -1,9 +1,11 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
+
 def test_cwl_peak_classes_expose_expected_parameters_and_category():
-    from easydiffraction.experiments.categories.peak.cwl import (
-        CwlPseudoVoigt,
-        CwlSplitPseudoVoigt,
-        CwlThompsonCoxHastings,
-    )
+    from easydiffraction.experiments.categories.peak.cwl import CwlPseudoVoigt
+    from easydiffraction.experiments.categories.peak.cwl import CwlSplitPseudoVoigt
+    from easydiffraction.experiments.categories.peak.cwl import CwlThompsonCoxHastings
 
     pv = CwlPseudoVoigt()
     spv = CwlSplitPseudoVoigt()
@@ -16,7 +18,13 @@ def test_cwl_peak_classes_expose_expected_parameters_and_category():
     # Broadening parameters added by CwlBroadeningMixin
     for obj in (pv, spv, tch):
         names = {p.name for p in obj.parameters}
-        assert {'broad_gauss_u', 'broad_gauss_v', 'broad_gauss_w', 'broad_lorentz_x', 'broad_lorentz_y'}.issubset(names)
+        assert {
+            'broad_gauss_u',
+            'broad_gauss_v',
+            'broad_gauss_w',
+            'broad_lorentz_x',
+            'broad_lorentz_y',
+        }.issubset(names)
 
     # EmpiricalAsymmetry added only for split PV
     names_spv = {p.name for p in spv.parameters}

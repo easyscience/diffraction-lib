@@ -1,7 +1,10 @@
-import pytest
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import numpy as np
 
 # expected vs actual helpers
+
 
 def _assert_equal(expected, actual):
     assert expected == actual
@@ -9,22 +12,24 @@ def _assert_equal(expected, actual):
 
 # Module under test: easydiffraction.analysis.fit_helpers.tracking
 
+
 def test_module_import():
     import easydiffraction.analysis.fit_helpers.tracking as MUT
-    expected_module_name = "easydiffraction.analysis.fit_helpers.tracking"
+
+    expected_module_name = 'easydiffraction.analysis.fit_helpers.tracking'
     actual_module_name = MUT.__name__
     _assert_equal(expected_module_name, actual_module_name)
 
 
 def test_tracker_terminal_flow_prints_and_updates_best(monkeypatch, capsys):
-    from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
     import easydiffraction.analysis.fit_helpers.tracking as tracking_mod
+    from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
 
     # Force terminal branch (not notebook)
     monkeypatch.setattr(tracking_mod, 'is_notebook', lambda: False)
 
     tracker = FitProgressTracker()
-    tracker.start_tracking("dummy")
+    tracker.start_tracking('dummy')
     tracker.start_timer()
 
     # First iteration sets previous and best

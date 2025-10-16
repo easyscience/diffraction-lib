@@ -1,9 +1,11 @@
-import numpy as np
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
 
 
 def test_module_import():
     import easydiffraction.analysis.calculators.cryspy as MUT
-    assert MUT.__name__ == "easydiffraction.analysis.calculators.cryspy"
+
+    assert MUT.__name__ == 'easydiffraction.analysis.calculators.cryspy'
 
 
 def test_cryspy_calculator_engine_flag_and_converters():
@@ -18,7 +20,7 @@ def test_cryspy_calculator_engine_flag_and_converters():
     class DummySample:
         @property
         def as_cif(self):
-            return "data_x"
+            return 'data_x'
 
     class DummyType:
         class BeamMode:
@@ -30,8 +32,10 @@ def test_cryspy_calculator_engine_flag_and_converters():
 
     class DummyExperiment:
         def __init__(self):
-            self.name = "E"
-            self.type = DummyType(type("E", (), {"CONSTANT_WAVELENGTH": "cw"}) if False else type("Enum", (), {}) )
+            self.name = 'E'
+            self.type = DummyType(
+                type('E', (), {'CONSTANT_WAVELENGTH': 'cw'}) if False else type('Enum', (), {})
+            )
 
     # _convert_sample_model_to_cryspy_cif returns input as_cif
-    assert calc._convert_sample_model_to_cryspy_cif(DummySample()) == "data_x"
+    assert calc._convert_sample_model_to_cryspy_cif(DummySample()) == 'data_x'

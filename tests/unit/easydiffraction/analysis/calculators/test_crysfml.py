@@ -1,10 +1,13 @@
-import numpy as np
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import pytest
 
 
 def test_module_import():
     import easydiffraction.analysis.calculators.crysfml as MUT
-    assert MUT.__name__ == "easydiffraction.analysis.calculators.crysfml"
+
+    assert MUT.__name__ == 'easydiffraction.analysis.calculators.crysfml'
 
 
 def test_crysfml_engine_flag_and_structure_factors_raises():

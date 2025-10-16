@@ -1,18 +1,16 @@
-import pytest
-
-# expected vs actual helpers
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
 
 
 # Module under test: easydiffraction.plotting.plotting
 
+
 def test_module_import():
     import easydiffraction.plotting.plotting as MUT
-    expected_module_name = "easydiffraction.plotting.plotting"
+
+    expected_module_name = 'easydiffraction.plotting.plotting'
     actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert expected_module_name == actual_module_name
 
 
 def test_plotter_configuration_and_engine_switch(capsys):
@@ -52,8 +50,9 @@ def test_plotter_factory_unsupported(capsys):
 
 
 def test_plotter_error_paths_and_filtering(capsys):
+    from easydiffraction.experiments.experiment.enums import BeamModeEnum
+    from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
     from easydiffraction.plotting.plotting import Plotter
-    from easydiffraction.experiments.experiment.enums import BeamModeEnum, ScatteringTypeEnum
 
     class Ptn:
         def __init__(self, x=None, meas=None, calc=None, d=None):
@@ -101,6 +100,7 @@ def test_plotter_error_paths_and_filtering(capsys):
 
     # Filtering
     import numpy as np
+
     p.x_min, p.x_max = 0.5, 1.5
     arr = np.array([0.0, 1.0, 2.0])
     filt = p._filtered_y_array(arr, arr, None, None)
@@ -108,10 +108,12 @@ def test_plotter_error_paths_and_filtering(capsys):
 
 
 def test_plotter_routes_to_ascii_plotter(monkeypatch):
-    from easydiffraction.plotting.plotting import Plotter
-    from easydiffraction.experiments.experiment.enums import BeamModeEnum, ScatteringTypeEnum
-    import easydiffraction.plotting.plotters.plotter_ascii as ascii_mod
     import numpy as np
+
+    import easydiffraction.plotting.plotters.plotter_ascii as ascii_mod
+    from easydiffraction.experiments.experiment.enums import BeamModeEnum
+    from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
+    from easydiffraction.plotting.plotting import Plotter
 
     called = {}
 

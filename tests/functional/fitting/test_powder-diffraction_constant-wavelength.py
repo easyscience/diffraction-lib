@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import os
 import tempfile
 
@@ -252,8 +255,12 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Set aliases for parameters
     project.analysis.aliases.add_from_args(label='biso_La', param_uid=atom_sites['La'].b_iso.uid)
     project.analysis.aliases.add_from_args(label='biso_Ba', param_uid=atom_sites['Ba'].b_iso.uid)
-    project.analysis.aliases.add_from_args(label='occ_La', param_uid=atom_sites['La'].occupancy.uid)
-    project.analysis.aliases.add_from_args(label='occ_Ba', param_uid=atom_sites['Ba'].occupancy.uid)
+    project.analysis.aliases.add_from_args(
+        label='occ_La', param_uid=atom_sites['La'].occupancy.uid
+    )
+    project.analysis.aliases.add_from_args(
+        label='occ_Ba', param_uid=atom_sites['Ba'].occupancy.uid
+    )
 
     # Set constraints
     project.analysis.constraints.add_from_args(lhs_alias='biso_Ba', rhs_expr='biso_La')

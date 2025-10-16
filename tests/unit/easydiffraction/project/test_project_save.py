@@ -1,4 +1,5 @@
-from pathlib import Path
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
 
 
 def test_project_save_uses_cwd_when_no_explicit_path(monkeypatch, tmp_path, capsys):
@@ -10,16 +11,16 @@ def test_project_save_uses_cwd_when_no_explicit_path(monkeypatch, tmp_path, caps
     p.save()
     out = capsys.readouterr().out
     # It should announce saving and create the three core files in cwd
-    assert "Saving project" in out
-    assert (tmp_path / "project.cif").exists()
-    assert (tmp_path / "analysis.cif").exists()
-    assert (tmp_path / "summary.cif").exists()
+    assert 'Saving project' in out
+    assert (tmp_path / 'project.cif').exists()
+    assert (tmp_path / 'analysis.cif').exists()
+    assert (tmp_path / 'summary.cif').exists()
 
 
 def test_project_save_as_writes_core_files(tmp_path, monkeypatch):
+    from easydiffraction.analysis.analysis import Analysis
     from easydiffraction.project.project import Project
     from easydiffraction.project.project_info import ProjectInfo
-    from easydiffraction.analysis.analysis import Analysis
     from easydiffraction.summary.summary import Summary
 
     # Monkeypatch as_cif producers to avoid heavy internals

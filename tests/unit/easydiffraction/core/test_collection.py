@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
+
 def test_collection_add_get_delete_and_names():
     from easydiffraction.core.collection import CollectionBase
     from easydiffraction.core.identity import Identity
@@ -13,16 +17,16 @@ def test_collection_add_get_delete_and_names():
 
         @property
         def as_cif(self) -> str:
-            return ""
+            return ''
 
     c = MyCollection(item_type=Item)
-    a = Item("a")
-    b = Item("b")
-    c["a"] = a
-    c["b"] = b
-    assert c["a"] is a and c["b"] is b
-    a2 = Item("a")
-    c["a"] = a2
-    assert c["a"] is a2 and len(list(c.keys())) == 2
-    del c["b"]
-    assert list(c.names) == ["a"]
+    a = Item('a')
+    b = Item('b')
+    c['a'] = a
+    c['b'] = b
+    assert c['a'] is a and c['b'] is b
+    a2 = Item('a')
+    c['a'] = a2
+    assert c['a'] is a2 and len(list(c.keys())) == 2
+    del c['b']
+    assert list(c.names) == ['a']

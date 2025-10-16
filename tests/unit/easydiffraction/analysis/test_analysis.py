@@ -1,33 +1,35 @@
-import pytest
-
-
-def _assert_equal(expected, actual):
-    assert expected == actual
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
 
 
 def test_module_import():
     import easydiffraction.analysis.analysis as MUT
-    expected_module_name = "easydiffraction.analysis.analysis"
+
+    expected_module_name = 'easydiffraction.analysis.analysis'
     actual_module_name = MUT.__name__
-    _assert_equal(expected_module_name, actual_module_name)
+    assert expected_module_name == actual_module_name
 
 
 def _make_project_with_names(names):
     class ExpCol:
         def __init__(self, names):
             self._names = names
+
         @property
         def names(self):
             return self._names
+
     class P:
         experiments = ExpCol(names)
         sample_models = object()
         _varname = 'proj'
+
     return P()
 
 
 def test_show_current_calculator_and_minimizer_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
+
     a = Analysis(project=_make_project_with_names([]))
     a.show_current_calculator()
     a.show_current_minimizer()
@@ -39,8 +41,9 @@ def test_show_current_calculator_and_minimizer_prints(capsys):
 
 
 def test_current_calculator_setter_success_and_unknown(monkeypatch, capsys):
-    from easydiffraction.analysis.analysis import Analysis
     from easydiffraction.analysis import calculators as calc_pkg
+    from easydiffraction.analysis.analysis import Analysis
+
     a = Analysis(project=_make_project_with_names([]))
 
     # Success path
@@ -66,6 +69,7 @@ def test_current_calculator_setter_success_and_unknown(monkeypatch, capsys):
 
 def test_fit_modes_show_and_switch_to_joint(monkeypatch, capsys):
     from easydiffraction.analysis.analysis import Analysis
+
     a = Analysis(project=_make_project_with_names(['e1', 'e2']))
 
     a.show_available_fit_modes()

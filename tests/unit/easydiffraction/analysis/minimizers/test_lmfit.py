@@ -1,10 +1,15 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import types
+
 import numpy as np
 
 
 def test_module_import():
     import easydiffraction.analysis.minimizers.lmfit as MUT
-    assert MUT.__name__ == "easydiffraction.analysis.minimizers.lmfit"
+
+    assert MUT.__name__ == 'easydiffraction.analysis.minimizers.lmfit'
 
 
 def test_lmfit_prepare_and_sync(monkeypatch):
@@ -39,20 +44,24 @@ def test_lmfit_prepare_and_sync(monkeypatch):
 
     class FakeResult:
         def __init__(self):
-            self.params = {"p1": FakeParam(10.0, stderr=0.5), "p2": FakeParam(20.0, stderr=1.0)}
+            self.params = {'p1': FakeParam(10.0, stderr=0.5), 'p2': FakeParam(20.0, stderr=1.0)}
             self.success = True
 
     # Monkeypatch lmfit in module namespace
     import easydiffraction.analysis.minimizers.lmfit as lm
 
-    monkeypatch.setattr(lm, "lmfit", types.SimpleNamespace(Parameters=FakeParams, minimize=lambda *a, **k: FakeResult()))
+    monkeypatch.setattr(
+        lm,
+        'lmfit',
+        types.SimpleNamespace(Parameters=FakeParams, minimize=lambda *a, **k: FakeResult()),
+    )
 
     minim = LmfitMinimizer()
-    params = [P("p1", 1.0), P("p2", 2.0)]
+    params = [P('p1', 1.0), P('p2', 2.0)]
 
     # Prepare
     kwargs = minim._prepare_solver_args(params)
-    assert isinstance(kwargs.get("engine_parameters"), FakeParams)
+    assert isinstance(kwargs.get('engine_parameters'), FakeParams)
     # Run solver calls our fake minimize and returns FakeResult
     res = minim._run_solver(lambda *a, **k: np.array([0.0]), **kwargs)
     assert isinstance(res, FakeResult)

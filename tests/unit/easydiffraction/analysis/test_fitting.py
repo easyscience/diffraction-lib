@@ -1,7 +1,9 @@
-import pytest
-import numpy as np
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+
 
 # expected vs actual helpers
+
 
 def _assert_equal(expected, actual):
     assert expected == actual
@@ -9,9 +11,11 @@ def _assert_equal(expected, actual):
 
 # Module under test: easydiffraction.analysis.fitting
 
+
 def test_module_import():
     import easydiffraction.analysis.fitting as MUT
-    expected_module_name = "easydiffraction.analysis.fitting"
+
+    expected_module_name = 'easydiffraction.analysis.fitting'
     actual_module_name = MUT.__name__
     _assert_equal(expected_module_name, actual_module_name)
 
@@ -21,13 +25,17 @@ def test_fitter_early_exit_when_no_params(capsys, monkeypatch):
 
     class DummyCollection:
         free_parameters = []
+
         def __init__(self):
             self._names = ['e1']
+
         @property
         def names(self):
             return self._names
+
     class DummyMin:
-        tracker = type('T', (), {'track': staticmethod(lambda a,b: a)})()
+        tracker = type('T', (), {'track': staticmethod(lambda a, b: a)})()
+
         def fit(self, params, obj):
             return None
 
