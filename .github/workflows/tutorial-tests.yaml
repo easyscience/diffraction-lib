@@ -22,6 +22,10 @@ concurrency:
     ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Set the environment variables to be used in all jobs defined in this workflow
+env:
+  CI_BRANCH: ${{ github.head_ref || github.ref_name }}
+
 jobs:
   # Job 1: Test tutorials as scripts and notebooks on multiple OS
   tutorial-tests:
