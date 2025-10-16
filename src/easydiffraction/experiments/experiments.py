@@ -14,7 +14,11 @@ from easydiffraction.utils.formatting import paragraph
 
 
 class Experiments(DatablockCollection):
-    """Collection manager for multiple Experiment instances."""
+    """Collection of Experiment data blocks.
+
+    Provides convenience constructors for common creation patterns and
+    helper methods for simple presentation of collection contents.
+    """
 
     def __init__(self) -> None:
         super().__init__(item_type=ExperimentBase)
@@ -25,13 +29,21 @@ class Experiments(DatablockCollection):
 
     @typechecked
     def add_from_cif_path(self, cif_path: str):
-        """Add a new experiment from a CIF file path."""
+        """Add an experiment from a CIF file path.
+
+        Args:
+            cif_path: Path to a CIF document.
+        """
         experiment = ExperimentFactory.create(cif_path=cif_path)
         self.add(experiment)
 
     @typechecked
     def add_from_cif_str(self, cif_str: str):
-        """Add a new experiment from CIF file content (string)."""
+        """Add an experiment from a CIF string.
+
+        Args:
+            cif_str: Full CIF document as a string.
+        """
         experiment = ExperimentFactory.create(cif_str=cif_str)
         self.add(experiment)
 
@@ -45,7 +57,16 @@ class Experiments(DatablockCollection):
         radiation_probe: str = RadiationProbeEnum.default().value,
         scattering_type: str = ScatteringTypeEnum.default().value,
     ):
-        """Add a new experiment from a data file path."""
+        """Add an experiment from a data file path.
+
+        Args:
+            name: Experiment identifier.
+            data_path: Path to the measured data file.
+            sample_form: Sample form (powder or single crystal).
+            beam_mode: Beam mode (constant wavelength or TOF).
+            radiation_probe: Radiation probe (neutron or xray).
+            scattering_type: Scattering type (bragg or total).
+        """
         experiment = ExperimentFactory.create(
             name=name,
             data_path=data_path,
@@ -65,7 +86,15 @@ class Experiments(DatablockCollection):
         radiation_probe: str = RadiationProbeEnum.default().value,
         scattering_type: str = ScatteringTypeEnum.default().value,
     ):
-        """Add a new experiment without any data file."""
+        """Add an experiment without associating a data file.
+
+        Args:
+            name: Experiment identifier.
+            sample_form: Sample form (powder or single crystal).
+            beam_mode: Beam mode (constant wavelength or TOF).
+            radiation_probe: Radiation probe (neutron or xray).
+            scattering_type: Scattering type (bragg or total).
+        """
         experiment = ExperimentFactory.create(
             name=name,
             sample_form=sample_form,
@@ -77,6 +106,7 @@ class Experiments(DatablockCollection):
 
     @typechecked
     def remove(self, name: str) -> None:
+        """Remove an experiment by name if it exists."""
         if name in self:
             del self[name]
 
@@ -85,9 +115,11 @@ class Experiments(DatablockCollection):
     # ------------
 
     def show_names(self) -> None:
+        """Print the list of experiment names."""
         print(paragraph('Defined experiments' + ' 🔬'))
         print(self.names)
 
     def show_params(self) -> None:
+        """Print parameters for each experiment in the collection."""
         for exp in self.values():
             exp.show_params()
