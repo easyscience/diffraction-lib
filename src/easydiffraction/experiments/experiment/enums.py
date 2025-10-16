@@ -5,6 +5,8 @@ from enum import Enum
 
 
 class SampleFormEnum(str, Enum):
+    """Physical sample form supported by experiments."""
+
     POWDER = 'powder'
     SINGLE_CRYSTAL = 'single crystal'
 
@@ -14,6 +16,8 @@ class SampleFormEnum(str, Enum):
 
 
 class ScatteringTypeEnum(str, Enum):
+    """Type of scattering modeled in an experiment."""
+
     BRAGG = 'bragg'
     TOTAL = 'total'
 
@@ -23,6 +27,8 @@ class ScatteringTypeEnum(str, Enum):
 
 
 class RadiationProbeEnum(str, Enum):
+    """Incident radiation probe used in the experiment."""
+
     NEUTRON = 'neutron'
     XRAY = 'xray'
 
@@ -32,6 +38,8 @@ class RadiationProbeEnum(str, Enum):
 
 
 class BeamModeEnum(str, Enum):
+    """Beam delivery mode for the instrument."""
+
     CONSTANT_WAVELENGTH = 'constant wavelength'
     TIME_OF_FLIGHT = 'time-of-flight'
 
@@ -41,6 +49,8 @@ class BeamModeEnum(str, Enum):
 
 
 class PeakProfileTypeEnum(str, Enum):
+    """Available peak profile types per scattering and beam mode."""
+
     PSEUDO_VOIGT = 'pseudo-voigt'
     SPLIT_PSEUDO_VOIGT = 'split pseudo-voigt'
     THOMPSON_COX_HASTINGS = 'thompson-cox-hastings'

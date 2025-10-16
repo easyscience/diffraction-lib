@@ -24,9 +24,34 @@ from easydiffraction.utils.utils import render_table
 
 
 class Analysis:
+    """High-level orchestration of analysis tasks for a Project.
+
+    This class wires calculators and minimizers, exposes a compact
+    interface for parameters, constraints and results, and coordinates
+    computations across the project's sample models and experiments.
+
+    Typical usage:
+
+    - Display or filter parameters to fit.
+    - Select a calculator/minimizer implementation.
+    - Calculate patterns and run single or joint fits.
+
+    Attributes:
+    project: The parent Project object.
+        aliases: A registry of human-friendly aliases for parameters.
+        constraints: Symbolic constraints between parameters.
+    calculator: Active calculator used for computations.
+        fitter: Active fitter/minimizer driver.
+    """
+
     _calculator = CalculatorFactory.create_calculator('cryspy')
 
     def __init__(self, project) -> None:
+        """Create a new Analysis instance bound to a project.
+
+        Args:
+            project: The project that owns models and experiments.
+        """
         self.project = project
         self.aliases = Aliases()
         self.constraints = Constraints()
@@ -79,6 +104,9 @@ class Analysis:
         return dataframe
 
     def show_all_params(self) -> None:
+        """Print a table with all parameters for sample models and
+        experiments.
+        """
         sample_models_params = self.project.sample_models.parameters
         experiments_params = self.project.experiments.parameters
 
@@ -126,6 +154,9 @@ class Analysis:
         )
 
     def show_fittable_params(self) -> None:
+        """Print a table with parameters that can be included in
+        fitting.
+        """
         sample_models_params = self.project.sample_models.fittable_parameters
         experiments_params = self.project.experiments.fittable_parameters
 
@@ -177,6 +208,9 @@ class Analysis:
         )
 
     def show_free_params(self) -> None:
+        """Print a table with only currently-free (varying)
+        parameters.
+        """
         sample_models_params = self.project.sample_models.free_parameters
         experiments_params = self.project.experiments.free_parameters
         free_params = sample_models_params + experiments_params
@@ -225,6 +259,13 @@ class Analysis:
         )
 
     def how_to_access_parameters(self) -> None:
+        """Show Python access paths and CIF unique IDs for all
+        parameters.
+
+        The output explains how to reference specific parameters in code
+        and which unique identifiers are used when creating CIF-based
+        constraints.
+        """
         sample_models_params = self.project.sample_models.parameters
         experiments_params = self.project.experiments.parameters
         all_params = {
@@ -289,19 +330,31 @@ class Analysis:
         )
 
     def show_current_calculator(self) -> None:
+        """Print the name of the currently selected calculator
+        engine.
+        """
         print(paragraph('Current calculator'))
         print(self.current_calculator)
 
     @staticmethod
     def show_supported_calculators() -> None:
+        """Print a table of available calculator backends on this
+        system.
+        """
         CalculatorFactory.show_supported_calculators()
 
     @property
     def current_calculator(self) -> str:
+        """The key/name of the active calculator backend."""
         return self._calculator_key
 
     @current_calculator.setter
     def current_calculator(self, calculator_name: str) -> None:
+        """Switch to a different calculator backend.
+
+        Args:
+            calculator_name: Calculator key to use (e.g. 'cryspy').
+        """
         calculator = CalculatorFactory.create_calculator(calculator_name)
         if calculator is None:
             return
@@ -311,29 +364,53 @@ class Analysis:
         print(self.current_calculator)
 
     def show_current_minimizer(self) -> None:
+        """Print the name of the currently selected minimizer."""
         print(paragraph('Current minimizer'))
         print(self.current_minimizer)
 
     @staticmethod
     def show_available_minimizers() -> None:
+        """Print a table of available minimizer drivers on this
+        system.
+        """
         MinimizerFactory.show_available_minimizers()
 
     @property
     def current_minimizer(self) -> Optional[str]:
+        """The identifier of the active minimizer, if any."""
         return self.fitter.selection if self.fitter else None
 
     @current_minimizer.setter
     def current_minimizer(self, selection: str) -> None:
+        """Switch to a different minimizer implementation.
+
+        Args:
+            selection: Minimizer selection string, e.g.
+                'lmfit (leastsq)'.
+        """
         self.fitter = Fitter(selection)
         print(paragraph('Current minimizer changed to'))
         print(self.current_minimizer)
 
     @property
     def fit_mode(self) -> str:
+        """Current fitting strategy: either 'single' or 'joint'."""
         return self._fit_mode
 
     @fit_mode.setter
     def fit_mode(self, strategy: str) -> None:
+        """Set the fitting strategy.
+
+        When set to 'joint', all experiments get default weights and
+        are used together in a single optimization.
+
+        Args:
+                strategy: Either 'single' or 'joint'.
+
+        Raises:
+            ValueError: If an unsupported strategy value is
+                provided.
+        """
         if strategy not in ['single', 'joint']:
             raise ValueError("Fit mode must be either 'single' or 'joint'")
         self._fit_mode = strategy
@@ -346,6 +423,9 @@ class Analysis:
         print(self._fit_mode)
 
     def show_available_fit_modes(self) -> None:
+        """Print all supported fitting strategies and their
+        descriptions.
+        """
         strategies = [
             {
                 'Strategy': 'single',
@@ -374,21 +454,25 @@ class Analysis:
         )
 
     def show_current_fit_mode(self) -> None:
+        """Print the currently active fitting strategy."""
         print(paragraph('Current fit mode'))
         print(self.fit_mode)
 
     def calculate_pattern(self, expt_name: str) -> None:
-        """Calculate the diffraction pattern for a given experiment. The
-        calculated pattern is stored within the experiment's datastore.
+        """Calculate and store the diffraction pattern for an
+        experiment.
+
+        The pattern is stored in the target experiment's datastore.
 
         Args:
-            expt_name: The name of the experiment.
+                expt_name: The identifier of the experiment to compute.
         """
         experiment = self.project.experiments[expt_name]
         sample_models = self.project.sample_models
         self.calculator.calculate_pattern(sample_models, experiment)
 
     def show_constraints(self) -> None:
+        """Print a table of all user-defined symbolic constraints."""
         constraints_dict = dict(self.constraints)
 
         if not self.constraints._items:
@@ -416,6 +500,9 @@ class Analysis:
         )
 
     def apply_constraints(self):
+        """Apply the currently defined constraints to the active
+        project.
+        """
         if not self.constraints._items:
             print(warning('No constraints defined.'))
             return
@@ -425,6 +512,14 @@ class Analysis:
         self.constraints_handler.apply()
 
     def fit(self):
+        """Execute fitting using the selected mode, calculator and
+        minimizer.
+
+        In 'single' mode, fits each experiment independently. In
+        'joint' mode, performs a simultaneous fit across experiments
+        with weights.
+            Sets :attr:`fit_results` on success.
+        """
         sample_models = self.project.sample_models
         if not sample_models:
             print('No sample models found in the project. Cannot run fit.')
@@ -471,11 +566,19 @@ class Analysis:
         self.fit_results = self.fitter.results
 
     def as_cif(self):
+        """Serialize the analysis section to a CIF string.
+
+        Returns:
+            The analysis section represented as a CIF document string.
+        """
         from easydiffraction.io.cif.serialize import analysis_to_cif
 
         return analysis_to_cif(self)
 
     def show_as_cif(self) -> None:
+        """Render the analysis section as CIF in a formatted console
+        view.
+        """
         cif_text: str = self.as_cif()
         paragraph_title: str = paragraph('Analysis 🧮 info as cif')
         render_cif(cif_text, paragraph_title)

@@ -24,6 +24,8 @@ DEFAULT_COLORS = {
 
 
 class PlotlyPlotter(PlotterBase):
+    """Interactive plotter using Plotly for notebooks and browsers."""
+
     pio.templates.default = 'plotly_dark' if darkdetect.isDark() else 'plotly_white'
     if is_pycharm():
         pio.renderers.default = 'browser'
@@ -53,6 +55,16 @@ class PlotlyPlotter(PlotterBase):
         title,
         height=None,
     ):
+        """Render an interactive Plotly figure.
+
+        Args:
+            x: 1D array-like of x-axis values.
+            y_series: Sequence of y arrays to plot.
+            labels: Series identifiers corresponding to y_series.
+            axes_labels: Pair of strings for the x and y titles.
+            title: Figure title.
+            height: Ignored; Plotly auto-sizes based on renderer.
+        """
         # Intentionally unused; accepted for API compatibility
         del height
         data = []

@@ -55,6 +55,13 @@ SERIES_CONFIG = dict(
 
 
 class PlotterBase(ABC):
+    """Abstract base for plotting backends.
+
+    Concrete implementations should accept x values, multiple y-series
+    and a small set of labeling arguments and render a plot to the
+    chosen medium.
+    """
+
     @abstractmethod
     def plot(
         self,
@@ -65,4 +72,14 @@ class PlotterBase(ABC):
         title,
         height,
     ):
+        """Render a plot.
+
+        Args:
+            x: 1D array-like of x-axis values.
+            y_series: Sequence of y arrays to plot.
+            labels: Series identifiers corresponding to y_series.
+            axes_labels: Pair of strings for the x and y axis titles.
+            title: Figure title.
+            height: Backend-specific height in text or pixels.
+        """
         pass

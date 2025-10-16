@@ -16,6 +16,8 @@ DEFAULT_COLORS = {
 
 
 class AsciiPlotter(PlotterBase):
+    """Terminal-based plotter using ASCII art."""
+
     def _get_legend_item(self, label):
         color_start = DEFAULT_COLORS[label]
         color_end = asciichartpy.reset
@@ -33,6 +35,17 @@ class AsciiPlotter(PlotterBase):
         title,
         height=None,
     ):
+        """Render a compact ASCII chart in the terminal.
+
+        Args:
+            x: 1D array-like of x values (only used for range
+                display).
+            y_series: Sequence of y arrays to plot.
+            labels: Series identifiers corresponding to y_series.
+            axes_labels: Ignored; kept for API compatibility.
+            title: Figure title printed above the chart.
+            height: Number of text rows to allocate for the chart.
+        """
         # Intentionally unused; kept for a consistent plotting API
         del axes_labels
         title = paragraph(title)

@@ -24,7 +24,19 @@ if TYPE_CHECKING:
 
 
 class GenericDescriptorBase(GuardedBase):
-    """..."""
+    """Base class for all parameter-like descriptors.
+
+    A descriptor encapsulates a typed value with validation,
+    human-readable name/description and a globally unique identifier
+    that is stable across the session. Concrete subclasses specialize
+    the expected data type and can extend the public API with
+    additional behavior (e.g. units).
+
+    Attributes:
+        name: Local parameter name (e.g. 'a', 'b_iso').
+        description: Optional human-readable description.
+        uid: Stable random identifier for external references.
+    """
 
     _BOOL_SPEC_TEMPLATE = AttributeSpec(
         type_=DataTypes.BOOL,
@@ -38,6 +50,13 @@ class GenericDescriptorBase(GuardedBase):
         name: str,
         description: str = None,
     ):
+        """Initialize the descriptor with validation and identity.
+
+        Args:
+            value_spec: Validation specification for the value.
+            name: Local name of the descriptor within its category.
+            description: Optional human-readable description.
+        """
         super().__init__()
 
         expected_type = getattr(self, '_value_type', None)
@@ -80,14 +99,19 @@ class GenericDescriptorBase(GuardedBase):
 
     @property
     def uid(self):
+        """Stable random identifier for this descriptor."""
         return self._uid
 
     @property
     def name(self) -> str:
+        """Local name of the descriptor (without category/datablock)."""
         return self._name
 
     @property
     def unique_name(self):
+        """Fully qualified name including datablock, category and entry
+        name.
+        """
         # 7c: Use filter(None, [...])
         parts = [
             self._identity.datablock_entry_name,
@@ -99,10 +123,12 @@ class GenericDescriptorBase(GuardedBase):
 
     @property
     def value(self):
+        """Current validated value."""
         return self._value
 
     @value.setter
     def value(self, v):
+        """Set a new value after validating against the spec."""
         self._value = self._value_spec.validated(
             v,
             name=self.unique_name,
@@ -111,15 +137,22 @@ class GenericDescriptorBase(GuardedBase):
 
     @property
     def description(self):
+        """Optional human-readable description."""
         return self._description
 
     @property
     def parameters(self):
-        # For a single descriptor, itself is the only parameter.
+        """Return a flat list of parameters contained by this object.
+
+        For a single descriptor, it returns a one-element list with
+        itself. Composite objects override this to flatten nested
+        structures.
+        """
         return [self]
 
     @property
     def as_cif(self) -> str:
+        """Serialize this descriptor to a CIF-formatted string."""
         return param_to_cif(self)
 
 
@@ -154,11 +187,17 @@ class GenericNumericDescriptor(GenericDescriptorBase):
 
     @property
     def units(self) -> str:
+        """Units associated with the numeric value, if any."""
         return self._units
 
 
 class GenericParameter(GenericNumericDescriptor):
-    """..."""
+    """Numeric descriptor extended with fitting-related attributes.
+
+    Adds standard attributes used by minimizers: "free" flag,
+    uncertainty, bounds and an optional starting value. Subclasses can
+    integrate with specific backends while preserving this interface.
+    """
 
     def __init__(
         self,
@@ -196,16 +235,18 @@ class GenericParameter(GenericNumericDescriptor):
 
     @property
     def _minimizer_uid(self):
-        """Return variant of uid safe for minimizer engines."""
+        """Variant of uid that is safe for minimizer engines."""
         # return self.unique_name.replace('.', '__')
         return self.uid
 
     @property
     def name(self) -> str:
+        """Local name of the parameter (without category/datablock)."""
         return self._name
 
     @property
     def unique_name(self):
+        """Fully qualified parameter name including its context path."""
         parts = [
             self._identity.datablock_entry_name,
             self._identity.category_code,
@@ -216,44 +257,55 @@ class GenericParameter(GenericNumericDescriptor):
 
     @property
     def constrained(self):
+        """Whether this parameter is part of a constraint expression."""
         return self._constrained
 
     @property
     def free(self):
+        """Whether this parameter is currently varied during fitting."""
         return self._free
 
     @free.setter
     def free(self, v):
+        """Set the "free" flag after validation."""
         self._free = self._free_spec.validated(
             v, name=f'{self.unique_name}.free', current=self._free
         )
 
     @property
     def uncertainty(self):
+        """Estimated standard uncertainty of the fitted value, if
+        available.
+        """
         return self._uncertainty
 
     @uncertainty.setter
     def uncertainty(self, v):
+        """Set the uncertainty value (must be non-negative or None)."""
         self._uncertainty = self._uncertainty_spec.validated(
             v, name=f'{self.unique_name}.uncertainty', current=self._uncertainty
         )
 
     @property
     def fit_min(self):
+        """Lower fitting bound."""
         return self._fit_min
 
     @fit_min.setter
     def fit_min(self, v):
+        """Set the lower bound for the parameter value."""
         self._fit_min = self._fit_min_spec.validated(
             v, name=f'{self.unique_name}.fit_min', current=self._fit_min
         )
 
     @property
     def fit_max(self):
+        """Upper fitting bound."""
         return self._fit_max
 
     @fit_max.setter
     def fit_max(self, v):
+        """Set the upper bound for the parameter value."""
         self._fit_max = self._fit_max_spec.validated(
             v, name=f'{self.unique_name}.fit_max', current=self._fit_max
         )
@@ -266,6 +318,12 @@ class StringDescriptor(GenericStringDescriptor):
         cif_handler: CifHandler,
         **kwargs: Any,
     ) -> None:
+        """String descriptor bound to a CIF handler.
+
+        Args:
+            cif_handler: Object that tracks CIF identifiers.
+            **kwargs: Forwarded to GenericStringDescriptor.
+        """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
         self._cif_handler.attach(self)
@@ -278,6 +336,12 @@ class NumericDescriptor(GenericNumericDescriptor):
         cif_handler: CifHandler,
         **kwargs: Any,
     ) -> None:
+        """Numeric descriptor bound to a CIF handler.
+
+        Args:
+            cif_handler: Object that tracks CIF identifiers.
+            **kwargs: Forwarded to GenericNumericDescriptor.
+        """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
         self._cif_handler.attach(self)
@@ -290,6 +354,12 @@ class Parameter(GenericParameter):
         cif_handler: CifHandler,
         **kwargs: Any,
     ) -> None:
+        """Fittable parameter bound to a CIF handler.
+
+        Args:
+            cif_handler: Object that tracks CIF identifiers.
+            **kwargs: Forwarded to GenericParameter.
+        """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
         self._cif_handler.attach(self)
