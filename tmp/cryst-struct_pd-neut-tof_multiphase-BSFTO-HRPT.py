@@ -41,17 +41,17 @@ model_1.cell.length_c = 7.876
 # #### Set Atom Sites
 
 # %%
-model_1.atom_sites.add('Bi1', 'Bi', 0.702, 0.114, 0,     wyckoff_letter='g', b_iso=0.0, occupancy=0.88)
-model_1.atom_sites.add('Sm1', 'Sm', 0.702, 0.114, 0,     wyckoff_letter='g', b_iso=0.0, occupancy=0.12)
-model_1.atom_sites.add('Bi2', 'Bi', 0.751, 0.132, 0.5,   wyckoff_letter='h', b_iso=0.0, occupancy=0.88)
-model_1.atom_sites.add('Sm2', 'Sm', 0.751, 0.132, 0.5,   wyckoff_letter='h', b_iso=0.0, occupancy=0.12)
-model_1.atom_sites.add('Fe',  'Fe', 0.236, 0.121, 0.259, wyckoff_letter='i', b_iso=0.0, occupancy=0.94)
-model_1.atom_sites.add('Ti',  'Ti', 0.236, 0.121, 0.259, wyckoff_letter='i', b_iso=0.0, occupancy=0.06)
-model_1.atom_sites.add('O1',  'O',  0.258, 0.151, 0,     wyckoff_letter='g', b_iso=0.0, occupancy=1.0)
-model_1.atom_sites.add('O2',  'O',  0.316, 0.093, 0.5,   wyckoff_letter='h', b_iso=0.0, occupancy=1.0)
-model_1.atom_sites.add('O3',  'O',  0.002, 0.258, 0.299, wyckoff_letter='i', b_iso=0.0, occupancy=1.0)
-model_1.atom_sites.add('O4',  'O',  0,     0.5,   0.264, wyckoff_letter='f', b_iso=0.0, occupancy=1.0)
-model_1.atom_sites.add('O5',  'O',  0,     0,     0.198, wyckoff_letter='e', b_iso=0.0, occupancy=1.0)
+model_1.atom_sites.add('Bi1', 'Bi', 0.702, 0.114, 0, wyckoff_letter='g', b_iso=0.0, occupancy=0.88)
+model_1.atom_sites.add('Sm1', 'Sm', 0.702, 0.114, 0, wyckoff_letter='g', b_iso=0.0, occupancy=0.12)
+model_1.atom_sites.add('Bi2', 'Bi', 0.751, 0.132, 0.5, wyckoff_letter='h', b_iso=0.0, occupancy=0.88)
+model_1.atom_sites.add('Sm2', 'Sm', 0.751, 0.132, 0.5, wyckoff_letter='h', b_iso=0.0, occupancy=0.12)
+model_1.atom_sites.add('Fe', 'Fe', 0.236, 0.121, 0.259, wyckoff_letter='i', b_iso=0.0, occupancy=0.94)
+model_1.atom_sites.add('Ti', 'Ti', 0.236, 0.121, 0.259, wyckoff_letter='i', b_iso=0.0, occupancy=0.06)
+model_1.atom_sites.add('O1', 'O', 0.258, 0.151, 0, wyckoff_letter='g', b_iso=0.0, occupancy=1.0)
+model_1.atom_sites.add('O2', 'O', 0.316, 0.093, 0.5, wyckoff_letter='h', b_iso=0.0, occupancy=1.0)
+model_1.atom_sites.add('O3', 'O', 0.002, 0.258, 0.299, wyckoff_letter='i', b_iso=0.0, occupancy=1.0)
+model_1.atom_sites.add('O4', 'O', 0, 0.5, 0.264, wyckoff_letter='f', b_iso=0.0, occupancy=1.0)
+model_1.atom_sites.add('O5', 'O', 0, 0, 0.198, wyckoff_letter='e', b_iso=0.0, occupancy=1.0)
 
 # %% [markdown]
 # ### Create Sample Model 2: Rhombohedral phase
@@ -77,11 +77,11 @@ model_2.cell.length_c = 13.758
 # #### Set Atom Sites
 
 # %%
-model_2.atom_sites.add('Bi',  'Bi', 0,     0,     0,     wyckoff_letter='a', b_iso=0.0, occupancy=0.88)
-model_2.atom_sites.add('Sm',  'Sm', 0,     0,     0,     wyckoff_letter='a', b_iso=0.0, occupancy=0.12)
-model_2.atom_sites.add('Fe',  'Fe', 0,     0,     0.223, wyckoff_letter='a', b_iso=0.0, occupancy=0.94)
-model_2.atom_sites.add('Ti',  'Ti', 0,     0,     0.223, wyckoff_letter='a', b_iso=0.0, occupancy=0.06)
-model_2.atom_sites.add('O',   'O',  0.436, 0.022, 0.958, wyckoff_letter='b', b_iso=0.0, occupancy=1.0)
+model_2.atom_sites.add('Bi', 'Bi', 0, 0, 0, wyckoff_letter='a', b_iso=0.0, occupancy=0.88)
+model_2.atom_sites.add('Sm', 'Sm', 0, 0, 0, wyckoff_letter='a', b_iso=0.0, occupancy=0.12)
+model_2.atom_sites.add('Fe', 'Fe', 0, 0, 0.223, wyckoff_letter='a', b_iso=0.0, occupancy=0.94)
+model_2.atom_sites.add('Ti', 'Ti', 0, 0, 0.223, wyckoff_letter='a', b_iso=0.0, occupancy=0.06)
+model_2.atom_sites.add('O', 'O', 0.436, 0.022, 0.958, wyckoff_letter='b', b_iso=0.0, occupancy=1.0)
 
 # %% [markdown]
 # ## Define Experiment
@@ -92,7 +92,7 @@ model_2.atom_sites.add('O',   'O',  0.436, 0.022, 0.958, wyckoff_letter='b', b_i
 # #### Download Data
 
 # %%
-#download_from_repository('hrpt_n_Bi0p88Sm0p12Fe0p94Ti0p06O3_DW_V_9x8x52_1p49_HI.xye',
+# download_from_repository('hrpt_n_Bi0p88Sm0p12Fe0p94Ti0p06O3_DW_V_9x8x52_1p49_HI.xye',
 #                         branch='develop',
 #                         destination='data')
 
@@ -237,11 +237,11 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 # Set sample model parameters to be optimized.
 
 # %%
-#model_1.cell.length_a.free = True
-#model_1.atom_sites['Co'].b_iso.free = True
-#model_1.atom_sites['O'].b_iso.free = True
+# model_1.cell.length_a.free = True
+# model_1.atom_sites['Co'].b_iso.free = True
+# model_1.atom_sites['O'].b_iso.free = True
 
-#model_2.cell.length_a.free = True
+# model_2.cell.length_a.free = True
 
 # %% [markdown]
 # Set experiment parameters to be optimized.

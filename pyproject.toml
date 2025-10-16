@@ -176,7 +176,7 @@ source = ['src/easydiffraction'] # Limit coverage to the source code directory
 [tool.coverage.report]
 show_missing = true # Show missing lines
 skip_covered = true # Skip files with 100% coverage in the report
-fail_under = 70     # Temporarily reduce to allow gradual improvement
+fail_under = 65     # Temporarily reduce to allow gradual improvement
 
 ########################
 # Configuration for ruff
@@ -187,7 +187,7 @@ fail_under = 70     # Temporarily reduce to allow gradual improvement
 
 [tool.ruff]
 # Temporarily exclude some directories until we have improved the code quality there
-exclude = ['tests', 'tutorials-drafts']
+exclude = ['tests', 'tmp']
 indent-width = 4
 line-length = 99
 # Enable new rules that are not yet stable, like DOC

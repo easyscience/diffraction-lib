@@ -126,9 +126,9 @@ experiment.background['110'].y.free = True
 experiment.linked_phases['lbco'].scale.free = True
 
 
-#sample_model.show_as_cif()
-#experiment.show_as_cif()
-#exit()
+# sample_model.show_as_cif()
+# experiment.show_as_cif()
+# exit()
 
 
 # %%

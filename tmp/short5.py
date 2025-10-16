@@ -3,22 +3,19 @@ from __future__ import annotations
 from typing import ParamSpec
 from typing import TypeVar
 
-from easydiffraction.utils.logging import log  # type: ignore
-
-from easydiffraction.sample_models.categories.cell import Cell  # type: ignore
-from easydiffraction.sample_models.categories.space_group import SpaceGroup  # type: ignore
-from easydiffraction.sample_models.categories.atom_sites import AtomSite, AtomSites  # type: ignore
-
-from easydiffraction.sample_models.sample_model.factory import SampleModel
-from easydiffraction.sample_models.sample_model.base import SampleModelBase
-from easydiffraction.sample_models.sample_models import SampleModels
-
 from easydiffraction.analysis.categories.constraints import Constraint
 from easydiffraction.analysis.categories.constraints import Constraints
+from easydiffraction.sample_models.categories.atom_sites import AtomSite  # type: ignore
+from easydiffraction.sample_models.categories.atom_sites import AtomSites  # type: ignore
+from easydiffraction.sample_models.categories.cell import Cell  # type: ignore
+from easydiffraction.sample_models.categories.space_group import SpaceGroup  # type: ignore
+from easydiffraction.sample_models.sample_model.base import SampleModelBase
+from easydiffraction.sample_models.sample_model.factory import SampleModel
+from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.utils.logging import log  # type: ignore
 
 P = ParamSpec('P')
 R = TypeVar('R')
-
 
 
 # ---------------------------------------------------------------------
@@ -81,9 +78,9 @@ if __name__ == '__main__':
     assert getattr(c.length_b, 'qwe', None) is None
     assert c.length_b._cif_handler.names == ['_cell.length_b']
     assert len(c.length_b._minimizer_uid) == 16
-    assert(c.parameters[1].value == 3.3)  # type: ignore
+    assert (c.parameters[1].value == 3.3)  # type: ignore
 
-    log.info(f'-------- SpaceGroup --------')
+    log.info('-------- SpaceGroup --------')
 
     sg = SpaceGroup()
     assert sg.name_h_m.value == 'P 1'
@@ -104,7 +101,7 @@ if __name__ == '__main__':
     assert sg.name_h_m.value == 'P n m a'
     assert sg.it_coordinate_system_code.value == 'abc'
 
-    log.info(f'-------- AtomSites --------')
+    log.info('-------- AtomSites --------')
 
     s1 = AtomSite(label='La', type_symbol='La')
     assert s1.label.value == 'La'
@@ -139,7 +136,7 @@ if __name__ == '__main__':
     assert sites['Tb'].label.value == 'Tb'
     assert sites['Tb'].name is None
 
-    log.info(f'-------- SampleModel --------')
+    log.info('-------- SampleModel --------')
 
     model = SampleModel(name='lbco')
     assert model.name == 'lbco'
@@ -152,7 +149,7 @@ if __name__ == '__main__':
     assert model.atom_sites._items[0].label.value == 'Tb'
     assert model.atom_sites._items[1].label.value == 'Si'
 
-    log.info(f'-------- SampleModels --------')
+    log.info('-------- SampleModels --------')
 
     models = SampleModels()
     assert len(models) == 0
@@ -160,7 +157,7 @@ if __name__ == '__main__':
     assert len(models) == 1
     assert models._items[0].name == 'lbco'
 
-    log.info(f'-------- PARENTS --------')
+    log.info('-------- PARENTS --------')
 
     assert models._parent is None
     assert type(models['lbco']._parent) is SampleModels
@@ -178,7 +175,7 @@ if __name__ == '__main__':
     assert s1._parent is None
     assert type(models['lbco'].atom_sites) is AtomSites
 
-    log.info(f'-------- PARAMETERS --------')
+    log.info('-------- PARAMETERS --------')
 
     assert len(models['lbco'].atom_sites['Si'].parameters) == 9
     assert models['lbco'].atom_sites['Si'].parameters[0].value == 'Si'
@@ -187,7 +184,7 @@ if __name__ == '__main__':
     assert len(models['lbco'].parameters) == 17
     assert len(models.parameters) == 17
 
-    log.info(f'-------- CIF HANDLERS --------')
+    log.info('-------- CIF HANDLERS --------')
 
     s3 = AtomSite(label='La', type_symbol='La')
     assert s3.label.value == 'La'
@@ -219,7 +216,7 @@ La La 0.0 0.0 0.0 a 1.0 0.0 Biso"""
 
     print(models['lbco'].as_cif)
 
-    assert models['lbco'].as_cif =="""data_lbco
+    assert models['lbco'].as_cif == """data_lbco
 
 _cell.length_a 10.0
 _cell.length_b 10.0
@@ -244,7 +241,7 @@ _atom_site.adp_type
 Si Si 0.456 0.0 0.0 a 1.0 0.0 Biso
 La La 0.0 0.0 0.0 a 1.0 0.0 Biso"""
 
-    assert models.as_cif =="""data_lbco
+    assert models.as_cif == """data_lbco
 
 _cell.length_a 10.0
 _cell.length_b 10.0
@@ -269,7 +266,7 @@ _atom_site.adp_type
 Si Si 0.456 0.0 0.0 a 1.0 0.0 Biso
 La La 0.0 0.0 0.0 a 1.0 0.0 Biso"""
 
-    log.info(f'-------- Full Names --------')
+    log.info('-------- Full Names --------')
 
     cell = Cell()
     assert cell.unique_name == 'cell'
@@ -279,14 +276,14 @@ La La 0.0 0.0 0.0 a 1.0 0.0 Biso"""
     site = AtomSite(label='Tb', type_symbol='Tb')
     assert site.unique_name == 'atom_site.Tb'
 
-    sites = AtomSites() #
+    sites = AtomSites()  #
     assert sites.unique_name is None
 
     sites.add(site)
     assert site.unique_name == 'atom_site.Tb'
     assert sites['Tb'].unique_name == 'atom_site.Tb'
 
-    model = SampleModel(name='lbco') #
+    model = SampleModel(name='lbco')  #
     assert model.unique_name == 'lbco'
 
     model.cell = cell
@@ -300,7 +297,7 @@ La La 0.0 0.0 0.0 a 1.0 0.0 Biso"""
     assert model.atom_sites.unique_name is None
     assert model.atom_sites['Tb'].unique_name == 'lbco.atom_site.Tb'
 
-    models = SampleModels() #
+    models = SampleModels()  #
     assert models.unique_name is None
 
     models.add(model)
@@ -309,7 +306,7 @@ La La 0.0 0.0 0.0 a 1.0 0.0 Biso"""
     assert models['lbco'].atom_sites.unique_name is None
     assert models['lbco'].atom_sites['Tb'].unique_name == 'lbco.atom_site.Tb'
 
-    log.info(f'-------- Constraints --------')
+    log.info('-------- Constraints --------')
     con = Constraint(lhs_alias='cell.length_a', rhs_expr='2 * cell.length_b + 1.0')
     assert con.lhs_alias.value == 'cell.length_a'
     assert con.rhs_expr.value == '2 * cell.length_b + 1.0'

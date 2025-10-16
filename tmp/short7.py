@@ -75,7 +75,6 @@ def single_fit_neutron_pd_cwl_lbco() -> None:
 
     expt.show_as_cif()
 
-
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
     project.analysis.current_minimizer = 'lmfit (leastsq)'

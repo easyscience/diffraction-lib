@@ -194,7 +194,7 @@ npm-config = 'npm config set registry https://registry.npmjs.org/'
 prettier-install = 'npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml'
 pre-commit-setup = 'pre-commit clean && pre-commit uninstall && pre-commit install --hook-type pre-commit --hook-type pre-push --overwrite'
 pre-commit-update = 'pre-commit autoupdate'
-remove-pycache = "find . -type d -name '__pycache__' -prune -exec rm -rf '{}' +"
+clean-pycache = "find . -type d -name '__pycache__' -prune -exec rm -rf '{}' +"
 
 dev = { depends-on = [
   'dev-install',

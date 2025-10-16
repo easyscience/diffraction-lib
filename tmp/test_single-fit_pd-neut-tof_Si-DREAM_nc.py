@@ -2,8 +2,9 @@
 # # Structure Refinement: Si (NCrystal sim), DREAM
 
 # %%
-import os
+
 import pytest
+
 import easydiffraction as ed
 
 # %% [markdown]
@@ -30,6 +31,8 @@ sample_model.space_group.it_coordinate_system_code = '1'
 sample_model.cell.length_a = 5.46872800  # 5.43146
 
 # %%
+import pathlib
+
 from easydiffraction.sample_models.categories.atom_sites import AtomSite
 
 sample_model.atom_sites.add(
@@ -54,7 +57,7 @@ sample_model.atom_sites.add(
 
 # %%
 data_path = 'tutorials/data/DREAM_mantle_bc240_nist_cif_2.xye'
-if not os.path.exists(data_path):  # pragma: no cover - environment dependent
+if not pathlib.Path(data_path).exists():  # pragma: no cover - environment dependent
     pytest.skip(f'Missing data file: {data_path}', allow_module_level=True)
 project.experiments.add_from_data_path(
     name='dream',

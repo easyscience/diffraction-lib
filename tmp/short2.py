@@ -12,20 +12,21 @@ from easydiffraction.sample_models.categories.atom_sites import AtomSite
 from easydiffraction.sample_models.categories.atom_sites import AtomSites
 from easydiffraction.sample_models.categories.cell import Cell
 from easydiffraction.sample_models.categories.space_group import SpaceGroup
-#from easydiffraction.core.parameters import BaseDescriptor, GenericDescriptor, Descriptor
-#from easydiffraction.core.parameters import BaseParameter, GenericParameter, Parameter
 
-#Logger.configure(mode=Logger.Mode.VERBOSE, level=Logger.Level.DEBUG)
-#Logger.configure(mode=Logger.Mode.COMPACT, level=Logger.Level.DEBUG)
+# from easydiffraction.core.parameters import BaseDescriptor, GenericDescriptor, Descriptor
+# from easydiffraction.core.parameters import BaseParameter, GenericParameter, Parameter
+
+# Logger.configure(mode=Logger.Mode.VERBOSE, level=Logger.Level.DEBUG)
+# Logger.configure(mode=Logger.Mode.COMPACT, level=Logger.Level.DEBUG)
 
 
-#bd = BaseDescriptor()
-#gd = GenericDescriptor()
-#d = Descriptor()
+# bd = BaseDescriptor()
+# gd = GenericDescriptor()
+# d = Descriptor()
 
-#bp = BaseParameter()
-#gp = GenericParameter()
-#p = Parameter()
+# bp = BaseParameter()
+# gp = GenericParameter()
+# p = Parameter()
 
 project = ed.Project()
 
@@ -42,7 +43,6 @@ cell.length_a = '5.4603'
 cell.length_a = -5.4603
 
 cell.lengtha = -5.4603
-
 
 
 exit()
