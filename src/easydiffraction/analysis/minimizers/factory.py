@@ -7,10 +7,10 @@ from typing import List
 from typing import Optional
 from typing import Type
 
+from easydiffraction import log
 from easydiffraction.analysis.minimizers.base import MinimizerBase
 from easydiffraction.analysis.minimizers.dfols import DfolsMinimizer
 from easydiffraction.analysis.minimizers.lmfit import LmfitMinimizer
-from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_table
 
 
@@ -67,7 +67,7 @@ class MinimizerFactory:
             description: str = config.get('description', 'No description provided.')
             columns_data.append([name, description])
 
-        print(paragraph('Supported minimizers'))
+        log.paragraph('Supported minimizers')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,

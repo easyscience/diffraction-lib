@@ -8,6 +8,7 @@ import tempfile
 from typeguard import typechecked
 from varname import varname
 
+from easydiffraction import log
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
@@ -17,8 +18,6 @@ from easydiffraction.plotting.plotting import Plotter
 from easydiffraction.project.project_info import ProjectInfo
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.summary.summary import Summary
-from easydiffraction.utils.formatting import error
-from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d
 
@@ -141,21 +140,21 @@ class Project(GuardedBase):
 
         Loads project info, sample models, experiments, etc.
         """
-        print(paragraph(f'Loading project 📦 from {dir_path}'))
-        print(dir_path)
+        log.paragraph(f'Loading project 📦 from {dir_path}')
+        log.print(dir_path)
         self._info.path = dir_path
         # TODO: load project components from files inside dir_path
-        print('Loading project is not implemented yet.')
+        log.print('Loading project is not implemented yet.')
         self._saved = True
 
     def save(self) -> None:
         """Save the project into the existing project directory."""
         if not self._info.path:
-            print(error('Project path not specified. Use save_as() to define the path first.'))
+            log.error('Project path not specified. Use save_as() to define the path first.')
             return
 
-        print(paragraph(f"Saving project 📦 '{self.name}' to"))
-        print(self._info.path.resolve())
+        log.paragraph(f"Saving project 📦 '{self.name}' to")
+        log.print(self.info.path.resolve())
 
         # Ensure project directory exists
         self._info.path.mkdir(parents=True, exist_ok=True)
@@ -163,7 +162,7 @@ class Project(GuardedBase):
         # Save project info
         with (self._info.path / 'project.cif').open('w') as f:
             f.write(self._info.as_cif())
-            print('✅ project.cif')
+            log.print('├── 📄 project.cif')
 
         # Save sample models
         sm_dir = self._info.path / 'sample_models'
@@ -173,9 +172,10 @@ class Project(GuardedBase):
         for model in self.sample_models.values():
             file_name: str = f'{model.name}.cif'
             file_path = sm_dir / file_name
+            log.print('├── 📁 sample_models')
             with file_path.open('w') as f:
                 f.write(model.as_cif)
-                print(f'✅ sample_models/{file_name}')
+                log.print(f'│   └── 📄 {file_name}')
 
         # Save experiments
         expt_dir = self._info.path / 'experiments'
@@ -183,19 +183,20 @@ class Project(GuardedBase):
         for experiment in self.experiments.values():
             file_name: str = f'{experiment.name}.cif'
             file_path = expt_dir / file_name
+            log.print('├── 📁 experiments')
             with file_path.open('w') as f:
                 f.write(experiment.as_cif)
-                print(f'✅ experiments/{file_name}')
+                log.print(f'│   └── 📄 {file_name}')
 
         # Save analysis
         with (self._info.path / 'analysis.cif').open('w') as f:
             f.write(self.analysis.as_cif())
-            print('✅ analysis.cif')
+            log.print('├── 📄 analysis.cif')
 
         # Save summary
         with (self._info.path / 'summary.cif').open('w') as f:
             f.write(self.summary.as_cif())
-            print('✅ summary.cif')
+            log.print('└── 📄 summary.cif')
 
         self._info.update_last_modified()
         self._saved = True
@@ -329,4 +330,4 @@ class Project(GuardedBase):
                 experiment.instrument.setup_wavelength.value,
             )
         else:
-            print(error(f'Unsupported beam mode: {beam_mode} for d-spacing update.'))
+            log.error(f'Unsupported beam mode: {beam_mode} for d-spacing update.')

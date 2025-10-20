@@ -3,6 +3,7 @@
 
 from typeguard import typechecked
 
+from easydiffraction import log
 from easydiffraction.core.datablock import DatablockCollection
 from easydiffraction.experiments.experiment.base import ExperimentBase
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
@@ -10,7 +11,6 @@ from easydiffraction.experiments.experiment.enums import RadiationProbeEnum
 from easydiffraction.experiments.experiment.enums import SampleFormEnum
 from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 from easydiffraction.experiments.experiment.factory import ExperimentFactory
-from easydiffraction.utils.formatting import paragraph
 
 
 class Experiments(DatablockCollection):
@@ -116,8 +116,8 @@ class Experiments(DatablockCollection):
 
     def show_names(self) -> None:
         """Print the list of experiment names."""
-        print(paragraph('Defined experiments' + ' 🔬'))
-        print(self.names)
+        log.paragraph('Defined experiments' + ' 🔬')
+        log.print(self.names)
 
     def show_params(self) -> None:
         """Print parameters for each experiment in the collection."""

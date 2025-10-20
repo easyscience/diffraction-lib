@@ -4,6 +4,7 @@
 
 from typing import List
 
+from easydiffraction import log
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
@@ -11,7 +12,6 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.io.cif.handler import CifHandler
-from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_table
 
 
@@ -117,7 +117,7 @@ class ExcludedRegions(CategoryCollection):
         columns_alignment = ['left', 'left']
         columns_data: List[List[float]] = [[r.start.value, r.end.value] for r in self._items]
 
-        print(paragraph('Excluded regions'))
+        log.paragraph('Excluded regions')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,

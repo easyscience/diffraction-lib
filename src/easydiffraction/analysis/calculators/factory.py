@@ -7,12 +7,11 @@ from typing import Optional
 from typing import Type
 from typing import Union
 
+from easydiffraction import log
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
 from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
 from easydiffraction.analysis.calculators.pdffit import PdffitCalculator
-from easydiffraction.utils.formatting import error
-from easydiffraction.utils.formatting import paragraph
 from easydiffraction.utils.utils import render_table
 
 
@@ -77,7 +76,7 @@ class CalculatorFactory:
             description: str = config.get('description', 'No description provided.')
             columns_data.append([name, description])
 
-        print(paragraph('Supported calculators'))
+        log.paragraph('Supported calculators')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -96,8 +95,10 @@ class CalculatorFactory:
         """
         config = cls._supported_calculators().get(calculator_name)
         if not config:
-            print(error(f"Unknown calculator '{calculator_name}'"))
-            print(f'Supported calculators: {cls.list_supported_calculators()}')
+            log.warning(
+                f"Unknown calculator '{calculator_name}', "
+                f'Supported calculators: {cls.list_supported_calculators()}'
+            )
             return None
 
         return config['class']()

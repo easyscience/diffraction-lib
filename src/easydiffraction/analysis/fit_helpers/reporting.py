@@ -5,7 +5,7 @@ from typing import Any
 from typing import List
 from typing import Optional
 
-from easydiffraction import paragraph
+from easydiffraction import log
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squared
 from easydiffraction.analysis.fit_helpers.metrics import calculate_rb_factor
@@ -96,19 +96,19 @@ class FitResults:
         if f_obs is not None and f_calc is not None:
             br = calculate_rb_factor(f_obs, f_calc) * 100
 
-        print(paragraph('Fit results'))
-        print(f'{status_icon} Success: {self.success}')
-        print(f'⏱️ Fitting time: {self.fitting_time:.2f} seconds')
-        print(f'📏 Goodness-of-fit (reduced χ²): {self.reduced_chi_square:.2f}')
+        log.paragraph('Fit results')
+        log.print(f'{status_icon} Success: {self.success}')
+        log.print(f'⏱️ Fitting time: {self.fitting_time:.2f} seconds')
+        log.print(f'📏 Goodness-of-fit (reduced χ²): {self.reduced_chi_square:.2f}')
         if rf is not None:
-            print(f'📏 R-factor (Rf): {rf:.2f}%')
+            log.print(f'📏 R-factor (Rf): {rf:.2f}%')
         if rf2 is not None:
-            print(f'📏 R-factor squared (Rf²): {rf2:.2f}%')
+            log.print(f'📏 R-factor squared (Rf²): {rf2:.2f}%')
         if wr is not None:
-            print(f'📏 Weighted R-factor (wR): {wr:.2f}%')
+            log.print(f'📏 Weighted R-factor (wR): {wr:.2f}%')
         if br is not None:
-            print(f'📏 Bragg R-factor (BR): {br:.2f}%')
-        print('📈 Fitted parameters:')
+            log.print(f'📏 Bragg R-factor (BR): {br:.2f}%')
+        log.print('📈 Fitted parameters:')
 
         headers = [
             'datablock',

@@ -7,6 +7,7 @@ from typing import Union
 
 import pandas as pd
 
+from easydiffraction import log
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.analysis.categories.aliases import Aliases
 from easydiffraction.analysis.categories.constraints import Constraints
@@ -17,8 +18,6 @@ from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.singletons import ConstraintsHandler
 from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.utils.formatting import paragraph
-from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
 
@@ -111,7 +110,7 @@ class Analysis:
         experiments_params = self.project.experiments.parameters
 
         if not sample_models_params and not experiments_params:
-            print(warning('No parameters found.'))
+            log.warning('No parameters found.')
             return
 
         columns_headers = [
@@ -134,7 +133,7 @@ class Analysis:
         sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
         sample_models_dataframe = sample_models_dataframe[columns_headers]
 
-        print(paragraph('All parameters for all sample models (🧩 data blocks)'))
+        log.paragraph('All parameters for all sample models (🧩 data blocks)')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -145,7 +144,7 @@ class Analysis:
         experiments_dataframe = self._get_params_as_dataframe(experiments_params)
         experiments_dataframe = experiments_dataframe[columns_headers]
 
-        print(paragraph('All parameters for all experiments (🔬 data blocks)'))
+        log.paragraph('All parameters for all experiments (🔬 data blocks)')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -161,7 +160,7 @@ class Analysis:
         experiments_params = self.project.experiments.fittable_parameters
 
         if not sample_models_params and not experiments_params:
-            print(warning('No fittable parameters found.'))
+            log.warning('No fittable parameters found.')
             return
 
         columns_headers = [
@@ -188,7 +187,7 @@ class Analysis:
         sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
         sample_models_dataframe = sample_models_dataframe[columns_headers]
 
-        print(paragraph('Fittable parameters for all sample models (🧩 data blocks)'))
+        log.paragraph('Fittable parameters for all sample models (🧩 data blocks)')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -199,7 +198,7 @@ class Analysis:
         experiments_dataframe = self._get_params_as_dataframe(experiments_params)
         experiments_dataframe = experiments_dataframe[columns_headers]
 
-        print(paragraph('Fittable parameters for all experiments (🔬 data blocks)'))
+        log.paragraph('Fittable parameters for all experiments (🔬 data blocks)')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -211,12 +210,17 @@ class Analysis:
         """Print a table with only currently-free (varying)
         parameters.
         """
+        log.paragraph(
+            'Free parameters for both sample models (🧩 data blocks) '
+            'and experiments (🔬 data blocks)'
+        )
+
         sample_models_params = self.project.sample_models.free_parameters
         experiments_params = self.project.experiments.free_parameters
         free_params = sample_models_params + experiments_params
 
         if not free_params:
-            print(warning('No free parameters found.'))
+            log.warning('No free parameters found.')
             return
 
         columns_headers = [
@@ -274,7 +278,7 @@ class Analysis:
         }
 
         if not all_params:
-            print(warning('No parameters found.'))
+            log.warning('No parameters found.')
             return
 
         columns_headers = [
@@ -321,7 +325,7 @@ class Analysis:
                         cif_uid,
                     ])
 
-        print(paragraph('How to access parameters'))
+        log.paragraph('Show parameter CIF unique identifiers')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -333,8 +337,8 @@ class Analysis:
         """Print the name of the currently selected calculator
         engine.
         """
-        print(paragraph('Current calculator'))
-        print(self.current_calculator)
+        log.paragraph('Current calculator')
+        log.print(self.current_calculator)
 
     @staticmethod
     def show_supported_calculators() -> None:
@@ -360,13 +364,13 @@ class Analysis:
             return
         self.calculator = calculator
         self._calculator_key = calculator_name
-        print(paragraph('Current calculator changed to'))
-        print(self.current_calculator)
+        log.paragraph('Current calculator changed to')
+        log.print(self.current_calculator)
 
     def show_current_minimizer(self) -> None:
         """Print the name of the currently selected minimizer."""
-        print(paragraph('Current minimizer'))
-        print(self.current_minimizer)
+        log.paragraph('Current minimizer')
+        log.print(self.current_minimizer)
 
     @staticmethod
     def show_available_minimizers() -> None:
@@ -389,8 +393,8 @@ class Analysis:
                 'lmfit (leastsq)'.
         """
         self.fitter = Fitter(selection)
-        print(paragraph('Current minimizer changed to'))
-        print(self.current_minimizer)
+        log.paragraph('Current minimizer changed to')
+        log.print(self.current_minimizer)
 
     @property
     def fit_mode(self) -> str:
@@ -419,8 +423,8 @@ class Analysis:
             self.joint_fit_experiments = JointFitExperiments()
             for id in self.project.experiments.names:
                 self.joint_fit_experiments.add_from_args(id=id, weight=0.5)
-        print(paragraph('Current fit mode changed to'))
-        print(self._fit_mode)
+        log.paragraph('Current fit mode changed to')
+        log.print(self._fit_mode)
 
     def show_available_fit_modes(self) -> None:
         """Print all supported fitting strategies and their
@@ -446,7 +450,7 @@ class Analysis:
             description = item['Description']
             columns_data.append([strategy, description])
 
-        print(paragraph('Available fit modes'))
+        log.paragraph('Available fit modes')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -455,8 +459,8 @@ class Analysis:
 
     def show_current_fit_mode(self) -> None:
         """Print the currently active fitting strategy."""
-        print(paragraph('Current fit mode'))
-        print(self.fit_mode)
+        log.paragraph('Current fit mode')
+        log.print(self.fit_mode)
 
     def calculate_pattern(self, expt_name: str) -> None:
         """Calculate and store the diffraction pattern for an
@@ -476,7 +480,7 @@ class Analysis:
         constraints_dict = dict(self.constraints)
 
         if not self.constraints._items:
-            print(warning('No constraints defined.'))
+            log.warning('No constraints defined.')
             return
 
         rows = []
@@ -492,7 +496,7 @@ class Analysis:
         alignments = ['left', 'left', 'left']
         rows = [[row[header] for header in headers] for row in rows]
 
-        print(paragraph('User defined constraints'))
+        log.paragraph('User defined constraints')
         render_table(
             columns_headers=headers,
             columns_alignment=alignments,
@@ -504,7 +508,7 @@ class Analysis:
         project.
         """
         if not self.constraints._items:
-            print(warning('No constraints defined.'))
+            log.warning('No constraints defined.')
             return
 
         self.constraints_handler.set_aliases(self.aliases)
@@ -522,27 +526,23 @@ class Analysis:
         """
         sample_models = self.project.sample_models
         if not sample_models:
-            print('No sample models found in the project. Cannot run fit.')
+            log.warning('No sample models found in the project. Cannot run fit.')
             return
 
         experiments = self.project.experiments
         if not experiments:
-            print('No experiments found in the project. Cannot run fit.')
+            log.warning('No experiments found in the project. Cannot run fit.')
             return
 
         calculator = self.calculator
         if not calculator:
-            print('No calculator is set. Cannot run fit.')
+            log.warning('No calculator is set. Cannot run fit.')
             return
 
         # Run the fitting process
-        experiment_ids = experiments.names
-
         if self.fit_mode == 'joint':
-            print(
-                paragraph(
-                    f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"
-                )
+            log.paragraph(
+                f"Using all experiments 🔬 {experiments.names} for '{self.fit_mode}' fitting"
             )
             self.fitter.fit(
                 sample_models,
@@ -552,9 +552,7 @@ class Analysis:
             )
         elif self.fit_mode == 'single':
             for expt_name in experiments.names:
-                print(
-                    paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting")
-                )
+                log.paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting")
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name
                 dummy_experiments.add(experiment)
@@ -580,5 +578,6 @@ class Analysis:
         view.
         """
         cif_text: str = self.as_cif()
-        paragraph_title: str = paragraph('Analysis 🧮 info as cif')
-        render_cif(cif_text, paragraph_title)
+        paragraph_title: str = 'Analysis 🧮 info as cif'
+        log.paragraph(paragraph_title)
+        render_cif(cif_text)

@@ -171,9 +171,9 @@ def _get_release_info(tag: str | None) -> dict | None:
             return json.load(response)
     except Exception as e:
         if tag is not None:
-            print(error(f'Failed to fetch release info for tag {tag}: {e}'))
+            log.error(f'Failed to fetch release info for tag {tag}: {e}')
         else:
-            print(error(f'Failed to fetch latest release info: {e}'))
+            log.error(f'Failed to fetch latest release info: {e}')
         return None
 
 
@@ -248,7 +248,7 @@ def _extract_notebooks_from_asset(download_url: str) -> list[str]:
             ]
             return _sort_notebooks(notebooks)
     except Exception as e:
-        print(error(f"Failed to download or parse 'tutorials.zip': {e}"))
+        log.error(f"Failed to download or parse 'tutorials.zip': {e}")
         return []
 
 
@@ -273,17 +273,17 @@ def fetch_tutorial_list() -> list[str]:
     release_info = _get_release_info(tag)
     # Fallback to latest if tag fetch failed and tag was attempted
     if release_info is None and tag is not None:
-        print(error('Falling back to latest release info...'))
+        log.error('Falling back to latest release info...')
         release_info = _get_release_info(None)
     if release_info is None:
         return []
     tutorial_asset = _get_tutorial_asset(release_info)
     if not tutorial_asset:
-        print(error("'tutorials.zip' not found in the release."))
+        log.error("'tutorials.zip' not found in the release.")
         return []
     download_url = tutorial_asset.get('browser_download_url')
     if not download_url:
-        print(error("'browser_download_url' not found for tutorials.zip."))
+        log.error("'browser_download_url' not found for tutorials.zip.")
         return []
     return _extract_notebooks_from_asset(download_url)
 
@@ -300,7 +300,7 @@ def list_tutorials():
 
     released_ed_version = stripped_package_version('easydiffraction')
 
-    print(paragraph(f'📘 Tutorials available for easydiffraction v{released_ed_version}:'))
+    log.print(f'Tutorials available for easydiffraction v{released_ed_version}:')
     render_table(
         columns_data=columns_data,
         columns_alignment=columns_alignment,
@@ -325,35 +325,35 @@ def fetch_tutorials() -> None:
     release_info = _get_release_info(tag)
     # Fallback to latest if tag fetch failed and tag was attempted
     if release_info is None and tag is not None:
-        print(error('Falling back to latest release info...'))
+        log.error('Falling back to latest release info...')
         release_info = _get_release_info(None)
     if release_info is None:
-        print(error('Unable to fetch release info.'))
+        log.error('Unable to fetch release info.')
         return
     tutorial_asset = _get_tutorial_asset(release_info)
     if not tutorial_asset:
-        print(error("'tutorials.zip' not found in the release."))
+        log.error("'tutorials.zip' not found in the release.")
         return
     file_url = tutorial_asset.get('browser_download_url')
     if not file_url:
-        print(error("'browser_download_url' not found for tutorials.zip."))
+        log.error("'browser_download_url' not found for tutorials.zip.")
         return
     file_name = 'tutorials.zip'
     # Validate URL for security
     _validate_url(file_url)
 
-    print('📥 Downloading tutorial notebooks...')
+    log.print('📥 Downloading tutorial notebooks...')
     with _safe_urlopen(file_url) as resp:
         pathlib.Path(file_name).write_bytes(resp.read())
 
-    print('📦 Extracting tutorials to "tutorials/"...')
+    log.print('📦 Extracting tutorials to "tutorials/"...')
     with zipfile.ZipFile(file_name, 'r') as zip_ref:
         zip_ref.extractall()
 
-    print('🧹 Cleaning up...')
+    log.print('🧹 Cleaning up...')
     pathlib.Path(file_name).unlink()
 
-    print('✅ Tutorials fetched successfully.')
+    log.print('✅ Tutorials fetched successfully.')
 
 
 def show_version() -> None:
@@ -363,7 +363,7 @@ def show_version() -> None:
         None
     """
     current_ed_version = package_version('easydiffraction')
-    print(paragraph(f'📘 Current easydiffraction v{current_ed_version}'))
+    log.print(f'Current easydiffraction v{current_ed_version}')
 
 
 def is_notebook() -> bool:
@@ -529,10 +529,10 @@ def render_table(
             showindex=indices,
         )
 
-        print(table)
+        log.print(table)
 
 
-def render_cif(cif_text, paragraph_title) -> None:
+def render_cif(cif_text) -> None:
     """Display the CIF text as a formatted table in Jupyter Notebook or
     terminal.
 

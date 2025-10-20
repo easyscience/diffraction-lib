@@ -13,6 +13,7 @@ from typing import Union
 import numpy as np
 from numpy.polynomial.chebyshev import chebval
 
+from easydiffraction import log
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import Parameter
@@ -21,8 +22,6 @@ from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.experiments.categories.background.base import BackgroundBase
 from easydiffraction.io.cif.handler import CifHandler
-from easydiffraction.utils.formatting import paragraph
-from easydiffraction.utils.formatting import warning
 from easydiffraction.utils.utils import render_table
 
 
@@ -91,7 +90,7 @@ class ChebyshevPolynomialBackground(BackgroundBase):
     def calculate(self, x_data):
         """Evaluate polynomial background over x_data."""
         if not self._items:
-            print(warning('No background points found. Setting background to zero.'))
+            log.warning('No background points found. Setting background to zero.')
             return np.zeros_like(x_data)
 
         u = (x_data - x_data.min()) / (x_data.max() - x_data.min()) * 2 - 1
@@ -107,7 +106,7 @@ class ChebyshevPolynomialBackground(BackgroundBase):
             [t.order.value, t.coef.value] for t in self._items
         ]
 
-        print(paragraph('Chebyshev polynomial background terms'))
+        log.paragraph('Chebyshev polynomial background terms')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,

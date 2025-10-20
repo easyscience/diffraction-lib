@@ -3,9 +3,6 @@
 
 from importlib import import_module
 
-from easydiffraction.utils.formatting import chapter
-from easydiffraction.utils.formatting import paragraph
-from easydiffraction.utils.formatting import section
 from easydiffraction.utils.logging import Logger
 from easydiffraction.utils.logging import log
 
@@ -24,13 +21,7 @@ _LAZY_ENTRIES = [
 
 _LAZY_MAP = {attr_name: module_name for module_name, attr_name in _LAZY_ENTRIES}
 
-__all__ = list(_LAZY_MAP.keys()) + [
-    'Logger',
-    'log',
-    'chapter',
-    'section',
-    'paragraph',
-]
+__all__ = list(_LAZY_MAP.keys()) + ['Logger', 'log']
 
 
 def __getattr__(name):
