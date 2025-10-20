@@ -182,6 +182,7 @@ class Summary:
             ]
         ]
         render_table(
+            columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=fit_metrics,
         )

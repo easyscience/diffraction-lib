@@ -11,10 +11,11 @@ from varname import varname
 from easydiffraction import log
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guard import GuardedBase
+from easydiffraction.display.plotting import Plotter
+from easydiffraction.display.tables import TableRenderer
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.io.cif.serialize import project_to_cif
-from easydiffraction.plotting.plotting import Plotter
 from easydiffraction.project.project_info import ProjectInfo
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.summary.summary import Summary
@@ -43,6 +44,7 @@ class Project(GuardedBase):
         self._info: ProjectInfo = ProjectInfo(name, title, description)
         self._sample_models = SampleModels()
         self._experiments = Experiments()
+        self._tabler = TableRenderer.get()
         self._plotter = Plotter()
         self._analysis = Analysis(self)
         self._summary = Summary(self)
@@ -108,6 +110,11 @@ class Project(GuardedBase):
     def plotter(self):
         """Plotting facade bound to the project."""
         return self._plotter
+
+    @property
+    def tabler(self):
+        """Tables rendering facade bound to the project."""
+        return self._tabler
 
     @property
     def analysis(self):

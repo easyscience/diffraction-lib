@@ -75,13 +75,15 @@ class Analysis:
         rows = []
         for param in params:
             common_attrs = {}
-            if isinstance(param, (NumericDescriptor, Parameter)):
+            # TODO: Merge into one. Add field if attr exists
+            if isinstance(param, (NumericDescriptor, Parameter)):  # TODO: StringDescriptor?
                 common_attrs = {
                     'datablock': param._identity.datablock_entry_name,
                     'category': param._identity.category_code,
-                    'entry': param._identity.category_entry_name,
+                    'entry': param._identity.category_entry_name
+                    or '',  # TODO: 'entry' if not None?
                     'parameter': param.name,
-                    'value': param.value,
+                    'value': param.value,  # TODO: f'{param.value!r}' for StringDescriptor?
                     'units': param.units,
                     'fittable': False,
                 }
@@ -92,9 +94,11 @@ class Analysis:
                     'free': param.free,
                     'min': param.fit_min,
                     'max': param.fit_max,
+                    # 'uncertainty': f'{param.uncertainty:.4f}'
+                    # if param.uncertainty else '',
                     'uncertainty': f'{param.uncertainty:.4f}' if param.uncertainty else '',
-                    'value': f'{param.value:.4f}',
-                    'units': param.units,
+                    # 'value': f'{param.value:.4f}', # TODO: Needed?
+                    # 'units': param.units,
                 }
             row = common_attrs | param_attrs
             rows.append(row)
@@ -248,27 +252,20 @@ class Analysis:
 
         dataframe = self._get_params_as_dataframe(free_params)
         dataframe = dataframe[columns_headers]
+        columns_data = dataframe[columns_headers].to_numpy()
 
-        print(
-            paragraph(
-                'Free parameters for both sample models (🧩 data blocks) '
-                'and experiments (🔬 data blocks)'
-            )
-        )
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
-            columns_data=dataframe,
+            columns_data=columns_data,
             show_index=True,
         )
 
     def how_to_access_parameters(self) -> None:
-        """Show Python access paths and CIF unique IDs for all
-        parameters.
+        """Show Python access paths for all parameters.
 
-        The output explains how to reference specific parameters in code
-        and which unique identifiers are used when creating CIF-based
-        constraints.
+        The output explains how to reference specific parameters in
+        code.
         """
         sample_models_params = self.project.sample_models.parameters
         experiments_params = self.project.experiments.parameters
@@ -287,11 +284,9 @@ class Analysis:
             'entry',
             'parameter',
             'How to Access in Python Code',
-            'Unique Identifier for CIF Constraints',
         ]
 
         columns_alignment = [
-            'left',
             'left',
             'left',
             'left',
@@ -306,7 +301,7 @@ class Analysis:
                 if isinstance(param, (NumericDescriptor, Parameter)):
                     datablock_entry_name = param._identity.datablock_entry_name
                     category_code = param._identity.category_code
-                    category_entry_name = param._identity.category_entry_name
+                    category_entry_name = param._identity.category_entry_name or ''
                     param_key = param.name
                     code_variable = (
                         f'{project_varname}.{datablock_type}'
@@ -315,13 +310,69 @@ class Analysis:
                     if category_entry_name:
                         code_variable += f"['{category_entry_name}']"
                     code_variable += f'.{param_key}'
-                    cif_uid = param._cif_handler.uid
                     columns_data.append([
                         datablock_entry_name,
                         category_code,
                         category_entry_name,
                         param_key,
                         code_variable,
+                    ])
+
+        log.paragraph('How to access parameters')
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+            show_index=True,
+        )
+
+    def show_parameter_cif_uids(self) -> None:
+        """Show CIF unique IDs for all parameters.
+
+        The output explains which unique identifiers are used when
+        creating CIF-based constraints.
+        """
+        sample_models_params = self.project.sample_models.parameters
+        experiments_params = self.project.experiments.parameters
+        all_params = {
+            'sample_models': sample_models_params,
+            'experiments': experiments_params,
+        }
+
+        if not all_params:
+            log.warning('No parameters found.')
+            return
+
+        columns_headers = [
+            'datablock',
+            'category',
+            'entry',
+            'parameter',
+            'Unique Identifier for CIF Constraints',
+        ]
+
+        columns_alignment = [
+            'left',
+            'left',
+            'left',
+            'left',
+            'left',
+        ]
+
+        columns_data = []
+        for _datablock_type, params in all_params.items():
+            for param in params:
+                if isinstance(param, (NumericDescriptor, Parameter)):
+                    datablock_entry_name = param._identity.datablock_entry_name
+                    category_code = param._identity.category_code
+                    category_entry_name = param._identity.category_entry_name or ''
+                    param_key = param.name
+                    cif_uid = param._cif_handler.uid
+                    columns_data.append([
+                        datablock_entry_name,
+                        category_code,
+                        category_entry_name,
+                        param_key,
                         cif_uid,
                     ])
 
