@@ -147,7 +147,7 @@ class Project(GuardedBase):
 
         Loads project info, sample models, experiments, etc.
         """
-        log.paragraph(f'Loading project 📦 from {dir_path}')
+        log.paragraph('Loading project 📦 from')
         log.print(dir_path)
         self._info.path = dir_path
         # TODO: load project components from files inside dir_path

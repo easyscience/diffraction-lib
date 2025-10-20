@@ -4,12 +4,12 @@
 import io
 import json
 import os
+import pathlib
 import re
 import urllib.request
 import zipfile
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
-from importlib.util import find_spec
 from typing import List
 from typing import Optional
 from urllib.parse import urlparse
@@ -23,15 +23,16 @@ from uncertainties import UFloat
 from uncertainties import ufloat
 from uncertainties import ufloat_fromstr
 
+import easydiffraction.utils.env as _env
+from easydiffraction import log
+from easydiffraction.display.tables import TableRenderer
+
 try:
     import IPython
     from IPython.display import HTML
     from IPython.display import display
 except ImportError:
     IPython = None
-
-import pathlib
-
 from rich import box
 from rich.table import Table
 

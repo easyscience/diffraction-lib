@@ -18,7 +18,7 @@ except ImportError:
     clear_output = None
 
 from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
-from easydiffraction.utils.utils import is_notebook
+from easydiffraction.utils.env import is_notebook
 from easydiffraction.utils.utils import render_table
 
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold

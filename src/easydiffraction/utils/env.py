@@ -51,8 +51,9 @@ def is_notebook() -> bool:
         ip = ipython_mod.get_ipython()  # type: ignore[attr-defined]
         if ip is None:
             return False
-        # Prefer config-based detection when available (works with tests).
-        has_cfg = hasattr(ip, 'config') and isinstance(getattr(ip, 'config'), dict)
+        # Prefer config-based detection when available (works with
+        # tests).
+        has_cfg = hasattr(ip, 'config') and isinstance(ip.config, dict)
         if has_cfg and 'IPKernelApp' in ip.config:  # type: ignore[index]
             return True
         shell = ip.__class__.__name__
@@ -69,6 +70,7 @@ def is_github_ci() -> bool:
     """Return True when running under GitHub Actions CI.
 
     Returns:
-        bool: True if env var ``GITHUB_ACTIONS`` is set, False otherwise.
+        bool: True if env var ``GITHUB_ACTIONS`` is set, False
+        otherwise.
     """
     return os.environ.get('GITHUB_ACTIONS') is not None
