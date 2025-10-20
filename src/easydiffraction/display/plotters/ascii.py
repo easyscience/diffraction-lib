@@ -3,10 +3,10 @@
 
 import asciichartpy
 
-from easydiffraction.plotting.plotters.plotter_base import DEFAULT_HEIGHT
-from easydiffraction.plotting.plotters.plotter_base import SERIES_CONFIG
-from easydiffraction.plotting.plotters.plotter_base import PlotterBase
-from easydiffraction.utils.formatting import paragraph
+from easydiffraction import log
+from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
+from easydiffraction.display.plotters.base import SERIES_CONFIG
+from easydiffraction.display.plotters.base import PlotterBase
 
 DEFAULT_COLORS = {
     'meas': asciichartpy.blue,
@@ -46,9 +46,8 @@ class AsciiPlotter(PlotterBase):
             title: Figure title printed above the chart.
             height: Number of text rows to allocate for the chart.
         """
-        # Intentionally unused; kept for a consistent plotting API
+        # Intentionally unused; kept for a consistent display API
         del axes_labels
-        title = paragraph(title)
         legend = '\n'.join([self._get_legend_item(label) for label in labels])
 
         if height is None:
@@ -59,7 +58,10 @@ class AsciiPlotter(PlotterBase):
 
         chart = asciichartpy.plot(y_series, config)
 
-        print(f'{title}')
-        print(f'Displaying data for selected x-range from {x[0]} to {x[-1]} ({len(x)} points)')
-        print(f'Legend:\n{legend}')
-        print(chart)
+        log.paragraph(f'{title}')  # TODO: f''?
+        log.print(f'Displaying data for selected x-range from {x[0]} to {x[-1]} ({len(x)} points)')
+        log.print(f'Legend:\n{legend}')
+
+        padded = '\n'.join(' ' + line for line in chart.splitlines())
+
+        print(padded)

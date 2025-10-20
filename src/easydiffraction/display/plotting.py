@@ -4,18 +4,18 @@
 
 import numpy as np
 
-from easydiffraction.plotting.plotters.plotter_ascii import AsciiPlotter
-from easydiffraction.plotting.plotters.plotter_base import DEFAULT_AXES_LABELS
-from easydiffraction.plotting.plotters.plotter_base import DEFAULT_ENGINE
-from easydiffraction.plotting.plotters.plotter_base import DEFAULT_HEIGHT
-from easydiffraction.plotting.plotters.plotter_base import DEFAULT_MAX
-from easydiffraction.plotting.plotters.plotter_base import DEFAULT_MIN
-from easydiffraction.plotting.plotters.plotter_plotly import PlotlyPlotter
-from easydiffraction.utils.formatting import error
-from easydiffraction.utils.formatting import paragraph
+from easydiffraction import log
+from easydiffraction.display.plotters.ascii import AsciiPlotter
+from easydiffraction.display.plotters.base import DEFAULT_AXES_LABELS
+from easydiffraction.display.plotters.base import DEFAULT_ENGINE
+from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
+from easydiffraction.display.plotters.base import DEFAULT_MAX
+from easydiffraction.display.plotters.base import DEFAULT_MIN
+from easydiffraction.display.plotters.plotly import PlotlyPlotter
 from easydiffraction.utils.utils import render_table
 
 
+# TODO: Inherit from BaseRenderer
 class Plotter:
     """User-facing plotting facade backed by concrete plotters."""
 
@@ -48,8 +48,8 @@ class Plotter:
             return
         self._engine = new_engine
         self._plotter = new_plotter
-        print(paragraph('Current plotter changed to'))
-        print(self._engine)
+        log.paragraph('Current plotter changed to')
+        log.print(self._engine)
 
     @property
     def x_min(self):
@@ -100,7 +100,7 @@ class Plotter:
             ['Chart height', self.height],
         ]
 
-        print(paragraph('Current plotter configuration'))
+        log.paragraph('Current plotter configuration')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -116,7 +116,7 @@ class Plotter:
             description = config.get('description', 'No description provided.')
             columns_data.append([name, description])
 
-        print(paragraph('Supported plotter engines'))
+        log.paragraph('Supported plotter engines')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -134,10 +134,10 @@ class Plotter:
     ):
         """Plot measured pattern using current engine."""
         if pattern.x is None:
-            error(f'No data available for experiment {expt_name}')
+            log.error(f'No data available for experiment {expt_name}')
             return
         if pattern.meas is None:
-            error(f'No measured data available for experiment {expt_name}')
+            log.error(f'No measured data available for experiment {expt_name}')
             return
 
         x_array = pattern.d if d_spacing else pattern.x
@@ -192,10 +192,10 @@ class Plotter:
     ):
         """Plot calculated pattern using current engine."""
         if pattern.x is None:
-            error(f'No data available for experiment {expt_name}')
+            log.error(f'No data available for experiment {expt_name}')
             return
         if pattern.calc is None:
-            print(f'No calculated data available for experiment {expt_name}')
+            log.error(f'No calculated data available for experiment {expt_name}')
             return
 
         x_array = pattern.d if d_spacing else pattern.x
@@ -251,13 +251,13 @@ class Plotter:
     ):
         """Plot measured and calculated series and optional residual."""
         if pattern.x is None:
-            print(error(f'No data available for experiment {expt_name}'))
+            log.error(f'No data available for experiment {expt_name}')
             return
         if pattern.meas is None:
-            print(error(f'No measured data available for experiment {expt_name}'))
+            log.error(f'No measured data available for experiment {expt_name}')
             return
         if pattern.calc is None:
-            print(error(f'No calculated data available for experiment {expt_name}'))
+            log.error(f'No calculated data available for experiment {expt_name}')
             return
 
         # Select x-axis data based on d-spacing or original x values
@@ -368,8 +368,8 @@ class PlotterFactory:
         config = cls._SUPPORTED_ENGINES_DICT.get(engine_name)
         if not config:
             supported_engines = cls.supported_engines()
-            print(error(f"Unsupported plotting engine '{engine_name}'"))
-            print(f'Supported engines: {supported_engines}')
+            log.error(f"Unsupported plotting engine '{engine_name}'")
+            log.print(f'Supported engines: {supported_engines}')
             return None
         plotter_class = config['class']
         plotter_obj = plotter_class()

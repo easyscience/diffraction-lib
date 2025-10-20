@@ -12,8 +12,8 @@ except ImportError:
     display = None
     HTML = None
 
-from easydiffraction.plotting.plotters.plotter_base import SERIES_CONFIG
-from easydiffraction.plotting.plotters.plotter_base import PlotterBase
+from easydiffraction.display.plotters.base import SERIES_CONFIG
+from easydiffraction.display.plotters.base import PlotterBase
 from easydiffraction.utils.utils import is_pycharm
 
 DEFAULT_COLORS = {
