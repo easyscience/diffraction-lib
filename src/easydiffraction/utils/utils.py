@@ -32,9 +32,8 @@ except ImportError:
 
 import pathlib
 
-from easydiffraction.utils.formatting import error
-from easydiffraction.utils.formatting import paragraph
-from easydiffraction.utils.formatting import warning
+from rich import box
+from rich.table import Table
 
 
 def _validate_url(url: str) -> None:
@@ -76,22 +75,25 @@ def download_from_repository(
         overwrite: Whether to overwrite the file if it already exists.
             Defaults to False.
     """
-    dest_path = pathlib.Path(destination)
-    file_path = dest_path / file_name
-    if file_path.exists():
-        if not overwrite:
-            print(warning(f"File '{file_path}' already exists and will not be overwritten."))
-            return
-        else:
-            print(warning(f"File '{file_path}' already exists and will be overwritten."))
-            file_path.unlink()
-
     base = 'https://raw.githubusercontent.com'
     org = 'easyscience'
     repo = 'diffraction-lib'
     branch = branch or DATA_REPO_BRANCH  # Use the global branch variable if not provided
     path_in_repo = 'tutorials/data'
     url = f'{base}/{org}/{repo}/refs/heads/{branch}/{path_in_repo}/{file_name}'
+
+    log.paragraph('Downloading...')
+    log.print(f"File '{file_name}' from '{org}/{repo}'")
+
+    dest_path = pathlib.Path(destination)
+    file_path = dest_path / file_name
+    if file_path.exists():
+        if not overwrite:
+            log.warning(f"File '{file_path}' already exists and will not be overwritten.")
+            return
+        else:
+            log.warning(f"File '{file_path}' already exists and will be overwritten.")
+            file_path.unlink()
 
     pooch.retrieve(
         url=url,
@@ -548,16 +550,16 @@ def render_cif(cif_text) -> None:
     else:
         lines: List[str] = [line for line in cif_text.splitlines()]
 
+    lines: List[str] = [line for line in cif_text.splitlines()]
+
     # Convert each line into a single-column format for table rendering
     columns: List[List[str]] = [[line] for line in lines]
 
-    # Print title paragraph
-    print(paragraph_title)
-
     # Render the table using left alignment and no headers
     render_table(
-        columns_data=columns,
+        columns_headers=['CIF'],
         columns_alignment=['left'],
+        columns_data=columns,
     )
 
 

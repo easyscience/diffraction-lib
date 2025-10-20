@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+"""Pandas-based table renderer for notebooks using DataFrame Styler."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -12,11 +16,19 @@ except ImportError:
 
 
 class PandasTableBackend(TableBackendBase):
+    """Render tables using the pandas Styler in Jupyter environments."""
+
     def render(
         self,
         alignments,
         df,
     ) -> Any:
+        """Render a styled DataFrame.
+
+        Args:
+            alignments: Iterable of column justifications (e.g. 'left').
+            df: DataFrame whose index is displayed as the first column.
+        """
         color = self._pandas_border_color
 
         # Base table styles

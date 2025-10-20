@@ -14,7 +14,7 @@ except ImportError:
 
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.base import PlotterBase
-from easydiffraction.utils.utils import is_pycharm
+from easydiffraction.utils.env import is_pycharm
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',

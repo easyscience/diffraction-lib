@@ -1,3 +1,11 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+"""Low-level backends for rendering tables.
+
+This module defines the abstract base for tabular renderers and small
+helpers for consistent styling across terminal and notebook outputs.
+"""
+
 from __future__ import annotations
 
 from abc import ABC
@@ -10,6 +18,12 @@ from rich.color import Color
 
 
 class TableBackendBase(ABC):
+    """Abstract base class for concrete table backends.
+
+    Subclasses implement the ``render`` method which receives an index-aware
+    pandas DataFrame and the alignment for each column header.
+    """
+
     FLOAT_PRECISION = 5
     RICH_BORDER_DARK_THEME = 'grey35'
     RICH_BORDER_LIGHT_THEME = 'grey85'
@@ -19,12 +33,13 @@ class TableBackendBase(ABC):
         self._float_fmt = f'{{:.{self.FLOAT_PRECISION}f}}'.format
 
     def _format_value(self, value: Any) -> Any:
+        """Format floats with fixed precision and others as strings."""
         return self._float_fmt(value) if isinstance(value, float) else str(value)
 
     def _is_dark_theme(self) -> bool:
-        """Return 'dark' or 'light'.
+        """Return True when a dark theme is detected in Jupyter.
 
-        If not running inside Jupyter, return default.
+        If not running inside Jupyter, return a sane default (True).
         """
         default = True
 
@@ -38,6 +53,7 @@ class TableBackendBase(ABC):
         return is_dark()
 
     def _rich_to_hex(self, color):
+        """Convert a Rich color name to a CSS-style hex string."""
         c = Color.parse(color)
         rgb = c.get_truecolor()
         hex_value = '#{:02x}{:02x}{:02x}'.format(*rgb)
@@ -59,4 +75,7 @@ class TableBackendBase(ABC):
         alignments,
         df,
     ) -> Any:
+        """Render the provided DataFrame with backend-specific
+        styling.
+        """
         pass

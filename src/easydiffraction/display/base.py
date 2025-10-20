@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-License-Identifier: BSD-3-Clause
+"""Common base classes for display components and their factories."""
+
 from __future__ import annotations
 
 from abc import ABC
@@ -13,8 +17,11 @@ from easydiffraction.core.singletons import SingletonBase
 
 
 class RendererBase(SingletonBase, ABC):
-    """Base class for display/render components with pluggable
-    engines.
+    """Base class for display components with pluggable engines.
+
+    Subclasses provide a factory and a default engine. This class
+    manages the active backend instance and exposes helpers to inspect
+    supported engines in a table-friendly format.
     """
 
     def __init__(self):
@@ -24,9 +31,7 @@ class RendererBase(SingletonBase, ABC):
     @classmethod
     @abstractmethod
     def _factory(cls) -> type[RendererFactoryBase]:
-        """Return the factory class (e.g., PlotterFactory,
-        TableFactory).
-        """
+        """Return the factory class for this renderer type."""
         raise NotImplementedError
 
     @classmethod
@@ -44,29 +49,24 @@ class RendererBase(SingletonBase, ABC):
         if new_engine == self._engine:
             log.info(f"Engine is already set to '{new_engine}'. No change made.")
             return
-        engines_list = self._factory().supported_engines()
-        if new_engine not in engines_list:
-            engines = str(engines_list)[1:-1]  # remove brackets
-            log.warning(f"Engine '{new_engine}' is not supported. Available engines: {engines}")
+        try:
+            self._backend = self._factory().create(new_engine)
+        except ValueError as exc:
+            # Log a friendly message and leave engine unchanged
+            log.warning(str(exc))
             return
-        self._backend = self._factory().create(new_engine)
-        self._engine = new_engine
-        log.paragraph('Current engine changed to')
-        log.print(f"'{self._engine}'")
+        else:
+            self._engine = new_engine
+            log.paragraph('Current engine changed to')
+            log.print(f"'{self._engine}'")
 
+    @abstractmethod
     def show_config(self) -> None:
-        """Display minimal configuration for this renderer."""
-        headers = [
-            ('Parameter', 'left'),
-            ('Value', 'left'),
-        ]
-        rows = [['engine', self._engine]]
-        df = pd.DataFrame(rows, columns=pd.MultiIndex.from_tuples(headers))
-        log.paragraph('Current renderer configuration')
-        self.render(df)
+        """Display the current renderer configuration."""
+        raise NotImplementedError
 
     def show_supported_engines(self) -> None:
-        """List supported engines with descriptions."""
+        """List supported engines with descriptions in a table."""
         headers = [
             ('Engine', 'left'),
             ('Description', 'left'),
@@ -74,7 +74,10 @@ class RendererBase(SingletonBase, ABC):
         rows = self._factory().descriptions()
         df = pd.DataFrame(rows, columns=pd.MultiIndex.from_tuples(headers))
         log.paragraph('Supported engines')
-        self.render(df)
+        # Delegate table rendering to the TableRenderer singleton
+        from easydiffraction.display.tables import TableRenderer  # local import to avoid cycles
+
+        TableRenderer.get().render(df)
 
     def show_current_engine(self) -> None:
         """Display the currently selected engine."""
@@ -83,23 +86,37 @@ class RendererBase(SingletonBase, ABC):
 
 
 class RendererFactoryBase(ABC):
-    _SUPPORTED_ENGINES: dict[str, type]
+    """Base factory that manages discovery and creation of backends."""
 
     @classmethod
     def create(cls, engine_name: str) -> Any:
-        config = cls._SUPPORTED_ENGINES[engine_name]
-        engine_class = config['class']
-        instance = engine_class()
-        return instance
+        registry = cls._registry()
+        if engine_name not in registry:
+            supported = list(registry.keys())
+            raise ValueError(f"Unsupported engine '{engine_name}'. Supported engines: {supported}")
+        engine_class = registry[engine_name]['class']
+        return engine_class()
 
     @classmethod
     def supported_engines(cls) -> List[str]:
-        keys = cls._SUPPORTED_ENGINES.keys()
-        engines = list(keys)
-        return engines
+        """Return a list of supported engine identifiers."""
+        return list(cls._registry().keys())
 
     @classmethod
     def descriptions(cls) -> List[Tuple[str, str]]:
-        items = cls._SUPPORTED_ENGINES.items()
-        descriptions = [(name, config.get('description')) for name, config in items]
-        return descriptions
+        """Return pairs of engine name and human-friendly
+        description.
+        """
+        items = cls._registry().items()
+        return [(name, config.get('description')) for name, config in items]
+
+    @classmethod
+    @abstractmethod
+    def _registry(cls) -> dict:
+        """Return engine registry. Implementations must provide this.
+
+        The returned mapping should have keys as engine names and values
+        as a config dict with 'description' and 'class'. Lazy imports
+        are allowed to avoid circular dependencies.
+        """
+        raise NotImplementedError

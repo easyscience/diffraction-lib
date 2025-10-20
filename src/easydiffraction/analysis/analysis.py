@@ -284,9 +284,11 @@ class Analysis:
             'entry',
             'parameter',
             'How to Access in Python Code',
+            'CIF uid',
         ]
 
         columns_alignment = [
+            'left',
             'left',
             'left',
             'left',
@@ -310,12 +312,17 @@ class Analysis:
                     if category_entry_name:
                         code_variable += f"['{category_entry_name}']"
                     code_variable += f'.{param_key}'
+                    uid = (
+                        f'{datablock_entry_name}.{category_code}.'
+                        f'{category_entry_name + "." if category_entry_name else ""}{param_key}'
+                    )
                     columns_data.append([
                         datablock_entry_name,
                         category_code,
                         category_entry_name,
                         param_key,
                         code_variable,
+                        uid,
                     ])
 
         log.paragraph('How to access parameters')

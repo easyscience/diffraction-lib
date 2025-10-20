@@ -1,64 +1,95 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Plotting facade for measured and calculated patterns."""
+"""Plotting facade for measured and calculated patterns.
+
+Uses the common :class:`RendererBase` so plotters and tablers share a
+consistent configuration surface and engine handling.
+"""
+
+from enum import Enum
 
 import numpy as np
+import pandas as pd
 
 from easydiffraction import log
+from easydiffraction.display.base import RendererBase
+from easydiffraction.display.base import RendererFactoryBase
 from easydiffraction.display.plotters.ascii import AsciiPlotter
 from easydiffraction.display.plotters.base import DEFAULT_AXES_LABELS
-from easydiffraction.display.plotters.base import DEFAULT_ENGINE
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import DEFAULT_MAX
 from easydiffraction.display.plotters.base import DEFAULT_MIN
 from easydiffraction.display.plotters.plotly import PlotlyPlotter
-from easydiffraction.utils.utils import render_table
+from easydiffraction.display.tables import TableRenderer
+from easydiffraction.utils.env import is_notebook
 
 
-# TODO: Inherit from BaseRenderer
-class Plotter:
+class PlotterEngineEnum(str, Enum):
+    ASCII = 'asciichartpy'
+    PLOTLY = 'plotly'
+
+    @classmethod
+    def default(cls) -> 'PlotterEngineEnum':
+        """Select default engine based on environment."""
+        if is_notebook():
+            log.debug('Setting default plotting engine to Plotly for Jupyter')
+            return cls.PLOTLY
+        log.debug('Setting default plotting engine to Asciichartpy for console')
+        return cls.ASCII
+
+    def description(self) -> str:
+        """Human-readable description for UI listings."""
+        if self is PlotterEngineEnum.ASCII:
+            return 'Console ASCII line charts'
+        elif self is PlotterEngineEnum.PLOTLY:
+            return 'Interactive browser-based graphing library'
+        return ''
+
+
+class Plotter(RendererBase):
     """User-facing plotting facade backed by concrete plotters."""
 
     def __init__(self):
-        # Plotting engine
-        self._engine = DEFAULT_ENGINE
-
+        super().__init__()
         # X-axis limits
         self._x_min = DEFAULT_MIN
         self._x_max = DEFAULT_MAX
-
         # Chart height
         self.height = DEFAULT_HEIGHT
 
-        # Plotter instance
-        self._plotter = PlotterFactory.create_plotter(self._engine)
+    @classmethod
+    def _factory(cls) -> type[RendererFactoryBase]:  # type: ignore[override]
+        return PlotterFactory
 
-    @property
-    def engine(self):
-        """Returns the current plotting engine name."""
-        return self._engine
+    @classmethod
+    def _default_engine(cls) -> str:
+        return PlotterEngineEnum.default().value
 
-    @engine.setter
-    def engine(self, new_engine):
-        """Sets the current plotting engine name and updates the plotter
-        instance.
-        """
-        new_plotter = PlotterFactory.create_plotter(new_engine)
-        if new_plotter is None:
-            return
-        self._engine = new_engine
-        self._plotter = new_plotter
-        log.paragraph('Current plotter changed to')
-        log.print(self._engine)
+    def show_config(self):
+        """Display the current plotting configuration."""
+        headers = [
+            ('Parameter', 'left'),
+            ('Value', 'left'),
+        ]
+        rows = [
+            ['Plotting engine', self.engine],
+            ['x-axis limits', f'[{self.x_min}, {self.x_max}]'],
+            ['Chart height', self.height],
+        ]
+        df = pd.DataFrame(rows, columns=pd.MultiIndex.from_tuples(headers))
+        log.paragraph('Current plotter configuration')
+        TableRenderer.get().render(df)
 
     @property
     def x_min(self):
-        """Returns the minimum x-axis limit."""
+        """Minimum x-axis limit."""
         return self._x_min
 
     @x_min.setter
     def x_min(self, value):
-        """Sets the minimum x-axis limit."""
+        """Set minimum x-axis limit, falling back to default when
+        None.
+        """
         if value is not None:
             self._x_min = value
         else:
@@ -66,12 +97,14 @@ class Plotter:
 
     @property
     def x_max(self):
-        """Returns the maximum x-axis limit."""
+        """Maximum x-axis limit."""
         return self._x_max
 
     @x_max.setter
     def x_max(self, value):
-        """Sets the maximum x-axis limit."""
+        """Set maximum x-axis limit, falling back to default when
+        None.
+        """
         if value is not None:
             self._x_max = value
         else:
@@ -79,49 +112,16 @@ class Plotter:
 
     @property
     def height(self):
-        """Returns the chart height."""
+        """Plot height (rows for ASCII, pixels for Plotly)."""
         return self._height
 
     @height.setter
     def height(self, value):
-        """Sets the chart height."""
+        """Set plot height, falling back to default when None."""
         if value is not None:
             self._height = value
         else:
             self._height = DEFAULT_HEIGHT
-
-    def show_config(self):
-        """Displays the current configuration settings."""
-        columns_headers = ['Parameter', 'Value']
-        columns_alignment = ['left', 'left']
-        columns_data = [
-            ['Plotting engine', self.engine],
-            ['x-axis limits', f'[{self.x_min}, {self.x_max}]'],
-            ['Chart height', self.height],
-        ]
-
-        log.paragraph('Current plotter configuration')
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=columns_data,
-        )
-
-    def show_supported_engines(self):
-        """Displays the supported plotting engines."""
-        columns_headers = ['Engine', 'Description']
-        columns_alignment = ['left', 'left']
-        columns_data = []
-        for name, config in PlotterFactory._SUPPORTED_ENGINES_DICT.items():
-            description = config.get('description', 'No description provided.')
-            columns_data.append([name, description])
-
-        log.paragraph('Supported plotter engines')
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=columns_data,
-        )
 
     def plot_meas(
         self,
@@ -132,7 +132,7 @@ class Plotter:
         x_max=None,
         d_spacing=False,
     ):
-        """Plot measured pattern using current engine."""
+        """Plot measured pattern using the current engine."""
         if pattern.x is None:
             log.error(f'No data available for experiment {expt_name}')
             return
@@ -172,7 +172,8 @@ class Plotter:
                 )
             ]
 
-        self._plotter.plot(
+        # TODO: Before, it was elf._plotter.plot. Check what is better.
+        self._backend.plot(
             x=x,
             y_series=y_series,
             labels=y_labels,
@@ -190,7 +191,7 @@ class Plotter:
         x_max=None,
         d_spacing=False,
     ):
-        """Plot calculated pattern using current engine."""
+        """Plot calculated pattern using the current engine."""
         if pattern.x is None:
             log.error(f'No data available for experiment {expt_name}')
             return
@@ -230,7 +231,7 @@ class Plotter:
                 )
             ]
 
-        self._plotter.plot(
+        self._backend.plot(
             x=x,
             y_series=y_series,
             labels=y_labels,
@@ -314,7 +315,7 @@ class Plotter:
             y_series.append(y_resid)
             y_labels.append('resid')
 
-        self._plotter.plot(
+        self._backend.plot(
             x=x,
             y_series=y_series,
             labels=y_labels,
@@ -341,36 +342,18 @@ class Plotter:
         return filtered_y_array
 
 
-class PlotterFactory:
+class PlotterFactory(RendererFactoryBase):
     """Factory for plotter implementations."""
 
-    _SUPPORTED_ENGINES_DICT = {
-        'asciichartpy': {
-            'description': 'Console ASCII line charts',
-            'class': AsciiPlotter,
-        },
-        'plotly': {
-            'description': 'Interactive browser-based graphing library',
-            'class': PlotlyPlotter,
-        },
-    }
-
     @classmethod
-    def supported_engines(cls):
-        """Return list of supported engine names."""
-        keys = cls._SUPPORTED_ENGINES_DICT.keys()
-        engines = list(keys)
-        return engines
-
-    @classmethod
-    def create_plotter(cls, engine_name):
-        """Create a concrete plotter by engine name."""
-        config = cls._SUPPORTED_ENGINES_DICT.get(engine_name)
-        if not config:
-            supported_engines = cls.supported_engines()
-            log.error(f"Unsupported plotting engine '{engine_name}'")
-            log.print(f'Supported engines: {supported_engines}')
-            return None
-        plotter_class = config['class']
-        plotter_obj = plotter_class()
-        return plotter_obj
+    def _registry(cls) -> dict:
+        return {
+            PlotterEngineEnum.ASCII.value: {
+                'description': PlotterEngineEnum.ASCII.description(),
+                'class': AsciiPlotter,
+            },
+            PlotterEngineEnum.PLOTLY.value: {
+                'description': PlotterEngineEnum.PLOTLY.description(),
+                'class': PlotlyPlotter,
+            },
+        }
