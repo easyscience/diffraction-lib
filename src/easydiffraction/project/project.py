@@ -8,6 +8,7 @@ import tempfile
 from typeguard import typechecked
 from varname import varname
 
+from easydiffraction import console
 from easydiffraction import log
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guard import GuardedBase
@@ -147,11 +148,11 @@ class Project(GuardedBase):
 
         Loads project info, sample models, experiments, etc.
         """
-        log.paragraph('Loading project 📦 from')
-        log.print(dir_path)
+        console.paragraph('Loading project 📦 from')
+        console.print(dir_path)
         self._info.path = dir_path
         # TODO: load project components from files inside dir_path
-        log.print('Loading project is not implemented yet.')
+        console.print('Loading project is not implemented yet.')
         self._saved = True
 
     def save(self) -> None:
@@ -160,8 +161,8 @@ class Project(GuardedBase):
             log.error('Project path not specified. Use save_as() to define the path first.')
             return
 
-        log.paragraph(f"Saving project 📦 '{self.name}' to")
-        log.print(self.info.path.resolve())
+        console.paragraph(f"Saving project 📦 '{self.name}' to")
+        console.print(self.info.path.resolve())
 
         # Ensure project directory exists
         self._info.path.mkdir(parents=True, exist_ok=True)
@@ -169,7 +170,7 @@ class Project(GuardedBase):
         # Save project info
         with (self._info.path / 'project.cif').open('w') as f:
             f.write(self._info.as_cif())
-            log.print('├── 📄 project.cif')
+            console.print('├── 📄 project.cif')
 
         # Save sample models
         sm_dir = self._info.path / 'sample_models'
@@ -179,10 +180,10 @@ class Project(GuardedBase):
         for model in self.sample_models.values():
             file_name: str = f'{model.name}.cif'
             file_path = sm_dir / file_name
-            log.print('├── 📁 sample_models')
+            console.print('├── 📁 sample_models')
             with file_path.open('w') as f:
                 f.write(model.as_cif)
-                log.print(f'│   └── 📄 {file_name}')
+                console.print(f'│   └── 📄 {file_name}')
 
         # Save experiments
         expt_dir = self._info.path / 'experiments'
@@ -190,20 +191,20 @@ class Project(GuardedBase):
         for experiment in self.experiments.values():
             file_name: str = f'{experiment.name}.cif'
             file_path = expt_dir / file_name
-            log.print('├── 📁 experiments')
+            console.print('├── 📁 experiments')
             with file_path.open('w') as f:
                 f.write(experiment.as_cif)
-                log.print(f'│   └── 📄 {file_name}')
+                console.print(f'│   └── 📄 {file_name}')
 
         # Save analysis
         with (self._info.path / 'analysis.cif').open('w') as f:
             f.write(self.analysis.as_cif())
-            log.print('├── 📄 analysis.cif')
+            console.print('├── 📄 analysis.cif')
 
         # Save summary
         with (self._info.path / 'summary.cif').open('w') as f:
             f.write(self.summary.as_cif())
-            log.print('└── 📄 summary.cif')
+            console.print('└── 📄 summary.cif')
 
         self._info.update_last_modified()
         self._saved = True

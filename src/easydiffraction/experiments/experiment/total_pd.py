@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from easydiffraction import log
+from easydiffraction import console
 from easydiffraction.experiments.experiment.base import PdExperimentBase
 
 if TYPE_CHECKING:
@@ -55,5 +55,5 @@ class TotalPdExperiment(PdExperimentBase):
         self.datastore.meas = y
         self.datastore.meas_su = sy
 
-        log.paragraph('Data loaded successfully')
-        log.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
+        console.paragraph('Data loaded successfully')
+        console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")

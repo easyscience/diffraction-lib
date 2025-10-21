@@ -4,7 +4,7 @@
 from textwrap import wrap
 from typing import List
 
-from easydiffraction import log
+from easydiffraction import console
 from easydiffraction.utils.utils import render_table
 
 
@@ -35,13 +35,13 @@ class Summary:
 
     def show_project_info(self) -> None:
         """Print the project title and description."""
-        log.section('Project info')
+        console.section('Project info')
 
-        log.paragraph('Title')
-        log.print(self.project.info.title)
+        console.paragraph('Title')
+        console.print(self.project.info.title)
 
         if self.project.info.description:
-            log.paragraph('Description')
+            console.paragraph('Description')
             # log.print('\n'.join(wrap(self.project.info.description,
             # width=80)))
             # TODO: Fix the following lines
@@ -55,16 +55,16 @@ class Summary:
         """Print crystallographic data including phase datablocks, space
         groups, cell parameters, and atom sites.
         """
-        log.section('Crystallographic data')
+        console.section('Crystallographic data')
 
         for model in self.project.sample_models.values():
-            log.paragraph('Phase datablock')
-            log.print(f'🧩 {model.name}')
+            console.paragraph('Phase datablock')
+            console.print(f'🧩 {model.name}')
 
-            log.paragraph('Space group')
-            log.print(model.space_group.name_h_m.value)
+            console.paragraph('Space group')
+            console.print(model.space_group.name_h_m.value)
 
-            log.paragraph('Cell parameters')
+            console.paragraph('Cell parameters')
             columns_headers = ['Parameter', 'Value']
             columns_alignment: List[str] = ['left', 'right']
             cell_data = [
@@ -77,7 +77,7 @@ class Summary:
                 columns_data=cell_data,
             )
 
-            log.paragraph('Atom sites')
+            console.paragraph('Atom sites')
             columns_headers = [
                 'label',
                 'type',
@@ -117,14 +117,14 @@ class Summary:
         """Print experimental data including experiment datablocks,
         types, instrument settings, and peak profile information.
         """
-        log.section('Experiments')
+        console.section('Experiments')
 
         for expt in self.project.experiments.values():
-            log.paragraph('Experiment datablock')
-            log.print(f'🔬 {expt.name}')
+            console.paragraph('Experiment datablock')
+            console.print(f'🔬 {expt.name}')
 
-            log.paragraph('Experiment type')
-            log.print(
+            console.paragraph('Experiment type')
+            console.print(
                 f'{expt.type.sample_form.value}, '
                 f'{expt.type.radiation_probe.value}, '
                 f'{expt.type.beam_mode.value}'
@@ -132,19 +132,19 @@ class Summary:
 
             if 'instrument' in expt._public_attrs():
                 if 'setup_wavelength' in expt.instrument._public_attrs():
-                    log.paragraph('Wavelength')
-                    log.print(f'{expt.instrument.setup_wavelength.value:.5f}')
+                    console.paragraph('Wavelength')
+                    console.print(f'{expt.instrument.setup_wavelength.value:.5f}')
                 if 'calib_twotheta_offset' in expt.instrument._public_attrs():
-                    log.paragraph('2θ offset')
-                    log.print(f'{expt.instrument.calib_twotheta_offset.value:.5f}')
+                    console.paragraph('2θ offset')
+                    console.print(f'{expt.instrument.calib_twotheta_offset.value:.5f}')
 
             if 'peak_profile_type' in expt._public_attrs():
-                log.paragraph('Profile type')
-                log.print(expt.peak_profile_type)
+                console.paragraph('Profile type')
+                console.print(expt.peak_profile_type)
 
             if 'peak' in expt._public_attrs():
                 if 'broad_gauss_u' in expt.peak._public_attrs():
-                    log.paragraph('Peak broadening (Gaussian)')
+                    console.paragraph('Peak broadening (Gaussian)')
                     columns_alignment = ['left', 'right']
                     columns_data = [
                         ['U', f'{expt.peak.broad_gauss_u.value:.5f}'],
@@ -156,7 +156,7 @@ class Summary:
                         columns_data=columns_data,
                     )
                 if 'broad_lorentz_x' in expt.peak._public_attrs():
-                    log.paragraph('Peak broadening (Lorentzian)')
+                    console.paragraph('Peak broadening (Lorentzian)')
                     columns_alignment = ['left', 'right']
                     columns_data = [
                         ['X', f'{expt.peak.broad_lorentz_x.value:.5f}'],
@@ -171,15 +171,15 @@ class Summary:
         """Print fitting details including calculation and minimization
         engines, and fit quality metrics.
         """
-        log.section('Fitting')
+        console.section('Fitting')
 
-        log.paragraph('Calculation engine')
-        log.print(self.project.analysis.current_calculator)
+        console.paragraph('Calculation engine')
+        console.print(self.project.analysis.current_calculator)
 
-        log.paragraph('Minimization engine')
-        log.print(self.project.analysis.current_minimizer)
+        console.paragraph('Minimization engine')
+        console.print(self.project.analysis.current_minimizer)
 
-        log.paragraph('Fit quality')
+        console.paragraph('Fit quality')
         columns_headers = ['metric', 'value']
         columns_alignment = ['left', 'right']
         fit_metrics = [

@@ -11,6 +11,7 @@ from enum import Enum
 import numpy as np
 import pandas as pd
 
+from easydiffraction import console
 from easydiffraction import log
 from easydiffraction.display.base import RendererBase
 from easydiffraction.display.base import RendererFactoryBase
@@ -77,7 +78,7 @@ class Plotter(RendererBase):
             ['Chart height', self.height],
         ]
         df = pd.DataFrame(rows, columns=pd.MultiIndex.from_tuples(headers))
-        log.paragraph('Current plotter configuration')
+        console.paragraph('Current plotter configuration')
         TableRenderer.get().render(df)
 
     @property

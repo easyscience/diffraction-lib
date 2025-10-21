@@ -12,6 +12,7 @@ from typing import List
 import numpy as np
 from scipy.interpolate import interp1d
 
+from easydiffraction import console
 from easydiffraction import log
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
@@ -109,7 +110,7 @@ class LineSegmentBackground(BackgroundBase):
         columns_alignment = ['left', 'left']
         columns_data: List[List[float]] = [[p.x.value, p.y.value] for p in self._items]
 
-        log.paragraph('Line-segment background points')
+        console.paragraph('Line-segment background points')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,

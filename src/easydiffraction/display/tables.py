@@ -9,6 +9,7 @@ from typing import Any
 
 import pandas as pd
 
+from easydiffraction import console
 from easydiffraction import log
 from easydiffraction.display.base import RendererBase
 from easydiffraction.display.base import RendererFactoryBase
@@ -61,7 +62,7 @@ class TableRenderer(RendererBase):
         ]
         rows = [['engine', self._engine]]
         df = pd.DataFrame(rows, columns=pd.MultiIndex.from_tuples(headers))
-        log.paragraph('Current tabler configuration')
+        console.paragraph('Current tabler configuration')
         TableRenderer.get().render(df)
 
     def render(self, df) -> Any:

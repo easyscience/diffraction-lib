@@ -3,7 +3,7 @@
 
 import asciichartpy
 
-from easydiffraction import log
+from easydiffraction import console
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.base import PlotterBase
@@ -58,9 +58,11 @@ class AsciiPlotter(PlotterBase):
 
         chart = asciichartpy.plot(y_series, config)
 
-        log.paragraph(f'{title}')  # TODO: f''?
-        log.print(f'Displaying data for selected x-range from {x[0]} to {x[-1]} ({len(x)} points)')
-        log.print(f'Legend:\n{legend}')
+        console.paragraph(f'{title}')  # TODO: f''?
+        console.print(
+            f'Displaying data for selected x-range from {x[0]} to {x[-1]} ({len(x)} points)'
+        )
+        console.print(f'Legend:\n{legend}')
 
         padded = '\n'.join(' ' + line for line in chart.splitlines())
 

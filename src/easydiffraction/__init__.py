@@ -4,6 +4,7 @@
 from importlib import import_module
 
 from easydiffraction.utils.logging import Logger
+from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 Logger.configure()
@@ -21,7 +22,7 @@ _LAZY_ENTRIES = [
 
 _LAZY_MAP = {attr_name: module_name for module_name, attr_name in _LAZY_ENTRIES}
 
-__all__ = list(_LAZY_MAP.keys()) + ['Logger', 'log']
+__all__ = list(_LAZY_MAP.keys()) + ['Logger', 'log', 'console']
 
 
 def __getattr__(name):

@@ -5,7 +5,7 @@
 import datetime
 import pathlib
 
-from easydiffraction import log
+from easydiffraction import console
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.io.cif.serialize import project_info_to_cif
 from easydiffraction.utils.utils import render_cif
@@ -101,5 +101,5 @@ class ProjectInfo(GuardedBase):
         """Pretty-print CIF via shared utilities."""
         paragraph_title: str = f"Project 📦 '{self.name}' info as CIF"
         cif_text: str = self.as_cif()
-        log.paragraph(paragraph_title)
+        console.paragraph(paragraph_title)
         render_cif(cif_text)

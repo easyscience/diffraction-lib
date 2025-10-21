@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from easydiffraction import console
 from easydiffraction import log
 from easydiffraction.experiments.categories.background.enums import BackgroundTypeEnum
 from easydiffraction.experiments.categories.background.factory import BackgroundFactory
@@ -87,8 +88,8 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
         self.datastore.meas_su = sy
         self.datastore.excluded = np.full(x.shape, fill_value=False, dtype=bool)
 
-        log.paragraph('Data loaded successfully')
-        log.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
+        console.paragraph('Data loaded successfully')
+        console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
 
     @property
     def background_type(self):
@@ -112,8 +113,8 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
             return
         self.background = BackgroundFactory.create(new_type)
         self._background_type = new_type
-        log.paragraph(f"Background type for experiment '{self.name}' changed to")
-        log.print(new_type)
+        console.paragraph(f"Background type for experiment '{self.name}' changed to")
+        console.print(new_type)
 
     def show_supported_background_types(self):
         """Print a table of supported background types."""
@@ -123,7 +124,7 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
         for bt in BackgroundFactory._supported_map():
             columns_data.append([bt.value, bt.description()])
 
-        log.paragraph('Supported background types')
+        console.paragraph('Supported background types')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -132,5 +133,5 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
 
     def show_current_background_type(self):
         """Print the currently used background type."""
-        log.paragraph('Current background type')
-        log.print(self.background_type)
+        console.paragraph('Current background type')
+        console.print(self.background_type)

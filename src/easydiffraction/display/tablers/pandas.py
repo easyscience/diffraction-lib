@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from easydiffraction import log
+from easydiffraction import console
 from easydiffraction.display.tablers.base import TableBackendBase
 
 try:
@@ -91,4 +91,4 @@ class PandasTableBackend(TableBackendBase):
         if display is not None:
             display(styler)
         else:
-            log.print(styler)
+            console.print(styler)

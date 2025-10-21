@@ -7,6 +7,7 @@ from typing import Union
 
 import pandas as pd
 
+from easydiffraction import console
 from easydiffraction import log
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.analysis.categories.aliases import Aliases
@@ -137,7 +138,7 @@ class Analysis:
         sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
         sample_models_dataframe = sample_models_dataframe[columns_headers]
 
-        log.paragraph('All parameters for all sample models (🧩 data blocks)')
+        console.paragraph('All parameters for all sample models (🧩 data blocks)')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -148,7 +149,7 @@ class Analysis:
         experiments_dataframe = self._get_params_as_dataframe(experiments_params)
         experiments_dataframe = experiments_dataframe[columns_headers]
 
-        log.paragraph('All parameters for all experiments (🔬 data blocks)')
+        console.paragraph('All parameters for all experiments (🔬 data blocks)')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -191,7 +192,7 @@ class Analysis:
         sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
         sample_models_dataframe = sample_models_dataframe[columns_headers]
 
-        log.paragraph('Fittable parameters for all sample models (🧩 data blocks)')
+        console.paragraph('Fittable parameters for all sample models (🧩 data blocks)')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -202,7 +203,7 @@ class Analysis:
         experiments_dataframe = self._get_params_as_dataframe(experiments_params)
         experiments_dataframe = experiments_dataframe[columns_headers]
 
-        log.paragraph('Fittable parameters for all experiments (🔬 data blocks)')
+        console.paragraph('Fittable parameters for all experiments (🔬 data blocks)')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -214,7 +215,7 @@ class Analysis:
         """Print a table with only currently-free (varying)
         parameters.
         """
-        log.paragraph(
+        console.paragraph(
             'Free parameters for both sample models (🧩 data blocks) '
             'and experiments (🔬 data blocks)'
         )
@@ -325,7 +326,7 @@ class Analysis:
                         uid,
                     ])
 
-        log.paragraph('How to access parameters')
+        console.paragraph('How to access parameters')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -383,7 +384,7 @@ class Analysis:
                         cif_uid,
                     ])
 
-        log.paragraph('Show parameter CIF unique identifiers')
+        console.paragraph('Show parameter CIF unique identifiers')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -395,8 +396,8 @@ class Analysis:
         """Print the name of the currently selected calculator
         engine.
         """
-        log.paragraph('Current calculator')
-        log.print(self.current_calculator)
+        console.paragraph('Current calculator')
+        console.print(self.current_calculator)
 
     @staticmethod
     def show_supported_calculators() -> None:
@@ -422,13 +423,13 @@ class Analysis:
             return
         self.calculator = calculator
         self._calculator_key = calculator_name
-        log.paragraph('Current calculator changed to')
-        log.print(self.current_calculator)
+        console.paragraph('Current calculator changed to')
+        console.print(self.current_calculator)
 
     def show_current_minimizer(self) -> None:
         """Print the name of the currently selected minimizer."""
-        log.paragraph('Current minimizer')
-        log.print(self.current_minimizer)
+        console.paragraph('Current minimizer')
+        console.print(self.current_minimizer)
 
     @staticmethod
     def show_available_minimizers() -> None:
@@ -451,8 +452,8 @@ class Analysis:
                 'lmfit (leastsq)'.
         """
         self.fitter = Fitter(selection)
-        log.paragraph('Current minimizer changed to')
-        log.print(self.current_minimizer)
+        console.paragraph('Current minimizer changed to')
+        console.print(self.current_minimizer)
 
     @property
     def fit_mode(self) -> str:
@@ -481,8 +482,8 @@ class Analysis:
             self.joint_fit_experiments = JointFitExperiments()
             for id in self.project.experiments.names:
                 self.joint_fit_experiments.add_from_args(id=id, weight=0.5)
-        log.paragraph('Current fit mode changed to')
-        log.print(self._fit_mode)
+        console.paragraph('Current fit mode changed to')
+        console.print(self._fit_mode)
 
     def show_available_fit_modes(self) -> None:
         """Print all supported fitting strategies and their
@@ -508,7 +509,7 @@ class Analysis:
             description = item['Description']
             columns_data.append([strategy, description])
 
-        log.paragraph('Available fit modes')
+        console.paragraph('Available fit modes')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -517,8 +518,8 @@ class Analysis:
 
     def show_current_fit_mode(self) -> None:
         """Print the currently active fitting strategy."""
-        log.paragraph('Current fit mode')
-        log.print(self.fit_mode)
+        console.paragraph('Current fit mode')
+        console.print(self.fit_mode)
 
     def calculate_pattern(self, expt_name: str) -> None:
         """Calculate and store the diffraction pattern for an
@@ -554,7 +555,7 @@ class Analysis:
         alignments = ['left', 'left', 'left']
         rows = [[row[header] for header in headers] for row in rows]
 
-        log.paragraph('User defined constraints')
+        console.paragraph('User defined constraints')
         render_table(
             columns_headers=headers,
             columns_alignment=alignments,
@@ -599,7 +600,7 @@ class Analysis:
 
         # Run the fitting process
         if self.fit_mode == 'joint':
-            log.paragraph(
+            console.paragraph(
                 f"Using all experiments 🔬 {experiments.names} for '{self.fit_mode}' fitting"
             )
             self.fitter.fit(
@@ -610,7 +611,9 @@ class Analysis:
             )
         elif self.fit_mode == 'single':
             for expt_name in experiments.names:
-                log.paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting")
+                console.paragraph(
+                    f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"
+                )
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name
                 dummy_experiments.add(experiment)
@@ -637,5 +640,5 @@ class Analysis:
         """
         cif_text: str = self.as_cif()
         paragraph_title: str = 'Analysis 🧮 info as cif'
-        log.paragraph(paragraph_title)
+        console.paragraph(paragraph_title)
         render_cif(cif_text)

@@ -24,6 +24,7 @@ from uncertainties import ufloat
 from uncertainties import ufloat_fromstr
 
 import easydiffraction.utils.env as _env  # TODO: Rename to environment?
+from easydiffraction import console
 from easydiffraction import log
 from easydiffraction.display.tables import TableRenderer
 
@@ -83,17 +84,17 @@ def download_from_repository(
     path_in_repo = 'tutorials/data'
     url = f'{base}/{org}/{repo}/refs/heads/{branch}/{path_in_repo}/{file_name}'
 
-    log.paragraph('Downloading...')
-    log.print(f"File '{file_name}' from '{org}/{repo}'")
+    console.paragraph('Downloading...')
+    console.print(f"File '{file_name}' from '{org}/{repo}'")
 
     dest_path = pathlib.Path(destination)
     file_path = dest_path / file_name
     if file_path.exists():
         if not overwrite:
-            log.warning(f"File '{file_path}' already exists and will not be overwritten.")
+            log.info(f"File '{file_path}' already exists and will not be overwritten.")
             return
         else:
-            log.warning(f"File '{file_path}' already exists and will be overwritten.")
+            log.info(f"File '{file_path}' already exists and will be overwritten.")
             file_path.unlink()
 
     pooch.retrieve(
@@ -304,7 +305,7 @@ def list_tutorials():
 
     released_ed_version = stripped_package_version('easydiffraction')
 
-    log.print(f'Tutorials available for easydiffraction v{released_ed_version}:')
+    console.print(f'Tutorials available for easydiffraction v{released_ed_version}:')
     render_table(
         columns_data=columns_data,
         columns_alignment=columns_alignment,
@@ -346,18 +347,18 @@ def fetch_tutorials() -> None:
     # Validate URL for security
     _validate_url(file_url)
 
-    log.print('📥 Downloading tutorial notebooks...')
+    console.print('📥 Downloading tutorial notebooks...')
     with _safe_urlopen(file_url) as resp:
         pathlib.Path(file_name).write_bytes(resp.read())
 
-    log.print('📦 Extracting tutorials to "tutorials/"...')
+    console.print('📦 Extracting tutorials to "tutorials/"...')
     with zipfile.ZipFile(file_name, 'r') as zip_ref:
         zip_ref.extractall()
 
-    log.print('🧹 Cleaning up...')
+    console.print('🧹 Cleaning up...')
     pathlib.Path(file_name).unlink()
 
-    log.print('✅ Tutorials fetched successfully.')
+    console.print('✅ Tutorials fetched successfully.')
 
 
 def show_version() -> None:
@@ -367,7 +368,7 @@ def show_version() -> None:
         None
     """
     current_ed_version = package_version('easydiffraction')
-    log.print(f'Current easydiffraction v{current_ed_version}')
+    console.print(f'Current easydiffraction v{current_ed_version}')
 
 
 # TODO: Complete migration to TableRenderer and remove old methods
@@ -407,7 +408,7 @@ def render_table_old2(
     show_index=True,
     display_handle=None,
 ):
-    # TODO: Move log.print(table) to show_table
+    # TODO: Move console.print(table) to show_table
 
     # Use pandas DataFrame for Jupyter Notebook rendering
     if _env.is_notebook():
@@ -523,7 +524,7 @@ def render_table_old2(
             else:
                 table.add_row(*map(str, row))
 
-        log.print(table)
+        console.print(table)
 
 
 def render_table_old(
@@ -630,7 +631,7 @@ def render_table_old(
             showindex=indices,
         )
 
-        log.print(table)
+        console.print(table)
 
 
 def render_cif(cif_text) -> None:

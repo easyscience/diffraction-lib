@@ -12,6 +12,7 @@ from typing import Tuple
 
 import pandas as pd
 
+from easydiffraction import console
 from easydiffraction import log
 from easydiffraction.core.singletons import SingletonBase
 
@@ -57,8 +58,8 @@ class RendererBase(SingletonBase, ABC):
             return
         else:
             self._engine = new_engine
-            log.paragraph('Current engine changed to')
-            log.print(f"'{self._engine}'")
+            console.paragraph('Current engine changed to')
+            console.print(f"'{self._engine}'")
 
     @abstractmethod
     def show_config(self) -> None:
@@ -73,7 +74,7 @@ class RendererBase(SingletonBase, ABC):
         ]
         rows = self._factory().descriptions()
         df = pd.DataFrame(rows, columns=pd.MultiIndex.from_tuples(headers))
-        log.paragraph('Supported engines')
+        console.paragraph('Supported engines')
         # Delegate table rendering to the TableRenderer singleton
         from easydiffraction.display.tables import TableRenderer  # local import to avoid cycles
 
@@ -81,8 +82,8 @@ class RendererBase(SingletonBase, ABC):
 
     def show_current_engine(self) -> None:
         """Display the currently selected engine."""
-        log.paragraph('Current engine')
-        log.print(f"'{self._engine}'")
+        console.paragraph('Current engine')
+        console.print(f"'{self._engine}'")
 
 
 class RendererFactoryBase(ABC):

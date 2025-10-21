@@ -7,7 +7,7 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction import log
+from easydiffraction import console
 
 try:
     from IPython.display import HTML
@@ -171,8 +171,8 @@ class FitProgressTracker:
         Args:
             minimizer_name: Name of the minimizer used for the run.
         """
-        log.print(f"🚀 Starting fit process with '{minimizer_name}'...")
-        log.print('📈 Goodness-of-fit (reduced χ²) change:')
+        console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
+        console.print('📈 Goodness-of-fit (reduced χ²) change:')
 
         if is_notebook() and display is not None:
             # Reset the DataFrame rows
@@ -193,16 +193,16 @@ class FitProgressTracker:
             )
         else:
             # Top border
-            log.print('┏' + '┯'.join(['━' * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + '┓')
+            console.print('┏' + '┯'.join(['━' * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + '┓')
 
             # Header row (all centered)
             header_row = (
                 '┃' + '│'.join([format_cell(h, align='center') for h in DEFAULT_HEADERS]) + '┃'
             )
-            log.print(header_row)
+            console.print(header_row)
 
             # Separator
-            log.print('┠' + '┼'.join(['─' * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + '┨')
+            console.print('┠' + '┼'.join(['─' * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + '┨')
 
     def add_tracking_info(self, row: List[str]) -> None:
         """Append a formatted row to the progress display.
@@ -232,7 +232,7 @@ class FitProgressTracker:
             )
 
             # Print the new row
-            log.print(formatted_row)
+            console.print(formatted_row)
 
     def finish_tracking(self) -> None:
         """Finalize progress display and print best result summary."""
@@ -247,11 +247,11 @@ class FitProgressTracker:
         # Bottom border for terminal only
         if not is_notebook() or display is None:
             # Bottom border for terminal only
-            log.print('╘' + '╧'.join(['═' * FIXED_WIDTH for _ in range(len(row))]) + '╛')
+            console.print('╘' + '╧'.join(['═' * FIXED_WIDTH for _ in range(len(row))]) + '╛')
 
         # Print best result
-        log.print(
+        console.print(
             f'🏆 Best goodness-of-fit (reduced χ²) is {self._best_chi2:.2f} '
             f'at iteration {self._best_iteration}'
         )
-        log.print('✅ Fitting complete.')
+        console.print('✅ Fitting complete.')

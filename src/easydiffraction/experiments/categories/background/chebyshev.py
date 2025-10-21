@@ -13,6 +13,7 @@ from typing import Union
 import numpy as np
 from numpy.polynomial.chebyshev import chebval
 
+from easydiffraction import console
 from easydiffraction import log
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
@@ -106,7 +107,7 @@ class ChebyshevPolynomialBackground(BackgroundBase):
             [t.order.value, t.coef.value] for t in self._items
         ]
 
-        log.paragraph('Chebyshev polynomial background terms')
+        console.paragraph('Chebyshev polynomial background terms')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,

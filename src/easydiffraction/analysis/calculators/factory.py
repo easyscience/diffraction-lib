@@ -7,6 +7,7 @@ from typing import Optional
 from typing import Type
 from typing import Union
 
+from easydiffraction import console
 from easydiffraction import log
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
@@ -76,7 +77,7 @@ class CalculatorFactory:
             description: str = config.get('description', 'No description provided.')
             columns_data.append([name, description])
 
-        log.paragraph('Supported calculators')
+        console.paragraph('Supported calculators')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,

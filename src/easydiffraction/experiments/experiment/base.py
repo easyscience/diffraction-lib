@@ -6,6 +6,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
+from easydiffraction import console
 from easydiffraction import log
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.experiments.categories.excluded_regions import ExcludedRegions
@@ -81,7 +82,7 @@ class ExperimentBase(DatablockItem):
         datastore_cif = self.datastore.as_truncated_cif
         cif_text: str = f'{experiment_cif}\n\n{datastore_cif}'
         paragraph_title: str = f"Experiment 🔬 '{self.name}' as cif"
-        log.paragraph(paragraph_title)
+        console.paragraph(paragraph_title)
         render_cif(cif_text)
 
     @abstractmethod
@@ -191,8 +192,8 @@ class PdExperimentBase(ExperimentBase):
             profile_type=new_type,
         )
         self._peak_profile_type = new_type
-        log.paragraph(f"Peak profile type for experiment '{self.name}' changed to")
-        log.print(new_type.value)
+        console.paragraph(f"Peak profile type for experiment '{self.name}' changed to")
+        console.print(new_type.value)
 
     def show_supported_peak_profile_types(self):
         """Print available peak profile types for this experiment."""
@@ -206,7 +207,7 @@ class PdExperimentBase(ExperimentBase):
         for profile_type in PeakFactory._supported[scattering_type][beam_mode]:
             columns_data.append([profile_type.value, profile_type.description()])
 
-        log.paragraph('Supported peak profile types')
+        console.paragraph('Supported peak profile types')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -215,5 +216,5 @@ class PdExperimentBase(ExperimentBase):
 
     def show_current_peak_profile_type(self):
         """Print the currently selected peak profile type."""
-        log.paragraph('Current peak profile type')
-        log.print(self.peak_profile_type)
+        console.paragraph('Current peak profile type')
+        console.print(self.peak_profile_type)
