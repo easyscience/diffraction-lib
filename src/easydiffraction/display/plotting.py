@@ -22,7 +22,7 @@ from easydiffraction.display.plotters.base import DEFAULT_MAX
 from easydiffraction.display.plotters.base import DEFAULT_MIN
 from easydiffraction.display.plotters.plotly import PlotlyPlotter
 from easydiffraction.display.tables import TableRenderer
-from easydiffraction.utils.env import is_notebook
+from easydiffraction.utils.environment import is_notebook
 
 
 class PlotterEngineEnum(str, Enum):

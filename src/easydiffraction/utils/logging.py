@@ -26,10 +26,10 @@ from rich.console import RenderableType
 from rich.logging import RichHandler
 from rich.text import Text
 
-from easydiffraction.utils.env import in_pytest
-from easydiffraction.utils.env import in_warp
-from easydiffraction.utils.env import is_notebook
-from easydiffraction.utils.env import is_notebook as in_jupyter
+from easydiffraction.utils.environment import in_pytest
+from easydiffraction.utils.environment import in_warp
+from easydiffraction.utils.environment import is_notebook
+from easydiffraction.utils.environment import is_notebook as in_jupyter
 
 CONSOLE_WIDTH = 120  # Is it really used?
 

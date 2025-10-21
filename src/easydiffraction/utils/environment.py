@@ -4,13 +4,16 @@
 from __future__ import annotations
 
 import os
+import sys
 from importlib.util import find_spec
 
 
 def in_pytest() -> bool:
-    import sys
-
     return 'pytest' in sys.modules
+
+
+def in_warp() -> bool:
+    return os.getenv('TERM_PROGRAM') == 'WarpTerminal'
 
 
 def is_pycharm() -> bool:

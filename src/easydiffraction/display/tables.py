@@ -15,7 +15,7 @@ from easydiffraction.display.base import RendererBase
 from easydiffraction.display.base import RendererFactoryBase
 from easydiffraction.display.tablers.pandas import PandasTableBackend
 from easydiffraction.display.tablers.rich import RichTableBackend
-from easydiffraction.utils.env import is_notebook
+from easydiffraction.utils.environment import is_notebook
 
 
 class TableEngineEnum(str, Enum):
