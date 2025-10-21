@@ -150,11 +150,11 @@ def project_info_to_cif(info) -> str:
     last_modified = f"'{info._last_modified.strftime('%d %b %Y %H:%M:%S')}'"
 
     return (
-        f'_project.id             {name}\n'
-        f'_project.title          {title}\n'
-        f'_project.description    {description}\n'
-        f'_project.created        {created}\n'
-        f'_project.last_modified  {last_modified}'
+        f'_project.id               {name}\n'
+        f'_project.title            {title}\n'
+        f'_project.description      {description}\n'
+        f'_project.created          {created}\n'
+        f'_project.last_modified    {last_modified}'
     )
 
 

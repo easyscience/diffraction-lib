@@ -41,7 +41,7 @@ class RichTableBackend(TableBackendBase):
         # Use a wide console to avoid truncation/ellipsis in cells
         self.console = Console(
             force_jupyter=False,
-            width=200,
+            # width=200,
         )
 
     @property
@@ -71,7 +71,7 @@ class RichTableBackend(TableBackendBase):
             show_header=True,
             header_style='bold',
             border_style=color,
-            expand=True,  # to fill all available horizontal space
+            # expand=True,  # to fill all available horizontal space
         )
 
         # Add index column header first
@@ -79,7 +79,8 @@ class RichTableBackend(TableBackendBase):
 
         # Add other column headers with alignment
         for col, align in zip(df, alignments, strict=False):
-            table.add_column(str(col), justify=align, no_wrap=True)
+            # table.add_column(str(col), justify=align, no_wrap=True)
+            table.add_column(str(col), justify=align, no_wrap=False)
 
         # Add rows (prepend the index value as first column)
         for idx, row_values in df.iterrows():

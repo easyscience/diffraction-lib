@@ -20,8 +20,9 @@ from rich.color import Color
 class TableBackendBase(ABC):
     """Abstract base class for concrete table backends.
 
-    Subclasses implement the ``render`` method which receives an index-aware
-    pandas DataFrame and the alignment for each column header.
+    Subclasses implement the ``render`` method which receives an
+    index-aware pandas DataFrame and the alignment for each column
+    header.
     """
 
     FLOAT_PRECISION = 5

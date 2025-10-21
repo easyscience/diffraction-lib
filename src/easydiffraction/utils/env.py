@@ -28,6 +28,7 @@ def is_colab() -> bool:
         return False
 
 
+# TODO: Consider renaming helpers to is_jupyter or in_jupyter.
 def is_notebook() -> bool:
     """Return True when running inside a Jupyter Notebook.
 

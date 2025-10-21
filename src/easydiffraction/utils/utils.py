@@ -23,7 +23,7 @@ from uncertainties import UFloat
 from uncertainties import ufloat
 from uncertainties import ufloat_fromstr
 
-import easydiffraction.utils.env as _env
+import easydiffraction.utils.env as _env  # TODO: Rename to environment?
 from easydiffraction import log
 from easydiffraction.display.tables import TableRenderer
 
@@ -276,17 +276,18 @@ def fetch_tutorial_list() -> list[str]:
     release_info = _get_release_info(tag)
     # Fallback to latest if tag fetch failed and tag was attempted
     if release_info is None and tag is not None:
-        log.error('Falling back to latest release info...')
+        # Non-fatal during listing; warn and fall back silently
+        log.warning('Falling back to latest release info...', exc_type=UserWarning)
         release_info = _get_release_info(None)
     if release_info is None:
         return []
     tutorial_asset = _get_tutorial_asset(release_info)
     if not tutorial_asset:
-        log.error("'tutorials.zip' not found in the release.")
+        log.warning("'tutorials.zip' not found in the release.", exc_type=UserWarning)
         return []
     download_url = tutorial_asset.get('browser_download_url')
     if not download_url:
-        log.error("'browser_download_url' not found for tutorials.zip.")
+        log.warning("'browser_download_url' not found for tutorials.zip.", exc_type=UserWarning)
         return []
     return _extract_notebooks_from_asset(download_url)
 
@@ -369,66 +370,163 @@ def show_version() -> None:
     log.print(f'Current easydiffraction v{current_ed_version}')
 
 
-def is_notebook() -> bool:
-    """Determines if the current environment is a Jupyter Notebook.
-
-    Returns:
-        bool: True if running inside a Jupyter Notebook, False
-        otherwise.
-    """
-    if IPython is None:
-        return False
-    if is_pycharm():  # Running inside PyCharm
-        return False
-    if is_colab():  # Running inside Google Colab
-        return True
-
-    try:
-        # get_ipython is only defined inside IPython environments
-        shell = get_ipython().__class__.__name__  # type: ignore[name-defined]
-        if shell == 'ZMQInteractiveShell':  # Jupyter notebook or qtconsole
-            return True
-        if shell == 'TerminalInteractiveShell':  # Terminal running IPython
-            return False
-        # Fallback for any other shell type
-        return False
-    except NameError:
-        return False  # Probably standard Python interpreter
-
-
-def is_pycharm() -> bool:
-    """Determines if the current environment is PyCharm.
-
-    Returns:
-        bool: True if running inside PyCharm, False otherwise.
-    """
-    return os.environ.get('PYCHARM_HOSTED') == '1'
-
-
-def is_colab() -> bool:
-    """Determines if the current environment is Google Colab.
-
-    Returns:
-        bool: True if running in Google Colab PyCharm, False otherwise.
-    """
-    try:
-        return find_spec('google.colab') is not None
-    except ModuleNotFoundError:
-        return False
-
-
-def is_github_ci() -> bool:
-    """Determines if the current process is running in GitHub Actions
-    CI.
-
-    Returns:
-        bool: True if the environment variable ``GITHUB_ACTIONS`` is
-        set (Always "true" on GitHub Actions), False otherwise.
-    """
-    return os.environ.get('GITHUB_ACTIONS') is not None
-
-
+# TODO: Complete migration to TableRenderer and remove old methods
 def render_table(
+    columns_data,
+    columns_alignment,
+    columns_headers=None,
+    show_index=True,
+    display_handle=None,
+):
+    del show_index
+    del display_handle
+
+    # Allow callers to pass no headers; synthesize default column names
+    if columns_headers is None:
+        num_cols = len(columns_data[0]) if columns_data else 0
+        columns_headers = [f'col{i + 1}' for i in range(num_cols)]
+        # If alignment list shorter, pad with 'left'
+        if len(columns_alignment) < num_cols:
+            columns_alignment = list(columns_alignment) + ['left'] * (
+                num_cols - len(columns_alignment)
+            )
+
+    headers = [
+        (col, align) for col, align in zip(columns_headers, columns_alignment, strict=False)
+    ]
+    df = pd.DataFrame(columns_data, columns=pd.MultiIndex.from_tuples(headers))
+
+    tabler = TableRenderer.get()
+    tabler.render(df)
+
+
+def render_table_old2(
+    columns_data,
+    columns_alignment,
+    columns_headers=None,
+    show_index=True,
+    display_handle=None,
+):
+    # TODO: Move log.print(table) to show_table
+
+    # Use pandas DataFrame for Jupyter Notebook rendering
+    if _env.is_notebook():
+        # Create DataFrame
+        if columns_headers is None:
+            df = pd.DataFrame(columns_data)
+            df.columns = range(df.shape[1])  # Ensure numeric column labels
+            columns_headers = df.columns.tolist()
+            skip_headers = True
+        else:
+            df = pd.DataFrame(columns_data, columns=columns_headers)
+            skip_headers = False
+
+        # Force starting index from 1
+        if show_index:
+            df.index += 1
+
+        # Replace None/NaN values with empty strings
+        df.fillna('', inplace=True)
+
+        # Formatters for data cell alignment and replacing None with
+        # empty string
+        def make_formatter(align):
+            return lambda x: f'<div style="text-align: {align};">{x}</div>'
+
+        formatters = {
+            col: make_formatter(align)
+            for col, align in zip(
+                columns_headers,
+                columns_alignment,
+                strict=True,
+            )
+        }
+
+        # Convert DataFrame to HTML
+        html = df.to_html(
+            escape=False,
+            index=show_index,
+            formatters=formatters,
+            border=0,
+            header=not skip_headers,
+        )
+
+        # Add compact CSS for cells and a custom class to avoid
+        # affecting other tables
+        style_block = (
+            '<style>'
+            '.ed-tbl th, .ed-tbl td { '
+            'line-height: 1.9 !important;'
+            'padding-top: 0.0em !important; '
+            'padding-bottom: 0.0em !important; '
+            'padding-left: 0.6em !important; '
+            'padding-right: 0.6em !important; '
+            '}'
+            '.ed-tbl th div, .ed-tbl td div { '
+            'line-height: 1.9 !important;'
+            'padding-top: 0.0em !important; '
+            'padding-bottom: 0.0em !important; '
+            'padding-left: 0.6em !important; '
+            'padding-right: 0.6em !important; '
+            '}'
+            '.ed-tbl thead th { '
+            'border-bottom: 1px solid color-mix(in srgb, currentColor 20%, transparent) '
+            '!important; }'
+            '.ed-tbl tbody th { '
+            'font-weight: normal !important; '
+            'opacity: 0.5 !important; '
+            'color: inherit !important; }'
+            '</style>'
+        )
+        html = html.replace(
+            '<table class="dataframe">',
+            style_block + '<table class="dataframe ed-tbl" '
+            'style="'
+            'border-collapse: separate; '
+            'border: 1px solid color-mix(in srgb, currentColor 20%, transparent); '
+            'margin-left: 0.4em;'
+            'margin-top: 0.5em;'
+            'margin-bottom: 1em;'
+            'max-width: 60em;'
+            '">',
+        )
+
+        # Manually apply text alignment to headers
+        if not skip_headers:
+            for col, align in zip(columns_headers, columns_alignment, strict=True):
+                html = html.replace(f'<th>{col}', f'<th style="text-align: {align};">{col}')
+
+        # Display or update the table in Jupyter Notebook
+        if display_handle is not None:
+            display_handle.update(HTML(html))
+        else:
+            display(HTML(html))
+
+    # Use rich for terminal rendering
+    else:
+        table = Table(
+            title=None,
+            box=box.HEAVY_EDGE,
+            show_header=True,
+            header_style='bold blue',
+        )
+
+        if columns_headers is not None:
+            if show_index:
+                table.add_column(header='#', justify='right', style='dim', no_wrap=True)
+            for header, alignment in zip(columns_headers, columns_alignment, strict=True):
+                table.add_column(header=header, justify=alignment, overflow='fold')
+
+        for idx, row in enumerate(columns_data, start=1):
+            if show_index:
+                table.add_row(str(idx), *map(str, row))
+            else:
+                table.add_row(*map(str, row))
+
+        log.print(table)
+
+
+def render_table_old(
     columns_data,
     columns_alignment,
     columns_headers=None,
@@ -448,7 +546,7 @@ def render_table(
         display_handle: Optional display handle for updating in Jupyter.
     """
     # Use pandas DataFrame for Jupyter Notebook rendering
-    if is_notebook():
+    if _env.is_notebook():
         # Create DataFrame
         if columns_headers is None:
             df = pd.DataFrame(columns_data)
@@ -546,7 +644,7 @@ def render_cif(cif_text) -> None:
     # Split into lines and replace empty ones with a '&nbsp;'
     # (non-breaking space) to force empty lines to be rendered in
     # full height in the table. This is only needed in Jupyter Notebook.
-    if is_notebook():
+    if _env.is_notebook():
         lines: List[str] = [line if line.strip() else '&nbsp;' for line in cif_text.splitlines()]
     else:
         lines: List[str] = [line for line in cif_text.splitlines()]
