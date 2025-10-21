@@ -15,7 +15,44 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover
     from types import TracebackType
 
+import re
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from rich.console import Console
+from rich.console import Group
+from rich.console import RenderableType
 from rich.logging import RichHandler
+from rich.padding import Padding
+from rich.text import Text
+
+CONSOLE_WIDTH = 1000
+
+
+class IconRichHandler(RichHandler):
+    _icons = {
+        logging.CRITICAL: '💀',
+        logging.ERROR: '❌',
+        logging.WARNING: '⚠️',
+        logging.DEBUG: '💀',
+        logging.INFO: 'ℹ️',
+    }
+
+    @staticmethod
+    def in_warp() -> bool:
+        return os.getenv('TERM_PROGRAM') == 'WarpTerminal'
+
+    def get_level_text(self, record: logging.LogRecord) -> Text:
+        icon = self._icons.get(record.levelno, record.levelname)
+        if self.in_warp() and icon in ['⚠️', '⚙️', 'ℹ️']:
+            icon = icon + ' '  # add space to avoid rendering issues in Warp
+        return Text(icon)
+
+    def render_message(self, record: logging.LogRecord, message: str) -> Text:
+        icon = self._icons.get(record.levelno, record.levelname)
+        record = logging.makeLogRecord(record.__dict__)
+        record.levelname = icon
+        return super().render_message(record, message)
 
 
 class Logger:
@@ -51,12 +88,59 @@ class Logger:
     _configured = False
     _mode: 'Logger.Mode' = Mode.VERBOSE
     _reaction: 'Logger.Reaction' = Reaction.RAISE  # TODO: not default?
+    _console = Console(width=CONSOLE_WIDTH, force_jupyter=False)
+
+    @classmethod
+    def print2(cls, *objects, **kwargs):
+        """Print objects to the console with left padding.
+
+        - Renderables (Rich types like Text, Table, Panel, etc.) are
+            kept as-is.
+        - Non-renderables (ints, floats, Path, etc.) are converted to
+            str().
+        """
+        safe_objects = []
+        for obj in objects:
+            if isinstance(obj, (str, RenderableType)):
+                safe_objects.append(obj)
+            elif isinstance(obj, Path):
+                # Rich can render Path objects, but str() ensures
+                # consistency
+                safe_objects.append(str(obj))
+            else:
+                safe_objects.append(str(obj))
+
+        # Join with spaces, like print()
+        padded = Padding(*safe_objects, (0, 0, 0, 3))
+        cls._console.print(padded, **kwargs)
+
+    @classmethod
+    def print(cls, *objects, **kwargs):
+        """Print objects to the console with left padding."""
+        safe_objects = []
+        for obj in objects:
+            if isinstance(obj, RenderableType):
+                safe_objects.append(obj)
+            elif isinstance(obj, Path):
+                safe_objects.append(str(obj))
+            else:
+                safe_objects.append(str(obj))
+
+        # If multiple objects, join with spaces
+        renderable = (
+            ' '.join(str(o) for o in safe_objects)
+            if all(isinstance(o, str) for o in safe_objects)
+            else Group(*safe_objects)
+        )
+
+        padded = Padding(renderable, (0, 0, 0, 3))
+        cls._console.print(padded, **kwargs)
 
     # ---------------- environment detection ----------------
     @staticmethod
     def _in_jupyter() -> bool:  # pragma: no cover - heuristic
         try:
-            from IPython import get_ipython  # type: ignore[import-not-found]
+            from IPython import get_ipython
 
             return get_ipython() is not None
         except Exception:  # noqa: BLE001
@@ -138,7 +222,7 @@ class Logger:
                 # locals_max_string=0,  # no local string previews
             )
         console = Console(
-            width=120,
+            width=CONSOLE_WIDTH,
             # color_system="truecolor",
             force_jupyter=False,
             # force_terminal=False,
@@ -149,8 +233,8 @@ class Logger:
         handler = RichHandler(
             rich_tracebacks=rich_tracebacks,
             markup=True,
-            show_time=False,
-            show_path=False,
+            show_time=False,  # show_time=(mode == cls.Mode.VERBOSE),
+            show_path=False,  # show_path=(mode == cls.Mode.VERBOSE),
             tracebacks_show_locals=False,
             tracebacks_suppress=['easydiffraction'],
             tracebacks_max_frames=10,
@@ -250,6 +334,52 @@ class Logger:
         if not cls._configured:  # pragma: no cover - trivial
             cls.configure()
 
+    # ---------------- text formatting helpers ----------------
+    @staticmethod
+    def _chapter(title: str) -> str:
+        """Formats a chapter header with bold magenta text, uppercase,
+        and padding.
+        """
+        width = 80
+        symbol = '─'
+        full_title = f' {title.upper()} '
+        pad_len = (width - len(full_title)) // 2
+        padding = symbol * pad_len
+        line = f'[bold magenta]{padding}{full_title}{padding}[/bold magenta]'
+        if len(line) < width:
+            line += symbol
+        formatted = f'{line}'
+        from easydiffraction.utils.env import is_notebook as in_jupyter
+
+        if not in_jupyter():
+            formatted = f'\n{formatted}'
+        return formatted
+
+    @staticmethod
+    def _section(title: str) -> str:
+        """Formats a section header with bold green text."""
+        full_title = f'{title.upper()}'
+        line = '━' * len(full_title)
+        formatted = f'[bold green]{full_title}\n{line}[/bold green]'
+
+        # Avoid injecting extra newlines; callers can separate sections
+        return formatted
+
+    @staticmethod
+    def _paragraph(message: str) -> Text:
+        parts = re.split(r"('.*?')", message)
+        text = Text()
+        for part in parts:
+            if part.startswith("'") and part.endswith("'"):
+                text.append(part)
+            else:
+                text.append(part, style='bold blue')
+        formatted = f'{text.markup}'
+
+        # Paragraphs should not force an extra leading newline; rely on
+        # caller
+        return formatted
+
     # ---------------- core routing ----------------
     @classmethod
     def handle(
@@ -278,33 +408,50 @@ class Logger:
 
     # ---------------- convenience API ----------------
     @classmethod
-    def debug(cls, message: str) -> None:
-        cls.handle(message, level=cls.Level.DEBUG, exc_type=None)
+    def debug(cls, *messages: str) -> None:
+        for message in messages:
+            cls.handle(message, level=cls.Level.DEBUG, exc_type=None)
 
     @classmethod
-    def info(cls, message: str) -> None:
-        cls.handle(message, level=cls.Level.INFO, exc_type=None)
+    def info(cls, *messages: str) -> None:
+        for message in messages:
+            cls.handle(message, level=cls.Level.INFO, exc_type=None)
 
     @classmethod
-    def warning(cls, message: str, exc_type: type[BaseException] | None = None) -> None:
-        cls.handle(message, level=cls.Level.WARNING, exc_type=exc_type)
+    def warning(cls, *messages: str, exc_type: type[BaseException] | None = None) -> None:
+        for message in messages:
+            cls.handle(message, level=cls.Level.WARNING, exc_type=exc_type)
 
     @classmethod
-    def error(cls, message: str, exc_type: type[BaseException] = AttributeError) -> None:
-        if cls._reaction is cls.Reaction.RAISE:
-            cls.handle(message, level=cls.Level.ERROR, exc_type=exc_type)
-        elif cls._reaction is cls.Reaction.WARN:
-            cls.handle(message, level=cls.Level.WARNING, exc_type=UserWarning)
+    def error(cls, *messages: str, exc_type: type[BaseException] = AttributeError) -> None:
+        for message in messages:
+            if cls._reaction is cls.Reaction.RAISE:
+                cls.handle(message, level=cls.Level.ERROR, exc_type=exc_type)
+            elif cls._reaction is cls.Reaction.WARN:
+                cls.handle(message, level=cls.Level.WARNING, exc_type=UserWarning)
 
     @classmethod
-    def critical(cls, message: str, exc_type: type[BaseException] = RuntimeError) -> None:
-        cls.handle(message, level=cls.Level.CRITICAL, exc_type=exc_type)
+    def critical(cls, *messages: str, exc_type: type[BaseException] = RuntimeError) -> None:
+        for message in messages:
+            cls.handle(message, level=cls.Level.CRITICAL, exc_type=exc_type)
 
     @classmethod
     def exception(cls, message: str) -> None:
         """Log current exception from inside ``except`` block."""
         cls._lazy_config()
         cls._logger.error(message, exc_info=True)
+
+    @classmethod
+    def paragraph(cls, message: str) -> None:
+        cls.print(cls._paragraph(message))
+
+    @classmethod
+    def section(cls, message: str) -> None:
+        cls.print(cls._section(message))
+
+    @classmethod
+    def chapter(cls, message: str) -> None:
+        cls.info(cls._chapter(message))
 
 
 log = Logger  # ergonomic alias
