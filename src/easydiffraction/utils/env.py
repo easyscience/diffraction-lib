@@ -7,6 +7,12 @@ import os
 from importlib.util import find_spec
 
 
+def in_pytest() -> bool:
+    import sys
+
+    return 'pytest' in sys.modules
+
+
 def is_pycharm() -> bool:
     """Determines if the current environment is PyCharm.
 

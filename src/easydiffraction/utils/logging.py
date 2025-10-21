@@ -26,6 +26,9 @@ from rich.logging import RichHandler
 from rich.padding import Padding
 from rich.text import Text
 
+from easydiffraction.utils.env import in_pytest
+from easydiffraction.utils.env import is_notebook
+
 CONSOLE_WIDTH = 1000
 
 
@@ -91,7 +94,7 @@ class Logger:
     _console = Console(width=CONSOLE_WIDTH, force_jupyter=False)
 
     @classmethod
-    def print2(cls, *objects, **kwargs):
+    def print(cls, *objects, **kwargs):
         """Print objects to the console with left padding.
 
         - Renderables (Rich types like Text, Table, Panel, etc.) are
@@ -99,24 +102,6 @@ class Logger:
         - Non-renderables (ints, floats, Path, etc.) are converted to
             str().
         """
-        safe_objects = []
-        for obj in objects:
-            if isinstance(obj, (str, RenderableType)):
-                safe_objects.append(obj)
-            elif isinstance(obj, Path):
-                # Rich can render Path objects, but str() ensures
-                # consistency
-                safe_objects.append(str(obj))
-            else:
-                safe_objects.append(str(obj))
-
-        # Join with spaces, like print()
-        padded = Padding(*safe_objects, (0, 0, 0, 3))
-        cls._console.print(padded, **kwargs)
-
-    @classmethod
-    def print(cls, *objects, **kwargs):
-        """Print objects to the console with left padding."""
         safe_objects = []
         for obj in objects:
             if isinstance(obj, RenderableType):
@@ -135,22 +120,6 @@ class Logger:
 
         padded = Padding(renderable, (0, 0, 0, 3))
         cls._console.print(padded, **kwargs)
-
-    # ---------------- environment detection ----------------
-    @staticmethod
-    def _in_jupyter() -> bool:  # pragma: no cover - heuristic
-        try:
-            from IPython import get_ipython
-
-            return get_ipython() is not None
-        except Exception:  # noqa: BLE001
-            return False
-
-    @staticmethod
-    def _in_pytest() -> bool:
-        import sys
-
-        return 'pytest' in sys.modules
 
     # ---------------- configuration ----------------
     @classmethod
@@ -209,7 +178,7 @@ class Logger:
         from rich.console import Console
 
         # Enable rich tracebacks inside Jupyter environments
-        if cls._in_jupyter():
+        if is_notebook():
             from rich import traceback
 
             traceback.install(
@@ -393,7 +362,7 @@ class Logger:
         cls._lazy_config()
         if exc_type is not None:
             if exc_type is UserWarning:
-                if cls._in_pytest():
+                if in_pytest():
                     # Always issue a real warning so pytest can catch it
                     warnings.warn(message, UserWarning, stacklevel=2)
                 else:
