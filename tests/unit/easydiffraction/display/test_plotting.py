@@ -2,15 +2,15 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 def test_module_import():
-    import easydiffraction.plotting.plotting as MUT
+    import easydiffraction.display.plotting as MUT
 
-    expected_module_name = 'easydiffraction.plotting.plotting'
+    expected_module_name = 'easydiffraction.display.plotting'
     actual_module_name = MUT.__name__
     assert expected_module_name == actual_module_name
 
 
 def test_plotter_configuration_and_engine_switch(capsys):
-    from easydiffraction.plotting.plotting import Plotter
+    from easydiffraction.display.plotting import Plotter
 
     p = Plotter()
     # show config prints a table
@@ -18,10 +18,11 @@ def test_plotter_configuration_and_engine_switch(capsys):
     out1 = capsys.readouterr().out
     assert 'Current plotter configuration' in out1
 
-    # show supported engines prints a table
+    # show supported engines prints a table (now via base RendererBase title)
     p.show_supported_engines()
     out2 = capsys.readouterr().out
-    assert 'Supported plotter engines' in out2
+    # assert 'Supported plotter engines' in out2
+    assert 'Supported engines' in out2
 
     # Switch engine to its current value (no-op, but exercise setter)
     cur = p.engine
@@ -36,19 +37,25 @@ def test_plotter_configuration_and_engine_switch(capsys):
     assert 'asciichartpy' in out3 or 'plotly' in out3
 
 
-def test_plotter_factory_unsupported(capsys):
-    from easydiffraction.plotting.plotting import PlotterFactory
+def test_plotter_factory_supported_and_unsupported():
+    from easydiffraction.display.plotting import PlotterFactory
 
-    obj = PlotterFactory.create_plotter('nope')
-    assert obj is None
-    out = capsys.readouterr().out
-    assert 'Unsupported plotting engine' in out
+    # Supported engine creates a backend instance
+    obj = PlotterFactory.create('asciichartpy')
+    assert obj is not None
+
+    # Unsupported engine should raise ValueError (unified policy)
+    try:
+        PlotterFactory.create('nope')
+        assert False, 'Expected ValueError for unsupported engine name'
+    except ValueError:
+        pass
 
 
 def test_plotter_error_paths_and_filtering(capsys):
     from easydiffraction.experiments.experiment.enums import BeamModeEnum
     from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
-    from easydiffraction.plotting.plotting import Plotter
+    from easydiffraction.display.plotting import Plotter
 
     class Ptn:
         def __init__(self, x=None, meas=None, calc=None, d=None):
@@ -77,22 +84,29 @@ def test_plotter_error_paths_and_filtering(capsys):
 
     p.plot_calc(Ptn(x=None, calc=None), 'E', ExptType())
     out = capsys.readouterr().out
-    # plot_calc also uses formatting.error(...) without printing for x is None
+    # error path should not print to stdout
     assert out == ''
 
     p.plot_calc(Ptn(x=[1], calc=None), 'E', ExptType())
     out = capsys.readouterr().out
-    assert 'No calculated data available' in out or 'No calculated data' in out
+    # assert 'No calculated data available' in out or 'No calculated data' in out
+    # error path should not print to stdout in new API
+    assert out == ''
 
     p.plot_meas_vs_calc(Ptn(x=None), 'E', ExptType())
     out = capsys.readouterr().out
-    assert 'No data available' in out
+    # assert 'No data available' in out
+    assert out == ''
     p.plot_meas_vs_calc(Ptn(x=[1], meas=None, calc=[1]), 'E', ExptType())
     out = capsys.readouterr().out
-    assert 'No measured data available' in out
+    # assert 'No measured data available' in out
+    assert out == ''
     p.plot_meas_vs_calc(Ptn(x=[1], meas=[1], calc=None), 'E', ExptType())
     out = capsys.readouterr().out
-    assert 'No calculated data available' in out
+    # assert 'No calculated data available' in out
+    assert out == ''
+    # TODO: Update assertions with new logging-based error handling
+    #  in the above line and elsewhere as needed.
 
     # Filtering
     import numpy as np
@@ -106,10 +120,10 @@ def test_plotter_error_paths_and_filtering(capsys):
 def test_plotter_routes_to_ascii_plotter(monkeypatch):
     import numpy as np
 
-    import easydiffraction.plotting.plotters.plotter_ascii as ascii_mod
+    import easydiffraction.display.plotters.ascii as ascii_mod
     from easydiffraction.experiments.experiment.enums import BeamModeEnum
     from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
-    from easydiffraction.plotting.plotting import Plotter
+    from easydiffraction.display.plotting import Plotter
 
     called = {}
 

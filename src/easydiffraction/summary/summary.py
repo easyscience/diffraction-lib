@@ -42,7 +42,8 @@ class Summary:
 
         if self.project.info.description:
             log.paragraph('Description')
-            # log.print('\n'.join(wrap(self.project.info.description, width=80)))
+            # log.print('\n'.join(wrap(self.project.info.description,
+            # width=80)))
             # TODO: Fix the following lines
             # Ensure description wraps with explicit newlines for tests
             desc_lines = wrap(self.project.info.description, width=60)
