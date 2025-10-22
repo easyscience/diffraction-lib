@@ -1,5 +1,11 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Project-wide logging utilities built on top of Rich.
+
+Provides a shared Rich console, a compact/verbose logger with consistent
+formatting, Jupyter traceback handling, and a small printing façade
+tailored to the configured console.
+"""
 
 from __future__ import annotations
 
@@ -88,8 +94,11 @@ class ConsoleManager:
 
     @staticmethod
     def _detect_width() -> int:
-        """Detect the console width, adapting for Jupyter, fallback to
-        _MIN_CONSOLE_WIDTH.
+        """Detect a suitable console width for the shared Console.
+
+        Returns:
+            The detected terminal width, clamped at
+            ``_MIN_CONSOLE_WIDTH`` to avoid cramped layouts.
         """
         min_width = ConsoleManager._MIN_CONSOLE_WIDTH
         try:
@@ -155,7 +164,7 @@ class ExceptionHookManager:
     """Handles installation and restoration of exception hooks."""
 
     @staticmethod
-    def install_verbose_hook(logger: logging.Logger):
+    def install_verbose_hook(logger: logging.Logger) -> None:
         if not hasattr(Logger, '_orig_excepthook'):
             Logger._orig_excepthook = sys.excepthook  # type: ignore[attr-defined]
 
@@ -178,7 +187,7 @@ class ExceptionHookManager:
         sys.excepthook = aligned_excepthook  # type: ignore[assignment]
 
     @staticmethod
-    def install_compact_hook(logger: logging.Logger):
+    def install_compact_hook(logger: logging.Logger) -> None:
         if not hasattr(Logger, '_orig_excepthook'):
             Logger._orig_excepthook = sys.excepthook  # type: ignore[attr-defined]
 
@@ -239,7 +248,14 @@ class LoggerConfig:
         level: 'Logger.Level',
         rich_tracebacks: bool,
     ) -> None:
-        """Configure the logger with RichHandler and exception hooks."""
+        """Configure the logger with RichHandler and exception hooks.
+
+        Args:
+            logger: Logger instance to configure.
+            mode: Output mode (compact or verbose).
+            level: Minimum log level to emit.
+            rich_tracebacks: Whether to enable Rich tracebacks.
+        """
         LoggerConfigurator.setup_handlers(
             logger,
             level=int(level),
