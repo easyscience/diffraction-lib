@@ -290,6 +290,7 @@ def list_tutorials():
         None
     """
     tutorials = fetch_tutorial_list()
+    columns_headers = ['name']
     columns_data = [[t] for t in tutorials]
     columns_alignment = ['left']
 
@@ -297,6 +298,7 @@ def list_tutorials():
 
     console.print(f'Tutorials available for easydiffraction v{released_ed_version}:')
     render_table(
+        columns_headers=columns_headers,
         columns_data=columns_data,
         columns_alignment=columns_alignment,
     )

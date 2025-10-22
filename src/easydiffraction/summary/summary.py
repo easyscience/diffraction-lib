@@ -145,6 +145,7 @@ class Summary:
             if 'peak' in expt._public_attrs():
                 if 'broad_gauss_u' in expt.peak._public_attrs():
                     console.paragraph('Peak broadening (Gaussian)')
+                    columns_headers = ['Parameter', 'Value']
                     columns_alignment = ['left', 'right']
                     columns_data = [
                         ['U', f'{expt.peak.broad_gauss_u.value:.5f}'],
@@ -152,17 +153,22 @@ class Summary:
                         ['W', f'{expt.peak.broad_gauss_w.value:.5f}'],
                     ]
                     render_table(
+                        columns_headers=columns_headers,
                         columns_alignment=columns_alignment,
                         columns_data=columns_data,
                     )
                 if 'broad_lorentz_x' in expt.peak._public_attrs():
                     console.paragraph('Peak broadening (Lorentzian)')
+                    # TODO: Some headers capitalize, some don't -
+                    #  be consistent
+                    columns_headers = ['Parameter', 'Value']
                     columns_alignment = ['left', 'right']
                     columns_data = [
                         ['X', f'{expt.peak.broad_lorentz_x.value:.5f}'],
                         ['Y', f'{expt.peak.broad_lorentz_y.value:.5f}'],
                     ]
                     render_table(
+                        columns_headers=columns_headers,
                         columns_alignment=columns_alignment,
                         columns_data=columns_data,
                     )

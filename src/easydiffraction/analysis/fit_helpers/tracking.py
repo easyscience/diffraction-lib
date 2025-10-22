@@ -214,9 +214,9 @@ class FitProgressTracker:
 
         # Initial empty table; subsequent updates will reuse the handle
         render_table(
-            columns_data=self._df_rows,
-            columns_alignment=DEFAULT_ALIGNMENTS,
             columns_headers=DEFAULT_HEADERS,
+            columns_alignment=DEFAULT_ALIGNMENTS,
+            columns_data=self._df_rows,
             display_handle=self._display_handle,
         )
 
@@ -230,9 +230,9 @@ class FitProgressTracker:
         # terminal live)
         self._df_rows.append(row)
         render_table(
-            columns_data=self._df_rows,
-            columns_alignment=DEFAULT_ALIGNMENTS,
             columns_headers=DEFAULT_HEADERS,
+            columns_alignment=DEFAULT_ALIGNMENTS,
+            columns_data=self._df_rows,
             display_handle=self._display_handle,
         )
 
