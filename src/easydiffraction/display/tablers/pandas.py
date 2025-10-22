@@ -47,11 +47,13 @@ class PandasTableBackend(TableBackendBase):
                     ('border-bottom', f'1px solid {color}'),
                 ],
             },
-            # Remove all cell borders
+            # Cell border, padding and line height
             {
                 'selector': 'th, td',
                 'props': [
                     ('border', 'none'),
+                    ('padding-top', '0.25em'),
+                    ('line-height', '1.25em'),
                 ],
             },
             # Style for index column
