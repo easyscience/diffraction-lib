@@ -11,12 +11,12 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
-      #- id: pixi-py-lint-check-staged
-      #  name: pixi run py-lint-check-staged
-      #  entry: pixi run py-lint-check-pre
-      #  language: system
-      #  pass_filenames: false
-      #  stages: [pre-commit]
+      - id: pixi-py-lint-check-staged
+        name: pixi run py-lint-check-staged
+        entry: pixi run py-lint-check-pre
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
 
       - id: pixi-py-format-check-staged
         name: pixi run py-format-check-staged
@@ -49,9 +49,9 @@ repos:
         pass_filenames: false
         stages: [pre-push]
 
-      #- id: pixi-unit-tests
-      #  name: pixi run unit-tests
-      #  entry: pixi run unit-tests
-      #  language: system
-      #  pass_filenames: false
-      #  stages: [pre-push]
+      - id: pixi-unit-tests
+        name: pixi run unit-tests
+        entry: pixi run unit-tests
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
