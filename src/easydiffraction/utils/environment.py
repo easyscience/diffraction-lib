@@ -16,7 +16,7 @@ def in_warp() -> bool:
     return os.getenv('TERM_PROGRAM') == 'WarpTerminal'
 
 
-def is_pycharm() -> bool:
+def in_pycharm() -> bool:
     """Determines if the current environment is PyCharm.
 
     Returns:
@@ -25,7 +25,7 @@ def is_pycharm() -> bool:
     return os.environ.get('PYCHARM_HOSTED') == '1'
 
 
-def is_colab() -> bool:
+def in_colab() -> bool:
     """Determines if the current environment is Google Colab.
 
     Returns:
@@ -37,8 +37,7 @@ def is_colab() -> bool:
         return False
 
 
-# TODO: Consider renaming helpers to is_jupyter or in_jupyter.
-def is_notebook() -> bool:
+def in_jupyter() -> bool:
     """Return True when running inside a Jupyter Notebook.
 
     Returns:
@@ -52,9 +51,9 @@ def is_notebook() -> bool:
         ipython_mod = IPython
     if ipython_mod is None:
         return False
-    if is_pycharm():
+    if in_pycharm():
         return False
-    if is_colab():
+    if in_colab():
         return True
 
     try:
@@ -76,7 +75,7 @@ def is_notebook() -> bool:
         return False
 
 
-def is_github_ci() -> bool:
+def in_github_ci() -> bool:
     """Return True when running under GitHub Actions CI.
 
     Returns:

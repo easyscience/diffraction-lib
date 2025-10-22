@@ -20,7 +20,7 @@ except ImportError:
     clear_output = None
 
 from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
-from easydiffraction.utils.environment import is_notebook
+from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.utils import render_table
 
 try:
@@ -62,7 +62,7 @@ def _make_display_handle() -> Any | None:
     - In terminal, returns a _TerminalLiveHandle backed by rich Live.
     - If neither applies, returns None.
     """
-    if is_notebook() and display is not None and HTML is not None:
+    if in_jupyter() and display is not None and HTML is not None:
         h = DisplayHandle()
         # Create an empty placeholder area to update in place
         h.display(HTML(''))

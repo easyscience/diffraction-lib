@@ -15,7 +15,7 @@ from easydiffraction.display.base import RendererBase
 from easydiffraction.display.base import RendererFactoryBase
 from easydiffraction.display.tablers.pandas import PandasTableBackend
 from easydiffraction.display.tablers.rich import RichTableBackend
-from easydiffraction.utils.environment import is_notebook
+from easydiffraction.utils.environment import in_jupyter
 
 
 class TableEngineEnum(str, Enum):
@@ -28,7 +28,7 @@ class TableEngineEnum(str, Enum):
 
         Returns Pandas when running in Jupyter, otherwise Rich.
         """
-        if is_notebook():
+        if in_jupyter():
             log.debug('Setting default table engine to Pandas for Jupyter')
             return cls.PANDAS
         log.debug('Setting default table engine to Rich for console')
@@ -110,7 +110,7 @@ class TableRendererFactory(RendererFactoryBase):
                 'class': RichTableBackend,
             }
         }
-        if is_notebook():
+        if in_jupyter():
             base[TableEngineEnum.PANDAS.value] = {
                 'description': TableEngineEnum.PANDAS.description(),
                 'class': PandasTableBackend,

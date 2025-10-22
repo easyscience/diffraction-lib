@@ -22,7 +22,7 @@ from easydiffraction.display.plotters.base import DEFAULT_MAX
 from easydiffraction.display.plotters.base import DEFAULT_MIN
 from easydiffraction.display.plotters.plotly import PlotlyPlotter
 from easydiffraction.display.tables import TableRenderer
-from easydiffraction.utils.environment import is_notebook
+from easydiffraction.utils.environment import in_jupyter
 
 
 class PlotterEngineEnum(str, Enum):
@@ -32,7 +32,7 @@ class PlotterEngineEnum(str, Enum):
     @classmethod
     def default(cls) -> 'PlotterEngineEnum':
         """Select default engine based on environment."""
-        if is_notebook():
+        if in_jupyter():
             log.debug('Setting default plotting engine to Plotly for Jupyter')
             return cls.PLOTLY
         log.debug('Setting default plotting engine to Asciichartpy for console')

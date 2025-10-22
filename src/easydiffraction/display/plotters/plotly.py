@@ -20,7 +20,7 @@ except ImportError:
 
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.base import PlotterBase
-from easydiffraction.utils.environment import is_pycharm
+from easydiffraction.utils.environment import in_pycharm
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',
@@ -33,7 +33,7 @@ class PlotlyPlotter(PlotterBase):
     """Interactive plotter using Plotly for notebooks and browsers."""
 
     pio.templates.default = 'plotly_dark' if darkdetect.isDark() else 'plotly_white'
-    if is_pycharm():
+    if in_pycharm():
         pio.renderers.default = 'browser'
 
     def _get_trace(self, x, y, label):
@@ -143,7 +143,7 @@ class PlotlyPlotter(PlotterBase):
         fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
 
         # Show the figure
-        if is_pycharm() or display is None or HTML is None:
+        if in_pycharm() or display is None or HTML is None:
             fig.show(config=config)
         else:
             html_fig = pio.to_html(

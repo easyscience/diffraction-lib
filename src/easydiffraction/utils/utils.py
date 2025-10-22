@@ -26,7 +26,7 @@ from uncertainties import ufloat_fromstr
 from easydiffraction import console
 from easydiffraction import log
 from easydiffraction.display.tables import TableRenderer
-from easydiffraction.utils.environment import is_notebook
+from easydiffraction.utils.environment import in_jupyter
 
 try:
     import IPython
@@ -410,7 +410,7 @@ def render_table_old2(
     # TODO: Move console.print(table) to show_table
 
     # Use pandas DataFrame for Jupyter Notebook rendering
-    if is_notebook():
+    if in_jupyter():
         # Create DataFrame
         if columns_headers is None:
             df = pd.DataFrame(columns_data)
@@ -546,7 +546,7 @@ def render_table_old(
         display_handle: Optional display handle for updating in Jupyter.
     """
     # Use pandas DataFrame for Jupyter Notebook rendering
-    if is_notebook():
+    if in_jupyter():
         # Create DataFrame
         if columns_headers is None:
             df = pd.DataFrame(columns_data)
@@ -644,7 +644,7 @@ def render_cif(cif_text) -> None:
     # Split into lines and replace empty ones with a '&nbsp;'
     # (non-breaking space) to force empty lines to be rendered in
     # full height in the table. This is only needed in Jupyter Notebook.
-    if is_notebook():
+    if in_jupyter():
         lines: List[str] = [line if line.strip() else '&nbsp;' for line in cif_text.splitlines()]
     else:
         lines: List[str] = [line for line in cif_text.splitlines()]
