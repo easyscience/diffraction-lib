@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import logging
 import os
+import shutil
 import warnings
 from contextlib import suppress
 from enum import Enum
@@ -26,12 +27,9 @@ from rich.console import RenderableType
 from rich.logging import RichHandler
 from rich.text import Text
 
+from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import in_pytest
 from easydiffraction.utils.environment import in_warp
-from easydiffraction.utils.environment import is_notebook
-from easydiffraction.utils.environment import is_notebook as in_jupyter
-
-CONSOLE_WIDTH = 120
 
 # ======================================================================
 # HANDLERS
@@ -58,7 +56,7 @@ class IconifiedRichHandler(RichHandler):
     def get_level_text(self, record: logging.LogRecord) -> Text:
         if self.mode == 'compact':
             icon = self._icons.get(record.levelno, record.levelname)
-            if in_warp() and not is_notebook() and icon in ['⚠️', '⚙️', 'ℹ️']:
+            if in_warp() and not in_jupyter() and icon in ['⚠️', '⚙️', 'ℹ️']:
                 icon = icon + ' '  # add space to align with two-char icons
             return Text(icon)
         else:
@@ -77,6 +75,7 @@ class IconifiedRichHandler(RichHandler):
         return super().render_message(record, message)
 
 
+# ======================================================================
 # CONSOLE MANAGER
 # ======================================================================
 
@@ -84,13 +83,29 @@ class IconifiedRichHandler(RichHandler):
 class ConsoleManager:
     """Central provider for shared Rich Console instance."""
 
+    _MIN_CONSOLE_WIDTH = 130
     _instance: Console | None = None
+
+    @staticmethod
+    def _detect_width() -> int:
+        """Detect the console width, adapting for Jupyter, fallback to
+        _MIN_CONSOLE_WIDTH.
+        """
+        min_width = ConsoleManager._MIN_CONSOLE_WIDTH
+        try:
+            width = shutil.get_terminal_size().columns
+        except Exception:
+            width = min_width
+        return max(width, min_width)
 
     @classmethod
     def get(cls) -> Console:
         """Return a shared Rich Console instance."""
         if cls._instance is None:
-            cls._instance = Console(width=CONSOLE_WIDTH, force_jupyter=False)
+            cls._instance = Console(
+                width=cls._detect_width(),
+                force_jupyter=False,
+            )
         return cls._instance
 
 
@@ -114,7 +129,7 @@ class LoggerConfigurator:
         logger.propagate = False
         logger.setLevel(level)
 
-        if is_notebook():
+        if in_jupyter():
             traceback.install(
                 show_locals=False,
                 suppress=['easydiffraction'],
@@ -214,7 +229,7 @@ class JupyterIntegration:
 
 
 class LoggerConfig:
-    """Façade for logger configuration, delegates to helpers."""
+    """Facade for logger configuration, delegates to helpers."""
 
     @staticmethod
     def configure(
@@ -502,7 +517,7 @@ class ConsolePrinter:
         """Formats a chapter header with bold magenta text, uppercase,
         and padding.
         """
-        width = CONSOLE_WIDTH
+        width = ConsoleManager._detect_width()
         symbol = '─'
         full_title = f' {title.upper()} '
         pad_len = (width - len(full_title)) // 2
