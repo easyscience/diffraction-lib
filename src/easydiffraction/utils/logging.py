@@ -127,15 +127,20 @@ class LoggerConfig:
     """Facade for logger configuration, delegates to helpers."""
 
     @staticmethod
-    def _setup_handlers(
+    def setup_handlers(
         logger: logging.Logger,
         *,
         level: int,
         rich_tracebacks: bool,
         mode: str = 'compact',
     ) -> None:
-        """Install Rich handler and optional Jupyter traceback
-        support.
+        """Install Rich handler and optional Jupyter traceback support.
+
+        Args:
+            logger: Logger instance to attach handlers to.
+            level: Minimum log level to emit.
+            rich_tracebacks: Whether to enable Rich tracebacks.
+            mode: Output mode name ("compact" or "verbose").
         """
         logger.handlers.clear()
         logger.propagate = False
@@ -162,82 +167,6 @@ class LoggerConfig:
         handler.setFormatter(logging.Formatter('%(message)s'))
         logger.addHandler(handler)
 
-
-class ExceptionHookManager:
-    """Handles installation and restoration of exception hooks."""
-
-    @staticmethod
-    def install_verbose_hook(logger: logging.Logger) -> None:
-        if not hasattr(Logger, '_orig_excepthook'):
-            Logger._orig_excepthook = sys.excepthook  # type: ignore[attr-defined]
-
-        def aligned_excepthook(
-            exc_type: type[BaseException],
-            exc: BaseException,
-            tb: 'TracebackType | None',
-        ) -> None:
-            original_args = getattr(exc, 'args', tuple())
-            message = str(exc)
-            with suppress(Exception):
-                exc.args = tuple()
-            try:
-                logger.error(message, exc_info=(exc_type, exc, tb))
-            except Exception:  # pragma: no cover
-                logger.error('Unhandled exception (logging failure)')
-            with suppress(Exception):
-                exc.args = original_args
-
-        sys.excepthook = aligned_excepthook  # type: ignore[assignment]
-
-    @staticmethod
-    def install_compact_hook(logger: logging.Logger) -> None:
-        if not hasattr(Logger, '_orig_excepthook'):
-            Logger._orig_excepthook = sys.excepthook  # type: ignore[attr-defined]
-
-        def compact_excepthook(
-            _exc_type: type[BaseException],
-            exc: BaseException,
-            _tb: 'TracebackType | None',
-        ) -> None:
-            logger.error(str(exc))
-            raise SystemExit(1)
-
-        sys.excepthook = compact_excepthook  # type: ignore[assignment]
-
-    @staticmethod
-    def restore_original_hook():
-        if hasattr(Logger, '_orig_excepthook'):
-            sys.excepthook = Logger._orig_excepthook  # type: ignore[attr-defined]
-
-    # Jupyter-specific traceback suppression (inlined here)
-    @staticmethod
-    def _suppress_traceback(logger):
-        def suppress_jupyter_traceback(*args, **kwargs):
-            try:
-                _evalue = (
-                    args[2] if len(args) > 2 else kwargs.get('_evalue') or kwargs.get('evalue')
-                )
-                logger.error(str(_evalue))
-            except Exception as err:
-                logger.debug('Jupyter traceback suppressor failed: %r', err)
-            return None
-
-        return suppress_jupyter_traceback
-
-    @staticmethod
-    def install_jupyter_traceback_suppressor(logger: logging.Logger) -> None:
-        try:
-            from IPython import get_ipython
-
-            ip = get_ipython()
-            if ip is not None:
-                ip.set_custom_exc(
-                    (BaseException,), ExceptionHookManager._suppress_traceback(logger)
-                )
-        except Exception as err:
-            msg = f'Failed to install Jupyter traceback suppressor: {err!r}'
-            logger.debug(msg)
-
     @staticmethod
     def configure(
         logger: logging.Logger,
@@ -254,7 +183,7 @@ class ExceptionHookManager:
             level: Minimum log level to emit.
             rich_tracebacks: Whether to enable Rich tracebacks.
         """
-        LoggerConfig._setup_handlers(
+        LoggerConfig.setup_handlers(
             logger,
             level=int(level),
             rich_tracebacks=rich_tracebacks,
@@ -270,12 +199,117 @@ class ExceptionHookManager:
             ExceptionHookManager.restore_original_hook()
 
 
+class ExceptionHookManager:
+    """Handles installation and restoration of exception hooks."""
+
+    @staticmethod
+    def install_verbose_hook(logger: logging.Logger) -> None:
+        """Install a verbose exception hook that prints rich tracebacks.
+
+        Args:
+            logger: Logger used to emit the exception information.
+        """
+        if not hasattr(Logger, '_orig_excepthook'):
+            Logger._orig_excepthook = sys.excepthook  # type: ignore[attr-defined]
+
+        def aligned_excepthook(
+            exc_type: type[BaseException],
+            exc: BaseException,
+            tb: 'TracebackType | None',
+        ) -> None:
+            original_args = getattr(exc, 'args', tuple())
+            message = str(exc)
+            with suppress(Exception):
+                exc.args = tuple()
+            try:
+                logger.error(message, exc_info=(exc_type, exc, tb))
+            except Exception:
+                logger.error('Unhandled exception (logging failure)')
+            finally:
+                with suppress(Exception):
+                    exc.args = original_args
+
+        sys.excepthook = aligned_excepthook  # type: ignore[assignment]
+
+    @staticmethod
+    def install_compact_hook(logger: logging.Logger) -> None:
+        """Install a compact exception hook that logs message-only.
+
+        Args:
+            logger: Logger used to emit the error message.
+        """
+        if not hasattr(Logger, '_orig_excepthook'):
+            Logger._orig_excepthook = sys.excepthook  # type: ignore[attr-defined]
+
+        def compact_excepthook(
+            _exc_type: type[BaseException],
+            exc: BaseException,
+            _tb: 'TracebackType | None',
+        ) -> None:
+            logger.error(str(exc))
+            raise SystemExit(1)
+
+        sys.excepthook = compact_excepthook  # type: ignore[assignment]
+
+    @staticmethod
+    def restore_original_hook():
+        """Restore the original sys.excepthook if it was overridden."""
+        if hasattr(Logger, '_orig_excepthook'):
+            sys.excepthook = Logger._orig_excepthook  # type: ignore[attr-defined]
+
+    # Jupyter-specific traceback suppression (inlined here)
+    @staticmethod
+    def _suppress_traceback(logger):
+        """Build a Jupyter custom exception callback that logs only the
+        message.
+
+        Args:
+            logger: Logger used to emit error messages.
+
+        Returns:
+            A callable suitable for IPython's set_custom_exc that
+            suppresses full tracebacks and logs only the exception
+            message.
+        """
+
+        def suppress_jupyter_traceback(*args, **kwargs):
+            try:
+                _evalue = (
+                    args[2] if len(args) > 2 else kwargs.get('_evalue') or kwargs.get('evalue')
+                )
+                logger.error(str(_evalue))
+            except Exception as err:
+                logger.debug('Jupyter traceback suppressor failed: %r', err)
+            return None
+
+        return suppress_jupyter_traceback
+
+    @staticmethod
+    def install_jupyter_traceback_suppressor(logger: logging.Logger) -> None:
+        """Install a Jupyter/IPython custom exception handler that
+        suppresses tracebacks.
+
+        Args:
+            logger: Logger used to emit error messages.
+        """
+        try:
+            from IPython import get_ipython
+
+            ip = get_ipython()
+            if ip is not None:
+                ip.set_custom_exc(
+                    (BaseException,), ExceptionHookManager._suppress_traceback(logger)
+                )
+        except Exception as err:
+            msg = f'Failed to install Jupyter traceback suppressor: {err!r}'
+            logger.debug(msg)
+
+
 # ======================================================================
 # LOGGER CORE
 # ======================================================================
 
 
-# ===== Internal/Enums/Config/Core =====
 class Logger:
     """Centralized logging with Rich formatting and two modes.
 
