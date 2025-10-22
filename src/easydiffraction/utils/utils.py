@@ -362,23 +362,14 @@ def show_version() -> None:
     console.print(f'Current easydiffraction v{current_ed_version}')
 
 
-# TODO: Complete migration to TableRenderer and remove old methods
+# TODO: This is a temporary utility function. Complete migration to
+#  TableRenderer (as e.g. in show_all_params) and remove this.
 def render_table(
     columns_data,
     columns_alignment,
     columns_headers=None,
     display_handle=None,
 ):
-    # Allow callers to pass no headers; synthesize default column names
-    if columns_headers is None:
-        num_cols = len(columns_data[0]) if columns_data else 0
-        columns_headers = [f'col{i + 1}' for i in range(num_cols)]
-        # If alignment list shorter, pad with 'left'
-        if len(columns_alignment) < num_cols:
-            columns_alignment = list(columns_alignment) + ['left'] * (
-                num_cols - len(columns_alignment)
-            )
-
     headers = [
         (col, align) for col, align in zip(columns_headers, columns_alignment, strict=False)
     ]
