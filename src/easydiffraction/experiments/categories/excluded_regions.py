@@ -60,7 +60,7 @@ class ExcludedRegion(CategoryItem):
         # self._category_entry_attr_name = self.start.name
         # self.name = self.start.value
         self._identity.category_code = 'excluded_regions'
-        self._identity.category_entry_name = lambda: self.start.value
+        self._identity.category_entry_name = lambda: str(self.start.value)
 
     @property
     def start(self) -> NumericDescriptor:

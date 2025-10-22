@@ -67,7 +67,7 @@ class Alias(CategoryItem):
         )
 
         self._identity.category_code = 'alias'
-        self._identity.category_entry_name = lambda: self.label.value
+        self._identity.category_entry_name = lambda: str(self.label.value)
 
     @property
     def label(self):

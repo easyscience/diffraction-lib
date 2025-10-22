@@ -55,7 +55,7 @@ class LinkedPhase(CategoryItem):
             ),
         )
         self._identity.category_code = 'linked_phases'
-        self._identity.category_entry_name = lambda: self.id.value
+        self._identity.category_entry_name = lambda: str(self.id.value)
 
     @property
     def id(self) -> StringDescriptor:

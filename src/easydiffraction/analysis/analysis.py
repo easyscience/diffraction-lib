@@ -17,7 +17,9 @@ from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import Parameter
+from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.singletons import ConstraintsHandler
+from easydiffraction.display.tables import TableRenderer
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
@@ -73,39 +75,37 @@ class Analysis:
         Returns:
             A pandas DataFrame containing parameter information.
         """
-        rows = []
+        records = []
         for param in params:
-            common_attrs = {}
+            record = {}
             # TODO: Merge into one. Add field if attr exists
-            if isinstance(param, (NumericDescriptor, Parameter)):  # TODO: StringDescriptor?
-                common_attrs = {
-                    'datablock': param._identity.datablock_entry_name,
-                    'category': param._identity.category_code,
-                    'entry': param._identity.category_entry_name
-                    or '',  # TODO: 'entry' if not None?
-                    'parameter': param.name,
-                    'value': param.value,  # TODO: f'{param.value!r}' for StringDescriptor?
-                    'units': param.units,
-                    'fittable': False,
+            # TODO: f'{param.value!r}' for StringDescriptor?
+            if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
+                record = {
+                    ('fittable', 'left'): False,
+                    ('datablock', 'left'): param._identity.datablock_entry_name,
+                    ('category', 'left'): param._identity.category_code,
+                    ('entry', 'left'): param._identity.category_entry_name or '',
+                    ('parameter', 'left'): param.name,
+                    ('value', 'right'): param.value,
                 }
-            param_attrs = {}
+            if isinstance(param, (NumericDescriptor, Parameter)):
+                record = record | {
+                    ('units', 'left'): param.units,
+                }
             if isinstance(param, Parameter):
-                param_attrs = {
-                    'fittable': True,
-                    'free': param.free,
-                    'min': param.fit_min,
-                    'max': param.fit_max,
-                    # 'uncertainty': f'{param.uncertainty:.4f}'
-                    # if param.uncertainty else '',
-                    'uncertainty': f'{param.uncertainty:.4f}' if param.uncertainty else '',
-                    # 'value': f'{param.value:.4f}', # TODO: Needed?
-                    # 'units': param.units,
+                record = record | {
+                    ('fittable', 'left'): True,
+                    ('free', 'left'): param.free,
+                    ('min', 'right'): param.fit_min,
+                    ('max', 'right'): param.fit_max,
+                    ('uncertainty', 'right'): param.uncertainty or '',
                 }
-            row = common_attrs | param_attrs
-            rows.append(row)
+            records.append(record)
 
-        dataframe = pd.DataFrame(rows)
-        return dataframe
+        df = pd.DataFrame.from_records(records)
+        df.columns = pd.MultiIndex.from_tuples(df.columns)
+        return df
 
     def show_all_params(self) -> None:
         """Print a table with all parameters for sample models and
@@ -118,7 +118,9 @@ class Analysis:
             log.warning('No parameters found.')
             return
 
-        columns_headers = [
+        tabler = TableRenderer.get()
+
+        filtered_headers = [
             'datablock',
             'category',
             'entry',
@@ -126,34 +128,16 @@ class Analysis:
             'value',
             'fittable',
         ]
-        columns_alignment = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'right',
-            'left',
-        ]
-
-        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
-        sample_models_dataframe = sample_models_dataframe[columns_headers]
 
         console.paragraph('All parameters for all sample models (🧩 data blocks)')
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=sample_models_dataframe,
-        )
-
-        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
-        experiments_dataframe = experiments_dataframe[columns_headers]
+        df = self._get_params_as_dataframe(sample_models_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
         console.paragraph('All parameters for all experiments (🔬 data blocks)')
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=experiments_dataframe,
-        )
+        df = self._get_params_as_dataframe(experiments_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
     def show_fittable_params(self) -> None:
         """Print a table with parameters that can be included in
@@ -166,7 +150,9 @@ class Analysis:
             log.warning('No fittable parameters found.')
             return
 
-        columns_headers = [
+        tabler = TableRenderer.get()
+
+        filtered_headers = [
             'datablock',
             'category',
             'entry',
@@ -176,46 +162,21 @@ class Analysis:
             'units',
             'free',
         ]
-        columns_alignment = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'right',
-            'right',
-            'left',
-            'left',
-        ]
-
-        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
-        sample_models_dataframe = sample_models_dataframe[columns_headers]
 
         console.paragraph('Fittable parameters for all sample models (🧩 data blocks)')
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=sample_models_dataframe,
-        )
-
-        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
-        experiments_dataframe = experiments_dataframe[columns_headers]
+        df = self._get_params_as_dataframe(sample_models_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
         console.paragraph('Fittable parameters for all experiments (🔬 data blocks)')
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=experiments_dataframe,
-        )
+        df = self._get_params_as_dataframe(experiments_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
     def show_free_params(self) -> None:
         """Print a table with only currently-free (varying)
         parameters.
         """
-        console.paragraph(
-            'Free parameters for both sample models (🧩 data blocks) '
-            'and experiments (🔬 data blocks)'
-        )
-
         sample_models_params = self.project.sample_models.free_parameters
         experiments_params = self.project.experiments.free_parameters
         free_params = sample_models_params + experiments_params
@@ -224,7 +185,9 @@ class Analysis:
             log.warning('No free parameters found.')
             return
 
-        columns_headers = [
+        tabler = TableRenderer.get()
+
+        filtered_headers = [
             'datablock',
             'category',
             'entry',
@@ -235,27 +198,14 @@ class Analysis:
             'max',
             'units',
         ]
-        columns_alignment = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'right',
-            'right',
-            'right',
-            'right',
-            'left',
-        ]
 
-        dataframe = self._get_params_as_dataframe(free_params)
-        dataframe = dataframe[columns_headers]
-        columns_data = dataframe[columns_headers].to_numpy()
-
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=columns_data,
+        console.paragraph(
+            'Free parameters for both sample models (🧩 data blocks) '
+            'and experiments (🔬 data blocks)'
         )
+        df = self._get_params_as_dataframe(free_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
     def how_to_access_parameters(self) -> None:
         """Show Python access paths for all parameters.
@@ -280,11 +230,9 @@ class Analysis:
             'entry',
             'parameter',
             'How to Access in Python Code',
-            'CIF uid',
         ]
 
         columns_alignment = [
-            'left',
             'left',
             'left',
             'left',
@@ -294,31 +242,26 @@ class Analysis:
 
         columns_data = []
         project_varname = self.project._varname
-        for datablock_type, params in all_params.items():
+        for datablock_code, params in all_params.items():
             for param in params:
-                if isinstance(param, (NumericDescriptor, Parameter)):
+                if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
                     datablock_entry_name = param._identity.datablock_entry_name
                     category_code = param._identity.category_code
                     category_entry_name = param._identity.category_entry_name or ''
                     param_key = param.name
                     code_variable = (
-                        f'{project_varname}.{datablock_type}'
+                        f'{project_varname}.{datablock_code}'
                         f"['{datablock_entry_name}'].{category_code}"
                     )
                     if category_entry_name:
                         code_variable += f"['{category_entry_name}']"
                     code_variable += f'.{param_key}'
-                    uid = (
-                        f'{datablock_entry_name}.{category_code}.'
-                        f'{category_entry_name + "." if category_entry_name else ""}{param_key}'
-                    )
                     columns_data.append([
                         datablock_entry_name,
                         category_code,
                         category_entry_name,
                         param_key,
                         code_variable,
-                        uid,
                     ])
 
         console.paragraph('How to access parameters')
@@ -362,9 +305,9 @@ class Analysis:
         ]
 
         columns_data = []
-        for _datablock_type, params in all_params.items():
+        for _, params in all_params.items():
             for param in params:
-                if isinstance(param, (NumericDescriptor, Parameter)):
+                if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
                     datablock_entry_name = param._identity.datablock_entry_name
                     category_code = param._identity.category_code
                     category_entry_name = param._identity.category_entry_name or ''

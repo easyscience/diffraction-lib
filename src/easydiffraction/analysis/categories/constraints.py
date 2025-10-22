@@ -63,7 +63,7 @@ class Constraint(CategoryItem):
         )
 
         self._identity.category_code = 'constraint'
-        self._identity.category_entry_name = lambda: self.lhs_alias.value
+        self._identity.category_entry_name = lambda: str(self.lhs_alias.value)
 
     @property
     def lhs_alias(self):
