@@ -143,7 +143,6 @@ class Analysis:
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=sample_models_dataframe,
-            show_index=True,
         )
 
         experiments_dataframe = self._get_params_as_dataframe(experiments_params)
@@ -154,7 +153,6 @@ class Analysis:
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=experiments_dataframe,
-            show_index=True,
         )
 
     def show_fittable_params(self) -> None:
@@ -197,7 +195,6 @@ class Analysis:
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=sample_models_dataframe,
-            show_index=True,
         )
 
         experiments_dataframe = self._get_params_as_dataframe(experiments_params)
@@ -208,7 +205,6 @@ class Analysis:
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=experiments_dataframe,
-            show_index=True,
         )
 
     def show_free_params(self) -> None:
@@ -259,7 +255,6 @@ class Analysis:
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=columns_data,
-            show_index=True,
         )
 
     def how_to_access_parameters(self) -> None:
@@ -331,7 +326,6 @@ class Analysis:
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=columns_data,
-            show_index=True,
         )
 
     def show_parameter_cif_uids(self) -> None:
@@ -389,7 +383,6 @@ class Analysis:
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=columns_data,
-            show_index=True,
         )
 
     def show_current_calculator(self) -> None:

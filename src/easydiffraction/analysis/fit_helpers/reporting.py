@@ -175,5 +175,4 @@ class FitResults:
             columns_headers=headers,
             columns_alignment=alignments,
             columns_data=rows,
-            show_index=True,
         )

@@ -299,7 +299,6 @@ def list_tutorials():
     render_table(
         columns_data=columns_data,
         columns_alignment=columns_alignment,
-        show_index=True,
     )
 
 
@@ -366,11 +365,8 @@ def render_table(
     columns_data,
     columns_alignment,
     columns_headers=None,
-    show_index=False,
     display_handle=None,
 ):
-    del show_index
-
     # Allow callers to pass no headers; synthesize default column names
     if columns_headers is None:
         num_cols = len(columns_data[0]) if columns_data else 0
