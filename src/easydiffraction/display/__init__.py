@@ -10,3 +10,7 @@ to render tabular data and plots in different environments.
 - Plots: see :mod:`easydiffraction.display.plotting` and the engines in
         :mod:`easydiffraction.display.plotters`.
 """
+
+from easydiffraction.display.utils import JupyterScrollManager
+
+JupyterScrollManager.disable_jupyter_scroll()
