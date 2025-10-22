@@ -32,12 +32,14 @@ class PandasTableBackend(TableBackendBase):
             A list of ``Styler.set_table_styles`` dictionaries.
         """
         return [
-            # Outer border on the entire table
+            # Margins and outer border on the entire table
             {
                 'selector': ' ',
                 'props': [
                     ('border', f'1px solid {color}'),
                     ('border-collapse', 'collapse'),
+                    ('margin-top', '0.5em'),
+                    ('margin-left', '0.5em'),
                 ],
             },
             # Horizontal border under header row
@@ -62,6 +64,13 @@ class PandasTableBackend(TableBackendBase):
                 'props': [
                     ('color', color),
                     ('font-weight', 'normal'),
+                ],
+            },
+            # Remove zebra-row background
+            {
+                'selector': 'tbody tr:nth-child(odd), tbody tr:nth-child(even)',
+                'props': [
+                    ('background-color', 'transparent'),
                 ],
             },
         ]
@@ -100,6 +109,7 @@ class PandasTableBackend(TableBackendBase):
         header_alignment_styles = self._build_header_alignment_styles(df, alignments)
 
         styler = df.style.format(precision=self.FLOAT_PRECISION)
+        styler = styler.set_table_attributes('class="dataframe"')  # For mkdocs-jupyter
         styler = styler.set_table_styles(table_styles + header_alignment_styles)
 
         for column, align in zip(df.columns, alignments, strict=False):
