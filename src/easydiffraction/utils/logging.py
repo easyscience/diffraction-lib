@@ -579,11 +579,11 @@ class ConsolePrinter:
         cls._console.print(formatted)
 
 
-# Configure logging on import to preserve prior behavior
+# Configure logging at import time
 Logger.configure()
 
-# ergonomic alias
+# Convenient alias for logger
 log = Logger
 
-# ergonomic alias for printer
+# Convenient alias for console printer
 console = ConsolePrinter
