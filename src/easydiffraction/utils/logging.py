@@ -123,17 +123,20 @@ class ConsoleManager:
 # ======================================================================
 
 
-class LoggerConfigurator:
-    """Handles setting up handlers and formatting for the logger."""
+class LoggerConfig:
+    """Facade for logger configuration, delegates to helpers."""
 
     @staticmethod
-    def setup_handlers(
+    def _setup_handlers(
         logger: logging.Logger,
         *,
         level: int,
         rich_tracebacks: bool,
         mode: str = 'compact',
     ) -> None:
+        """Install Rich handler and optional Jupyter traceback
+        support.
+        """
         logger.handlers.clear()
         logger.propagate = False
         logger.setLevel(level)
@@ -206,10 +209,7 @@ class ExceptionHookManager:
         if hasattr(Logger, '_orig_excepthook'):
             sys.excepthook = Logger._orig_excepthook  # type: ignore[attr-defined]
 
-
-class JupyterIntegration:
-    """Handles Jupyter-specific traceback suppression."""
-
+    # Jupyter-specific traceback suppression (inlined here)
     @staticmethod
     def _suppress_traceback(logger):
         def suppress_jupyter_traceback(*args, **kwargs):
@@ -231,14 +231,12 @@ class JupyterIntegration:
 
             ip = get_ipython()
             if ip is not None:
-                ip.set_custom_exc((BaseException,), JupyterIntegration._suppress_traceback(logger))
+                ip.set_custom_exc(
+                    (BaseException,), ExceptionHookManager._suppress_traceback(logger)
+                )
         except Exception as err:
             msg = f'Failed to install Jupyter traceback suppressor: {err!r}'
             logger.debug(msg)
-
-
-class LoggerConfig:
-    """Facade for logger configuration, delegates to helpers."""
 
     @staticmethod
     def configure(
@@ -256,7 +254,7 @@ class LoggerConfig:
             level: Minimum log level to emit.
             rich_tracebacks: Whether to enable Rich tracebacks.
         """
-        LoggerConfigurator.setup_handlers(
+        LoggerConfig._setup_handlers(
             logger,
             level=int(level),
             rich_tracebacks=rich_tracebacks,
@@ -267,7 +265,7 @@ class LoggerConfig:
             ExceptionHookManager.install_verbose_hook(logger)
         elif mode == Logger.Mode.COMPACT:
             ExceptionHookManager.install_compact_hook(logger)
-            JupyterIntegration.install_jupyter_traceback_suppressor(logger)
+            ExceptionHookManager.install_jupyter_traceback_suppressor(logger)
         else:
             ExceptionHookManager.restore_original_hook()
 
@@ -389,7 +387,7 @@ class Logger:
         """Install traceback suppressor in Jupyter, safely and lint-
         clean.
         """
-        JupyterIntegration.install_jupyter_traceback_suppressor(cls._logger)
+        ExceptionHookManager.install_jupyter_traceback_suppressor(cls._logger)
 
     # ===== Helpers =====
     @classmethod
