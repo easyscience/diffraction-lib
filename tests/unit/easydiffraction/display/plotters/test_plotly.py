@@ -13,7 +13,7 @@ def test_get_trace_and_plot(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
     # Arrange: force non-PyCharm branch and stub fig.show/HTML/display so nothing opens
-    monkeypatch.setattr(pp, 'is_pycharm', lambda: False)
+    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
 
     shown = {'count': 0}
 

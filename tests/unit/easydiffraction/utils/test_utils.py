@@ -93,11 +93,11 @@ def test_validate_url_rejects_non_http_https():
 
 
 def test_is_github_ci_env_true(monkeypatch):
-    import easydiffraction.utils.env as env
+    import easydiffraction.utils.environment as env
 
     monkeypatch.setenv('GITHUB_ACTIONS', 'true')
     expected = True
-    actual = env.is_github_ci()
+    actual = env.in_github_ci()
     assert expected == actual
 
 
@@ -110,29 +110,31 @@ def test_package_version_missing_package_returns_none():
 
 
 def test_is_notebook_false_in_plain_env(monkeypatch):
-    import easydiffraction.utils.env as env
+    import easydiffraction.utils.environment as env
 
     # Ensure no IPython and not PyCharm
     monkeypatch.setenv('PYCHARM_HOSTED', '', prepend=False)
-    assert env.is_notebook() is False
+    assert env.in_jupyter() is False
 
 
 def test_is_pycharm_and_is_colab(monkeypatch):
-    import easydiffraction.utils.env as env
+    import easydiffraction.utils.environment as env
 
     # PyCharm
     monkeypatch.setenv('PYCHARM_HOSTED', '1')
-    assert env.is_pycharm() is True
+    assert env.in_pycharm() is True
     # Colab detection when module is absent -> False
-    assert env.is_colab() is False
+    assert env.in_colab() is False
 
 
 def test_render_table_terminal_branch(capsys, monkeypatch):
     import easydiffraction.utils.utils as MUT
-
-    import easydiffraction.utils.env as env
-    monkeypatch.setattr(env, 'is_notebook', lambda: False)
-    MUT.render_table(columns_data=[[1, 2], [3, 4]], columns_alignment=['left', 'left'])
+    # Ensure non-notebook rendering; on CI/default env it's terminal anyway.
+    MUT.render_table(
+        columns_data=[[1, 2], [3, 4]],
+        columns_alignment=['left', 'left'],
+        columns_headers=['A', 'B'],
+    )
     out = capsys.readouterr().out
     # fancy_outline uses box-drawing characters; accept a couple of expected ones
     assert ('╒' in out and '╕' in out) or ('┌' in out and '┐' in out)

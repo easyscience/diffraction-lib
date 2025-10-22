@@ -71,40 +71,32 @@ def test_plotter_error_paths_and_filtering(capsys):
 
     p = Plotter()
 
-    # Error paths
+    # Error paths (now log errors via console; messages are printed)
     p.plot_meas(Ptn(x=None, meas=None), 'E', ExptType())
     out = capsys.readouterr().out
-    # plot_meas uses formatting.error(...) without printing -> no stdout
-    assert out == ''
+    assert 'No data available for experiment E' in out
 
     p.plot_meas(Ptn(x=[1], meas=None), 'E', ExptType())
     out = capsys.readouterr().out
-    # Same here: no print, so no stdout
-    assert out == ''
+    assert 'No measured data available for experiment E' in out
 
     p.plot_calc(Ptn(x=None, calc=None), 'E', ExptType())
     out = capsys.readouterr().out
-    # error path should not print to stdout
-    assert out == ''
+    assert 'No data available for experiment E' in out
 
     p.plot_calc(Ptn(x=[1], calc=None), 'E', ExptType())
     out = capsys.readouterr().out
-    # assert 'No calculated data available' in out or 'No calculated data' in out
-    # error path should not print to stdout in new API
-    assert out == ''
+    assert 'No calculated data available for experiment E' in out
 
     p.plot_meas_vs_calc(Ptn(x=None), 'E', ExptType())
     out = capsys.readouterr().out
-    # assert 'No data available' in out
-    assert out == ''
+    assert 'No data available for experiment E' in out
     p.plot_meas_vs_calc(Ptn(x=[1], meas=None, calc=[1]), 'E', ExptType())
     out = capsys.readouterr().out
-    # assert 'No measured data available' in out
-    assert out == ''
+    assert 'No measured data available for experiment E' in out
     p.plot_meas_vs_calc(Ptn(x=[1], meas=[1], calc=None), 'E', ExptType())
     out = capsys.readouterr().out
-    # assert 'No calculated data available' in out
-    assert out == ''
+    assert 'No calculated data available for experiment E' in out
     # TODO: Update assertions with new logging-based error handling
     #  in the above line and elsewhere as needed.
 
