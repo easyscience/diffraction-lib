@@ -244,7 +244,7 @@ class LoggerConfig:
             logger,
             level=int(level),
             rich_tracebacks=rich_tracebacks,
-            mode=Logger._mode.value,
+            mode=mode.value,
         )
 
         if rich_tracebacks and mode == Logger.Mode.VERBOSE:
@@ -489,7 +489,7 @@ class ConsolePrinter:
         cls._console.print(renderable, **kwargs)
 
     @classmethod
-    def paragraph(cls, title: str) -> Text:
+    def paragraph(cls, title: str) -> None:
         parts = re.split(r"('.*?')", title)
         text = Text()
         for part in parts:
@@ -503,7 +503,7 @@ class ConsolePrinter:
         cls._console.print(formatted)
 
     @classmethod
-    def section(cls, title: str) -> str:
+    def section(cls, title: str) -> None:
         """Formats a section header with bold green text."""
         full_title = f'{title.upper()}'
         line = '━' * len(full_title)
@@ -513,7 +513,7 @@ class ConsolePrinter:
         cls._console.print(formatted)
 
     @classmethod
-    def chapter(cls, title: str) -> str:
+    def chapter(cls, title: str) -> None:
         """Formats a chapter header with bold magenta text, uppercase,
         and padding.
         """
