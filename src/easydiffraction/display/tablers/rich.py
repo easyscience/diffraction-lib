@@ -1,11 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Rich-based table renderer for terminals and notebooks.
-
-This module defines :class:`RichTableBackend`, a backend that renders
-tables with the Rich library in the terminal and, when running in a
-notebook, exports the table to HTML for in-place updates.
-"""
+"""Rich-based table renderer for terminals and notebooks."""
 
 from __future__ import annotations
 
@@ -17,11 +12,11 @@ from rich.console import Console
 from rich.table import Table
 
 try:
-    from IPython.display import HTML  # type: ignore[import-not-found]
-    from IPython.display import display  # type: ignore[import-not-found]
-except Exception:  # pragma: no cover - optional dependency
-    HTML = None  # type: ignore[assignment]
-    display = None  # type: ignore[assignment]
+    from IPython.display import HTML
+    from IPython.display import display
+except Exception:
+    HTML = None
+    display = None
 
 from easydiffraction import log
 from easydiffraction.display.tablers.base import TableBackendBase
@@ -123,6 +118,7 @@ class RichTableBackend(TableBackendBase):
                     return
                 except Exception as err:
                     log.debug(f'Rich to HTML DisplayHandle update failed: {err!r}')
+
             # Assume terminal/live-like handle
             else:
                 try:
@@ -130,6 +126,7 @@ class RichTableBackend(TableBackendBase):
                     return
                 except Exception as err:
                     log.debug(f'Rich live handle update failed: {err!r}')
+
         # Normal print to console
         console = ConsoleManager.get()
         console.print(table)

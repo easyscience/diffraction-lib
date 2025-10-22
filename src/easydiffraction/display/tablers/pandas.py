@@ -7,11 +7,11 @@ from __future__ import annotations
 from typing import Any
 
 try:
-    from IPython.display import HTML  # type: ignore[import-not-found]
-    from IPython.display import display  # type: ignore[import-not-found]
-except Exception:  # pragma: no cover - optional dependency
-    HTML = None  # type: ignore[assignment]
-    display = None  # type: ignore[assignment]
+    from IPython.display import HTML
+    from IPython.display import display
+except Exception:
+    HTML = None
+    display = None
 
 from easydiffraction import log
 from easydiffraction.display.tablers.base import TableBackendBase
@@ -129,9 +129,11 @@ class PandasTableBackend(TableBackendBase):
                     return
                 except Exception as err:
                     log.debug(f'Pandas DisplayHandle update failed: {err!r}')
+
             # This should not happen in Pandas backend
             else:
                 pass
+
         # Normal display
         display(styler)
 
