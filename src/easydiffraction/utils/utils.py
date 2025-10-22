@@ -23,7 +23,6 @@ from uncertainties import ufloat
 from uncertainties import ufloat_fromstr
 
 from easydiffraction.display.tables import TableRenderer
-from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
@@ -385,16 +384,8 @@ def render_cif(cif_text) -> None:
 
     Args:
         cif_text: The CIF text to display.
-        paragraph_title: The title to print above the table.
     """
-    # Split into lines and replace empty ones with a '&nbsp;'
-    # (non-breaking space) to force empty lines to be rendered in
-    # full height in the table. This is only needed in Jupyter Notebook.
-    if in_jupyter():
-        lines: List[str] = [line if line.strip() else '&nbsp;' for line in cif_text.splitlines()]
-    else:
-        lines: List[str] = [line for line in cif_text.splitlines()]
-
+    # Split into lines
     lines: List[str] = [line for line in cif_text.splitlines()]
 
     # Convert each line into a single-column format for table rendering
