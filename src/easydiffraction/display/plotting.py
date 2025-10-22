@@ -88,8 +88,10 @@ class Plotter(RendererBase):
 
     @x_min.setter
     def x_min(self, value):
-        """Set minimum x-axis limit, falling back to default when
-        None.
+        """Set the minimum x-axis limit.
+
+        Args:
+            value: Minimum limit or ``None`` to reset to default.
         """
         if value is not None:
             self._x_min = value
@@ -103,8 +105,10 @@ class Plotter(RendererBase):
 
     @x_max.setter
     def x_max(self, value):
-        """Set maximum x-axis limit, falling back to default when
-        None.
+        """Set the maximum x-axis limit.
+
+        Args:
+            value: Maximum limit or ``None`` to reset to default.
         """
         if value is not None:
             self._x_max = value
@@ -118,7 +122,11 @@ class Plotter(RendererBase):
 
     @height.setter
     def height(self, value):
-        """Set plot height, falling back to default when None."""
+        """Set plot height.
+
+        Args:
+            value: Height value or ``None`` to reset to default.
+        """
         if value is not None:
             self._height = value
         else:
@@ -133,7 +141,17 @@ class Plotter(RendererBase):
         x_max=None,
         d_spacing=False,
     ):
-        """Plot measured pattern using the current engine."""
+        """Plot measured pattern using the current engine.
+
+        Args:
+            pattern: Object with ``x`` and ``meas`` arrays (and
+                ``d`` when ``d_spacing`` is true).
+            expt_name: Experiment name for the title.
+            expt_type: Experiment type with scattering/beam enums.
+            x_min: Optional minimum x-axis limit.
+            x_max: Optional maximum x-axis limit.
+            d_spacing: If ``True``, plot against d-spacing values.
+        """
         if pattern.x is None:
             log.error(f'No data available for experiment {expt_name}')
             return
@@ -149,8 +167,10 @@ class Plotter(RendererBase):
         if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
             max_intensity_pos = np.argmax(pattern.meas)
             half_range = 50
-            x_min = x_array[max_intensity_pos - half_range]
-            x_max = x_array[max_intensity_pos + half_range]
+            start = max(0, max_intensity_pos - half_range)
+            end = min(len(x_array) - 1, max_intensity_pos + half_range)
+            x_min = x_array[start]
+            x_max = x_array[end]
 
         # Filter x, y_meas, and y_calc based on x_min and x_max
         x = self._filtered_y_array(
@@ -203,7 +223,17 @@ class Plotter(RendererBase):
         x_max=None,
         d_spacing=False,
     ):
-        """Plot calculated pattern using the current engine."""
+        """Plot calculated pattern using the current engine.
+
+        Args:
+            pattern: Object with ``x`` and ``calc`` arrays (and
+                ``d`` when ``d_spacing`` is true).
+            expt_name: Experiment name for the title.
+            expt_type: Experiment type with scattering/beam enums.
+            x_min: Optional minimum x-axis limit.
+            x_max: Optional maximum x-axis limit.
+            d_spacing: If ``True``, plot against d-spacing values.
+        """
         if pattern.x is None:
             log.error(f'No data available for experiment {expt_name}')
             return
@@ -219,8 +249,10 @@ class Plotter(RendererBase):
         if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
             max_intensity_pos = np.argmax(pattern.meas)
             half_range = 50
-            x_min = x_array[max_intensity_pos - half_range]
-            x_max = x_array[max_intensity_pos + half_range]
+            start = max(0, max_intensity_pos - half_range)
+            end = min(len(x_array) - 1, max_intensity_pos + half_range)
+            x_min = x_array[start]
+            x_max = x_array[end]
 
         # Filter x, y_meas, and y_calc based on x_min and x_max
         x = self._filtered_y_array(
@@ -273,7 +305,18 @@ class Plotter(RendererBase):
         show_residual=False,
         d_spacing=False,
     ):
-        """Plot measured and calculated series and optional residual."""
+        """Plot measured and calculated series and optional residual.
+
+        Args:
+            pattern: Object with ``x``, ``meas`` and ``calc`` arrays
+                (and ``d`` when ``d_spacing`` is true).
+            expt_name: Experiment name for the title.
+            expt_type: Experiment type with scattering/beam enums.
+            x_min: Optional minimum x-axis limit.
+            x_max: Optional maximum x-axis limit.
+            show_residual: If ``True``, add residual series.
+            d_spacing: If ``True``, plot against d-spacing values.
+        """
         if pattern.x is None:
             log.error(f'No data available for experiment {expt_name}')
             return
@@ -292,8 +335,10 @@ class Plotter(RendererBase):
         if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
             max_intensity_pos = np.argmax(pattern.meas)
             half_range = 50
-            x_min = x_array[max_intensity_pos - half_range]
-            x_max = x_array[max_intensity_pos + half_range]
+            start = max(0, max_intensity_pos - half_range)
+            end = min(len(x_array) - 1, max_intensity_pos + half_range)
+            x_min = x_array[start]
+            x_max = x_array[end]
 
         # Filter x, y_meas, and y_calc based on x_min and x_max
         x = self._filtered_y_array(
@@ -354,6 +399,19 @@ class Plotter(RendererBase):
         x_min,
         x_max,
     ):
+        """Filter an array by the inclusive x-range limits.
+
+        Args:
+            y_array: 1D array-like of y values.
+            x_array: 1D array-like of x values (same length as
+                ``y_array``).
+            x_min: Minimum x limit (or ``None`` to use default).
+            x_max: Maximum x limit (or ``None`` to use default).
+
+        Returns:
+            Filtered ``y_array`` values where ``x_array`` lies within
+            ``[x_min, x_max]``.
+        """
         if x_min is None:
             x_min = self.x_min
         if x_max is None:

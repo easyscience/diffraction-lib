@@ -31,8 +31,7 @@ from easydiffraction.utils.environment import in_warp
 from easydiffraction.utils.environment import is_notebook
 from easydiffraction.utils.environment import is_notebook as in_jupyter
 
-CONSOLE_WIDTH = 120  # Is it really used?
-
+CONSOLE_WIDTH = 120
 
 # ======================================================================
 # HANDLERS
@@ -67,16 +66,17 @@ class IconifiedRichHandler(RichHandler):
             return super().get_level_text(record)
 
     def render_message(self, record: logging.LogRecord, message: str) -> Text:
-        # Keep icons in message only for compact mode. In verbose, use
-        # normal.
+        # In compact mode, let the icon come from get_level_text and
+        # keep the message body unadorned. In verbose mode, defer to
+        # RichHandler.
         if self.mode == 'compact':
-            icon = self._icons.get(record.levelno, record.levelname)
-            record = logging.makeLogRecord(record.__dict__)
-            record.levelname = icon
+            try:
+                return Text.from_markup(message)
+            except Exception:
+                return Text(str(message))
         return super().render_message(record, message)
 
 
-# ======================================================================
 # CONSOLE MANAGER
 # ======================================================================
 
@@ -389,18 +389,20 @@ class Logger:
         """Route a log message (see class docs for policy)."""
         cls._lazy_config()
         message = ' '.join(messages)
-        # Special handling for Reaction.WARN
+        # Prioritize explicit UserWarning path so pytest captures
+        # warnings
+        if exc_type is UserWarning:
+            if in_pytest():
+                warnings.warn(message, UserWarning, stacklevel=2)
+            else:
+                cls._logger.warning(message)
+            return
+        # Special handling for Reaction.WARN (non-warning cases)
         if cls._reaction is cls.Reaction.WARN:
             # Log as error/critical (keep icon) but continue execution
             cls._logger.log(int(level), message)
             return
         if exc_type is not None:
-            if exc_type is UserWarning:
-                if in_pytest():
-                    warnings.warn(message, UserWarning, stacklevel=2)
-                else:
-                    cls._logger.warning(message)
-                return
             if cls._mode is cls.Mode.VERBOSE:
                 raise exc_type(message)
             if cls._mode is cls.Mode.COMPACT:

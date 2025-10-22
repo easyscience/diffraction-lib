@@ -84,3 +84,58 @@ def is_github_ci() -> bool:
         otherwise.
     """
     return os.environ.get('GITHUB_ACTIONS') is not None
+
+
+# ----------------------------------------------------------------------
+# IPython/Jupyter helpers
+# ----------------------------------------------------------------------
+
+
+def is_ipython_display_handle(obj: object) -> bool:
+    """Return True if ``obj`` is an IPython DisplayHandle instance.
+
+    Tries to import ``IPython.display.DisplayHandle`` and uses
+    ``isinstance`` when available. Falls back to a conservative
+    module name heuristic if IPython is missing. Any errors result
+    in ``False``.
+    """
+    try:  # Fast path when IPython is available
+        from IPython.display import DisplayHandle  # type: ignore[import-not-found]
+
+        try:
+            return isinstance(obj, DisplayHandle)
+        except Exception:
+            return False
+    except Exception:
+        # Fallback heuristic when IPython is unavailable
+        try:
+            mod = getattr(getattr(obj, '__class__', None), '__module__', '')
+            return isinstance(mod, str) and mod.startswith('IPython')
+        except Exception:
+            return False
+
+
+def can_update_ipython_display() -> bool:
+    """Return True if IPython HTML display utilities are available.
+
+    This indicates we can safely construct ``IPython.display.HTML`` and
+    update a display handle.
+    """
+    try:
+        from IPython.display import HTML  # type: ignore[import-not-found]  # noqa: F401
+
+        return True
+    except Exception:
+        return False
+
+
+def can_use_ipython_display(handle: object) -> bool:
+    """Return True if we can update the given IPython DisplayHandle.
+
+    Combines type checking of the handle with availability of IPython
+    HTML utilities.
+    """
+    try:
+        return is_ipython_display_handle(handle) and can_update_ipython_display()
+    except Exception:
+        return False

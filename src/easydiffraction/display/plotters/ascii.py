@@ -1,5 +1,11 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""ASCII plotting backend.
+
+Renders compact line charts in the terminal using
+``asciichartpy``. This backend is well suited for quick feedback in
+CLI environments and keeps a consistent API with other plotters.
+"""
 
 import asciichartpy
 
@@ -19,6 +25,17 @@ class AsciiPlotter(PlotterBase):
     """Terminal-based plotter using ASCII art."""
 
     def _get_legend_item(self, label):
+        """Return a colored legend entry for a given series label.
+
+        The legend uses a colored line matching the series color and
+        the human-readable name from :data:`SERIES_CONFIG`.
+
+        Args:
+            label: Series identifier (e.g., ``'meas'``).
+
+        Returns:
+            A formatted legend string with color escapes.
+        """
         color_start = DEFAULT_COLORS[label]
         color_end = asciichartpy.reset
         line = '────'

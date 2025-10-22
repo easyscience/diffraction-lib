@@ -1,5 +1,11 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Plotly plotting backend.
+
+Provides an interactive plotting implementation using Plotly. In
+notebooks, figures are displayed inline; in other environments a browser
+renderer may be used depending on configuration.
+"""
 
 import darkdetect
 import plotly.graph_objects as go
@@ -31,6 +37,17 @@ class PlotlyPlotter(PlotterBase):
         pio.renderers.default = 'browser'
 
     def _get_trace(self, x, y, label):
+        """Create a Plotly trace for a single data series.
+
+        Args:
+            x: 1D array-like of x-axis values.
+            y: 1D array-like of y-axis values.
+            label: Series identifier (``'meas'``, ``'calc'``, or
+                ``'resid'``).
+
+        Returns:
+            A configured :class:`plotly.graph_objects.Scatter` trace.
+        """
         mode = SERIES_CONFIG[label]['mode']
         name = SERIES_CONFIG[label]['name']
         color = DEFAULT_COLORS[label]

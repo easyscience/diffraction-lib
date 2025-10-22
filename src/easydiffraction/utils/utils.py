@@ -376,11 +376,10 @@ def render_table(
     columns_data,
     columns_alignment,
     columns_headers=None,
-    show_index=True,
+    show_index=False,
     display_handle=None,
 ):
     del show_index
-    del display_handle
 
     # Allow callers to pass no headers; synthesize default column names
     if columns_headers is None:
@@ -398,7 +397,7 @@ def render_table(
     df = pd.DataFrame(columns_data, columns=pd.MultiIndex.from_tuples(headers))
 
     tabler = TableRenderer.get()
-    tabler.render(df)
+    tabler.render(df, display_handle=display_handle)
 
 
 def render_table_old2(

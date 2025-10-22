@@ -65,7 +65,19 @@ class TableRenderer(RendererBase):
         console.paragraph('Current tabler configuration')
         TableRenderer.get().render(df)
 
-    def render(self, df) -> Any:
+    def render(self, df, display_handle: Any | None = None) -> Any:
+        """Render a DataFrame as a table using the active backend.
+
+        Args:
+            df: DataFrame with a two-level column index where the
+                second level provides per-column alignment.
+            display_handle: Optional environment-specific handle used
+                to update an existing output area in-place (e.g., an
+                IPython DisplayHandle or a terminal live handle).
+
+        Returns:
+            Backend-specific return value (usually ``None``).
+        """
         # Work on a copy to avoid mutating the original DataFrame
         df = df.copy()
 
@@ -78,7 +90,7 @@ class TableRenderer(RendererBase):
         # Remove alignments from df (Keep only the first index level)
         df.columns = df.columns.get_level_values(0)
 
-        return self._backend.render(alignments, df)
+        return self._backend.render(alignments, df, display_handle)
 
 
 class TableRendererFactory(RendererFactoryBase):
@@ -86,16 +98,21 @@ class TableRendererFactory(RendererFactoryBase):
 
     @classmethod
     def _registry(cls) -> dict:
-        """Build registry from TableEngineEnum ensuring single source of
-        truth for descriptions and engine ids.
+        """Build registry, adapting available engines to the
+        environment.
+
+        - In Jupyter: expose both 'rich' and 'pandas'.
+        - In terminal: expose only 'rich' (pandas is notebook-only).
         """
-        return {
+        base = {
             TableEngineEnum.RICH.value: {
                 'description': TableEngineEnum.RICH.description(),
                 'class': RichTableBackend,
-            },
-            TableEngineEnum.PANDAS.value: {
+            }
+        }
+        if is_notebook():
+            base[TableEngineEnum.PANDAS.value] = {
                 'description': TableEngineEnum.PANDAS.description(),
                 'class': PandasTableBackend,
-            },
-        }
+            }
+        return base
