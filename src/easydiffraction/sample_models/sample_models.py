@@ -3,10 +3,10 @@
 
 from typeguard import typechecked
 
-from easydiffraction import console
 from easydiffraction.core.datablock import DatablockCollection
 from easydiffraction.sample_models.sample_model.base import SampleModelBase
 from easydiffraction.sample_models.sample_model.factory import SampleModelFactory
+from easydiffraction.utils.logging import console
 
 
 class SampleModels(DatablockCollection):

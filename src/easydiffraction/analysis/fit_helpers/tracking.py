@@ -9,7 +9,7 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction import console
+from easydiffraction.utils.logging import console
 
 try:
     from IPython.display import HTML

@@ -5,9 +5,9 @@
 import datetime
 import pathlib
 
-from easydiffraction import console
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.io.cif.serialize import project_info_to_cif
+from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_cif
 
 

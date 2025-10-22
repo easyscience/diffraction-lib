@@ -1,12 +1,12 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from easydiffraction import console
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.sample_models.categories.atom_sites import AtomSites
 from easydiffraction.sample_models.categories.cell import Cell
 from easydiffraction.sample_models.categories.space_group import SpaceGroup
+from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_cif
 
 

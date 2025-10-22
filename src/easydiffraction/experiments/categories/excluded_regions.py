@@ -4,7 +4,6 @@
 
 from typing import List
 
-from easydiffraction import console
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
@@ -12,6 +11,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
 
 

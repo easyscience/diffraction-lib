@@ -9,13 +9,13 @@ from typing import Any
 
 import pandas as pd
 
-from easydiffraction import console
-from easydiffraction import log
 from easydiffraction.display.base import RendererBase
 from easydiffraction.display.base import RendererFactoryBase
 from easydiffraction.display.tablers.pandas import PandasTableBackend
 from easydiffraction.display.tablers.rich import RichTableBackend
 from easydiffraction.utils.environment import in_jupyter
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 
 
 class TableEngineEnum(str, Enum):

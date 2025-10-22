@@ -4,7 +4,7 @@
 from textwrap import wrap
 from typing import List
 
-from easydiffraction import console
+from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
 
 

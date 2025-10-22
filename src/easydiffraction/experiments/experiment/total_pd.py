@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from easydiffraction import console
 from easydiffraction.experiments.experiment.base import PdExperimentBase
+from easydiffraction.utils.logging import console
 
 if TYPE_CHECKING:
     from easydiffraction.experiments.categories.experiment_type import ExperimentType

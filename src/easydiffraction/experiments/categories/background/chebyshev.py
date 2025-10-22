@@ -13,8 +13,6 @@ from typing import Union
 import numpy as np
 from numpy.polynomial.chebyshev import chebval
 
-from easydiffraction import console
-from easydiffraction import log
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import Parameter
@@ -23,6 +21,8 @@ from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.experiments.categories.background.base import BackgroundBase
 from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
 
 

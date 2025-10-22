@@ -11,8 +11,6 @@ from enum import Enum
 import numpy as np
 import pandas as pd
 
-from easydiffraction import console
-from easydiffraction import log
 from easydiffraction.display.base import RendererBase
 from easydiffraction.display.base import RendererFactoryBase
 from easydiffraction.display.plotters.ascii import AsciiPlotter
@@ -23,6 +21,8 @@ from easydiffraction.display.plotters.base import DEFAULT_MIN
 from easydiffraction.display.plotters.plotly import PlotlyPlotter
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.utils.environment import in_jupyter
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 
 
 class PlotterEngineEnum(str, Enum):

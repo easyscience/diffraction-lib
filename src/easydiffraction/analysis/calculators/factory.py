@@ -7,12 +7,12 @@ from typing import Optional
 from typing import Type
 from typing import Union
 
-from easydiffraction import console
-from easydiffraction import log
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
 from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
 from easydiffraction.analysis.calculators.pdffit import PdffitCalculator
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
 
 

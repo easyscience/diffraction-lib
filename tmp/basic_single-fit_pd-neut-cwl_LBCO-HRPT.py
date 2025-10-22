@@ -25,8 +25,8 @@
 import os
 
 import easydiffraction as ed
-from easydiffraction import console
-from easydiffraction import log
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 
 # %%
 print(os.getenv('TERM_PROGRAM'))

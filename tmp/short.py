@@ -1,6 +1,6 @@
 from easydiffraction import Experiment
 from easydiffraction import Experiments
-from easydiffraction import Logger
+from easydiffraction.utils.logging import logger
 from easydiffraction import Project
 from easydiffraction import SampleModel
 from easydiffraction import SampleModels

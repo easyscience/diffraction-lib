@@ -5,11 +5,11 @@ from typing import Any
 from typing import List
 from typing import Optional
 
-from easydiffraction import console
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squared
 from easydiffraction.analysis.fit_helpers.metrics import calculate_rb_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_factor
+from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
 
 

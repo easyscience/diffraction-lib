@@ -6,8 +6,6 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
-from easydiffraction import console
-from easydiffraction import log
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.experiments.categories.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.categories.linked_phases import LinkedPhases
@@ -15,6 +13,8 @@ from easydiffraction.experiments.categories.peak.factory import PeakFactory
 from easydiffraction.experiments.categories.peak.factory import PeakProfileTypeEnum
 from easydiffraction.experiments.datastore.factory import DatastoreFactory
 from easydiffraction.io.cif.serialize import experiment_to_cif
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
 

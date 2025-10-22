@@ -8,8 +8,6 @@ import tempfile
 from typeguard import typechecked
 from varname import varname
 
-from easydiffraction import console
-from easydiffraction import log
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.display.plotting import Plotter
@@ -20,6 +18,8 @@ from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.project.project_info import ProjectInfo
 from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.summary.summary import Summary
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d
 

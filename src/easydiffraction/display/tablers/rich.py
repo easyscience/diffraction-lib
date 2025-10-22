@@ -18,10 +18,10 @@ except Exception:
     HTML = None
     display = None
 
-from easydiffraction import log
 from easydiffraction.display.tablers.base import TableBackendBase
 from easydiffraction.utils.environment import can_use_ipython_display
 from easydiffraction.utils.logging import ConsoleManager
+from easydiffraction.utils.logging import log
 
 """Custom compact box style used for consistent borders."""
 CUSTOM_BOX = """\

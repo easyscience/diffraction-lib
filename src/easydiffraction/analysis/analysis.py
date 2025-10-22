@@ -7,8 +7,6 @@ from typing import Union
 
 import pandas as pd
 
-from easydiffraction import console
-from easydiffraction import log
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.analysis.categories.aliases import Aliases
 from easydiffraction.analysis.categories.constraints import Constraints
@@ -21,6 +19,8 @@ from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.singletons import ConstraintsHandler
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
 

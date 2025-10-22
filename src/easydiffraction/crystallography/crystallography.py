@@ -13,8 +13,8 @@ from sympy import simplify
 from sympy import symbols
 from sympy import sympify
 
-from easydiffraction import log
 from easydiffraction.crystallography.space_groups import SPACE_GROUPS
+from easydiffraction.utils.logging import log
 
 
 def apply_cell_symmetry_constraints(

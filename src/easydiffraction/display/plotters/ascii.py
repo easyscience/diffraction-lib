@@ -9,10 +9,10 @@ CLI environments and keeps a consistent API with other plotters.
 
 import asciichartpy
 
-from easydiffraction import console
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.base import PlotterBase
+from easydiffraction.utils.logging import console
 
 DEFAULT_COLORS = {
     'meas': asciichartpy.blue,

@@ -12,9 +12,9 @@ from typing import Tuple
 
 import pandas as pd
 
-from easydiffraction import console
-from easydiffraction import log
 from easydiffraction.core.singletons import SingletonBase
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 
 
 class RendererBase(SingletonBase, ABC):

@@ -7,10 +7,10 @@ from typing import List
 from typing import Optional
 from typing import Type
 
-from easydiffraction import console
 from easydiffraction.analysis.minimizers.base import MinimizerBase
 from easydiffraction.analysis.minimizers.dfols import DfolsMinimizer
 from easydiffraction.analysis.minimizers.lmfit import LmfitMinimizer
+from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
 
 

@@ -3,7 +3,6 @@
 
 from typeguard import typechecked
 
-from easydiffraction import console
 from easydiffraction.core.datablock import DatablockCollection
 from easydiffraction.experiments.experiment.base import ExperimentBase
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
@@ -11,6 +10,7 @@ from easydiffraction.experiments.experiment.enums import RadiationProbeEnum
 from easydiffraction.experiments.experiment.enums import SampleFormEnum
 from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 from easydiffraction.experiments.experiment.factory import ExperimentFactory
+from easydiffraction.utils.logging import console
 
 
 class Experiments(DatablockCollection):

@@ -22,10 +22,10 @@ from uncertainties import UFloat
 from uncertainties import ufloat
 from uncertainties import ufloat_fromstr
 
-from easydiffraction import console
-from easydiffraction import log
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.utils.environment import in_jupyter
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 
 
 def _validate_url(url: str) -> None:

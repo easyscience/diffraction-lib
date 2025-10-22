@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from easydiffraction import log
 from easydiffraction.utils.environment import in_jupyter
+from easydiffraction.utils.logging import log
 
 # Optional import – safe even if IPython is not installed
 try:

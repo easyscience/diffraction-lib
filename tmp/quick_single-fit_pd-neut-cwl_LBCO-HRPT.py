@@ -5,7 +5,7 @@ import easydiffraction as ed
 # %%
 # ## Step 1: Define Project
 project = ed.Project()
-project.tabler.engine = 'rich'
+#project.tabler.engine = 'rich'
 #project.tabler.engine = 'pandas'
 
 # %%

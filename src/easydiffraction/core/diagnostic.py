@@ -8,7 +8,7 @@ attribute validation and configuration checks.
 
 import difflib
 
-from easydiffraction import log
+from easydiffraction.utils.logging import log
 
 
 class Diagnostics:
