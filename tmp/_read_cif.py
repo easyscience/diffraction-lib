@@ -64,6 +64,9 @@ experiment = project.experiments['hrpt']
 project.experiments.show_names()
 
 # %%
+experiment.show_as_cif()
+
+# %%
 experiment.instrument.setup_wavelength = 1.494
 experiment.instrument.calib_twotheta_offset = 0.6
 
@@ -89,6 +92,9 @@ experiment.linked_phases.add_from_args(id='lbco', scale=10.0)
 
 # %% [markdown]
 # ## Step 4: Perform Analysis
+
+# %%
+experiment.show_as_cif()
 
 # %%
 sample_model.cell.length_a.free = True

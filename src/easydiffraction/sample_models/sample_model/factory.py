@@ -59,7 +59,6 @@ class SampleModelFactory(FactoryBase):
         cif_path: str,
     ) -> SampleModelBase:
         """Create a model by reading and parsing a CIF file."""
-        # Parse CIF and build model
         doc = cls._read_cif_document_from_path(cif_path)
         block = cls._pick_first_structural_block(doc)
         return cls._create_model_from_block(block)
@@ -70,7 +69,6 @@ class SampleModelFactory(FactoryBase):
         cif_str: str,
     ) -> SampleModelBase:
         """Create a model by parsing a CIF string."""
-        # Parse CIF string and build model
         doc = cls._read_cif_document_from_string(cif_str)
         block = cls._pick_first_structural_block(doc)
         return cls._create_model_from_block(block)
@@ -81,16 +79,19 @@ class SampleModelFactory(FactoryBase):
     # gemmi helpers
     # -------------
 
+    # TODO: Move to a common CIF utility module? io.cif.parse?
     @staticmethod
     def _read_cif_document_from_path(path: str) -> gemmi.cif.Document:
         """Read a CIF document from a file path."""
         return gemmi.cif.read_file(path)
 
+    # TODO: Move to a common CIF utility module? io.cif.parse?
     @staticmethod
     def _read_cif_document_from_string(text: str) -> gemmi.cif.Document:
         """Read a CIF document from a raw text string."""
         return gemmi.cif.read_string(text)
 
+    # TODO: Move to a common CIF utility module? io.cif.parse?
     @staticmethod
     def _has_structural_content(block: gemmi.cif.Block) -> bool:
         """Return True if the CIF block contains structural content."""
@@ -108,6 +109,7 @@ class SampleModelFactory(FactoryBase):
         ]
         return all(block.find_value(tag) for tag in required_cell)
 
+    # TODO: Move to a common CIF utility module? io.cif.parse?
     @classmethod
     def _pick_first_structural_block(
         cls,
@@ -124,6 +126,7 @@ class SampleModelFactory(FactoryBase):
         except Exception:
             return doc[0]
 
+    # TODO: Move to a common CIF utility module? io.cif.parse?
     @classmethod
     def _create_model_from_block(
         cls,
@@ -137,11 +140,13 @@ class SampleModelFactory(FactoryBase):
         cls._set_atom_sites_from_cif_block(model, block)
         return model
 
+    # TODO: Move to a common CIF utility module? io.cif.parse?
     @classmethod
     def _extract_name_from_block(cls, block: gemmi.cif.Block) -> str:
         """Extract a model name from the CIF block name."""
         return block.name or 'model'
 
+    # TODO: Move to a common CIF utility module? io.cif.parse?
     @classmethod
     def _set_space_group_from_cif_block(
         cls,
@@ -151,6 +156,7 @@ class SampleModelFactory(FactoryBase):
         """Populate the model's space group from a CIF block."""
         model.space_group.from_cif(block)
 
+    # TODO: Move to a common CIF utility module? io.cif.parse?
     @classmethod
     def _set_cell_from_cif_block(
         cls,
@@ -160,6 +166,7 @@ class SampleModelFactory(FactoryBase):
         """Populate the model's unit cell from a CIF block."""
         model.cell.from_cif(block)
 
+    # TODO: Move to a common CIF utility module? io.cif.parse?
     @classmethod
     def _set_atom_sites_from_cif_block(
         cls,
@@ -168,3 +175,7 @@ class SampleModelFactory(FactoryBase):
     ) -> None:
         """Populate the model's atom sites from a CIF block."""
         model.atom_sites.from_cif(block)
+
+    # TODO: How to automatically parce and populate all categories?
+    #  for category in model.categories:
+    #      cls._set_category_from_cif_block(category, block)
