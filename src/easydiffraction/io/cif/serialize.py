@@ -3,13 +3,23 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Optional
 from typing import Sequence
 
 import numpy as np
 
+from easydiffraction.core.validation import DataTypes
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import str_to_ufloat
+
+if TYPE_CHECKING:
+    import gemmi
+
+    from easydiffraction.core.category import CategoryCollection
+    from easydiffraction.core.category import CategoryItem
+    from easydiffraction.core.parameters import GenericDescriptorBase
 
 
 def format_value(value) -> str:
@@ -17,6 +27,11 @@ def format_value(value) -> str:
     if isinstance(value, str) and (' ' in value or '\t' in value):
         return f'"{value}"'
     return str(value)
+
+
+##################
+# Serialize to CIF
+##################
 
 
 def param_to_cif(param) -> str:
@@ -202,61 +217,70 @@ def summary_to_cif(_summary) -> str:
 
 # TODO: Check the following methods:
 
+######################
+# Deserialize from CIF
+######################
 
-def param_from_cif(self, block: Any, idx: int = 0) -> None:
+
+def param_from_cif(
+    self: GenericDescriptorBase,
+    block: gemmi.cif.Block,
+    idx: int = 0,
+) -> None:
     found_values: list[Any] = []
-    for tag in self.full_cif_names:
-        candidate = list(block.find_values(tag))
-        if candidate:
-            found_values = candidate
+    # Try to find the value(s) from the CIF block iterating over
+    # the possible cif names in order of preference.
+    for tag in self._cif_handler.names:
+        candidates = list(block.find_values(tag))
+        if candidates:
+            found_values = candidates
             break
+    # If no values found, the parameter keeps its default value.
     if not found_values:
-        self.value = self.default_value
         return
+    # If found, pick the one at the given index
     raw = found_values[idx]
-    if self.value_type is float:
+    # If numeric, parse with uncertainty if present
+    if self._value_type == DataTypes.NUMERIC:
         u = str_to_ufloat(raw)
         self.value = u.n
-        if hasattr(self, 'uncertainty'):
+        if not np.isnan(u.s) and hasattr(self, 'uncertainty'):
             self.uncertainty = u.s  # type: ignore[attr-defined]
-    elif self.value_type is str:
+    # If string, strip quotes if present
+    elif self._value_type == DataTypes.STRING:
         if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
             self.value = raw[1:-1]
         else:
             self.value = raw
+    # Other types are not supported
     else:
-        self.value = raw
+        log.debug(f'Unrecognized type: {self._value_type}')
 
 
-def category_item_from_cif(self, block, idx: int = 0) -> None:
+def category_item_from_cif(
+    self: CategoryItem,
+    block: gemmi.cif.Block,
+    idx: int = 0,
+) -> None:
     """Populate each parameter from CIF block at given loop index."""
     for param in self.parameters:
         param.from_cif(block, idx=idx)
 
 
 # TODO: from_cif or add_from_cif as in collections?
-def category_collection_from_cif(self, block):
-    # Derive loop size using category_entry_name first CIF tag alias
-    if self._item_type is None:
-        raise ValueError('Child class is not defined.')
+def category_collection_from_cif(self: CategoryCollection, block: gemmi.cif.Block) -> None:
     # TODO: Find a better way and then remove TODO in the AtomSite
     #  class
-    # Create a temporary instance to access category_entry_name
-    # attribute used as ID column for the items in this collection
+    if self._item_type is None:
+        raise ValueError('Child class is not defined.')
+    # Create a temporary instance to access category_code needed
+    # to find the loop in the CIF block
     child_obj = self._item_type()
-    entry_attr = getattr(child_obj, child_obj._category_entry_attr_name)
-    # Try to find the value(s) from the CIF block iterating over
-    # the possible cif names in order of preference.
-    size = 0
-    for name in entry_attr.full_cif_names:
-        size = len(block.find_values(name))
-        break
-    # If no values found, nothing to do
-    if not size:
-        return
-    # If values found, delegate to child class to parse each
-    # row and add to collection
-    for row_idx in range(size):
+    category_code = child_obj._identity.category_code
+    # Derive row count from category code
+    row_count = len(block.find_mmcif_category(f'_{category_code}.'))
+    # Delegate to child class to parse each row and add to collection
+    for row_idx in range(row_count):
         child_obj = self._item_type()
         child_obj.from_cif(block, idx=row_idx)
         self.add(child_obj)

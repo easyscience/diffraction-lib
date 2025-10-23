@@ -17,6 +17,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import TypeValidator
+from easydiffraction.io.cif.serialize import param_from_cif
 from easydiffraction.io.cif.serialize import param_to_cif
 
 if TYPE_CHECKING:
@@ -154,6 +155,10 @@ class GenericDescriptorBase(GuardedBase):
     def as_cif(self) -> str:
         """Serialize this descriptor to a CIF-formatted string."""
         return param_to_cif(self)
+
+    def from_cif(self, block, idx=0):
+        """Populate this parameter from a CIF block."""
+        param_from_cif(self, block, idx)
 
 
 class GenericStringDescriptor(GenericDescriptorBase):

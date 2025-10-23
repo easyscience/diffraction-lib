@@ -7,7 +7,9 @@ from easydiffraction.core.collection import CollectionBase
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.core.parameters import GenericDescriptorBase
 from easydiffraction.core.validation import checktype
+from easydiffraction.io.cif.serialize import category_collection_from_cif
 from easydiffraction.io.cif.serialize import category_collection_to_cif
+from easydiffraction.io.cif.serialize import category_item_from_cif
 from easydiffraction.io.cif.serialize import category_item_to_cif
 
 
@@ -38,6 +40,10 @@ class CategoryItem(GuardedBase):
         """Return CIF representation of this object."""
         return category_item_to_cif(self)
 
+    def from_cif(self, block, idx=0):
+        """Populate this item from a CIF block."""
+        category_item_from_cif(self, block, idx)
+
 
 class CategoryCollection(CollectionBase):
     """Handles loop-style category containers (e.g. AtomSites).
@@ -67,6 +73,10 @@ class CategoryCollection(CollectionBase):
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
         return category_collection_to_cif(self)
+
+    def from_cif(self, block):
+        """Populate this collection from a CIF block."""
+        category_collection_from_cif(self, block)
 
     @checktype
     def add(self, item) -> None:
