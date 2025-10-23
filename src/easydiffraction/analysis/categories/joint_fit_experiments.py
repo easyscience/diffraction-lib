@@ -65,7 +65,7 @@ class JointFitExperiment(CategoryItem):
         )
 
         self._identity.category_code = 'joint_fit_experiment'
-        self._identity.category_entry_name = lambda: self.id.value
+        self._identity.category_entry_name = lambda: str(self.id.value)
 
     @property
     def id(self):

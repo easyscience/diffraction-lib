@@ -57,10 +57,9 @@ class BackgroundFactory:
         supported = cls._supported_map()
         if background_type not in supported:
             supported_types = list(supported.keys())
-
             raise ValueError(
-                f"Unsupported background type: '{background_type}'.\n"
-                f' Supported background types: {[bt.value for bt in supported_types]}'
+                f"Unsupported background type: '{background_type}'. "
+                f'Supported background types: {[bt.value for bt in supported_types]}'
             )
 
         background_class = supported[background_type]

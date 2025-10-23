@@ -32,6 +32,7 @@
 │   │   ├── 📄 reporting.py
 │   │   │   └── 🏷️ class FitResults
 │   │   └── 📄 tracking.py
+│   │       ├── 🏷️ class _TerminalLiveHandle
 │   │       └── 🏷️ class FitProgressTracker
 │   ├── 📁 minimizers
 │   │   ├── 📄 __init__.py
@@ -93,6 +94,37 @@
 │   ├── 📄 __init__.py
 │   ├── 📄 crystallography.py
 │   └── 📄 space_groups.py
+├── 📁 display
+│   ├── 📁 plotters
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 ascii.py
+│   │   │   └── 🏷️ class AsciiPlotter
+│   │   ├── 📄 base.py
+│   │   │   └── 🏷️ class PlotterBase
+│   │   └── 📄 plotly.py
+│   │       └── 🏷️ class PlotlyPlotter
+│   ├── 📁 tablers
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 base.py
+│   │   │   └── 🏷️ class TableBackendBase
+│   │   ├── 📄 pandas.py
+│   │   │   └── 🏷️ class PandasTableBackend
+│   │   └── 📄 rich.py
+│   │       └── 🏷️ class RichTableBackend
+│   ├── 📄 __init__.py
+│   ├── 📄 base.py
+│   │   ├── 🏷️ class RendererBase
+│   │   └── 🏷️ class RendererFactoryBase
+│   ├── 📄 plotting.py
+│   │   ├── 🏷️ class PlotterEngineEnum
+│   │   ├── 🏷️ class Plotter
+│   │   └── 🏷️ class PlotterFactory
+│   ├── 📄 tables.py
+│   │   ├── 🏷️ class TableEngineEnum
+│   │   ├── 🏷️ class TableRenderer
+│   │   └── 🏷️ class TableRendererFactory
+│   └── 📄 utils.py
+│       └── 🏷️ class JupyterScrollManager
 ├── 📁 experiments
 │   ├── 📁 categories
 │   │   ├── 📁 background
@@ -192,19 +224,6 @@
 │       ├── 📄 handler.py
 │       │   └── 🏷️ class CifHandler
 │       └── 📄 serialize.py
-├── 📁 plotting
-│   ├── 📁 plotters
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 plotter_ascii.py
-│   │   │   └── 🏷️ class AsciiPlotter
-│   │   ├── 📄 plotter_base.py
-│   │   │   └── 🏷️ class PlotterBase
-│   │   └── 📄 plotter_plotly.py
-│   │       └── 🏷️ class PlotlyPlotter
-│   ├── 📄 __init__.py
-│   └── 📄 plotting.py
-│       ├── 🏷️ class Plotter
-│       └── 🏷️ class PlotterFactory
 ├── 📁 project
 │   ├── 📄 __init__.py
 │   ├── 📄 project.py
@@ -236,9 +255,14 @@
 │       └── 🏷️ class Summary
 ├── 📁 utils
 │   ├── 📄 __init__.py
-│   ├── 📄 formatting.py
+│   ├── 📄 environment.py
 │   ├── 📄 logging.py
-│   │   └── 🏷️ class Logger
+│   │   ├── 🏷️ class IconifiedRichHandler
+│   │   ├── 🏷️ class ConsoleManager
+│   │   ├── 🏷️ class LoggerConfig
+│   │   ├── 🏷️ class ExceptionHookManager
+│   │   ├── 🏷️ class Logger
+│   │   └── 🏷️ class ConsolePrinter
 │   └── 📄 utils.py
 ├── 📄 __init__.py
 └── 📄 __main__.py

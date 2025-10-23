@@ -5,15 +5,15 @@ import numpy as np
 
 
 def test_module_import():
-    import easydiffraction.plotting.plotters.plotter_ascii as MUT
+    import easydiffraction.display.plotters.ascii as MUT
 
-    expected_module_name = 'easydiffraction.plotting.plotters.plotter_ascii'
+    expected_module_name = 'easydiffraction.display.plotters.ascii'
     actual_module_name = MUT.__name__
     assert expected_module_name == actual_module_name
 
 
 def test_ascii_plotter_plot_minimal(capsys):
-    from easydiffraction.plotting.plotters.plotter_ascii import AsciiPlotter
+    from easydiffraction.display.plotters.ascii import AsciiPlotter
 
     x = np.array([0.0, 1.0, 2.0])
     y = np.array([1.0, 2.0, 3.0])

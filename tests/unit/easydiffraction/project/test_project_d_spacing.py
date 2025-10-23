@@ -97,6 +97,6 @@ def test_update_pattern_d_spacing_unsupported_prints(monkeypatch, capsys):
     # Act
     p.update_pattern_d_spacing('e1')
 
-    # Assert warning printed
+    # Assert error is reported via console/logging in the new API
     out = capsys.readouterr().out
     assert 'Unsupported beam mode' in out

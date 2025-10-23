@@ -13,8 +13,8 @@ from easydiffraction.experiments.categories.peak.factory import PeakFactory
 from easydiffraction.experiments.categories.peak.factory import PeakProfileTypeEnum
 from easydiffraction.experiments.datastore.factory import DatastoreFactory
 from easydiffraction.io.cif.serialize import experiment_to_cif
-from easydiffraction.utils.formatting import paragraph
-from easydiffraction.utils.formatting import warning
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
 
@@ -81,8 +81,9 @@ class ExperimentBase(DatablockItem):
         experiment_cif = super().as_cif
         datastore_cif = self.datastore.as_truncated_cif
         cif_text: str = f'{experiment_cif}\n\n{datastore_cif}'
-        paragraph_title: str = paragraph(f"Experiment 🔬 '{self.name}' as cif")
-        render_cif(cif_text, paragraph_title)
+        paragraph_title: str = f"Experiment 🔬 '{self.name}' as cif"
+        console.paragraph(paragraph_title)
+        render_cif(cif_text)
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
@@ -168,7 +169,7 @@ class PdExperimentBase(ExperimentBase):
             try:
                 new_type = PeakProfileTypeEnum(new_type)
             except ValueError:
-                print(warning(f"Unknown peak profile type '{new_type}'"))
+                log.warning(f"Unknown peak profile type '{new_type}'")
                 return
 
         supported_types = list(
@@ -178,9 +179,11 @@ class PdExperimentBase(ExperimentBase):
         )
 
         if new_type not in supported_types:
-            print(warning(f"Unsupported peak profile '{new_type.value}'"))
-            print(f'Supported peak profiles: {supported_types}')
-            print("For more information, use 'show_supported_peak_profile_types()'")
+            log.warning(
+                f"Unsupported peak profile '{new_type.value}', "
+                f'Supported peak profiles: {supported_types}',
+                "For more information, use 'show_supported_peak_profile_types()'",
+            )
             return
 
         self._peak = PeakFactory.create(
@@ -189,8 +192,8 @@ class PdExperimentBase(ExperimentBase):
             profile_type=new_type,
         )
         self._peak_profile_type = new_type
-        print(paragraph(f"Peak profile type for experiment '{self.name}' changed to"))
-        print(new_type.value)
+        console.paragraph(f"Peak profile type for experiment '{self.name}' changed to")
+        console.print(new_type.value)
 
     def show_supported_peak_profile_types(self):
         """Print available peak profile types for this experiment."""
@@ -204,7 +207,7 @@ class PdExperimentBase(ExperimentBase):
         for profile_type in PeakFactory._supported[scattering_type][beam_mode]:
             columns_data.append([profile_type.value, profile_type.description()])
 
-        print(paragraph('Supported peak profile types'))
+        console.paragraph('Supported peak profile types')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -213,5 +216,5 @@ class PdExperimentBase(ExperimentBase):
 
     def show_current_peak_profile_type(self):
         """Print the currently selected peak profile type."""
-        print(paragraph('Current peak profile type'))
-        print(self.peak_profile_type)
+        console.paragraph('Current peak profile type')
+        console.print(self.peak_profile_type)

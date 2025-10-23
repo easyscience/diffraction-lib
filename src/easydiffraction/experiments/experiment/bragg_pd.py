@@ -11,8 +11,8 @@ from easydiffraction.experiments.categories.background.enums import BackgroundTy
 from easydiffraction.experiments.categories.background.factory import BackgroundFactory
 from easydiffraction.experiments.experiment.base import PdExperimentBase
 from easydiffraction.experiments.experiment.instrument_mixin import InstrumentMixin
-from easydiffraction.utils.formatting import paragraph
-from easydiffraction.utils.formatting import warning
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
@@ -88,8 +88,8 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
         self.datastore.meas_su = sy
         self.datastore.excluded = np.full(x.shape, fill_value=False, dtype=bool)
 
-        print(paragraph('Data loaded successfully'))
-        print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
+        console.paragraph('Data loaded successfully')
+        console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
 
     @property
     def background_type(self):
@@ -105,14 +105,16 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
         """
         if new_type not in BackgroundFactory._supported_map():
             supported_types = list(BackgroundFactory._supported_map().keys())
-            print(warning(f"Unknown background type '{new_type}'"))
-            print(f'Supported background types: {supported_types}')
-            print("For more information, use 'show_supported_background_types()'")
+            log.warning(
+                f"Unknown background type '{new_type}'. "
+                f'Supported background types: {[bt.value for bt in supported_types]}. '
+                f"For more information, use 'show_supported_background_types()'"
+            )
             return
         self.background = BackgroundFactory.create(new_type)
         self._background_type = new_type
-        print(paragraph(f"Background type for experiment '{self.name}' changed to"))
-        print(new_type)
+        console.paragraph(f"Background type for experiment '{self.name}' changed to")
+        console.print(new_type)
 
     def show_supported_background_types(self):
         """Print a table of supported background types."""
@@ -122,7 +124,7 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
         for bt in BackgroundFactory._supported_map():
             columns_data.append([bt.value, bt.description()])
 
-        print(paragraph('Supported background types'))
+        console.paragraph('Supported background types')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -131,5 +133,5 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
 
     def show_current_background_type(self):
         """Print the currently used background type."""
-        print(paragraph('Current background type'))
-        print(self.background_type)
+        console.paragraph('Current background type')
+        console.print(self.background_type)

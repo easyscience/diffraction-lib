@@ -16,8 +16,8 @@ def test_tracker_terminal_flow_prints_and_updates_best(monkeypatch, capsys):
     import easydiffraction.analysis.fit_helpers.tracking as tracking_mod
     from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
 
-    # Force terminal branch (not notebook)
-    monkeypatch.setattr(tracking_mod, 'is_notebook', lambda: False)
+    # Force terminal branch (not notebook): tracking imports in_jupyter directly
+    monkeypatch.setattr(tracking_mod, 'in_jupyter', lambda: False)
 
     tracker = FitProgressTracker()
     tracker.start_tracking('dummy')

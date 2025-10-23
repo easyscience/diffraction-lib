@@ -133,34 +133,28 @@ def project_info_to_cif(info) -> str:
     """Render ProjectInfo to CIF text (id, title, description,
     dates).
     """
-    from textwrap import wrap
+    name = f'{info.name}'
 
-    wrapped_title = wrap(info.title, width=46)
-    wrapped_description = wrap(info.description, width=46)
+    title = f'{info.title}'
+    if ' ' in title:
+        title = f"'{title}'"
 
-    title_str = f"_project.title            '{wrapped_title[0]}'" if wrapped_title else ''
-    for line in wrapped_title[1:]:
-        title_str += f"\n{' ' * 27}'{line}'"
-
-    if wrapped_description:
-        base = '_project.description      '
-        indent = ' ' * len(base)
-        desc_str = f"{base}'{wrapped_description[0]}"
-        for line in wrapped_description[1:]:
-            desc_str += f'\n{indent}{line}'
-        desc_str += "'"
+    if len(info.description) > 60:
+        description = f'\n;\n{info.description}\n;'
     else:
-        desc_str = "_project.description      ''"
+        description = f'{info.description}'
+        if ' ' in description:
+            description = f"'{description}'"
 
-    created = info._created.strftime('%d %b %Y %H:%M:%S')
-    modified = info._last_modified.strftime('%d %b %Y %H:%M:%S')
+    created = f"'{info._created.strftime('%d %b %Y %H:%M:%S')}'"
+    last_modified = f"'{info._last_modified.strftime('%d %b %Y %H:%M:%S')}'"
 
     return (
-        f'_project.id               {info.name}\n'
-        f'{title_str}\n'
-        f'{desc_str}\n'
-        f"_project.created          '{created}'\n"
-        f"_project.last_modified    '{modified}'\n"
+        f'_project.id               {name}\n'
+        f'_project.title            {title}\n'
+        f'_project.description      {description}\n'
+        f'_project.created          {created}\n'
+        f'_project.last_modified    {last_modified}'
     )
 
 

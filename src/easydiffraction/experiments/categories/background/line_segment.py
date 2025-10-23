@@ -20,8 +20,8 @@ from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.experiments.categories.background.base import BackgroundBase
 from easydiffraction.io.cif.handler import CifHandler
-from easydiffraction.utils.formatting import paragraph
-from easydiffraction.utils.formatting import warning
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
 
 
@@ -89,7 +89,7 @@ class LineSegmentBackground(BackgroundBase):
     def calculate(self, x_data):
         """Interpolate background points over x_data."""
         if not self:
-            print(warning('No background points found. Setting background to zero.'))
+            log.warning('No background points found. Setting background to zero.')
             return np.zeros_like(x_data)
 
         background_x = np.array([point.x.value for point in self.values()])
@@ -110,7 +110,7 @@ class LineSegmentBackground(BackgroundBase):
         columns_alignment = ['left', 'left']
         columns_data: List[List[float]] = [[p.x.value, p.y.value] for p in self._items]
 
-        print(paragraph('Line-segment background points'))
+        console.paragraph('Line-segment background points')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,

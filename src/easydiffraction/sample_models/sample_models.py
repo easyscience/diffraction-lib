@@ -6,7 +6,7 @@ from typeguard import typechecked
 from easydiffraction.core.datablock import DatablockCollection
 from easydiffraction.sample_models.sample_model.base import SampleModelBase
 from easydiffraction.sample_models.sample_model.factory import SampleModelFactory
-from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.logging import console
 
 
 class SampleModels(DatablockCollection):
@@ -65,8 +65,8 @@ class SampleModels(DatablockCollection):
 
     def show_names(self) -> None:
         """List all model names in the collection."""
-        print(paragraph('Defined sample models' + ' 🧩'))
-        print(self.names)
+        console.paragraph('Defined sample models' + ' 🧩')
+        console.print(self.names)
 
     def show_params(self) -> None:
         """Show parameters of all sample models in the collection."""

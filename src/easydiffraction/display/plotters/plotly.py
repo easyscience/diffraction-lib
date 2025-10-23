@@ -1,5 +1,11 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Plotly plotting backend.
+
+Provides an interactive plotting implementation using Plotly. In
+notebooks, figures are displayed inline; in other environments a browser
+renderer may be used depending on configuration.
+"""
 
 import darkdetect
 import plotly.graph_objects as go
@@ -12,9 +18,9 @@ except ImportError:
     display = None
     HTML = None
 
-from easydiffraction.plotting.plotters.plotter_base import SERIES_CONFIG
-from easydiffraction.plotting.plotters.plotter_base import PlotterBase
-from easydiffraction.utils.utils import is_pycharm
+from easydiffraction.display.plotters.base import SERIES_CONFIG
+from easydiffraction.display.plotters.base import PlotterBase
+from easydiffraction.utils.environment import in_pycharm
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',
@@ -27,10 +33,21 @@ class PlotlyPlotter(PlotterBase):
     """Interactive plotter using Plotly for notebooks and browsers."""
 
     pio.templates.default = 'plotly_dark' if darkdetect.isDark() else 'plotly_white'
-    if is_pycharm():
+    if in_pycharm():
         pio.renderers.default = 'browser'
 
     def _get_trace(self, x, y, label):
+        """Create a Plotly trace for a single data series.
+
+        Args:
+            x: 1D array-like of x-axis values.
+            y: 1D array-like of y-axis values.
+            label: Series identifier (``'meas'``, ``'calc'``, or
+                ``'resid'``).
+
+        Returns:
+            A configured :class:`plotly.graph_objects.Scatter` trace.
+        """
         mode = SERIES_CONFIG[label]['mode']
         name = SERIES_CONFIG[label]['name']
         color = DEFAULT_COLORS[label]
@@ -126,7 +143,7 @@ class PlotlyPlotter(PlotterBase):
         fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
 
         # Show the figure
-        if is_pycharm() or display is None or HTML is None:
+        if in_pycharm() or display is None or HTML is None:
             fig.show(config=config)
         else:
             html_fig = pio.to_html(

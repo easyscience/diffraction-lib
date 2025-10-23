@@ -46,6 +46,22 @@
 │   ├── 📄 __init__.py
 │   ├── 📄 crystallography.py
 │   └── 📄 space_groups.py
+├── 📁 display
+│   ├── 📁 plotters
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 ascii.py
+│   │   ├── 📄 base.py
+│   │   └── 📄 plotly.py
+│   ├── 📁 tablers
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 base.py
+│   │   ├── 📄 pandas.py
+│   │   └── 📄 rich.py
+│   ├── 📄 __init__.py
+│   ├── 📄 base.py
+│   ├── 📄 plotting.py
+│   ├── 📄 tables.py
+│   └── 📄 utils.py
 ├── 📁 experiments
 │   ├── 📁 categories
 │   │   ├── 📁 background
@@ -96,14 +112,6 @@
 │   └── 📁 cif
 │       ├── 📄 handler.py
 │       └── 📄 serialize.py
-├── 📁 plotting
-│   ├── 📁 plotters
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 plotter_ascii.py
-│   │   ├── 📄 plotter_base.py
-│   │   └── 📄 plotter_plotly.py
-│   ├── 📄 __init__.py
-│   └── 📄 plotting.py
 ├── 📁 project
 │   ├── 📄 __init__.py
 │   ├── 📄 project.py
@@ -125,7 +133,7 @@
 │   └── 📄 summary.py
 ├── 📁 utils
 │   ├── 📄 __init__.py
-│   ├── 📄 formatting.py
+│   ├── 📄 environment.py
 │   ├── 📄 logging.py
 │   └── 📄 utils.py
 ├── 📄 __init__.py

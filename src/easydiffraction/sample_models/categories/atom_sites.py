@@ -187,7 +187,7 @@ class AtomSite(CategoryItem):
         )
 
         self._identity.category_code = 'atom_site'
-        self._identity.category_entry_name = lambda: self.label.value
+        self._identity.category_entry_name = lambda: str(self.label.value)
 
     @property
     def _type_symbol_allowed_values(self):

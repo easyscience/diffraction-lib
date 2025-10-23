@@ -4,8 +4,7 @@
 from textwrap import wrap
 from typing import List
 
-from easydiffraction.utils.formatting import paragraph
-from easydiffraction.utils.formatting import section
+from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
 
 
@@ -36,40 +35,49 @@ class Summary:
 
     def show_project_info(self) -> None:
         """Print the project title and description."""
-        print(section('Project info'))
+        console.section('Project info')
 
-        print(paragraph('Title'))
-        print(self.project.info.title)
+        console.paragraph('Title')
+        console.print(self.project.info.title)
 
         if self.project.info.description:
-            print(paragraph('Description'))
-            print('\n'.join(wrap(self.project.info.description, width=60)))
+            console.paragraph('Description')
+            # log.print('\n'.join(wrap(self.project.info.description,
+            # width=80)))
+            # TODO: Fix the following lines
+            # Ensure description wraps with explicit newlines for tests
+            desc_lines = wrap(self.project.info.description, width=60)
+            # Use plain print to avoid Left padding that would break
+            # newline adjacency checks
+            print('\n'.join(desc_lines))
 
     def show_crystallographic_data(self) -> None:
         """Print crystallographic data including phase datablocks, space
         groups, cell parameters, and atom sites.
         """
-        print(section('Crystallographic data'))
+        console.section('Crystallographic data')
 
         for model in self.project.sample_models.values():
-            print(paragraph('Phase datablock'))
-            print(f'🧩 {model.name}')
+            console.paragraph('Phase datablock')
+            console.print(f'🧩 {model.name}')
 
-            print(paragraph('Space group'))
-            print(model.space_group.name_h_m.value)
+            console.paragraph('Space group')
+            console.print(model.space_group.name_h_m.value)
 
-            print(paragraph('Cell parameters'))
+            console.paragraph('Cell parameters')
+            columns_headers = ['Parameter', 'Value']
             columns_alignment: List[str] = ['left', 'right']
             cell_data = [
                 [p.name.replace('length_', '').replace('angle_', ''), f'{p.value:.5f}']
                 for p in model.cell.parameters
             ]
             render_table(
+                columns_headers=columns_headers,
                 columns_alignment=columns_alignment,
                 columns_data=cell_data,
             )
 
-            print(paragraph('Atom sites'))
+            console.paragraph('Atom sites')
             columns_headers = [
                 'label',
                 'type',
@@ -109,14 +117,14 @@ class Summary:
         """Print experimental data including experiment datablocks,
         types, instrument settings, and peak profile information.
         """
-        print(section('Experiments'))
+        console.section('Experiments')
 
         for expt in self.project.experiments.values():
-            print(paragraph('Experiment datablock'))
-            print(f'🔬 {expt.name}')
+            console.paragraph('Experiment datablock')
+            console.print(f'🔬 {expt.name}')
 
-            print(paragraph('Experiment type'))
-            print(
+            console.paragraph('Experiment type')
+            console.print(
                 f'{expt.type.sample_form.value}, '
                 f'{expt.type.radiation_probe.value}, '
                 f'{expt.type.beam_mode.value}'
@@ -124,19 +132,20 @@ class Summary:
 
             if 'instrument' in expt._public_attrs():
                 if 'setup_wavelength' in expt.instrument._public_attrs():
-                    print(paragraph('Wavelength'))
-                    print(f'{expt.instrument.setup_wavelength.value:.5f}')
+                    console.paragraph('Wavelength')
+                    console.print(f'{expt.instrument.setup_wavelength.value:.5f}')
                 if 'calib_twotheta_offset' in expt.instrument._public_attrs():
-                    print(paragraph('2θ offset'))
-                    print(f'{expt.instrument.calib_twotheta_offset.value:.5f}')
+                    console.paragraph('2θ offset')
+                    console.print(f'{expt.instrument.calib_twotheta_offset.value:.5f}')
 
             if 'peak_profile_type' in expt._public_attrs():
-                print(paragraph('Profile type'))
-                print(expt.peak_profile_type)
+                console.paragraph('Profile type')
+                console.print(expt.peak_profile_type)
 
             if 'peak' in expt._public_attrs():
                 if 'broad_gauss_u' in expt.peak._public_attrs():
-                    print(paragraph('Peak broadening (Gaussian)'))
+                    console.paragraph('Peak broadening (Gaussian)')
+                    columns_headers = ['Parameter', 'Value']
                     columns_alignment = ['left', 'right']
                     columns_data = [
                         ['U', f'{expt.peak.broad_gauss_u.value:.5f}'],
@@ -144,17 +153,22 @@ class Summary:
                         ['W', f'{expt.peak.broad_gauss_w.value:.5f}'],
                     ]
                     render_table(
+                        columns_headers=columns_headers,
                         columns_alignment=columns_alignment,
                         columns_data=columns_data,
                     )
                 if 'broad_lorentz_x' in expt.peak._public_attrs():
-                    print(paragraph('Peak broadening (Lorentzian)'))
+                    console.paragraph('Peak broadening (Lorentzian)')
+                    # TODO: Some headers capitalize, some don't -
+                    #  be consistent
+                    columns_headers = ['Parameter', 'Value']
                     columns_alignment = ['left', 'right']
                     columns_data = [
                         ['X', f'{expt.peak.broad_lorentz_x.value:.5f}'],
                         ['Y', f'{expt.peak.broad_lorentz_y.value:.5f}'],
                     ]
                     render_table(
+                        columns_headers=columns_headers,
                         columns_alignment=columns_alignment,
                         columns_data=columns_data,
                     )
@@ -163,15 +177,16 @@ class Summary:
         """Print fitting details including calculation and minimization
         engines, and fit quality metrics.
         """
-        print(section('Fitting'))
+        console.section('Fitting')
 
-        print(paragraph('Calculation engine'))
-        print(self.project.analysis.current_calculator)
+        console.paragraph('Calculation engine')
+        console.print(self.project.analysis.current_calculator)
 
-        print(paragraph('Minimization engine'))
-        print(self.project.analysis.current_minimizer)
+        console.paragraph('Minimization engine')
+        console.print(self.project.analysis.current_minimizer)
 
-        print(paragraph('Fit quality'))
+        console.paragraph('Fit quality')
+        columns_headers = ['metric', 'value']
         columns_alignment = ['left', 'right']
         fit_metrics = [
             [
@@ -180,6 +195,7 @@ class Summary:
             ]
         ]
         render_table(
+            columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=fit_metrics,
         )

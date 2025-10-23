@@ -15,10 +15,12 @@ from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import Parameter
+from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.singletons import ConstraintsHandler
+from easydiffraction.display.tables import TableRenderer
 from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.utils.formatting import paragraph
-from easydiffraction.utils.formatting import warning
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
 
@@ -73,35 +75,37 @@ class Analysis:
         Returns:
             A pandas DataFrame containing parameter information.
         """
-        rows = []
+        records = []
         for param in params:
-            common_attrs = {}
+            record = {}
+            # TODO: Merge into one. Add field if attr exists
+            # TODO: f'{param.value!r}' for StringDescriptor?
+            if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
+                record = {
+                    ('fittable', 'left'): False,
+                    ('datablock', 'left'): param._identity.datablock_entry_name,
+                    ('category', 'left'): param._identity.category_code,
+                    ('entry', 'left'): param._identity.category_entry_name or '',
+                    ('parameter', 'left'): param.name,
+                    ('value', 'right'): param.value,
+                }
             if isinstance(param, (NumericDescriptor, Parameter)):
-                common_attrs = {
-                    'datablock': param._identity.datablock_entry_name,
-                    'category': param._identity.category_code,
-                    'entry': param._identity.category_entry_name,
-                    'parameter': param.name,
-                    'value': param.value,
-                    'units': param.units,
-                    'fittable': False,
+                record = record | {
+                    ('units', 'left'): param.units,
                 }
-            param_attrs = {}
             if isinstance(param, Parameter):
-                param_attrs = {
-                    'fittable': True,
-                    'free': param.free,
-                    'min': param.fit_min,
-                    'max': param.fit_max,
-                    'uncertainty': f'{param.uncertainty:.4f}' if param.uncertainty else '',
-                    'value': f'{param.value:.4f}',
-                    'units': param.units,
+                record = record | {
+                    ('fittable', 'left'): True,
+                    ('free', 'left'): param.free,
+                    ('min', 'right'): param.fit_min,
+                    ('max', 'right'): param.fit_max,
+                    ('uncertainty', 'right'): param.uncertainty or '',
                 }
-            row = common_attrs | param_attrs
-            rows.append(row)
+            records.append(record)
 
-        dataframe = pd.DataFrame(rows)
-        return dataframe
+        df = pd.DataFrame.from_records(records)
+        df.columns = pd.MultiIndex.from_tuples(df.columns)
+        return df
 
     def show_all_params(self) -> None:
         """Print a table with all parameters for sample models and
@@ -111,10 +115,12 @@ class Analysis:
         experiments_params = self.project.experiments.parameters
 
         if not sample_models_params and not experiments_params:
-            print(warning('No parameters found.'))
+            log.warning('No parameters found.')
             return
 
-        columns_headers = [
+        tabler = TableRenderer.get()
+
+        filtered_headers = [
             'datablock',
             'category',
             'entry',
@@ -122,36 +128,16 @@ class Analysis:
             'value',
             'fittable',
         ]
-        columns_alignment = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'right',
-            'left',
-        ]
 
-        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
-        sample_models_dataframe = sample_models_dataframe[columns_headers]
+        console.paragraph('All parameters for all sample models (🧩 data blocks)')
+        df = self._get_params_as_dataframe(sample_models_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
-        print(paragraph('All parameters for all sample models (🧩 data blocks)'))
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=sample_models_dataframe,
-            show_index=True,
-        )
-
-        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
-        experiments_dataframe = experiments_dataframe[columns_headers]
-
-        print(paragraph('All parameters for all experiments (🔬 data blocks)'))
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=experiments_dataframe,
-            show_index=True,
-        )
+        console.paragraph('All parameters for all experiments (🔬 data blocks)')
+        df = self._get_params_as_dataframe(experiments_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
     def show_fittable_params(self) -> None:
         """Print a table with parameters that can be included in
@@ -161,10 +147,12 @@ class Analysis:
         experiments_params = self.project.experiments.fittable_parameters
 
         if not sample_models_params and not experiments_params:
-            print(warning('No fittable parameters found.'))
+            log.warning('No fittable parameters found.')
             return
 
-        columns_headers = [
+        tabler = TableRenderer.get()
+
+        filtered_headers = [
             'datablock',
             'category',
             'entry',
@@ -174,38 +162,16 @@ class Analysis:
             'units',
             'free',
         ]
-        columns_alignment = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'right',
-            'right',
-            'left',
-            'left',
-        ]
 
-        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
-        sample_models_dataframe = sample_models_dataframe[columns_headers]
+        console.paragraph('Fittable parameters for all sample models (🧩 data blocks)')
+        df = self._get_params_as_dataframe(sample_models_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
-        print(paragraph('Fittable parameters for all sample models (🧩 data blocks)'))
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=sample_models_dataframe,
-            show_index=True,
-        )
-
-        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
-        experiments_dataframe = experiments_dataframe[columns_headers]
-
-        print(paragraph('Fittable parameters for all experiments (🔬 data blocks)'))
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=experiments_dataframe,
-            show_index=True,
-        )
+        console.paragraph('Fittable parameters for all experiments (🔬 data blocks)')
+        df = self._get_params_as_dataframe(experiments_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
     def show_free_params(self) -> None:
         """Print a table with only currently-free (varying)
@@ -216,10 +182,12 @@ class Analysis:
         free_params = sample_models_params + experiments_params
 
         if not free_params:
-            print(warning('No free parameters found.'))
+            log.warning('No free parameters found.')
             return
 
-        columns_headers = [
+        tabler = TableRenderer.get()
+
+        filtered_headers = [
             'datablock',
             'category',
             'entry',
@@ -230,41 +198,20 @@ class Analysis:
             'max',
             'units',
         ]
-        columns_alignment = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'right',
-            'right',
-            'right',
-            'right',
-            'left',
-        ]
 
-        dataframe = self._get_params_as_dataframe(free_params)
-        dataframe = dataframe[columns_headers]
-
-        print(
-            paragraph(
-                'Free parameters for both sample models (🧩 data blocks) '
-                'and experiments (🔬 data blocks)'
-            )
+        console.paragraph(
+            'Free parameters for both sample models (🧩 data blocks) '
+            'and experiments (🔬 data blocks)'
         )
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=dataframe,
-            show_index=True,
-        )
+        df = self._get_params_as_dataframe(free_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
     def how_to_access_parameters(self) -> None:
-        """Show Python access paths and CIF unique IDs for all
-        parameters.
+        """Show Python access paths for all parameters.
 
-        The output explains how to reference specific parameters in code
-        and which unique identifiers are used when creating CIF-based
-        constraints.
+        The output explains how to reference specific parameters in
+        code.
         """
         sample_models_params = self.project.sample_models.parameters
         experiments_params = self.project.experiments.parameters
@@ -274,7 +221,7 @@ class Analysis:
         }
 
         if not all_params:
-            print(warning('No parameters found.'))
+            log.warning('No parameters found.')
             return
 
         columns_headers = [
@@ -283,11 +230,9 @@ class Analysis:
             'entry',
             'parameter',
             'How to Access in Python Code',
-            'Unique Identifier for CIF Constraints',
         ]
 
         columns_alignment = [
-            'left',
             'left',
             'left',
             'left',
@@ -297,44 +242,98 @@ class Analysis:
 
         columns_data = []
         project_varname = self.project._varname
-        for datablock_type, params in all_params.items():
+        for datablock_code, params in all_params.items():
             for param in params:
-                if isinstance(param, (NumericDescriptor, Parameter)):
+                if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
                     datablock_entry_name = param._identity.datablock_entry_name
                     category_code = param._identity.category_code
-                    category_entry_name = param._identity.category_entry_name
+                    category_entry_name = param._identity.category_entry_name or ''
                     param_key = param.name
                     code_variable = (
-                        f'{project_varname}.{datablock_type}'
+                        f'{project_varname}.{datablock_code}'
                         f"['{datablock_entry_name}'].{category_code}"
                     )
                     if category_entry_name:
                         code_variable += f"['{category_entry_name}']"
                     code_variable += f'.{param_key}'
-                    cif_uid = param._cif_handler.uid
                     columns_data.append([
                         datablock_entry_name,
                         category_code,
                         category_entry_name,
                         param_key,
                         code_variable,
-                        cif_uid,
                     ])
 
-        print(paragraph('How to access parameters'))
+        console.paragraph('How to access parameters')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=columns_data,
-            show_index=True,
+        )
+
+    def show_parameter_cif_uids(self) -> None:
+        """Show CIF unique IDs for all parameters.
+
+        The output explains which unique identifiers are used when
+        creating CIF-based constraints.
+        """
+        sample_models_params = self.project.sample_models.parameters
+        experiments_params = self.project.experiments.parameters
+        all_params = {
+            'sample_models': sample_models_params,
+            'experiments': experiments_params,
+        }
+
+        if not all_params:
+            log.warning('No parameters found.')
+            return
+
+        columns_headers = [
+            'datablock',
+            'category',
+            'entry',
+            'parameter',
+            'Unique Identifier for CIF Constraints',
+        ]
+
+        columns_alignment = [
+            'left',
+            'left',
+            'left',
+            'left',
+            'left',
+        ]
+
+        columns_data = []
+        for _, params in all_params.items():
+            for param in params:
+                if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
+                    datablock_entry_name = param._identity.datablock_entry_name
+                    category_code = param._identity.category_code
+                    category_entry_name = param._identity.category_entry_name or ''
+                    param_key = param.name
+                    cif_uid = param._cif_handler.uid
+                    columns_data.append([
+                        datablock_entry_name,
+                        category_code,
+                        category_entry_name,
+                        param_key,
+                        cif_uid,
+                    ])
+
+        console.paragraph('Show parameter CIF unique identifiers')
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
         )
 
     def show_current_calculator(self) -> None:
         """Print the name of the currently selected calculator
         engine.
         """
-        print(paragraph('Current calculator'))
-        print(self.current_calculator)
+        console.paragraph('Current calculator')
+        console.print(self.current_calculator)
 
     @staticmethod
     def show_supported_calculators() -> None:
@@ -360,13 +359,13 @@ class Analysis:
             return
         self.calculator = calculator
         self._calculator_key = calculator_name
-        print(paragraph('Current calculator changed to'))
-        print(self.current_calculator)
+        console.paragraph('Current calculator changed to')
+        console.print(self.current_calculator)
 
     def show_current_minimizer(self) -> None:
         """Print the name of the currently selected minimizer."""
-        print(paragraph('Current minimizer'))
-        print(self.current_minimizer)
+        console.paragraph('Current minimizer')
+        console.print(self.current_minimizer)
 
     @staticmethod
     def show_available_minimizers() -> None:
@@ -389,8 +388,8 @@ class Analysis:
                 'lmfit (leastsq)'.
         """
         self.fitter = Fitter(selection)
-        print(paragraph('Current minimizer changed to'))
-        print(self.current_minimizer)
+        console.paragraph('Current minimizer changed to')
+        console.print(self.current_minimizer)
 
     @property
     def fit_mode(self) -> str:
@@ -419,8 +418,8 @@ class Analysis:
             self.joint_fit_experiments = JointFitExperiments()
             for id in self.project.experiments.names:
                 self.joint_fit_experiments.add_from_args(id=id, weight=0.5)
-        print(paragraph('Current fit mode changed to'))
-        print(self._fit_mode)
+        console.paragraph('Current fit mode changed to')
+        console.print(self._fit_mode)
 
     def show_available_fit_modes(self) -> None:
         """Print all supported fitting strategies and their
@@ -446,7 +445,7 @@ class Analysis:
             description = item['Description']
             columns_data.append([strategy, description])
 
-        print(paragraph('Available fit modes'))
+        console.paragraph('Available fit modes')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -455,8 +454,8 @@ class Analysis:
 
     def show_current_fit_mode(self) -> None:
         """Print the currently active fitting strategy."""
-        print(paragraph('Current fit mode'))
-        print(self.fit_mode)
+        console.paragraph('Current fit mode')
+        console.print(self.fit_mode)
 
     def calculate_pattern(self, expt_name: str) -> None:
         """Calculate and store the diffraction pattern for an
@@ -476,7 +475,7 @@ class Analysis:
         constraints_dict = dict(self.constraints)
 
         if not self.constraints._items:
-            print(warning('No constraints defined.'))
+            log.warning('No constraints defined.')
             return
 
         rows = []
@@ -492,7 +491,7 @@ class Analysis:
         alignments = ['left', 'left', 'left']
         rows = [[row[header] for header in headers] for row in rows]
 
-        print(paragraph('User defined constraints'))
+        console.paragraph('User defined constraints')
         render_table(
             columns_headers=headers,
             columns_alignment=alignments,
@@ -504,7 +503,7 @@ class Analysis:
         project.
         """
         if not self.constraints._items:
-            print(warning('No constraints defined.'))
+            log.warning('No constraints defined.')
             return
 
         self.constraints_handler.set_aliases(self.aliases)
@@ -522,27 +521,23 @@ class Analysis:
         """
         sample_models = self.project.sample_models
         if not sample_models:
-            print('No sample models found in the project. Cannot run fit.')
+            log.warning('No sample models found in the project. Cannot run fit.')
             return
 
         experiments = self.project.experiments
         if not experiments:
-            print('No experiments found in the project. Cannot run fit.')
+            log.warning('No experiments found in the project. Cannot run fit.')
             return
 
         calculator = self.calculator
         if not calculator:
-            print('No calculator is set. Cannot run fit.')
+            log.warning('No calculator is set. Cannot run fit.')
             return
 
         # Run the fitting process
-        experiment_ids = experiments.names
-
         if self.fit_mode == 'joint':
-            print(
-                paragraph(
-                    f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"
-                )
+            console.paragraph(
+                f"Using all experiments 🔬 {experiments.names} for '{self.fit_mode}' fitting"
             )
             self.fitter.fit(
                 sample_models,
@@ -552,8 +547,8 @@ class Analysis:
             )
         elif self.fit_mode == 'single':
             for expt_name in experiments.names:
-                print(
-                    paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting")
+                console.paragraph(
+                    f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"
                 )
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name
@@ -580,5 +575,6 @@ class Analysis:
         view.
         """
         cif_text: str = self.as_cif()
-        paragraph_title: str = paragraph('Analysis 🧮 info as cif')
-        render_cif(cif_text, paragraph_title)
+        paragraph_title: str = 'Analysis 🧮 info as cif'
+        console.paragraph(paragraph_title)
+        render_cif(cif_text)

@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Abstract base and shared constants for plotting backends."""
 
 from abc import ABC
 from abc import abstractmethod
@@ -8,9 +9,7 @@ import numpy as np
 
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
-from easydiffraction.utils.utils import is_notebook
 
-DEFAULT_ENGINE = 'plotly' if is_notebook() else 'asciichartpy'
 DEFAULT_HEIGHT = 9
 DEFAULT_MIN = -np.inf
 DEFAULT_MAX = np.inf
@@ -57,9 +56,8 @@ SERIES_CONFIG = dict(
 class PlotterBase(ABC):
     """Abstract base for plotting backends.
 
-    Concrete implementations should accept x values, multiple y-series
-    and a small set of labeling arguments and render a plot to the
-    chosen medium.
+    Implementations accept x values, multiple y-series, optional labels
+    and render a plot to the chosen medium.
     """
 
     @abstractmethod
@@ -75,11 +73,11 @@ class PlotterBase(ABC):
         """Render a plot.
 
         Args:
-            x: 1D array-like of x-axis values.
+            x: 1D array of x-axis values.
             y_series: Sequence of y arrays to plot.
-            labels: Series identifiers corresponding to y_series.
-            axes_labels: Pair of strings for the x and y axis titles.
+            labels: Identifiers corresponding to y_series.
+            axes_labels: Pair of strings for the x and y titles.
             title: Figure title.
-            height: Backend-specific height in text or pixels.
+            height: Backend-specific height (text rows or pixels).
         """
         pass

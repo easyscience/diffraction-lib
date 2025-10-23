@@ -2,10 +2,14 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import time
+from contextlib import suppress
+from typing import Any
 from typing import List
 from typing import Optional
 
 import numpy as np
+
+from easydiffraction.utils.logging import console
 
 try:
     from IPython.display import HTML
@@ -16,29 +20,60 @@ except ImportError:
     clear_output = None
 
 from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
-from easydiffraction.utils.utils import is_notebook
+from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.utils import render_table
 
+try:
+    from rich.live import Live
+except Exception:  # pragma: no cover - rich always available in app env
+    Live = None  # type: ignore[assignment]
+
+from easydiffraction.utils.logging import ConsoleManager
+
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
-FIXED_WIDTH = 17
 DEFAULT_HEADERS = ['iteration', 'χ²', 'improvement [%]']
 DEFAULT_ALIGNMENTS = ['center', 'center', 'center']
 
 
-def format_cell(
-    cell: str,
-    width: int = FIXED_WIDTH,
-    align: str = 'center',
-) -> str:
-    cell_str = str(cell)
-    if align == 'center':
-        return cell_str.center(width)
-    elif align == 'left':
-        return cell_str.ljust(width)
-    elif align == 'right':
-        return cell_str.rjust(width)
-    else:
-        return cell_str
+class _TerminalLiveHandle:
+    """Adapter that exposes update()/close() for terminal live updates.
+
+    Wraps a rich.live.Live instance but keeps the tracker decoupled from
+    the underlying UI mechanism.
+    """
+
+    def __init__(self, live) -> None:
+        self._live = live
+
+    def update(self, renderable) -> None:
+        self._live.update(renderable, refresh=True)
+
+    def close(self) -> None:
+        with suppress(Exception):
+            self._live.stop()
+
+
+def _make_display_handle() -> Any | None:
+    """Create and initialize a display/update handle for the
+    environment.
+
+    - In Jupyter, returns an IPython DisplayHandle and creates a
+        placeholder.
+    - In terminal, returns a _TerminalLiveHandle backed by rich Live.
+    - If neither applies, returns None.
+    """
+    if in_jupyter() and display is not None and HTML is not None:
+        h = DisplayHandle()
+        # Create an empty placeholder area to update in place
+        h.display(HTML(''))
+        return h
+    if Live is not None:
+        # Reuse the shared Console to coordinate with logging output
+        # and keep consistent width
+        live = Live(console=ConsoleManager.get(), auto_refresh=True)
+        live.start()
+        return _TerminalLiveHandle(live)
+    return None
 
 
 class FitProgressTracker:
@@ -59,7 +94,8 @@ class FitProgressTracker:
         self._fitting_time: Optional[float] = None
 
         self._df_rows: List[List[str]] = []
-        self._display_handle: Optional[DisplayHandle] = None
+        self._display_handle: Optional[Any] = None
+        self._live: Optional[Any] = None
 
     def reset(self) -> None:
         """Reset internal state before a new optimization run."""
@@ -169,38 +205,20 @@ class FitProgressTracker:
         Args:
             minimizer_name: Name of the minimizer used for the run.
         """
-        print(f"🚀 Starting fit process with '{minimizer_name}'...")
-        print('📈 Goodness-of-fit (reduced χ²) change:')
+        console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
+        console.print('📈 Goodness-of-fit (reduced χ²) change:')
 
-        if is_notebook() and display is not None:
-            # Reset the DataFrame rows
-            self._df_rows = []
+        # Reset rows and create an environment-appropriate handle
+        self._df_rows = []
+        self._display_handle = _make_display_handle()
 
-            # Recreate display handle for updating the table
-            self._display_handle = DisplayHandle()
-
-            # Create placeholder for display
-            self._display_handle.display(HTML(''))
-
-            # Show empty table with headers
-            render_table(
-                columns_data=self._df_rows,
-                columns_alignment=DEFAULT_ALIGNMENTS,
-                columns_headers=DEFAULT_HEADERS,
-                display_handle=self._display_handle,
-            )
-        else:
-            # Top border
-            print('╒' + '╤'.join(['═' * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + '╕')
-
-            # Header row (all centered)
-            header_row = (
-                '│' + '│'.join([format_cell(h, align='center') for h in DEFAULT_HEADERS]) + '│'
-            )
-            print(header_row)
-
-            # Separator
-            print('╞' + '╪'.join(['═' * FIXED_WIDTH for _ in DEFAULT_HEADERS]) + '╡')
+        # Initial empty table; subsequent updates will reuse the handle
+        render_table(
+            columns_headers=DEFAULT_HEADERS,
+            columns_alignment=DEFAULT_ALIGNMENTS,
+            columns_data=self._df_rows,
+            display_handle=self._display_handle,
+        )
 
     def add_tracking_info(self, row: List[str]) -> None:
         """Append a formatted row to the progress display.
@@ -208,29 +226,15 @@ class FitProgressTracker:
         Args:
             row: Columns corresponding to DEFAULT_HEADERS.
         """
-        if is_notebook() and display is not None:
-            # Add row to DataFrame
-            self._df_rows.append(row)
-
-            # Show fully updated table
-            render_table(
-                columns_data=self._df_rows,
-                columns_alignment=DEFAULT_ALIGNMENTS,
-                columns_headers=DEFAULT_HEADERS,
-                display_handle=self._display_handle,
-            )
-        else:
-            # Alignments for each column
-            formatted_row = (
-                '│'
-                + '│'.join([
-                    format_cell(cell, align=DEFAULT_ALIGNMENTS[i]) for i, cell in enumerate(row)
-                ])
-                + '│'
-            )
-
-            # Print the new row
-            print(formatted_row)
+        # Append and update via the active handle (Jupyter or
+        # terminal live)
+        self._df_rows.append(row)
+        render_table(
+            columns_headers=DEFAULT_HEADERS,
+            columns_alignment=DEFAULT_ALIGNMENTS,
+            columns_data=self._df_rows,
+            display_handle=self._display_handle,
+        )
 
     def finish_tracking(self) -> None:
         """Finalize progress display and print best result summary."""
@@ -242,14 +246,14 @@ class FitProgressTracker:
         ]
         self.add_tracking_info(row)
 
-        # Bottom border for terminal only
-        if not is_notebook() or display is None:
-            # Bottom border for terminal only
-            print('╘' + '╧'.join(['═' * FIXED_WIDTH for _ in range(len(row))]) + '╛')
+        # Close terminal live if used
+        if self._display_handle is not None and hasattr(self._display_handle, 'close'):
+            with suppress(Exception):
+                self._display_handle.close()
 
         # Print best result
-        print(
+        console.print(
             f'🏆 Best goodness-of-fit (reduced χ²) is {self._best_chi2:.2f} '
             f'at iteration {self._best_iteration}'
         )
-        print('✅ Fitting complete.')
+        console.print('✅ Fitting complete.')

@@ -11,7 +11,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.io.cif.handler import CifHandler
-from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
 
 
@@ -60,7 +60,7 @@ class ExcludedRegion(CategoryItem):
         # self._category_entry_attr_name = self.start.name
         # self.name = self.start.value
         self._identity.category_code = 'excluded_regions'
-        self._identity.category_entry_name = lambda: self.start.value
+        self._identity.category_entry_name = lambda: str(self.start.value)
 
     @property
     def start(self) -> NumericDescriptor:
@@ -117,7 +117,7 @@ class ExcludedRegions(CategoryCollection):
         columns_alignment = ['left', 'left']
         columns_data: List[List[float]] = [[r.start.value, r.end.value] for r in self._items]
 
-        print(paragraph('Excluded regions'))
+        console.paragraph('Excluded regions')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,

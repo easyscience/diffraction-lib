@@ -8,7 +8,7 @@ attribute validation and configuration checks.
 
 import difflib
 
-from easydiffraction import log
+from easydiffraction.utils.logging import log
 
 
 class Diagnostics:
@@ -165,7 +165,7 @@ class Diagnostics:
     @staticmethod
     def _log_error(msg, exc_type=Exception):
         """Emit an error-level message via shared logger."""
-        log.error(message=msg, exc_type=exc_type)
+        log.error(msg, exc_type=exc_type)
 
     @staticmethod
     def _log_error_with_fallback(
@@ -179,12 +179,12 @@ class Diagnostics:
             msg += f' Keeping current {current!r}.'
         else:
             msg += f' Using default {default!r}.'
-        log.error(message=msg, exc_type=exc_type)
+        log.error(msg, exc_type=exc_type)
 
     @staticmethod
     def _log_debug(msg):
         """Emit a debug-level message via shared logger."""
-        log.debug(message=msg)
+        log.debug(msg)
 
     # ==============================================================
     # Suggestion and allowed value helpers

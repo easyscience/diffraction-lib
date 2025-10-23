@@ -2,18 +2,18 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 def test_module_import():
-    import easydiffraction.plotting.plotters.plotter_plotly as MUT
+    import easydiffraction.display.plotters.plotly as MUT
 
-    expected_module_name = 'easydiffraction.plotting.plotters.plotter_plotly'
+    expected_module_name = 'easydiffraction.display.plotters.plotly'
     actual_module_name = MUT.__name__
     assert expected_module_name == actual_module_name
 
 
 def test_get_trace_and_plot(monkeypatch):
-    import easydiffraction.plotting.plotters.plotter_plotly as pp
+    import easydiffraction.display.plotters.plotly as pp
 
     # Arrange: force non-PyCharm branch and stub fig.show/HTML/display so nothing opens
-    monkeypatch.setattr(pp, 'is_pycharm', lambda: False)
+    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
 
     shown = {'count': 0}
 

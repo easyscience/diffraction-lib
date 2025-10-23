@@ -10,7 +10,7 @@ from easydiffraction.experiments.experiment.enums import RadiationProbeEnum
 from easydiffraction.experiments.experiment.enums import SampleFormEnum
 from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 from easydiffraction.experiments.experiment.factory import ExperimentFactory
-from easydiffraction.utils.formatting import paragraph
+from easydiffraction.utils.logging import console
 
 
 class Experiments(DatablockCollection):
@@ -116,8 +116,8 @@ class Experiments(DatablockCollection):
 
     def show_names(self) -> None:
         """Print the list of experiment names."""
-        print(paragraph('Defined experiments' + ' 🔬'))
-        print(self.names)
+        console.paragraph('Defined experiments' + ' 🔬')
+        console.print(self.names)
 
     def show_params(self) -> None:
         """Print parameters for each experiment in the collection."""

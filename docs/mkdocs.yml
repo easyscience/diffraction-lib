@@ -86,12 +86,13 @@ nav:
           - 2025 DMSC: tutorials/dmsc-summer-school-2025_analysis-powder-diffraction.ipynb
   - API Reference:
       - API Reference: api-reference/index.md
+      - analysis: api-reference/analysis.md
       - core: api-reference/core.md
       - crystallography: api-reference/crystallography.md
-      - utils: api-reference/utils.md
-      - plotting: api-reference/plotting.md
+      - display: api-reference/display.md
+      - experiments: api-reference/experiments.md
+      - io: api-reference/io.md
       - project: api-reference/project.md
       - sample_models: api-reference/sample_models.md
-      - experiments: api-reference/experiments.md
-      - analysis: api-reference/analysis.md
       - summary: api-reference/summary.md
+      - utils: api-reference/utils.md

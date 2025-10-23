@@ -1,12 +1,12 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from easydiffraction import paragraph
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.sample_models.categories.atom_sites import AtomSites
 from easydiffraction.sample_models.categories.cell import Cell
 from easydiffraction.sample_models.categories.space_group import SpaceGroup
+from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_cif
 
 
@@ -160,17 +160,17 @@ class SampleModelBase(DatablockItem):
 
     def show_structure(self):
         """Show an ASCII projection of the structure on a 2D plane."""
-        print(paragraph(f"Sample model 🧩 '{self.name}' structure view"))
-        print('Not implemented yet.')
+        console.paragraph(f"Sample model 🧩 '{self.name}' structure view")
+        console.print('Not implemented yet.')
 
     def show_params(self):
         """Display structural parameters (space group, cell, atom
         sites).
         """
-        print(f'\nSampleModel ID: {self.name}')
-        print(f'Space group: {self.space_group.name_h_m}')
-        print(f'Cell parameters: {self.cell.as_dict}')
-        print('Atom sites:')
+        console.print(f'\nSampleModel ID: {self.name}')
+        console.print(f'Space group: {self.space_group.name_h_m}')
+        console.print(f'Cell parameters: {self.cell.as_dict}')
+        console.print('Atom sites:')
         self.atom_sites.show()
 
     def show_as_cif(self) -> None:
@@ -178,5 +178,6 @@ class SampleModelBase(DatablockItem):
         view.
         """
         cif_text: str = self.as_cif
-        paragraph_title: str = paragraph(f"Sample model 🧩 '{self.name}' as cif")
-        render_cif(cif_text, paragraph_title)
+        paragraph_title: str = f"Sample model 🧩 '{self.name}' as cif"
+        console.paragraph(paragraph_title)
+        render_cif(cif_text)

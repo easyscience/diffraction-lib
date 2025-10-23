@@ -74,10 +74,11 @@ docs = [
   'pyyaml',                          # YAML parser
 ]
 visualization = [
-  'darkdetect', # Detecting dark mode
-  'pandas',     # Displaying tables in juptyer notebooks
-  'plotly',     # Interactive plots
-  'py3Dmol',    # Visualisation of crystal structures
+  'darkdetect',          # Detecting dark mode
+  'jupyter_dark_detect', # Jupyter notebook dark mode support
+  'pandas',              # Displaying tables in juptyer notebooks
+  'plotly',              # Interactive plots
+  'py3Dmol',             # Visualisation of crystal structures
 ]
 all = [
   'easydiffraction[dev]',

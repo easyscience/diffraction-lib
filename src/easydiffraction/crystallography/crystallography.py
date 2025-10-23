@@ -14,6 +14,7 @@ from sympy import symbols
 from sympy import sympify
 
 from easydiffraction.crystallography.space_groups import SPACE_GROUPS
+from easydiffraction.utils.logging import log
 
 
 def apply_cell_symmetry_constraints(
@@ -33,13 +34,13 @@ def apply_cell_symmetry_constraints(
     it_number = get_it_number_by_name_hm_short(name_hm)
     if it_number is None:
         error_msg = f"Failed to get IT_number for name_H-M '{name_hm}'"
-        print(error_msg)
+        log.error(error_msg)  # TODO: ValueError? Diagnostics?
         return cell
 
     crystal_system = get_crystal_system_by_it_number(it_number)
     if crystal_system is None:
         error_msg = f"Failed to get crystal system for IT_number '{it_number}'"
-        print(error_msg)
+        log.error(error_msg)  # TODO: ValueError? Diagnostics?
         return cell
 
     if crystal_system == 'cubic':
@@ -78,7 +79,7 @@ def apply_cell_symmetry_constraints(
 
     else:
         error_msg = f'Unknown or unsupported crystal system: {crystal_system}'
-        print(error_msg)
+        log.error(error_msg)  # TODO: ValueError? Diagnostics?
 
     return cell
 
@@ -104,13 +105,13 @@ def apply_atom_site_symmetry_constraints(
     it_number = get_it_number_by_name_hm_short(name_hm)
     if it_number is None:
         error_msg = f"Failed to get IT_number for name_H-M '{name_hm}'"
-        print(error_msg)
+        log.error(error_msg)  # TODO: ValueError? Diagnostics?
         return atom_site
 
     it_coordinate_system_code = coord_code
     if it_coordinate_system_code is None:
         error_msg = 'IT_coordinate_system_code is not set'
-        print(error_msg)
+        log.error(error_msg)  # TODO: ValueError? Diagnostics?
         return atom_site
 
     space_group_entry = SPACE_GROUPS[(it_number, it_coordinate_system_code)]
