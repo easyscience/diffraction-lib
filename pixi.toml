@@ -177,6 +177,7 @@ docs-notebooks = 'mv tutorials/*.ipynb docs/tutorials/'
 docs-config = 'python tools/create_mkdocs_yml.py'
 docs-serve = "JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS='ignore::RuntimeWarning' python -m mkdocs serve --dirty"
 docs-build = "JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS='ignore::RuntimeWarning' python -m mkdocs build"
+docs-local = "pixi run docs-build --no-directory-urls"
 docs-clean = 'tools/cleanup_docs.sh'
 docs-setup = { depends-on = [
   'docs-config',
