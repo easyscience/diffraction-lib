@@ -21,8 +21,8 @@ class ExcludedRegion(CategoryItem):
     def __init__(
         self,
         *,
-        start: float,
-        end: float,
+        start=None,
+        end=None,
     ):
         super().__init__()
 

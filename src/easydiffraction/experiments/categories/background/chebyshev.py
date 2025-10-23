@@ -35,7 +35,12 @@ class PolynomialTerm(CategoryItem):
     not break immediately. Tests should migrate to the short names.
     """
 
-    def __init__(self, *, order: int, coef: float) -> None:
+    def __init__(
+        self,
+        *,
+        order=None,
+        coef=None,
+    ) -> None:
         super().__init__()
 
         # Canonical descriptors

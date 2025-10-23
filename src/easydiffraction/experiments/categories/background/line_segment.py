@@ -28,7 +28,12 @@ from easydiffraction.utils.utils import render_table
 class LineSegment(CategoryItem):
     """Single background control point for interpolation."""
 
-    def __init__(self, *, x: float, y: float):
+    def __init__(
+        self,
+        *,
+        x=None,
+        y=None,
+    ):
         super().__init__()
 
         self._x = NumericDescriptor(
@@ -43,7 +48,12 @@ class LineSegment(CategoryItem):
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_pd_background.line_segment_X']),
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.line_segment_X',
+                    '_pd_background_line_segment_X',
+                ]
+            ),
         )
         self._y = Parameter(
             name='y',  # TODO: rename to intensity
@@ -57,7 +67,12 @@ class LineSegment(CategoryItem):
                 default=0.0,
                 content_validator=RangeValidator(),
             ),  # TODO: rename to intensity
-            cif_handler=CifHandler(names=['_pd_background.line_segment_intensity']),
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.line_segment_intensity',
+                    '_pd_background_line_segment_intensity',
+                ]
+            ),
         )
 
         self._identity.category_code = 'background'

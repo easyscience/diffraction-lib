@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from easydiffraction.core.category import CategoryCollection
     from easydiffraction.core.category import CategoryItem
     from easydiffraction.core.parameters import GenericDescriptorBase
+    from easydiffraction.experiments.experiment import ExperimentBase
 
 
 def format_value(value) -> str:
@@ -130,14 +131,17 @@ def datablock_item_to_cif(datablock) -> str:
 
     header = f'data_{datablock._identity.datablock_entry_name}'
     parts: list[str] = [header]
+
     # First categories
     for v in vars(datablock).values():
         if isinstance(v, CategoryItem):
             parts.append(v.as_cif)
+
     # Then collections
     for v in vars(datablock).values():
         if isinstance(v, CategoryCollection):
             parts.append(v.as_cif)
+
     return '\n\n'.join(parts)
 
 
@@ -230,6 +234,7 @@ def param_from_cif(
     idx: int = 0,
 ) -> None:
     found_values: list[Any] = []
+
     # Try to find the value(s) from the CIF block iterating over
     # the possible cif names in order of preference.
     for tag in self._cif_handler.names:
@@ -237,23 +242,28 @@ def param_from_cif(
         if candidates:
             found_values = candidates
             break
+
     # If no values found, the parameter keeps its default value.
     if not found_values:
         return
+
     # If found, pick the one at the given index
     raw = found_values[idx]
+
     # If numeric, parse with uncertainty if present
     if self._value_type == DataTypes.NUMERIC:
         u = str_to_ufloat(raw)
         self.value = u.n
         if not np.isnan(u.s) and hasattr(self, 'uncertainty'):
             self.uncertainty = u.s  # type: ignore[attr-defined]
+
     # If string, strip quotes if present
     elif self._value_type == DataTypes.STRING:
         if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
             self.value = raw[1:-1]
         else:
             self.value = raw
+
     # Other types are not supported
     else:
         log.debug(f'Unrecognized type: {self._value_type}')
@@ -270,19 +280,65 @@ def category_item_from_cif(
 
 
 # TODO: from_cif or add_from_cif as in collections?
-def category_collection_from_cif(self: CategoryCollection, block: gemmi.cif.Block) -> None:
+def category_collection_from_cif(
+    self: CategoryCollection,
+    block: gemmi.cif.Block,
+) -> None:
     # TODO: Find a better way and then remove TODO in the AtomSite
     #  class
     if self._item_type is None:
         raise ValueError('Child class is not defined.')
-    # Create a temporary instance to access category_code needed
-    # to find the loop in the CIF block
-    child_obj = self._item_type()
-    category_code = child_obj._identity.category_code
-    # Derive row count from category code
-    row_count = len(block.find_mmcif_category(f'_{category_code}.'))
+
+    # Create a temporary instance to access its parameters and
+    # parameter CIF names
+    category_item = self._item_type()
+
+    # Iterate over category parameters and their possible CIF names
+    # to determine the number of rows present in the CIF block
+    row_count = 0
+    for param in category_item.parameters:
+        for name in param._cif_handler.names:
+            row_count = len(block.find_values(name))
+            if row_count:
+                break
+    log.debug(f'Found {row_count} rows for category {self}.')
+
     # Delegate to child class to parse each row and add to collection
     for row_idx in range(row_count):
         child_obj = self._item_type()
         child_obj.from_cif(block, idx=row_idx)
         self.add(child_obj)
+
+
+def datastore_from_cif(
+    self: ExperimentBase,
+    block: gemmi.cif.Block,
+) -> None:
+    """Populate a datastore from a CIF block."""
+    # TODO: Make datastore category collection with cif names, etc.
+    x_name = '_pd_meas.2theta_scan'
+    y_name = '_pd_meas.intensity_total'
+    sy_name = '_pd_meas.intensity_total_su'
+    names = [x_name, y_name, sy_name]
+
+    # Iterate over category parameters and their possible CIF names
+    # to determine the number of rows present in the CIF block
+    row_count = 0
+    for name in names:
+        row_count = len(block.find_values(name))
+        if row_count:
+            break
+    log.debug(f'Found {row_count} rows for datastore {self}.')
+
+    x = np.array(block.find_values(x_name), dtype=float)
+    y = np.array(block.find_values(y_name), dtype=float)
+    sy = np.array(block.find_values(sy_name), dtype=float)
+
+    # TODO: Duplicate code from _load_ascii_data_to_experiment
+    self.datastore.full_x = x
+    self.datastore.full_meas = y
+    self.datastore.full_meas_su = sy
+    self.datastore.x = x
+    self.datastore.meas = y
+    self.datastore.meas_su = sy
+    self.datastore.excluded = np.full(x.shape, fill_value=False, dtype=bool)

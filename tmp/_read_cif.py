@@ -71,36 +71,6 @@ project.experiments.show_names()
 
 # %%
 experiment.show_as_cif()
-# %%
-experiment.instrument.setup_wavelength = 1.494
-experiment.instrument.calib_twotheta_offset = 0.6
-
-# %%
-experiment.peak.broad_gauss_u = 0.1
-experiment.peak.broad_gauss_v = -0.1
-experiment.peak.broad_gauss_w = 0.1
-experiment.peak.broad_lorentz_y = 0.1
-
-# %%
-experiment.background.add_from_args(x=10, y=170)
-experiment.background.add_from_args(x=30, y=170)
-experiment.background.add_from_args(x=50, y=170)
-experiment.background.add_from_args(x=110, y=170)
-experiment.background.add_from_args(x=165, y=170)
-
-# %%
-experiment.excluded_regions.add_from_args(start=0, end=5)
-experiment.excluded_regions.add_from_args(start=165, end=180)
-
-# %%
-experiment.linked_phases.add_from_args(id='lbco', scale=10.0)
-
-# %%
-
-# %%
-experiment.show_as_cif()
-# %%
-exit()
 
 # %% [markdown]
 # ## Step 4: Perform Analysis
@@ -121,11 +91,11 @@ experiment.peak.broad_gauss_v.free = True
 experiment.peak.broad_gauss_w.free = True
 experiment.peak.broad_lorentz_y.free = True
 
-experiment.background['10'].y.free = True
-experiment.background['30'].y.free = True
-experiment.background['50'].y.free = True
-experiment.background['110'].y.free = True
-experiment.background['165'].y.free = True
+#experiment.background['10'].y.free = True
+#experiment.background['30'].y.free = True
+#experiment.background['50'].y.free = True
+#experiment.background['110'].y.free = True
+#experiment.background['165'].y.free = True
 
 experiment.linked_phases['lbco'].scale.free = True
 
@@ -134,3 +104,5 @@ project.analysis.fit()
 
 # %%
 project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+
+# %%
