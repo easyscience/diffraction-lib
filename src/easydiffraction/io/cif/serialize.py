@@ -130,9 +130,11 @@ def datablock_item_to_cif(datablock) -> str:
 
     header = f'data_{datablock._identity.datablock_entry_name}'
     parts: list[str] = [header]
+    # First categories
     for v in vars(datablock).values():
         if isinstance(v, CategoryItem):
             parts.append(v.as_cif)
+    # Then collections
     for v in vars(datablock).values():
         if isinstance(v, CategoryCollection):
             parts.append(v.as_cif)

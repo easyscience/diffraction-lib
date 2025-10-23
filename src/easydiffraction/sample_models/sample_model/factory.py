@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import gemmi
 
+from easydiffraction.core.category import CategoryCollection
+from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.sample_models.sample_model.base import SampleModelBase
 
@@ -128,54 +130,23 @@ class SampleModelFactory(FactoryBase):
 
     # TODO: Move to a common CIF utility module? io.cif.parse?
     @classmethod
+    def _extract_name_from_block(cls, block: gemmi.cif.Block) -> str:
+        """Extract a model name from the CIF block name."""
+        # TODO: Need validator or normalization
+        return block.name
+
+    # TODO: Move to a common CIF utility module? io.cif.parse?
+    @classmethod
     def _create_model_from_block(
         cls,
         block: gemmi.cif.Block,
     ) -> SampleModelBase:
         """Build a model instance from a single CIF block."""
         name = cls._extract_name_from_block(block)
-        model = SampleModelBase(name=name)
-        cls._set_space_group_from_cif_block(model, block)
-        cls._set_cell_from_cif_block(model, block)
-        cls._set_atom_sites_from_cif_block(model, block)
+        model = SampleModelFactory.create(name=name)
+        # TODO: Add property categories to the DatablockItem class
+        # Iterate over all categories and populate them from CIF
+        for category in vars(model).values():
+            if isinstance(category, (CategoryItem, CategoryCollection)):
+                category.from_cif(block)
         return model
-
-    # TODO: Move to a common CIF utility module? io.cif.parse?
-    @classmethod
-    def _extract_name_from_block(cls, block: gemmi.cif.Block) -> str:
-        """Extract a model name from the CIF block name."""
-        return block.name or 'model'
-
-    # TODO: Move to a common CIF utility module? io.cif.parse?
-    @classmethod
-    def _set_space_group_from_cif_block(
-        cls,
-        model: SampleModelBase,
-        block: gemmi.cif.Block,
-    ) -> None:
-        """Populate the model's space group from a CIF block."""
-        model.space_group.from_cif(block)
-
-    # TODO: Move to a common CIF utility module? io.cif.parse?
-    @classmethod
-    def _set_cell_from_cif_block(
-        cls,
-        model: SampleModelBase,
-        block: gemmi.cif.Block,
-    ) -> None:
-        """Populate the model's unit cell from a CIF block."""
-        model.cell.from_cif(block)
-
-    # TODO: Move to a common CIF utility module? io.cif.parse?
-    @classmethod
-    def _set_atom_sites_from_cif_block(
-        cls,
-        model: SampleModelBase,
-        block: gemmi.cif.Block,
-    ) -> None:
-        """Populate the model's atom sites from a CIF block."""
-        model.atom_sites.from_cif(block)
-
-    # TODO: How to automatically parce and populate all categories?
-    #  for category in model.categories:
-    #      cls._set_category_from_cif_block(category, block)
