@@ -55,7 +55,8 @@ class PandasTableBackend(TableBackendBase):
                 'props': [
                     ('border', 'none'),
                     ('padding-top', '0.25em'),
-                    ('line-height', '1.25em'),
+                    ('padding-bottom', '0.25em'),
+                    ('line-height', '1.15em'),
                 ],
             },
             # Style for index column
