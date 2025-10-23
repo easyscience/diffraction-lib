@@ -28,14 +28,19 @@ class DatablockItem(GuardedBase):
         return self._identity.datablock_entry_name
 
     @property
+    def categories(self):
+        return [
+            v for v in vars(self).values() if isinstance(v, (CategoryItem, CategoryCollection))
+        ]
+
+    @property
     def parameters(self):
         """All parameters from all categories contained in this
         datablock.
         """
         params = []
-        for v in vars(self).values():
-            if isinstance(v, (CategoryItem, CategoryCollection)):
-                params.extend(v.parameters)
+        for v in self.categories:
+            params.extend(v.parameters)
         return params
 
     @property

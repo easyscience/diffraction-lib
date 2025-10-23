@@ -18,6 +18,11 @@
 
 # %% [markdown]
 # ## Import Library
+#
+# import gemmi
+# d = gemmi.cif.read_string("data_x\n_a 1\n")
+# b = d.sole_block()
+# do nothing else
 
 # %%
 import easydiffraction as ed
@@ -27,6 +32,7 @@ from easydiffraction.utils.logging import Logger
 Logger.configure(
     level=Logger.Level.INFO,
     mode=Logger.Mode.COMPACT,
+    #mode=Logger.Mode.VERBOSE,
     reaction=Logger.Reaction.WARN,
 )
 
@@ -65,7 +71,6 @@ project.experiments.show_names()
 
 # %%
 experiment.show_as_cif()
-
 # %%
 experiment.instrument.setup_wavelength = 1.494
 experiment.instrument.calib_twotheta_offset = 0.6
@@ -90,11 +95,15 @@ experiment.excluded_regions.add_from_args(start=165, end=180)
 # %%
 experiment.linked_phases.add_from_args(id='lbco', scale=10.0)
 
-# %% [markdown]
-# ## Step 4: Perform Analysis
+# %%
 
 # %%
 experiment.show_as_cif()
+# %%
+exit()
+
+# %% [markdown]
+# ## Step 4: Perform Analysis
 
 # %%
 sample_model.cell.length_a.free = True
