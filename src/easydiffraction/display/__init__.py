@@ -11,6 +11,7 @@ to render tabular data and plots in different environments.
         :mod:`easydiffraction.display.plotters`.
 """
 
-from easydiffraction.display.utils import JupyterScrollManager
-
-JupyterScrollManager.disable_jupyter_scroll()
+# TODO: The following works in Jupyter, but breaks MkDocs builds.
+#  Disable for now.
+# from easydiffraction.display.utils import JupyterScrollManager
+# JupyterScrollManager.disable_jupyter_scroll()
