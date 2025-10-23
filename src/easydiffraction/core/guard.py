@@ -13,7 +13,6 @@ class GuardedBase(ABC):
     linkage.
     """
 
-    # 5b: Use class-level diagnoser
     _diagnoser = Diagnostics()
 
     def __init__(self):
@@ -30,7 +29,7 @@ class GuardedBase(ABC):
         allowed = cls._public_attrs()
         if key not in allowed:
             type(self)._diagnoser.attr_error(
-                self.unique_name,
+                self._log_name,
                 key,
                 allowed,
                 label='Allowed readable/writable',
@@ -50,7 +49,7 @@ class GuardedBase(ABC):
         # Prevent modification of read-only attributes
         if key in cls._public_readonly_attrs():
             cls._diagnoser.readonly_error(
-                self.unique_name,
+                self._log_name,
                 key,
             )
             return
@@ -59,7 +58,7 @@ class GuardedBase(ABC):
         if key not in cls._public_attrs():
             allowed = cls._public_writable_attrs()
             cls._diagnoser.attr_error(
-                self.unique_name,
+                self._log_name,
                 key,
                 allowed,
                 label='Allowed writable',
@@ -112,7 +111,7 @@ class GuardedBase(ABC):
 
     @property
     def _log_name(self):
-        return type(self).__name__
+        return self.unique_name or type(self).__name__
 
     @property
     def unique_name(self):
