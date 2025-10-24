@@ -50,6 +50,9 @@ class ExperimentFactory(FactoryBase):
         """Helper to construct an ExperimentType from keyword arguments,
         using defaults as needed.
         """
+        # TODO: Defaults are already in the experiment type...
+        # TODO: Merging with experiment_type_from_block from
+        #  io.cif.parse
         return ExperimentType(
             sample_form=kwargs.get('sample_form', SampleFormEnum.default()),
             beam_mode=kwargs.get('beam_mode', BeamModeEnum.default()),
@@ -66,17 +69,20 @@ class ExperimentFactory(FactoryBase):
         """Build a model instance from a single CIF block."""
         name = name_from_block(block)
 
-        # TODO: experiment type need to be read from CIF block
-        kwargs = {'beam_mode': BeamModeEnum.CONSTANT_WAVELENGTH}
-        expt_type = cls._make_experiment_type(kwargs)
+        # TODO: move to io.cif.parse?
+        expt_type = ExperimentType()
+        for param in expt_type.parameters:
+            param.from_cif(block)
 
         # Create experiment instance of appropriate class
+        # TODO: make helper method to create experiment from type
         scattering_type = expt_type.scattering_type.value
         sample_form = expt_type.sample_form.value
         expt_class = cls._SUPPORTED[scattering_type][sample_form]
         expt_obj = expt_class(name=name, type=expt_type)
 
         # Read all categories from CIF block
+        # TODO: move to io.cif.parse?
         for category in expt_obj.categories:
             category.from_cif(block)
 

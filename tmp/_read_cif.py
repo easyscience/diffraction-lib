@@ -18,11 +18,6 @@
 
 # %% [markdown]
 # ## Import Library
-#
-# import gemmi
-# d = gemmi.cif.read_string("data_x\n_a 1\n")
-# b = d.sole_block()
-# do nothing else
 
 # %%
 import easydiffraction as ed
@@ -32,7 +27,6 @@ from easydiffraction.utils.logging import Logger
 Logger.configure(
     level=Logger.Level.INFO,
     mode=Logger.Mode.COMPACT,
-    #mode=Logger.Mode.VERBOSE,
     reaction=Logger.Reaction.WARN,
 )
 
@@ -52,10 +46,11 @@ project.sample_models.add_from_cif_path("data/lbco.cif")
 project.sample_models.show_names()
 
 # %%
-sample_model = project.sample_models['lbco']
+# Create an alias for easier access
+lbco = project.sample_models['lbco']
 
 # %%
-sample_model.show_as_cif()
+lbco.show_as_cif()
 
 # %% [markdown]
 # ## Step 3: Define Experiment
@@ -64,40 +59,47 @@ sample_model.show_as_cif()
 project.experiments.add_from_cif_path("data/hrpt.cif")
 
 # %%
-experiment = project.experiments['hrpt']
-
-# %%
 project.experiments.show_names()
 
 # %%
-experiment.show_as_cif()
+# Create an alias for easier access
+hrpt = project.experiments['hrpt']
+
+# %%
+hrpt.show_as_cif()
 
 # %% [markdown]
 # ## Step 4: Perform Analysis
 
 # %%
-sample_model.cell.length_a.free = True
+# Select sample model parameters to refine
+lbco.cell.length_a.free = True
 
-sample_model.atom_sites['La'].b_iso.free = True
-sample_model.atom_sites['Ba'].b_iso.free = True
-sample_model.atom_sites['Co'].b_iso.free = True
-sample_model.atom_sites['O'].b_iso.free = True
+#lbco.atom_sites['La'].b_iso.free = True
+#lbco.atom_sites['Ba'].b_iso.free = True
+#lbco.atom_sites['Co'].b_iso.free = True
+#lbco.atom_sites['O'].b_iso.free = True
+for atom_site in lbco.atom_sites:
+    atom_site.b_iso.free = True
 
 # %%
-experiment.instrument.calib_twotheta_offset.free = True
+# Select experiment parameters to refine
+hrpt.linked_phases['lbco'].scale.free = True
 
-experiment.peak.broad_gauss_u.free = True
-experiment.peak.broad_gauss_v.free = True
-experiment.peak.broad_gauss_w.free = True
-experiment.peak.broad_lorentz_y.free = True
+hrpt.instrument.calib_twotheta_offset.free = True
 
-#experiment.background['10'].y.free = True
-#experiment.background['30'].y.free = True
-#experiment.background['50'].y.free = True
-#experiment.background['110'].y.free = True
-#experiment.background['165'].y.free = True
+hrpt.peak.broad_gauss_u.free = True
+hrpt.peak.broad_gauss_v.free = True
+hrpt.peak.broad_gauss_w.free = True
+hrpt.peak.broad_lorentz_y.free = True
 
-experiment.linked_phases['lbco'].scale.free = True
+#hrpt.background['10'].y.free = True
+#hrpt.background['30'].y.free = True
+#hrpt.background['50'].y.free = True
+#hrpt.background['110'].y.free = True
+#hrpt.background['165'].y.free = True
+for line_segment in hrpt.background:
+    line_segment.y.free = True
 
 # %%
 project.analysis.fit()

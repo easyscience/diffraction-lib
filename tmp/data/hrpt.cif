@@ -15,25 +15,23 @@ _instr.wavelength 1.494
 _instr.2theta_offset 0.6
 
 loop_
-	_pd_phase_block.id
-	_pd_phase_block.scale
-	lbco 10.0
+_pd_phase_block.id
+_pd_phase_block.scale
+lbco 10.0
 
+loop_
+_pd_background_line_segment_X
+_pd_background_line_segment_intensity
+10 170
+30 170
+50 170
+110 170
+165 170
 
-
-	loop_
-	_pd_background.line_segment_X
-	_pd_background.line_segment_intensity
-	10 170
-	30 170
-	50 170
-	110 170
-	165 170
-
-	loop_
-	_pd_meas.2theta_scan
-	_pd_meas.intensity_total
-	_pd_meas.intensity_total_su
+loop_
+_pd_meas.2theta_scan
+_pd_meas.intensity_total
+_pd_meas.intensity_total_su
      10.00    167.00   12.60
      10.05    157.00   12.50
      10.10    187.00   13.30

@@ -23,3 +23,12 @@ def name_from_block(block: gemmi.cif.Block) -> str:
     """Extract a model name from the CIF block name."""
     # TODO: Need validator or normalization?
     return block.name
+
+
+# def experiment_type_from_block(
+#        exp_type: ExperimentType,
+#        block: gemmi.cif.Block,
+# ) -> dict:
+#    """Extract experiment type information from a CIF block."""
+#    for param in exp_type.parameters:
+#        param.from_cif(block)

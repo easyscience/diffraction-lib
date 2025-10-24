@@ -32,10 +32,10 @@ class ExperimentType(CategoryItem):
     def __init__(
         self,
         *,
-        sample_form: str,
-        beam_mode: str,
-        radiation_probe: str,
-        scattering_type: str,
+        sample_form=None,
+        beam_mode=None,
+        radiation_probe=None,
+        scattering_type=None,
     ):
         super().__init__()
 

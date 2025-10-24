@@ -316,6 +316,10 @@ def datastore_from_cif(
 ) -> None:
     """Populate a datastore from a CIF block."""
     # TODO: Make datastore category collection with cif names, etc.
+    #  We need multiple datastores for different experiment types.
+    #  Similar to e.g. background or instrument or peak categories.
+    #  Then, datastore will be automatically handled like other
+    #  categories and this method can be removed.
     x_name = '_pd_meas.2theta_scan'
     y_name = '_pd_meas.intensity_total'
     sy_name = '_pd_meas.intensity_total_su'
