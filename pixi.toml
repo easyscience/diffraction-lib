@@ -39,16 +39,14 @@ channels = ['conda-forge']
 
 # Default feature configuration
 
-[dependencies] # == [feature.default.dependencies]
-pip = '*' # Required to install from PyPI
-
 [target.win-64.dependencies]
 libcblas = '*' # CBLAS library for linear algebra; required for pdffit2.
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
-jupyterlab = '*'                                      # JupyterLab for notebooks
+pip = '*'                                             # Native package installer
+uv = '*'                                              # Package manager
+jupyterlab = '*'                                      # Jupyter notebooks
 pixi-kernel = '*'                                     # Pixi Jupyter kernel
-uv = '*'                                              # Python package manager
 easydiffraction = { version = '*', extras = ['all'] } # Main package
 
 [target.osx.pypi-dependencies]
