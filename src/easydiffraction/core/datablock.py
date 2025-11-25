@@ -10,8 +10,6 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.collection import CollectionBase
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.core.parameters import Parameter
-from easydiffraction.io.cif.serialize import datablock_collection_to_cif
-from easydiffraction.io.cif.serialize import datablock_item_to_cif
 
 
 class DatablockItem(GuardedBase):
@@ -41,6 +39,8 @@ class DatablockItem(GuardedBase):
         # background points in the data category?
         for category in self.categories:
             category._update()
+        ###print('***** _update_categories')
+        self._need_categories_update = False
 
     @property
     def unique_name(self):
@@ -65,6 +65,8 @@ class DatablockItem(GuardedBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
+        from easydiffraction.io.cif.serialize import datablock_item_to_cif
+        
         self._update_categories()
         return datablock_item_to_cif(self)
 
@@ -107,6 +109,8 @@ class DatablockCollection(CollectionBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
+        from easydiffraction.io.cif.serialize import datablock_collection_to_cif
+        
         return datablock_collection_to_cif(self)
 
     @typechecked

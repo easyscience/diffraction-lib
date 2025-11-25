@@ -50,10 +50,19 @@ project.sample_models.show_names()
 lbco = project.sample_models['lbco']
 
 # %%
+#print('a')
+#print('lbco.cell.length_b.value', lbco.cell.length_b.value)
+#print('b')
 lbco.cell.length_a = 3.89
+#print('c')
+#print('lbco.cell.length_b.value', lbco.cell.length_b.value)
+#print('d')
+#print('lbco.cell.length_b.value', lbco.cell.length_b.value)
+#print('e')
 
 # %%
 lbco.show_as_cif()
+#exit()
 
 # %% [markdown]
 # ## Step 3: Define Experiment
@@ -70,6 +79,12 @@ hrpt = project.experiments['hrpt']
 
 # %%
 hrpt.show_as_cif()
+#exit()
+
+print('==')
+print('a', hrpt.background['1'].y.value)
+
+#exit()
 
 # %%
 print('hrpt.data.x', hrpt.data.x)

@@ -300,6 +300,10 @@ class PdCwlData(CategoryCollection):
     def refinement_status(self) -> np.ndarray:
         return np.fromiter((p.refinement_status.value for p in self._items), dtype=object)
 
+    def _update(self):
+        pass
+        #print('!!!! PdCwlData _update called')
+
 
 class PdTofData(CategoryCollection):
     # TODO: ???

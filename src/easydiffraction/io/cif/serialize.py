@@ -158,11 +158,6 @@ def datablock_item_to_cif(datablock) -> str:
     header = f'data_{datablock._identity.datablock_entry_name}'
     parts: list[str] = [header]
 
-    ### TODO: TEMPORARY
-    for v in vars(datablock).values():
-        if isinstance(v, (CategoryItem, CategoryCollection)):
-            v._update()
-
     # First categories
     for v in vars(datablock).values():
         if isinstance(v, CategoryItem):
@@ -450,6 +445,10 @@ def category_collection_from_cif(
 
     # Pre-create default items in the collection
     self._items = [self._item_type() for _ in range(num_rows)]
+    
+    # Set parent for each item to enable identity resolution
+    for item in self._items:
+        object.__setattr__(item, '_parent', self)
 
     # Set those items' parameters, which are present in the loop
     for row_idx in range(num_rows):
@@ -461,6 +460,11 @@ def category_collection_from_cif(
 
                     # TODO: The following is duplication of param_from_cif
                     raw = array[row_idx][col_idx]
+
+                    # If integer, parse directly
+                    #if param._value_type == DataTypes.INTEGER:
+                    #    param.value = int(raw)
+                    #    exit()
 
                     # If numeric, parse with uncertainty if present
                     if param._value_type == DataTypes.NUMERIC:
@@ -483,7 +487,7 @@ def category_collection_from_cif(
                     break
 
 
-def datastore_from_cif_OLD(
+def datastore_from_cif(
     self: ExperimentBase,
     block: gemmi.cif.Block,
 ) -> None:

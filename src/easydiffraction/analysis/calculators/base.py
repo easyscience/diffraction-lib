@@ -66,17 +66,6 @@ class CalculatorBase(ABC):
         #    - Update data refinement status flag based on the excluded
         #      regions category
 
-        ### TODO: TEMPORARY
-        #for category in experiment.categories:
-        #    category._update()
-
-
-        experiment._update_categories()
-
-
-        ###x_data = experiment.datastore.x
-        x_data = experiment.data.x
-        y_calc_zeros = np.zeros_like(x_data)
 
         valid_linked_phases = self._get_valid_linked_phases(sample_models, experiment)
 
@@ -84,11 +73,18 @@ class CalculatorBase(ABC):
         constraints = ConstraintsHandler.get()
         constraints.apply()
 
+        # Update categories
+        experiment._update_categories()
 
 
+
+        ###x_data = experiment.datastore.x
+        x_data = experiment.data.x
+        y_bkg = experiment.data.bkg
+        initial_y_calc = np.zeros_like(x_data)
 
         # Calculate contributions from valid linked sample models
-        y_calc_scaled = y_calc_zeros
+        y_calc_scaled = initial_y_calc
         for linked_phase in valid_linked_phases:
             sample_model_id = linked_phase._identity.category_entry_name
             sample_model_scale = linked_phase.scale.value
@@ -113,19 +109,6 @@ class CalculatorBase(ABC):
             sample_model_y_calc_scaled = sample_model_scale * sample_model_y_calc
             y_calc_scaled += sample_model_y_calc_scaled
 
-        # Calculate background contribution
-        #y_bkg = np.zeros_like(x_data)
-        # TODO: Change to the following check in other places instead of
-        #  old `hasattr` check, because `hasattr` triggers warnings?
-        # TODO: or experiment.data has bkg?
-        #if 'background' in experiment._public_attrs():
-        #    y_bkg = experiment.background.calculate(x_data)
-        ###experiment.datastore.bkg = y_bkg
-        # new 'data' instead of 'datastore'
-        #experiment.data._set_bkg(y_bkg)
-
-
-        y_bkg = experiment.data.bkg
 
 
         # Calculate total pattern
@@ -141,7 +124,7 @@ class CalculatorBase(ABC):
     @abstractmethod
     def _calculate_single_model_pattern(
         self,
-        sample_model: SampleModels,
+        sample_model: SampleModels, # TODO: SampleModelBase?
         experiment: ExperimentBase,
         called_by_minimizer: bool,
     ) -> np.ndarray:
