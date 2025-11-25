@@ -44,6 +44,7 @@ class SampleModelBase(DatablockItem):
         )
         return f'<{name} ({items})>'
 
+
     @property
     def name(self) -> str:
         """Model name.
@@ -148,7 +149,7 @@ class SampleModelBase(DatablockItem):
         """
         pass
 
-    def apply_symmetry_constraints(self):
+    def _apply_symmetry_constraints(self):
         """Apply all available symmetry constraints to this model."""
         self._apply_cell_symmetry_constraints()
         self._apply_atomic_coordinates_symmetry_constraints()

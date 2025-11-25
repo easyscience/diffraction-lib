@@ -5,7 +5,7 @@
 
  _cell.angle_alpha  90
  _cell.angle_beta  90
- _cell.length_a  3.88(1)
+ _cell.length_a  3.88
  _cell.length_b  3.88
  _cell.length_c  3.88
 
@@ -34,4 +34,3 @@
  10.15 197.0 14.0
  10.2 164.0 12.5
  10.25 171.0 13.0
-

@@ -143,9 +143,13 @@ def get_reliability_inputs(
     y_err_all = []
     for experiment in experiments.values():
         calculator.calculate_pattern(sample_models, experiment)
-        y_calc = experiment.datastore.calc
-        y_meas = experiment.datastore.meas
-        y_meas_su = experiment.datastore.meas_su
+        ###y_calc = experiment.datastore.calc
+        ###y_meas = experiment.datastore.meas
+        ###y_meas_su = experiment.datastore.meas_su
+        # new 'data' instead of 'datastore'
+        y_calc = experiment.data.calc
+        y_meas = experiment.data.meas
+        y_meas_su = experiment.data.meas_su
 
         if y_meas is not None and y_calc is not None:
             # If standard uncertainty is not provided, use ones

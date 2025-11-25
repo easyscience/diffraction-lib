@@ -11,7 +11,7 @@ from easydiffraction.io.cif.serialize import category_collection_from_cif
 from easydiffraction.io.cif.serialize import category_collection_to_cif
 from easydiffraction.io.cif.serialize import category_item_from_cif
 from easydiffraction.io.cif.serialize import category_item_to_cif
-
+from easydiffraction.core.validation import DataTypes
 
 class CategoryItem(GuardedBase):
     """Base class for items in a category collection."""
@@ -22,6 +22,9 @@ class CategoryItem(GuardedBase):
         params = ', '.join(f'{p.name}={p.value!r}' for p in self.parameters)
         return f'<{name} ({params})>'
 
+    def _update(self):
+        pass
+
     @property
     def unique_name(self):
         parts = [
@@ -29,7 +32,9 @@ class CategoryItem(GuardedBase):
             self._identity.category_code,
             self._identity.category_entry_name,
         ]
-        return '.'.join(filter(None, parts))
+        # Convert all parts to strings and filter out None/empty values
+        str_parts = [str(part) for part in parts if part is not None]
+        return '.'.join(str_parts)
 
     @property
     def parameters(self):
@@ -56,6 +61,9 @@ class CategoryCollection(CollectionBase):
         name = self._log_name
         size = len(self)
         return f'<{name} collection ({size} items)>'
+
+    def _update(self):
+        pass
 
     @property
     def unique_name(self):

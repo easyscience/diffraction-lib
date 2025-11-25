@@ -3,7 +3,7 @@
 """Exclude ranges of x from fitting/plotting (masked regions)."""
 
 from typing import List
-
+import numpy as np
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
@@ -25,6 +25,8 @@ class ExcludedRegion(CategoryItem):
         end=None,
     ):
         super().__init__()
+
+        # TODO: Add point_id as for the background
 
         self._start = NumericDescriptor(
             name='start',
@@ -85,28 +87,25 @@ class ExcludedRegions(CategoryCollection):
     def __init__(self):
         super().__init__(item_type=ExcludedRegion)
 
-    def add(self, item: ExcludedRegion) -> None:
-        """Mark excluded points in the pattern when a region is
-        added.
-        """
-        # 1. Call parent add first
+    def _update(self):
+        data = self._parent.data
+        x = data.x
 
-        super().add(item)
+        # Start with a mask of all False (nothing excluded yet)
+        combined_mask = np.full_like(x, fill_value=False, dtype=bool)
 
-        # 2. Now add extra behavior specific to ExcludedRegions
+        # Combine masks for all excluded regions
+        for region in self.values():
+            start = region.start.value
+            end = region.end.value
+            region_mask = (x >= start) & (x <= end)
+            combined_mask |= region_mask
 
-        datastore = self._parent.datastore
+        # Invert mask, as refinement status is opposite of excluded
+        inverted_mask = ~combined_mask
 
-        # Boolean mask for points within the new excluded region
-        in_region = (datastore.full_x >= item.start.value) & (datastore.full_x <= item.end.value)
-
-        # Update the exclusion mask
-        datastore.excluded[in_region] = True
-
-        # Update the excluded points in the datastore
-        datastore.x = datastore.full_x[~datastore.excluded]
-        datastore.meas = datastore.full_meas[~datastore.excluded]
-        datastore.meas_su = datastore.full_meas_su[~datastore.excluded]
+        # Set refinement status in the data object
+        data._set_refinement_status(inverted_mask)
 
     def show(self) -> None:
         """Print a table of excluded [start, end] intervals."""

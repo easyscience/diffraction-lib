@@ -233,7 +233,9 @@ class Project(GuardedBase):
         d_spacing=False,
     ):
         experiment = self.experiments[expt_name]
-        datastore = experiment.datastore
+        ###datastore = experiment.datastore
+        # new 'data' instead of 'datastore'
+        data = experiment.data
         expt_type = experiment.type
 
         # Update d-spacing if necessary
@@ -246,7 +248,7 @@ class Project(GuardedBase):
 
         # Plot measured pattern
         self.plotter.plot_meas(
-            datastore,
+            data,
             expt_name,
             expt_type,
             x_min=x_min,
@@ -263,7 +265,9 @@ class Project(GuardedBase):
     ):
         self.analysis.calculate_pattern(expt_name)  # Recalculate pattern
         experiment = self.experiments[expt_name]
-        datastore = experiment.datastore
+        ###datastore = experiment.datastore
+        # new 'data' instead of 'datastore'
+        data = experiment.data
         expt_type = experiment.type
 
         # Update d-spacing if necessary
@@ -276,7 +280,7 @@ class Project(GuardedBase):
 
         # Plot calculated pattern
         self.plotter.plot_calc(
-            datastore,
+            data,
             expt_name,
             expt_type,
             x_min=x_min,
@@ -294,10 +298,13 @@ class Project(GuardedBase):
     ):
         self.analysis.calculate_pattern(expt_name)  # Recalculate pattern
         experiment = self.experiments[expt_name]
-        datastore = experiment.datastore
+        ###datastore = experiment.datastore
+        # new 'data' instead of 'datastore'
+        data = experiment.data
         expt_type = experiment.type
 
         # Update d-spacing if necessary
+        # TODO: Move to CalculatorBase calculate_pattern?
         # TODO: This is done before every plot, and not when parameters
         #  needed for d-spacing conversion are changed. The reason is
         #  to minimize the performance impact during the fitting
@@ -307,7 +314,7 @@ class Project(GuardedBase):
 
         # Plot measured vs calculated
         self.plotter.plot_meas_vs_calc(
-            datastore,
+            data,
             expt_name,
             expt_type,
             x_min=x_min,
@@ -321,7 +328,9 @@ class Project(GuardedBase):
         mode.
         """
         experiment = self.experiments[expt_name]
-        datastore = experiment.datastore
+        ###datastore = experiment.datastore
+        # new 'data' instead of 'datastore'
+        data = experiment.data
         expt_type = experiment.type
         beam_mode = expt_type.beam_mode.value
 

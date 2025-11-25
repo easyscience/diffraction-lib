@@ -17,6 +17,10 @@ from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
+from easydiffraction.experiments.categories.data.pd import PdCwlData
+from easydiffraction.experiments.categories.data.pd import DataFactory
+
+
 
 if TYPE_CHECKING:
     from easydiffraction.experiments.categories.experiment_type import ExperimentType
@@ -106,6 +110,9 @@ class PdExperimentBase(ExperimentBase):
     ) -> None:
         super().__init__(name=name, type=type)
 
+        self._linked_phases: LinkedPhases = LinkedPhases()
+        self._excluded_regions: ExcludedRegions = ExcludedRegions()
+
         self._peak_profile_type: PeakProfileTypeEnum = PeakProfileTypeEnum.default(
             self.type.scattering_type.value,
             self.type.beam_mode.value,
@@ -116,8 +123,10 @@ class PdExperimentBase(ExperimentBase):
             profile_type=self._peak_profile_type,
         )
 
-        self._linked_phases: LinkedPhases = LinkedPhases()
-        self._excluded_regions: ExcludedRegions = ExcludedRegions()
+        self._data = DataFactory.create(
+            sample_form=self.type.sample_form.value,
+            beam_mode=self.type.beam_mode.value,
+        )
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
@@ -128,6 +137,16 @@ class PdExperimentBase(ExperimentBase):
                 the beam mode (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
         """
         pass
+
+    @property
+    def linked_phases(self):
+        """Collection of phases linked to this experiment."""
+        return self._linked_phases
+
+    @property
+    def excluded_regions(self):
+        """Collection of excluded regions for the x-grid."""
+        return self._excluded_regions
 
     @property
     def peak(self) -> str:
@@ -143,15 +162,13 @@ class PdExperimentBase(ExperimentBase):
         """
         self._peak = value
 
-    @property
-    def linked_phases(self) -> str:
-        """Collection of phases linked to this experiment."""
-        return self._linked_phases
 
     @property
-    def excluded_regions(self) -> str:
-        """Collection of excluded regions for the x-grid."""
-        return self._excluded_regions
+    def data(self):
+        return self._data
+
+
+
 
     @property
     def peak_profile_type(self):

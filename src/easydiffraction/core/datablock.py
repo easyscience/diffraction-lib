@@ -17,11 +17,30 @@ from easydiffraction.io.cif.serialize import datablock_item_to_cif
 class DatablockItem(GuardedBase):
     """Base class for items in a datablock collection."""
 
+    def __init__(self):
+        super().__init__()
+        self._need_categories_update = False
+
     def __str__(self) -> str:
         """Human-readable representation of this component."""
         name = self._log_name
         items = getattr(self, '_items', None)
         return f'<{name} ({items})>'
+
+    def _update_categories(self):
+        # TODO: Make abstract method and implement in subclasses.
+        # This should call apply_symmetry and apply_constraints in the
+        # case of sample models. In the case of experiments, it should
+        # run calculations to update the "data" categories.
+        # Any parameter change should set _need_categories_update to
+        # True.
+        # Calling as_cif or data getter should first check this flag
+        # and call this method if True.
+        # Should this be also called when parameters are accessed? E.g.
+        # if one change background coefficients, then access the
+        # background points in the data category?
+        for category in self.categories:
+            category._update()
 
     @property
     def unique_name(self):
@@ -46,6 +65,7 @@ class DatablockItem(GuardedBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
+        self._update_categories()
         return datablock_item_to_cif(self)
 
 

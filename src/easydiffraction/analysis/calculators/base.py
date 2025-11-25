@@ -54,7 +54,28 @@ class CalculatorBase(ABC):
             called_by_minimizer: Whether the calculation is called by a
                 minimizer.
         """
-        x_data = experiment.datastore.x
+
+        # TODO: Call update for all the datablocks involved, starting
+        #  with sample_models, then experiment, to ensure all data is
+        #  up-to-date before calculation.
+        #  * In the case of sample models:
+        #    - Apply user constraints
+        #    - Apply symmetry constraints
+        #  * In the case of experiment:
+        #    - Update background data based on the bkg category
+        #    - Update data refinement status flag based on the excluded
+        #      regions category
+
+        ### TODO: TEMPORARY
+        #for category in experiment.categories:
+        #    category._update()
+
+
+        experiment._update_categories()
+
+
+        ###x_data = experiment.datastore.x
+        x_data = experiment.data.x
         y_calc_zeros = np.zeros_like(x_data)
 
         valid_linked_phases = self._get_valid_linked_phases(sample_models, experiment)
@@ -62,6 +83,9 @@ class CalculatorBase(ABC):
         # Apply user constraints to all sample models
         constraints = ConstraintsHandler.get()
         constraints.apply()
+
+
+
 
         # Calculate contributions from valid linked sample models
         y_calc_scaled = y_calc_zeros
@@ -71,7 +95,11 @@ class CalculatorBase(ABC):
             sample_model = sample_models[sample_model_id]
 
             # Apply symmetry constraints
-            sample_model.apply_symmetry_constraints()
+            #sample_model._apply_symmetry_constraints()
+
+
+            sample_model._update_categories()
+
 
             sample_model_y_calc = self._calculate_single_model_pattern(
                 sample_model,
@@ -86,16 +114,29 @@ class CalculatorBase(ABC):
             y_calc_scaled += sample_model_y_calc_scaled
 
         # Calculate background contribution
-        y_bkg = np.zeros_like(x_data)
+        #y_bkg = np.zeros_like(x_data)
         # TODO: Change to the following check in other places instead of
         #  old `hasattr` check, because `hasattr` triggers warnings?
-        if 'background' in experiment._public_attrs():
-            y_bkg = experiment.background.calculate(x_data)
-        experiment.datastore.bkg = y_bkg
+        # TODO: or experiment.data has bkg?
+        #if 'background' in experiment._public_attrs():
+        #    y_bkg = experiment.background.calculate(x_data)
+        ###experiment.datastore.bkg = y_bkg
+        # new 'data' instead of 'datastore'
+        #experiment.data._set_bkg(y_bkg)
+
+
+        y_bkg = experiment.data.bkg
+
 
         # Calculate total pattern
         y_calc_total = y_calc_scaled + y_bkg
-        experiment.datastore.calc = y_calc_total
+        ###experiment.datastore.calc = y_calc_total
+        # new 'data' instead of 'datastore'
+        experiment.data._set_calc(y_calc_total)
+
+        # TODO: Calculate and set d-spacing here???
+        # ...
+
 
     @abstractmethod
     def _calculate_single_model_pattern(

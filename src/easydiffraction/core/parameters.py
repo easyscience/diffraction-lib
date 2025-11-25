@@ -81,8 +81,6 @@ class GenericDescriptorBase(GuardedBase):
         self._value_spec = value_spec
         self._name = name
         self._description = description
-        self._uid: str = self._generate_uid()
-        UidMapHandler.get().add_to_uid_map(self)
 
         # Initial validated states
         self._value = self._value_spec.validated(
@@ -92,16 +90,6 @@ class GenericDescriptorBase(GuardedBase):
 
     def __str__(self) -> str:
         return f'<{self.unique_name} = {self.value!r}>'
-
-    @staticmethod
-    def _generate_uid(length: int = 16) -> str:
-        letters = string.ascii_lowercase
-        return ''.join(secrets.choice(letters) for _ in range(length))
-
-    @property
-    def uid(self):
-        """Stable random identifier for this descriptor."""
-        return self._uid
 
     @property
     def name(self) -> str:
@@ -228,6 +216,11 @@ class GenericParameter(GenericNumericDescriptor):
         self._constrained_spec = self._BOOL_SPEC_TEMPLATE
         self._constrained = self._constrained_spec.default
 
+        self._uid: str = self._generate_uid()
+        UidMapHandler.get().add_to_uid_map(self)
+
+
+
     def __str__(self) -> str:
         s = GenericDescriptorBase.__str__(self)
         s = s[1:-1]  # strip <>
@@ -237,6 +230,17 @@ class GenericParameter(GenericNumericDescriptor):
             s += f' {self.units}'
         s += f' (free={self.free})'
         return f'<{s}>'
+
+
+    @staticmethod
+    def _generate_uid(length: int = 16) -> str:
+        letters = string.ascii_lowercase
+        return ''.join(secrets.choice(letters) for _ in range(length))
+
+    @property
+    def uid(self):
+        """Stable random identifier for this descriptor."""
+        return self._uid
 
     @property
     def _minimizer_uid(self):

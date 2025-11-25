@@ -16,7 +16,7 @@ from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.parse import document_from_path
 from easydiffraction.io.cif.parse import name_from_block
 from easydiffraction.io.cif.parse import pick_sole_block
-from easydiffraction.io.cif.serialize import datastore_from_cif
+#from easydiffraction.io.cif.serialize import datastore_from_cif
 
 
 class ExperimentFactory(FactoryBase):
@@ -87,7 +87,7 @@ class ExperimentFactory(FactoryBase):
             category.from_cif(block)
 
         # Populate experiment datastore from CIF block
-        datastore_from_cif(expt_obj, block)
+        #datastore_from_cif(expt_obj, block)
 
         return expt_obj
 

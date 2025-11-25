@@ -26,7 +26,7 @@ import easydiffraction as ed
 from easydiffraction.utils.logging import Logger
 Logger.configure(
     level=Logger.Level.INFO,
-    mode=Logger.Mode.COMPACT,
+    mode=Logger.Mode.VERBOSE,
     reaction=Logger.Reaction.WARN,
 )
 
@@ -40,7 +40,7 @@ project = ed.Project()
 # ## Step 2: Define Sample Model
 
 # %%
-project.sample_models.add_from_cif_path("data/lbco.cif")
+project.sample_models.add_from_cif_path("tmp/data/lbco.cif")
 
 # %%
 project.sample_models.show_names()
@@ -50,13 +50,16 @@ project.sample_models.show_names()
 lbco = project.sample_models['lbco']
 
 # %%
+lbco.cell.length_a = 3.89
+
+# %%
 lbco.show_as_cif()
 
 # %% [markdown]
 # ## Step 3: Define Experiment
 
 # %%
-project.experiments.add_from_cif_path("data/hrpt.cif")
+project.experiments.add_from_cif_path("tmp/data/hrpt.cif")
 
 # %%
 project.experiments.show_names()
@@ -68,6 +71,29 @@ hrpt = project.experiments['hrpt']
 # %%
 hrpt.show_as_cif()
 
+# %%
+print('hrpt.data.x', hrpt.data.x)
+print('hrpt.data.meas', hrpt.data.meas)
+print('hrpt.data.calc', hrpt.data.calc)
+
+project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+
+print('hrpt.data.calc', hrpt.data.calc)
+
+hrpt.show_as_cif()
+
+print('hrpt.data.meas[3]', hrpt.data.meas[3])
+print('hrpt.data["3"].intensity_meas', hrpt.data["3"].intensity_meas)
+print('hrpt.data["3"].intensity_meas', hrpt.data["3"].intensity_meas.value)
+
+print("hrpt.background['1'].y", hrpt.background['1'].y)
+print("hrpt.background['1'].y.value", hrpt.background['1'].y.value)
+print("hrpt.background['1'].y.free", hrpt.background['1'].y.free)
+
+
+#exit()
+# %%
+
 # %% [markdown]
 # ## Step 4: Perform Analysis
 
@@ -75,12 +101,12 @@ hrpt.show_as_cif()
 # Select sample model parameters to refine
 lbco.cell.length_a.free = True
 
-#lbco.atom_sites['La'].b_iso.free = True
-#lbco.atom_sites['Ba'].b_iso.free = True
-#lbco.atom_sites['Co'].b_iso.free = True
-#lbco.atom_sites['O'].b_iso.free = True
-for atom_site in lbco.atom_sites:
-    atom_site.b_iso.free = True
+lbco.atom_sites['La'].b_iso.free = True
+lbco.atom_sites['Ba'].b_iso.free = True
+lbco.atom_sites['Co'].b_iso.free = True
+lbco.atom_sites['O'].b_iso.free = True
+#for atom_site in lbco.atom_sites:
+#    atom_site.b_iso.free = True
 
 # %%
 # Select experiment parameters to refine
@@ -93,11 +119,11 @@ hrpt.peak.broad_gauss_v.free = True
 hrpt.peak.broad_gauss_w.free = True
 hrpt.peak.broad_lorentz_y.free = True
 
-#hrpt.background['10'].y.free = True
-#hrpt.background['30'].y.free = True
-#hrpt.background['50'].y.free = True
-#hrpt.background['110'].y.free = True
-#hrpt.background['165'].y.free = True
+#hrpt.background['1'].y.free = True
+##hrpt.background['2'].y.free = True
+#hrpt.background['3'].y.free = True
+#hrpt.background['4'].y.free = True
+#hrpt.background['5'].y.free = True
 for line_segment in hrpt.background:
     line_segment.y.free = True
 
@@ -108,3 +134,6 @@ project.analysis.fit()
 project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
+#hrpt.show_as_cif()
+
+print(lbco.cell)
