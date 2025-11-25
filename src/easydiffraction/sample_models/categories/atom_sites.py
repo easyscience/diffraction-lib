@@ -288,17 +288,13 @@ class AtomSite(CategoryItem):
     def b_iso(self, value):
         self._b_iso.value = value
 
-
-
-
-
 class AtomSites(CategoryCollection):
     """Collection of AtomSite instances."""
 
     def __init__(self):
         super().__init__(item_type=AtomSite)
 
-    def _update(self):
+    def _apply_atomic_coordinates_symmetry_constraints(self):
         """Apply symmetry rules to fractional coordinates of atom
         sites.
         """
@@ -329,3 +325,7 @@ class AtomSites(CategoryCollection):
             atom.fract_x.value = dummy_atom['fract_x']
             atom.fract_y.value = dummy_atom['fract_y']
             atom.fract_z.value = dummy_atom['fract_z']
+
+    def _update(self):
+        """Update atom sites by applying symmetry constraints."""
+        self._apply_atomic_coordinates_symmetry_constraints()

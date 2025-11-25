@@ -157,8 +157,8 @@ class Cell(CategoryItem):
     def angle_gamma(self, value):
         self._angle_gamma.value = value
 
-    def _update(self):
-        """Apply symmetry rules to unit-cell parameters in place."""
+    def _apply_cell_symmetry_constraints(self):
+        """Apply symmetry constraints to cell parameters."""
         dummy_cell = {
             'lattice_a': self.length_a.value,
             'lattice_b': self.length_b.value,
@@ -168,11 +168,19 @@ class Cell(CategoryItem):
             'angle_gamma': self.angle_gamma.value,
         }
         space_group_name = self._parent.space_group.name_h_m.value
-        ecr.apply_cell_symmetry_constraints(cell=dummy_cell,
-                                            name_hm=space_group_name,)
+
+        ecr.apply_cell_symmetry_constraints(
+            cell=dummy_cell,
+            name_hm=space_group_name,
+        )
+
         self.length_a.value = dummy_cell['lattice_a']
         self.length_b.value = dummy_cell['lattice_b']
         self.length_c.value = dummy_cell['lattice_c']
         self.angle_alpha.value = dummy_cell['angle_alpha']
         self.angle_beta.value = dummy_cell['angle_beta']
         self.angle_gamma.value = dummy_cell['angle_gamma']
+
+    def _update(self):
+        """Update cell parameters by applying symmetry constraints."""
+        self._apply_cell_symmetry_constraints()
