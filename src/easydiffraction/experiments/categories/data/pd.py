@@ -331,6 +331,8 @@ class PdCwlData(CategoryCollection):
 
         self._set_calc(y_calc_scaled + self.bkg)
 
+        # TODO: Reduce calculation for the 'incl' points (refinement_status) only
+
 
 
 class PdTofData(CategoryCollection):

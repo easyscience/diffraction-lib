@@ -79,7 +79,7 @@ hrpt = project.experiments['hrpt']
 
 # %%
 hrpt.show_as_cif()
-exit()
+#exit()
 
 print('==')
 print('a', hrpt.background['1'].y.value)
@@ -152,3 +152,5 @@ project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 #hrpt.show_as_cif()
 
 print(lbco.cell)
+
+hrpt.show_as_cif()

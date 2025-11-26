@@ -164,13 +164,19 @@ class Fitter:
         residuals: List[float] = []
 
         for experiment, weight in zip(experiments.values(), _weights, strict=True):
+
+            # Update categories to reflect new parameter values
+            for sample_model in sample_models:
+                sample_model._update_categories()
+            experiment._update_categories(called_by_minimizer=True)
+
             # Calculate the difference between measured and calculated
             # patterns
-            calculator.calculate_pattern(
-                sample_models,
-                experiment,
-                called_by_minimizer=True,
-            )
+            #calculator.calculate_pattern(
+            #    sample_models,
+            #    experiment,
+            #    called_by_minimizer=True,
+            #)
             ###y_calc: np.ndarray = experiment.datastore.calc
             ###y_meas: np.ndarray = experiment.datastore.meas
             ###y_meas_su: np.ndarray = experiment.datastore.meas_su

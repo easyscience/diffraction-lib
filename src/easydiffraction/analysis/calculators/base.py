@@ -55,6 +55,7 @@ class CalculatorBase(ABC):
                 minimizer.
         """
 
+
         # TODO: Call update for all the datablocks involved, starting
         #  with sample_models, then experiment, to ensure all data is
         #  up-to-date before calculation.
@@ -66,9 +67,12 @@ class CalculatorBase(ABC):
         #    - Update data refinement status flag based on the excluded
         #      regions category
 
+        # TODO: This method is still in use in other places, so we
+        #  need to refactor them to call _update_categories
+
         for sample_model in sample_models:
             sample_model._update_categories()
-        experiment._update_categories(called_by_minimizer=called_by_minimizer)
+        experiment._update_categories()
         return
 
 
