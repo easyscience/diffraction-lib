@@ -249,6 +249,11 @@ class PdCwlData(CategoryCollection):
     # TODO: ???
     #_description: str = 'Powder diffraction data points for constant-wavelength experiments.'
 
+    # Redefine update priority to ensure data updated after other
+    # categories. Higher number = runs later. Default for other categories,
+    # e.g., background and excluded regions are 10 by default
+    _update_priority = 100
+
     def __init__(self):
         super().__init__(item_type=PdCwlDataPoint)
 
@@ -300,9 +305,32 @@ class PdCwlData(CategoryCollection):
     def refinement_status(self) -> np.ndarray:
         return np.fromiter((p.refinement_status.value for p in self._items), dtype=object)
 
-    def _update(self):
-        pass
-        #print('!!!! PdCwlData _update called')
+    def _update(self, called_by_minimizer=False):
+        experiment = self._parent
+        experiments = experiment._parent
+        project = experiments._parent
+        sample_models = project.sample_models
+        #calculator = experiment.calculator
+        calculator = project.analysis.calculator
+
+        initial_y_calc = np.zeros_like(self.x)
+        y_calc_scaled = initial_y_calc
+        for linked_phase in experiment.linked_phases:
+            sample_model_id = linked_phase._identity.category_entry_name
+            sample_model_scale = linked_phase.scale.value
+            sample_model = sample_models[sample_model_id]
+
+            sample_model_y_calc = calculator._calculate_single_model_pattern(
+                sample_model,
+                experiment,
+                called_by_minimizer=called_by_minimizer,
+            )
+
+            sample_model_y_calc_scaled = sample_model_scale * sample_model_y_calc
+            y_calc_scaled += sample_model_y_calc_scaled
+
+        self._set_calc(y_calc_scaled + self.bkg)
+
 
 
 class PdTofData(CategoryCollection):

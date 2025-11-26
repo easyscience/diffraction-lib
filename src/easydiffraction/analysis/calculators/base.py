@@ -66,6 +66,16 @@ class CalculatorBase(ABC):
         #    - Update data refinement status flag based on the excluded
         #      regions category
 
+        for sample_model in sample_models:
+            sample_model._update_categories()
+        experiment._update_categories(called_by_minimizer=called_by_minimizer)
+        return
+
+
+
+
+
+
 
         valid_linked_phases = self._get_valid_linked_phases(sample_models, experiment)
 
@@ -157,7 +167,7 @@ class CalculatorBase(ABC):
             A list of valid linked phases.
         """
         if not experiment.linked_phases:
-            print('Warning: No linked phases found. Returning empty pattern.')
+            print('Warning: No linked phases defined. Returning empty pattern.')
             return []
 
         valid_linked_phases = []
@@ -165,7 +175,7 @@ class CalculatorBase(ABC):
             if linked_phase._identity.category_entry_name not in sample_models.names:
                 print(
                     f"Warning: Linked phase '{linked_phase.id.value}' not "
-                    f'found in Sample Models {sample_models.names}'
+                    f'found in Sample Models {sample_models.names}. Skipping it.'
                 )
                 continue
             valid_linked_phases.append(linked_phase)

@@ -19,6 +19,7 @@ from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
 from easydiffraction.experiments.categories.data.pd import PdCwlData
 from easydiffraction.experiments.categories.data.pd import DataFactory
+#from easydiffraction.analysis.calculators.factory import CalculatorFactory
 
 
 
@@ -45,6 +46,10 @@ class ExperimentBase(DatablockItem):
             sample_form=self.type.sample_form.value,
             beam_mode=self.type.beam_mode.value,
         )
+        # TODO: Should return default calculator based on experiment
+        #  type
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+        self._calculator = CalculatorFactory.create_calculator('cryspy')
         self._identity.datablock_entry_name = lambda: self.name
 
     @property
@@ -74,6 +79,11 @@ class ExperimentBase(DatablockItem):
         arrays.
         """
         return self._datastore
+
+    @property
+    def calculator(self):
+        """Calculator engine used for pattern calculations."""
+        return self._calculator
 
     @property
     def as_cif(self) -> str:

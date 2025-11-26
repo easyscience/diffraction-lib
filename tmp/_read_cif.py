@@ -79,7 +79,7 @@ hrpt = project.experiments['hrpt']
 
 # %%
 hrpt.show_as_cif()
-#exit()
+exit()
 
 print('==')
 print('a', hrpt.background['1'].y.value)
@@ -91,11 +91,11 @@ print('hrpt.data.x', hrpt.data.x)
 print('hrpt.data.meas', hrpt.data.meas)
 print('hrpt.data.calc', hrpt.data.calc)
 
-project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+###project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 print('hrpt.data.calc', hrpt.data.calc)
 
-hrpt.show_as_cif()
+###hrpt.show_as_cif()
 
 print('hrpt.data.meas[3]', hrpt.data.meas[3])
 print('hrpt.data["3"].intensity_meas', hrpt.data["3"].intensity_meas)

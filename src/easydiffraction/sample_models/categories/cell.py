@@ -181,6 +181,6 @@ class Cell(CategoryItem):
         self.angle_beta.value = dummy_cell['angle_beta']
         self.angle_gamma.value = dummy_cell['angle_gamma']
 
-    def _update(self):
+    def _update(self, called_by_minimizer=False):
         """Update cell parameters by applying symmetry constraints."""
         self._apply_cell_symmetry_constraints()

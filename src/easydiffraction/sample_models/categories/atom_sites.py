@@ -326,6 +326,6 @@ class AtomSites(CategoryCollection):
             atom.fract_y.value = dummy_atom['fract_y']
             atom.fract_z.value = dummy_atom['fract_z']
 
-    def _update(self):
+    def _update(self, called_by_minimizer=False):
         """Update atom sites by applying symmetry constraints."""
         self._apply_atomic_coordinates_symmetry_constraints()

@@ -118,7 +118,7 @@ class LineSegmentBackground(BackgroundBase):
     def __init__(self):
         super().__init__(item_type=LineSegment)
 
-    def _update(self):
+    def _update(self, called_by_minimizer=False):
         """Interpolate background points over x_data."""
         data = self._parent.data
         x = data.x
@@ -142,6 +142,7 @@ class LineSegmentBackground(BackgroundBase):
         data._set_bkg(y)
 
     def calculate(self, x_data):
+        pass # TODO: remove this method. _update does the job now.
         """Interpolate background points over x_data."""
         if not self:
             log.warning('No background points found. Setting background to zero.')

@@ -87,7 +87,7 @@ class ExcludedRegions(CategoryCollection):
     def __init__(self):
         super().__init__(item_type=ExcludedRegion)
 
-    def _update(self):
+    def _update(self, called_by_minimizer=False):
         data = self._parent.data
         x = data.x
 

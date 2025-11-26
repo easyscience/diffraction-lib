@@ -16,13 +16,19 @@ from easydiffraction.core.validation import DataTypes
 class CategoryItem(GuardedBase):
     """Base class for items in a category collection."""
 
+    # TODO: Set different default priorities for CategoryItem and
+    #  CategoryCollection and use them when serializing to CIF!
+    # TODO: Common for all categories
+    _update_priority = 10  # Default. Lower values run first.
+
     def __str__(self) -> str:
         """Human-readable representation of this component."""
         name = self._log_name
         params = ', '.join(f'{p.name}={p.value!r}' for p in self.parameters)
         return f'<{name} ({params})>'
 
-    def _update(self):
+    # TODO: Common for all categories
+    def _update(self, called_by_minimizer=False):
         pass
 
     @property
@@ -56,13 +62,17 @@ class CategoryCollection(CollectionBase):
     Each item is a CategoryItem (component).
     """
 
+    # TODO: Common for all categories
+    _update_priority = 10  # Default. Lower values run first.
+
     def __str__(self) -> str:
         """Human-readable representation of this component."""
         name = self._log_name
         size = len(self)
         return f'<{name} collection ({size} items)>'
 
-    def _update(self):
+    # TODO: Common for all categories
+    def _update(self, called_by_minimizer=False):
         pass
 
     @property

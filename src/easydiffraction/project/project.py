@@ -52,6 +52,9 @@ class Project(GuardedBase):
         self._saved = False
         self._varname = varname()
 
+        #self._experiments._parent = self
+        #print('***', id(self._experiments._parent), id(self), id(self._experiments))
+
     # ------------------------------------------------------------------
     # Dunder methods
     # ------------------------------------------------------------------

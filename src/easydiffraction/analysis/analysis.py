@@ -546,12 +546,19 @@ class Analysis:
                 weights=self.joint_fit_experiments,
             )
         elif self.fit_mode == 'single':
+            # TODO: Find a better way without creating dummy experiments?
             for expt_name in experiments.names:
                 console.paragraph(
                     f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"
                 )
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name
+
+                # This is a workaround to set the parent project
+                # of the dummy experiments collection, so that
+                # parameters can be resolved correctly during fitting.
+                object.__setattr__(dummy_experiments, '_parent', self.project)
+
                 dummy_experiments.add(experiment)
                 self.fitter.fit(sample_models, dummy_experiments, calculator)
         else:
