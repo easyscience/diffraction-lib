@@ -243,6 +243,7 @@ def param_from_cif(
         self.value = u.n
         if not np.isnan(u.s) and hasattr(self, 'uncertainty'):
             self.uncertainty = u.s  # type: ignore[attr-defined]
+            self.free = True  # Mark as free if uncertainty is present
 
     # If string, strip quotes if present
     elif self._value_type == DataTypes.STRING:
@@ -327,6 +328,7 @@ def category_collection_from_cif(
                         param.value = u.n
                         if not np.isnan(u.s) and hasattr(param, 'uncertainty'):
                             param.uncertainty = u.s  # type: ignore[attr-defined]
+                            param.free = True  # Mark as free if uncertainty is present
 
                     # If string, strip quotes if present
                     elif param._value_type == DataTypes.STRING:
