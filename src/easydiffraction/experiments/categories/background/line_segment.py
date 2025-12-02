@@ -33,7 +33,7 @@ class LineSegment(CategoryItem):
     def __init__(
         self,
         *,
-        id,
+        id,  # TODO: rename as in the case of data points?
         x,
         y,
     ):

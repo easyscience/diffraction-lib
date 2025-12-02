@@ -39,6 +39,7 @@ class PolynomialTerm(CategoryItem):
         self,
         *,
         order=None,
+        # TODO: add id as in line segment
         coef=None,
     ) -> None:
         super().__init__()
