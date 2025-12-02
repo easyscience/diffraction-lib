@@ -37,7 +37,7 @@ project = ed.Project()
 ed.download_from_repository('lbco.cif', destination='data')
 
 # %%
-project.sample_models.add(cif_path="data/lbco.cif")
+project.sample_models.add(cif_path='data/lbco.cif')
 
 # %% [markdown]
 # ## Step 3: Define Experiment
@@ -47,7 +47,7 @@ project.sample_models.add(cif_path="data/lbco.cif")
 ed.download_from_repository('hrpt_lbco.cif', destination='data')
 
 # %%
-project.experiments.add(cif_path="data/hrpt_lbco.cif")
+project.experiments.add(cif_path='data/hrpt_lbco.cif')
 
 # %% [markdown]
 # ## Step 4: Perform Analysis

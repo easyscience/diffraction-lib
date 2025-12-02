@@ -44,7 +44,7 @@ model.cell.length_c = 14.1
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add_from_args(
+model.atom_sites.add(
     label='Zn',
     type_symbol='Zn',
     fract_x=0,
@@ -53,7 +53,7 @@ model.atom_sites.add_from_args(
     wyckoff_letter='b',
     b_iso=0.5,
 )
-model.atom_sites.add_from_args(
+model.atom_sites.add(
     label='Cu',
     type_symbol='Cu',
     fract_x=0.5,
@@ -62,7 +62,7 @@ model.atom_sites.add_from_args(
     wyckoff_letter='e',
     b_iso=0.5,
 )
-model.atom_sites.add_from_args(
+model.atom_sites.add(
     label='O',
     type_symbol='O',
     fract_x=0.21,
@@ -71,7 +71,7 @@ model.atom_sites.add_from_args(
     wyckoff_letter='h',
     b_iso=0.5,
 )
-model.atom_sites.add_from_args(
+model.atom_sites.add(
     label='Cl',
     type_symbol='Cl',
     fract_x=0,
@@ -80,7 +80,7 @@ model.atom_sites.add_from_args(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-model.atom_sites.add_from_args(
+model.atom_sites.add(
     label='H',
     type_symbol='2H',
     fract_x=0.13,
@@ -89,26 +89,6 @@ model.atom_sites.add_from_args(
     wyckoff_letter='h',
     b_iso=0.5,
 )
-
-# %% [markdown]
-# #### Symmetry constraints
-#
-# Show CIF output before applying symmetry constraints.
-
-# %%
-model.show_as_cif()
-
-# %% [markdown]
-# Apply symmetry constraints.
-
-# %%
-model.apply_symmetry_constraints()
-
-# %% [markdown]
-# Show CIF output after applying symmetry constraints.
-
-# %%
-model.show_as_cif()
 
 # %% [markdown]
 # ## Define Experiment
@@ -148,21 +128,21 @@ expt.peak.broad_lorentz_y = 0
 # #### Set Background
 
 # %%
-expt.background.add_from_args(x=4.4196, y=500)
-expt.background.add_from_args(x=6.6207, y=500)
-expt.background.add_from_args(x=10.4918, y=500)
-expt.background.add_from_args(x=15.4634, y=500)
-expt.background.add_from_args(x=45.6041, y=500)
-expt.background.add_from_args(x=74.6844, y=500)
-expt.background.add_from_args(x=103.4187, y=500)
-expt.background.add_from_args(x=121.6311, y=500)
-expt.background.add_from_args(x=159.4116, y=500)
+expt.background.add(id='1', x=4.4196, y=500)
+expt.background.add(id='2', x=6.6207, y=500)
+expt.background.add(id='3', x=10.4918, y=500)
+expt.background.add(id='4', x=15.4634, y=500)
+expt.background.add(id='5', x=45.6041, y=500)
+expt.background.add(id='6', x=74.6844, y=500)
+expt.background.add(id='7', x=103.4187, y=500)
+expt.background.add(id='8', x=121.6311, y=500)
+expt.background.add(id='9', x=159.4116, y=500)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add_from_args(id='hs', scale=0.5)
+expt.linked_phases.add(id='hs', scale=0.5)
 
 # %% [markdown]
 # ## Define Project
@@ -185,13 +165,13 @@ project.plotter.engine = 'plotly'
 # #### Add Sample Model
 
 # %%
-project.sample_models.add(model)
+project.sample_models.add(sample_model=model)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(expt)
+project.experiments.add(experiment=expt)
 
 # %% [markdown]
 # ## Perform Analysis

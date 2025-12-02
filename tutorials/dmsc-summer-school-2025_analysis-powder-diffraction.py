@@ -120,7 +120,7 @@ ed.download_from_repository(file_name, destination=dir_path)
 # for more details about different types of experiments.
 
 # %%
-project_1.experiments.add_from_data_path(
+project_1.experiments.add(
     name='sim_si',
     data_path=si_xye_path,
     sample_form='powder',
@@ -183,8 +183,8 @@ project_1.plot_meas(expt_name='sim_si')
 # for more details about excluding regions from the measured data.
 
 # %%
-project_1.experiments['sim_si'].excluded_regions.add_from_args(start=0, end=55000)
-project_1.experiments['sim_si'].excluded_regions.add_from_args(start=105500, end=200000)
+project_1.experiments['sim_si'].excluded_regions.add(id=1, start=0, end=55000)
+project_1.experiments['sim_si'].excluded_regions.add(id=2, start=105500, end=200000)
 
 # %% [markdown]
 # To visualize the effect of excluding the high TOF region, we can plot
@@ -353,13 +353,13 @@ project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0147
 
 # %%
 project_1.experiments['sim_si'].background_type = 'line-segment'
-project_1.experiments['sim_si'].background.add_from_args(x=50000, y=0.01)
-project_1.experiments['sim_si'].background.add_from_args(x=60000, y=0.01)
-project_1.experiments['sim_si'].background.add_from_args(x=70000, y=0.01)
-project_1.experiments['sim_si'].background.add_from_args(x=80000, y=0.01)
-project_1.experiments['sim_si'].background.add_from_args(x=90000, y=0.01)
-project_1.experiments['sim_si'].background.add_from_args(x=100000, y=0.01)
-project_1.experiments['sim_si'].background.add_from_args(x=110000, y=0.01)
+project_1.experiments['sim_si'].background.add(id=1, x=50000, y=0.01)
+project_1.experiments['sim_si'].background.add(id=2, x=60000, y=0.01)
+project_1.experiments['sim_si'].background.add(id=3, x=70000, y=0.01)
+project_1.experiments['sim_si'].background.add(id=4, x=80000, y=0.01)
+project_1.experiments['sim_si'].background.add(id=5, x=90000, y=0.01)
+project_1.experiments['sim_si'].background.add(id=6, x=100000, y=0.01)
+project_1.experiments['sim_si'].background.add(id=7, x=110000, y=0.01)
 
 # %% [markdown]
 # ### 🧩 Create a Sample Model – Si
@@ -446,7 +446,7 @@ project_1.experiments['sim_si'].background.add_from_args(x=110000, y=0.01)
 # #### Add Sample Model
 
 # %%
-project_1.sample_models.add_minimal(name='si')
+project_1.sample_models.add(name='si')
 
 # %% [markdown]
 # #### Set Space Group
@@ -480,7 +480,7 @@ project_1.sample_models['si'].cell.length_a = 5.43
 # for more details about the atom sites category.
 
 # %%
-project_1.sample_models['si'].atom_sites.add_from_args(
+project_1.sample_models['si'].atom_sites.add(
     label='Si',
     type_symbol='Si',
     fract_x=0,
@@ -504,7 +504,7 @@ project_1.sample_models['si'].atom_sites.add_from_args(
 # for more details about linking a sample model to an experiment.
 
 # %%
-project_1.experiments['sim_si'].linked_phases.add_from_args(id='si', scale=1.0)
+project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
 
 # %% [markdown]
 # ### 🚀 Analyze and Fit the Data
@@ -750,7 +750,7 @@ lbco_xye_path = f'{dir_path}/{file_name}'
 # reduced data file is missing.
 ed.download_from_repository(file_name, destination=dir_path)
 
-project_2.experiments.add_from_data_path(
+project_2.experiments.add(
     name='sim_lbco',
     data_path=lbco_xye_path,
     sample_form='powder',
@@ -781,8 +781,8 @@ project_2.experiments.add_from_data_path(
 project_2.plotter.engine = 'plotly'
 project_2.plot_meas(expt_name='sim_lbco')
 
-project_2.experiments['sim_lbco'].excluded_regions.add_from_args(start=0, end=55000)
-project_2.experiments['sim_lbco'].excluded_regions.add_from_args(start=105500, end=200000)
+project_2.experiments['sim_lbco'].excluded_regions.add(id=1, start=0, end=55000)
+project_2.experiments['sim_lbco'].excluded_regions.add(id=2, start=105500, end=200000)
 
 project_2.plot_meas(expt_name='sim_lbco')
 
@@ -859,13 +859,13 @@ project_2.experiments['sim_lbco'].peak.asym_alpha_1 = sim_si_peak.asym_alpha_1.v
 
 # %% tags=["solution", "hide-input"]
 project_2.experiments['sim_lbco'].background_type = 'line-segment'
-project_2.experiments['sim_lbco'].background.add_from_args(x=50000, y=0.2)
-project_2.experiments['sim_lbco'].background.add_from_args(x=60000, y=0.2)
-project_2.experiments['sim_lbco'].background.add_from_args(x=70000, y=0.2)
-project_2.experiments['sim_lbco'].background.add_from_args(x=80000, y=0.2)
-project_2.experiments['sim_lbco'].background.add_from_args(x=90000, y=0.2)
-project_2.experiments['sim_lbco'].background.add_from_args(x=100000, y=0.2)
-project_2.experiments['sim_lbco'].background.add_from_args(x=110000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id=1, x=50000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id=2, x=60000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id=3, x=70000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id=4, x=80000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id=5, x=90000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id=6, x=100000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id=7, x=110000, y=0.2)
 
 # %% [markdown]
 # ### 🧩 Exercise 3: Define a Sample Model – LBCO
@@ -1005,7 +1005,7 @@ project_2.sample_models['lbco'].cell.length_a = 3.88
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.sample_models['lbco'].atom_sites.add_from_args(
+project_2.sample_models['lbco'].atom_sites.add(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -1015,7 +1015,7 @@ project_2.sample_models['lbco'].atom_sites.add_from_args(
     b_iso=0.95,
     occupancy=0.5,
 )
-project_2.sample_models['lbco'].atom_sites.add_from_args(
+project_2.sample_models['lbco'].atom_sites.add(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -1025,7 +1025,7 @@ project_2.sample_models['lbco'].atom_sites.add_from_args(
     b_iso=0.95,
     occupancy=0.5,
 )
-project_2.sample_models['lbco'].atom_sites.add_from_args(
+project_2.sample_models['lbco'].atom_sites.add(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -1034,7 +1034,7 @@ project_2.sample_models['lbco'].atom_sites.add_from_args(
     wyckoff_letter='b',
     b_iso=0.80,
 )
-project_2.sample_models['lbco'].atom_sites.add_from_args(
+project_2.sample_models['lbco'].atom_sites.add(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -1060,7 +1060,7 @@ project_2.sample_models['lbco'].atom_sites.add_from_args(
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.experiments['sim_lbco'].linked_phases.add_from_args(id='lbco', scale=1.0)
+project_2.experiments['sim_lbco'].linked_phases.add(id='lbco', scale=1.0)
 
 # %% [markdown]
 # ### 🚀 Exercise 5: Analyze and Fit the Data
@@ -1366,7 +1366,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1, x_max=1.7, d_spacing=
 
 # %% tags=["solution", "hide-input"]
 # Set Space Group
-project_2.sample_models.add_minimal(name='si')
+project_2.sample_models.add(name='si')
 project_2.sample_models['si'].space_group.name_h_m = 'F d -3 m'
 project_2.sample_models['si'].space_group.it_coordinate_system_code = '2'
 
@@ -1374,7 +1374,7 @@ project_2.sample_models['si'].space_group.it_coordinate_system_code = '2'
 project_2.sample_models['si'].cell.length_a = 5.43
 
 # Set Atom Sites
-project_2.sample_models['si'].atom_sites.add_from_args(
+project_2.sample_models['si'].atom_sites.add(
     label='Si',
     type_symbol='Si',
     fract_x=0,
@@ -1385,7 +1385,7 @@ project_2.sample_models['si'].atom_sites.add_from_args(
 )
 
 # Assign Sample Model to Experiment
-project_2.experiments['sim_lbco'].linked_phases.add_from_args(id='si', scale=1.0)
+project_2.experiments['sim_lbco'].linked_phases.add(id='si', scale=1.0)
 
 # %% [markdown]
 # #### Exercise 5.11: Refine the Scale of the Si Phase

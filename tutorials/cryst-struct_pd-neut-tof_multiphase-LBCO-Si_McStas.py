@@ -42,7 +42,7 @@ model_1.cell.length_a = 3.8909
 # #### Set Atom Sites
 
 # %%
-model_1.atom_sites.add_from_args(
+model_1.atom_sites.add(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -52,7 +52,7 @@ model_1.atom_sites.add_from_args(
     b_iso=0.2,
     occupancy=0.5,
 )
-model_1.atom_sites.add_from_args(
+model_1.atom_sites.add(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -62,7 +62,7 @@ model_1.atom_sites.add_from_args(
     b_iso=0.2,
     occupancy=0.5,
 )
-model_1.atom_sites.add_from_args(
+model_1.atom_sites.add(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -71,7 +71,7 @@ model_1.atom_sites.add_from_args(
     wyckoff_letter='b',
     b_iso=0.2567,
 )
-model_1.atom_sites.add_from_args(
+model_1.atom_sites.add(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -104,7 +104,7 @@ model_2.cell.length_a = 5.43146
 # #### Set Atom Sites
 
 # %%
-model_2.atom_sites.add_from_args(
+model_2.atom_sites.add(
     label='Si',
     type_symbol='Si',
     fract_x=0.0,
@@ -173,26 +173,26 @@ experiment.background_type = 'line-segment'
 # Add background points.
 
 # %%
-experiment.background.add_from_args(x=45000, y=0.2)
-experiment.background.add_from_args(x=50000, y=0.2)
-experiment.background.add_from_args(x=55000, y=0.2)
-experiment.background.add_from_args(x=65000, y=0.2)
-experiment.background.add_from_args(x=70000, y=0.2)
-experiment.background.add_from_args(x=75000, y=0.2)
-experiment.background.add_from_args(x=80000, y=0.2)
-experiment.background.add_from_args(x=85000, y=0.2)
-experiment.background.add_from_args(x=90000, y=0.2)
-experiment.background.add_from_args(x=95000, y=0.2)
-experiment.background.add_from_args(x=100000, y=0.2)
-experiment.background.add_from_args(x=105000, y=0.2)
-experiment.background.add_from_args(x=110000, y=0.2)
+experiment.background.add(x=45000, y=0.2)
+experiment.background.add(x=50000, y=0.2)
+experiment.background.add(x=55000, y=0.2)
+experiment.background.add(x=65000, y=0.2)
+experiment.background.add(x=70000, y=0.2)
+experiment.background.add(x=75000, y=0.2)
+experiment.background.add(x=80000, y=0.2)
+experiment.background.add(x=85000, y=0.2)
+experiment.background.add(x=90000, y=0.2)
+experiment.background.add(x=95000, y=0.2)
+experiment.background.add(x=100000, y=0.2)
+experiment.background.add(x=105000, y=0.2)
+experiment.background.add(x=110000, y=0.2)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-experiment.linked_phases.add_from_args(id='lbco', scale=4.0)
-experiment.linked_phases.add_from_args(id='si', scale=0.2)
+experiment.linked_phases.add(id='lbco', scale=4.0)
+experiment.linked_phases.add(id='si', scale=0.2)
 
 # %% [markdown]
 # ## Define Project
@@ -242,8 +242,8 @@ project.plot_meas(expt_name='mcstas')
 # Add excluded regions.
 
 # %%
-experiment.excluded_regions.add_from_args(start=0, end=40000)
-experiment.excluded_regions.add_from_args(start=108000, end=200000)
+experiment.excluded_regions.add(start=0, end=40000)
+experiment.excluded_regions.add(start=108000, end=200000)
 
 # %% [markdown]
 # Show excluded regions.
