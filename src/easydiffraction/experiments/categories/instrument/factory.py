@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-
 """Factory for instrument category items.
 
 Provides a stable entry point for creating instrument objects from the

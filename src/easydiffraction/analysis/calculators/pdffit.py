@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-
 """PDF calculation backend using diffpy.pdffit2 if available.
 
 The class adapts the engine to EasyDiffraction calculator interface and

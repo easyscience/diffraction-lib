@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-
 """Identity helpers to build CIF-like hierarchical names.
 
 Used by containers and items to expose datablock/category/entry names
