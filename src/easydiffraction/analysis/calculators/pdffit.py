@@ -97,7 +97,7 @@ class PdffitCalculator(CalculatorBase):
         calculator.setvar('spdiameter', experiment.peak.damp_particle_diameter.value)
 
         # Data
-        x = list(experiment.datastore.x)
+        x = list(experiment.data.x)
         y_noise = list(np.zeros_like(x))
 
         # Assign the data to the PDFfit calculator

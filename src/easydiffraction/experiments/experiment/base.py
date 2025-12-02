@@ -11,7 +11,6 @@ from easydiffraction.experiments.categories.excluded_regions import ExcludedRegi
 from easydiffraction.experiments.categories.linked_phases import LinkedPhases
 from easydiffraction.experiments.categories.peak.factory import PeakFactory
 from easydiffraction.experiments.categories.peak.factory import PeakProfileTypeEnum
-from easydiffraction.experiments.datastore.factory import DatastoreFactory
 from easydiffraction.io.cif.serialize import experiment_to_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
@@ -33,7 +32,7 @@ if TYPE_CHECKING:
 class ExperimentBase(DatablockItem):
     """Base class for all experiments with only core attributes.
 
-    Wraps experiment type, instrument and datastore.
+    Wraps experiment type and instrument.
     """
 
     def __init__(
@@ -45,10 +44,6 @@ class ExperimentBase(DatablockItem):
         super().__init__()
         self._name = name
         self._type = type
-        self._datastore = DatastoreFactory.create(
-            sample_form=self.type.sample_form.value,
-            beam_mode=self.type.beam_mode.value,
-        )
         # TODO: Should return default calculator based on experiment
         #  type
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
@@ -77,13 +72,6 @@ class ExperimentBase(DatablockItem):
         return self._type
 
     @property
-    def datastore(self):
-        """Data container with x, y, error, calc and background
-        arrays.
-        """
-        return self._datastore
-
-    @property
     def calculator(self):
         """Calculator engine used for pattern calculations."""
         return self._calculator
@@ -94,17 +82,15 @@ class ExperimentBase(DatablockItem):
         return experiment_to_cif(self)
 
     def show_as_cif(self) -> None:
-        """Pretty-print the experiment and datastore as CIF text."""
+        """Pretty-print the experiment as CIF text."""
         experiment_cif = super().as_cif
-        datastore_cif = self.datastore.as_truncated_cif
-        cif_text: str = f'{experiment_cif}\n\n{datastore_cif}'
         paragraph_title: str = f"Experiment 🔬 '{self.name}' as cif"
         console.paragraph(paragraph_title)
-        render_cif(cif_text)
+        render_cif(experiment_cif)
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load ASCII data from file into the experiment datastore.
+        """Load ASCII data from file into the experiment data category.
 
         Args:
             data_path: Path to the ASCII file to load.

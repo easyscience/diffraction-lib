@@ -360,10 +360,7 @@ class CryspyCalculator(CalculatorBase):
                 if attr_obj is not None:
                     cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 
-        ###x_data = experiment.datastore.x
-        # new 'data' instead of 'datastore'
-        ###x_data = experiment.data.x
-        x_data = experiment.data.x  ###[experiment.data._mask]
+        x_data = experiment.data.x
         twotheta_min = float(x_data.min())
         twotheta_max = float(x_data.max())
         cif_lines.append('')
@@ -408,13 +405,8 @@ class CryspyCalculator(CalculatorBase):
             cif_lines.append('_tof_meas_intensity')
             cif_lines.append('_tof_meas_intensity_sigma')
 
-        ###y_data = experiment.datastore.meas
-        ###sy_data = experiment.datastore.meas_su
-        # new 'data' instead of 'datastore'
-        ###y_data = experiment.data.meas
-        ###sy_data = experiment.data.meas_su
-        y_data: np.ndarray = experiment.data.meas  ###[experiment.data._mask]
-        sy_data: np.ndarray = experiment.data.meas_su  ###[experiment.data._mask]
+        y_data: np.ndarray = experiment.data.meas
+        sy_data: np.ndarray = experiment.data.meas_su
 
         for x_val, y_val, sy_val in zip(x_data, y_data, sy_data, strict=True):
             cif_lines.append(f'  {x_val:.5f}   {y_val:.5f}   {sy_val:.5f}')

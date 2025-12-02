@@ -172,21 +172,9 @@ class Fitter:
 
             # Calculate the difference between measured and calculated
             # patterns
-            #calculator.calculate_pattern(
-            #    sample_models,
-            #    experiment,
-            #    called_by_minimizer=True,
-            #)
-            ###y_calc: np.ndarray = experiment.datastore.calc
-            ###y_meas: np.ndarray = experiment.datastore.meas
-            ###y_meas_su: np.ndarray = experiment.datastore.meas_su
-            # new 'data' instead of 'datastore'
-            ###y_calc: np.ndarray = experiment.data.calc
-            ###y_meas: np.ndarray = experiment.data.meas
-            ###y_meas_su: np.ndarray = experiment.data.meas_su
-            y_calc: np.ndarray = experiment.data.calc  ###[experiment.data._mask]
-            y_meas: np.ndarray = experiment.data.meas  ###[experiment.data._mask]
-            y_meas_su: np.ndarray = experiment.data.meas_su  ###[experiment.data._mask]
+            y_calc: np.ndarray = experiment.data.calc
+            y_meas: np.ndarray = experiment.data.meas
+            y_meas_su: np.ndarray = experiment.data.meas_su
             diff = (y_meas - y_calc) / y_meas_su
 
             # Residuals are squared before going into reduced
