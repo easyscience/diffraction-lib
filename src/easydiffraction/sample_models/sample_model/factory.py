@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-
 """Factory for creating sample models from simple inputs or CIF.
 
 Supports three argument combinations: ``name``, ``cif_path``, or
@@ -64,7 +63,15 @@ class SampleModelFactory(FactoryBase):
         return cls._create_from_gemmi_block(block)
 
     @classmethod
-    def create(cls, **kwargs) -> SampleModelBase:
+    def _create_minimal(
+        cls,
+        name: str,
+    ) -> SampleModelBase:
+        """Create a minimal default model with just a name."""
+        return SampleModelBase(name=name)
+
+    @classmethod
+    def create(cls, **kwargs):
         """Create a model based on a validated argument combination.
 
         Keyword Args:
@@ -92,4 +99,4 @@ class SampleModelFactory(FactoryBase):
         elif 'cif_str' in kwargs:
             return cls._create_from_cif_str(kwargs['cif_str'])
         elif 'name' in kwargs:
-            return SampleModelBase(name=kwargs['name'])
+            return cls._create_minimal(kwargs['name'])
