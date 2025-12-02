@@ -228,6 +228,12 @@ class Project(GuardedBase):
     # Plotting
     # ------------------------------------------
 
+    def _update_categories(self, expt_name) -> None:
+        for sample_model in self.sample_models:
+            sample_model._update_categories()
+        experiment = self.experiments[expt_name]
+        experiment._update_categories()
+
     def plot_meas(
         self,
         expt_name,
@@ -235,25 +241,13 @@ class Project(GuardedBase):
         x_max=None,
         d_spacing=False,
     ):
+        self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
-        ###datastore = experiment.datastore
-        # new 'data' instead of 'datastore'
-        data = experiment.data
-        expt_type = experiment.type
 
-        # Update d-spacing if necessary
-        # TODO: This is done before every plot, and not when parameters
-        #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting
-        #  process. Need to find a better way to handle this.
-        if d_spacing:
-            self.update_pattern_d_spacing(expt_name)
-
-        # Plot measured pattern
         self.plotter.plot_meas(
-            data,
+            experiment.data,
             expt_name,
-            expt_type,
+            experiment.type,
             x_min=x_min,
             x_max=x_max,
             d_spacing=d_spacing,
@@ -266,31 +260,13 @@ class Project(GuardedBase):
         x_max=None,
         d_spacing=False,
     ):
-        ###self.analysis.calculate_pattern(expt_name)  # Recalculate pattern
-
-        for sample_model in self.sample_models:
-            sample_model._update_categories()
+        self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
-        experiment._update_categories()
 
-        ###datastore = experiment.datastore
-        # new 'data' instead of 'datastore'
-        data = experiment.data
-        expt_type = experiment.type
-
-        # Update d-spacing if necessary
-        # TODO: This is done before every plot, and not when parameters
-        #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting
-        #  process. Need to find a better way to handle this.
-        if d_spacing:
-            self.update_pattern_d_spacing(expt_name)
-
-        # Plot calculated pattern
         self.plotter.plot_calc(
-            data,
+            experiment.data,
             expt_name,
-            expt_type,
+            experiment.type,
             x_min=x_min,
             x_max=x_max,
             d_spacing=d_spacing,
@@ -304,59 +280,15 @@ class Project(GuardedBase):
         show_residual=False,
         d_spacing=False,
     ):
-        ###self.analysis.calculate_pattern(expt_name)  # Recalculate pattern
-        for sample_model in self.sample_models:
-            sample_model._update_categories()
+        self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
-        experiment._update_categories()
 
-        ###datastore = experiment.datastore
-        # new 'data' instead of 'datastore'
-        data = experiment.data
-        expt_type = experiment.type
-
-        # Update d-spacing if necessary
-        # TODO: Move to CalculatorBase calculate_pattern?
-        # TODO: This is done before every plot, and not when parameters
-        #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting
-        #  process. Need to find a better way to handle this.
-        if d_spacing:
-            self.update_pattern_d_spacing(expt_name)
-
-        # Plot measured vs calculated
         self.plotter.plot_meas_vs_calc(
-            data,
+            experiment.data,
             expt_name,
-            expt_type,
+            experiment.type,
             x_min=x_min,
             x_max=x_max,
             show_residual=show_residual,
             d_spacing=d_spacing,
         )
-
-    def update_pattern_d_spacing(self, expt_name: str) -> None:
-        """Update the pattern's d-spacing based on the experiment's beam
-        mode.
-        """
-        experiment = self.experiments[expt_name]
-        ###datastore = experiment.datastore
-        # new 'data' instead of 'datastore'
-        data = experiment.data
-        expt_type = experiment.type
-        beam_mode = expt_type.beam_mode.value
-
-        if beam_mode == BeamModeEnum.TIME_OF_FLIGHT:
-            datastore.d = tof_to_d(
-                datastore.x,
-                experiment.instrument.calib_d_to_tof_offset.value,
-                experiment.instrument.calib_d_to_tof_linear.value,
-                experiment.instrument.calib_d_to_tof_quad.value,
-            )
-        elif beam_mode == BeamModeEnum.CONSTANT_WAVELENGTH:
-            datastore.d = twotheta_to_d(
-                datastore.x,
-                experiment.instrument.setup_wavelength.value,
-            )
-        else:
-            log.error(f'Unsupported beam mode: {beam_mode} for d-spacing update.')
