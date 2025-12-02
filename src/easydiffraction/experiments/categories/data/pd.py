@@ -247,17 +247,14 @@ class PdTofDataPoint(
 
 
 
-class PdCwlData(CategoryCollection):
+class PdDataBase(CategoryCollection):
     # TODO: ???
-    #_description: str = 'Powder diffraction data points for constant-wavelength experiments.'
 
     # Redefine update priority to ensure data updated after other
     # categories. Higher number = runs later. Default for other categories,
     # e.g., background and excluded regions are 10 by default
     _update_priority = 100
 
-    def __init__(self):
-        super().__init__(item_type=PdCwlDataPoint)
 
     def _set_calc(self, values) -> None:
         """Helper method to set calculated intensity. To be used internally by calculators."""
@@ -294,16 +291,6 @@ class PdCwlData(CategoryCollection):
     @property
     def calc_status(self) -> np.ndarray:
         return np.fromiter((p.calc_status.value for p in self._items), dtype=object)
-
-    @property
-    def all_x(self) -> np.ndarray:
-        """Get the 2θ values for all data points in this collection."""
-        return np.fromiter((p.two_theta.value for p in self._items), dtype=float)
-
-    @property
-    def x(self) -> np.ndarray:
-        """Get the 2θ values for data points included in calculations."""
-        return np.fromiter((p.two_theta.value for p in self._calc_items), dtype=float)
 
     @property
     def meas(self) -> np.ndarray:
@@ -348,6 +335,22 @@ class PdCwlData(CategoryCollection):
         self._set_calc(calc + self.bkg)  ###[self._mask])
 
 
+class PdCwlData(PdDataBase):
+    # TODO: ???
+    #_description: str = 'Powder diffraction data points for constant-wavelength experiments.'
+
+    def __init__(self):
+        super().__init__(item_type=PdCwlDataPoint)
+
+    @property
+    def all_x(self) -> np.ndarray:
+        """Get the 2θ values for all data points in this collection."""
+        return np.fromiter((p.two_theta.value for p in self._items), dtype=float)
+
+    @property
+    def x(self) -> np.ndarray:
+        """Get the 2θ values for data points included in calculations."""
+        return np.fromiter((p.two_theta.value for p in self._calc_items), dtype=float)
 
 
 class PdTofData(CategoryCollection):
@@ -356,6 +359,16 @@ class PdTofData(CategoryCollection):
 
     def __init__(self):
         super().__init__(item_type=PdTofDataPoint)
+
+    @property
+    def all_x(self) -> np.ndarray:
+        """Get the TOF values for all data points in this collection."""
+        return np.fromiter((p.time_of_flight.value for p in self._items), dtype=float)
+
+    @property
+    def x(self) -> np.ndarray:
+        """Get the TOF values for data points included in calculations."""
+        return np.fromiter((p.time_of_flight.value for p in self._calc_items), dtype=float)
 
 
 
