@@ -26,7 +26,11 @@ class Experiments(DatablockCollection):
     # TODO: Move to DatablockCollection?
     # TODO: Disallow args and only allow kwargs?
     def add(self, **kwargs):
-        experiment = ExperimentFactory.create(**kwargs)
+        experiment = kwargs.pop('experiment', None)
+
+        if experiment is None:
+            experiment = ExperimentFactory.create(**kwargs)
+
         self._add(experiment)
 
     # @typechecked

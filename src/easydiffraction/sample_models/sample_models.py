@@ -22,7 +22,11 @@ class SampleModels(DatablockCollection):
     # TODO: Move to DatablockCollection?
     # TODO: Disallow args and only allow kwargs?
     def add(self, **kwargs):
-        sample_model = SampleModelFactory.create(**kwargs)
+        sample_model = kwargs.pop('sample_model', None)
+
+        if sample_model is None:
+            sample_model = SampleModelFactory.create(**kwargs)
+
         self._add(sample_model)
 
     # @typechecked
