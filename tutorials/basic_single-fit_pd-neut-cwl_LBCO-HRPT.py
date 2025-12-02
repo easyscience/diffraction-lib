@@ -703,6 +703,5 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # %% [markdown]
 # #### Show Project Summary
 
-
 # %%
 project.summary.show_report()
