@@ -249,35 +249,44 @@ class PdDataBase(CategoryCollection):
     # default
     _update_priority = 100
 
-    def _set_d_spacing(self, values) -> None:
-        """Helper method to set d-spacing values.
+    # Should be set only once
 
-        To be used internally by calculators.
+    def _set_point_id(self, values) -> None:
+        """Helper method to set point IDs."""
+        for p, v in zip(self._items, values, strict=True):
+            p.point_id._value = v
+
+    def _set_meas(self, values) -> None:
+        """Helper method to set measured intensity."""
+        for p, v in zip(self._items, values, strict=True):
+            p.intensity_meas._value = v
+
+    def _set_meas_su(self, values) -> None:
+        """Helper method to set standard uncertainty of measured
+        intensity.
         """
+        for p, v in zip(self._items, values, strict=True):
+            p.intensity_meas_su._value = v
+
+    # Can be set multiple times
+
+    def _set_d_spacing(self, values) -> None:
+        """Helper method to set d-spacing values."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.d_spacing._value = v
 
     def _set_calc(self, values) -> None:
-        """Helper method to set calculated intensity.
-
-        To be used internally by calculators.
-        """
+        """Helper method to set calculated intensity."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_calc._value = v
 
     def _set_bkg(self, values) -> None:
-        """Helper method to set background intensity.
-
-        To be used internally by calculators.
-        """
+        """Helper method to set background intensity."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_bkg._value = v
 
     def _set_calc_status(self, values) -> None:
-        """Helper method to set refinement status.
-
-        To be used internally by refiners.
-        """
+        """Helper method to set refinement status."""
         for p, v in zip(self._items, values, strict=True):
             if v:
                 p.calc_status._value = 'incl'
@@ -352,6 +361,15 @@ class PdCwlData(PdDataBase):
     def __init__(self):
         super().__init__(item_type=PdCwlDataPoint)
 
+    # Should be set only once
+
+    def _set_x(self, values) -> None:
+        """Helper method to set 2θ values."""
+        self._items = [self._item_type() for _ in range(values.size)]
+        for p, v in zip(self._items, values, strict=True):
+            p.two_theta._value = v
+        self._set_point_id([str(i + 1) for i in range(values.size)])
+
     @property
     def all_x(self) -> np.ndarray:
         """Get the 2θ values for all data points in this collection."""
@@ -382,6 +400,12 @@ class PdTofData(CategoryCollection):
 
     def __init__(self):
         super().__init__(item_type=PdTofDataPoint)
+
+    def _set_x(self, values) -> None:
+        """Helper method to set time-of-flight values."""
+        for p, v in zip(self._items, values, strict=True):
+            p.time_of_flight._value = v
+        self._set_point_id([str(i + 1) for i in range(values.size)])
 
     @property
     def all_x(self) -> np.ndarray:

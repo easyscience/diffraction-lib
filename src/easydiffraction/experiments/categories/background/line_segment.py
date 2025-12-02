@@ -33,8 +33,9 @@ class LineSegment(CategoryItem):
     def __init__(
         self,
         *,
-        x=None,
-        y=None,
+        id,
+        x,
+        y,
     ):
         super().__init__()
 
@@ -43,6 +44,7 @@ class LineSegment(CategoryItem):
             description='Identifier for this background data point.',
             value_spec=AttributeSpec(
                 type_=DataTypes.STRING,
+                value=id,
                 default='0',
                 # TODO: the following pattern is valid for dict key
                 #  (keywords are not checked). CIF label is less strict.
@@ -96,6 +98,14 @@ class LineSegment(CategoryItem):
 
         self._identity.category_code = 'background'
         self._identity.category_entry_name = lambda: str(self._id.value)
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id.value = value
 
     @property
     def x(self):

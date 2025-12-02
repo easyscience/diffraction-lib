@@ -9,9 +9,11 @@ import numpy as np
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
+from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.validation import RegexValidator
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
@@ -23,13 +25,31 @@ class ExcludedRegion(CategoryItem):
     def __init__(
         self,
         *,
-        start=None,
-        end=None,
+        id,
+        start,
+        end,
     ):
         super().__init__()
 
         # TODO: Add point_id as for the background
-
+        self._id = StringDescriptor(
+            name='id',
+            description='Identifier for this excluded region.',
+            value_spec=AttributeSpec(
+                type_=DataTypes.STRING,
+                value=id,
+                default='0',
+                # TODO: the following pattern is valid for dict key
+                #  (keywords are not checked). CIF label is less strict.
+                #  Do we need conversion between CIF and internal label?
+                content_validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
+            ),
+            cif_handler=CifHandler(
+                names=[
+                    '_excluded_region.id',
+                ]
+            ),
+        )
         self._start = NumericDescriptor(
             name='start',
             description='Start of the excluded region.',
@@ -64,7 +84,15 @@ class ExcludedRegion(CategoryItem):
         # self._category_entry_attr_name = self.start.name
         # self.name = self.start.value
         self._identity.category_code = 'excluded_regions'
-        self._identity.category_entry_name = lambda: str(self.start.value)
+        self._identity.category_entry_name = lambda: str(self._id.value)
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id.value = value
 
     @property
     def start(self) -> NumericDescriptor:
