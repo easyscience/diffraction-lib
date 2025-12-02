@@ -13,11 +13,13 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.parameters import NumericDescriptor, StringDescriptor
+from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import Parameter
+from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
-from easydiffraction.core.validation import RangeValidator, RegexValidator
+from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.validation import RegexValidator
 from easydiffraction.experiments.categories.background.base import BackgroundBase
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.logging import console
@@ -119,7 +121,9 @@ class LineSegmentBackground(BackgroundBase):
         super().__init__(item_type=LineSegment)
 
     def _update(self, called_by_minimizer=False):
-        """Interpolate background points over x_data."""
+        """Interpolate background points over x data."""
+        del called_by_minimizer
+
         data = self._parent.data
         x = data.x
 
@@ -140,25 +144,6 @@ class LineSegmentBackground(BackgroundBase):
 
         y = interp_func(x)
         data._set_bkg(y)
-
-    def calculate(self, x_data):
-        pass # TODO: remove this method. _update does the job now.
-        """Interpolate background points over x_data."""
-        if not self:
-            log.warning('No background points found. Setting background to zero.')
-            return np.zeros_like(x_data)
-
-        background_x = np.array([point.x.value for point in self.values()])
-        background_y = np.array([point.y.value for point in self.values()])
-        interp_func = interp1d(
-            background_x,
-            background_y,
-            kind='linear',
-            bounds_error=False,
-            fill_value=(background_y[0], background_y[-1]),
-        )
-        y_data = interp_func(x_data)
-        return y_data
 
     def show(self) -> None:
         """Print a table of control points (x, intensity)."""

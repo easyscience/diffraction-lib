@@ -44,7 +44,6 @@ class SampleModelBase(DatablockItem):
         )
         return f'<{name} ({items})>'
 
-
     @property
     def name(self) -> str:
         """Model name.

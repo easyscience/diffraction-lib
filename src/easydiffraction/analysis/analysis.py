@@ -533,7 +533,8 @@ class Analysis:
                 weights=self.joint_fit_experiments,
             )
         elif self.fit_mode == 'single':
-            # TODO: Find a better way without creating dummy experiments?
+            # TODO: Find a better way without creating dummy
+            #  experiments?
             for expt_name in experiments.names:
                 console.paragraph(
                     f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"

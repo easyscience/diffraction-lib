@@ -9,11 +9,11 @@ Represents an equation of the form ``lhs_alias = rhs_expr`` where
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import StringDescriptor
+from easydiffraction.core.singletons import ConstraintsHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.io.cif.handler import CifHandler
-from easydiffraction.core.singletons import ConstraintsHandler
 
 
 class Constraint(CategoryItem):
@@ -105,5 +105,7 @@ class Constraints(CategoryCollection):
         super().__init__(item_type=Constraint)
 
     def _update(self, called_by_minimizer=False):
+        del called_by_minimizer
+
         constraints = ConstraintsHandler.get()
         constraints.apply()

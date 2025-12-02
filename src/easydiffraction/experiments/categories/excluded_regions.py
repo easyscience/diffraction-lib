@@ -3,7 +3,9 @@
 """Exclude ranges of x from fitting/plotting (masked regions)."""
 
 from typing import List
+
 import numpy as np
+
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
@@ -88,10 +90,13 @@ class ExcludedRegions(CategoryCollection):
     that are to be excluded from calculations and, as a result, from
     fitting and plotting.
     """
+
     def __init__(self):
         super().__init__(item_type=ExcludedRegion)
 
     def _update(self, called_by_minimizer=False):
+        del called_by_minimizer
+
         data = self._parent.data
         x = data.all_x
 

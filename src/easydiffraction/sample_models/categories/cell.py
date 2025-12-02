@@ -9,8 +9,8 @@ from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
-from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.crystallography import crystallography as ecr
+from easydiffraction.io.cif.handler import CifHandler
 
 
 class Cell(CategoryItem):
@@ -183,4 +183,6 @@ class Cell(CategoryItem):
 
     def _update(self, called_by_minimizer=False):
         """Update cell parameters by applying symmetry constraints."""
+        del called_by_minimizer
+
         self._apply_cell_symmetry_constraints()

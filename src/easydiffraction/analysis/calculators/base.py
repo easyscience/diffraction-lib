@@ -3,12 +3,9 @@
 
 from abc import ABC
 from abc import abstractmethod
-from typing import Any
-from typing import List
 
 import numpy as np
 
-from easydiffraction.core.singletons import ConstraintsHandler
 from easydiffraction.experiments.experiment.base import ExperimentBase
 from easydiffraction.sample_models.sample_model.base import SampleModelBase
 from easydiffraction.sample_models.sample_models import SampleModels
@@ -41,7 +38,7 @@ class CalculatorBase(ABC):
     @abstractmethod
     def calculate_pattern(
         self,
-        sample_model: SampleModels, # TODO: SampleModelBase?
+        sample_model: SampleModels,  # TODO: SampleModelBase?
         experiment: ExperimentBase,
         called_by_minimizer: bool,
     ) -> np.ndarray:

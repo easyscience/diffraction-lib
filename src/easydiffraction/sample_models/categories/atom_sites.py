@@ -17,9 +17,9 @@ from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
+from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.io.cif.handler import CifHandler
 
-from easydiffraction.crystallography import crystallography as ecr
 
 class AtomSite(CategoryItem):
     """Single atom site with fractional coordinates and ADP.
@@ -288,6 +288,7 @@ class AtomSite(CategoryItem):
     def b_iso(self, value):
         self._b_iso.value = value
 
+
 class AtomSites(CategoryCollection):
     """Collection of AtomSite instances."""
 
@@ -328,4 +329,6 @@ class AtomSites(CategoryCollection):
 
     def _update(self, called_by_minimizer=False):
         """Update atom sites by applying symmetry constraints."""
+        del called_by_minimizer
+
         self._apply_atomic_coordinates_symmetry_constraints()

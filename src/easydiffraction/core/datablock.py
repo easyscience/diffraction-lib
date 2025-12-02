@@ -25,8 +25,10 @@ class DatablockItem(GuardedBase):
         items = getattr(self, '_items', None)
         return f'<{name} ({items})>'
 
-    def _update_categories(self,
-                           called_by_minimizer = False) -> None:
+    def _update_categories(
+        self,
+        called_by_minimizer=False,
+    ) -> None:
         # TODO: Make abstract method and implement in subclasses.
         # This should call apply_symmetry and apply_constraints in the
         # case of sample models. In the case of experiments, it should
@@ -38,11 +40,9 @@ class DatablockItem(GuardedBase):
         # Should this be also called when parameters are accessed? E.g.
         # if one change background coefficients, then access the
         # background points in the data category?
-        #return
-        #if not self._need_categories_update:
+        # return
+        # if not self._need_categories_update:
         #    return
-
-        #print("=== updating categories for datablock item:", self.unique_name)
 
         for category in self.categories:
             category._update(called_by_minimizer=called_by_minimizer)
@@ -55,8 +55,9 @@ class DatablockItem(GuardedBase):
 
     @property
     def categories(self):
-        cats = [v for v in vars(self).values()
-                if isinstance(v, (CategoryItem, CategoryCollection))]
+        cats = [
+            v for v in vars(self).values() if isinstance(v, (CategoryItem, CategoryCollection))
+        ]
         # Sort by _update_priority (lower values first)
         return sorted(cats, key=lambda c: type(c)._update_priority)
 
@@ -74,7 +75,7 @@ class DatablockItem(GuardedBase):
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
         from easydiffraction.io.cif.serialize import datablock_item_to_cif
-        
+
         self._update_categories()
         return datablock_item_to_cif(self)
 
@@ -118,7 +119,7 @@ class DatablockCollection(CollectionBase):
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
         from easydiffraction.io.cif.serialize import datablock_collection_to_cif
-        
+
         return datablock_collection_to_cif(self)
 
     @typechecked

@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import secrets
 import string
-import threading
 from typing import TYPE_CHECKING
 from typing import Any
 
@@ -20,9 +19,6 @@ from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import TypeValidator
 from easydiffraction.io.cif.serialize import param_from_cif
 from easydiffraction.io.cif.serialize import param_to_cif
-
-# Thread-local storage to prevent recursion during value access
-_thread_locals = threading.local()
 
 if TYPE_CHECKING:
     from easydiffraction.io.cif.handler import CifHandler
@@ -114,50 +110,29 @@ class GenericDescriptorBase(GuardedBase):
         ]
         return '.'.join(filter(None, parts))
 
-    #def _datablock(self):
-        """Helper to get the parent datablock of this descriptor."""
-        #return self._parent._datablock()
-
     def _parent_of_type(self, cls):
-        """Walk up the parent chain and return the first parent of type `cls`."""
-        obj = getattr(self, "_parent", None)
+        """Walk up the parent chain and return the first parent of type
+        `cls`.
+        """
+        obj = getattr(self, '_parent', None)
         visited = set()
         while obj is not None and id(obj) not in visited:
             visited.add(id(obj))
             if isinstance(obj, cls):
                 return obj
-            obj = getattr(obj, "_parent", None)
+            obj = getattr(obj, '_parent', None)
         return None
 
     def _datablock_item(self):
         """Return the DatablockItem ancestor, if any."""
         from easydiffraction.core.datablock import DatablockItem
-        return self._parent_of_type(DatablockItem)
 
+        return self._parent_of_type(DatablockItem)
 
     @property
     def value(self):
         """Current validated value."""
         return self._value
-
-        # Prevent recursion when accessing value during identity resolution or
-        # update
-        if getattr(_thread_locals, 'getting_value', False):
-            return self._value
-        
-        try:
-            _thread_locals.getting_value = True
-            
-            # Trigger update of the whole datablock if needed
-            parent_datablock = self._datablock_item()
-            if parent_datablock is not None:
-                if parent_datablock._need_categories_update == True:
-                    parent_datablock._update_categories()
-
-            # Return the current value
-            return self._value
-        finally:
-            _thread_locals.getting_value = False
 
     @value.setter
     def value(self, v):
@@ -174,14 +149,10 @@ class GenericDescriptorBase(GuardedBase):
         )
 
         # Mark parent datablock as needing categories update
+        # TODO: Check if it is actually in use?
         parent_datablock = self._datablock_item()
         if parent_datablock is not None:
             parent_datablock._need_categories_update = True
-
-        # Trigger update of the whole datablock
-        #parent_datablock = self._datablock_item()
-        #if parent_datablock is not None:
-        #    parent_datablock._update_categories()
 
     @property
     def description(self):
@@ -278,8 +249,6 @@ class GenericParameter(GenericNumericDescriptor):
         self._uid: str = self._generate_uid()
         UidMapHandler.get().add_to_uid_map(self)
 
-
-
     def __str__(self) -> str:
         s = GenericDescriptorBase.__str__(self)
         s = s[1:-1]  # strip <>
@@ -289,7 +258,6 @@ class GenericParameter(GenericNumericDescriptor):
             s += f' {self.units}'
         s += f' (free={self.free})'
         return f'<{s}>'
-
 
     @staticmethod
     def _generate_uid(length: int = 16) -> str:

@@ -11,7 +11,7 @@ from easydiffraction.io.cif.serialize import category_collection_from_cif
 from easydiffraction.io.cif.serialize import category_collection_to_cif
 from easydiffraction.io.cif.serialize import category_item_from_cif
 from easydiffraction.io.cif.serialize import category_item_to_cif
-from easydiffraction.core.validation import DataTypes
+
 
 class CategoryItem(GuardedBase):
     """Base class for items in a category collection."""
@@ -29,6 +29,7 @@ class CategoryItem(GuardedBase):
 
     # TODO: Common for all categories
     def _update(self, called_by_minimizer=False):
+        del called_by_minimizer
         pass
 
     @property
@@ -73,6 +74,7 @@ class CategoryCollection(CollectionBase):
 
     # TODO: Common for all categories
     def _update(self, called_by_minimizer=False):
+        del called_by_minimizer
         pass
 
     @property

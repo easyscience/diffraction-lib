@@ -6,7 +6,6 @@ from typing import Tuple
 
 import numpy as np
 
-from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.sample_models.sample_models import SampleModels
 
@@ -124,7 +123,6 @@ def calculate_reduced_chi_square(
 def get_reliability_inputs(
     sample_models: SampleModels,
     experiments: Experiments,
-    calculator: CalculatorBase,
 ) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
     """Collect observed and calculated data points for reliability
     calculations.
@@ -132,7 +130,6 @@ def get_reliability_inputs(
     Args:
         sample_models: Collection of sample models.
         experiments: Collection of experiments.
-        calculator: The calculator to use for pattern generation.
 
     Returns:
         Tuple containing arrays of (observed values, calculated values,

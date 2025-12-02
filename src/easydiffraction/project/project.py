@@ -12,7 +12,6 @@ from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.display.plotting import Plotter
 from easydiffraction.display.tables import TableRenderer
-from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.project.project_info import ProjectInfo
@@ -20,8 +19,6 @@ from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.summary.summary import Summary
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
-from easydiffraction.utils.utils import tof_to_d
-from easydiffraction.utils.utils import twotheta_to_d
 
 
 class Project(GuardedBase):
@@ -51,9 +48,6 @@ class Project(GuardedBase):
         self._summary = Summary(self)
         self._saved = False
         self._varname = varname()
-
-        #self._experiments._parent = self
-        #print('***', id(self._experiments._parent), id(self), id(self._experiments))
 
     # ------------------------------------------------------------------
     # Dunder methods

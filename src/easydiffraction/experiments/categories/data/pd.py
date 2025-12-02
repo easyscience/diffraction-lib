@@ -1,28 +1,24 @@
 from __future__ import annotations
 
-from typing import List
-
-import numpy as np
-from scipy.interpolate import interp1d
 from typing import Optional
 
-from easydiffraction.experiments.experiment.enums import BeamModeEnum
-from easydiffraction.experiments.experiment.enums import PeakProfileTypeEnum
-from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
-from easydiffraction.utils.utils import tof_to_d
-from easydiffraction.utils.utils import twotheta_to_d
-from easydiffraction.core.category import CategoryItem, CategoryCollection
-from easydiffraction.core.parameters import NumericDescriptor, StringDescriptor
-from easydiffraction.core.parameters import Parameter
+import numpy as np
+
+from easydiffraction.core.category import CategoryCollection
+from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.parameters import NumericDescriptor
+from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
-from easydiffraction.core.validation import RangeValidator, RegexValidator, MembershipValidator
-from easydiffraction.experiments.categories.background.base import BackgroundBase
-from easydiffraction.experiments.experiment.enums import SampleFormEnum, BeamModeEnum
+from easydiffraction.core.validation import MembershipValidator
+from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.validation import RegexValidator
+from easydiffraction.experiments.experiment.enums import BeamModeEnum
+from easydiffraction.experiments.experiment.enums import SampleFormEnum
 from easydiffraction.io.cif.handler import CifHandler
-from easydiffraction.utils.logging import console
-from easydiffraction.utils.logging import log
-from easydiffraction.utils.utils import render_table
+from easydiffraction.utils.utils import tof_to_d
+from easydiffraction.utils.utils import twotheta_to_d
+
 
 class PdDataPointBaseMixin:
     """Single base data point mixin for powder diffraction data."""
@@ -122,20 +118,15 @@ class PdDataPointBaseMixin:
             description='Status code of the data point in the calculation process.',
             value_spec=AttributeSpec(
                 type_=DataTypes.STRING,
-                default='incl', # TODO: Make Enum
+                default='incl',  # TODO: Make Enum
                 content_validator=MembershipValidator(allowed=['incl', 'excl']),
             ),
             cif_handler=CifHandler(
                 names=[
-                    '_pd_data.refinement_status', # TODO: rename to calc_status
+                    '_pd_data.refinement_status',  # TODO: rename to calc_status
                 ]
             ),
         )
-
-        # TODO: Temporary deletion
-        #del self._d_spacing
-        #del self._intensity_calc
-        #del self._intensity_bkg
 
     @property
     def point_id(self) -> NumericDescriptor:
@@ -166,9 +157,10 @@ class PdDataPointBaseMixin:
         return self._calc_status
 
 
-
 class PdCwlDataPointMixin:
-    """Mixin for powder diffraction data points with constant wavelength."""
+    """Mixin for powder diffraction data points with constant
+    wavelength.
+    """
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -192,6 +184,7 @@ class PdCwlDataPointMixin:
     @property
     def two_theta(self) -> NumericDescriptor:
         return self._two_theta
+
 
 class PdTofDataPointMixin:
     """Mixin for powder diffraction data points with time-of-flight."""
@@ -218,12 +211,15 @@ class PdTofDataPointMixin:
     def time_of_flight(self) -> NumericDescriptor:
         return self._time_of_flight
 
+
 class PdCwlDataPoint(
     PdDataPointBaseMixin,
     PdCwlDataPointMixin,
-    CategoryItem, # Must be last to ensure mixins initialized first
+    CategoryItem,  # Must be last to ensure mixins initialized first
 ):
-    """Powder diffraction data point for constant-wavelength experiments."""
+    """Powder diffraction data point for constant-wavelength
+    experiments.
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -234,7 +230,7 @@ class PdCwlDataPoint(
 class PdTofDataPoint(
     CategoryItem,
     PdDataPointBaseMixin,
-    PdTofDataPointMixin
+    PdTofDataPointMixin,
 ):
     """Powder diffraction data point for time-of-flight experiments."""
 
@@ -244,35 +240,44 @@ class PdTofDataPoint(
         self._identity.category_entry_name = lambda: str(self.point_id.value)
 
 
-
-
-
-
 class PdDataBase(CategoryCollection):
     # TODO: ???
 
     # Redefine update priority to ensure data updated after other
-    # categories. Higher number = runs later. Default for other categories,
-    # e.g., background and excluded regions are 10 by default
+    # categories. Higher number = runs later. Default for other
+    # categories, e.g., background and excluded regions are 10 by
+    # default
     _update_priority = 100
 
     def _set_d_spacing(self, values) -> None:
-        """Helper method to set d-spacing values. To be used internally by calculators."""
+        """Helper method to set d-spacing values.
+
+        To be used internally by calculators.
+        """
         for p, v in zip(self._calc_items, values, strict=True):
             p.d_spacing._value = v
 
     def _set_calc(self, values) -> None:
-        """Helper method to set calculated intensity. To be used internally by calculators."""
+        """Helper method to set calculated intensity.
+
+        To be used internally by calculators.
+        """
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_calc._value = v
 
     def _set_bkg(self, values) -> None:
-        """Helper method to set background intensity. To be used internally by calculators."""
+        """Helper method to set background intensity.
+
+        To be used internally by calculators.
+        """
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_bkg._value = v
 
     def _set_calc_status(self, values) -> None:
-        """Helper method to set refinement status. To be used internally by refiners."""
+        """Helper method to set refinement status.
+
+        To be used internally by refiners.
+        """
         for p, v in zip(self._items, values, strict=True):
             if v:
                 p.calc_status._value = 'incl'
@@ -280,8 +285,7 @@ class PdDataBase(CategoryCollection):
                 p.calc_status._value = 'excl'
             else:
                 raise ValueError(
-                    f'Invalid refinement status value: {v}. '
-                    f'Expected boolean True/False.'
+                    f'Invalid refinement status value: {v}. Expected boolean True/False.'
                 )
 
     @property
@@ -291,7 +295,7 @@ class PdDataBase(CategoryCollection):
     @property
     def _calc_items(self):
         """Get only the items included in calculations."""
-        return [item for item, mask in zip(self._items, self._calc_mask) if mask]
+        return [item for item, mask in zip(self._items, self._calc_mask, strict=False) if mask]
 
     @property
     def calc_status(self) -> np.ndarray:
@@ -318,10 +322,10 @@ class PdDataBase(CategoryCollection):
         experiments = experiment._parent
         project = experiments._parent
         sample_models = project.sample_models
-        #calculator = experiment.calculator  # TODO: move from analysis
+        # calculator = experiment.calculator  # TODO: move from analysis
         calculator = project.analysis.calculator
 
-        initial_calc = np.zeros_like(self.x)  ###[self._mask])
+        initial_calc = np.zeros_like(self.x)
         calc = initial_calc
         for linked_phase in experiment._get_valid_linked_phases(sample_models):
             sample_model_id = linked_phase._identity.category_entry_name
@@ -337,12 +341,13 @@ class PdDataBase(CategoryCollection):
             sample_model_scaled_calc = sample_model_scale * sample_model_calc
             calc += sample_model_scaled_calc
 
-        self._set_calc(calc + self.bkg)  ###[self._mask])
+        self._set_calc(calc + self.bkg)
 
 
 class PdCwlData(PdDataBase):
     # TODO: ???
-    #_description: str = 'Powder diffraction data points for constant-wavelength experiments.'
+    # _description: str = 'Powder diffraction data points for
+    # constant-wavelength experiments.'
 
     def __init__(self):
         super().__init__(item_type=PdCwlDataPoint)
@@ -354,7 +359,9 @@ class PdCwlData(PdDataBase):
 
     @property
     def x(self) -> np.ndarray:
-        """Get the 2θ values for data points included in calculations."""
+        """Get the 2θ values for data points included in
+        calculations.
+        """
         return np.fromiter((p.two_theta.value for p in self._calc_items), dtype=float)
 
     def _update(self, called_by_minimizer=False):
@@ -370,7 +377,8 @@ class PdCwlData(PdDataBase):
 
 class PdTofData(CategoryCollection):
     # TODO: ???
-    #_description: str = 'Powder diffraction data points for time-of-flight experiments.'
+    # _description: str = 'Powder diffraction data points for
+    # time-of-flight experiments.'
 
     def __init__(self):
         super().__init__(item_type=PdTofDataPoint)
@@ -382,7 +390,9 @@ class PdTofData(CategoryCollection):
 
     @property
     def x(self) -> np.ndarray:
-        """Get the TOF values for data points included in calculations."""
+        """Get the TOF values for data points included in
+        calculations.
+        """
         return np.fromiter((p.time_of_flight.value for p in self._calc_items), dtype=float)
 
     def _update(self, called_by_minimizer=False):
@@ -410,13 +420,12 @@ class DataFactory:
 
     @classmethod
     def create(
-            cls,
-            *,
-            sample_form: Optional[SampleFormEnum] = None,
-            beam_mode: Optional[BeamModeEnum] = None,
+        cls,
+        *,
+        sample_form: Optional[SampleFormEnum] = None,
+        beam_mode: Optional[BeamModeEnum] = None,
     ) -> CategoryCollection:
         """Create a data collection for the given configuration."""
-
         supported_sample_forms = list(cls._supported.keys())
         if sample_form not in supported_sample_forms:
             raise ValueError(
@@ -439,4 +448,3 @@ class DataFactory:
         data_obj = data_class()
 
         return data_obj
-

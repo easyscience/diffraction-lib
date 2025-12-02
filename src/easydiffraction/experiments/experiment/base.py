@@ -5,8 +5,11 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from typing import TYPE_CHECKING
+from typing import Any
+from typing import List
 
 from easydiffraction.core.datablock import DatablockItem
+from easydiffraction.experiments.categories.data.pd import DataFactory
 from easydiffraction.experiments.categories.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.categories.linked_phases import LinkedPhases
 from easydiffraction.experiments.categories.peak.factory import PeakFactory
@@ -16,17 +19,10 @@ from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
-from easydiffraction.experiments.categories.data.pd import PdCwlData
-from easydiffraction.experiments.categories.data.pd import DataFactory
-#from easydiffraction.analysis.calculators.factory import CalculatorFactory
-from typing import List
-from easydiffraction.sample_models.sample_models import SampleModels
-from typing import Any
-
-
 
 if TYPE_CHECKING:
     from easydiffraction.experiments.categories.experiment_type import ExperimentType
+    from easydiffraction.sample_models.sample_models import SampleModels
 
 
 class ExperimentBase(DatablockItem):
@@ -47,6 +43,7 @@ class ExperimentBase(DatablockItem):
         # TODO: Should return default calculator based on experiment
         #  type
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
+
         self._calculator = CalculatorFactory.create_calculator('cryspy')
         self._identity.datablock_entry_name = lambda: self.name
 
@@ -161,7 +158,6 @@ class PdExperimentBase(ExperimentBase):
 
         return valid_linked_phases
 
-
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """Load powder diffraction data from an ASCII file.
@@ -196,13 +192,9 @@ class PdExperimentBase(ExperimentBase):
         """
         self._peak = value
 
-
     @property
     def data(self):
         return self._data
-
-
-
 
     @property
     def peak_profile_type(self):

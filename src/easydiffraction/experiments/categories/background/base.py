@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Any
 
 from easydiffraction.core.category import CategoryCollection
 
@@ -15,18 +14,6 @@ class BackgroundBase(CategoryCollection):
     Concrete implementations provide parameterized background models and
     compute background intensities on the experiment grid.
     """
-
-    @abstractmethod
-    def calculate(self, x_data: Any) -> Any:
-        """Compute background values for the provided x grid.
-
-        Args:
-            x_data: X positions (e.g. 2θ, TOF) at which to evaluate.
-
-        Returns:
-            Background intensity array aligned with ``x_data``.
-        """
-        pass
 
     # TODO: Consider moving to CategoryCollection
     @abstractmethod

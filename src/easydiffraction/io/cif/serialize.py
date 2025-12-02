@@ -20,14 +20,15 @@ if TYPE_CHECKING:
     from easydiffraction.core.category import CategoryCollection
     from easydiffraction.core.category import CategoryItem
     from easydiffraction.core.parameters import GenericDescriptorBase
-    from easydiffraction.experiments.experiment import ExperimentBase
 
 
 PRECISION = 5
 
+
 def format_value(value) -> str:
-    """Format a single CIF value, quoting strings with whitespace,
-    and format floats with global precision."""
+    """Format a single CIF value, quoting strings with whitespace, and
+    format floats with global precision.
+    """
     # Strings with whitespace are quoted
     if isinstance(value, str):
         if ' ' in value or '\t' in value:
@@ -35,7 +36,7 @@ def format_value(value) -> str:
         return value
 
     # Floats: format with the global precision
-    #if isinstance(value, float):
+    # if isinstance(value, float):
     #    return f"{value:.{PRECISION}f}"
 
     # Everything else: fallback
@@ -265,109 +266,6 @@ def category_item_from_cif(
         param.from_cif(block, idx=idx)
 
 
-# TODO: from_cif or add_from_cif as in collections?
-def category_collection_from_cif_old(
-    self: CategoryCollection,
-    block: gemmi.cif.Block,
-) -> None:
-    # TODO: Find a better way and then remove TODO in the AtomSite
-    #  class
-    # TODO: Rename to _item_cls?
-    if self._item_type is None:
-        raise ValueError('Child class is not defined.')
-
-    # Create a temporary instance to access its parameters and
-    # parameter CIF names
-    category_item = self._item_type()
-
-    #log.warning('---A', self._item_type)
-
-    # Iterate over category parameters and their possible CIF names
-    # to determine the number of rows present in the CIF block
-    def _find_row_count(block, category_item):
-        for param in category_item.parameters:
-            for name in param._cif_handler.names:
-                row_count = len(block.find_values(name))
-                if row_count:
-                    return row_count
-        return 0
-    row_count = _find_row_count(block, category_item)
-    log.debug(f'Found {row_count} rows for category {self}.')
-
-    log.warning(f'===START: {self._item_type}')
-
-    # Delegate to child class to parse each row and add to collection
-    for row_idx in range(row_count):
-        child_obj = self._item_type()
-        ##log.warning(f'   D: {row_idx}')
-        child_obj.from_cif(block, idx=row_idx)
-        self.add(child_obj)
-
-    log.warning(f'  ---END: {self._item_type}')
-
-
-
-def category_collection_from_cif_OLD(
-    self: CategoryCollection,
-    block: gemmi.cif.Block,
-) -> None:
-    # TODO: Find a better way and then remove TODO in the AtomSite
-    #  class
-    # TODO: Rename to _item_cls?
-    if self._item_type is None:
-        raise ValueError('Child class is not defined.')
-
-    # Create a temporary instance to access its parameters and
-    # parameter CIF names
-    category_item = self._item_type()
-
-    # Iterate over category parameters and their possible CIF names
-    # trying to find the whole loop it belongs to inside the CIF block
-    def _get_loop(block, category_item):
-        for param in category_item.parameters:
-            for name in param._cif_handler.names:
-                loop = block.find_loop(name).get_loop()
-                if loop is not None:
-                    return loop
-        return None
-    loop = _get_loop(block, category_item)
-
-    # If no loop found
-    if loop is None:
-        log.debug(f'No loop found for category {self}.')
-        return
-
-    # Get 2D array of loop values (as strings)
-    names = loop.tags
-    vals = loop.values
-    num_rows = loop.length()
-    num_cols = loop.width()
-    arr = np.array(vals, dtype=str).reshape(num_rows, num_cols)
-
-    # Populate collection with items according to loop rows
-    # and set those items' parameters, which are present in the loop
-    for row_idx in range(num_rows):
-        item = self._item_type()
-        for param in item.parameters:
-            for name in param._cif_handler.names:
-                if name in names:
-                    col_idx = names.index(name)
-                    val = arr[row_idx][col_idx]
-                    if param._value_type == DataTypes.NUMERIC:
-                        val = float(val)
-                    param.value = val
-                    break
-        # Add item to collection without validation for performance if
-        # number of rows is large (expected for data categories)
-        #self.add(item)
-        if num_rows > 100:
-            self._items.append(item)
-        else:
-            self.add(item)
-
-
-
-
 def category_collection_from_cif(
     self: CategoryCollection,
     block: gemmi.cif.Block,
@@ -391,6 +289,7 @@ def category_collection_from_cif(
                 if loop is not None:
                     return loop
         return None
+
     loop = _get_loop(block, category_item)
 
     # If no loop found
@@ -405,7 +304,7 @@ def category_collection_from_cif(
 
     # Pre-create default items in the collection
     self._items = [self._item_type() for _ in range(num_rows)]
-    
+
     # Set parent for each item to enable identity resolution
     for item in self._items:
         object.__setattr__(item, '_parent', self)
@@ -418,13 +317,9 @@ def category_collection_from_cif(
                 if cif_name in loop.tags:
                     col_idx = loop.tags.index(cif_name)
 
-                    # TODO: The following is duplication of param_from_cif
+                    # TODO: The following is duplication of
+                    #  param_from_cif
                     raw = array[row_idx][col_idx]
-
-                    # If integer, parse directly
-                    #if param._value_type == DataTypes.INTEGER:
-                    #    param.value = int(raw)
-                    #    exit()
 
                     # If numeric, parse with uncertainty if present
                     if param._value_type == DataTypes.NUMERIC:

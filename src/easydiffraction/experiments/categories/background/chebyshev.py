@@ -93,13 +93,18 @@ class ChebyshevPolynomialBackground(BackgroundBase):
     def __init__(self):
         super().__init__(item_type=PolynomialTerm)
 
-    def calculate(self, x_data):
-        """Evaluate polynomial background over x_data."""
+    def _update(self, called_by_minimizer=False):
+        """Evaluate polynomial background over x data."""
+        del called_by_minimizer
+
+        data = self._parent.data
+        x = data.x
+
         if not self._items:
             log.warning('No background points found. Setting background to zero.')
-            return np.zeros_like(x_data)
+            return np.zeros_like(x)
 
-        u = (x_data - x_data.min()) / (x_data.max() - x_data.min()) * 2 - 1
+        u = (x - x.min()) / (x.max() - x.min()) * 2 - 1
         coefs = [term.coef.value for term in self._items]
         y_data = chebval(u, coefs)
         return y_data
