@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-
 """Line-segment background model.
 
 Interpolate user-specified points to form a background curve.
@@ -42,7 +41,7 @@ class LineSegment(CategoryItem):
 
         self._id = StringDescriptor(
             name='id',
-            description='Identifier for this background data point.',
+            description='Identifier for this background line segment.',
             value_spec=AttributeSpec(
                 type_=DataTypes.STRING,
                 value=id,

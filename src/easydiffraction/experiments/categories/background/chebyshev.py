@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-
 """Chebyshev polynomial background model.
 
 Provides a collection of polynomial terms and evaluation helpers.
@@ -17,9 +16,11 @@ from numpy.polynomial.chebyshev import chebval
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import Parameter
+from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.validation import RegexValidator
 from easydiffraction.experiments.categories.background.base import BackgroundBase
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.logging import console
@@ -39,13 +40,30 @@ class PolynomialTerm(CategoryItem):
     def __init__(
         self,
         *,
-        # TODO: add id as in line segment
+        id=None,  # TODO: rename as in the case of data points?
         order=None,
         coef=None,
     ) -> None:
         super().__init__()
 
-        # Canonical descriptors
+        self._id = StringDescriptor(
+            name='id',
+            description='Identifier for this background polynomial term.',
+            value_spec=AttributeSpec(
+                type_=DataTypes.STRING,
+                value=id,
+                default='0',
+                # TODO: the following pattern is valid for dict key
+                #  (keywords are not checked). CIF label is less strict.
+                #  Do we need conversion between CIF and internal label?
+                content_validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
+            ),
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.id',
+                ]
+            ),
+        )
         self._order = NumericDescriptor(
             name='order',
             description='Order used in a Chebyshev polynomial background term',
@@ -55,7 +73,11 @@ class PolynomialTerm(CategoryItem):
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_pd_background.Chebyshev_order']),
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.Chebyshev_order',
+                ]
+            ),
         )
         self._coef = Parameter(
             name='coef',
@@ -66,11 +88,15 @@ class PolynomialTerm(CategoryItem):
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_pd_background.Chebyshev_coef']),
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.Chebyshev_coef',
+                ]
+            ),
         )
 
         self._identity.category_code = 'background'
-        self._identity.category_entry_name = lambda: str(self.order.value)
+        self._identity.category_entry_name = lambda: str(self._id.value)
 
     @property
     def order(self):
