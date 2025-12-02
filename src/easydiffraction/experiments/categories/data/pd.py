@@ -9,7 +9,8 @@ from typing import Optional
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiment.enums import PeakProfileTypeEnum
 from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
-
+from easydiffraction.utils.utils import tof_to_d
+from easydiffraction.utils.utils import twotheta_to_d
 from easydiffraction.core.category import CategoryItem, CategoryCollection
 from easydiffraction.core.parameters import NumericDescriptor, StringDescriptor
 from easydiffraction.core.parameters import Parameter
@@ -255,6 +256,10 @@ class PdDataBase(CategoryCollection):
     # e.g., background and excluded regions are 10 by default
     _update_priority = 100
 
+    def _set_d_spacing(self, values) -> None:
+        """Helper method to set d-spacing values. To be used internally by calculators."""
+        for p, v in zip(self._calc_items, values, strict=True):
+            p.d_spacing._value = v
 
     def _set_calc(self, values) -> None:
         """Helper method to set calculated intensity. To be used internally by calculators."""
@@ -352,6 +357,16 @@ class PdCwlData(PdDataBase):
         """Get the 2θ values for data points included in calculations."""
         return np.fromiter((p.two_theta.value for p in self._calc_items), dtype=float)
 
+    def _update(self, called_by_minimizer=False):
+        super()._update(called_by_minimizer)
+
+        experiment = self._parent
+        d_spacing = twotheta_to_d(
+            self.x,
+            experiment.instrument.setup_wavelength.value,
+        )
+        self._set_d_spacing(d_spacing)
+
 
 class PdTofData(CategoryCollection):
     # TODO: ???
@@ -370,6 +385,17 @@ class PdTofData(CategoryCollection):
         """Get the TOF values for data points included in calculations."""
         return np.fromiter((p.time_of_flight.value for p in self._calc_items), dtype=float)
 
+    def _update(self, called_by_minimizer=False):
+        super()._update(called_by_minimizer)
+
+        experiment = self._parent
+        d_spacing = tof_to_d(
+            self.x,
+            experiment.instrument.calib_d_to_tof_offset.value,
+            experiment.instrument.calib_d_to_tof_linear.value,
+            experiment.instrument.calib_d_to_tof_quad.value,
+        )
+        self._set_d_spacing(d_spacing)
 
 
 class DataFactory:
