@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
@@ -16,8 +14,6 @@ from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
-from easydiffraction.experiments.experiment.enums import BeamModeEnum
-from easydiffraction.experiments.experiment.enums import SampleFormEnum
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d
@@ -412,7 +408,6 @@ class PdTofData(PdDataBase):
         for p, v in zip(self._items, values, strict=True):
             p.time_of_flight._value = v
         self._set_point_id([str(i + 1) for i in range(values.size)])
-        pass
 
     @property
     def all_x(self) -> np.ndarray:
@@ -437,45 +432,3 @@ class PdTofData(PdDataBase):
             experiment.instrument.calib_d_to_tof_quad.value,
         )
         self._set_d_spacing(d_spacing)
-
-
-class DataFactory:
-    """Factory for creating powder diffraction data collections."""
-
-    _supported = {
-        SampleFormEnum.POWDER: {
-            BeamModeEnum.CONSTANT_WAVELENGTH: PdCwlData,
-            BeamModeEnum.TIME_OF_FLIGHT: PdTofData,
-        },
-    }
-
-    @classmethod
-    def create(
-        cls,
-        *,
-        sample_form: Optional[SampleFormEnum] = None,
-        beam_mode: Optional[BeamModeEnum] = None,
-    ) -> CategoryCollection:
-        """Create a data collection for the given configuration."""
-        supported_sample_forms = list(cls._supported.keys())
-        if sample_form not in supported_sample_forms:
-            raise ValueError(
-                f"Unsupported sample form: '{sample_form}'.\n"
-                f'Supported sample forms: {supported_sample_forms}'
-            )
-        supported_beam_modes = list(cls._supported[sample_form].keys())
-        if beam_mode not in supported_beam_modes:
-            raise ValueError(
-                f"Unsupported beam mode: '{beam_mode}' for scattering type: "
-                f"'{sample_form}'.\n Supported beam modes: '{supported_beam_modes}'"
-            )
-
-        if sample_form is None:
-            sample_form = SampleFormEnum.default()
-        if beam_mode is None:
-            beam_mode = BeamModeEnum.default()
-
-        data_class = cls._supported[sample_form][beam_mode]
-        data_obj = data_class()
-
-        return data_obj

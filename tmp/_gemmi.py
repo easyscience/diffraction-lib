@@ -96,7 +96,7 @@ t1 = time.perf_counter()
 print("- make collection:", t1 - t0, "s")
 print('  collection[1]:', collection[1])
 
-from easydiffraction.experiments.categories.data.pd import PdCwlData, PdCwlDataPoint
+from easydiffraction.experiments.categories.data.bragg_pd import PdCwlData, PdCwlDataPoint
 
 
 t0 = time.perf_counter()

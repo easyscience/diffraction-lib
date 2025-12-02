@@ -9,7 +9,7 @@ from typing import Any
 from typing import List
 
 from easydiffraction.core.datablock import DatablockItem
-from easydiffraction.experiments.categories.data.pd import DataFactory
+from easydiffraction.experiments.categories.data.factory import DataFactory
 from easydiffraction.experiments.categories.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.categories.linked_phases import LinkedPhases
 from easydiffraction.experiments.categories.peak.factory import PeakFactory
@@ -122,6 +122,7 @@ class PdExperimentBase(ExperimentBase):
         self._data = DataFactory.create(
             sample_form=self.type.sample_form.value,
             beam_mode=self.type.beam_mode.value,
+            scattering_type=self.type.scattering_type.value,
         )
 
     def _get_valid_linked_phases(
