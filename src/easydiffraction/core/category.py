@@ -99,14 +99,17 @@ class CategoryCollection(CollectionBase):
         category_collection_from_cif(self, block)
 
     @checktype
-    def add(self, item) -> None:
+    def _add(self, item) -> None:
         """Add an item to the collection."""
         self[item._identity.category_entry_name] = item
 
+    # TODO: Disallow args and only allow kwargs?
+    # TODO: Check kwargs as for, e.g.,
+    #  ExperimentFactory.create(**kwargs)?
     @checktype
-    def add_from_args(self, *args, **kwargs) -> None:
+    def add(self, *args, **kwargs) -> None:
         """Create and add a new child instance from the provided
         arguments.
         """
         child_obj = self._item_type(*args, **kwargs)
-        self.add(child_obj)
+        self._add(child_obj)

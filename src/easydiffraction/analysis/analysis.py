@@ -541,7 +541,7 @@ class Analysis:
                 # parameters can be resolved correctly during fitting.
                 object.__setattr__(dummy_experiments, '_parent', self.project)
 
-                dummy_experiments.add(experiment)
+                dummy_experiments._add(experiment)
                 self.fitter.fit(
                     sample_models,
                     dummy_experiments,

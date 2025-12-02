@@ -123,6 +123,6 @@ class DatablockCollection(CollectionBase):
         return datablock_collection_to_cif(self)
 
     @typechecked
-    def add(self, item) -> None:
+    def _add(self, item) -> None:
         """Add an item to the collection."""
         self[item._identity.datablock_entry_name] = item

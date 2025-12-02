@@ -40,7 +40,8 @@ project = ed.Project()
 # ## Step 2: Define Sample Model
 
 # %%
-project.sample_models.add_from_cif_path("tmp/data/lbco.cif")
+#project.sample_models.add_from_cif_path("tmp/data/lbco.cif")
+project.sample_models.add(cif_path="tmp/data/lbco.cif")
 
 # %%
 project.sample_models.show_names()
@@ -68,7 +69,8 @@ lbco.show_as_cif()
 # ## Step 3: Define Experiment
 
 # %%
-project.experiments.add_from_cif_path("tmp/data/hrpt.cif")
+#project.experiments.add_from_cif_path("tmp/data/hrpt.cif")
+project.experiments.add(cif_path="tmp/data/hrpt.cif")
 
 # %%
 project.experiments.show_names()
@@ -76,6 +78,9 @@ project.experiments.show_names()
 # %%
 # Create an alias for easier access
 hrpt = project.experiments['hrpt']
+
+# %%
+hrpt.background['1'].y = 300
 
 # %%
 hrpt.show_as_cif()
@@ -114,17 +119,20 @@ print("hrpt.background['1'].y.free", hrpt.background['1'].y.free)
 
 
 # %%
-project.analysis.aliases.add_from_args(
+project.analysis.aliases.add(
     label='biso_La',
     param_uid=lbco.atom_sites['La'].b_iso.uid,
 )
-project.analysis.aliases.add_from_args(
+project.analysis.aliases.add(
     label='biso_Ba',
     param_uid=lbco.atom_sites['Ba'].b_iso.uid,
 )
 
 # %%
-project.analysis.constraints.add_from_args(lhs_alias='biso_Ba', rhs_expr='biso_La')
+project.analysis.constraints.add(
+    lhs_alias='biso_Ba',
+    rhs_expr='biso_La',
+)
 
 # %%
 #project.analysis.apply_constraints()
