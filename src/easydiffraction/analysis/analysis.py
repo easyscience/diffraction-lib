@@ -457,19 +457,6 @@ class Analysis:
         console.paragraph('Current fit mode')
         console.print(self.fit_mode)
 
-    def calculate_pattern(self, expt_name: str) -> None:
-        """Calculate and store the diffraction pattern for an
-        experiment.
-
-        The pattern is stored in the target experiment's datastore.
-
-        Args:
-                expt_name: The identifier of the experiment to compute.
-        """
-        experiment = self.project.experiments[expt_name]
-        sample_models = self.project.sample_models
-        self.calculator.calculate_pattern(sample_models, experiment)
-
     def show_constraints(self) -> None:
         """Print a table of all user-defined symbolic constraints."""
         constraints_dict = dict(self.constraints)

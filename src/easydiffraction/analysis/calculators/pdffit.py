@@ -54,7 +54,7 @@ class PdffitCalculator(CalculatorBase):
         print('[pdffit] Calculating HKLs (not applicable)...')
         return []
 
-    def _calculate_single_model_pattern(
+    def calculate_pattern(
         self,
         sample_model: SampleModelBase,
         experiment: ExperimentBase,

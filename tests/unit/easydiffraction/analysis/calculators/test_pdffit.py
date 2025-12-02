@@ -92,7 +92,7 @@ def test_pdffit_cif_v2_to_v1_regex_behavior(monkeypatch):
     monkeypatch.setattr(mod, '_pdffit_devnull', None, raising=False)
 
     calc = PdffitCalculator()
-    pattern = calc._calculate_single_model_pattern(
+    pattern = calc.calculate_pattern(
         DummySampleModel(), DummyExperiment(), called_by_minimizer=False
     )
     assert isinstance(pattern, np.ndarray) and pattern.shape[0] == 5

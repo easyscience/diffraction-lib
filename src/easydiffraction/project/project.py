@@ -266,8 +266,13 @@ class Project(GuardedBase):
         x_max=None,
         d_spacing=False,
     ):
-        self.analysis.calculate_pattern(expt_name)  # Recalculate pattern
+        ###self.analysis.calculate_pattern(expt_name)  # Recalculate pattern
+
+        for sample_model in self.sample_models:
+            sample_model._update_categories()
         experiment = self.experiments[expt_name]
+        experiment._update_categories()
+
         ###datastore = experiment.datastore
         # new 'data' instead of 'datastore'
         data = experiment.data
@@ -299,8 +304,12 @@ class Project(GuardedBase):
         show_residual=False,
         d_spacing=False,
     ):
-        self.analysis.calculate_pattern(expt_name)  # Recalculate pattern
+        ###self.analysis.calculate_pattern(expt_name)  # Recalculate pattern
+        for sample_model in self.sample_models:
+            sample_model._update_categories()
         experiment = self.experiments[expt_name]
+        experiment._update_categories()
+
         ###datastore = experiment.datastore
         # new 'data' instead of 'datastore'
         data = experiment.data

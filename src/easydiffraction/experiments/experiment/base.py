@@ -20,6 +20,9 @@ from easydiffraction.utils.utils import render_table
 from easydiffraction.experiments.categories.data.pd import PdCwlData
 from easydiffraction.experiments.categories.data.pd import DataFactory
 #from easydiffraction.analysis.calculators.factory import CalculatorFactory
+from typing import List
+from easydiffraction.sample_models.sample_models import SampleModels
+from typing import Any
 
 
 
@@ -137,6 +140,41 @@ class PdExperimentBase(ExperimentBase):
             sample_form=self.type.sample_form.value,
             beam_mode=self.type.beam_mode.value,
         )
+
+    def _get_valid_linked_phases(
+        self,
+        sample_models: SampleModels,
+    ) -> List[Any]:
+        """Get valid linked phases for this experiment.
+
+        Args:
+            sample_models: Collection of sample models.
+
+        Returns:
+            A list of valid linked phases.
+        """
+        if not self.linked_phases:
+            print('Warning: No linked phases defined. Returning empty pattern.')
+            return []
+
+        valid_linked_phases = []
+        for linked_phase in self.linked_phases:
+            if linked_phase._identity.category_entry_name not in sample_models.names:
+                print(
+                    f"Warning: Linked phase '{linked_phase.id.value}' not "
+                    f'found in Sample Models {sample_models.names}. Skipping it.'
+                )
+                continue
+            valid_linked_phases.append(linked_phase)
+
+        if not valid_linked_phases:
+            print(
+                'Warning: None of the linked phases found in Sample '
+                'Models. Returning empty pattern.'
+            )
+
+        return valid_linked_phases
+
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:

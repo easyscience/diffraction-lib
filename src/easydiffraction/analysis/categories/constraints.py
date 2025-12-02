@@ -13,6 +13,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.core.singletons import ConstraintsHandler
 
 
 class Constraint(CategoryItem):
@@ -97,6 +98,12 @@ class Constraint(CategoryItem):
 class Constraints(CategoryCollection):
     """Collection of :class:`Constraint` items."""
 
+    _update_priority = 90  # After most others, but before data categories
+
     def __init__(self):
         """Create an empty constraints collection."""
         super().__init__(item_type=Constraint)
+
+    def _update(self, called_by_minimizer=False):
+        constraints = ConstraintsHandler.get()
+        constraints.apply()

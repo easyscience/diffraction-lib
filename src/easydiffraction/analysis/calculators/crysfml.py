@@ -51,7 +51,7 @@ class CrysfmlCalculator(CalculatorBase):
         """
         raise NotImplementedError('HKL calculation is not implemented for CrysfmlCalculator.')
 
-    def _calculate_single_model_pattern(
+    def calculate_pattern(
         self,
         sample_model: SampleModels,
         experiment: ExperimentBase,

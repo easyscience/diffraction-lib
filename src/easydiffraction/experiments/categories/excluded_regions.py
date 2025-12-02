@@ -82,14 +82,18 @@ class ExcludedRegion(CategoryItem):
 
 
 class ExcludedRegions(CategoryCollection):
-    """Collection of ExcludedRegion instances."""
+    """Collection of ExcludedRegion instances.
 
+    Excluded regions define closed intervals [start, end] on the x-axis
+    that are to be excluded from calculations and, as a result, from
+    fitting and plotting.
+    """
     def __init__(self):
         super().__init__(item_type=ExcludedRegion)
 
     def _update(self, called_by_minimizer=False):
         data = self._parent.data
-        x = data.x
+        x = data.all_x
 
         # Start with a mask of all False (nothing excluded yet)
         combined_mask = np.full_like(x, fill_value=False, dtype=bool)
@@ -105,7 +109,7 @@ class ExcludedRegions(CategoryCollection):
         inverted_mask = ~combined_mask
 
         # Set refinement status in the data object
-        data._set_refinement_status(inverted_mask)
+        data._set_calc_status(inverted_mask)
 
     def show(self) -> None:
         """Print a table of excluded [start, end] intervals."""

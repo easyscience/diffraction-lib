@@ -116,9 +116,9 @@ class PdDataPointBaseMixin:
                 ]
             ),
         )
-        self._refinement_status = StringDescriptor(
-            name='refinement_status',
-            description='Status code of the data point in the structure refinement process.',
+        self._calc_status = StringDescriptor(
+            name='calc_status',
+            description='Status code of the data point in the calculation process.',
             value_spec=AttributeSpec(
                 type_=DataTypes.STRING,
                 default='incl', # TODO: Make Enum
@@ -126,7 +126,7 @@ class PdDataPointBaseMixin:
             ),
             cif_handler=CifHandler(
                 names=[
-                    '_pd_data.refinement_status',
+                    '_pd_data.refinement_status', # TODO: rename to calc_status
                 ]
             ),
         )
@@ -161,8 +161,8 @@ class PdDataPointBaseMixin:
         return self._intensity_bkg
 
     @property
-    def refinement_status(self) -> StringDescriptor:
-        return self._refinement_status
+    def calc_status(self) -> StringDescriptor:
+        return self._calc_status
 
 
 
@@ -245,6 +245,8 @@ class PdTofDataPoint(
 
 
 
+
+
 class PdCwlData(CategoryCollection):
     # TODO: ???
     #_description: str = 'Powder diffraction data points for constant-wavelength experiments.'
@@ -259,21 +261,21 @@ class PdCwlData(CategoryCollection):
 
     def _set_calc(self, values) -> None:
         """Helper method to set calculated intensity. To be used internally by calculators."""
-        for p, v in zip(self._items, values, strict=True):
+        for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_calc._value = v
 
     def _set_bkg(self, values) -> None:
         """Helper method to set background intensity. To be used internally by calculators."""
-        for p, v in zip(self._items, values, strict=True):
+        for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_bkg._value = v
 
-    def _set_refinement_status(self, values) -> None:
+    def _set_calc_status(self, values) -> None:
         """Helper method to set refinement status. To be used internally by refiners."""
         for p, v in zip(self._items, values, strict=True):
             if v:
-                p.refinement_status._value = 'incl'
+                p.calc_status._value = 'incl'
             elif not v:
-                p.refinement_status._value = 'excl'
+                p.calc_status._value = 'excl'
             else:
                 raise ValueError(
                     f'Invalid refinement status value: {v}. '
@@ -281,57 +283,70 @@ class PdCwlData(CategoryCollection):
                 )
 
     @property
-    def x(self) -> np.ndarray:
+    def _calc_mask(self) -> np.ndarray:
+        return self.calc_status == 'incl'
+
+    @property
+    def _calc_items(self):
+        """Get only the items included in calculations."""
+        return [item for item, mask in zip(self._items, self._calc_mask) if mask]
+
+    @property
+    def calc_status(self) -> np.ndarray:
+        return np.fromiter((p.calc_status.value for p in self._items), dtype=object)
+
+    @property
+    def all_x(self) -> np.ndarray:
         """Get the 2θ values for all data points in this collection."""
         return np.fromiter((p.two_theta.value for p in self._items), dtype=float)
 
     @property
+    def x(self) -> np.ndarray:
+        """Get the 2θ values for data points included in calculations."""
+        return np.fromiter((p.two_theta.value for p in self._calc_items), dtype=float)
+
+    @property
     def meas(self) -> np.ndarray:
-        return np.fromiter((p.intensity_meas.value for p in self._items), dtype=float)
+        return np.fromiter((p.intensity_meas.value for p in self._calc_items), dtype=float)
 
     @property
     def meas_su(self) -> np.ndarray:
-        return np.fromiter((p.intensity_meas_su.value for p in self._items), dtype=float)
+        return np.fromiter((p.intensity_meas_su.value for p in self._calc_items), dtype=float)
 
     @property
     def calc(self) -> np.ndarray:
-        return np.fromiter((p.intensity_calc.value for p in self._items), dtype=float)
+        return np.fromiter((p.intensity_calc.value for p in self._calc_items), dtype=float)
 
     @property
     def bkg(self) -> np.ndarray:
-        return np.fromiter((p.intensity_bkg.value for p in self._items), dtype=float)
-
-    @property
-    def refinement_status(self) -> np.ndarray:
-        return np.fromiter((p.refinement_status.value for p in self._items), dtype=object)
+        return np.fromiter((p.intensity_bkg.value for p in self._calc_items), dtype=float)
 
     def _update(self, called_by_minimizer=False):
         experiment = self._parent
         experiments = experiment._parent
         project = experiments._parent
         sample_models = project.sample_models
-        #calculator = experiment.calculator
+        #calculator = experiment.calculator  # TODO: move from analysis
         calculator = project.analysis.calculator
 
-        initial_y_calc = np.zeros_like(self.x)
-        y_calc_scaled = initial_y_calc
-        for linked_phase in experiment.linked_phases:
+        initial_calc = np.zeros_like(self.x)  ###[self._mask])
+        calc = initial_calc
+        for linked_phase in experiment._get_valid_linked_phases(sample_models):
             sample_model_id = linked_phase._identity.category_entry_name
             sample_model_scale = linked_phase.scale.value
             sample_model = sample_models[sample_model_id]
 
-            sample_model_y_calc = calculator._calculate_single_model_pattern(
+            sample_model_calc = calculator.calculate_pattern(
                 sample_model,
                 experiment,
                 called_by_minimizer=called_by_minimizer,
             )
 
-            sample_model_y_calc_scaled = sample_model_scale * sample_model_y_calc
-            y_calc_scaled += sample_model_y_calc_scaled
+            sample_model_scaled_calc = sample_model_scale * sample_model_calc
+            calc += sample_model_scaled_calc
 
-        self._set_calc(y_calc_scaled + self.bkg)
+        self._set_calc(calc + self.bkg)  ###[self._mask])
 
-        # TODO: Reduce calculation for the 'incl' points (refinement_status) only
 
 
 

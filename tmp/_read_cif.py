@@ -112,6 +112,23 @@ print("hrpt.background['1'].y.free", hrpt.background['1'].y.free)
 # %% [markdown]
 # ## Step 4: Perform Analysis
 
+
+# %%
+project.analysis.aliases.add_from_args(
+    label='biso_La',
+    param_uid=lbco.atom_sites['La'].b_iso.uid,
+)
+project.analysis.aliases.add_from_args(
+    label='biso_Ba',
+    param_uid=lbco.atom_sites['Ba'].b_iso.uid,
+)
+
+# %%
+project.analysis.constraints.add_from_args(lhs_alias='biso_Ba', rhs_expr='biso_La')
+
+# %%
+#project.analysis.apply_constraints()
+
 # %%
 # Select sample model parameters to refine
 lbco.cell.length_a.free = True
