@@ -34,9 +34,9 @@ class LineSegment(CategoryItem):
     def __init__(
         self,
         *,
-        id,  # TODO: rename as in the case of data points?
-        x,
-        y,
+        id=None,  # TODO: rename as in the case of data points?
+        x=None,
+        y=None,
     ):
         super().__init__()
 

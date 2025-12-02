@@ -39,8 +39,8 @@ class PolynomialTerm(CategoryItem):
     def __init__(
         self,
         *,
-        order=None,
         # TODO: add id as in line segment
+        order=None,
         coef=None,
     ) -> None:
         super().__init__()

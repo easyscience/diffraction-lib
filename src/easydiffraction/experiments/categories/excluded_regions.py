@@ -26,9 +26,9 @@ class ExcludedRegion(CategoryItem):
     def __init__(
         self,
         *,
-        id,  # TODO: rename as in the case of data points?
-        start,
-        end,
+        id=None,  # TODO: rename as in the case of data points?
+        start=None,
+        end=None,
     ):
         super().__init__()
 
