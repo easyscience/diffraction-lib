@@ -132,7 +132,7 @@ class PdDataPointBaseMixin:
         )
 
     @property
-    def point_id(self) -> NumericDescriptor:
+    def point_id(self) -> StringDescriptor:
         return self._point_id
 
     @property
@@ -231,9 +231,9 @@ class PdCwlDataPoint(
 
 
 class PdTofDataPoint(
-    CategoryItem,
     PdDataPointBaseMixin,
     PdTofDataPointMixin,
+    CategoryItem,  # Must be last to ensure mixins initialized first
 ):
     """Powder diffraction data point for time-of-flight experiments."""
 
@@ -368,6 +368,7 @@ class PdCwlData(PdDataBase):
 
     def _set_x(self, values) -> None:
         """Helper method to set 2θ values."""
+        # TODO: split into multiple methods
         self._items = [self._item_type() for _ in range(values.size)]
         for p, v in zip(self._items, values, strict=True):
             p.two_theta._value = v
@@ -396,7 +397,7 @@ class PdCwlData(PdDataBase):
         self._set_d_spacing(d_spacing)
 
 
-class PdTofData(CategoryCollection):
+class PdTofData(PdDataBase):
     # TODO: ???
     # _description: str = 'Powder diffraction data points for
     # time-of-flight experiments.'
@@ -406,9 +407,12 @@ class PdTofData(CategoryCollection):
 
     def _set_x(self, values) -> None:
         """Helper method to set time-of-flight values."""
+        # TODO: split into multiple methods
+        self._items = [self._item_type() for _ in range(values.size)]
         for p, v in zip(self._items, values, strict=True):
             p.time_of_flight._value = v
         self._set_point_id([str(i + 1) for i in range(values.size)])
+        pass
 
     @property
     def all_x(self) -> np.ndarray:
