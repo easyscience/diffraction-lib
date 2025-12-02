@@ -22,52 +22,32 @@
 # %%
 import easydiffraction as ed
 
-# %%
-from easydiffraction.utils.logging import Logger
-Logger.configure(
-    level=Logger.Level.INFO,
-    mode=Logger.Mode.VERBOSE,
-    reaction=Logger.Reaction.WARN,
-)
-
 # %% [markdown]
 # ## Step 1: Define Project
 
 # %%
-# Create project without name and description
+# Create minimal project without name and description
 project = ed.Project()
 
 # %% [markdown]
 # ## Step 2: Define Sample Model
 
 # %%
+# Download CIF file from repository
 ed.download_from_repository('lbco.cif', destination='data')
 
 # %%
 project.sample_models.add(cif_path="data/lbco.cif")
 
-# %%
-project.sample_models.show_names()
-
-# %%
-# Create an alias for easier access
-lbco = project.sample_models['lbco']
-
 # %% [markdown]
 # ## Step 3: Define Experiment
 
 # %%
+# Download CIF file from repository
 ed.download_from_repository('hrpt_lbco.cif', destination='data')
 
 # %%
 project.experiments.add(cif_path="data/hrpt_lbco.cif")
-
-# %%
-project.experiments.show_names()
-
-# %%
-# Create an alias for easier access
-hrpt = project.experiments['hrpt']
 
 # %% [markdown]
 # ## Step 4: Perform Analysis
@@ -78,6 +58,9 @@ hrpt = project.experiments['hrpt']
 project.analysis.fit()
 
 # %%
+project.experiments.show_names()
+
+# %%
 project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %% [markdown]
@@ -85,5 +68,3 @@ project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
 project.summary.show_report()
-
-# %%
