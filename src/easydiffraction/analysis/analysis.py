@@ -516,11 +516,6 @@ class Analysis:
             log.warning('No experiments found in the project. Cannot run fit.')
             return
 
-        calculator = self.calculator
-        if not calculator:
-            log.warning('No calculator is set. Cannot run fit.')
-            return
-
         # Run the fitting process
         if self.fit_mode == 'joint':
             console.paragraph(
@@ -529,7 +524,6 @@ class Analysis:
             self.fitter.fit(
                 sample_models,
                 experiments,
-                calculator,
                 weights=self.joint_fit_experiments,
             )
         elif self.fit_mode == 'single':
@@ -548,7 +542,10 @@ class Analysis:
                 object.__setattr__(dummy_experiments, '_parent', self.project)
 
                 dummy_experiments.add(experiment)
-                self.fitter.fit(sample_models, dummy_experiments, calculator)
+                self.fitter.fit(
+                    sample_models,
+                    dummy_experiments,
+                )
         else:
             raise NotImplementedError(f'Fit mode {self.fit_mode} not implemented yet.')
 
