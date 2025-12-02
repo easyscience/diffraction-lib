@@ -108,44 +108,6 @@ def category_collection_to_cif(collection, max_display: Optional[int] = 20) -> s
     return '\n'.join(lines)
 
 
-def datastore_to_cif(datastore, max_points: Optional[int] = None) -> str:
-    """Render a datastore to CIF text.
-
-    Expects ``datastore`` to have ``_cif_mapping()`` and attributes per
-    mapping keys.
-    """
-    cif_lines: list[str] = ['loop_']
-
-    mapping: dict[str, str] = datastore._cif_mapping()  # type: ignore[attr-defined]
-    for cif_key in mapping.values():
-        cif_lines.append(cif_key)
-
-    data_arrays: list[np.ndarray] = []
-    for attr_name in mapping:
-        arr = getattr(datastore, attr_name, None)
-        data_arrays.append(np.array([]) if arr is None else arr)
-
-    if not data_arrays or not data_arrays[0].size:
-        return ''
-
-    n_points = len(data_arrays[0])
-
-    def format_row(i: int) -> str:
-        return ' '.join(str(data_arrays[j][i]) for j in range(len(data_arrays)))
-
-    if max_points is not None and n_points > 2 * max_points:
-        for i in range(max_points):
-            cif_lines.append(format_row(i))
-        cif_lines.append('...')
-        for i in range(-max_points, 0):
-            cif_lines.append(format_row(i))
-    else:
-        for i in range(n_points):
-            cif_lines.append(format_row(i))
-
-    return '\n'.join(cif_lines)
-
-
 def datablock_item_to_cif(datablock) -> str:
     """Render a DatablockItem-like object to CIF text.
 
@@ -223,9 +185,7 @@ def project_to_cif(project) -> str:
 
 def experiment_to_cif(experiment) -> str:
     """Render an experiment: datablock part plus measured data."""
-    block = datablock_item_to_cif(experiment)
-    data = experiment.datastore.as_cif
-    return f'{block}\n\n{data}' if data else block
+    return datablock_item_to_cif(experiment)
 
 
 def analysis_to_cif(analysis) -> str:
@@ -485,41 +445,3 @@ def category_collection_from_cif(
                         log.debug(f'Unrecognized type: {param._value_type}')
 
                     break
-
-
-def datastore_from_cif(
-    self: ExperimentBase,
-    block: gemmi.cif.Block,
-) -> None:
-    """Populate a datastore from a CIF block."""
-    # TODO: Make datastore category collection with cif names, etc.
-    #  We need multiple datastores for different experiment types.
-    #  Similar to e.g. background or instrument or peak categories.
-    #  Then, datastore will be automatically handled like other
-    #  categories and this method can be removed.
-    x_name = '_pd_meas.2theta_scan'
-    y_name = '_pd_meas.intensity_total'
-    sy_name = '_pd_meas.intensity_total_su'
-    names = [x_name, y_name, sy_name]
-
-    # Iterate over category parameters and their possible CIF names
-    # to determine the number of rows present in the CIF block
-    row_count = 0
-    for name in names:
-        row_count = len(block.find_values(name))
-        if row_count:
-            break
-    log.debug(f'Found {row_count} rows for datastore {self}.')
-
-    x = np.array(block.find_values(x_name), dtype=float)
-    y = np.array(block.find_values(y_name), dtype=float)
-    sy = np.array(block.find_values(sy_name), dtype=float)
-
-    # TODO: Duplicate code from _load_ascii_data_to_experiment
-    self.datastore.full_x = x
-    self.datastore.full_meas = y
-    self.datastore.full_meas_su = sy
-    self.datastore.x = x
-    self.datastore.meas = y
-    self.datastore.meas_su = sy
-    self.datastore.excluded = np.full(x.shape, fill_value=False, dtype=bool)
