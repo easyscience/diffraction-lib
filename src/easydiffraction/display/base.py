@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+
 """Common base classes for display components and their factories."""
 
 from __future__ import annotations
