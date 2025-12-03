@@ -22,25 +22,33 @@ if TYPE_CHECKING:
     from easydiffraction.core.parameters import GenericDescriptorBase
 
 
-PRECISION = 5
-
-
 def format_value(value) -> str:
     """Format a single CIF value, quoting strings with whitespace, and
     format floats with global precision.
     """
+    width = 8
+    precision = 4
+
+    # Converting
+
+    # Convert ints to floats
+    if isinstance(value, int):
+        value = float(value)
     # Strings with whitespace are quoted
-    if isinstance(value, str):
-        if ' ' in value or '\t' in value:
-            return f'"{value}"'
-        return value
+    elif isinstance(value, str) and (' ' in value or '\t' in value):
+        value = f'"{value}"'
 
-    # Floats: format with the global precision
-    # if isinstance(value, float):
-    #    return f"{value:.{PRECISION}f}"
+    # Formatting
 
+    # Format floats with given precision
+    if isinstance(value, float):
+        return f'{value:>{width}.{precision}f}'
+    # Format strings right-aligned
+    elif isinstance(value, str):
+        return f'{value:>{width}s}'
     # Everything else: fallback
-    return str(value)
+    else:
+        return str(value)
 
 
 ##################
