@@ -370,34 +370,38 @@ def test_fit_neutron_pd_cwl_hs() -> None:
         wyckoff_letter='h',
         b_iso=2.3,
     )
-    model.apply_symmetry_constraints()
 
     # Set experiment
     data_file = 'hrpt_hs.xye'
     download_from_repository(data_file, destination=TEMP_DIR)
+
     expt = ExperimentFactory.create(name='hrpt', data_path=os.path.join(TEMP_DIR, data_file))
+
     expt.instrument.setup_wavelength = 1.89
     expt.instrument.calib_twotheta_offset = 0.0
+
     expt.peak.broad_gauss_u = 0.1579
     expt.peak.broad_gauss_v = -0.3571
     expt.peak.broad_gauss_w = 0.3498
     expt.peak.broad_lorentz_x = 0.2927
     expt.peak.broad_lorentz_y = 0
-    expt.background.add(x=4.4196, y=648.413)
-    expt.background.add(x=6.6207, y=523.788)
-    expt.background.add(x=10.4918, y=454.938)
-    expt.background.add(x=15.4634, y=435.913)
-    expt.background.add(x=45.6041, y=472.972)
-    expt.background.add(x=74.6844, y=486.606)
-    expt.background.add(x=103.4187, y=472.409)
-    expt.background.add(x=121.6311, y=496.734)
-    expt.background.add(x=159.4116, y=473.146)
+
+    expt.background.add(id='1', x=4.4196, y=648.413)
+    expt.background.add(id='2', x=6.6207, y=523.788)
+    expt.background.add(id='3', x=10.4918, y=454.938)
+    expt.background.add(id='4', x=15.4634, y=435.913)
+    expt.background.add(id='5', x=45.6041, y=472.972)
+    expt.background.add(id='6', x=74.6844, y=486.606)
+    expt.background.add(id='7', x=103.4187, y=472.409)
+    expt.background.add(id='8', x=121.6311, y=496.734)
+    expt.background.add(id='9', x=159.4116, y=473.146)
+
     expt.linked_phases.add(id='hs', scale=0.492)
 
     # Create project
     project = Project()
-    project.sample_models.add(model)
-    project.experiments.add(expt)
+    project.sample_models.add(sample_model=model)
+    project.experiments.add(experiment=expt)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
@@ -415,7 +419,11 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=2.11, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=2.11,
+        decimal=1,
+    )
 
     # ------------ 2nd fitting ------------
 
@@ -431,7 +439,11 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=2.11, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=2.11,
+        decimal=1,
+    )
 
     # ------------ 3rd fitting ------------
 
@@ -446,7 +458,11 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=2.11, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=2.11,
+        decimal=1,
+    )
 
     # ------------ 3rd fitting ------------
 
@@ -461,7 +477,11 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=2.11, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=2.11,
+        decimal=1,
+    )
 
 
 if __name__ == '__main__':

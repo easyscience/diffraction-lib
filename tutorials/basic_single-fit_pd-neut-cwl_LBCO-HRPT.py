@@ -367,7 +367,7 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=Tr
 # Show all parameters of the project.
 
 # %%
-#project.analysis.show_all_params()
+# project.analysis.show_all_params()
 
 # %% [markdown]
 # Show all fittable parameters.
@@ -385,7 +385,7 @@ project.analysis.show_free_params()
 # Show how to access parameters in the code.
 
 # %%
-#project.analysis.how_to_access_parameters()
+# project.analysis.how_to_access_parameters()
 
 # %% [markdown]
 # #### Set Fit Mode
