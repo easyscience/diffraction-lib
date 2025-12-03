@@ -225,6 +225,7 @@ class Project(GuardedBase):
     def _update_categories(self, expt_name) -> None:
         for sample_model in self.sample_models:
             sample_model._update_categories()
+        self.analysis._update_categories()
         experiment = self.experiments[expt_name]
         experiment._update_categories()
 

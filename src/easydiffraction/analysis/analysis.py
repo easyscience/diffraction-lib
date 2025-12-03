@@ -525,6 +525,7 @@ class Analysis:
                 sample_models,
                 experiments,
                 weights=self.joint_fit_experiments,
+                analysis=self,
             )
         elif self.fit_mode == 'single':
             # TODO: Find a better way without creating dummy
@@ -545,12 +546,32 @@ class Analysis:
                 self.fitter.fit(
                     sample_models,
                     dummy_experiments,
+                    analysis=self,
                 )
         else:
             raise NotImplementedError(f'Fit mode {self.fit_mode} not implemented yet.')
 
         # After fitting, get the results
         self.fit_results = self.fitter.results
+
+    def _update_categories(self, called_by_minimizer=False) -> None:
+        """Update all categories owned by Analysis.
+
+        This ensures aliases and constraints are up-to-date before
+        serialization or after parameter changes.
+
+        Args:
+            called_by_minimizer: Whether this is called during fitting.
+        """
+        # Apply constraints to sync dependent parameters
+        if self.constraints._items:
+            self.constraints_handler.apply()
+
+        # Update category-specific logic
+        # TODO: Need self.categories as in the case of datablock.py
+        for category in [self.aliases, self.constraints]:
+            if hasattr(category, '_update'):
+                category._update(called_by_minimizer=called_by_minimizer)
 
     def as_cif(self):
         """Serialize the analysis section to a CIF string.
@@ -560,6 +581,7 @@ class Analysis:
         """
         from easydiffraction.io.cif.serialize import analysis_to_cif
 
+        self._update_categories()
         return analysis_to_cif(self)
 
     def show_as_cif(self) -> None:

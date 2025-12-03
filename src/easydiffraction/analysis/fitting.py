@@ -33,6 +33,7 @@ class Fitter:
         sample_models: SampleModels,
         experiments: Experiments,
         weights: Optional[np.array] = None,
+        analysis=None,
     ) -> None:
         """Run the fitting process.
 
@@ -40,6 +41,8 @@ class Fitter:
             sample_models: Collection of sample models.
             experiments: Collection of experiments.
             weights: Optional weights for joint fitting.
+            analysis: Optional Analysis object to update its categories
+                during fitting.
         """
         params = sample_models.free_parameters + experiments.free_parameters
 
@@ -57,6 +60,7 @@ class Fitter:
                 sample_models=sample_models,
                 experiments=experiments,
                 weights=weights,
+                analysis=analysis,
             )
 
         # Perform fitting
@@ -117,6 +121,7 @@ class Fitter:
         sample_models: SampleModels,
         experiments: Experiments,
         weights: Optional[np.array] = None,
+        analysis=None,
     ) -> np.ndarray:
         """Residual function computes the difference between measured
         and calculated patterns. It updates the parameter values
@@ -128,12 +133,18 @@ class Fitter:
             sample_models: Collection of sample models.
             experiments: Collection of experiments.
             weights: Optional weights for joint fitting.
+            analysis: Optional Analysis object to update its categories
+                during fitting.
 
         Returns:
             Array of weighted residuals.
         """
         # Sync parameters back to objects
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
+
+        # Update analysis categories (applies constraints)
+        if analysis is not None:
+            analysis._update_categories(called_by_minimizer=True)
 
         # Prepare weights for joint fitting
         num_expts: int = len(experiments.names)
