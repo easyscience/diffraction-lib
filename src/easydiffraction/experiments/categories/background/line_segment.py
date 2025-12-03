@@ -36,7 +36,7 @@ class LineSegment(CategoryItem):
         id=None,  # TODO: rename as in the case of data points?
         x=None,
         y=None,
-    ):
+    ) -> None:
         super().__init__()
 
         self._id = StringDescriptor(
@@ -137,13 +137,13 @@ class LineSegmentBackground(BackgroundBase):
         data = self._parent.data
         x = data.x
 
-        if not self.values():
+        if not self._items:
             log.debug('No background points found. Setting background to zero.')
             data._set_bkg(np.zeros_like(x))
             return
 
-        segments_x = np.array([point.x.value for point in self.values()])
-        segments_y = np.array([point.y.value for point in self.values()])
+        segments_x = np.array([point.x.value for point in self._items])
+        segments_y = np.array([point.y.value for point in self._items])
         interp_func = interp1d(
             segments_x,
             segments_y,

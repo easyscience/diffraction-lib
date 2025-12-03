@@ -99,6 +99,14 @@ class PolynomialTerm(CategoryItem):
         self._identity.category_entry_name = lambda: str(self._id.value)
 
     @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id.value = value
+
+    @property
     def order(self):
         return self._order
 
@@ -130,12 +138,14 @@ class ChebyshevPolynomialBackground(BackgroundBase):
 
         if not self._items:
             log.warning('No background points found. Setting background to zero.')
-            return np.zeros_like(x)
+            data._set_bkg(np.zeros_like(x))
+            return
 
         u = (x - x.min()) / (x.max() - x.min()) * 2 - 1
         coefs = [term.coef.value for term in self._items]
-        y_data = chebval(u, coefs)
-        return y_data
+
+        y = chebval(u, coefs)
+        data._set_bkg(y)
 
     def show(self) -> None:
         """Print a table of polynomial orders and coefficients."""
