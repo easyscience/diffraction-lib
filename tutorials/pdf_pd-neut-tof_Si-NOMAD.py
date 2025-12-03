@@ -28,7 +28,7 @@ project.plotter.x_max = 40
 # ## Add Sample Model
 
 # %%
-project.sample_models.add_minimal(name='si')
+project.sample_models.add(name='si')
 
 # %%
 sample_model = project.sample_models['si']
@@ -49,10 +49,13 @@ sample_model.atom_sites.add(
 # ## Add Experiment
 
 # %%
-ed.download_from_repository('NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr', destination='data')
+ed.download_from_repository(
+    'NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr',
+    destination='data',
+)
 
 # %%
-project.experiments.add_from_data_path(
+project.experiments.add(
     name='nomad',
     data_path='data/NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr',
     sample_form='powder',

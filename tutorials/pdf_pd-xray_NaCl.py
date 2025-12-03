@@ -32,14 +32,20 @@ project.plotter.x_max = 30.0
 # ## Add Sample Model
 
 # %%
-project.sample_models.add_minimal(name='nacl')
+project.sample_models.add(name='nacl')
 
 # %%
 project.sample_models['nacl'].space_group.name_h_m = 'F m -3 m'
 project.sample_models['nacl'].space_group.it_coordinate_system_code = '1'
 project.sample_models['nacl'].cell.length_a = 5.62
 project.sample_models['nacl'].atom_sites.add(
-    label='Na', type_symbol='Na', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=1.0
+    label='Na',
+    type_symbol='Na',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=1.0,
 )
 project.sample_models['nacl'].atom_sites.add(
     label='Cl',
@@ -58,7 +64,7 @@ project.sample_models['nacl'].atom_sites.add(
 ed.download_from_repository('NaCl.gr', destination='data')
 
 # %%
-project.experiments.add_from_data_path(
+project.experiments.add(
     name='xray_pdf',
     data_path='data/NaCl.gr',
     sample_form='powder',

@@ -951,7 +951,7 @@ project_2.experiments['sim_lbco'].background.add(id=7, x=110000, y=0.2)
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.sample_models.add_minimal(name='lbco')
+project_2.sample_models.add(name='lbco')
 
 # %% [markdown]
 # #### Exercise 3.2: Set Space Group
