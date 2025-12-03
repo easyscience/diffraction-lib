@@ -40,8 +40,8 @@ def test_update_pattern_d_spacing_branches(monkeypatch, capsys):
     exps = Experiments()
     tof_exp = DummyExp('e_tof', 'time-of-flight')
     cwl_exp = DummyExp('e_cwl', 'constant wavelength')
-    exps.add(tof_exp)
-    exps.add(cwl_exp)
+    exps.add(experiment=tof_exp)
+    exps.add(experiment=cwl_exp)
 
     from easydiffraction.project.project import Project
 
@@ -87,7 +87,7 @@ def test_update_pattern_d_spacing_unsupported_prints(monkeypatch, capsys):
     exp = DummyExp('e1', 'constant wavelength')
     # Flip to unsupported value after init to avoid factory issues
     exp.type.beam_mode = type('E', (), {'value': 'unsupported'})
-    exps.add(exp)
+    exps.add(experiment=exp)
 
     from easydiffraction.project.project import Project
 

@@ -26,7 +26,7 @@ def test_calculator_base_get_valid_linked_phases_filters_missing():
             pass
 
         def _calculate_single_model_pattern(self, sample_model, experiment, called_by_minimizer):
-            return np.zeros_like(experiment.datastore.x)
+            return np.zeros_like(experiment.data.x)
 
     class DummyLinked:
         def __init__(self, entry_name):
@@ -41,7 +41,7 @@ def test_calculator_base_get_valid_linked_phases_filters_missing():
     class DummyExperiment:
         def __init__(self, linked):
             self.linked_phases = linked
-            self.datastore = DummyStore()
+            self.data = DummyStore()
 
             def _public():
                 return []

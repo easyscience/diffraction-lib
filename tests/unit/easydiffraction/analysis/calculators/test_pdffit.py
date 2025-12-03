@@ -49,7 +49,7 @@ def test_pdffit_cif_v2_to_v1_regex_behavior(monkeypatch):
         def __init__(self):
             self.name = 'E'
             self.peak = DummyPeak()
-            self.datastore = type('D', (), {'x': np.linspace(0.0, 1.0, 5)})()
+            self.data = type('D', (), {'x': np.linspace(0.0, 1.0, 5)})()
             self.type = type('T', (), {'radiation_probe': type('P', (), {'value': 'neutron'})()})()
             self.linked_phases = DummyLinkedPhases()
 

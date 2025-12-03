@@ -46,6 +46,6 @@ def test_load_ascii_data_pdf(tmp_path: pytest.TempPathFactory):
 
     # With diffpy available, load should succeed
     expt._load_ascii_data_to_experiment(str(f))
-    assert np.allclose(expt.datastore.x, data[:, 0])
-    assert np.allclose(expt.datastore.meas, data[:, 1])
-    assert np.allclose(expt.datastore.meas_su, data[:, 2])
+    assert np.allclose(expt.data.x, data[:, 0])
+    assert np.allclose(expt.data.meas, data[:, 1])
+    assert np.allclose(expt.data.meas_su, data[:, 2])
