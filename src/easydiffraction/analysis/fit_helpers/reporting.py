@@ -140,7 +140,7 @@ class FitResults:
             )  # getattr(param, 'datablock_name', 'N/A')
             category_code = param._identity.category_code  # getattr(param, 'category_key', 'N/A')
             category_entry_name = (
-                param._identity.category_entry_name
+                param._identity.category_entry_name or ''
             )  # getattr(param, 'category_entry_name', 'N/A')
             name = getattr(param, 'name', 'N/A')
             start = (
