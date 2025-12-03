@@ -168,6 +168,9 @@ for line_segment in hrpt.background:
     line_segment.y.free = True
 
 # %%
+project.analysis.show_free_params()
+
+# %%
 project.analysis.fit()
 
 # %%
@@ -176,6 +179,6 @@ project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 # %%
 #hrpt.show_as_cif()
 
-print(lbco.cell)
+#print(lbco.cell)
 
-hrpt.show_as_cif()
+#hrpt.show_as_cif()
