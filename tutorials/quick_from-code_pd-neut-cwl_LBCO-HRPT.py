@@ -1,9 +1,13 @@
 # %% [markdown]
 # # Structure Refinement: LBCO, HRPT
 #
-# This minimalistic example is designed to be as compact as possible for
-# a Rietveld refinement of a crystal structure using constant-wavelength
-# neutron powder diffraction data for La0.5Ba0.5CoO3 from HRPT at PSI.
+# This minimalistic example is designed to show how Rietveld refinement
+# of a crystal structure can be performed when both the sample model and
+# experiment are defined directly in code. Only the experimentally
+# measured data is loaded from an external file.
+#
+# For this example, constant-wavelength neutron powder diffraction data
+# for La0.5Ba0.5CoO3 from HRPT at PSI is used.
 #
 # It does not contain any advanced features or options, and includes no
 # comments or explanations—these can be found in the other tutorials.
@@ -97,7 +101,6 @@ project.experiments.add(
     sample_form='powder',
     beam_mode='constant wavelength',
     radiation_probe='neutron',
-    scattering_type='bragg',  # !!!
 )
 
 # %%
@@ -153,10 +156,6 @@ experiment.background['4'].y.free = True
 experiment.background['5'].y.free = True
 
 experiment.linked_phases['lbco'].scale.free = True
-
-
-sample_model.show_as_cif()
-experiment.show_as_cif()
 
 
 # %%

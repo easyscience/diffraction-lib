@@ -173,19 +173,19 @@ experiment.background_type = 'line-segment'
 # Add background points.
 
 # %%
-experiment.background.add(x=45000, y=0.2)
-experiment.background.add(x=50000, y=0.2)
-experiment.background.add(x=55000, y=0.2)
-experiment.background.add(x=65000, y=0.2)
-experiment.background.add(x=70000, y=0.2)
-experiment.background.add(x=75000, y=0.2)
-experiment.background.add(x=80000, y=0.2)
-experiment.background.add(x=85000, y=0.2)
-experiment.background.add(x=90000, y=0.2)
-experiment.background.add(x=95000, y=0.2)
-experiment.background.add(x=100000, y=0.2)
-experiment.background.add(x=105000, y=0.2)
-experiment.background.add(x=110000, y=0.2)
+experiment.background.add(id='1', x=45000, y=0.2)
+experiment.background.add(id='2', x=50000, y=0.2)
+experiment.background.add(id='3', x=55000, y=0.2)
+experiment.background.add(id='4', x=65000, y=0.2)
+experiment.background.add(id='5', x=70000, y=0.2)
+experiment.background.add(id='6', x=75000, y=0.2)
+experiment.background.add(id='7', x=80000, y=0.2)
+experiment.background.add(id='8', x=85000, y=0.2)
+experiment.background.add(id='9', x=90000, y=0.2)
+experiment.background.add(id='10', x=95000, y=0.2)
+experiment.background.add(id='11', x=100000, y=0.2)
+experiment.background.add(id='12', x=105000, y=0.2)
+experiment.background.add(id='13', x=110000, y=0.2)
 
 # %% [markdown]
 # #### Set Linked Phases
@@ -206,17 +206,11 @@ experiment.linked_phases.add(id='si', scale=0.2)
 project = Project()
 
 # %% [markdown]
-# #### Set Plotting Engine
-
-# %%
-project.plotter.engine = 'plotly'
-
-# %% [markdown]
 # #### Add Sample Models
 
 # %%
-project.sample_models.add(model_1)
-project.sample_models.add(model_2)
+project.sample_models.add(sample_model=model_1)
+project.sample_models.add(sample_model=model_2)
 
 # %% [markdown]
 # #### Show Sample Models
@@ -228,7 +222,7 @@ project.sample_models.show_names()
 # #### Add Experiments
 
 # %%
-project.experiments.add(experiment)
+project.experiments.add(experiment=experiment)
 
 # %% [markdown]
 # #### Set Excluded Regions
@@ -242,8 +236,8 @@ project.plot_meas(expt_name='mcstas')
 # Add excluded regions.
 
 # %%
-experiment.excluded_regions.add(start=0, end=40000)
-experiment.excluded_regions.add(start=108000, end=200000)
+experiment.excluded_regions.add(id='1', start=0, end=40000)
+experiment.excluded_regions.add(id='2', start=108000, end=200000)
 
 # %% [markdown]
 # Show excluded regions.
@@ -321,3 +315,5 @@ project.analysis.fit()
 
 # %%
 project.plot_meas_vs_calc(expt_name='mcstas')
+
+# %%

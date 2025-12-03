@@ -100,20 +100,6 @@ model.atom_sites.add(
 )
 
 # %% [markdown]
-# #### Symmetry Constraints
-#
-# Show CIF output before applying symmetry constraints.
-
-# %%
-model.show_as_cif()
-
-# %% [markdown]
-# Show CIF output after applying symmetry constraints.
-
-# %%
-model.show_as_cif()
-
-# %% [markdown]
 # ## Define Experiment
 #
 # This section shows how to add experiments, configure their parameters,
