@@ -78,7 +78,10 @@ def category_item_to_cif(item) -> str:
     return '\n'.join(lines)
 
 
-def category_collection_to_cif(collection, max_display: Optional[int] = 20) -> str:
+def category_collection_to_cif(
+    collection,
+    max_display: Optional[int] = 20,
+) -> str:
     """Render a CategoryCollection-like object to CIF text.
 
     Uses first item to build loop header, then emits rows for each item.
@@ -339,6 +342,7 @@ def category_collection_from_cif(
                             param.free = True  # Mark as free if uncertainty is present
 
                     # If string, strip quotes if present
+                    # TODO: Make a helper function for this
                     elif param._value_type == DataTypes.STRING:
                         if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
                             param.value = raw[1:-1]
