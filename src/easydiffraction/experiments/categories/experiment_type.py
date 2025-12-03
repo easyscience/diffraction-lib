@@ -46,7 +46,7 @@ class ExperimentType(CategoryItem):
             value_spec=AttributeSpec(
                 value=sample_form,
                 type_=DataTypes.STRING,
-                default=SampleFormEnum.default(),
+                default=SampleFormEnum.default().value,
                 content_validator=MembershipValidator(
                     allowed=[member.value for member in SampleFormEnum]
                 ),
@@ -65,7 +65,7 @@ class ExperimentType(CategoryItem):
             value_spec=AttributeSpec(
                 value=beam_mode,
                 type_=DataTypes.STRING,
-                default=BeamModeEnum.default(),
+                default=BeamModeEnum.default().value,
                 content_validator=MembershipValidator(
                     allowed=[member.value for member in BeamModeEnum]
                 ),
@@ -82,7 +82,7 @@ class ExperimentType(CategoryItem):
             value_spec=AttributeSpec(
                 value=radiation_probe,
                 type_=DataTypes.STRING,
-                default=RadiationProbeEnum.default(),
+                default=RadiationProbeEnum.default().value,
                 content_validator=MembershipValidator(
                     allowed=[member.value for member in RadiationProbeEnum]
                 ),
@@ -101,7 +101,7 @@ class ExperimentType(CategoryItem):
             value_spec=AttributeSpec(
                 value=scattering_type,
                 type_=DataTypes.STRING,
-                default=ScatteringTypeEnum.default(),
+                default=ScatteringTypeEnum.default().value,
                 content_validator=MembershipValidator(
                     allowed=[member.value for member in ScatteringTypeEnum]
                 ),
