@@ -310,6 +310,10 @@ class PdDataBase(CategoryCollection):
         return np.fromiter((p.calc_status.value for p in self._items), dtype=object)
 
     @property
+    def d(self) -> np.ndarray:
+        return np.fromiter((p.d_spacing.value for p in self._calc_items), dtype=float)
+
+    @property
     def meas(self) -> np.ndarray:
         return np.fromiter((p.intensity_meas.value for p in self._calc_items), dtype=float)
 
