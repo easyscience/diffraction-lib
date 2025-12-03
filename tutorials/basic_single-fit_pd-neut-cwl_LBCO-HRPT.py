@@ -91,7 +91,7 @@ project.plotter.engine = 'plotly'
 # #### Add Sample Model
 
 # %%
-project.sample_models.add_minimal(name='lbco')
+project.sample_models.add(name='lbco')
 
 # %% [markdown]
 # #### Show Defined Sample Models
@@ -166,12 +166,6 @@ project.sample_models['lbco'].atom_sites.add(
 )
 
 # %% [markdown]
-# #### Apply Symmetry Constraints
-
-# %%
-project.sample_models['lbco'].apply_symmetry_constraints()
-
-# %% [markdown]
 # #### Show Sample Model as CIF
 
 # %%
@@ -211,7 +205,7 @@ ed.download_from_repository('hrpt_lbco.xye', destination='data')
 # #### Add Diffraction Experiment
 
 # %%
-project.experiments.add_from_data_path(
+project.experiments.add(
     name='hrpt',
     data_path='data/hrpt_lbco.xye',
     sample_form='powder',
@@ -295,11 +289,11 @@ project.experiments['hrpt'].background_type = 'line-segment'
 # Add background points.
 
 # %%
-project.experiments['hrpt'].background.add(x=10, y=170)
-project.experiments['hrpt'].background.add(x=30, y=170)
-project.experiments['hrpt'].background.add(x=50, y=170)
-project.experiments['hrpt'].background.add(x=110, y=170)
-project.experiments['hrpt'].background.add(x=165, y=170)
+project.experiments['hrpt'].background.add(id='10', x=10, y=170)
+project.experiments['hrpt'].background.add(id='30', x=30, y=170)
+project.experiments['hrpt'].background.add(id='50', x=50, y=170)
+project.experiments['hrpt'].background.add(id='110', x=110, y=170)
+project.experiments['hrpt'].background.add(id='165', x=165, y=170)
 
 # %% [markdown]
 # Show current background points.
@@ -373,7 +367,7 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=Tr
 # Show all parameters of the project.
 
 # %%
-project.analysis.show_all_params()
+#project.analysis.show_all_params()
 
 # %% [markdown]
 # Show all fittable parameters.
@@ -391,7 +385,7 @@ project.analysis.show_free_params()
 # Show how to access parameters in the code.
 
 # %%
-project.analysis.how_to_access_parameters()
+#project.analysis.how_to_access_parameters()
 
 # %% [markdown]
 # #### Set Fit Mode
@@ -705,3 +699,5 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %%
 project.summary.show_report()
+
+# %%
