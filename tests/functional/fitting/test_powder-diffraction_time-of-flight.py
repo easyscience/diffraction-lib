@@ -52,13 +52,12 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     expt.peak.asym_alpha_1 = 0.5971
     expt.linked_phases.add(id='si', scale=14.92)
     for x in range(0, 35000, 5000):
-        expt.background.add(x=x, y=200)
-    expt.show_as_cif()
+        expt.background.add(id=str(x), x=x, y=200)
 
     # Create project
     project = Project()
-    project.sample_models.add(model)
-    project.experiments.add(expt)
+    project.sample_models.add(sample_model=model)
+    project.experiments.add(experiment=expt)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
@@ -76,7 +75,11 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=3.19, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=3.19,
+        decimal=1,
+    )
 
 
 def test_single_fit_neutron_pd_tof_ncaf() -> None:
@@ -191,12 +194,12 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         (91958, 268),
         (102712, 262),
     ]:
-        expt.background.add(x=x, y=y)
+        expt.background.add(id=str(x), x=x, y=y)
 
     # Create project
     project = Project()
-    project.sample_models.add(model)
-    project.experiments.add(expt)
+    project.sample_models.add(sample_model=model)
+    project.experiments.add(experiment=expt)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
@@ -213,7 +216,11 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=15.25, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=15.25,
+        decimal=1,
+    )
 
 
 if __name__ == '__main__':
