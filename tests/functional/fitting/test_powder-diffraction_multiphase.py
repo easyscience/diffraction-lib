@@ -96,13 +96,13 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     expt.linked_phases.add(id='lbco', scale=4.0)
     expt.linked_phases.add(id='si', scale=0.2)
     for x in range(45000, 115000, 5000):
-        expt.background.add(x=x, y=0.2)
+        expt.background.add(id=str(x), x=x, y=0.2)
 
     # Create project
     project = Project()
-    project.sample_models.add(model_1)
-    project.sample_models.add(model_2)
-    project.experiments.add(expt)
+    project.sample_models.add(sample_model=model_1)
+    project.sample_models.add(sample_model=model_2)
+    project.experiments.add(experiment=expt)
 
     # Exclude regions from fitting
     project.experiments['mcstas'].excluded_regions.add(start=108000, end=200000)
@@ -134,7 +134,11 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=2.87, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=2.87,
+        decimal=1,
+    )
 
 
 if __name__ == '__main__':
