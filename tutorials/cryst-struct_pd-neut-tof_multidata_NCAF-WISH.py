@@ -211,7 +211,7 @@ for idx, (x, y) in enumerate(
     ],
     start=1,
 ):
-    expt56.background.add(id=idx, x=x, y=y)
+    expt56.background.add(id=str(idx), x=x, y=y)
 
 # %%
 expt47.background_type = 'line-segment'
@@ -247,7 +247,7 @@ for idx, (x, y) in enumerate(
     ],
     start=1,
 ):
-    expt47.background.add(id=idx, x=x, y=y)
+    expt47.background.add(id=str(idx), x=x, y=y)
 
 # %% [markdown]
 # #### Set Linked Phases
@@ -262,12 +262,12 @@ expt47.linked_phases.add(id='ncaf', scale=2.0)
 # #### Set Excluded Regions
 
 # %%
-expt56.excluded_regions.add(id=1, start=0, end=10010)
-expt56.excluded_regions.add(id=2, start=100010, end=200000)
+expt56.excluded_regions.add(id='1', start=0, end=10010)
+expt56.excluded_regions.add(id='2', start=100010, end=200000)
 
 # %%
-expt47.excluded_regions.add(id=1, start=0, end=10006)
-expt47.excluded_regions.add(id=2, start=100004, end=200000)
+expt47.excluded_regions.add(id='1', start=0, end=10006)
+expt47.excluded_regions.add(id='2', start=100004, end=200000)
 
 # %% [markdown]
 # ## Define Project
@@ -284,7 +284,9 @@ project = Project()
 # #### Set Plotting Engine
 
 # %%
-project.plotter.engine = 'plotly'
+# Keep the auto-selected engine. Alternatively, you can uncomment the
+# line below to explicitly set the engine to the required one.
+#project.plotter.engine = 'plotly'
 
 # %% [markdown]
 # #### Add Sample Model

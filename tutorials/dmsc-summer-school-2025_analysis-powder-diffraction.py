@@ -154,7 +154,9 @@ project_1.experiments.add(
 # for more details about setting the plotting engine.
 
 # %%
-project_1.plotter.engine = 'plotly'
+# Keep the auto-selected engine. Alternatively, you can uncomment the
+# line below to explicitly set the engine to the required one.
+#project.plotter.engine = 'plotly'
 
 # %%
 project_1.plot_meas(expt_name='sim_si')
@@ -183,8 +185,8 @@ project_1.plot_meas(expt_name='sim_si')
 # for more details about excluding regions from the measured data.
 
 # %%
-project_1.experiments['sim_si'].excluded_regions.add(id=1, start=0, end=55000)
-project_1.experiments['sim_si'].excluded_regions.add(id=2, start=105500, end=200000)
+project_1.experiments['sim_si'].excluded_regions.add(id='1', start=0, end=55000)
+project_1.experiments['sim_si'].excluded_regions.add(id='2', start=105500, end=200000)
 
 # %% [markdown]
 # To visualize the effect of excluding the high TOF region, we can plot
@@ -353,13 +355,13 @@ project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0147
 
 # %%
 project_1.experiments['sim_si'].background_type = 'line-segment'
-project_1.experiments['sim_si'].background.add(id=1, x=50000, y=0.01)
-project_1.experiments['sim_si'].background.add(id=2, x=60000, y=0.01)
-project_1.experiments['sim_si'].background.add(id=3, x=70000, y=0.01)
-project_1.experiments['sim_si'].background.add(id=4, x=80000, y=0.01)
-project_1.experiments['sim_si'].background.add(id=5, x=90000, y=0.01)
-project_1.experiments['sim_si'].background.add(id=6, x=100000, y=0.01)
-project_1.experiments['sim_si'].background.add(id=7, x=110000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='1', x=50000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='2', x=60000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='3', x=70000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='4', x=80000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='5', x=90000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='6', x=100000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='7', x=110000, y=0.01)
 
 # %% [markdown]
 # ### 🧩 Create a Sample Model – Si
@@ -778,11 +780,10 @@ project_2.experiments.add(
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.plotter.engine = 'plotly'
 project_2.plot_meas(expt_name='sim_lbco')
 
-project_2.experiments['sim_lbco'].excluded_regions.add(id=1, start=0, end=55000)
-project_2.experiments['sim_lbco'].excluded_regions.add(id=2, start=105500, end=200000)
+project_2.experiments['sim_lbco'].excluded_regions.add(id='1', start=0, end=55000)
+project_2.experiments['sim_lbco'].excluded_regions.add(id='2', start=105500, end=200000)
 
 project_2.plot_meas(expt_name='sim_lbco')
 
@@ -859,13 +860,13 @@ project_2.experiments['sim_lbco'].peak.asym_alpha_1 = sim_si_peak.asym_alpha_1.v
 
 # %% tags=["solution", "hide-input"]
 project_2.experiments['sim_lbco'].background_type = 'line-segment'
-project_2.experiments['sim_lbco'].background.add(id=1, x=50000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(id=2, x=60000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(id=3, x=70000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(id=4, x=80000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(id=5, x=90000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(id=6, x=100000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(id=7, x=110000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='1', x=50000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='2', x=60000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='3', x=70000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='4', x=80000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='5', x=90000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='6', x=100000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='7', x=110000, y=0.2)
 
 # %% [markdown]
 # ### 🧩 Exercise 3: Define a Sample Model – LBCO

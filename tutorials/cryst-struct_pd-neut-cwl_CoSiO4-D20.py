@@ -171,7 +171,9 @@ project = Project()
 # #### Set Plotting Engine
 
 # %%
-project.plotter.engine = 'plotly'
+# Keep the auto-selected engine. Alternatively, you can uncomment the
+# line below to explicitly set the engine to the required one.
+#project.plotter.engine = 'plotly'
 
 # %% [markdown]
 # #### Add Sample Model
