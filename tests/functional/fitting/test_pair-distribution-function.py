@@ -16,7 +16,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     project = ed.Project()
 
     # Set sample model
-    project.sample_models.add_minimal(name='nacl')
+    project.sample_models.add(name='nacl')
     sample_model = project.sample_models['nacl']
     sample_model.space_group.name_h_m = 'F m -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
@@ -43,7 +43,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     # Set experiment
     data_file = 'NaCl.gr'
     ed.download_from_repository(data_file, destination=TEMP_DIR)
-    project.experiments.add_from_data_path(
+    project.experiments.add(
         name='xray_pdf',
         data_path=os.path.join(TEMP_DIR, data_file),
         sample_form='powder',
@@ -83,7 +83,7 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     project = ed.Project()
 
     # Set sample model
-    project.sample_models.add_minimal(name='ni')
+    project.sample_models.add(name='ni')
     sample_model = project.sample_models['ni']
     sample_model.space_group.name_h_m.value = 'F m -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
@@ -101,7 +101,7 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     # Set experiment
     data_file = 'ni-q27r100-neutron_from-2.gr'
     ed.download_from_repository(data_file, destination=TEMP_DIR)
-    project.experiments.add_from_data_path(
+    project.experiments.add(
         name='pdf',
         data_path=os.path.join(TEMP_DIR, data_file),
         sample_form='powder',
@@ -138,7 +138,7 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     project = ed.Project()
 
     # Set sample model
-    project.sample_models.add_minimal(name='si')
+    project.sample_models.add(name='si')
     sample_model = project.sample_models['si']
     sample_model.space_group.name_h_m.value = 'F d -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
@@ -156,7 +156,7 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     # Set experiment
     data_file = 'NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr'
     ed.download_from_repository(data_file, destination=TEMP_DIR)
-    project.experiments.add_from_data_path(
+    project.experiments.add(
         name='nomad',
         data_path=os.path.join(TEMP_DIR, data_file),
         sample_form='powder',
