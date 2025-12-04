@@ -149,7 +149,7 @@ class LineSegmentBackground(BackgroundBase):
             segments_y,
             kind='linear',
             bounds_error=False,
-            fill_value=(segments_x[0], segments_y[-1]),
+            fill_value=(segments_y[0], segments_y[-1]),
         )
 
         y = interp_func(x)
