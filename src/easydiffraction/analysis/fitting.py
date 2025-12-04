@@ -147,7 +147,7 @@ class Fitter:
         # then analysis (constraints), then experiments (calculations)
         for sample_model in sample_models:
             sample_model._update_categories()
-        
+
         if analysis is not None:
             analysis._update_categories(called_by_minimizer=True)
 

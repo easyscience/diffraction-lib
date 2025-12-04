@@ -23,7 +23,7 @@ project = ed.Project()
 # %%
 # Keep the auto-selected engine. Alternatively, you can uncomment the
 # line below to explicitly set the engine to the required one.
-#project.plotter.engine = 'plotly'
+# project.plotter.engine = 'plotly'
 
 # %%
 # Set global plot range for plots

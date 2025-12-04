@@ -156,7 +156,7 @@ project_1.experiments.add(
 # %%
 # Keep the auto-selected engine. Alternatively, you can uncomment the
 # line below to explicitly set the engine to the required one.
-#project.plotter.engine = 'plotly'
+# project.plotter.engine = 'plotly'
 
 # %%
 project_1.plot_meas(expt_name='sim_si')
