@@ -72,7 +72,10 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     # Set experiments
     data_file = 'd1a_pbso4_first-half.dat'
     download_from_repository(data_file, destination=TEMP_DIR)
-    expt1 = ExperimentFactory.create(name='npd1', data_path=os.path.join(TEMP_DIR, data_file))
+    expt1 = ExperimentFactory.create(
+        name='npd1',
+        data_path=os.path.join(TEMP_DIR, data_file),
+    )
     expt1.instrument.setup_wavelength = 1.91
     expt1.instrument.calib_twotheta_offset = -0.1406
     expt1.peak.broad_gauss_u = 0.139
@@ -82,17 +85,17 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt1.peak.broad_lorentz_y = 0.0878
     expt1.linked_phases.add(id='pbso4', scale=1.46)
     expt1.background_type = 'line-segment'
-    for x, y in [
-        (11.0, 206.1624),
-        (15.0, 194.75),
-        (20.0, 194.505),
-        (30.0, 188.4375),
-        (50.0, 207.7633),
-        (70.0, 201.7002),
-        (120.0, 244.4525),
-        (153.0, 226.0595),
+    for id, x, y in [
+        ('1', 11.0, 206.1624),
+        ('2', 15.0, 194.75),
+        ('3', 20.0, 194.505),
+        ('4', 30.0, 188.4375),
+        ('5', 50.0, 207.7633),
+        ('6', 70.0, 201.7002),
+        ('7', 120.0, 244.4525),
+        ('8', 153.0, 226.0595),
     ]:
-        expt1.background.add(x=x, y=y)
+        expt1.background.add(id=id, x=x, y=y)
 
     data_file = 'd1a_pbso4_second-half.dat'
     download_from_repository(data_file, destination=TEMP_DIR)
@@ -106,23 +109,23 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt2.peak.broad_lorentz_y = 0.0878
     expt2.linked_phases.add(id='pbso4', scale=1.46)
     expt2.background_type = 'line-segment'
-    for x, y in [
-        (11.0, 206.1624),
-        (15.0, 194.75),
-        (20.0, 194.505),
-        (30.0, 188.4375),
-        (50.0, 207.7633),
-        (70.0, 201.7002),
-        (120.0, 244.4525),
-        (153.0, 226.0595),
+    for id, x, y in [
+        ('1', 11.0, 206.1624),
+        ('2', 15.0, 194.75),
+        ('3', 20.0, 194.505),
+        ('4', 30.0, 188.4375),
+        ('5', 50.0, 207.7633),
+        ('6', 70.0, 201.7002),
+        ('7', 120.0, 244.4525),
+        ('8', 153.0, 226.0595),
     ]:
-        expt2.background.add(x=x, y=y)
+        expt2.background.add(id=id, x=x, y=y)
 
     # Create project
     project = Project()
-    project.sample_models.add(model)
-    project.experiments.add(expt1)
-    project.experiments.add(expt2)
+    project.sample_models.add(sample_model=model)
+    project.experiments.add(experiment=expt1)
+    project.experiments.add(experiment=expt2)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
@@ -138,7 +141,11 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=4.66, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=4.66,
+        decimal=1,
+    )
 
 
 @pytest.mark.fast
@@ -211,17 +218,17 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt1.peak.broad_lorentz_x = 0
     expt1.peak.broad_lorentz_y = 0.088
     expt1.linked_phases.add(id='pbso4', scale=1.5)
-    for x, y in [
-        (11.0, 206.1624),
-        (15.0, 194.75),
-        (20.0, 194.505),
-        (30.0, 188.4375),
-        (50.0, 207.7633),
-        (70.0, 201.7002),
-        (120.0, 244.4525),
-        (153.0, 226.0595),
+    for id, x, y in [
+        ('1', 11.0, 206.1624),
+        ('2', 15.0, 194.75),
+        ('3', 20.0, 194.505),
+        ('4', 30.0, 188.4375),
+        ('5', 50.0, 207.7633),
+        ('6', 70.0, 201.7002),
+        ('7', 120.0, 244.4525),
+        ('8', 153.0, 226.0595),
     ]:
-        expt1.background.add(x=x, y=y)
+        expt1.background.add(id=id, x=x, y=y)
 
     data_file = 'lab_pbso4.dat'
     download_from_repository(data_file, destination=TEMP_DIR)
@@ -238,23 +245,23 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt2.peak.broad_lorentz_x = 0
     expt2.peak.broad_lorentz_y = 0.057691
     expt2.linked_phases.add(id='pbso4', scale=0.001)
-    for x, y in [
-        (11.0, 141.8516),
-        (13.0, 102.8838),
-        (16.0, 78.0551),
-        (20.0, 124.0121),
-        (30.0, 123.7123),
-        (50.0, 120.8266),
-        (90.0, 113.7473),
-        (110.0, 132.4643),
+    for id, x, y in [
+        ('1', 11.0, 141.8516),
+        ('2', 13.0, 102.8838),
+        ('3', 16.0, 78.0551),
+        ('4', 20.0, 124.0121),
+        ('5', 30.0, 123.7123),
+        ('6', 50.0, 120.8266),
+        ('7', 90.0, 113.7473),
+        ('8', 110.0, 132.4643),
     ]:
-        expt2.background.add(x=x, y=y)
+        expt2.background.add(id=id, x=x, y=y)
 
     # Create project
     project = Project()
-    project.sample_models.add(model)
-    project.experiments.add(expt1)
-    project.experiments.add(expt2)
+    project.sample_models.add(sample_model=model)
+    project.experiments.add(experiment=expt1)
+    project.experiments.add(experiment=expt2)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
@@ -274,7 +281,11 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=26.05, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=26.05,
+        decimal=1,
+    )
 
     # ------------ 2nd fitting ------------
 
@@ -283,7 +294,11 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=21.09, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=21.09,
+        decimal=1,
+    )
 
     # ------------ 3rd fitting ------------
 
@@ -294,7 +309,11 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=21.09, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=21.09,
+        decimal=1,
+    )
 
     # ------------ 4th fitting ------------
 
@@ -305,7 +324,11 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=14.39, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=14.39,
+        decimal=1,
+    )
 
 
 if __name__ == '__main__':
