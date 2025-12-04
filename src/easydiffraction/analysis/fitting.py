@@ -142,7 +142,12 @@ class Fitter:
         # Sync parameters back to objects
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
 
-        # Update analysis categories (applies constraints)
+        # Update categories to reflect new parameter values
+        # Order matters: sample models first (symmetry, structure),
+        # then analysis (constraints), then experiments (calculations)
+        for sample_model in sample_models:
+            sample_model._update_categories()
+        
         if analysis is not None:
             analysis._update_categories(called_by_minimizer=True)
 
@@ -166,9 +171,7 @@ class Fitter:
         residuals: List[float] = []
 
         for experiment, weight in zip(experiments.values(), _weights, strict=True):
-            # Update categories to reflect new parameter values
-            for sample_model in sample_models:
-                sample_model._update_categories()
+            # Update experiment-specific calculations
             experiment._update_categories(called_by_minimizer=True)
 
             # Calculate the difference between measured and calculated
