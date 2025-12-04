@@ -10,7 +10,6 @@ def test_chebyshev_background_calculate_and_cif():
     from easydiffraction.experiments.categories.background.chebyshev import (
         ChebyshevPolynomialBackground,
     )
-    from easydiffraction.experiments.categories.background.chebyshev import PolynomialTerm
 
     # Create mock parent with data
     x = np.linspace(0.0, 1.0, 5)
@@ -26,9 +25,7 @@ def test_chebyshev_background_calculate_and_cif():
     assert np.allclose(mock_data._bkg, 0.0)
 
     # Add two terms and verify CIF contains expected tags
-    t0 = PolynomialTerm(order=0, coef=1.0)
-    t1 = PolynomialTerm(order=1, coef=0.5)
-    cb.add(t0)
-    cb.add(t1)
+    cb.add(order=0, coef=1.0)
+    cb.add(order=1, coef=0.5)
     cif = cb.as_cif
     assert '_pd_background.Chebyshev_order' in cif and '_pd_background.Chebyshev_coef' in cif

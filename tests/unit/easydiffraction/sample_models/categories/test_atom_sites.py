@@ -23,7 +23,6 @@ def test_atom_site_defaults_and_setters():
 
 def test_atom_sites_collection_adds_by_label():
     sites = AtomSites()
-    a = AtomSite(label='O1', type_symbol='O')
-    sites.add(a)
+    sites.add(label='O1', type_symbol='O')
     assert 'O1' in sites.names
     assert sites['O1'].type_symbol.value == 'O'

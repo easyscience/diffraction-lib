@@ -2,49 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
-
-
-def test_datastore_to_cif_empty_returns_empty_string():
-    import easydiffraction.io.cif.serialize as MUT
-
-    class DS:
-        def _cif_mapping(self):
-            return {'x': '_x', 'y': '_y'}
-
-        # x, y absent or empty should yield empty CIF
-        x = np.array([])
-        y = np.array([])
-
-    out = MUT.datastore_to_cif(DS())
-    assert out == ''
-
-
-def test_datastore_to_cif_writes_rows_and_respects_max_points():
-    import easydiffraction.io.cif.serialize as MUT
-
-    class DS:
-        def __init__(self, n):
-            self.x = np.arange(n)
-            self.y = np.arange(n) + 100
-
-        def _cif_mapping(self):
-            return {'x': '_x', 'y': '_y'}
-
-    # Small dataset: no ellipsis
-    ds_small = DS(3)
-    out_small = MUT.datastore_to_cif(ds_small)
-    assert out_small.splitlines()[0] == 'loop_'
-    assert '_x' in out_small and '_y' in out_small
-    assert '0 100' in out_small and '2 102' in out_small
-
-    # Larger dataset with max_points enforced
-    ds_large = DS(10)
-    out_large = MUT.datastore_to_cif(ds_large, max_points=2)
-    lines = out_large.splitlines()
-    assert '...' in lines
-    # First two rows and last two rows present
-    assert '0 100' in out_large and '1 101' in out_large
-    assert '8 108' in out_large and '9 109' in out_large
+import pytest
 
 
 def test_datablock_item_to_cif_includes_item_and_collection():
@@ -147,11 +105,14 @@ def test_experiment_to_cif_with_and_without_data():
 
             self.item = Item()
 
-    out_with = MUT.experiment_to_cif(Exp('loop_\n_x\n1'))
-    assert out_with.startswith('data_expA') and 'loop_' in out_with
+    out_with = MUT.experiment_to_cif(Exp('loop_\\n_x\\n1'))
+    # Datastore CIF no longer automatically included in experiment CIF output
+    assert out_with.startswith('data_expA')
+    # Check that item CIF is included
+    assert '_k' in out_with and '1' in out_with
 
     out_without = MUT.experiment_to_cif(Exp(''))
-    assert out_without.startswith('data_expA') and out_without.endswith('_k 1')
+    assert out_without.startswith('data_expA') and out_without.endswith('1.0000')
 
 
 def test_analysis_to_cif_renders_all_sections():

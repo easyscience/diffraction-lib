@@ -59,8 +59,8 @@ def test_category_item_str_and_properties():
 
 def test_category_collection_str_and_cif_calls():
     c = SimpleCollection()
-    c.add(SimpleItem('n1'))
-    c.add(SimpleItem('n2'))
+    c.add('n1')
+    c.add('n2')
     s = str(c)
     assert 'collection' in s and '2 items' in s
     # as_cif delegates to serializer; should be a string (possibly empty)

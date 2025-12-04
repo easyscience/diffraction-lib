@@ -39,6 +39,9 @@ def test_get_reliability_inputs_collects_arrays_with_default_su():
         def __init__(self):
             self.data = DS()
 
+        def _update_categories(self, called_by_minimizer=False):
+            pass
+
     class Expts(dict):
         def values(self):
             return [Expt()]

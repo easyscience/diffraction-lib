@@ -111,13 +111,5 @@ class CategoryCollection(CollectionBase):
         """Create and add a new child instance from the provided
         arguments.
         """
-        # If first arg is already an instance of the item type, use it
-        # directly
-        # if args and isinstance(args[0], self._item_type):
-        #    child_obj = args[0]
-        # else:
-        #    # Otherwise create a new instance from args/kwargs
-        #    child_obj = self._item_type(*args, **kwargs)
-        # self._add(child_obj)
         child_obj = self._item_type(*args, **kwargs)
         self._add(child_obj)
