@@ -47,8 +47,6 @@
 │   ├── 📄 __init__.py
 │   ├── 📄 analysis.py
 │   │   └── 🏷️ class Analysis
-│   ├── 📄 calculation.py
-│   │   └── 🏷️ class Calculator
 │   └── 📄 fitting.py
 │       └── 🏷️ class Fitter
 ├── 📁 core
@@ -141,6 +139,24 @@
 │   │   │   └── 📄 line_segment.py
 │   │   │       ├── 🏷️ class LineSegment
 │   │   │       └── 🏷️ class LineSegmentBackground
+│   │   ├── 📁 data
+│   │   │   ├── 📄 bragg_pd.py
+│   │   │   │   ├── 🏷️ class PdDataPointBaseMixin
+│   │   │   │   ├── 🏷️ class PdCwlDataPointMixin
+│   │   │   │   ├── 🏷️ class PdTofDataPointMixin
+│   │   │   │   ├── 🏷️ class PdCwlDataPoint
+│   │   │   │   ├── 🏷️ class PdTofDataPoint
+│   │   │   │   ├── 🏷️ class PdDataBase
+│   │   │   │   ├── 🏷️ class PdCwlData
+│   │   │   │   └── 🏷️ class PdTofData
+│   │   │   ├── 📄 bragg_sc.py
+│   │   │   │   └── 🏷️ class Refln
+│   │   │   ├── 📄 factory.py
+│   │   │   │   └── 🏷️ class DataFactory
+│   │   │   └── 📄 total.py
+│   │   │       ├── 🏷️ class TotalDataPoint
+│   │   │       ├── 🏷️ class TotalDataBase
+│   │   │       └── 🏷️ class TotalData
 │   │   ├── 📁 instrument
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 base.py
@@ -185,16 +201,6 @@
 │   │   └── 📄 linked_phases.py
 │   │       ├── 🏷️ class LinkedPhase
 │   │       └── 🏷️ class LinkedPhases
-│   ├── 📁 datastore
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 base.py
-│   │   │   └── 🏷️ class DatastoreBase
-│   │   ├── 📄 factory.py
-│   │   │   └── 🏷️ class DatastoreFactory
-│   │   ├── 📄 pd.py
-│   │   │   └── 🏷️ class PdDatastore
-│   │   └── 📄 sc.py
-│   │       └── 🏷️ class ScDatastore
 │   ├── 📁 experiment
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
@@ -220,10 +226,13 @@
 │   └── 📄 experiments.py
 │       └── 🏷️ class Experiments
 ├── 📁 io
-│   └── 📁 cif
-│       ├── 📄 handler.py
-│       │   └── 🏷️ class CifHandler
-│       └── 📄 serialize.py
+│   ├── 📁 cif
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 handler.py
+│   │   │   └── 🏷️ class CifHandler
+│   │   ├── 📄 parse.py
+│   │   └── 📄 serialize.py
+│   └── 📄 __init__.py
 ├── 📁 project
 │   ├── 📄 __init__.py
 │   ├── 📄 project.py
