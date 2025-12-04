@@ -1,21 +1,28 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-import gemmi
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.experiments.categories.experiment_type import ExperimentType
 from easydiffraction.experiments.experiment import BraggPdExperiment
 from easydiffraction.experiments.experiment import BraggScExperiment
 from easydiffraction.experiments.experiment import TotalPdExperiment
-from easydiffraction.experiments.experiment.base import ExperimentBase
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiment.enums import RadiationProbeEnum
 from easydiffraction.experiments.experiment.enums import SampleFormEnum
 from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.parse import document_from_path
+from easydiffraction.io.cif.parse import document_from_string
 from easydiffraction.io.cif.parse import name_from_block
 from easydiffraction.io.cif.parse import pick_sole_block
+
+if TYPE_CHECKING:
+    import gemmi
+
+    from easydiffraction.experiments.experiment.base import ExperimentBase
 
 
 class ExperimentFactory(FactoryBase):
@@ -97,14 +104,15 @@ class ExperimentFactory(FactoryBase):
         block = pick_sole_block(doc)
         return cls._create_from_gemmi_block(block)
 
-    @staticmethod
-    def _create_from_cif_str(cif_str):
-        """Create an experiment from a CIF string.
-
-        Not yet implemented.
-        """
-        # TODO: Implement CIF string loading logic
-        raise NotImplementedError('CIF string loading not implemented yet.')
+    @classmethod
+    def _create_from_cif_str(
+        cls,
+        cif_str: str,
+    ) -> ExperimentBase:
+        """Create an experiment from a CIF string."""
+        doc = document_from_string(cif_str)
+        block = pick_sole_block(doc)
+        return cls._create_from_gemmi_block(block)
 
     @classmethod
     def _create_from_data_path(cls, kwargs):

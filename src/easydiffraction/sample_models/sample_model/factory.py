@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING
 
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.io.cif.parse import document_from_path
+from easydiffraction.io.cif.parse import document_from_string
 from easydiffraction.io.cif.parse import name_from_block
 from easydiffraction.io.cif.parse import pick_sole_block
 from easydiffraction.sample_models.sample_model.base import SampleModelBase
@@ -58,7 +59,7 @@ class SampleModelFactory(FactoryBase):
         cif_str: str,
     ) -> SampleModelBase:
         """Create a model by parsing a CIF string."""
-        doc = document_from_path(cif_str)
+        doc = document_from_string(cif_str)
         block = pick_sole_block(doc)
         return cls._create_from_gemmi_block(block)
 
