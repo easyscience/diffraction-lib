@@ -69,7 +69,8 @@ nav:
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:
-          - LBCO quick: tutorials/quick_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb
+          - LBCO quick CIF: tutorials/quick_from-cif_pd-neut-cwl_LBCO-HRPT.ipynb
+          - LBCO quick code: tutorials/quick_from-code_pd-neut-cwl_LBCO-HRPT.ipynb
           - LBCO basic: tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb
           - PbSO4 advanced: tutorials/advanced_joint-fit_pd-neut-xray-cwl_PbSO4.ipynb
       - Standard Diffraction:
