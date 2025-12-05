@@ -22,25 +22,25 @@ classifiers = [
 ]
 requires-python = '>=3.11,<3.14'
 dependencies = [
-  'colorama',       # Color terminal output
-  'tabulate',       # Pretty-print tabular data for terminal output
-  'asciichartpy',   # ASCII charts for terminal output
-  'pooch',          # Data downloader
-  'typer',          # Command-line interface creation
-  'rich',           # Rich text and beautiful formatting in the terminal
-  'varname',        # Variable name introspection
-  'asteval',        # An expression evaluator for Python
-  'scipy',          # Scientific computing library
-  'sympy',          # Symbolic mathematics library
-  'lmfit',          # Non-linear optimization and curve fitting
-  'bumps',          # Non-linear optimization and curve fitting
-  'dfo-ls',         # Non-linear optimization and curve fitting
-  'gemmi',          # Crystallography library
-  'cryspy',         # Calculations of diffraction patterns
-  'diffpy.pdffit2', # Calculations of Pair Distribution Function (PDF), Python >=3.11,<3.14
-  'diffpy.utils',   # Utilities for PDF calculations
-  'uncertainties',  # Propagation of uncertainties
-  'typeguard',      # Runtime type checking
+  'colorama',             # Color terminal output
+  'tabulate',             # Pretty-print tabular data for terminal output
+  'asciichartpy',         # ASCII charts for terminal output
+  'pooch',                # Data downloader
+  'typer',                # Command-line interface creation
+  'rich',                 # Rich text and beautiful formatting in the terminal
+  'varname',              # Variable name introspection
+  'asteval',              # An expression evaluator for Python
+  'scipy',                # Scientific computing library
+  'sympy',                # Symbolic mathematics library
+  'lmfit',                # Non-linear optimization and curve fitting
+  'bumps',                # Non-linear optimization and curve fitting
+  'dfo-ls',               # Non-linear optimization and curve fitting
+  'gemmi',                # Crystallography library
+  'cryspy',               # Calculations of diffraction patterns
+  'diffpy.pdffit2<1.5.2', # Calculations of Pair Distribution Function (PDF), Python >=3.11,<3.14
+  'diffpy.utils',         # Utilities for PDF calculations
+  'uncertainties',        # Propagation of uncertainties
+  'typeguard',            # Runtime type checking
 ]
 
 [project.optional-dependencies]
