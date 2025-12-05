@@ -91,7 +91,6 @@ py313-dev = { features = ['py313', 'nodejs'] }
 
 ## 🧪 Testing Tasks
 unit-tests = 'python -m pytest tests/unit/ --color=yes -v'
-func-tests = 'python -m pytest tests/functional/ --color=yes -n auto -v'
 integration-tests = 'python -m pytest tests/integration/ --color=yes -n auto -v'
 notebook-tests = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
 script-tests = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
@@ -152,8 +151,7 @@ raw-metrics-json = 'radon raw -s -j src/'
 
 ## 📊 Coverage
 unit-tests-coverage = 'pixi run unit-tests --cov=src/easydiffraction --cov-report=term-missing'
-func-tests-coverage = 'pixi run func-tests --cov=src/easydiffraction --cov-report=term-missing'
-integration-tests-coverage = 'pixi run func-tests --cov=src/easydiffraction --cov-report=term-missing'
+integration-tests-coverage = 'pixi run integration-tests --cov=src/easydiffraction --cov-report=term-missing'
 docstring-coverage = 'interrogate -c pyproject.toml src/'
 
 cov = { depends-on = ['docstring-coverage', 'integration-tests-coverage'] }

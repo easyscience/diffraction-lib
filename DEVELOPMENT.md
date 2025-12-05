@@ -75,9 +75,9 @@ This is an example of a workflow that describes the development process.
   ```bash
   pixi run unit-tests
   ```
-- Run functional tests
+- Run integration tests
   ```bash
-  pixi run func-tests
+  pixi run integration-tests
   ```
 - Test tutorials as python scripts
   ```bash

@@ -11,9 +11,9 @@ from pathlib import Path
 
 import pytest
 
-# Mark this module as 'functional' so it's excluded by default
+# Mark this module as 'integration' so it's excluded by default
 # (see pytest.ini)
-pytestmark = pytest.mark.functional
+pytestmark = pytest.mark.integration
 
 # Discover tutorial scripts, excluding temporary checkpoint files
 TUTORIALS = [p for p in Path('tutorials').rglob('*.py') if '.ipynb_checkpoints' not in p.parts]
