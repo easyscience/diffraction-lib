@@ -67,6 +67,7 @@ class PdDataPointBaseMixin:
             cif_handler=CifHandler(
                 names=[
                     '_pd_meas.intensity_total',
+                    '_pd_proc.intensity_norm',
                 ]
             ),
         )
@@ -81,6 +82,7 @@ class PdDataPointBaseMixin:
             cif_handler=CifHandler(
                 names=[
                     '_pd_meas.intensity_total_su',
+                    '_pd_proc.intensity_norm_su',
                 ]
             ),
         )
