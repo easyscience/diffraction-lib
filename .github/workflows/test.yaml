@@ -206,16 +206,6 @@ jobs:
             pixi run --environment $env wheel
           done
 
-      # Temporary workaround for pdffit2
-      - name: Install and setup development dependencies (temp. pdffit2)
-        shell: bash
-        run: |
-          for env in ${{ env.PIXI_ENVS }}; do
-            echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run --environment $env dev
-            pixi run python -m uv pip show diffpy.pdffit2
-          done
-
       - name: Add easydiffraction package from the built wheel
         shell: bash
         run: |
