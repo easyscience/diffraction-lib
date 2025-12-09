@@ -39,8 +39,11 @@ channels = ['conda-forge']
 
 # Default feature configuration
 
-[target.win-64.dependencies]
-libcblas = '*' # CBLAS library for linear algebra; required for pdffit2.
+[dependencies]
+gsl = '*' # GNU Scientific Library; required for pdffit2.
+
+#[target.win-64.dependencies]
+#libcblas = '*' # CBLAS library for linear algebra; required for pdffit2.
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
 pip = '*'                                             # Native package installer
