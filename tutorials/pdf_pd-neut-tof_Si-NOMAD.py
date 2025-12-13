@@ -54,15 +54,15 @@ sample_model.atom_sites.add(
 # ## Add Experiment
 
 # %%
-ed.download_from_repository(
-    'NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr',
+ed.download_data(
+    id=5,
     destination='data',
 )
 
 # %%
 project.experiments.add(
     name='nomad',
-    data_path='data/NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr',
+    data_path='data/ed-5.gr',
     sample_form='powder',
     beam_mode='time-of-flight',
     radiation_probe='neutron',

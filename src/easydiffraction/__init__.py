@@ -7,6 +7,7 @@ from easydiffraction.sample_models.sample_model.factory import SampleModelFactor
 from easydiffraction.utils.logging import Logger
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import download_data
 from easydiffraction.utils.utils import download_from_repository
 from easydiffraction.utils.utils import fetch_tutorials
 from easydiffraction.utils.utils import get_value_from_xye_header
@@ -18,6 +19,7 @@ __all__ = [
     'ExperimentFactory',
     'SampleModelFactory',
     'download_from_repository',
+    'download_data',
     'fetch_tutorials',
     'list_tutorials',
     'get_value_from_xye_header',

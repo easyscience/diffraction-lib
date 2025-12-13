@@ -18,7 +18,7 @@
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import SampleModelFactory
-from easydiffraction import download_from_repository
+from easydiffraction import download_data
 
 # %% [markdown]
 # ## Define Sample Model
@@ -107,7 +107,7 @@ model.atom_sites.add(
 # #### Download Data
 
 # %%
-download_from_repository('d1a_pbso4.dat', destination='data')
+download_data(id=13, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
@@ -115,7 +115,7 @@ download_from_repository('d1a_pbso4.dat', destination='data')
 # %%
 expt1 = ExperimentFactory.create(
     name='npd',
-    data_path='data/d1a_pbso4.dat',
+    data_path='data/ed-13.dat',
     radiation_probe='neutron',
 )
 
@@ -173,7 +173,7 @@ expt1.linked_phases.add(id='pbso4', scale=1.5)
 # #### Download Data
 
 # %%
-download_from_repository('lab_pbso4.dat', destination='data')
+download_data(id=16, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
@@ -181,7 +181,7 @@ download_from_repository('lab_pbso4.dat', destination='data')
 # %%
 expt2 = ExperimentFactory.create(
     name='xrd',
-    data_path='data/lab_pbso4.dat',
+    data_path='data/ed-16.dat',
     radiation_probe='xray',
 )
 

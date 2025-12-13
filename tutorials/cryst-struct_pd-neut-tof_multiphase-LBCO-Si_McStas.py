@@ -12,7 +12,7 @@
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import SampleModelFactory
-from easydiffraction import download_from_repository
+from easydiffraction import download_data
 
 # %% [markdown]
 # ## Define Sample Models
@@ -123,7 +123,7 @@ model_2.atom_sites.add(
 # #### Download Data
 
 # %%
-download_from_repository('mcstas_lbco-si.xye', destination='data')
+data_path = download_data(id=8, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
@@ -131,7 +131,7 @@ download_from_repository('mcstas_lbco-si.xye', destination='data')
 # %%
 experiment = ExperimentFactory.create(
     name='mcstas',
-    data_path='data/mcstas_lbco-si.xye',
+    data_path=data_path,
     sample_form='powder',
     beam_mode='time-of-flight',
     radiation_probe='neutron',

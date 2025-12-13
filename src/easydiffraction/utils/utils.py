@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 import io
 import json
 import os
@@ -8,6 +10,7 @@ import pathlib
 import re
 import urllib.request
 import zipfile
+from functools import lru_cache
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
 from typing import List
@@ -25,6 +28,8 @@ from uncertainties import ufloat_fromstr
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+
+pooch.get_logger().setLevel('WARNING')  # Suppress pooch info messages
 
 
 def _validate_url(url: str) -> None:
@@ -92,6 +97,127 @@ def download_from_repository(
         fname=file_name,
         path=destination,
     )
+
+
+def _filename_for_id_from_url(data_id: int | str, url: str) -> str:
+    """Return local filename like 'ed-12.xye' using extension from the
+    URL.
+    """
+    suffix = pathlib.Path(urlparse(url).path).suffix  # includes leading dot ('.cif', '.xye', ...)
+    # If URL has no suffix, fall back to no extension.
+    return f'ed-{data_id}{suffix}'
+
+
+def _normalize_known_hash(value: str | None) -> str | None:
+    """Return pooch-compatible known_hash or None.
+
+    Treat placeholder values like 'sha256:...' as unset.
+    """
+    if not value:
+        return None
+    value = value.strip()
+    if value.lower() == 'sha256:...':
+        return None
+    return value
+
+
+@lru_cache(maxsize=1)
+def _fetch_data_index() -> dict:
+    """Fetch & cache the diffraction data index.json and return it as
+    dict.
+    """
+    index_url = 'https://raw.githubusercontent.com/easyscience/data/refs/heads/master/diffraction/index.json'
+    _validate_url(index_url)
+
+    index_hash = 'sha256:725c0cc575f605478190e6f10ac4d3b2071122bd30fb1ea28eb7009631d1f522'
+    destination_dirname = 'easydiffraction'
+    destination_fname = 'data-index.json'
+    cache_dir = pooch.os_cache(destination_dirname)
+
+    index_path = pooch.retrieve(
+        url=index_url,
+        known_hash=index_hash,
+        fname=destination_fname,
+        path=cache_dir,
+        progressbar=False,
+    )
+
+    with pathlib.Path(index_path).open('r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def download_data(
+    id: int | str,
+    destination: str = 'data',
+    overwrite: bool = False,
+) -> str:
+    """Download a dataset by numeric ID using the remote diffraction
+    index.
+
+    Example:
+        path = download_data(id=12, destination="data")
+
+    Args:
+        id: Numeric dataset id (e.g. 12).
+        destination: Directory to save the file into (created if
+            missing).
+        overwrite: Whether to overwrite the file if it already exists.
+
+    Returns:
+        str: Full path to the downloaded file as string.
+
+    Raises:
+        KeyError: If the id is not found in the index.
+        ValueError: If the resolved URL is not HTTP/HTTPS.
+    """
+    index = _fetch_data_index()
+    key = str(id)
+
+    if key not in index:
+        # Provide a helpful message (and keep KeyError semantics)
+        available = ', '.join(
+            sorted(index.keys(), key=lambda s: int(s) if s.isdigit() else s)[:20]
+        )
+        raise KeyError(f'Unknown dataset id={id}. Example available ids: {available} ...')
+
+    record = index[key]
+    url = record['url']
+    _validate_url(url)
+
+    known_hash = _normalize_known_hash(record.get('hash'))
+    fname = _filename_for_id_from_url(id, url)
+
+    dest_path = pathlib.Path(destination)
+    dest_path.mkdir(parents=True, exist_ok=True)
+    file_path = dest_path / fname
+
+    description = record.get('description', '')
+    message = f'Data #{id}'
+    if description:
+        message += f': {description}'
+
+    console.paragraph('Getting data...')
+    console.print(f'{message}')
+
+    if file_path.exists():
+        if not overwrite:
+            console.print(
+                f"✅ Data #{id} already present at '{file_path}'. Keeping existing file."
+            )
+            return str(file_path)
+        log.debug(f"Data #{id} already present at '{file_path}', but will be overwritten.")
+        file_path.unlink()
+
+    # Pooch downloads to destination with our controlled filename.
+    pooch.retrieve(
+        url=url,
+        known_hash=known_hash,
+        fname=fname,
+        path=str(dest_path),
+    )
+
+    console.print(f"✅ Data #{id} downloaded to '{file_path}'")
+    return str(file_path)
 
 
 def package_version(package_name: str) -> str | None:

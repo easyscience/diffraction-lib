@@ -15,7 +15,7 @@
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import SampleModelFactory
-from easydiffraction import download_from_repository
+from easydiffraction import download_data
 
 # %% [markdown]
 # ## Define Sample Model
@@ -109,14 +109,14 @@ model.atom_sites.add(
 # #### Download Measured Data
 
 # %%
-download_from_repository(
-    'wish_ncaf_5_6.xys',
+download_data(
+    id=9,
     destination='data',
 )
 
 # %%
-download_from_repository(
-    'wish_ncaf_4_7.xys',
+download_data(
+    id=10,
     destination='data',
 )
 
@@ -126,14 +126,14 @@ download_from_repository(
 # %%
 expt56 = ExperimentFactory.create(
     name='wish_5_6',
-    data_path='data/wish_ncaf_5_6.xys',
+    data_path='data/ed-9.xys',
     beam_mode='time-of-flight',
 )
 
 # %%
 expt47 = ExperimentFactory.create(
     name='wish_4_7',
-    data_path='data/wish_ncaf_4_7.xys',
+    data_path='data/ed-10.xys',
     beam_mode='time-of-flight',
 )
 

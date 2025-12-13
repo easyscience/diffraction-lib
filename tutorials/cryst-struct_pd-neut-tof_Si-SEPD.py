@@ -12,7 +12,7 @@
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import SampleModelFactory
-from easydiffraction import download_from_repository
+from easydiffraction import download_data
 
 # %% [markdown]
 # ## Define Sample Model
@@ -60,15 +60,13 @@ model.atom_sites.add(
 # #### Download Measured Data
 
 # %%
-download_from_repository('sepd_si.xye', destination='data')
+download_data(id=7, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt = ExperimentFactory.create(
-    name='sepd', data_path='data/sepd_si.xye', beam_mode='time-of-flight'
-)
+expt = ExperimentFactory.create(name='sepd', data_path='data/ed-7.xye', beam_mode='time-of-flight')
 
 # %% [markdown]
 # #### Set Instrument

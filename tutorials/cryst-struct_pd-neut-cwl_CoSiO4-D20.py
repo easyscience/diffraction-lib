@@ -12,7 +12,7 @@
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import SampleModelFactory
-from easydiffraction import download_from_repository
+from easydiffraction import download_data
 
 # %% [markdown]
 # ## Define Sample Model
@@ -108,13 +108,13 @@ model.atom_sites.add(
 # #### Download Measured Data
 
 # %%
-download_from_repository('co2sio4_d20.xye', destination='data')
+download_data(id=12, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt = ExperimentFactory.create(name='d20', data_path='data/co2sio4_d20.xye')
+expt = ExperimentFactory.create(name='d20', data_path='data/ed-12.xye')
 
 # %% [markdown]
 # #### Set Instrument

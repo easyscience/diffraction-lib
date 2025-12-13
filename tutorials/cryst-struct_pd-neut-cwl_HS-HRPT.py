@@ -12,7 +12,7 @@
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import SampleModelFactory
-from easydiffraction import download_from_repository
+from easydiffraction import download_data
 
 # %% [markdown]
 # ## Define Sample Model
@@ -99,13 +99,13 @@ model.atom_sites.add(
 # #### Download Measured Data
 
 # %%
-download_from_repository('hrpt_hs.xye', destination='data')
+download_data(id=11, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt = ExperimentFactory.create(name='hrpt', data_path='data/hrpt_hs.xye')
+expt = ExperimentFactory.create(name='hrpt', data_path='data/ed-11.xye')
 
 # %% [markdown]
 # #### Set Instrument

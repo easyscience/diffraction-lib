@@ -66,12 +66,12 @@ project.sample_models['nacl'].atom_sites.add(
 # ## Add Experiment
 
 # %%
-ed.download_from_repository('NaCl.gr', destination='data')
+ed.download_data(id=4, destination='data')
 
 # %%
 project.experiments.add(
     name='xray_pdf',
-    data_path='data/NaCl.gr',
+    data_path='data/ed-4.gr',
     sample_form='powder',
     beam_mode='constant wavelength',
     radiation_probe='xray',

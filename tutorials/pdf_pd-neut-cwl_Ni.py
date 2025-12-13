@@ -44,12 +44,12 @@ project.sample_models['ni'].atom_sites.add(
 # ## Add Experiment
 
 # %%
-ed.download_from_repository('ni-q27r100-neutron_from-2.gr', destination='data')
+ed.download_data(id=6, destination='data')
 
 # %%
 project.experiments.add(
     name='pdf',
-    data_path='data/ni-q27r100-neutron_from-2.gr',
+    data_path='data/ed-6.gr',
     sample_form='powder',
     beam_mode='constant wavelength',
     radiation_probe='neutron',
