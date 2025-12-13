@@ -46,59 +46,6 @@ def _validate_url(url: str) -> None:
         raise ValueError(f"Unsafe URL scheme '{parsed.scheme}'. Only HTTP and HTTPS are allowed.")
 
 
-# Single source of truth for the data repository branch.
-# This can be overridden in CI or development environments.
-DATA_REPO_BRANCH = (
-    os.environ.get('CI_BRANCH')  # CI/dev override
-    or 'master'  # Default branch for the data repository
-)
-
-
-def download_from_repository(
-    file_name: str,
-    branch: str | None = None,
-    destination: str = 'data',
-    overwrite: bool = False,
-) -> None:
-    """Download a data file from the EasyDiffraction repository on
-    GitHub.
-
-    Args:
-        file_name: The file name to fetch (e.g., "NaCl.gr").
-        branch: Branch to fetch from. If None, uses DATA_REPO_BRANCH.
-        destination: Directory to save the file into (created if
-            missing).
-        overwrite: Whether to overwrite the file if it already exists.
-            Defaults to False.
-    """
-    base = 'https://raw.githubusercontent.com'
-    org = 'easyscience'
-    repo = 'diffraction-lib'
-    branch = branch or DATA_REPO_BRANCH  # Use the global branch variable if not provided
-    path_in_repo = 'tutorials/data'
-    url = f'{base}/{org}/{repo}/refs/heads/{branch}/{path_in_repo}/{file_name}'
-
-    console.paragraph('Downloading...')
-    console.print(f"File '{file_name}' from '{org}/{repo}'")
-
-    dest_path = pathlib.Path(destination)
-    file_path = dest_path / file_name
-    if file_path.exists():
-        if not overwrite:
-            log.info(f"File '{file_path}' already exists and will not be overwritten.")
-            return
-        else:
-            log.info(f"File '{file_path}' already exists and will be overwritten.")
-            file_path.unlink()
-
-    pooch.retrieve(
-        url=url,
-        known_hash=None,
-        fname=file_name,
-        path=destination,
-    )
-
-
 def _filename_for_id_from_url(data_id: int | str, url: str) -> str:
     """Return local filename like 'ed-12.xye' using extension from the
     URL.
@@ -129,7 +76,8 @@ def _fetch_data_index() -> dict:
     index_url = 'https://raw.githubusercontent.com/easyscience/data/refs/heads/master/diffraction/index.json'
     _validate_url(index_url)
 
-    index_hash = 'sha256:725c0cc575f605478190e6f10ac4d3b2071122bd30fb1ea28eb7009631d1f522'
+    # macOS: sha256sum index.json
+    index_hash = 'sha256:e78f5dd2f229ea83bfeb606502da602fc0b07136889877d3ab601694625dd3d7'
     destination_dirname = 'easydiffraction'
     destination_fname = 'data-index.json'
     cache_dir = pooch.os_cache(destination_dirname)
