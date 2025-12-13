@@ -92,20 +92,20 @@ project_1.info.description = 'Fitting simulated powder diffraction pattern of Si
 # workflow.
 
 # %%
-dir_path = 'data'
+data_dir = 'data'
 file_name = 'reduced_Si.xye'
-si_xye_path = f'{dir_path}/{file_name}'
+si_xye_path = f'{data_dir}/{file_name}'
 
 # %% [markdown]
 # Uncomment the following cell if your data reduction failed and the
 # reduced data file is missing. In this case, you can download our
 # pre-generated reduced data file from the EasyDiffraction repository.
-# The `download_from_repository` function will not overwrite an existing
-# file unless you set `overwrite=True`, so it's safe to run even if the
+# The `download_data` function will not overwrite an existing file
+# unless you set `overwrite=True`, so it's safe to run even if the
 # file is already present.
 
 # %%
-ed.download_from_repository(file_name, destination=dir_path)
+si_xye_path = ed.download_data(id=17, destination=data_dir)
 
 # %% [markdown]
 # Now we can create the experiment and load the measured data. In this
@@ -744,13 +744,13 @@ project_2.info.description = 'Fitting simulated powder diffraction pattern of La
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-dir_path = 'data'
+data_dir = 'data'
 file_name = 'reduced_LBCO.xye'
-lbco_xye_path = f'{dir_path}/{file_name}'
+lbco_xye_path = f'{data_dir}/{file_name}'
 
 # Uncomment the following line if your data reduction failed and the
 # reduced data file is missing.
-ed.download_from_repository(file_name, destination=dir_path)
+lbco_xye_path = ed.download_data(id=18, destination=data_dir)
 
 project_2.experiments.add(
     name='sim_lbco',
