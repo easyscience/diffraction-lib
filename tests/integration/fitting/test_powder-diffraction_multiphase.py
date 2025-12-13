@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os
 import tempfile
 
 from numpy.testing import assert_almost_equal
@@ -9,7 +8,7 @@ from numpy.testing import assert_almost_equal
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import SampleModelFactory
-from easydiffraction import download_from_repository
+from easydiffraction import download_data
 
 TEMP_DIR = tempfile.gettempdir()
 
@@ -74,11 +73,10 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     )
 
     # Set experiment
-    data_file = 'mcstas_lbco-si.xys'
-    download_from_repository(data_file, destination=TEMP_DIR)
+    data_path = download_data(id=8, destination=TEMP_DIR)
     expt = ExperimentFactory.create(
         name='mcstas',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         beam_mode='time-of-flight',
     )
     expt.instrument.setup_twotheta_bank = 94.90931761529106

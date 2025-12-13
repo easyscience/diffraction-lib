@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os
 import tempfile
 
 import pytest
@@ -10,7 +9,7 @@ from numpy.testing import assert_almost_equal
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import SampleModelFactory
-from easydiffraction import download_from_repository
+from easydiffraction import download_data
 
 TEMP_DIR = tempfile.gettempdir()
 
@@ -70,12 +69,8 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     )
 
     # Set experiments
-    data_file = 'd1a_pbso4_first-half.dat'
-    download_from_repository(data_file, destination=TEMP_DIR)
-    expt1 = ExperimentFactory.create(
-        name='npd1',
-        data_path=os.path.join(TEMP_DIR, data_file),
-    )
+    data_path = download_data(id=14, destination=TEMP_DIR)
+    expt1 = ExperimentFactory.create(name='npd1', data_path=data_path)
     expt1.instrument.setup_wavelength = 1.91
     expt1.instrument.calib_twotheta_offset = -0.1406
     expt1.peak.broad_gauss_u = 0.139
@@ -97,9 +92,8 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     ]:
         expt1.background.add(id=id, x=x, y=y)
 
-    data_file = 'd1a_pbso4_second-half.dat'
-    download_from_repository(data_file, destination=TEMP_DIR)
-    expt2 = ExperimentFactory.create(name='npd2', data_path=os.path.join(TEMP_DIR, data_file))
+    data_path = download_data(id=15, destination=TEMP_DIR)
+    expt2 = ExperimentFactory.create(name='npd2', data_path=data_path)
     expt2.instrument.setup_wavelength = 1.91
     expt2.instrument.calib_twotheta_offset = -0.1406
     expt2.peak.broad_gauss_u = 0.139
@@ -203,11 +197,10 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     )
 
     # Set experiments
-    data_file = 'd1a_pbso4.dat'
-    download_from_repository(data_file, destination=TEMP_DIR)
+    data_path = download_data(id=13, destination=TEMP_DIR)
     expt1 = ExperimentFactory.create(
         name='npd',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         radiation_probe='neutron',
     )
     expt1.instrument.setup_wavelength = 1.91
@@ -230,11 +223,10 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     ]:
         expt1.background.add(id=id, x=x, y=y)
 
-    data_file = 'lab_pbso4.dat'
-    download_from_repository(data_file, destination=TEMP_DIR)
+    data_path = download_data(id=16, destination=TEMP_DIR)
     expt2 = ExperimentFactory.create(
         name='xrd',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         radiation_probe='xray',
     )
     expt2.instrument.setup_wavelength = 1.540567

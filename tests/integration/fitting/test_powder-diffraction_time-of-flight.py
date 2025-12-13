@@ -9,7 +9,7 @@ from numpy.testing import assert_almost_equal
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import SampleModelFactory
-from easydiffraction import download_from_repository
+from easydiffraction import download_data
 
 TEMP_DIR = tempfile.gettempdir()
 
@@ -31,11 +31,10 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     )
 
     # Set experiment
-    data_file = 'sepd_si.xye'
-    download_from_repository(data_file, destination=TEMP_DIR)
+    data_path = download_data(id=7, destination=TEMP_DIR)
     expt = ExperimentFactory.create(
         name='sepd',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         beam_mode='time-of-flight',
     )
     expt.instrument.setup_twotheta_bank = 144.845
@@ -144,11 +143,10 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     )
 
     # Set experiment
-    data_file = 'wish_ncaf.xye'
-    download_from_repository(data_file, destination=TEMP_DIR)
+    data_path = download_data(id=9, destination=TEMP_DIR)
     expt = ExperimentFactory.create(
         name='wish',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         beam_mode='time-of-flight',
     )
     expt.instrument.setup_twotheta_bank = 152.827

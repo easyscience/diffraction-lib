@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os
 import tempfile
 
 import pytest
@@ -41,11 +40,10 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     )
 
     # Set experiment
-    data_file = 'NaCl.gr'
-    ed.download_from_repository(data_file, destination=TEMP_DIR)
+    data_path = ed.download_data(id=4, destination=TEMP_DIR)
     project.experiments.add(
         name='xray_pdf',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         sample_form='powder',
         beam_mode='constant wavelength',
         radiation_probe='xray',
@@ -99,11 +97,10 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     )
 
     # Set experiment
-    data_file = 'ni-q27r100-neutron_from-2.gr'
-    ed.download_from_repository(data_file, destination=TEMP_DIR)
+    data_path = ed.download_data(id=6, destination=TEMP_DIR)
     project.experiments.add(
         name='pdf',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         sample_form='powder',
         beam_mode='constant wavelength',
         radiation_probe='neutron',
@@ -154,11 +151,10 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     )
 
     # Set experiment
-    data_file = 'NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr'
-    ed.download_from_repository(data_file, destination=TEMP_DIR)
+    data_path = ed.download_data(id=5, destination=TEMP_DIR)
     project.experiments.add(
         name='nomad',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         sample_form='powder',
         beam_mode='time-of-flight',
         radiation_probe='neutron',
