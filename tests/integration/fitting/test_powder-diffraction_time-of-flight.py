@@ -149,6 +149,8 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         data_path=data_path,
         beam_mode='time-of-flight',
     )
+    expt.excluded_regions.add(id='1', start=0, end=9000)
+    expt.excluded_regions.add(id='2', start=100010, end=200000)
     expt.instrument.setup_twotheta_bank = 152.827
     expt.instrument.calib_d_to_tof_offset = -13.7123
     expt.instrument.calib_d_to_tof_linear = 20773.1
