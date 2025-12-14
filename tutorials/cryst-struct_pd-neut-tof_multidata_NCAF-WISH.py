@@ -109,16 +109,10 @@ model.atom_sites.add(
 # #### Download Measured Data
 
 # %%
-download_data(
-    id=9,
-    destination='data',
-)
+data_path56 = download_data(id=9, destination='data')
 
 # %%
-download_data(
-    id=10,
-    destination='data',
-)
+data_path47 = download_data(id=10, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
@@ -126,14 +120,14 @@ download_data(
 # %%
 expt56 = ExperimentFactory.create(
     name='wish_5_6',
-    data_path='data/ed-9.xys',
+    data_path=data_path56,
     beam_mode='time-of-flight',
 )
 
 # %%
 expt47 = ExperimentFactory.create(
     name='wish_4_7',
-    data_path='data/ed-10.xys',
+    data_path=data_path47,
     beam_mode='time-of-flight',
 )
 

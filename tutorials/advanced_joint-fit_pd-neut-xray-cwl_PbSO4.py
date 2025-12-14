@@ -107,7 +107,7 @@ model.atom_sites.add(
 # #### Download Data
 
 # %%
-download_data(id=13, destination='data')
+data_path1 = download_data(id=13, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
@@ -115,7 +115,7 @@ download_data(id=13, destination='data')
 # %%
 expt1 = ExperimentFactory.create(
     name='npd',
-    data_path='data/ed-13.dat',
+    data_path=data_path1,
     radiation_probe='neutron',
 )
 
@@ -173,7 +173,7 @@ expt1.linked_phases.add(id='pbso4', scale=1.5)
 # #### Download Data
 
 # %%
-download_data(id=16, destination='data')
+data_path2 = download_data(id=16, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
@@ -181,7 +181,7 @@ download_data(id=16, destination='data')
 # %%
 expt2 = ExperimentFactory.create(
     name='xrd',
-    data_path='data/ed-16.dat',
+    data_path=data_path2,
     radiation_probe='xray',
 )
 

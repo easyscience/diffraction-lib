@@ -60,13 +60,13 @@ model.atom_sites.add(
 # #### Download Measured Data
 
 # %%
-download_data(id=7, destination='data')
+data_path = download_data(id=7, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt = ExperimentFactory.create(name='sepd', data_path='data/ed-7.xye', beam_mode='time-of-flight')
+expt = ExperimentFactory.create(name='sepd', data_path=data_path, beam_mode='time-of-flight')
 
 # %% [markdown]
 # #### Set Instrument

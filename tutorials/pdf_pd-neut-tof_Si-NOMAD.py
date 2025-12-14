@@ -54,15 +54,12 @@ sample_model.atom_sites.add(
 # ## Add Experiment
 
 # %%
-ed.download_data(
-    id=5,
-    destination='data',
-)
+data_path = ed.download_data(id=5, destination='data')
 
 # %%
 project.experiments.add(
     name='nomad',
-    data_path='data/ed-5.gr',
+    data_path=data_path,
     sample_form='powder',
     beam_mode='time-of-flight',
     radiation_probe='neutron',

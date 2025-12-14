@@ -44,12 +44,12 @@ project.sample_models['ni'].atom_sites.add(
 # ## Add Experiment
 
 # %%
-ed.download_data(id=6, destination='data')
+data_path = ed.download_data(id=6, destination='data')
 
 # %%
 project.experiments.add(
     name='pdf',
-    data_path='data/ed-6.gr',
+    data_path=data_path,
     sample_form='powder',
     beam_mode='constant wavelength',
     radiation_probe='neutron',

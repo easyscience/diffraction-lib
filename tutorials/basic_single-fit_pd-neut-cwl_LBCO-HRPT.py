@@ -201,7 +201,7 @@ project.save()
 # Download the data file from the EasyDiffraction repository on GitHub.
 
 # %%
-ed.download_data(id=3, destination='data')
+data_path = ed.download_data(id=3, destination='data')
 
 # %% [markdown]
 # #### Add Diffraction Experiment
@@ -209,7 +209,7 @@ ed.download_data(id=3, destination='data')
 # %%
 project.experiments.add(
     name='hrpt',
-    data_path='data/ed-3.xye',
+    data_path=data_path,
     sample_form='powder',
     beam_mode='constant wavelength',
     radiation_probe='neutron',

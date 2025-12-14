@@ -108,13 +108,13 @@ model.atom_sites.add(
 # #### Download Measured Data
 
 # %%
-download_data(id=12, destination='data')
+data_path = download_data(id=12, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt = ExperimentFactory.create(name='d20', data_path='data/ed-12.xye')
+expt = ExperimentFactory.create(name='d20', data_path=data_path)
 
 # %% [markdown]
 # #### Set Instrument
