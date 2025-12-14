@@ -96,7 +96,7 @@ py313-dev = { features = ['py313', 'nodejs'] }
 unit-tests = 'python -m pytest tests/unit/ --color=yes -v'
 integration-tests = 'python -m pytest tests/integration/ --color=yes -n auto -v'
 notebook-tests = 'python -m pytest --nbmake tutorials/ --nbmake-timeout=600 --color=yes -n auto -v'
-script-tests = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
+script-tests = 'python -m pytest tools/test_scripts.py --color=yes -v'
 extra = 'python -m pytest tests/unit/extra.py -q --tb=no --disable-warnings --color=yes'
 
 test = { depends-on = ['unit-tests'] }
