@@ -56,7 +56,10 @@ jobs:
 
       - name: Test tutorials as python scripts
         shell: bash
-        run: pixi run script-tests
+        run: |
+          ED_LOG_MODE=verbose ED_LOG_REACTION=raise pixi run python tutorials/quick_from-code_pd-neut-cwl_LBCO-HRPT.py
+          ED_LOG_MODE=verbose ED_LOG_REACTION=raise pixi run python tutorials/quick_from-cif_pd-neut-cwl_LBCO-HRPT.py
+          pixi run script-tests
 
       - name: Convert tutorial scripts to notebooks
         shell: bash
