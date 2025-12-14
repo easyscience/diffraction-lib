@@ -1,12 +1,16 @@
 """Test runner for tutorial scripts in the 'tutorials' directory.
 
 This test discovers and executes all Python scripts located under the
-'tutorials' directory to ensure they run without errors. Each script is
-executed in isolation using runpy to simulate running as a standalone
-program.
+'tutorials' directory to ensure they run without errors.
+
+Important: each script must be executed in a fresh Python process.
+Running many tutorials in-process (e.g. via runpy) leaks global state
+between scripts (notably cached calculator dictionaries keyed only by
+model/experiment names), which can cause false failures.
 """
 
-import runpy
+import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -16,12 +20,8 @@ import pytest
 # (see pytest.ini)
 pytestmark = pytest.mark.integration
 
-# Ensure we run against the workspace sources (src/) rather than a
-# potentially-installed PyPI package.
 _repo_root = Path(__file__).resolve().parents[1]
 _src_root = _repo_root / 'src'
-if _src_root.exists() and str(_src_root) not in sys.path:
-    sys.path.insert(0, str(_src_root))
 
 # Discover tutorial scripts, excluding temporary checkpoint files
 TUTORIALS = [p for p in Path('tutorials').rglob('*.py') if '.ipynb_checkpoints' not in p.parts]
@@ -34,7 +34,22 @@ def test_script_runs(script_path: Path):
     Each script is run in the context of __main__ to mimic standalone
     execution.
     """
-    try:
-        runpy.run_path(str(script_path), run_name='__main__')
-    except Exception as e:
-        pytest.fail(f'{script_path}\n{e}')
+    env = os.environ.copy()
+    if _src_root.exists():
+        existing = env.get('PYTHONPATH', '')
+        env['PYTHONPATH'] = (
+            str(_src_root)
+            if not existing
+            else str(_src_root) + os.pathsep + existing
+        )
+
+    result = subprocess.run(
+        [sys.executable, str(script_path)],
+        cwd=str(_repo_root),
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        details = (result.stdout or '') + (result.stderr or '')
+        pytest.fail(f'{script_path}\n{details.strip()}')
