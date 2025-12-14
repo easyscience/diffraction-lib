@@ -7,6 +7,7 @@ program.
 """
 
 import runpy
+import sys
 from pathlib import Path
 
 import pytest
@@ -14,6 +15,13 @@ import pytest
 # Mark this module as 'integration' so it's excluded by default
 # (see pytest.ini)
 pytestmark = pytest.mark.integration
+
+# Ensure we run against the workspace sources (src/) rather than a
+# potentially-installed PyPI package.
+_repo_root = Path(__file__).resolve().parents[1]
+_src_root = _repo_root / 'src'
+if _src_root.exists() and str(_src_root) not in sys.path:
+    sys.path.insert(0, str(_src_root))
 
 # Discover tutorial scripts, excluding temporary checkpoint files
 TUTORIALS = [p for p in Path('tutorials').rglob('*.py') if '.ipynb_checkpoints' not in p.parts]
