@@ -21,7 +21,12 @@ project = ed.Project()
 # ## Set Plotting Engine
 
 # %%
-project.plotter.engine = 'plotly'
+# Keep the auto-selected engine. Alternatively, you can uncomment the
+# line below to explicitly set the engine to the required one.
+# project.plotter.engine = 'plotly'
+
+# %%
+# Set global plot range for plots
 project.plotter.x_max = 40
 
 # %% [markdown]
@@ -49,12 +54,12 @@ sample_model.atom_sites.add(
 # ## Add Experiment
 
 # %%
-ed.download_from_repository('NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr', destination='data')
+data_path = ed.download_data(id=5, destination='data')
 
 # %%
-project.experiments.add_from_data_path(
+project.experiments.add(
     name='nomad',
-    data_path='data/NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr',
+    data_path=data_path,
     sample_form='powder',
     beam_mode='time-of-flight',
     radiation_probe='neutron',

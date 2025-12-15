@@ -21,12 +21,6 @@ import easydiffraction as ed
 project = ed.Project()
 
 # %% [markdown]
-# ## Set Plotting Engine
-
-# %%
-project.plotter.engine = 'plotly'
-
-# %% [markdown]
 # ## Add Sample Model
 
 # %%
@@ -50,12 +44,12 @@ project.sample_models['ni'].atom_sites.add(
 # ## Add Experiment
 
 # %%
-ed.download_from_repository('ni-q27r100-neutron_from-2.gr', destination='data')
+data_path = ed.download_data(id=6, destination='data')
 
 # %%
-project.experiments.add_from_data_path(
+project.experiments.add(
     name='pdf',
-    data_path='data/ni-q27r100-neutron_from-2.gr',
+    data_path=data_path,
     sample_form='powder',
     beam_mode='constant wavelength',
     radiation_probe='neutron',

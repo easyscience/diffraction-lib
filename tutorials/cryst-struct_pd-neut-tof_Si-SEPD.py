@@ -9,10 +9,10 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
-from easydiffraction import download_from_repository
+from easydiffraction import SampleModelFactory
+from easydiffraction import download_data
 
 # %% [markdown]
 # ## Define Sample Model
@@ -23,7 +23,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel('si')
+model = SampleModelFactory.create(name='si')
 
 # %% [markdown]
 # #### Set Space Group
@@ -42,24 +42,31 @@ model.cell.length_a = 5.431
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Si', 'Si', 0.125, 0.125, 0.125, b_iso=0.5)
+model.atom_sites.add(
+    label='Si',
+    type_symbol='Si',
+    fract_x=0.125,
+    fract_y=0.125,
+    fract_z=0.125,
+    b_iso=0.5,
+)
 
 # %% [markdown]
 # ## Define Experiment
 #
-# This section shows how to add expßeriments, configure their
+# This section shows how to add experiments, configure their
 # parameters, and link the sample models defined in the previous step.
 #
 # #### Download Measured Data
 
 # %%
-download_from_repository('sepd_si.xye', destination='data')
+data_path = download_data(id=7, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt = Experiment(name='sepd', data_path='data/sepd_si.xye', beam_mode='time-of-flight')
+expt = ExperimentFactory.create(name='sepd', data_path=data_path, beam_mode='time-of-flight')
 
 # %% [markdown]
 # #### Set Instrument
@@ -94,13 +101,13 @@ expt.peak.asym_alpha_1 = 0.5971
 # %%
 expt.background_type = 'line-segment'
 for x in range(0, 35000, 5000):
-    expt.background.add(x=x, y=200)
+    expt.background.add(id=str(x), x=x, y=200)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add('si', scale=10.0)
+expt.linked_phases.add(id='si', scale=10.0)
 
 # %% [markdown]
 # ## Define Project
@@ -114,22 +121,16 @@ expt.linked_phases.add('si', scale=10.0)
 project = Project()
 
 # %% [markdown]
-# #### Set Plotting Engine
-
-# %%
-project.plotter.engine = 'plotly'
-
-# %% [markdown]
 # #### Add Sample Model
 
 # %%
-project.sample_models.add(model)
+project.sample_models.add(sample_model=model)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(expt)
+project.experiments.add(experiment=expt)
 
 # %% [markdown]
 # ## Perform Analysis

@@ -137,7 +137,14 @@ jobs:
       # Input: docs/ directory containing the Markdown files
       # Output: site/ directory containing the generated HTML files
       - name: Build site with MkDocs
-        run: pixi run docs-build
+        run: |
+          if [[ "${CI_BRANCH}" == "develop" || "${CI_BRANCH}" == "master" || "${CI_BRANCH}" == "main" ]]; then
+            echo "📘 Building production docs for ${CI_BRANCH}"
+            pixi run docs-build
+          else
+            echo "📗 Building local docs for ${CI_BRANCH}"
+            pixi run docs-local
+          fi
 
       # Set up the Pages action to configure the static files to be deployed
       # NOTE: The repository must have GitHub Pages enabled and configured to build using GitHub Actions

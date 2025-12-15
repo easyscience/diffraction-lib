@@ -17,11 +17,18 @@ The tutorials are organized into the following categories.
 
 ## Getting Started
 
-- [LBCO `quick`](quick_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb) – A minimal
+- [LBCO `quick` CIF](quick_from-cif_pd-neut-cwl_LBCO-HRPT.ipynb) – A minimal
   example intended as a quick reference for users already familiar with the
-  EasyDiffraction API or who want to see an example refinement in code. This
-  tutorial covers a Rietveld refinement of the La0.5Ba0.5CoO3 crystal structure
-  using constant wavelength neutron powder diffraction data from HRPT at PSI.
+  EasyDiffraction API or who want to see how Rietveld refinement of the
+  La0.5Ba0.5CoO3 crystal structure can be performed when both the sample model
+  and experiment are loaded from CIF files. Data collected from constant
+  wavelength neutron powder diffraction at HRPT at PSI.
+- [LBCO `quick` `code`](quick_from-code_pd-neut-cwl_LBCO-HRPT.ipynb) – A minimal
+  example intended as a quick reference for users already familiar with the
+  EasyDiffraction API or who want to see an example refinement when both the
+  sample model and experiment are defined directly in code. This tutorial covers
+  a Rietveld refinement of the La0.5Ba0.5CoO3 crystal structure using constant
+  wavelength neutron powder diffraction data from HRPT at PSI.
 - [LBCO `basic`](basic_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb) – Demonstrates
   the use of the EasyDiffraction API in a simplified, user-friendly manner that
   closely follows the GUI workflow for a Rietveld refinement of the
@@ -39,6 +46,9 @@ The tutorials are organized into the following categories.
 
 ## Standard Diffraction
 
+- [Co2SiO4 `pd-neut-cwl`](cryst-struct_pd-neut-cwl_HS-HRPT.ipynb) – Demonstrates
+  a Rietveld refinement of the Co2SiO4 crystal structure using constant
+  wavelength neutron powder diffraction data from D20 at ILL.
 - [HS `pd-neut-cwl`](cryst-struct_pd-neut-cwl_HS-HRPT.ipynb) – Demonstrates a
   Rietveld refinement of the HS crystal structure using constant wavelength
   neutron powder diffraction data from HRPT at PSI.

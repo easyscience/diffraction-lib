@@ -15,10 +15,10 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
-from easydiffraction import download_from_repository
+from easydiffraction import SampleModelFactory
+from easydiffraction import download_data
 
 # %% [markdown]
 # ## Define Sample Model
@@ -29,7 +29,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel('pbso4')
+model = SampleModelFactory.create(name='pbso4')
 
 # %% [markdown]
 # #### Set Space Group
@@ -49,11 +49,51 @@ model.cell.length_c = 6.95
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Pb', 'Pb', 0.1876, 0.25, 0.167, b_iso=1.37)
-model.atom_sites.add('S', 'S', 0.0654, 0.25, 0.684, b_iso=0.3777)
-model.atom_sites.add('O1', 'O', 0.9082, 0.25, 0.5954, b_iso=1.9764)
-model.atom_sites.add('O2', 'O', 0.1935, 0.25, 0.5432, b_iso=1.4456)
-model.atom_sites.add('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
+model.atom_sites.add(
+    label='Pb',
+    type_symbol='Pb',
+    fract_x=0.1876,
+    fract_y=0.25,
+    fract_z=0.167,
+    wyckoff_letter='c',
+    b_iso=1.37,
+)
+model.atom_sites.add(
+    label='S',
+    type_symbol='S',
+    fract_x=0.0654,
+    fract_y=0.25,
+    fract_z=0.684,
+    wyckoff_letter='c',
+    b_iso=0.3777,
+)
+model.atom_sites.add(
+    label='O1',
+    type_symbol='O',
+    fract_x=0.9082,
+    fract_y=0.25,
+    fract_z=0.5954,
+    wyckoff_letter='c',
+    b_iso=1.9764,
+)
+model.atom_sites.add(
+    label='O2',
+    type_symbol='O',
+    fract_x=0.1935,
+    fract_y=0.25,
+    fract_z=0.5432,
+    wyckoff_letter='c',
+    b_iso=1.4456,
+)
+model.atom_sites.add(
+    label='O3',
+    type_symbol='O',
+    fract_x=0.0811,
+    fract_y=0.0272,
+    fract_z=0.8086,
+    wyckoff_letter='d',
+    b_iso=1.2822,
+)
 
 
 # %% [markdown]
@@ -67,15 +107,15 @@ model.atom_sites.add('O3', 'O', 0.0811, 0.0272, 0.8086, b_iso=1.2822)
 # #### Download Data
 
 # %%
-download_from_repository('d1a_pbso4.dat', destination='data')
+data_path1 = download_data(id=13, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt1 = Experiment(
+expt1 = ExperimentFactory.create(
     name='npd',
-    data_path='data/d1a_pbso4.dat',
+    data_path=data_path1,
     radiation_probe='neutron',
 )
 
@@ -109,23 +149,23 @@ expt1.background_type = 'line-segment'
 # Add background points.
 
 # %%
-for x, y in [
-    (11.0, 206.1624),
-    (15.0, 194.75),
-    (20.0, 194.505),
-    (30.0, 188.4375),
-    (50.0, 207.7633),
-    (70.0, 201.7002),
-    (120.0, 244.4525),
-    (153.0, 226.0595),
+for id, x, y in [
+    ('1', 11.0, 206.1624),
+    ('2', 15.0, 194.75),
+    ('3', 20.0, 194.505),
+    ('4', 30.0, 188.4375),
+    ('5', 50.0, 207.7633),
+    ('6', 70.0, 201.7002),
+    ('7', 120.0, 244.4525),
+    ('8', 153.0, 226.0595),
 ]:
-    expt1.background.add(x, y)
+    expt1.background.add(id=id, x=x, y=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt1.linked_phases.add('pbso4', scale=1.5)
+expt1.linked_phases.add(id='pbso4', scale=1.5)
 
 # %% [markdown]
 # ### Experiment 2: xrd
@@ -133,15 +173,15 @@ expt1.linked_phases.add('pbso4', scale=1.5)
 # #### Download Data
 
 # %%
-download_from_repository('lab_pbso4.dat', destination='data')
+data_path2 = download_data(id=16, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt2 = Experiment(
+expt2 = ExperimentFactory.create(
     name='xrd',
-    data_path='data/lab_pbso4.dat',
+    data_path=data_path2,
     radiation_probe='xray',
 )
 
@@ -175,21 +215,21 @@ expt2.background_type = 'chebyshev polynomial'
 # Add background points.
 
 # %%
-for x, y in [
-    (0, 119.195),
-    (1, 6.221),
-    (2, -45.725),
-    (3, 8.119),
-    (4, 54.552),
-    (5, -20.661),
+for id, x, y in [
+    ('1', 0, 119.195),
+    ('2', 1, 6.221),
+    ('3', 2, -45.725),
+    ('4', 3, 8.119),
+    ('5', 4, 54.552),
+    ('6', 5, -20.661),
 ]:
-    expt2.background.add(x, y)
+    expt2.background.add(id=id, order=x, coef=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt2.linked_phases.add('pbso4', scale=0.001)
+expt2.linked_phases.add(id='pbso4', scale=0.001)
 
 # %% [markdown]
 # ## Define Project
@@ -206,14 +246,14 @@ project = Project()
 # #### Add Sample Model
 
 # %%
-project.sample_models.add(model)
+project.sample_models.add(sample_model=model)
 
 # %% [markdown]
 # #### Add Experiments
 
 # %%
-project.experiments.add(expt1)
-project.experiments.add(expt2)
+project.experiments.add(experiment=expt1)
+project.experiments.add(experiment=expt2)
 
 # %% [markdown]
 # ## Perform Analysis

@@ -13,7 +13,7 @@ available in EasyDiffraction:
   space groups, and symmetry operations.
 - [utils](utils.md) – Miscellaneous utility functions for formatting,
   decorators, and general helpers.
-- [plotting](plotting.md) – Tools for visualizing data and fitting results.
+- [display](display.md) – Tools for plotting data and rendering tables.
 - [project](project.md) – Defines the project and manages its state.
 - [sample_models](sample_models.md) – Defines sample models, such as
   crystallographic structures, and manages their properties.

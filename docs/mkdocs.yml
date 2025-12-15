@@ -69,7 +69,8 @@ nav:
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:
-          - LBCO quick: tutorials/quick_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb
+          - LBCO quick CIF: tutorials/quick_from-cif_pd-neut-cwl_LBCO-HRPT.ipynb
+          - LBCO quick code: tutorials/quick_from-code_pd-neut-cwl_LBCO-HRPT.ipynb
           - LBCO basic: tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb
           - PbSO4 advanced: tutorials/advanced_joint-fit_pd-neut-xray-cwl_PbSO4.ipynb
       - Standard Diffraction:
@@ -86,12 +87,13 @@ nav:
           - 2025 DMSC: tutorials/dmsc-summer-school-2025_analysis-powder-diffraction.ipynb
   - API Reference:
       - API Reference: api-reference/index.md
+      - analysis: api-reference/analysis.md
       - core: api-reference/core.md
       - crystallography: api-reference/crystallography.md
-      - utils: api-reference/utils.md
-      - plotting: api-reference/plotting.md
+      - display: api-reference/display.md
+      - experiments: api-reference/experiments.md
+      - io: api-reference/io.md
       - project: api-reference/project.md
       - sample_models: api-reference/sample_models.md
-      - experiments: api-reference/experiments.md
-      - analysis: api-reference/analysis.md
       - summary: api-reference/summary.md
+      - utils: api-reference/utils.md

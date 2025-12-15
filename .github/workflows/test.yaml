@@ -56,15 +56,15 @@ jobs:
       pytest-marks: ${{ steps.set-mark.outputs.pytest_marks }}
 
     steps:
-      # Determine if functional tests should be run fully or only the fast ones
+      # Determine if integration tests should be run fully or only the fast ones
       # (to save time on branches other than master and develop)
-      - name: Set mark for functional tests
+      - name: Set mark for integration tests
         id: set-mark
         run: |
           if [[ "${{ env.CI_BRANCH }}" == "master" || "${{ env.CI_BRANCH }}" == "develop" ]]; then
             echo "pytest_marks=" >> $GITHUB_OUTPUT
           else
-            echo "pytest_marks=-m 'fast'" >> $GITHUB_OUTPUT
+            echo "pytest_marks=-m fast" >> $GITHUB_OUTPUT
           fi
 
   # Job 2: Test code
@@ -115,12 +115,13 @@ jobs:
             pixi run --environment $env unit-tests
           done
 
-      - name: Run functional tests ${{ needs.env-prepare.outputs.pytest-marks }}
+      - name:
+          Run integration tests ${{ needs.env-prepare.outputs.pytest-marks }}
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run --environment $env func-tests "${{ needs.env-prepare.outputs.pytest-marks }}"
+            pixi run --environment $env integration-tests ${{ needs.env-prepare.outputs.pytest-marks }}
           done
 
       # Delete all local tags when not on a tagged commit to force versioningit
@@ -147,6 +148,10 @@ jobs:
         shell: bash
         run: pixi remove --pypi easydiffraction
 
+      - name: Remove Python cache files before uploading
+        shell: bash
+        run: pixi run clean-pycache
+
       # More than one file/dir need to be specified in 'path', to preserve the
       # structure of the dist/ directory, not only its contents.
       - name: Upload Python package for the next job
@@ -156,6 +161,7 @@ jobs:
           path: |
             dist/
             tests/
+            pytest.ini
             pixi.toml
             pixi.lock
           if-no-files-found: 'error'
@@ -221,12 +227,13 @@ jobs:
             pixi run --environment $env unit-tests
           done
 
-      - name: Run functional tests ${{ needs.env-prepare.outputs.pytest-marks }}
+      - name:
+          Run integration tests ${{ needs.env-prepare.outputs.pytest-marks }}
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
-            pixi run --environment $env func-tests "${{ needs.env-prepare.outputs.pytest-marks }}"
+            pixi run --environment $env integration-tests ${{ needs.env-prepare.outputs.pytest-marks }}
           done
 
   # Job 4: Trigger dashboard build

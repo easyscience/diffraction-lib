@@ -1,36 +1,35 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-import importlib
+from __future__ import annotations
+
 import io
 import json
 import os
+import pathlib
 import re
 import urllib.request
 import zipfile
+from functools import lru_cache
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
 from typing import List
+from typing import Optional
 from urllib.parse import urlparse
 
 import numpy as np
 import pandas as pd
 import pooch
 from packaging.version import Version
-from tabulate import tabulate
+from uncertainties import UFloat
+from uncertainties import ufloat
+from uncertainties import ufloat_fromstr
 
-try:
-    import IPython
-    from IPython.display import HTML
-    from IPython.display import display
-except ImportError:
-    IPython = None
+from easydiffraction.display.tables import TableRenderer
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 
-import pathlib
-
-from easydiffraction.utils.formatting import error
-from easydiffraction.utils.formatting import paragraph
-from easydiffraction.utils.formatting import warning
+pooch.get_logger().setLevel('WARNING')  # Suppress pooch info messages
 
 
 def _validate_url(url: str) -> None:
@@ -47,54 +46,126 @@ def _validate_url(url: str) -> None:
         raise ValueError(f"Unsafe URL scheme '{parsed.scheme}'. Only HTTP and HTTPS are allowed.")
 
 
-# Single source of truth for the data repository branch.
-# This can be overridden in CI or development environments.
-DATA_REPO_BRANCH = (
-    os.environ.get('CI_BRANCH')  # CI/dev override
-    or 'master'  # Default branch for the data repository
-)
+def _filename_for_id_from_url(data_id: int | str, url: str) -> str:
+    """Return local filename like 'ed-12.xye' using extension from the
+    URL.
+    """
+    suffix = pathlib.Path(urlparse(url).path).suffix  # includes leading dot ('.cif', '.xye', ...)
+    # If URL has no suffix, fall back to no extension.
+    return f'ed-{data_id}{suffix}'
 
 
-def download_from_repository(
-    file_name: str,
-    branch: str | None = None,
+def _normalize_known_hash(value: str | None) -> str | None:
+    """Return pooch-compatible known_hash or None.
+
+    Treat placeholder values like 'sha256:...' as unset.
+    """
+    if not value:
+        return None
+    value = value.strip()
+    if value.lower() == 'sha256:...':
+        return None
+    return value
+
+
+@lru_cache(maxsize=1)
+def _fetch_data_index() -> dict:
+    """Fetch & cache the diffraction data index.json and return it as
+    dict.
+    """
+    index_url = 'https://raw.githubusercontent.com/easyscience/data/refs/heads/master/diffraction/index.json'
+    _validate_url(index_url)
+
+    # macOS: sha256sum index.json
+    index_hash = 'sha256:e78f5dd2f229ea83bfeb606502da602fc0b07136889877d3ab601694625dd3d7'
+    destination_dirname = 'easydiffraction'
+    destination_fname = 'data-index.json'
+    cache_dir = pooch.os_cache(destination_dirname)
+
+    index_path = pooch.retrieve(
+        url=index_url,
+        known_hash=index_hash,
+        fname=destination_fname,
+        path=cache_dir,
+        progressbar=False,
+    )
+
+    with pathlib.Path(index_path).open('r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def download_data(
+    id: int | str,
     destination: str = 'data',
     overwrite: bool = False,
-) -> None:
-    """Download a data file from the EasyDiffraction repository on
-    GitHub.
+) -> str:
+    """Download a dataset by numeric ID using the remote diffraction
+    index.
+
+    Example:
+        path = download_data(id=12, destination="data")
 
     Args:
-        file_name: The file name to fetch (e.g., "NaCl.gr").
-        branch: Branch to fetch from. If None, uses DATA_REPO_BRANCH.
+        id: Numeric dataset id (e.g. 12).
         destination: Directory to save the file into (created if
             missing).
         overwrite: Whether to overwrite the file if it already exists.
-            Defaults to False.
+
+    Returns:
+        str: Full path to the downloaded file as string.
+
+    Raises:
+        KeyError: If the id is not found in the index.
+        ValueError: If the resolved URL is not HTTP/HTTPS.
     """
+    index = _fetch_data_index()
+    key = str(id)
+
+    if key not in index:
+        # Provide a helpful message (and keep KeyError semantics)
+        available = ', '.join(
+            sorted(index.keys(), key=lambda s: int(s) if s.isdigit() else s)[:20]
+        )
+        raise KeyError(f'Unknown dataset id={id}. Example available ids: {available} ...')
+
+    record = index[key]
+    url = record['url']
+    _validate_url(url)
+
+    known_hash = _normalize_known_hash(record.get('hash'))
+    fname = _filename_for_id_from_url(id, url)
+
     dest_path = pathlib.Path(destination)
-    file_path = dest_path / file_name
+    dest_path.mkdir(parents=True, exist_ok=True)
+    file_path = dest_path / fname
+
+    description = record.get('description', '')
+    message = f'Data #{id}'
+    if description:
+        message += f': {description}'
+
+    console.paragraph('Getting data...')
+    console.print(f'{message}')
+
     if file_path.exists():
         if not overwrite:
-            print(warning(f"File '{file_path}' already exists and will not be overwritten."))
-            return
-        else:
-            print(warning(f"File '{file_path}' already exists and will be overwritten."))
-            file_path.unlink()
+            console.print(
+                f"✅ Data #{id} already present at '{file_path}'. Keeping existing file."
+            )
+            return str(file_path)
+        log.debug(f"Data #{id} already present at '{file_path}', but will be overwritten.")
+        file_path.unlink()
 
-    base = 'https://raw.githubusercontent.com'
-    org = 'easyscience'
-    repo = 'diffraction-lib'
-    branch = branch or DATA_REPO_BRANCH  # Use the global branch variable if not provided
-    path_in_repo = 'tutorials/data'
-    url = f'{base}/{org}/{repo}/refs/heads/{branch}/{path_in_repo}/{file_name}'
-
+    # Pooch downloads to destination with our controlled filename.
     pooch.retrieve(
         url=url,
-        known_hash=None,
-        fname=file_name,
-        path=destination,
+        known_hash=known_hash,
+        fname=fname,
+        path=str(dest_path),
     )
+
+    console.print(f"✅ Data #{id} downloaded to '{file_path}'")
+    return str(file_path)
 
 
 def package_version(package_name: str) -> str | None:
@@ -167,9 +238,9 @@ def _get_release_info(tag: str | None) -> dict | None:
             return json.load(response)
     except Exception as e:
         if tag is not None:
-            print(error(f'Failed to fetch release info for tag {tag}: {e}'))
+            log.error(f'Failed to fetch release info for tag {tag}: {e}')
         else:
-            print(error(f'Failed to fetch latest release info: {e}'))
+            log.error(f'Failed to fetch latest release info: {e}')
         return None
 
 
@@ -244,7 +315,7 @@ def _extract_notebooks_from_asset(download_url: str) -> list[str]:
             ]
             return _sort_notebooks(notebooks)
     except Exception as e:
-        print(error(f"Failed to download or parse 'tutorials.zip': {e}"))
+        log.error(f"Failed to download or parse 'tutorials.zip': {e}")
         return []
 
 
@@ -269,17 +340,18 @@ def fetch_tutorial_list() -> list[str]:
     release_info = _get_release_info(tag)
     # Fallback to latest if tag fetch failed and tag was attempted
     if release_info is None and tag is not None:
-        print(error('Falling back to latest release info...'))
+        # Non-fatal during listing; warn and fall back silently
+        log.warning('Falling back to latest release info...', exc_type=UserWarning)
         release_info = _get_release_info(None)
     if release_info is None:
         return []
     tutorial_asset = _get_tutorial_asset(release_info)
     if not tutorial_asset:
-        print(error("'tutorials.zip' not found in the release."))
+        log.warning("'tutorials.zip' not found in the release.", exc_type=UserWarning)
         return []
     download_url = tutorial_asset.get('browser_download_url')
     if not download_url:
-        print(error("'browser_download_url' not found for tutorials.zip."))
+        log.warning("'browser_download_url' not found for tutorials.zip.", exc_type=UserWarning)
         return []
     return _extract_notebooks_from_asset(download_url)
 
@@ -291,16 +363,17 @@ def list_tutorials():
         None
     """
     tutorials = fetch_tutorial_list()
+    columns_headers = ['name']
     columns_data = [[t] for t in tutorials]
     columns_alignment = ['left']
 
     released_ed_version = stripped_package_version('easydiffraction')
 
-    print(paragraph(f'📘 Tutorials available for easydiffraction v{released_ed_version}:'))
+    console.print(f'Tutorials available for easydiffraction v{released_ed_version}:')
     render_table(
+        columns_headers=columns_headers,
         columns_data=columns_data,
         columns_alignment=columns_alignment,
-        show_index=True,
     )
 
 
@@ -321,35 +394,35 @@ def fetch_tutorials() -> None:
     release_info = _get_release_info(tag)
     # Fallback to latest if tag fetch failed and tag was attempted
     if release_info is None and tag is not None:
-        print(error('Falling back to latest release info...'))
+        log.error('Falling back to latest release info...')
         release_info = _get_release_info(None)
     if release_info is None:
-        print(error('Unable to fetch release info.'))
+        log.error('Unable to fetch release info.')
         return
     tutorial_asset = _get_tutorial_asset(release_info)
     if not tutorial_asset:
-        print(error("'tutorials.zip' not found in the release."))
+        log.error("'tutorials.zip' not found in the release.")
         return
     file_url = tutorial_asset.get('browser_download_url')
     if not file_url:
-        print(error("'browser_download_url' not found for tutorials.zip."))
+        log.error("'browser_download_url' not found for tutorials.zip.")
         return
     file_name = 'tutorials.zip'
     # Validate URL for security
     _validate_url(file_url)
 
-    print('📥 Downloading tutorial notebooks...')
+    console.print('📥 Downloading tutorial notebooks...')
     with _safe_urlopen(file_url) as resp:
         pathlib.Path(file_name).write_bytes(resp.read())
 
-    print('📦 Extracting tutorials to "tutorials/"...')
+    console.print('📦 Extracting tutorials to "tutorials/"...')
     with zipfile.ZipFile(file_name, 'r') as zip_ref:
         zip_ref.extractall()
 
-    print('🧹 Cleaning up...')
+    console.print('🧹 Cleaning up...')
     pathlib.Path(file_name).unlink()
 
-    print('✅ Tutorials fetched successfully.')
+    console.print('✅ Tutorials fetched successfully.')
 
 
 def show_version() -> None:
@@ -359,201 +432,44 @@ def show_version() -> None:
         None
     """
     current_ed_version = package_version('easydiffraction')
-    print(paragraph(f'📘 Current easydiffraction v{current_ed_version}'))
+    console.print(f'Current easydiffraction v{current_ed_version}')
 
 
-def is_notebook() -> bool:
-    """Determines if the current environment is a Jupyter Notebook.
-
-    Returns:
-        bool: True if running inside a Jupyter Notebook, False
-        otherwise.
-    """
-    if IPython is None:
-        return False
-    if is_pycharm():  # Running inside PyCharm
-        return False
-    if is_colab():  # Running inside Google Colab
-        return True
-
-    try:
-        # get_ipython is only defined inside IPython environments
-        shell = get_ipython().__class__.__name__  # type: ignore[name-defined]
-        if shell == 'ZMQInteractiveShell':  # Jupyter notebook or qtconsole
-            return True
-        if shell == 'TerminalInteractiveShell':  # Terminal running IPython
-            return False
-        # Fallback for any other shell type
-        return False
-    except NameError:
-        return False  # Probably standard Python interpreter
-
-
-def is_pycharm() -> bool:
-    """Determines if the current environment is PyCharm.
-
-    Returns:
-        bool: True if running inside PyCharm, False otherwise.
-    """
-    return os.environ.get('PYCHARM_HOSTED') == '1'
-
-
-def is_colab() -> bool:
-    """Determines if the current environment is Google Colab.
-
-    Returns:
-        bool: True if running in Google Colab PyCharm, False otherwise.
-    """
-    try:
-        return importlib.util.find_spec('google.colab') is not None
-    except ModuleNotFoundError:
-        return False
-
-
-def is_github_ci() -> bool:
-    """Determines if the current process is running in GitHub Actions
-    CI.
-
-    Returns:
-        bool: True if the environment variable ``GITHUB_ACTIONS`` is
-        set (Always "true" on GitHub Actions), False otherwise.
-    """
-    return os.environ.get('GITHUB_ACTIONS') is not None
-
-
+# TODO: This is a temporary utility function. Complete migration to
+#  TableRenderer (as e.g. in show_all_params) and remove this.
 def render_table(
     columns_data,
     columns_alignment,
     columns_headers=None,
-    show_index=False,
     display_handle=None,
 ):
-    """Renders a table either as an HTML (in Jupyter Notebook) or ASCII
-    (in terminal), with aligned columns.
+    headers = [
+        (col, align) for col, align in zip(columns_headers, columns_alignment, strict=False)
+    ]
+    df = pd.DataFrame(columns_data, columns=pd.MultiIndex.from_tuples(headers))
 
-    Args:
-        columns_data (list): List of lists, where each inner list
-            represents a row of data.
-        columns_alignment (list): Corresponding text alignment for each
-            column (e.g., 'left', 'center', 'right').
-        columns_headers (list): List of column headers.
-        show_index (bool): Whether to show the index column.
-        display_handle: Optional display handle for updating in Jupyter.
-    """
-    # Use pandas DataFrame for Jupyter Notebook rendering
-    if is_notebook():
-        # Create DataFrame
-        if columns_headers is None:
-            df = pd.DataFrame(columns_data)
-            df.columns = range(df.shape[1])  # Ensure numeric column labels
-            columns_headers = df.columns.tolist()
-            skip_headers = True
-        else:
-            df = pd.DataFrame(columns_data, columns=columns_headers)
-            skip_headers = False
-
-        # Force starting index from 1
-        if show_index:
-            df.index += 1
-
-        # Replace None/NaN values with empty strings
-        df.fillna('', inplace=True)
-
-        # Formatters for data cell alignment and replacing None with
-        # empty string
-        def make_formatter(align):
-            return lambda x: f'<div style="text-align: {align};">{x}</div>'
-
-        formatters = {
-            col: make_formatter(align)
-            for col, align in zip(
-                columns_headers,
-                columns_alignment,
-                strict=True,
-            )
-        }
-
-        # Convert DataFrame to HTML
-        html = df.to_html(
-            escape=False,
-            index=show_index,
-            formatters=formatters,
-            border=0,
-            header=not skip_headers,
-        )
-
-        # Add CSS to align the entire table to the left and show border
-        html = html.replace(
-            '<table class="dataframe">',
-            '<table class="dataframe" '
-            'style="'
-            'border-collapse: collapse; '
-            'border: 1px solid #515155; '
-            'margin-left: 0.5em;'
-            'margin-top: 0.5em;'
-            'margin-bottom: 1em;'
-            '">',
-        )
-
-        # Manually apply text alignment to headers
-        if not skip_headers:
-            for col, align in zip(columns_headers, columns_alignment, strict=True):
-                html = html.replace(f'<th>{col}', f'<th style="text-align: {align};">{col}')
-
-        # Display or update the table in Jupyter Notebook
-        if display_handle is not None:
-            display_handle.update(HTML(html))
-        else:
-            display(HTML(html))
-
-    # Use tabulate for terminal rendering
-    else:
-        if columns_headers is None:
-            columns_headers = []
-
-        indices = show_index
-        if show_index:
-            # Force starting index from 1
-            indices = range(1, len(columns_data) + 1)
-
-        table = tabulate(
-            columns_data,
-            headers=columns_headers,
-            tablefmt='fancy_outline',
-            numalign='left',
-            stralign='left',
-            showindex=indices,
-        )
-
-        print(table)
+    tabler = TableRenderer.get()
+    tabler.render(df, display_handle=display_handle)
 
 
-def render_cif(cif_text, paragraph_title) -> None:
+def render_cif(cif_text) -> None:
     """Display the CIF text as a formatted table in Jupyter Notebook or
     terminal.
 
     Args:
         cif_text: The CIF text to display.
-        paragraph_title: The title to print above the table.
     """
-    # Split into lines and replace empty ones with a '&nbsp;'
-    # (non-breaking space) to force empty lines to be rendered in
-    # full height in the table. This is only needed in Jupyter Notebook.
-    if is_notebook():
-        lines: List[str] = [line if line.strip() else '&nbsp;' for line in cif_text.splitlines()]
-    else:
-        lines: List[str] = [line for line in cif_text.splitlines()]
+    # Split into lines
+    lines: List[str] = [line for line in cif_text.splitlines()]
 
     # Convert each line into a single-column format for table rendering
     columns: List[List[str]] = [[line] for line in lines]
 
-    # Print title paragraph
-    print(paragraph_title)
-
     # Render the table using left alignment and no headers
     render_table(
-        columns_data=columns,
+        columns_headers=['CIF'],
         columns_alignment=['left'],
+        columns_data=columns,
     )
 
 
@@ -689,3 +605,47 @@ def get_value_from_xye_header(file_path, key):
         return float(match.group(1))
     else:
         raise ValueError(f'{key} not found in the header.')
+
+
+def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
+    """Parse a CIF-style numeric string into a `ufloat` with an optional
+    uncertainty.
+
+    Examples of supported input:
+    - "3.566"       → ufloat(3.566, nan)
+    - "3.566(2)"    → ufloat(3.566, 0.002)
+    - None          → ufloat(default, nan)
+
+    Behavior:
+    - If the input string contains a value with parentheses (e.g.
+      "3.566(2)"), the number in parentheses is interpreted as an
+      estimated standard deviation (esd) in the last digit(s).
+    - If the input string has no parentheses, an uncertainty of NaN is
+      assigned to indicate "no esd provided".
+    - If parsing fails, the function falls back to the given `default`
+      value with uncertainty NaN.
+
+    Parameters
+    ----------
+    s : str or None
+        Numeric string in CIF format (e.g. "3.566", "3.566(2)") or None.
+    default : float or None, optional
+        Default value to use if `s` is None or parsing fails.
+        Defaults to None.
+
+    Returns:
+    -------
+    UFloat
+        An `uncertainties.UFloat` object with the parsed value and
+        uncertainty. The uncertainty will be NaN if not specified or
+        parsing failed.
+    """
+    if s is None:
+        return ufloat(default, np.nan)
+
+    if '(' not in s and ')' not in s:
+        s = f'{s}(nan)'
+    try:
+        return ufloat_fromstr(s)
+    except Exception:
+        return ufloat(default, np.nan)

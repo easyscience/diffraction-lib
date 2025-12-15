@@ -79,7 +79,9 @@ project.plotter.show_config()
 # Set plotting engine.
 
 # %%
-project.plotter.engine = 'plotly'
+# Keep the auto-selected engine. Alternatively, you can uncomment the
+# line below to explicitly set the engine to the required one.
+# project.plotter.engine = 'plotly'
 
 # %% [markdown]
 # ## Step 2: Define Sample Model
@@ -166,12 +168,6 @@ project.sample_models['lbco'].atom_sites.add(
 )
 
 # %% [markdown]
-# #### Apply Symmetry Constraints
-
-# %%
-project.sample_models['lbco'].apply_symmetry_constraints()
-
-# %% [markdown]
 # #### Show Sample Model as CIF
 
 # %%
@@ -205,15 +201,15 @@ project.save()
 # Download the data file from the EasyDiffraction repository on GitHub.
 
 # %%
-ed.download_from_repository('hrpt_lbco.xye', destination='data')
+data_path = ed.download_data(id=3, destination='data')
 
 # %% [markdown]
 # #### Add Diffraction Experiment
 
 # %%
-project.experiments.add_from_data_path(
+project.experiments.add(
     name='hrpt',
-    data_path='data/hrpt_lbco.xye',
+    data_path=data_path,
     sample_form='powder',
     beam_mode='constant wavelength',
     radiation_probe='neutron',
@@ -295,11 +291,11 @@ project.experiments['hrpt'].background_type = 'line-segment'
 # Add background points.
 
 # %%
-project.experiments['hrpt'].background.add(x=10, y=170)
-project.experiments['hrpt'].background.add(x=30, y=170)
-project.experiments['hrpt'].background.add(x=50, y=170)
-project.experiments['hrpt'].background.add(x=110, y=170)
-project.experiments['hrpt'].background.add(x=165, y=170)
+project.experiments['hrpt'].background.add(id='10', x=10, y=170)
+project.experiments['hrpt'].background.add(id='30', x=30, y=170)
+project.experiments['hrpt'].background.add(id='50', x=50, y=170)
+project.experiments['hrpt'].background.add(id='110', x=110, y=170)
+project.experiments['hrpt'].background.add(id='165', x=165, y=170)
 
 # %% [markdown]
 # Show current background points.
@@ -373,7 +369,7 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=Tr
 # Show all parameters of the project.
 
 # %%
-project.analysis.show_all_params()
+# project.analysis.show_all_params()
 
 # %% [markdown]
 # Show all fittable parameters.
@@ -391,7 +387,7 @@ project.analysis.show_free_params()
 # Show how to access parameters in the code.
 
 # %%
-project.analysis.how_to_access_parameters()
+# project.analysis.how_to_access_parameters()
 
 # %% [markdown]
 # #### Set Fit Mode
@@ -705,3 +701,5 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %%
 project.summary.show_report()
+
+# %%

@@ -7,26 +7,53 @@ from typing import Union
 
 import pandas as pd
 
-from easydiffraction.analysis.calculators.calculator_factory import CalculatorFactory
-from easydiffraction.analysis.collections.aliases import Aliases
-from easydiffraction.analysis.collections.constraints import Constraints
-from easydiffraction.analysis.collections.joint_fit_experiments import JointFitExperiments
-from easydiffraction.analysis.minimization import DiffractionMinimizer
-from easydiffraction.analysis.minimizers.minimizer_factory import MinimizerFactory
-from easydiffraction.core.objects import Descriptor
-from easydiffraction.core.objects import Parameter
+from easydiffraction.analysis.calculators.factory import CalculatorFactory
+from easydiffraction.analysis.categories.aliases import Aliases
+from easydiffraction.analysis.categories.constraints import Constraints
+from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
+from easydiffraction.analysis.fitting import Fitter
+from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+from easydiffraction.core.parameters import NumericDescriptor
+from easydiffraction.core.parameters import Parameter
+from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.singletons import ConstraintsHandler
+from easydiffraction.display.tables import TableRenderer
 from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.utils.formatting import paragraph
-from easydiffraction.utils.formatting import warning
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
 
 
 class Analysis:
+    """High-level orchestration of analysis tasks for a Project.
+
+    This class wires calculators and minimizers, exposes a compact
+    interface for parameters, constraints and results, and coordinates
+    computations across the project's sample models and experiments.
+
+    Typical usage:
+
+    - Display or filter parameters to fit.
+    - Select a calculator/minimizer implementation.
+    - Calculate patterns and run single or joint fits.
+
+    Attributes:
+    project: The parent Project object.
+        aliases: A registry of human-friendly aliases for parameters.
+        constraints: Symbolic constraints between parameters.
+    calculator: Active calculator used for computations.
+        fitter: Active fitter/minimizer driver.
+    """
+
     _calculator = CalculatorFactory.create_calculator('cryspy')
 
     def __init__(self, project) -> None:
+        """Create a new Analysis instance bound to a project.
+
+        Args:
+            project: The project that owns models and experiments.
+        """
         self.project = project
         self.aliases = Aliases()
         self.constraints = Constraints()
@@ -34,59 +61,66 @@ class Analysis:
         self.calculator = Analysis._calculator  # Default calculator shared by project
         self._calculator_key: str = 'cryspy'  # Added to track the current calculator
         self._fit_mode: str = 'single'
-        self.fitter = DiffractionMinimizer('lmfit (leastsq)')
+        self.fitter = Fitter('lmfit (leastsq)')
 
     def _get_params_as_dataframe(
         self,
-        params: List[Union[Descriptor, Parameter]],
+        params: List[Union[NumericDescriptor, Parameter]],
     ) -> pd.DataFrame:
         """Convert a list of parameters to a DataFrame.
 
         Args:
-            params: List of Descriptor or Parameter objects.
+            params: List of DescriptorFloat or Parameter objects.
 
         Returns:
             A pandas DataFrame containing parameter information.
         """
-        rows = []
+        records = []
         for param in params:
-            common_attrs = {}
-            if isinstance(param, (Descriptor, Parameter)):
-                common_attrs = {
-                    'datablock': param.datablock_id,
-                    'category': param.category_key,
-                    'entry': param.collection_entry_id,
-                    'parameter': param.name,
-                    'value': param.value,
-                    'units': param.units,
-                    'fittable': False,
+            record = {}
+            # TODO: Merge into one. Add field if attr exists
+            # TODO: f'{param.value!r}' for StringDescriptor?
+            if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
+                record = {
+                    ('fittable', 'left'): False,
+                    ('datablock', 'left'): param._identity.datablock_entry_name,
+                    ('category', 'left'): param._identity.category_code,
+                    ('entry', 'left'): param._identity.category_entry_name or '',
+                    ('parameter', 'left'): param.name,
+                    ('value', 'right'): param.value,
                 }
-            param_attrs = {}
+            if isinstance(param, (NumericDescriptor, Parameter)):
+                record = record | {
+                    ('units', 'left'): param.units,
+                }
             if isinstance(param, Parameter):
-                param_attrs = {
-                    'fittable': True,
-                    'free': param.free,
-                    'min': param.min,
-                    'max': param.max,
-                    'uncertainty': f'{param.uncertainty:.4f}' if param.uncertainty else '',
-                    'value': f'{param.value:.4f}',
-                    'units': param.units,
+                record = record | {
+                    ('fittable', 'left'): True,
+                    ('free', 'left'): param.free,
+                    ('min', 'right'): param.fit_min,
+                    ('max', 'right'): param.fit_max,
+                    ('uncertainty', 'right'): param.uncertainty or '',
                 }
-            row = common_attrs | param_attrs
-            rows.append(row)
+            records.append(record)
 
-        dataframe = pd.DataFrame(rows)
-        return dataframe
+        df = pd.DataFrame.from_records(records)
+        df.columns = pd.MultiIndex.from_tuples(df.columns)
+        return df
 
     def show_all_params(self) -> None:
-        sample_models_params = self.project.sample_models.get_all_params()
-        experiments_params = self.project.experiments.get_all_params()
+        """Print a table with all parameters for sample models and
+        experiments.
+        """
+        sample_models_params = self.project.sample_models.parameters
+        experiments_params = self.project.experiments.parameters
 
         if not sample_models_params and not experiments_params:
-            print(warning('No parameters found.'))
+            log.warning('No parameters found.')
             return
 
-        columns_headers = [
+        tabler = TableRenderer.get()
+
+        filtered_headers = [
             'datablock',
             'category',
             'entry',
@@ -94,46 +128,31 @@ class Analysis:
             'value',
             'fittable',
         ]
-        columns_alignment = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'right',
-            'left',
-        ]
 
-        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
-        sample_models_dataframe = sample_models_dataframe[columns_headers]
+        console.paragraph('All parameters for all sample models (🧩 data blocks)')
+        df = self._get_params_as_dataframe(sample_models_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
-        print(paragraph('All parameters for all sample models (🧩 data blocks)'))
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=sample_models_dataframe,
-            show_index=True,
-        )
-
-        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
-        experiments_dataframe = experiments_dataframe[columns_headers]
-
-        print(paragraph('All parameters for all experiments (🔬 data blocks)'))
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=experiments_dataframe,
-            show_index=True,
-        )
+        console.paragraph('All parameters for all experiments (🔬 data blocks)')
+        df = self._get_params_as_dataframe(experiments_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
     def show_fittable_params(self) -> None:
-        sample_models_params = self.project.sample_models.get_fittable_params()
-        experiments_params = self.project.experiments.get_fittable_params()
+        """Print a table with parameters that can be included in
+        fitting.
+        """
+        sample_models_params = self.project.sample_models.fittable_parameters
+        experiments_params = self.project.experiments.fittable_parameters
 
         if not sample_models_params and not experiments_params:
-            print(warning('No fittable parameters found.'))
+            log.warning('No fittable parameters found.')
             return
 
-        columns_headers = [
+        tabler = TableRenderer.get()
+
+        filtered_headers = [
             'datablock',
             'category',
             'entry',
@@ -143,49 +162,32 @@ class Analysis:
             'units',
             'free',
         ]
-        columns_alignment = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'right',
-            'right',
-            'left',
-            'left',
-        ]
 
-        sample_models_dataframe = self._get_params_as_dataframe(sample_models_params)
-        sample_models_dataframe = sample_models_dataframe[columns_headers]
+        console.paragraph('Fittable parameters for all sample models (🧩 data blocks)')
+        df = self._get_params_as_dataframe(sample_models_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
-        print(paragraph('Fittable parameters for all sample models (🧩 data blocks)'))
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=sample_models_dataframe,
-            show_index=True,
-        )
-
-        experiments_dataframe = self._get_params_as_dataframe(experiments_params)
-        experiments_dataframe = experiments_dataframe[columns_headers]
-
-        print(paragraph('Fittable parameters for all experiments (🔬 data blocks)'))
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=experiments_dataframe,
-            show_index=True,
-        )
+        console.paragraph('Fittable parameters for all experiments (🔬 data blocks)')
+        df = self._get_params_as_dataframe(experiments_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
     def show_free_params(self) -> None:
-        sample_models_params = self.project.sample_models.get_free_params()
-        experiments_params = self.project.experiments.get_free_params()
+        """Print a table with only currently-free (varying)
+        parameters.
+        """
+        sample_models_params = self.project.sample_models.free_parameters
+        experiments_params = self.project.experiments.free_parameters
         free_params = sample_models_params + experiments_params
 
         if not free_params:
-            print(warning('No free parameters found.'))
+            log.warning('No free parameters found.')
             return
 
-        columns_headers = [
+        tabler = TableRenderer.get()
+
+        filtered_headers = [
             'datablock',
             'category',
             'entry',
@@ -196,44 +198,30 @@ class Analysis:
             'max',
             'units',
         ]
-        columns_alignment = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'right',
-            'right',
-            'right',
-            'right',
-            'left',
-        ]
 
-        dataframe = self._get_params_as_dataframe(free_params)
-        dataframe = dataframe[columns_headers]
-
-        print(
-            paragraph(
-                'Free parameters for both sample models (🧩 data blocks) '
-                'and experiments (🔬 data blocks)'
-            )
+        console.paragraph(
+            'Free parameters for both sample models (🧩 data blocks) '
+            'and experiments (🔬 data blocks)'
         )
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=dataframe,
-            show_index=True,
-        )
+        df = self._get_params_as_dataframe(free_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
 
     def how_to_access_parameters(self) -> None:
-        sample_models_params = self.project.sample_models.get_all_params()
-        experiments_params = self.project.experiments.get_all_params()
+        """Show Python access paths for all parameters.
+
+        The output explains how to reference specific parameters in
+        code.
+        """
+        sample_models_params = self.project.sample_models.parameters
+        experiments_params = self.project.experiments.parameters
         all_params = {
             'sample_models': sample_models_params,
             'experiments': experiments_params,
         }
 
         if not all_params:
-            print(warning('No parameters found.'))
+            log.warning('No parameters found.')
             return
 
         columns_headers = [
@@ -242,11 +230,9 @@ class Analysis:
             'entry',
             'parameter',
             'How to Access in Python Code',
-            'Unique Identifier for CIF Constraints',
         ]
 
         columns_alignment = [
-            'left',
             'left',
             'left',
             'left',
@@ -256,95 +242,189 @@ class Analysis:
 
         columns_data = []
         project_varname = self.project._varname
-        for datablock_type, params in all_params.items():
+        for datablock_code, params in all_params.items():
             for param in params:
-                if isinstance(param, (Descriptor, Parameter)):
-                    datablock_id = param.datablock_id
-                    category_key = param.category_key
-                    entry_id = param.collection_entry_id
+                if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
+                    datablock_entry_name = param._identity.datablock_entry_name
+                    category_code = param._identity.category_code
+                    category_entry_name = param._identity.category_entry_name or ''
                     param_key = param.name
                     code_variable = (
-                        f"{project_varname}.{datablock_type}['{datablock_id}'].{category_key}"
+                        f'{project_varname}.{datablock_code}'
+                        f"['{datablock_entry_name}'].{category_code}"
                     )
-                    if entry_id:
-                        code_variable += f"['{entry_id}']"
+                    if category_entry_name:
+                        code_variable += f"['{category_entry_name}']"
                     code_variable += f'.{param_key}'
-                    cif_uid = param._generate_human_readable_unique_id()
                     columns_data.append([
-                        datablock_id,
-                        category_key,
-                        entry_id,
+                        datablock_entry_name,
+                        category_code,
+                        category_entry_name,
                         param_key,
                         code_variable,
-                        cif_uid,
                     ])
 
-        print(paragraph('How to access parameters'))
+        console.paragraph('How to access parameters')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=columns_data,
-            show_index=True,
+        )
+
+    def show_parameter_cif_uids(self) -> None:
+        """Show CIF unique IDs for all parameters.
+
+        The output explains which unique identifiers are used when
+        creating CIF-based constraints.
+        """
+        sample_models_params = self.project.sample_models.parameters
+        experiments_params = self.project.experiments.parameters
+        all_params = {
+            'sample_models': sample_models_params,
+            'experiments': experiments_params,
+        }
+
+        if not all_params:
+            log.warning('No parameters found.')
+            return
+
+        columns_headers = [
+            'datablock',
+            'category',
+            'entry',
+            'parameter',
+            'Unique Identifier for CIF Constraints',
+        ]
+
+        columns_alignment = [
+            'left',
+            'left',
+            'left',
+            'left',
+            'left',
+        ]
+
+        columns_data = []
+        for _, params in all_params.items():
+            for param in params:
+                if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
+                    datablock_entry_name = param._identity.datablock_entry_name
+                    category_code = param._identity.category_code
+                    category_entry_name = param._identity.category_entry_name or ''
+                    param_key = param.name
+                    cif_uid = param._cif_handler.uid
+                    columns_data.append([
+                        datablock_entry_name,
+                        category_code,
+                        category_entry_name,
+                        param_key,
+                        cif_uid,
+                    ])
+
+        console.paragraph('Show parameter CIF unique identifiers')
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
         )
 
     def show_current_calculator(self) -> None:
-        print(paragraph('Current calculator'))
-        print(self.current_calculator)
+        """Print the name of the currently selected calculator
+        engine.
+        """
+        console.paragraph('Current calculator')
+        console.print(self.current_calculator)
 
     @staticmethod
     def show_supported_calculators() -> None:
+        """Print a table of available calculator backends on this
+        system.
+        """
         CalculatorFactory.show_supported_calculators()
 
     @property
     def current_calculator(self) -> str:
+        """The key/name of the active calculator backend."""
         return self._calculator_key
 
     @current_calculator.setter
     def current_calculator(self, calculator_name: str) -> None:
+        """Switch to a different calculator backend.
+
+        Args:
+            calculator_name: Calculator key to use (e.g. 'cryspy').
+        """
         calculator = CalculatorFactory.create_calculator(calculator_name)
         if calculator is None:
             return
         self.calculator = calculator
         self._calculator_key = calculator_name
-        print(paragraph('Current calculator changed to'))
-        print(self.current_calculator)
+        console.paragraph('Current calculator changed to')
+        console.print(self.current_calculator)
 
     def show_current_minimizer(self) -> None:
-        print(paragraph('Current minimizer'))
-        print(self.current_minimizer)
+        """Print the name of the currently selected minimizer."""
+        console.paragraph('Current minimizer')
+        console.print(self.current_minimizer)
 
     @staticmethod
     def show_available_minimizers() -> None:
+        """Print a table of available minimizer drivers on this
+        system.
+        """
         MinimizerFactory.show_available_minimizers()
 
     @property
     def current_minimizer(self) -> Optional[str]:
+        """The identifier of the active minimizer, if any."""
         return self.fitter.selection if self.fitter else None
 
     @current_minimizer.setter
     def current_minimizer(self, selection: str) -> None:
-        self.fitter = DiffractionMinimizer(selection)
-        print(paragraph('Current minimizer changed to'))
-        print(self.current_minimizer)
+        """Switch to a different minimizer implementation.
+
+        Args:
+            selection: Minimizer selection string, e.g.
+                'lmfit (leastsq)'.
+        """
+        self.fitter = Fitter(selection)
+        console.paragraph('Current minimizer changed to')
+        console.print(self.current_minimizer)
 
     @property
     def fit_mode(self) -> str:
+        """Current fitting strategy: either 'single' or 'joint'."""
         return self._fit_mode
 
     @fit_mode.setter
     def fit_mode(self, strategy: str) -> None:
+        """Set the fitting strategy.
+
+        When set to 'joint', all experiments get default weights and
+        are used together in a single optimization.
+
+        Args:
+                strategy: Either 'single' or 'joint'.
+
+        Raises:
+            ValueError: If an unsupported strategy value is
+                provided.
+        """
         if strategy not in ['single', 'joint']:
             raise ValueError("Fit mode must be either 'single' or 'joint'")
         self._fit_mode = strategy
         if strategy == 'joint' and not hasattr(self, 'joint_fit_experiments'):
             # Pre-populate all experiments with weight 0.5
             self.joint_fit_experiments = JointFitExperiments()
-            for id in self.project.experiments.ids:
-                self.joint_fit_experiments.add(id, weight=0.5)
-        print(paragraph('Current fit mode changed to'))
-        print(self._fit_mode)
+            for id in self.project.experiments.names:
+                self.joint_fit_experiments.add(id=id, weight=0.5)
+        console.paragraph('Current fit mode changed to')
+        console.print(self._fit_mode)
 
     def show_available_fit_modes(self) -> None:
+        """Print all supported fitting strategies and their
+        descriptions.
+        """
         strategies = [
             {
                 'Strategy': 'single',
@@ -365,7 +445,7 @@ class Analysis:
             description = item['Description']
             columns_data.append([strategy, description])
 
-        print(paragraph('Available fit modes'))
+        console.paragraph('Available fit modes')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -373,25 +453,16 @@ class Analysis:
         )
 
     def show_current_fit_mode(self) -> None:
-        print(paragraph('Current fit mode'))
-        print(self.fit_mode)
-
-    def calculate_pattern(self, expt_name: str) -> None:
-        """Calculate the diffraction pattern for a given experiment. The
-        calculated pattern is stored within the experiment's datastore.
-
-        Args:
-            expt_name: The name of the experiment.
-        """
-        experiment = self.project.experiments[expt_name]
-        sample_models = self.project.sample_models
-        self.calculator.calculate_pattern(sample_models, experiment)
+        """Print the currently active fitting strategy."""
+        console.paragraph('Current fit mode')
+        console.print(self.fit_mode)
 
     def show_constraints(self) -> None:
-        constraints_dict = self.constraints._items
+        """Print a table of all user-defined symbolic constraints."""
+        constraints_dict = dict(self.constraints)
 
         if not self.constraints._items:
-            print(warning('No constraints defined.'))
+            log.warning('No constraints defined.')
             return
 
         rows = []
@@ -407,7 +478,7 @@ class Analysis:
         alignments = ['left', 'left', 'left']
         rows = [[row[header] for header in headers] for row in rows]
 
-        print(paragraph('User defined constraints'))
+        console.paragraph('User defined constraints')
         render_table(
             columns_headers=headers,
             columns_alignment=alignments,
@@ -415,8 +486,11 @@ class Analysis:
         )
 
     def apply_constraints(self):
+        """Apply the currently defined constraints to the active
+        project.
+        """
         if not self.constraints._items:
-            print(warning('No constraints defined.'))
+            log.warning('No constraints defined.')
             return
 
         self.constraints_handler.set_aliases(self.aliases)
@@ -424,70 +498,97 @@ class Analysis:
         self.constraints_handler.apply()
 
     def fit(self):
+        """Execute fitting using the selected mode, calculator and
+        minimizer.
+
+        In 'single' mode, fits each experiment independently. In
+        'joint' mode, performs a simultaneous fit across experiments
+        with weights.
+            Sets :attr:`fit_results` on success.
+        """
         sample_models = self.project.sample_models
         if not sample_models:
-            print('No sample models found in the project. Cannot run fit.')
+            log.warning('No sample models found in the project. Cannot run fit.')
             return
 
         experiments = self.project.experiments
         if not experiments:
-            print('No experiments found in the project. Cannot run fit.')
-            return
-
-        calculator = self.calculator
-        if not calculator:
-            print('No calculator is set. Cannot run fit.')
+            log.warning('No experiments found in the project. Cannot run fit.')
             return
 
         # Run the fitting process
-        experiment_ids = experiments.ids
-
         if self.fit_mode == 'joint':
-            print(
-                paragraph(
-                    f"Using all experiments 🔬 {experiment_ids} for '{self.fit_mode}' fitting"
-                )
+            console.paragraph(
+                f"Using all experiments 🔬 {experiments.names} for '{self.fit_mode}' fitting"
             )
             self.fitter.fit(
                 sample_models,
                 experiments,
-                calculator,
                 weights=self.joint_fit_experiments,
+                analysis=self,
             )
         elif self.fit_mode == 'single':
-            for expt_name in experiments.ids:
-                print(
-                    paragraph(f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting")
+            # TODO: Find a better way without creating dummy
+            #  experiments?
+            for expt_name in experiments.names:
+                console.paragraph(
+                    f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"
                 )
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name
-                dummy_experiments.add(experiment)
-                self.fitter.fit(sample_models, dummy_experiments, calculator)
+
+                # This is a workaround to set the parent project
+                # of the dummy experiments collection, so that
+                # parameters can be resolved correctly during fitting.
+                object.__setattr__(dummy_experiments, '_parent', self.project)
+
+                dummy_experiments._add(experiment)
+                self.fitter.fit(
+                    sample_models,
+                    dummy_experiments,
+                    analysis=self,
+                )
         else:
             raise NotImplementedError(f'Fit mode {self.fit_mode} not implemented yet.')
 
         # After fitting, get the results
         self.fit_results = self.fitter.results
 
+    def _update_categories(self, called_by_minimizer=False) -> None:
+        """Update all categories owned by Analysis.
+
+        This ensures aliases and constraints are up-to-date before
+        serialization or after parameter changes.
+
+        Args:
+            called_by_minimizer: Whether this is called during fitting.
+        """
+        # Apply constraints to sync dependent parameters
+        if self.constraints._items:
+            self.constraints_handler.apply()
+
+        # Update category-specific logic
+        # TODO: Need self.categories as in the case of datablock.py
+        for category in [self.aliases, self.constraints]:
+            if hasattr(category, '_update'):
+                category._update(called_by_minimizer=called_by_minimizer)
+
     def as_cif(self):
-        current_minimizer = self.current_minimizer
-        if ' ' in current_minimizer:
-            current_minimizer = f'"{current_minimizer}"'
+        """Serialize the analysis section to a CIF string.
 
-        lines = []
-        lines.append(f'_analysis.calculator_engine  {self.current_calculator}')
-        lines.append(f'_analysis.fitting_engine  {current_minimizer}')
-        lines.append(f'_analysis.fit_mode  {self.fit_mode}')
+        Returns:
+            The analysis section represented as a CIF document string.
+        """
+        from easydiffraction.io.cif.serialize import analysis_to_cif
 
-        lines.append('')
-        lines.append(self.aliases.as_cif())
-
-        lines.append('')
-        lines.append(self.constraints.as_cif())
-
-        return '\n'.join(lines)
+        self._update_categories()
+        return analysis_to_cif(self)
 
     def show_as_cif(self) -> None:
+        """Render the analysis section as CIF in a formatted console
+        view.
+        """
         cif_text: str = self.as_cif()
-        paragraph_title: str = paragraph('Analysis 🧮 info as cif')
-        render_cif(cif_text, paragraph_title)
+        paragraph_title: str = 'Analysis 🧮 info as cif'
+        console.paragraph(paragraph_title)
+        render_cif(cif_text)

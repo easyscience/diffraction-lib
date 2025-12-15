@@ -39,6 +39,8 @@ dependencies = [
   'cryspy',         # Calculations of diffraction patterns
   'diffpy.pdffit2', # Calculations of Pair Distribution Function (PDF), Python >=3.11,<3.14
   'diffpy.utils',   # Utilities for PDF calculations
+  'uncertainties',  # Propagation of uncertainties
+  'typeguard',      # Runtime type checking
 ]
 
 [project.optional-dependencies]
@@ -65,22 +67,23 @@ docs = [
   'mkdocs',                          # Static site generator
   'mkdocs-material',                 # Documentation framework on top of MkDocs
   'mkdocs-autorefs<1.3.0',           # MkDocs: Auto-references support. 1.3.0 => DeprecationWarning: Setting a fallback anchor function is deprecated and ...
-  'mkdocs-jupyter',                  # MkDocs: Jupyter notebook support
+  'mkdocs-jupyter',                  # MkDocs: Jupyter notebook support.
   'mkdocs-plugin-inline-svg',        # MkDocs: Inline SVG support
   'mkdocs-markdownextradata-plugin', # MkDocs: Markdown extra data support, such as global variables
   'mkdocstrings-python',             # MkDocs: Python docstring support
   'pyyaml',                          # YAML parser
 ]
 visualization = [
-  'darkdetect', # Detecting dark mode
-  'pandas',     # Displaying tables in juptyer notebooks
-  'plotly',     # Interactive plots
-  'py3Dmol',    # Visualisation of crystal structures
+  'darkdetect',          # Detecting dark mode
+  'jupyter_dark_detect', # Jupyter notebook dark mode support
+  'pandas',              # Displaying tables in juptyer notebooks
+  'plotly',              # Interactive plots
+  'py3Dmol',             # Visualisation of crystal structures
 ]
 all = [
-  "easydiffraction[dev]",
-  "easydiffraction[docs]",
-  "easydiffraction[visualization]",
+  'easydiffraction[dev]',
+  'easydiffraction[docs]',
+  'easydiffraction[visualization]',
 ]
 
 [project.urls]
@@ -160,8 +163,9 @@ close-quotes-on-newline = true
 # https://interrogate.readthedocs.io/en/latest/
 
 [tool.interrogate]
-fail-under = 35 # Temporarily reduce to allow gradual improvement
+fail-under = 35                  # Temporarily reduce to allow gradual improvement
 verbose = 1
+exclude = ["src/**/__init__.py"]
 
 #######################################
 # Configuration for coverage/pytest-cov
@@ -169,12 +173,12 @@ verbose = 1
 
 [tool.coverage.run]
 branch = true                    # Measure branch coverage as well
-source = ["src/easydiffraction"] # Limit coverage to the source code directory
+source = ['src/easydiffraction'] # Limit coverage to the source code directory
 
 [tool.coverage.report]
 show_missing = true # Show missing lines
 skip_covered = true # Skip files with 100% coverage in the report
-fail_under = 58     # Temporarily reduce to allow gradual improvement
+fail_under = 65     # Temporarily reduce to allow gradual improvement
 
 ########################
 # Configuration for ruff
@@ -185,7 +189,7 @@ fail_under = 58     # Temporarily reduce to allow gradual improvement
 
 [tool.ruff]
 # Temporarily exclude some directories until we have improved the code quality there
-exclude = ['tests', 'tutorials-drafts']
+exclude = ['tests', 'tmp']
 indent-width = 4
 line-length = 99
 # Enable new rules that are not yet stable, like DOC
@@ -247,10 +251,10 @@ ignore = [
   'DTZ005', # Ignore: `datetime.datetime.now()` called without a `tz` argument
 ]
 
-# Temporarily increase McCabe complexity limit to 17 to allow
+# Temporarily increase McCabe complexity limit to 19 to allow
 # refactoring in smaller steps.
 [tool.ruff.lint.mccabe]
-max-complexity = 17 # default is 10
+max-complexity = 19 # default is 10
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = 'all'
@@ -262,11 +266,11 @@ force-single-line = true
 '*test_*.py' = ['S101'] # allow asserts in test files
 
 [tool.ruff.lint.pycodestyle]
-max-line-length = 99 # https://peps.python.org/pep-0008/#maximum-line-length
-max-doc-length = 72  # https://peps.python.org/pep-0008/#maximum-line-length
+max-line-length = 100 #99# https://peps.python.org/pep-0008/#maximum-line-length
+max-doc-length = 72   # https://peps.python.org/pep-0008/#maximum-line-length
 
 [tool.ruff.lint.pydocstyle]
-convention = "google"
+convention = 'google'
 
 [tool.ruff.format]
 docstring-code-format = true    # Whether to format code snippets in docstrings

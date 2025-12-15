@@ -9,10 +9,10 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
-from easydiffraction import download_from_repository
+from easydiffraction import SampleModelFactory
+from easydiffraction import download_data
 
 # %% [markdown]
 # ## Define Sample Model
@@ -23,7 +23,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel('cosio')
+model = SampleModelFactory.create(name='cosio')
 
 # %% [markdown]
 # #### Set Space Group
@@ -44,32 +44,60 @@ model.cell.length_c = 4.8
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Co1', 'Co', 0, 0, 0, wyckoff_letter='a', b_iso=0.5)
-model.atom_sites.add('Co2', 'Co', 0.279, 0.25, 0.985, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add('Si', 'Si', 0.094, 0.25, 0.429, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add('O1', 'O', 0.091, 0.25, 0.771, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add('O2', 'O', 0.448, 0.25, 0.217, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add('O3', 'O', 0.164, 0.032, 0.28, wyckoff_letter='d', b_iso=0.5)
-
-# %% [markdown]
-# #### Symmetry Constraints
-#
-# Show CIF output before applying symmetry constraints.
-
-# %%
-model.show_as_cif()
-
-# %% [markdown]
-# Apply symmetry constraints.
-
-# %%
-model.apply_symmetry_constraints()
-
-# %% [markdown]
-# Show CIF output after applying symmetry constraints.
-
-# %%
-model.show_as_cif()
+model.atom_sites.add(
+    label='Co1',
+    type_symbol='Co',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=0.5,
+)
+model.atom_sites.add(
+    label='Co2',
+    type_symbol='Co',
+    fract_x=0.279,
+    fract_y=0.25,
+    fract_z=0.985,
+    wyckoff_letter='c',
+    b_iso=0.5,
+)
+model.atom_sites.add(
+    label='Si',
+    type_symbol='Si',
+    fract_x=0.094,
+    fract_y=0.25,
+    fract_z=0.429,
+    wyckoff_letter='c',
+    b_iso=0.5,
+)
+model.atom_sites.add(
+    label='O1',
+    type_symbol='O',
+    fract_x=0.091,
+    fract_y=0.25,
+    fract_z=0.771,
+    wyckoff_letter='c',
+    b_iso=0.5,
+)
+model.atom_sites.add(
+    label='O2',
+    type_symbol='O',
+    fract_x=0.448,
+    fract_y=0.25,
+    fract_z=0.217,
+    wyckoff_letter='c',
+    b_iso=0.5,
+)
+model.atom_sites.add(
+    label='O3',
+    type_symbol='O',
+    fract_x=0.164,
+    fract_y=0.032,
+    fract_z=0.28,
+    wyckoff_letter='d',
+    b_iso=0.5,
+)
 
 # %% [markdown]
 # ## Define Experiment
@@ -80,13 +108,13 @@ model.show_as_cif()
 # #### Download Measured Data
 
 # %%
-download_from_repository('co2sio4_d20.xye', destination='data')
+data_path = download_data(id=12, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt = Experiment(name='d20', data_path='data/co2sio4_d20.xye')
+expt = ExperimentFactory.create(name='d20', data_path=data_path)
 
 # %% [markdown]
 # #### Set Instrument
@@ -107,26 +135,26 @@ expt.peak.broad_gauss_w = 0.4
 # #### Set Background
 
 # %%
-expt.background.add(x=8, y=500)
-expt.background.add(x=9, y=500)
-expt.background.add(x=10, y=500)
-expt.background.add(x=11, y=500)
-expt.background.add(x=12, y=500)
-expt.background.add(x=15, y=500)
-expt.background.add(x=25, y=500)
-expt.background.add(x=30, y=500)
-expt.background.add(x=50, y=500)
-expt.background.add(x=70, y=500)
-expt.background.add(x=90, y=500)
-expt.background.add(x=110, y=500)
-expt.background.add(x=130, y=500)
-expt.background.add(x=150, y=500)
+expt.background.add(id='1', x=8, y=500)
+expt.background.add(id='2', x=9, y=500)
+expt.background.add(id='3', x=10, y=500)
+expt.background.add(id='4', x=11, y=500)
+expt.background.add(id='5', x=12, y=500)
+expt.background.add(id='6', x=15, y=500)
+expt.background.add(id='7', x=25, y=500)
+expt.background.add(id='8', x=30, y=500)
+expt.background.add(id='9', x=50, y=500)
+expt.background.add(id='10', x=70, y=500)
+expt.background.add(id='11', x=90, y=500)
+expt.background.add(id='12', x=110, y=500)
+expt.background.add(id='13', x=130, y=500)
+expt.background.add(id='14', x=150, y=500)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add('cosio', scale=1.0)
+expt.linked_phases.add(id='cosio', scale=1.0)
 
 # %% [markdown]
 # ## Define Project
@@ -143,19 +171,21 @@ project = Project()
 # #### Set Plotting Engine
 
 # %%
-project.plotter.engine = 'plotly'
+# Keep the auto-selected engine. Alternatively, you can uncomment the
+# line below to explicitly set the engine to the required one.
+# project.plotter.engine = 'plotly'
 
 # %% [markdown]
 # #### Add Sample Model
 
 # %%
-project.sample_models.add(model)
+project.sample_models.add(sample_model=model)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(expt)
+project.experiments.add(experiment=expt)
 
 # %% [markdown]
 # ## Perform Analysis

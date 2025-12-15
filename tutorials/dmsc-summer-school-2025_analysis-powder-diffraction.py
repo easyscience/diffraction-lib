@@ -92,20 +92,20 @@ project_1.info.description = 'Fitting simulated powder diffraction pattern of Si
 # workflow.
 
 # %%
-dir_path = 'data'
+data_dir = 'data'
 file_name = 'reduced_Si.xye'
-si_xye_path = f'{dir_path}/{file_name}'
+si_xye_path = f'{data_dir}/{file_name}'
 
 # %% [markdown]
 # Uncomment the following cell if your data reduction failed and the
 # reduced data file is missing. In this case, you can download our
 # pre-generated reduced data file from the EasyDiffraction repository.
-# The `download_from_repository` function will not overwrite an existing
-# file unless you set `overwrite=True`, so it's safe to run even if the
+# The `download_data` function will not overwrite an existing file
+# unless you set `overwrite=True`, so it's safe to run even if the
 # file is already present.
 
 # %%
-ed.download_from_repository(file_name, destination=dir_path)
+si_xye_path = ed.download_data(id=17, destination=data_dir)
 
 # %% [markdown]
 # Now we can create the experiment and load the measured data. In this
@@ -120,7 +120,7 @@ ed.download_from_repository(file_name, destination=dir_path)
 # for more details about different types of experiments.
 
 # %%
-project_1.experiments.add_from_data_path(
+project_1.experiments.add(
     name='sim_si',
     data_path=si_xye_path,
     sample_form='powder',
@@ -154,7 +154,9 @@ project_1.experiments.add_from_data_path(
 # for more details about setting the plotting engine.
 
 # %%
-project_1.plotter.engine = 'plotly'
+# Keep the auto-selected engine. Alternatively, you can uncomment the
+# line below to explicitly set the engine to the required one.
+# project.plotter.engine = 'plotly'
 
 # %%
 project_1.plot_meas(expt_name='sim_si')
@@ -183,8 +185,8 @@ project_1.plot_meas(expt_name='sim_si')
 # for more details about excluding regions from the measured data.
 
 # %%
-project_1.experiments['sim_si'].excluded_regions.add(start=0, end=55000)
-project_1.experiments['sim_si'].excluded_regions.add(start=105500, end=200000)
+project_1.experiments['sim_si'].excluded_regions.add(id='1', start=0, end=55000)
+project_1.experiments['sim_si'].excluded_regions.add(id='2', start=105500, end=200000)
 
 # %% [markdown]
 # To visualize the effect of excluding the high TOF region, we can plot
@@ -353,13 +355,13 @@ project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0147
 
 # %%
 project_1.experiments['sim_si'].background_type = 'line-segment'
-project_1.experiments['sim_si'].background.add(x=50000, y=0.01)
-project_1.experiments['sim_si'].background.add(x=60000, y=0.01)
-project_1.experiments['sim_si'].background.add(x=70000, y=0.01)
-project_1.experiments['sim_si'].background.add(x=80000, y=0.01)
-project_1.experiments['sim_si'].background.add(x=90000, y=0.01)
-project_1.experiments['sim_si'].background.add(x=100000, y=0.01)
-project_1.experiments['sim_si'].background.add(x=110000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='1', x=50000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='2', x=60000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='3', x=70000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='4', x=80000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='5', x=90000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='6', x=100000, y=0.01)
+project_1.experiments['sim_si'].background.add(id='7', x=110000, y=0.01)
 
 # %% [markdown]
 # ### 🧩 Create a Sample Model – Si
@@ -742,15 +744,15 @@ project_2.info.description = 'Fitting simulated powder diffraction pattern of La
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-dir_path = 'data'
+data_dir = 'data'
 file_name = 'reduced_LBCO.xye'
-lbco_xye_path = f'{dir_path}/{file_name}'
+lbco_xye_path = f'{data_dir}/{file_name}'
 
 # Uncomment the following line if your data reduction failed and the
 # reduced data file is missing.
-ed.download_from_repository(file_name, destination=dir_path)
+lbco_xye_path = ed.download_data(id=18, destination=data_dir)
 
-project_2.experiments.add_from_data_path(
+project_2.experiments.add(
     name='sim_lbco',
     data_path=lbco_xye_path,
     sample_form='powder',
@@ -778,11 +780,10 @@ project_2.experiments.add_from_data_path(
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.plotter.engine = 'plotly'
 project_2.plot_meas(expt_name='sim_lbco')
 
-project_2.experiments['sim_lbco'].excluded_regions.add(start=0, end=55000)
-project_2.experiments['sim_lbco'].excluded_regions.add(start=105500, end=200000)
+project_2.experiments['sim_lbco'].excluded_regions.add(id='1', start=0, end=55000)
+project_2.experiments['sim_lbco'].excluded_regions.add(id='2', start=105500, end=200000)
 
 project_2.plot_meas(expt_name='sim_lbco')
 
@@ -830,7 +831,7 @@ project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.get_valu
 # %% tags=["solution", "hide-input"]
 # # Create a reference to the peak profile parameters from the Si
 sim_si_peak = project_1.experiments['sim_si'].peak
-project_2.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+project_2.experiments['sim_lbco'].peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0 = sim_si_peak.broad_gauss_sigma_0.value
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1 = sim_si_peak.broad_gauss_sigma_1.value
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2 = sim_si_peak.broad_gauss_sigma_2.value
@@ -859,13 +860,13 @@ project_2.experiments['sim_lbco'].peak.asym_alpha_1 = sim_si_peak.asym_alpha_1.v
 
 # %% tags=["solution", "hide-input"]
 project_2.experiments['sim_lbco'].background_type = 'line-segment'
-project_2.experiments['sim_lbco'].background.add(x=50000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(x=60000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(x=70000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(x=80000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(x=90000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(x=100000, y=0.2)
-project_2.experiments['sim_lbco'].background.add(x=110000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='1', x=50000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='2', x=60000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='3', x=70000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='4', x=80000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='5', x=90000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='6', x=100000, y=0.2)
+project_2.experiments['sim_lbco'].background.add(id='7', x=110000, y=0.2)
 
 # %% [markdown]
 # ### 🧩 Exercise 3: Define a Sample Model – LBCO

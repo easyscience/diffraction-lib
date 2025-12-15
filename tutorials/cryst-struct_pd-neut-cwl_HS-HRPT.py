@@ -9,10 +9,10 @@
 # ## Import Library
 
 # %%
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModel
-from easydiffraction import download_from_repository
+from easydiffraction import SampleModelFactory
+from easydiffraction import download_data
 
 # %% [markdown]
 # ## Define Sample Model
@@ -23,7 +23,7 @@ from easydiffraction import download_from_repository
 # #### Create Sample Model
 
 # %%
-model = SampleModel('hs')
+model = SampleModelFactory.create(name='hs')
 
 # %% [markdown]
 # #### Set Space Group
@@ -35,6 +35,7 @@ model.space_group.it_coordinate_system_code = 'h'
 # %% [markdown]
 # #### Set Unit Cell
 
+
 # %%
 model.cell.length_a = 6.9
 model.cell.length_c = 14.1
@@ -43,31 +44,51 @@ model.cell.length_c = 14.1
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add('Zn', 'Zn', 0, 0, 0.5, wyckoff_letter='b', b_iso=0.5)
-model.atom_sites.add('Cu', 'Cu', 0.5, 0, 0, wyckoff_letter='e', b_iso=0.5)
-model.atom_sites.add('O', 'O', 0.21, -0.21, 0.06, wyckoff_letter='h', b_iso=0.5)
-model.atom_sites.add('Cl', 'Cl', 0, 0, 0.197, wyckoff_letter='c', b_iso=0.5)
-model.atom_sites.add('H', '2H', 0.13, -0.13, 0.08, wyckoff_letter='h', b_iso=0.5)
-
-# %% [markdown]
-# #### Symmetry constraints
-#
-# Show CIF output before applying symmetry constraints.
-
-# %%
-model.show_as_cif()
-
-# %% [markdown]
-# Apply symmetry constraints.
-
-# %%
-model.apply_symmetry_constraints()
-
-# %% [markdown]
-# Show CIF output after applying symmetry constraints.
-
-# %%
-model.show_as_cif()
+model.atom_sites.add(
+    label='Zn',
+    type_symbol='Zn',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0.5,
+    wyckoff_letter='b',
+    b_iso=0.5,
+)
+model.atom_sites.add(
+    label='Cu',
+    type_symbol='Cu',
+    fract_x=0.5,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='e',
+    b_iso=0.5,
+)
+model.atom_sites.add(
+    label='O',
+    type_symbol='O',
+    fract_x=0.21,
+    fract_y=-0.21,
+    fract_z=0.06,
+    wyckoff_letter='h',
+    b_iso=0.5,
+)
+model.atom_sites.add(
+    label='Cl',
+    type_symbol='Cl',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0.197,
+    wyckoff_letter='c',
+    b_iso=0.5,
+)
+model.atom_sites.add(
+    label='H',
+    type_symbol='2H',
+    fract_x=0.13,
+    fract_y=-0.13,
+    fract_z=0.08,
+    wyckoff_letter='h',
+    b_iso=0.5,
+)
 
 # %% [markdown]
 # ## Define Experiment
@@ -78,13 +99,13 @@ model.show_as_cif()
 # #### Download Measured Data
 
 # %%
-download_from_repository('hrpt_hs.xye', destination='data')
+data_path = download_data(id=11, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
 
 # %%
-expt = Experiment(name='hrpt', data_path='data/hrpt_hs.xye')
+expt = ExperimentFactory.create(name='hrpt', data_path=data_path)
 
 # %% [markdown]
 # #### Set Instrument
@@ -107,21 +128,21 @@ expt.peak.broad_lorentz_y = 0
 # #### Set Background
 
 # %%
-expt.background.add(x=4.4196, y=500)
-expt.background.add(x=6.6207, y=500)
-expt.background.add(x=10.4918, y=500)
-expt.background.add(x=15.4634, y=500)
-expt.background.add(x=45.6041, y=500)
-expt.background.add(x=74.6844, y=500)
-expt.background.add(x=103.4187, y=500)
-expt.background.add(x=121.6311, y=500)
-expt.background.add(x=159.4116, y=500)
+expt.background.add(id='1', x=4.4196, y=500)
+expt.background.add(id='2', x=6.6207, y=500)
+expt.background.add(id='3', x=10.4918, y=500)
+expt.background.add(id='4', x=15.4634, y=500)
+expt.background.add(id='5', x=45.6041, y=500)
+expt.background.add(id='6', x=74.6844, y=500)
+expt.background.add(id='7', x=103.4187, y=500)
+expt.background.add(id='8', x=121.6311, y=500)
+expt.background.add(id='9', x=159.4116, y=500)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add('hs', scale=0.5)
+expt.linked_phases.add(id='hs', scale=0.5)
 
 # %% [markdown]
 # ## Define Project
@@ -138,19 +159,21 @@ project = Project()
 # #### Set Plotting Engine
 
 # %%
-project.plotter.engine = 'plotly'
+# Keep the auto-selected engine. Alternatively, you can uncomment the
+# line below to explicitly set the engine to the required one.
+# project.plotter.engine = 'plotly'
 
 # %% [markdown]
 # #### Add Sample Model
 
 # %%
-project.sample_models.add(model)
+project.sample_models.add(sample_model=model)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(expt)
+project.experiments.add(experiment=expt)
 
 # %% [markdown]
 # ## Perform Analysis
