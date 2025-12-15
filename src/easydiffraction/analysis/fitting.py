@@ -9,7 +9,6 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.parameters import Parameter
@@ -33,16 +32,17 @@ class Fitter:
         self,
         sample_models: SampleModels,
         experiments: Experiments,
-        calculator: Any,
         weights: Optional[np.array] = None,
+        analysis=None,
     ) -> None:
         """Run the fitting process.
 
         Args:
             sample_models: Collection of sample models.
             experiments: Collection of experiments.
-            calculator: The calculator to use for pattern generation.
             weights: Optional weights for joint fitting.
+            analysis: Optional Analysis object to update its categories
+                during fitting.
         """
         params = sample_models.free_parameters + experiments.free_parameters
 
@@ -59,33 +59,30 @@ class Fitter:
                 parameters=params,
                 sample_models=sample_models,
                 experiments=experiments,
-                calculator=calculator,
                 weights=weights,
+                analysis=analysis,
             )
 
         # Perform fitting
         self.results = self.minimizer.fit(params, objective_function)
 
         # Post-fit processing
-        self._process_fit_results(sample_models, experiments, calculator)
+        self._process_fit_results(sample_models, experiments)
 
     def _process_fit_results(
         self,
         sample_models: SampleModels,
         experiments: Experiments,
-        calculator: CalculatorBase,
     ) -> None:
         """Collect reliability inputs and display results after fitting.
 
         Args:
             sample_models: Collection of sample models.
             experiments: Collection of experiments.
-            calculator: The calculator used for pattern generation.
         """
         y_obs, y_calc, y_err = get_reliability_inputs(
             sample_models,
             experiments,
-            calculator,
         )
 
         # Placeholder for future f_obs / f_calc retrieval
@@ -123,8 +120,8 @@ class Fitter:
         parameters: List[Parameter],
         sample_models: SampleModels,
         experiments: Experiments,
-        calculator: CalculatorBase,
         weights: Optional[np.array] = None,
+        analysis=None,
     ) -> np.ndarray:
         """Residual function computes the difference between measured
         and calculated patterns. It updates the parameter values
@@ -135,14 +132,24 @@ class Fitter:
             parameters: List of parameters being optimized.
             sample_models: Collection of sample models.
             experiments: Collection of experiments.
-            calculator: The calculator to use for pattern generation.
             weights: Optional weights for joint fitting.
+            analysis: Optional Analysis object to update its categories
+                during fitting.
 
         Returns:
             Array of weighted residuals.
         """
         # Sync parameters back to objects
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
+
+        # Update categories to reflect new parameter values
+        # Order matters: sample models first (symmetry, structure),
+        # then analysis (constraints), then experiments (calculations)
+        for sample_model in sample_models:
+            sample_model._update_categories()
+
+        if analysis is not None:
+            analysis._update_categories(called_by_minimizer=True)
 
         # Prepare weights for joint fitting
         num_expts: int = len(experiments.names)
@@ -164,16 +171,14 @@ class Fitter:
         residuals: List[float] = []
 
         for experiment, weight in zip(experiments.values(), _weights, strict=True):
+            # Update experiment-specific calculations
+            experiment._update_categories(called_by_minimizer=True)
+
             # Calculate the difference between measured and calculated
             # patterns
-            calculator.calculate_pattern(
-                sample_models,
-                experiment,
-                called_by_minimizer=True,
-            )
-            y_calc: np.ndarray = experiment.datastore.calc
-            y_meas: np.ndarray = experiment.datastore.meas
-            y_meas_su: np.ndarray = experiment.datastore.meas_su
+            y_calc: np.ndarray = experiment.data.calc
+            y_meas: np.ndarray = experiment.data.meas
+            y_meas_su: np.ndarray = experiment.data.meas_su
             diff = (y_meas - y_calc) / y_meas_su
 
             # Residuals are squared before going into reduced

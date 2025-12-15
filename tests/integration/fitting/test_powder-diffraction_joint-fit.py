@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os
 import tempfile
 
 import pytest
@@ -10,7 +9,7 @@ from numpy.testing import assert_almost_equal
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import SampleModelFactory
-from easydiffraction import download_from_repository
+from easydiffraction import download_data
 
 TEMP_DIR = tempfile.gettempdir()
 
@@ -23,7 +22,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     model.cell.length_a = 8.47
     model.cell.length_b = 5.39
     model.cell.length_c = 6.95
-    model.atom_sites.add_from_args(
+    model.atom_sites.add(
         label='Pb',
         type_symbol='Pb',
         fract_x=0.1876,
@@ -32,7 +31,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=1.37,
     )
-    model.atom_sites.add_from_args(
+    model.atom_sites.add(
         label='S',
         type_symbol='S',
         fract_x=0.0654,
@@ -41,7 +40,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=0.3777,
     )
-    model.atom_sites.add_from_args(
+    model.atom_sites.add(
         label='O1',
         type_symbol='O',
         fract_x=0.9082,
@@ -50,7 +49,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=1.9764,
     )
-    model.atom_sites.add_from_args(
+    model.atom_sites.add(
         label='O2',
         type_symbol='O',
         fract_x=0.1935,
@@ -59,7 +58,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=1.4456,
     )
-    model.atom_sites.add_from_args(
+    model.atom_sites.add(
         label='O3',
         type_symbol='O',
         fract_x=0.0811,
@@ -70,9 +69,8 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     )
 
     # Set experiments
-    data_file = 'd1a_pbso4_first-half.dat'
-    download_from_repository(data_file, destination=TEMP_DIR)
-    expt1 = ExperimentFactory.create(name='npd1', data_path=os.path.join(TEMP_DIR, data_file))
+    data_path = download_data(id=14, destination=TEMP_DIR)
+    expt1 = ExperimentFactory.create(name='npd1', data_path=data_path)
     expt1.instrument.setup_wavelength = 1.91
     expt1.instrument.calib_twotheta_offset = -0.1406
     expt1.peak.broad_gauss_u = 0.139
@@ -80,23 +78,22 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt1.peak.broad_gauss_w = 0.386
     expt1.peak.broad_lorentz_x = 0
     expt1.peak.broad_lorentz_y = 0.0878
-    expt1.linked_phases.add_from_args(id='pbso4', scale=1.46)
+    expt1.linked_phases.add(id='pbso4', scale=1.46)
     expt1.background_type = 'line-segment'
-    for x, y in [
-        (11.0, 206.1624),
-        (15.0, 194.75),
-        (20.0, 194.505),
-        (30.0, 188.4375),
-        (50.0, 207.7633),
-        (70.0, 201.7002),
-        (120.0, 244.4525),
-        (153.0, 226.0595),
+    for id, x, y in [
+        ('1', 11.0, 206.1624),
+        ('2', 15.0, 194.75),
+        ('3', 20.0, 194.505),
+        ('4', 30.0, 188.4375),
+        ('5', 50.0, 207.7633),
+        ('6', 70.0, 201.7002),
+        ('7', 120.0, 244.4525),
+        ('8', 153.0, 226.0595),
     ]:
-        expt1.background.add_from_args(x=x, y=y)
+        expt1.background.add(id=id, x=x, y=y)
 
-    data_file = 'd1a_pbso4_second-half.dat'
-    download_from_repository(data_file, destination=TEMP_DIR)
-    expt2 = ExperimentFactory.create(name='npd2', data_path=os.path.join(TEMP_DIR, data_file))
+    data_path = download_data(id=15, destination=TEMP_DIR)
+    expt2 = ExperimentFactory.create(name='npd2', data_path=data_path)
     expt2.instrument.setup_wavelength = 1.91
     expt2.instrument.calib_twotheta_offset = -0.1406
     expt2.peak.broad_gauss_u = 0.139
@@ -104,25 +101,25 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt2.peak.broad_gauss_w = 0.386
     expt2.peak.broad_lorentz_x = 0
     expt2.peak.broad_lorentz_y = 0.0878
-    expt2.linked_phases.add_from_args(id='pbso4', scale=1.46)
+    expt2.linked_phases.add(id='pbso4', scale=1.46)
     expt2.background_type = 'line-segment'
-    for x, y in [
-        (11.0, 206.1624),
-        (15.0, 194.75),
-        (20.0, 194.505),
-        (30.0, 188.4375),
-        (50.0, 207.7633),
-        (70.0, 201.7002),
-        (120.0, 244.4525),
-        (153.0, 226.0595),
+    for id, x, y in [
+        ('1', 11.0, 206.1624),
+        ('2', 15.0, 194.75),
+        ('3', 20.0, 194.505),
+        ('4', 30.0, 188.4375),
+        ('5', 50.0, 207.7633),
+        ('6', 70.0, 201.7002),
+        ('7', 120.0, 244.4525),
+        ('8', 153.0, 226.0595),
     ]:
-        expt2.background.add_from_args(x=x, y=y)
+        expt2.background.add(id=id, x=x, y=y)
 
     # Create project
     project = Project()
-    project.sample_models.add(model)
-    project.experiments.add(expt1)
-    project.experiments.add(expt2)
+    project.sample_models.add(sample_model=model)
+    project.experiments.add(experiment=expt1)
+    project.experiments.add(experiment=expt2)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
@@ -138,7 +135,11 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=4.66, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=4.66,
+        decimal=1,
+    )
 
 
 @pytest.mark.fast
@@ -149,7 +150,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     model.cell.length_a = 8.47
     model.cell.length_b = 5.39
     model.cell.length_c = 6.95
-    model.atom_sites.add_from_args(
+    model.atom_sites.add(
         label='Pb',
         type_symbol='Pb',
         fract_x=0.1876,
@@ -158,7 +159,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=1.37,
     )
-    model.atom_sites.add_from_args(
+    model.atom_sites.add(
         label='S',
         type_symbol='S',
         fract_x=0.0654,
@@ -167,7 +168,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=0.3777,
     )
-    model.atom_sites.add_from_args(
+    model.atom_sites.add(
         label='O1',
         type_symbol='O',
         fract_x=0.9082,
@@ -176,7 +177,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=1.9764,
     )
-    model.atom_sites.add_from_args(
+    model.atom_sites.add(
         label='O2',
         type_symbol='O',
         fract_x=0.1935,
@@ -185,7 +186,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=1.4456,
     )
-    model.atom_sites.add_from_args(
+    model.atom_sites.add(
         label='O3',
         type_symbol='O',
         fract_x=0.0811,
@@ -196,11 +197,10 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     )
 
     # Set experiments
-    data_file = 'd1a_pbso4.dat'
-    download_from_repository(data_file, destination=TEMP_DIR)
+    data_path = download_data(id=13, destination=TEMP_DIR)
     expt1 = ExperimentFactory.create(
         name='npd',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         radiation_probe='neutron',
     )
     expt1.instrument.setup_wavelength = 1.91
@@ -210,24 +210,23 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt1.peak.broad_gauss_w = 0.386
     expt1.peak.broad_lorentz_x = 0
     expt1.peak.broad_lorentz_y = 0.088
-    expt1.linked_phases.add_from_args(id='pbso4', scale=1.5)
-    for x, y in [
-        (11.0, 206.1624),
-        (15.0, 194.75),
-        (20.0, 194.505),
-        (30.0, 188.4375),
-        (50.0, 207.7633),
-        (70.0, 201.7002),
-        (120.0, 244.4525),
-        (153.0, 226.0595),
+    expt1.linked_phases.add(id='pbso4', scale=1.5)
+    for id, x, y in [
+        ('1', 11.0, 206.1624),
+        ('2', 15.0, 194.75),
+        ('3', 20.0, 194.505),
+        ('4', 30.0, 188.4375),
+        ('5', 50.0, 207.7633),
+        ('6', 70.0, 201.7002),
+        ('7', 120.0, 244.4525),
+        ('8', 153.0, 226.0595),
     ]:
-        expt1.background.add_from_args(x=x, y=y)
+        expt1.background.add(id=id, x=x, y=y)
 
-    data_file = 'lab_pbso4.dat'
-    download_from_repository(data_file, destination=TEMP_DIR)
+    data_path = download_data(id=16, destination=TEMP_DIR)
     expt2 = ExperimentFactory.create(
         name='xrd',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         radiation_probe='xray',
     )
     expt2.instrument.setup_wavelength = 1.540567
@@ -237,24 +236,24 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt2.peak.broad_gauss_w = 0.021272
     expt2.peak.broad_lorentz_x = 0
     expt2.peak.broad_lorentz_y = 0.057691
-    expt2.linked_phases.add_from_args(id='pbso4', scale=0.001)
-    for x, y in [
-        (11.0, 141.8516),
-        (13.0, 102.8838),
-        (16.0, 78.0551),
-        (20.0, 124.0121),
-        (30.0, 123.7123),
-        (50.0, 120.8266),
-        (90.0, 113.7473),
-        (110.0, 132.4643),
+    expt2.linked_phases.add(id='pbso4', scale=0.001)
+    for id, x, y in [
+        ('1', 11.0, 141.8516),
+        ('2', 13.0, 102.8838),
+        ('3', 16.0, 78.0551),
+        ('4', 20.0, 124.0121),
+        ('5', 30.0, 123.7123),
+        ('6', 50.0, 120.8266),
+        ('7', 90.0, 113.7473),
+        ('8', 110.0, 132.4643),
     ]:
-        expt2.background.add_from_args(x=x, y=y)
+        expt2.background.add(id=id, x=x, y=y)
 
     # Create project
     project = Project()
-    project.sample_models.add(model)
-    project.experiments.add(expt1)
-    project.experiments.add(expt2)
+    project.sample_models.add(sample_model=model)
+    project.experiments.add(experiment=expt1)
+    project.experiments.add(experiment=expt2)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
@@ -274,7 +273,11 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=26.05, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=26.05,
+        decimal=1,
+    )
 
     # ------------ 2nd fitting ------------
 
@@ -283,7 +286,11 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=21.09, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=21.09,
+        decimal=1,
+    )
 
     # ------------ 3rd fitting ------------
 
@@ -294,7 +301,11 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=21.09, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=21.09,
+        decimal=1,
+    )
 
     # ------------ 4th fitting ------------
 
@@ -305,7 +316,11 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=14.39, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=14.39,
+        decimal=1,
+    )
 
 
 if __name__ == '__main__':

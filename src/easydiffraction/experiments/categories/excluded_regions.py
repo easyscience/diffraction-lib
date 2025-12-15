@@ -4,12 +4,16 @@
 
 from typing import List
 
+import numpy as np
+
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
+from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.validation import RegexValidator
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
@@ -21,11 +25,31 @@ class ExcludedRegion(CategoryItem):
     def __init__(
         self,
         *,
-        start: float,
-        end: float,
+        id=None,  # TODO: rename as in the case of data points?
+        start=None,
+        end=None,
     ):
         super().__init__()
 
+        # TODO: Add point_id as for the background
+        self._id = StringDescriptor(
+            name='id',
+            description='Identifier for this excluded region.',
+            value_spec=AttributeSpec(
+                type_=DataTypes.STRING,
+                value=id,
+                default='0',
+                # TODO: the following pattern is valid for dict key
+                #  (keywords are not checked). CIF label is less strict.
+                #  Do we need conversion between CIF and internal label?
+                content_validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
+            ),
+            cif_handler=CifHandler(
+                names=[
+                    '_excluded_region.id',
+                ]
+            ),
+        )
         self._start = NumericDescriptor(
             name='start',
             description='Start of the excluded region.',
@@ -60,7 +84,15 @@ class ExcludedRegion(CategoryItem):
         # self._category_entry_attr_name = self.start.name
         # self.name = self.start.value
         self._identity.category_code = 'excluded_regions'
-        self._identity.category_entry_name = lambda: str(self.start.value)
+        self._identity.category_entry_name = lambda: str(self._id.value)
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id.value = value
 
     @property
     def start(self) -> NumericDescriptor:
@@ -80,33 +112,37 @@ class ExcludedRegion(CategoryItem):
 
 
 class ExcludedRegions(CategoryCollection):
-    """Collection of ExcludedRegion instances."""
+    """Collection of ExcludedRegion instances.
+
+    Excluded regions define closed intervals [start, end] on the x-axis
+    that are to be excluded from calculations and, as a result, from
+    fitting and plotting.
+    """
 
     def __init__(self):
         super().__init__(item_type=ExcludedRegion)
 
-    def add(self, item: ExcludedRegion) -> None:
-        """Mark excluded points in the pattern when a region is
-        added.
-        """
-        # 1. Call parent add first
+    def _update(self, called_by_minimizer=False):
+        del called_by_minimizer
 
-        super().add(item)
+        data = self._parent.data
+        x = data.all_x
 
-        # 2. Now add extra behavior specific to ExcludedRegions
+        # Start with a mask of all False (nothing excluded yet)
+        combined_mask = np.full_like(x, fill_value=False, dtype=bool)
 
-        datastore = self._parent.datastore
+        # Combine masks for all excluded regions
+        for region in self.values():
+            start = region.start.value
+            end = region.end.value
+            region_mask = (x >= start) & (x <= end)
+            combined_mask |= region_mask
 
-        # Boolean mask for points within the new excluded region
-        in_region = (datastore.full_x >= item.start.value) & (datastore.full_x <= item.end.value)
+        # Invert mask, as refinement status is opposite of excluded
+        inverted_mask = ~combined_mask
 
-        # Update the exclusion mask
-        datastore.excluded[in_region] = True
-
-        # Update the excluded points in the datastore
-        datastore.x = datastore.full_x[~datastore.excluded]
-        datastore.meas = datastore.full_meas[~datastore.excluded]
-        datastore.meas_su = datastore.full_meas_su[~datastore.excluded]
+        # Set refinement status in the data object
+        data._set_calc_status(inverted_mask)
 
     def show(self) -> None:
         """Print a table of excluded [start, end] intervals."""

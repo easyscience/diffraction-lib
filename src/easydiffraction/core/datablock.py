@@ -10,12 +10,14 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.collection import CollectionBase
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.core.parameters import Parameter
-from easydiffraction.io.cif.serialize import datablock_collection_to_cif
-from easydiffraction.io.cif.serialize import datablock_item_to_cif
 
 
 class DatablockItem(GuardedBase):
     """Base class for items in a datablock collection."""
+
+    def __init__(self):
+        super().__init__()
+        self._need_categories_update = False
 
     def __str__(self) -> str:
         """Human-readable representation of this component."""
@@ -23,9 +25,41 @@ class DatablockItem(GuardedBase):
         items = getattr(self, '_items', None)
         return f'<{name} ({items})>'
 
+    def _update_categories(
+        self,
+        called_by_minimizer=False,
+    ) -> None:
+        # TODO: Make abstract method and implement in subclasses.
+        # This should call apply_symmetry and apply_constraints in the
+        # case of sample models. In the case of experiments, it should
+        # run calculations to update the "data" categories.
+        # Any parameter change should set _need_categories_update to
+        # True.
+        # Calling as_cif or data getter should first check this flag
+        # and call this method if True.
+        # Should this be also called when parameters are accessed? E.g.
+        # if one change background coefficients, then access the
+        # background points in the data category?
+        # return
+        # if not self._need_categories_update:
+        #    return
+
+        for category in self.categories:
+            category._update(called_by_minimizer=called_by_minimizer)
+
+        self._need_categories_update = False
+
     @property
     def unique_name(self):
         return self._identity.datablock_entry_name
+
+    @property
+    def categories(self):
+        cats = [
+            v for v in vars(self).values() if isinstance(v, (CategoryItem, CategoryCollection))
+        ]
+        # Sort by _update_priority (lower values first)
+        return sorted(cats, key=lambda c: type(c)._update_priority)
 
     @property
     def parameters(self):
@@ -33,14 +67,16 @@ class DatablockItem(GuardedBase):
         datablock.
         """
         params = []
-        for v in vars(self).values():
-            if isinstance(v, (CategoryItem, CategoryCollection)):
-                params.extend(v.parameters)
+        for v in self.categories:
+            params.extend(v.parameters)
         return params
 
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
+        from easydiffraction.io.cif.serialize import datablock_item_to_cif
+
+        self._update_categories()
         return datablock_item_to_cif(self)
 
 
@@ -82,9 +118,11 @@ class DatablockCollection(CollectionBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
+        from easydiffraction.io.cif.serialize import datablock_collection_to_cif
+
         return datablock_collection_to_cif(self)
 
     @typechecked
-    def add(self, item) -> None:
+    def _add(self, item) -> None:
         """Add an item to the collection."""
         self[item._identity.datablock_entry_name] = item

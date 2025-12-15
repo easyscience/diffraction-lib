@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 import io
 import json
 import os
@@ -8,6 +10,7 @@ import pathlib
 import re
 import urllib.request
 import zipfile
+from functools import lru_cache
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
 from typing import List
@@ -26,6 +29,8 @@ from easydiffraction.display.tables import TableRenderer
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
+pooch.get_logger().setLevel('WARNING')  # Suppress pooch info messages
+
 
 def _validate_url(url: str) -> None:
     """Validate that a URL uses only safe HTTP/HTTPS schemes.
@@ -41,57 +46,126 @@ def _validate_url(url: str) -> None:
         raise ValueError(f"Unsafe URL scheme '{parsed.scheme}'. Only HTTP and HTTPS are allowed.")
 
 
-# Single source of truth for the data repository branch.
-# This can be overridden in CI or development environments.
-DATA_REPO_BRANCH = (
-    os.environ.get('CI_BRANCH')  # CI/dev override
-    or 'master'  # Default branch for the data repository
-)
+def _filename_for_id_from_url(data_id: int | str, url: str) -> str:
+    """Return local filename like 'ed-12.xye' using extension from the
+    URL.
+    """
+    suffix = pathlib.Path(urlparse(url).path).suffix  # includes leading dot ('.cif', '.xye', ...)
+    # If URL has no suffix, fall back to no extension.
+    return f'ed-{data_id}{suffix}'
 
 
-def download_from_repository(
-    file_name: str,
-    branch: str | None = None,
+def _normalize_known_hash(value: str | None) -> str | None:
+    """Return pooch-compatible known_hash or None.
+
+    Treat placeholder values like 'sha256:...' as unset.
+    """
+    if not value:
+        return None
+    value = value.strip()
+    if value.lower() == 'sha256:...':
+        return None
+    return value
+
+
+@lru_cache(maxsize=1)
+def _fetch_data_index() -> dict:
+    """Fetch & cache the diffraction data index.json and return it as
+    dict.
+    """
+    index_url = 'https://raw.githubusercontent.com/easyscience/data/refs/heads/master/diffraction/index.json'
+    _validate_url(index_url)
+
+    # macOS: sha256sum index.json
+    index_hash = 'sha256:e78f5dd2f229ea83bfeb606502da602fc0b07136889877d3ab601694625dd3d7'
+    destination_dirname = 'easydiffraction'
+    destination_fname = 'data-index.json'
+    cache_dir = pooch.os_cache(destination_dirname)
+
+    index_path = pooch.retrieve(
+        url=index_url,
+        known_hash=index_hash,
+        fname=destination_fname,
+        path=cache_dir,
+        progressbar=False,
+    )
+
+    with pathlib.Path(index_path).open('r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def download_data(
+    id: int | str,
     destination: str = 'data',
     overwrite: bool = False,
-) -> None:
-    """Download a data file from the EasyDiffraction repository on
-    GitHub.
+) -> str:
+    """Download a dataset by numeric ID using the remote diffraction
+    index.
+
+    Example:
+        path = download_data(id=12, destination="data")
 
     Args:
-        file_name: The file name to fetch (e.g., "NaCl.gr").
-        branch: Branch to fetch from. If None, uses DATA_REPO_BRANCH.
+        id: Numeric dataset id (e.g. 12).
         destination: Directory to save the file into (created if
             missing).
         overwrite: Whether to overwrite the file if it already exists.
-            Defaults to False.
-    """
-    base = 'https://raw.githubusercontent.com'
-    org = 'easyscience'
-    repo = 'diffraction-lib'
-    branch = branch or DATA_REPO_BRANCH  # Use the global branch variable if not provided
-    path_in_repo = 'tutorials/data'
-    url = f'{base}/{org}/{repo}/refs/heads/{branch}/{path_in_repo}/{file_name}'
 
-    console.paragraph('Downloading...')
-    console.print(f"File '{file_name}' from '{org}/{repo}'")
+    Returns:
+        str: Full path to the downloaded file as string.
+
+    Raises:
+        KeyError: If the id is not found in the index.
+        ValueError: If the resolved URL is not HTTP/HTTPS.
+    """
+    index = _fetch_data_index()
+    key = str(id)
+
+    if key not in index:
+        # Provide a helpful message (and keep KeyError semantics)
+        available = ', '.join(
+            sorted(index.keys(), key=lambda s: int(s) if s.isdigit() else s)[:20]
+        )
+        raise KeyError(f'Unknown dataset id={id}. Example available ids: {available} ...')
+
+    record = index[key]
+    url = record['url']
+    _validate_url(url)
+
+    known_hash = _normalize_known_hash(record.get('hash'))
+    fname = _filename_for_id_from_url(id, url)
 
     dest_path = pathlib.Path(destination)
-    file_path = dest_path / file_name
+    dest_path.mkdir(parents=True, exist_ok=True)
+    file_path = dest_path / fname
+
+    description = record.get('description', '')
+    message = f'Data #{id}'
+    if description:
+        message += f': {description}'
+
+    console.paragraph('Getting data...')
+    console.print(f'{message}')
+
     if file_path.exists():
         if not overwrite:
-            log.info(f"File '{file_path}' already exists and will not be overwritten.")
-            return
-        else:
-            log.info(f"File '{file_path}' already exists and will be overwritten.")
-            file_path.unlink()
+            console.print(
+                f"✅ Data #{id} already present at '{file_path}'. Keeping existing file."
+            )
+            return str(file_path)
+        log.debug(f"Data #{id} already present at '{file_path}', but will be overwritten.")
+        file_path.unlink()
 
+    # Pooch downloads to destination with our controlled filename.
     pooch.retrieve(
         url=url,
-        known_hash=None,
-        fname=file_name,
-        path=destination,
+        known_hash=known_hash,
+        fname=fname,
+        path=str(dest_path),
     )
+
+    console.print(f"✅ Data #{id} downloaded to '{file_path}'")
+    return str(file_path)
 
 
 def package_version(package_name: str) -> str | None:

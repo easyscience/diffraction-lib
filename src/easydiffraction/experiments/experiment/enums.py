@@ -59,6 +59,7 @@ class RadiationProbeEnum(str, Enum):
 class BeamModeEnum(str, Enum):
     """Beam delivery mode for the instrument."""
 
+    # TODO: Rename to CWL and TOF
     CONSTANT_WAVELENGTH = 'constant wavelength'
     TIME_OF_FLIGHT = 'time-of-flight'
 

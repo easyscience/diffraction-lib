@@ -31,6 +31,6 @@ def test_fitter_early_exit_when_no_params(capsys, monkeypatch):
     f = Fitter()
     # Avoid creating a real minimizer
     f.minimizer = DummyMin()
-    f.fit(sample_models=DummyCollection(), experiments=DummyCollection(), calculator=object())
+    f.fit(sample_models=DummyCollection(), experiments=DummyCollection())
     out = capsys.readouterr().out
     assert 'No parameters selected for fitting' in out

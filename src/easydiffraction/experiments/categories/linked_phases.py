@@ -19,8 +19,8 @@ class LinkedPhase(CategoryItem):
     def __init__(
         self,
         *,
-        id: str,  # TODO: need new name instead of id
-        scale: float,
+        id=None,  # TODO: need new name instead of id
+        scale=None,
     ):
         super().__init__()
 

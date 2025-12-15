@@ -21,21 +21,26 @@ project = ed.Project()
 # ## Set Plotting Engine
 
 # %%
-project.plotter.engine = 'plotly'
+# Keep the auto-selected engine. Alternatively, you can uncomment the
+# line below to explicitly set the engine to the required one.
+# project.plotter.engine = 'plotly'
+
+# %%
+# Set global plot range for plots
 project.plotter.x_max = 40
 
 # %% [markdown]
 # ## Add Sample Model
 
 # %%
-project.sample_models.add_minimal(name='si')
+project.sample_models.add(name='si')
 
 # %%
 sample_model = project.sample_models['si']
 sample_model.space_group.name_h_m.value = 'F d -3 m'
 sample_model.space_group.it_coordinate_system_code = '1'
 sample_model.cell.length_a = 5.43146
-sample_model.atom_sites.add_from_args(
+sample_model.atom_sites.add(
     label='Si',
     type_symbol='Si',
     fract_x=0,
@@ -49,12 +54,12 @@ sample_model.atom_sites.add_from_args(
 # ## Add Experiment
 
 # %%
-ed.download_from_repository('NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr', destination='data')
+data_path = ed.download_data(id=5, destination='data')
 
 # %%
-project.experiments.add_from_data_path(
+project.experiments.add(
     name='nomad',
-    data_path='data/NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr',
+    data_path=data_path,
     sample_form='powder',
     beam_mode='time-of-flight',
     radiation_probe='neutron',
@@ -63,7 +68,7 @@ project.experiments.add_from_data_path(
 
 # %%
 experiment = project.experiments['nomad']
-experiment.linked_phases.add_from_args(id='si', scale=1.0)
+experiment.linked_phases.add(id='si', scale=1.0)
 experiment.peak.damp_q = 0.02
 experiment.peak.broad_q = 0.03
 experiment.peak.cutoff_q = 35.0

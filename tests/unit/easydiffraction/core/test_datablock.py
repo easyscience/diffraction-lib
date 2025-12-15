@@ -59,8 +59,8 @@ def test_datablock_collection_add_and_filters_with_real_parameters():
     coll = DatablockCollection(item_type=Block)
     a = Block('A')
     b = Block('B')
-    coll.add(a)
-    coll.add(b)
+    coll._add(a)
+    coll._add(b)
     # parameters collection aggregates from both blocks (p1 & p2 each)
     params = coll.parameters
     assert len(params) == 4

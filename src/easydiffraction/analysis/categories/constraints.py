@@ -9,6 +9,7 @@ Represents an equation of the form ``lhs_alias = rhs_expr`` where
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import StringDescriptor
+from easydiffraction.core.singletons import ConstraintsHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RegexValidator
@@ -97,6 +98,14 @@ class Constraint(CategoryItem):
 class Constraints(CategoryCollection):
     """Collection of :class:`Constraint` items."""
 
+    _update_priority = 90  # After most others, but before data categories
+
     def __init__(self):
         """Create an empty constraints collection."""
         super().__init__(item_type=Constraint)
+
+    def _update(self, called_by_minimizer=False):
+        del called_by_minimizer
+
+        constraints = ConstraintsHandler.get()
+        constraints.apply()

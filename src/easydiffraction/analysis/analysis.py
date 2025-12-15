@@ -417,7 +417,7 @@ class Analysis:
             # Pre-populate all experiments with weight 0.5
             self.joint_fit_experiments = JointFitExperiments()
             for id in self.project.experiments.names:
-                self.joint_fit_experiments.add_from_args(id=id, weight=0.5)
+                self.joint_fit_experiments.add(id=id, weight=0.5)
         console.paragraph('Current fit mode changed to')
         console.print(self._fit_mode)
 
@@ -456,19 +456,6 @@ class Analysis:
         """Print the currently active fitting strategy."""
         console.paragraph('Current fit mode')
         console.print(self.fit_mode)
-
-    def calculate_pattern(self, expt_name: str) -> None:
-        """Calculate and store the diffraction pattern for an
-        experiment.
-
-        The pattern is stored in the target experiment's datastore.
-
-        Args:
-                expt_name: The identifier of the experiment to compute.
-        """
-        experiment = self.project.experiments[expt_name]
-        sample_models = self.project.sample_models
-        self.calculator.calculate_pattern(sample_models, experiment)
 
     def show_constraints(self) -> None:
         """Print a table of all user-defined symbolic constraints."""
@@ -529,11 +516,6 @@ class Analysis:
             log.warning('No experiments found in the project. Cannot run fit.')
             return
 
-        calculator = self.calculator
-        if not calculator:
-            log.warning('No calculator is set. Cannot run fit.')
-            return
-
         # Run the fitting process
         if self.fit_mode == 'joint':
             console.paragraph(
@@ -542,23 +524,54 @@ class Analysis:
             self.fitter.fit(
                 sample_models,
                 experiments,
-                calculator,
                 weights=self.joint_fit_experiments,
+                analysis=self,
             )
         elif self.fit_mode == 'single':
+            # TODO: Find a better way without creating dummy
+            #  experiments?
             for expt_name in experiments.names:
                 console.paragraph(
                     f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"
                 )
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name
-                dummy_experiments.add(experiment)
-                self.fitter.fit(sample_models, dummy_experiments, calculator)
+
+                # This is a workaround to set the parent project
+                # of the dummy experiments collection, so that
+                # parameters can be resolved correctly during fitting.
+                object.__setattr__(dummy_experiments, '_parent', self.project)
+
+                dummy_experiments._add(experiment)
+                self.fitter.fit(
+                    sample_models,
+                    dummy_experiments,
+                    analysis=self,
+                )
         else:
             raise NotImplementedError(f'Fit mode {self.fit_mode} not implemented yet.')
 
         # After fitting, get the results
         self.fit_results = self.fitter.results
+
+    def _update_categories(self, called_by_minimizer=False) -> None:
+        """Update all categories owned by Analysis.
+
+        This ensures aliases and constraints are up-to-date before
+        serialization or after parameter changes.
+
+        Args:
+            called_by_minimizer: Whether this is called during fitting.
+        """
+        # Apply constraints to sync dependent parameters
+        if self.constraints._items:
+            self.constraints_handler.apply()
+
+        # Update category-specific logic
+        # TODO: Need self.categories as in the case of datablock.py
+        for category in [self.aliases, self.constraints]:
+            if hasattr(category, '_update'):
+                category._update(called_by_minimizer=called_by_minimizer)
 
     def as_cif(self):
         """Serialize the analysis section to a CIF string.
@@ -568,6 +581,7 @@ class Analysis:
         """
         from easydiffraction.io.cif.serialize import analysis_to_cif
 
+        self._update_categories()
         return analysis_to_cif(self)
 
     def show_as_cif(self) -> None:

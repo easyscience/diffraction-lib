@@ -7,18 +7,30 @@ from easydiffraction.core.collection import CollectionBase
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.core.parameters import GenericDescriptorBase
 from easydiffraction.core.validation import checktype
+from easydiffraction.io.cif.serialize import category_collection_from_cif
 from easydiffraction.io.cif.serialize import category_collection_to_cif
+from easydiffraction.io.cif.serialize import category_item_from_cif
 from easydiffraction.io.cif.serialize import category_item_to_cif
 
 
 class CategoryItem(GuardedBase):
     """Base class for items in a category collection."""
 
+    # TODO: Set different default priorities for CategoryItem and
+    #  CategoryCollection and use them when serializing to CIF!
+    # TODO: Common for all categories
+    _update_priority = 10  # Default. Lower values run first.
+
     def __str__(self) -> str:
         """Human-readable representation of this component."""
         name = self._log_name
         params = ', '.join(f'{p.name}={p.value!r}' for p in self.parameters)
         return f'<{name} ({params})>'
+
+    # TODO: Common for all categories
+    def _update(self, called_by_minimizer=False):
+        del called_by_minimizer
+        pass
 
     @property
     def unique_name(self):
@@ -27,7 +39,9 @@ class CategoryItem(GuardedBase):
             self._identity.category_code,
             self._identity.category_entry_name,
         ]
-        return '.'.join(filter(None, parts))
+        # Convert all parts to strings and filter out None/empty values
+        str_parts = [str(part) for part in parts if part is not None]
+        return '.'.join(str_parts)
 
     @property
     def parameters(self):
@@ -38,6 +52,10 @@ class CategoryItem(GuardedBase):
         """Return CIF representation of this object."""
         return category_item_to_cif(self)
 
+    def from_cif(self, block, idx=0):
+        """Populate this item from a CIF block."""
+        category_item_from_cif(self, block, idx)
+
 
 class CategoryCollection(CollectionBase):
     """Handles loop-style category containers (e.g. AtomSites).
@@ -45,11 +63,19 @@ class CategoryCollection(CollectionBase):
     Each item is a CategoryItem (component).
     """
 
+    # TODO: Common for all categories
+    _update_priority = 10  # Default. Lower values run first.
+
     def __str__(self) -> str:
         """Human-readable representation of this component."""
         name = self._log_name
         size = len(self)
         return f'<{name} collection ({size} items)>'
+
+    # TODO: Common for all categories
+    def _update(self, called_by_minimizer=False):
+        del called_by_minimizer
+        pass
 
     @property
     def unique_name(self):
@@ -68,15 +94,22 @@ class CategoryCollection(CollectionBase):
         """Return CIF representation of this object."""
         return category_collection_to_cif(self)
 
+    def from_cif(self, block):
+        """Populate this collection from a CIF block."""
+        category_collection_from_cif(self, block)
+
     @checktype
-    def add(self, item) -> None:
+    def _add(self, item) -> None:
         """Add an item to the collection."""
         self[item._identity.category_entry_name] = item
 
+    # TODO: Disallow args and only allow kwargs?
+    # TODO: Check kwargs as for, e.g.,
+    #  ExperimentFactory.create(**kwargs)?
     @checktype
-    def add_from_args(self, *args, **kwargs) -> None:
+    def add(self, *args, **kwargs) -> None:
         """Create and add a new child instance from the provided
         arguments.
         """
         child_obj = self._item_type(*args, **kwargs)
-        self.add(child_obj)
+        self._add(child_obj)

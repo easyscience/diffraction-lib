@@ -12,7 +12,6 @@ from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.display.plotting import Plotter
 from easydiffraction.display.tables import TableRenderer
-from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.project.project_info import ProjectInfo
@@ -20,8 +19,6 @@ from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.summary.summary import Summary
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
-from easydiffraction.utils.utils import tof_to_d
-from easydiffraction.utils.utils import twotheta_to_d
 
 
 class Project(GuardedBase):
@@ -225,6 +222,13 @@ class Project(GuardedBase):
     # Plotting
     # ------------------------------------------
 
+    def _update_categories(self, expt_name) -> None:
+        for sample_model in self.sample_models:
+            sample_model._update_categories()
+        self.analysis._update_categories()
+        experiment = self.experiments[expt_name]
+        experiment._update_categories()
+
     def plot_meas(
         self,
         expt_name,
@@ -232,23 +236,13 @@ class Project(GuardedBase):
         x_max=None,
         d_spacing=False,
     ):
+        self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
-        datastore = experiment.datastore
-        expt_type = experiment.type
 
-        # Update d-spacing if necessary
-        # TODO: This is done before every plot, and not when parameters
-        #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting
-        #  process. Need to find a better way to handle this.
-        if d_spacing:
-            self.update_pattern_d_spacing(expt_name)
-
-        # Plot measured pattern
         self.plotter.plot_meas(
-            datastore,
+            experiment.data,
             expt_name,
-            expt_type,
+            experiment.type,
             x_min=x_min,
             x_max=x_max,
             d_spacing=d_spacing,
@@ -261,24 +255,13 @@ class Project(GuardedBase):
         x_max=None,
         d_spacing=False,
     ):
-        self.analysis.calculate_pattern(expt_name)  # Recalculate pattern
+        self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
-        datastore = experiment.datastore
-        expt_type = experiment.type
 
-        # Update d-spacing if necessary
-        # TODO: This is done before every plot, and not when parameters
-        #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting
-        #  process. Need to find a better way to handle this.
-        if d_spacing:
-            self.update_pattern_d_spacing(expt_name)
-
-        # Plot calculated pattern
         self.plotter.plot_calc(
-            datastore,
+            experiment.data,
             expt_name,
-            expt_type,
+            experiment.type,
             x_min=x_min,
             x_max=x_max,
             d_spacing=d_spacing,
@@ -292,50 +275,15 @@ class Project(GuardedBase):
         show_residual=False,
         d_spacing=False,
     ):
-        self.analysis.calculate_pattern(expt_name)  # Recalculate pattern
+        self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
-        datastore = experiment.datastore
-        expt_type = experiment.type
 
-        # Update d-spacing if necessary
-        # TODO: This is done before every plot, and not when parameters
-        #  needed for d-spacing conversion are changed. The reason is
-        #  to minimize the performance impact during the fitting
-        #  process. Need to find a better way to handle this.
-        if d_spacing:
-            self.update_pattern_d_spacing(expt_name)
-
-        # Plot measured vs calculated
         self.plotter.plot_meas_vs_calc(
-            datastore,
+            experiment.data,
             expt_name,
-            expt_type,
+            experiment.type,
             x_min=x_min,
             x_max=x_max,
             show_residual=show_residual,
             d_spacing=d_spacing,
         )
-
-    def update_pattern_d_spacing(self, expt_name: str) -> None:
-        """Update the pattern's d-spacing based on the experiment's beam
-        mode.
-        """
-        experiment = self.experiments[expt_name]
-        datastore = experiment.datastore
-        expt_type = experiment.type
-        beam_mode = expt_type.beam_mode.value
-
-        if beam_mode == BeamModeEnum.TIME_OF_FLIGHT:
-            datastore.d = tof_to_d(
-                datastore.x,
-                experiment.instrument.calib_d_to_tof_offset.value,
-                experiment.instrument.calib_d_to_tof_linear.value,
-                experiment.instrument.calib_d_to_tof_quad.value,
-            )
-        elif beam_mode == BeamModeEnum.CONSTANT_WAVELENGTH:
-            datastore.d = twotheta_to_d(
-                datastore.x,
-                experiment.instrument.setup_wavelength.value,
-            )
-        else:
-            log.error(f'Unsupported beam mode: {beam_mode} for d-spacing update.')

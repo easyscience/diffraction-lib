@@ -15,9 +15,11 @@ from scipy.interpolate import interp1d
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import Parameter
+from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.validation import RegexValidator
 from easydiffraction.experiments.categories.background.base import BackgroundBase
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.logging import console
@@ -28,9 +30,33 @@ from easydiffraction.utils.utils import render_table
 class LineSegment(CategoryItem):
     """Single background control point for interpolation."""
 
-    def __init__(self, *, x: float, y: float):
+    def __init__(
+        self,
+        *,
+        id=None,  # TODO: rename as in the case of data points?
+        x=None,
+        y=None,
+    ) -> None:
         super().__init__()
 
+        self._id = StringDescriptor(
+            name='id',
+            description='Identifier for this background line segment.',
+            value_spec=AttributeSpec(
+                type_=DataTypes.STRING,
+                value=id,
+                default='0',
+                # TODO: the following pattern is valid for dict key
+                #  (keywords are not checked). CIF label is less strict.
+                #  Do we need conversion between CIF and internal label?
+                content_validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
+            ),
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.id',
+                ]
+            ),
+        )
         self._x = NumericDescriptor(
             name='x',
             description=(
@@ -43,7 +69,12 @@ class LineSegment(CategoryItem):
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_pd_background.line_segment_X']),
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.line_segment_X',
+                    '_pd_background_line_segment_X',
+                ]
+            ),
         )
         self._y = Parameter(
             name='y',  # TODO: rename to intensity
@@ -57,11 +88,24 @@ class LineSegment(CategoryItem):
                 default=0.0,
                 content_validator=RangeValidator(),
             ),  # TODO: rename to intensity
-            cif_handler=CifHandler(names=['_pd_background.line_segment_intensity']),
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.line_segment_intensity',
+                    '_pd_background_line_segment_intensity',
+                ]
+            ),
         )
 
         self._identity.category_code = 'background'
-        self._identity.category_entry_name = lambda: str(self.x.value)
+        self._identity.category_entry_name = lambda: str(self._id.value)
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id.value = value
 
     @property
     def x(self):
@@ -86,23 +130,30 @@ class LineSegmentBackground(BackgroundBase):
     def __init__(self):
         super().__init__(item_type=LineSegment)
 
-    def calculate(self, x_data):
-        """Interpolate background points over x_data."""
-        if not self:
-            log.warning('No background points found. Setting background to zero.')
-            return np.zeros_like(x_data)
+    def _update(self, called_by_minimizer=False):
+        """Interpolate background points over x data."""
+        del called_by_minimizer
 
-        background_x = np.array([point.x.value for point in self.values()])
-        background_y = np.array([point.y.value for point in self.values()])
+        data = self._parent.data
+        x = data.x
+
+        if not self._items:
+            log.debug('No background points found. Setting background to zero.')
+            data._set_bkg(np.zeros_like(x))
+            return
+
+        segments_x = np.array([point.x.value for point in self._items])
+        segments_y = np.array([point.y.value for point in self._items])
         interp_func = interp1d(
-            background_x,
-            background_y,
+            segments_x,
+            segments_y,
             kind='linear',
             bounds_error=False,
-            fill_value=(background_y[0], background_y[-1]),
+            fill_value=(segments_y[0], segments_y[-1]),
         )
-        y_data = interp_func(x_data)
-        return y_data
+
+        y = interp_func(x)
+        data._set_bkg(y)
 
     def show(self) -> None:
         """Print a table of control points (x, intensity)."""

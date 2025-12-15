@@ -63,7 +63,7 @@ class CryspyCalculator(CalculatorBase):
         """
         raise NotImplementedError('HKL calculation is not implemented for CryspyCalculator.')
 
-    def _calculate_single_model_pattern(
+    def calculate_pattern(
         self,
         sample_model: SampleModelBase,
         experiment: ExperimentBase,
@@ -360,7 +360,7 @@ class CryspyCalculator(CalculatorBase):
                 if attr_obj is not None:
                     cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 
-        x_data = experiment.datastore.x
+        x_data = experiment.data.x
         twotheta_min = float(x_data.min())
         twotheta_max = float(x_data.max())
         cif_lines.append('')
@@ -405,8 +405,9 @@ class CryspyCalculator(CalculatorBase):
             cif_lines.append('_tof_meas_intensity')
             cif_lines.append('_tof_meas_intensity_sigma')
 
-        y_data = experiment.datastore.meas
-        sy_data = experiment.datastore.meas_su
+        y_data: np.ndarray = experiment.data.meas
+        sy_data: np.ndarray = experiment.data.meas_su
+
         for x_val, y_val, sy_val in zip(x_data, y_data, sy_data, strict=True):
             cif_lines.append(f'  {x_val:.5f}   {y_val:.5f}   {sy_val:.5f}')
 

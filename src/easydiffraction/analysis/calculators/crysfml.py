@@ -51,7 +51,7 @@ class CrysfmlCalculator(CalculatorBase):
         """
         raise NotImplementedError('HKL calculation is not implemented for CrysfmlCalculator.')
 
-    def _calculate_single_model_pattern(
+    def calculate_pattern(
         self,
         sample_model: SampleModels,
         experiment: ExperimentBase,
@@ -76,7 +76,7 @@ class CrysfmlCalculator(CalculatorBase):
         crysfml_dict = self._crysfml_dict(sample_model, experiment)
         try:
             _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
-            y = self._adjust_pattern_length(y, len(experiment.datastore.x))
+            y = self._adjust_pattern_length(y, len(experiment.data.x))
         except KeyError:
             print('[CrysfmlCalculator] Error: No calculated data')
             y = []
@@ -181,7 +181,7 @@ class CrysfmlCalculator(CalculatorBase):
         instrument = getattr(experiment, 'instrument', None)
         peak = getattr(experiment, 'peak', None)
 
-        x_data = experiment.datastore.x
+        x_data = experiment.data.x
         twotheta_min = float(x_data.min())
         twotheta_max = float(x_data.max())
 

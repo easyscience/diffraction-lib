@@ -3,20 +3,57 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Optional
 from typing import Sequence
 
 import numpy as np
 
+from easydiffraction.core.validation import DataTypes
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import str_to_ufloat
+
+if TYPE_CHECKING:
+    import gemmi
+
+    from easydiffraction.core.category import CategoryCollection
+    from easydiffraction.core.category import CategoryItem
+    from easydiffraction.core.parameters import GenericDescriptorBase
 
 
 def format_value(value) -> str:
-    """Format a single CIF value, quoting strings with whitespace."""
-    if isinstance(value, str) and (' ' in value or '\t' in value):
-        return f'"{value}"'
-    return str(value)
+    """Format a single CIF value, quoting strings with whitespace, and
+    format floats with global precision.
+    """
+    width = 8
+    precision = 4
+
+    # Converting
+
+    # Convert ints to floats
+    if isinstance(value, int):
+        value = float(value)
+    # Strings with whitespace are quoted
+    elif isinstance(value, str) and (' ' in value or '\t' in value):
+        value = f'"{value}"'
+
+    # Formatting
+
+    # Format floats with given precision
+    if isinstance(value, float):
+        return f'{value:>{width}.{precision}f}'
+    # Format strings right-aligned
+    elif isinstance(value, str):
+        return f'{value:>{width}s}'
+    # Everything else: fallback
+    else:
+        return str(value)
+
+
+##################
+# Serialize to CIF
+##################
 
 
 def param_to_cif(param) -> str:
@@ -41,7 +78,10 @@ def category_item_to_cif(item) -> str:
     return '\n'.join(lines)
 
 
-def category_collection_to_cif(collection) -> str:
+def category_collection_to_cif(
+    collection,
+    max_display: Optional[int] = 20,
+) -> str:
     """Render a CategoryCollection-like object to CIF text.
 
     Uses first item to build loop header, then emits rows for each item.
@@ -59,49 +99,25 @@ def category_collection_to_cif(collection) -> str:
         lines.append(tags[0])
 
     # Rows
-    for item in collection.values():
-        row_vals = [format_value(p.value) for p in item.parameters]
-        lines.append(' '.join(row_vals))
+    # Limit number of displayed rows if requested
+    if len(collection) > max_display:
+        half_display = max_display // 2
+        for i in range(half_display):
+            item = list(collection.values())[i]
+            row_vals = [format_value(p.value) for p in item.parameters]
+            lines.append(' '.join(row_vals))
+        lines.append('...')
+        for i in range(-half_display, 0):
+            item = list(collection.values())[i]
+            row_vals = [format_value(p.value) for p in item.parameters]
+            lines.append(' '.join(row_vals))
+    # No limit
+    else:
+        for item in collection.values():
+            row_vals = [format_value(p.value) for p in item.parameters]
+            lines.append(' '.join(row_vals))
 
     return '\n'.join(lines)
-
-
-def datastore_to_cif(datastore, max_points: Optional[int] = None) -> str:
-    """Render a datastore to CIF text.
-
-    Expects ``datastore`` to have ``_cif_mapping()`` and attributes per
-    mapping keys.
-    """
-    cif_lines: list[str] = ['loop_']
-
-    mapping: dict[str, str] = datastore._cif_mapping()  # type: ignore[attr-defined]
-    for cif_key in mapping.values():
-        cif_lines.append(cif_key)
-
-    data_arrays: list[np.ndarray] = []
-    for attr_name in mapping:
-        arr = getattr(datastore, attr_name, None)
-        data_arrays.append(np.array([]) if arr is None else arr)
-
-    if not data_arrays or not data_arrays[0].size:
-        return ''
-
-    n_points = len(data_arrays[0])
-
-    def format_row(i: int) -> str:
-        return ' '.join(str(data_arrays[j][i]) for j in range(len(data_arrays)))
-
-    if max_points is not None and n_points > 2 * max_points:
-        for i in range(max_points):
-            cif_lines.append(format_row(i))
-        cif_lines.append('...')
-        for i in range(-max_points, 0):
-            cif_lines.append(format_row(i))
-    else:
-        for i in range(n_points):
-            cif_lines.append(format_row(i))
-
-    return '\n'.join(cif_lines)
 
 
 def datablock_item_to_cif(datablock) -> str:
@@ -115,12 +131,17 @@ def datablock_item_to_cif(datablock) -> str:
 
     header = f'data_{datablock._identity.datablock_entry_name}'
     parts: list[str] = [header]
+
+    # First categories
     for v in vars(datablock).values():
         if isinstance(v, CategoryItem):
             parts.append(v.as_cif)
+
+    # Then collections
     for v in vars(datablock).values():
         if isinstance(v, CategoryCollection):
             parts.append(v.as_cif)
+
     return '\n\n'.join(parts)
 
 
@@ -176,9 +197,7 @@ def project_to_cif(project) -> str:
 
 def experiment_to_cif(experiment) -> str:
     """Render an experiment: datablock part plus measured data."""
-    block = datablock_item_to_cif(experiment)
-    data = experiment.datastore.as_cif
-    return f'{block}\n\n{data}' if data else block
+    return datablock_item_to_cif(experiment)
 
 
 def analysis_to_cif(analysis) -> str:
@@ -202,61 +221,136 @@ def summary_to_cif(_summary) -> str:
 
 # TODO: Check the following methods:
 
+######################
+# Deserialize from CIF
+######################
 
-def param_from_cif(self, block: Any, idx: int = 0) -> None:
+
+def param_from_cif(
+    self: GenericDescriptorBase,
+    block: gemmi.cif.Block,
+    idx: int = 0,
+) -> None:
     found_values: list[Any] = []
-    for tag in self.full_cif_names:
-        candidate = list(block.find_values(tag))
-        if candidate:
-            found_values = candidate
+
+    # Try to find the value(s) from the CIF block iterating over
+    # the possible cif names in order of preference.
+    for tag in self._cif_handler.names:
+        candidates = list(block.find_values(tag))
+        if candidates:
+            found_values = candidates
             break
+
+    # If no values found, the parameter keeps its default value.
     if not found_values:
-        self.value = self.default_value
         return
+
+    # If found, pick the one at the given index
     raw = found_values[idx]
-    if self.value_type is float:
+
+    # If numeric, parse with uncertainty if present
+    if self._value_type == DataTypes.NUMERIC:
         u = str_to_ufloat(raw)
         self.value = u.n
-        if hasattr(self, 'uncertainty'):
+        if not np.isnan(u.s) and hasattr(self, 'uncertainty'):
             self.uncertainty = u.s  # type: ignore[attr-defined]
-    elif self.value_type is str:
+            self.free = True  # Mark as free if uncertainty is present
+
+    # If string, strip quotes if present
+    elif self._value_type == DataTypes.STRING:
         if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
             self.value = raw[1:-1]
         else:
             self.value = raw
+
+    # Other types are not supported
     else:
-        self.value = raw
+        log.debug(f'Unrecognized type: {self._value_type}')
 
 
-def category_item_from_cif(self, block, idx: int = 0) -> None:
+def category_item_from_cif(
+    self: CategoryItem,
+    block: gemmi.cif.Block,
+    idx: int = 0,
+) -> None:
     """Populate each parameter from CIF block at given loop index."""
     for param in self.parameters:
         param.from_cif(block, idx=idx)
 
 
-# TODO: from_cif or add_from_cif as in collections?
-def category_collection_from_cif(self, block):
-    # Derive loop size using category_entry_name first CIF tag alias
-    if self._item_type is None:
-        raise ValueError('Child class is not defined.')
+def category_collection_from_cif(
+    self: CategoryCollection,
+    block: gemmi.cif.Block,
+) -> None:
     # TODO: Find a better way and then remove TODO in the AtomSite
     #  class
-    # Create a temporary instance to access category_entry_name
-    # attribute used as ID column for the items in this collection
-    child_obj = self._item_type()
-    entry_attr = getattr(child_obj, child_obj._category_entry_attr_name)
-    # Try to find the value(s) from the CIF block iterating over
-    # the possible cif names in order of preference.
-    size = 0
-    for name in entry_attr.full_cif_names:
-        size = len(block.find_values(name))
-        break
-    # If no values found, nothing to do
-    if not size:
+    # TODO: Rename to _item_cls?
+    if self._item_type is None:
+        raise ValueError('Child class is not defined.')
+
+    # Create a temporary instance to access its parameters and
+    # parameter CIF names
+    category_item = self._item_type()
+
+    # Iterate over category parameters and their possible CIF names
+    # trying to find the whole loop it belongs to inside the CIF block
+    def _get_loop(block, category_item):
+        for param in category_item.parameters:
+            for name in param._cif_handler.names:
+                loop = block.find_loop(name).get_loop()
+                if loop is not None:
+                    return loop
+        return None
+
+    loop = _get_loop(block, category_item)
+
+    # If no loop found
+    if loop is None:
+        log.debug(f'No loop found for category {self}.')
         return
-    # If values found, delegate to child class to parse each
-    # row and add to collection
-    for row_idx in range(size):
-        child_obj = self._item_type()
-        child_obj.from_cif(block, idx=row_idx)
-        self.add(child_obj)
+
+    # Get 2D array of loop values (as strings)
+    num_rows = loop.length()
+    num_cols = loop.width()
+    array = np.array(loop.values, dtype=str).reshape(num_rows, num_cols)
+
+    # Pre-create default items in the collection
+    self._items = [self._item_type() for _ in range(num_rows)]
+
+    # Set parent for each item to enable identity resolution
+    for item in self._items:
+        object.__setattr__(item, '_parent', self)
+
+    # Set those items' parameters, which are present in the loop
+    for row_idx in range(num_rows):
+        current_item = self._items[row_idx]
+        for param in current_item.parameters:
+            for cif_name in param._cif_handler.names:
+                if cif_name in loop.tags:
+                    col_idx = loop.tags.index(cif_name)
+
+                    # TODO: The following is duplication of
+                    #  param_from_cif
+                    raw = array[row_idx][col_idx]
+
+                    # If numeric, parse with uncertainty if present
+                    if param._value_type == DataTypes.NUMERIC:
+                        u = str_to_ufloat(raw)
+                        param.value = u.n
+                        if not np.isnan(u.s) and hasattr(param, 'uncertainty'):
+                            param.uncertainty = u.s  # type: ignore[attr-defined]
+                            param.free = True  # Mark as free if uncertainty is present
+
+                    # If string, strip quotes if present
+                    # TODO: Make a helper function for this
+                    elif param._value_type == DataTypes.STRING:
+                        if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
+                            param.value = raw[1:-1]
+                        else:
+                            param.value = raw
+
+                    # Other types are not supported
+                    else:
+                        log.debug(f'Unrecognized type: {param._value_type}')
+
+                    break

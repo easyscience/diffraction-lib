@@ -16,9 +16,11 @@ from numpy.polynomial.chebyshev import chebval
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import Parameter
+from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.validation import RegexValidator
 from easydiffraction.experiments.categories.background.base import BackgroundBase
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.logging import console
@@ -35,10 +37,33 @@ class PolynomialTerm(CategoryItem):
     not break immediately. Tests should migrate to the short names.
     """
 
-    def __init__(self, *, order: int, coef: float) -> None:
+    def __init__(
+        self,
+        *,
+        id=None,  # TODO: rename as in the case of data points?
+        order=None,
+        coef=None,
+    ) -> None:
         super().__init__()
 
-        # Canonical descriptors
+        self._id = StringDescriptor(
+            name='id',
+            description='Identifier for this background polynomial term.',
+            value_spec=AttributeSpec(
+                type_=DataTypes.STRING,
+                value=id,
+                default='0',
+                # TODO: the following pattern is valid for dict key
+                #  (keywords are not checked). CIF label is less strict.
+                #  Do we need conversion between CIF and internal label?
+                content_validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
+            ),
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.id',
+                ]
+            ),
+        )
         self._order = NumericDescriptor(
             name='order',
             description='Order used in a Chebyshev polynomial background term',
@@ -48,7 +73,11 @@ class PolynomialTerm(CategoryItem):
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_pd_background.Chebyshev_order']),
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.Chebyshev_order',
+                ]
+            ),
         )
         self._coef = Parameter(
             name='coef',
@@ -59,11 +88,23 @@ class PolynomialTerm(CategoryItem):
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_pd_background.Chebyshev_coef']),
+            cif_handler=CifHandler(
+                names=[
+                    '_pd_background.Chebyshev_coef',
+                ]
+            ),
         )
 
         self._identity.category_code = 'background'
-        self._identity.category_entry_name = lambda: str(self.order.value)
+        self._identity.category_entry_name = lambda: str(self._id.value)
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id.value = value
 
     @property
     def order(self):
@@ -88,16 +129,23 @@ class ChebyshevPolynomialBackground(BackgroundBase):
     def __init__(self):
         super().__init__(item_type=PolynomialTerm)
 
-    def calculate(self, x_data):
-        """Evaluate polynomial background over x_data."""
+    def _update(self, called_by_minimizer=False):
+        """Evaluate polynomial background over x data."""
+        del called_by_minimizer
+
+        data = self._parent.data
+        x = data.x
+
         if not self._items:
             log.warning('No background points found. Setting background to zero.')
-            return np.zeros_like(x_data)
+            data._set_bkg(np.zeros_like(x))
+            return
 
-        u = (x_data - x_data.min()) / (x_data.max() - x_data.min()) * 2 - 1
+        u = (x - x.min()) / (x.max() - x.min()) * 2 - 1
         coefs = [term.coef.value for term in self._items]
-        y_data = chebval(u, coefs)
-        return y_data
+
+        y = chebval(u, coefs)
+        data._set_bkg(y)
 
     def show(self) -> None:
         """Print a table of polynomial orders and coefficients."""

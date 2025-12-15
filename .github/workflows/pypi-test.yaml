@@ -61,8 +61,8 @@ jobs:
       - name: Run unit tests to verify the installation
         run: pixi run unit-tests
 
-      - name: Run functional tests to verify the installation
-        run: pixi run func-tests
+      - name: Run integration tests to verify the installation
+        run: pixi run integration-tests
 
       # Github token to avoid hitting the unauthenticated API rate limit
       - name: List and fetch the EasyDiffraction tutorials

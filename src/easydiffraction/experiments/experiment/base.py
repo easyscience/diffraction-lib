@@ -5,13 +5,15 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from typing import TYPE_CHECKING
+from typing import Any
+from typing import List
 
 from easydiffraction.core.datablock import DatablockItem
+from easydiffraction.experiments.categories.data.factory import DataFactory
 from easydiffraction.experiments.categories.excluded_regions import ExcludedRegions
 from easydiffraction.experiments.categories.linked_phases import LinkedPhases
 from easydiffraction.experiments.categories.peak.factory import PeakFactory
 from easydiffraction.experiments.categories.peak.factory import PeakProfileTypeEnum
-from easydiffraction.experiments.datastore.factory import DatastoreFactory
 from easydiffraction.io.cif.serialize import experiment_to_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
@@ -20,12 +22,13 @@ from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
     from easydiffraction.experiments.categories.experiment_type import ExperimentType
+    from easydiffraction.sample_models.sample_models import SampleModels
 
 
 class ExperimentBase(DatablockItem):
     """Base class for all experiments with only core attributes.
 
-    Wraps experiment type, instrument and datastore.
+    Wraps experiment type and instrument.
     """
 
     def __init__(
@@ -37,10 +40,11 @@ class ExperimentBase(DatablockItem):
         super().__init__()
         self._name = name
         self._type = type
-        self._datastore = DatastoreFactory.create(
-            sample_form=self.type.sample_form.value,
-            beam_mode=self.type.beam_mode.value,
-        )
+        # TODO: Should return default calculator based on experiment
+        #  type
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+
+        self._calculator = CalculatorFactory.create_calculator('cryspy')
         self._identity.datablock_entry_name = lambda: self.name
 
     @property
@@ -65,11 +69,9 @@ class ExperimentBase(DatablockItem):
         return self._type
 
     @property
-    def datastore(self):
-        """Data container with x, y, error, calc and background
-        arrays.
-        """
-        return self._datastore
+    def calculator(self):
+        """Calculator engine used for pattern calculations."""
+        return self._calculator
 
     @property
     def as_cif(self) -> str:
@@ -77,17 +79,15 @@ class ExperimentBase(DatablockItem):
         return experiment_to_cif(self)
 
     def show_as_cif(self) -> None:
-        """Pretty-print the experiment and datastore as CIF text."""
+        """Pretty-print the experiment as CIF text."""
         experiment_cif = super().as_cif
-        datastore_cif = self.datastore.as_truncated_cif
-        cif_text: str = f'{experiment_cif}\n\n{datastore_cif}'
         paragraph_title: str = f"Experiment 🔬 '{self.name}' as cif"
         console.paragraph(paragraph_title)
-        render_cif(cif_text)
+        render_cif(experiment_cif)
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load ASCII data from file into the experiment datastore.
+        """Load ASCII data from file into the experiment data category.
 
         Args:
             data_path: Path to the ASCII file to load.
@@ -106,6 +106,9 @@ class PdExperimentBase(ExperimentBase):
     ) -> None:
         super().__init__(name=name, type=type)
 
+        self._linked_phases: LinkedPhases = LinkedPhases()
+        self._excluded_regions: ExcludedRegions = ExcludedRegions()
+
         self._peak_profile_type: PeakProfileTypeEnum = PeakProfileTypeEnum.default(
             self.type.scattering_type.value,
             self.type.beam_mode.value,
@@ -116,8 +119,45 @@ class PdExperimentBase(ExperimentBase):
             profile_type=self._peak_profile_type,
         )
 
-        self._linked_phases: LinkedPhases = LinkedPhases()
-        self._excluded_regions: ExcludedRegions = ExcludedRegions()
+        self._data = DataFactory.create(
+            sample_form=self.type.sample_form.value,
+            beam_mode=self.type.beam_mode.value,
+            scattering_type=self.type.scattering_type.value,
+        )
+
+    def _get_valid_linked_phases(
+        self,
+        sample_models: SampleModels,
+    ) -> List[Any]:
+        """Get valid linked phases for this experiment.
+
+        Args:
+            sample_models: Collection of sample models.
+
+        Returns:
+            A list of valid linked phases.
+        """
+        if not self.linked_phases:
+            print('Warning: No linked phases defined. Returning empty pattern.')
+            return []
+
+        valid_linked_phases = []
+        for linked_phase in self.linked_phases:
+            if linked_phase._identity.category_entry_name not in sample_models.names:
+                print(
+                    f"Warning: Linked phase '{linked_phase.id.value}' not "
+                    f'found in Sample Models {sample_models.names}. Skipping it.'
+                )
+                continue
+            valid_linked_phases.append(linked_phase)
+
+        if not valid_linked_phases:
+            print(
+                'Warning: None of the linked phases found in Sample '
+                'Models. Returning empty pattern.'
+            )
+
+        return valid_linked_phases
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
@@ -128,6 +168,16 @@ class PdExperimentBase(ExperimentBase):
                 the beam mode (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
         """
         pass
+
+    @property
+    def linked_phases(self):
+        """Collection of phases linked to this experiment."""
+        return self._linked_phases
+
+    @property
+    def excluded_regions(self):
+        """Collection of excluded regions for the x-grid."""
+        return self._excluded_regions
 
     @property
     def peak(self) -> str:
@@ -144,14 +194,8 @@ class PdExperimentBase(ExperimentBase):
         self._peak = value
 
     @property
-    def linked_phases(self) -> str:
-        """Collection of phases linked to this experiment."""
-        return self._linked_phases
-
-    @property
-    def excluded_regions(self) -> str:
-        """Collection of excluded regions for the x-grid."""
-        return self._excluded_regions
+    def data(self):
+        return self._data
 
     @property
     def peak_profile_type(self):

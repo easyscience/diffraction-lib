@@ -17,6 +17,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import TypeValidator
+from easydiffraction.io.cif.serialize import param_from_cif
 from easydiffraction.io.cif.serialize import param_to_cif
 
 if TYPE_CHECKING:
@@ -80,8 +81,6 @@ class GenericDescriptorBase(GuardedBase):
         self._value_spec = value_spec
         self._name = name
         self._description = description
-        self._uid: str = self._generate_uid()
-        UidMapHandler.get().add_to_uid_map(self)
 
         # Initial validated states
         self._value = self._value_spec.validated(
@@ -91,16 +90,6 @@ class GenericDescriptorBase(GuardedBase):
 
     def __str__(self) -> str:
         return f'<{self.unique_name} = {self.value!r}>'
-
-    @staticmethod
-    def _generate_uid(length: int = 16) -> str:
-        letters = string.ascii_lowercase
-        return ''.join(secrets.choice(letters) for _ in range(length))
-
-    @property
-    def uid(self):
-        """Stable random identifier for this descriptor."""
-        return self._uid
 
     @property
     def name(self) -> str:
@@ -121,6 +110,25 @@ class GenericDescriptorBase(GuardedBase):
         ]
         return '.'.join(filter(None, parts))
 
+    def _parent_of_type(self, cls):
+        """Walk up the parent chain and return the first parent of type
+        `cls`.
+        """
+        obj = getattr(self, '_parent', None)
+        visited = set()
+        while obj is not None and id(obj) not in visited:
+            visited.add(id(obj))
+            if isinstance(obj, cls):
+                return obj
+            obj = getattr(obj, '_parent', None)
+        return None
+
+    def _datablock_item(self):
+        """Return the DatablockItem ancestor, if any."""
+        from easydiffraction.core.datablock import DatablockItem
+
+        return self._parent_of_type(DatablockItem)
+
     @property
     def value(self):
         """Current validated value."""
@@ -129,11 +137,22 @@ class GenericDescriptorBase(GuardedBase):
     @value.setter
     def value(self, v):
         """Set a new value after validating against the spec."""
+        # Do nothing if the value is unchanged
+        if self._value == v:
+            return
+
+        # Validate and set the new value
         self._value = self._value_spec.validated(
             v,
             name=self.unique_name,
             current=self._value,
         )
+
+        # Mark parent datablock as needing categories update
+        # TODO: Check if it is actually in use?
+        parent_datablock = self._datablock_item()
+        if parent_datablock is not None:
+            parent_datablock._need_categories_update = True
 
     @property
     def description(self):
@@ -154,6 +173,10 @@ class GenericDescriptorBase(GuardedBase):
     def as_cif(self) -> str:
         """Serialize this descriptor to a CIF-formatted string."""
         return param_to_cif(self)
+
+    def from_cif(self, block, idx=0):
+        """Populate this parameter from a CIF block."""
+        param_from_cif(self, block, idx)
 
 
 class GenericStringDescriptor(GenericDescriptorBase):
@@ -223,6 +246,9 @@ class GenericParameter(GenericNumericDescriptor):
         self._constrained_spec = self._BOOL_SPEC_TEMPLATE
         self._constrained = self._constrained_spec.default
 
+        self._uid: str = self._generate_uid()
+        UidMapHandler.get().add_to_uid_map(self)
+
     def __str__(self) -> str:
         s = GenericDescriptorBase.__str__(self)
         s = s[1:-1]  # strip <>
@@ -232,6 +258,16 @@ class GenericParameter(GenericNumericDescriptor):
             s += f' {self.units}'
         s += f' (free={self.free})'
         return f'<{s}>'
+
+    @staticmethod
+    def _generate_uid(length: int = 16) -> str:
+        letters = string.ascii_lowercase
+        return ''.join(secrets.choice(letters) for _ in range(length))
+
+    @property
+    def uid(self):
+        """Stable random identifier for this descriptor."""
+        return self._uid
 
     @property
     def _minimizer_uid(self):

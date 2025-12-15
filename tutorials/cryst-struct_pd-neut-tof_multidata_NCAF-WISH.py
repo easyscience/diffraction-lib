@@ -15,7 +15,7 @@
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import SampleModelFactory
-from easydiffraction import download_from_repository
+from easydiffraction import download_data
 
 # %% [markdown]
 # ## Define Sample Model
@@ -45,7 +45,7 @@ model.cell.length_a = 10.250256
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add_from_args(
+model.atom_sites.add(
     label='Ca',
     type_symbol='Ca',
     fract_x=0.4663,
@@ -54,7 +54,7 @@ model.atom_sites.add_from_args(
     wyckoff_letter='b',
     b_iso=0.92,
 )
-model.atom_sites.add_from_args(
+model.atom_sites.add(
     label='Al',
     type_symbol='Al',
     fract_x=0.2521,
@@ -63,7 +63,7 @@ model.atom_sites.add_from_args(
     wyckoff_letter='a',
     b_iso=0.73,
 )
-model.atom_sites.add_from_args(
+model.atom_sites.add(
     label='Na',
     type_symbol='Na',
     fract_x=0.0851,
@@ -72,7 +72,7 @@ model.atom_sites.add_from_args(
     wyckoff_letter='a',
     b_iso=2.08,
 )
-model.atom_sites.add_from_args(
+model.atom_sites.add(
     label='F1',
     type_symbol='F',
     fract_x=0.1377,
@@ -81,7 +81,7 @@ model.atom_sites.add_from_args(
     wyckoff_letter='c',
     b_iso=0.90,
 )
-model.atom_sites.add_from_args(
+model.atom_sites.add(
     label='F2',
     type_symbol='F',
     fract_x=0.3625,
@@ -90,7 +90,7 @@ model.atom_sites.add_from_args(
     wyckoff_letter='c',
     b_iso=1.37,
 )
-model.atom_sites.add_from_args(
+model.atom_sites.add(
     label='F3',
     type_symbol='F',
     fract_x=0.4612,
@@ -109,16 +109,10 @@ model.atom_sites.add_from_args(
 # #### Download Measured Data
 
 # %%
-download_from_repository(
-    'wish_ncaf_5_6.xys',
-    destination='data',
-)
+data_path56 = download_data(id=9, destination='data')
 
 # %%
-download_from_repository(
-    'wish_ncaf_4_7.xys',
-    destination='data',
-)
+data_path47 = download_data(id=10, destination='data')
 
 # %% [markdown]
 # #### Create Experiment
@@ -126,14 +120,14 @@ download_from_repository(
 # %%
 expt56 = ExperimentFactory.create(
     name='wish_5_6',
-    data_path='data/wish_ncaf_5_6.xys',
+    data_path=data_path56,
     beam_mode='time-of-flight',
 )
 
 # %%
 expt47 = ExperimentFactory.create(
     name='wish_4_7',
-    data_path='data/wish_ncaf_4_7.xys',
+    data_path=data_path47,
     beam_mode='time-of-flight',
 )
 
@@ -178,90 +172,96 @@ expt47.peak.asym_alpha_1 = 0.1
 
 # %%
 expt56.background_type = 'line-segment'
-for x, y in [
-    (9162, 465),
-    (11136, 593),
-    (13313, 497),
-    (14906, 546),
-    (16454, 533),
-    (17352, 496),
-    (18743, 428),
-    (20179, 452),
-    (21368, 397),
-    (22176, 468),
-    (22827, 477),
-    (24644, 380),
-    (26439, 381),
-    (28257, 378),
-    (31196, 343),
-    (34034, 328),
-    (37265, 310),
-    (41214, 323),
-    (44827, 283),
-    (49830, 273),
-    (52905, 257),
-    (58204, 260),
-    (62916, 261),
-    (70186, 262),
-    (74204, 262),
-    (82103, 268),
-    (91958, 268),
-    (102712, 262),
-]:
-    expt56.background.add_from_args(x=x, y=y)
+for idx, (x, y) in enumerate(
+    [
+        (9162, 465),
+        (11136, 593),
+        (13313, 497),
+        (14906, 546),
+        (16454, 533),
+        (17352, 496),
+        (18743, 428),
+        (20179, 452),
+        (21368, 397),
+        (22176, 468),
+        (22827, 477),
+        (24644, 380),
+        (26439, 381),
+        (28257, 378),
+        (31196, 343),
+        (34034, 328),
+        (37265, 310),
+        (41214, 323),
+        (44827, 283),
+        (49830, 273),
+        (52905, 257),
+        (58204, 260),
+        (62916, 261),
+        (70186, 262),
+        (74204, 262),
+        (82103, 268),
+        (91958, 268),
+        (102712, 262),
+    ],
+    start=1,
+):
+    expt56.background.add(id=str(idx), x=x, y=y)
 
 # %%
 expt47.background_type = 'line-segment'
-for x, y in [
-    (9090, 488),
-    (10672, 566),
-    (12287, 494),
-    (14037, 559),
-    (15451, 529),
-    (16764, 445),
-    (18076, 460),
-    (19456, 413),
-    (20466, 511),
-    (21880, 396),
-    (23798, 391),
-    (25447, 385),
-    (28073, 349),
-    (30058, 332),
-    (32583, 309),
-    (34804, 355),
-    (37160, 318),
-    (40324, 290),
-    (46895, 260),
-    (50631, 256),
-    (54602, 246),
-    (58439, 264),
-    (66520, 250),
-    (75002, 258),
-    (83649, 257),
-    (92770, 255),
-    (101524, 260),
-]:
-    expt47.background.add_from_args(x=x, y=y)
+for idx, (x, y) in enumerate(
+    [
+        (9090, 488),
+        (10672, 566),
+        (12287, 494),
+        (14037, 559),
+        (15451, 529),
+        (16764, 445),
+        (18076, 460),
+        (19456, 413),
+        (20466, 511),
+        (21880, 396),
+        (23798, 391),
+        (25447, 385),
+        (28073, 349),
+        (30058, 332),
+        (32583, 309),
+        (34804, 355),
+        (37160, 318),
+        (40324, 290),
+        (46895, 260),
+        (50631, 256),
+        (54602, 246),
+        (58439, 264),
+        (66520, 250),
+        (75002, 258),
+        (83649, 257),
+        (92770, 255),
+        (101524, 260),
+    ],
+    start=1,
+):
+    expt47.background.add(id=str(idx), x=x, y=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt56.linked_phases.add_from_args(id='ncaf', scale=1.0)
+expt56.linked_phases.add(id='ncaf', scale=1.0)
 
 # %%
-expt47.linked_phases.add_from_args(id='ncaf', scale=2.0)
+expt47.linked_phases.add(id='ncaf', scale=2.0)
 
 # %% [markdown]
 # #### Set Excluded Regions
 
 # %%
-expt56.excluded_regions.add_from_args(start=0, end=10010)
-expt56.excluded_regions.add_from_args(start=100010, end=200000)
+expt56.excluded_regions.add(id='1', start=0, end=10010)
+expt56.excluded_regions.add(id='2', start=100010, end=200000)
 
 # %%
-expt47.excluded_regions.add_from_args(start=0, end=10006)
-expt47.excluded_regions.add_from_args(start=100004, end=200000)
+expt47.excluded_regions.add(id='1', start=0, end=10006)
+expt47.excluded_regions.add(id='2', start=100004, end=200000)
 
 # %% [markdown]
 # ## Define Project
@@ -278,20 +278,22 @@ project = Project()
 # #### Set Plotting Engine
 
 # %%
-project.plotter.engine = 'plotly'
+# Keep the auto-selected engine. Alternatively, you can uncomment the
+# line below to explicitly set the engine to the required one.
+# project.plotter.engine = 'plotly'
 
 # %% [markdown]
 # #### Add Sample Model
 
 # %%
-project.sample_models.add(model)
+project.sample_models.add(sample_model=model)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(expt56)
-project.experiments.add(expt47)
+project.experiments.add(experiment=expt56)
+project.experiments.add(experiment=expt47)
 
 # %% [markdown]
 # ## Perform Analysis

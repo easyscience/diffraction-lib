@@ -79,7 +79,9 @@ project.plotter.show_config()
 # Set plotting engine.
 
 # %%
-project.plotter.engine = 'plotly'
+# Keep the auto-selected engine. Alternatively, you can uncomment the
+# line below to explicitly set the engine to the required one.
+# project.plotter.engine = 'plotly'
 
 # %% [markdown]
 # ## Step 2: Define Sample Model
@@ -91,7 +93,7 @@ project.plotter.engine = 'plotly'
 # #### Add Sample Model
 
 # %%
-project.sample_models.add_minimal(name='lbco')
+project.sample_models.add(name='lbco')
 
 # %% [markdown]
 # #### Show Defined Sample Models
@@ -126,7 +128,7 @@ project.sample_models['lbco'].cell.length_a = 3.88
 # Add atom sites to the sample model.
 
 # %%
-project.sample_models['lbco'].atom_sites.add_from_args(
+project.sample_models['lbco'].atom_sites.add(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -136,7 +138,7 @@ project.sample_models['lbco'].atom_sites.add_from_args(
     b_iso=0.5,
     occupancy=0.5,
 )
-project.sample_models['lbco'].atom_sites.add_from_args(
+project.sample_models['lbco'].atom_sites.add(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -146,7 +148,7 @@ project.sample_models['lbco'].atom_sites.add_from_args(
     b_iso=0.5,
     occupancy=0.5,
 )
-project.sample_models['lbco'].atom_sites.add_from_args(
+project.sample_models['lbco'].atom_sites.add(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -155,7 +157,7 @@ project.sample_models['lbco'].atom_sites.add_from_args(
     wyckoff_letter='b',
     b_iso=0.5,
 )
-project.sample_models['lbco'].atom_sites.add_from_args(
+project.sample_models['lbco'].atom_sites.add(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -164,12 +166,6 @@ project.sample_models['lbco'].atom_sites.add_from_args(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-
-# %% [markdown]
-# #### Apply Symmetry Constraints
-
-# %%
-project.sample_models['lbco'].apply_symmetry_constraints()
 
 # %% [markdown]
 # #### Show Sample Model as CIF
@@ -205,15 +201,15 @@ project.save()
 # Download the data file from the EasyDiffraction repository on GitHub.
 
 # %%
-ed.download_from_repository('hrpt_lbco.xye', destination='data')
+data_path = ed.download_data(id=3, destination='data')
 
 # %% [markdown]
 # #### Add Diffraction Experiment
 
 # %%
-project.experiments.add_from_data_path(
+project.experiments.add(
     name='hrpt',
-    data_path='data/hrpt_lbco.xye',
+    data_path=data_path,
     sample_form='powder',
     beam_mode='constant wavelength',
     radiation_probe='neutron',
@@ -295,11 +291,11 @@ project.experiments['hrpt'].background_type = 'line-segment'
 # Add background points.
 
 # %%
-project.experiments['hrpt'].background.add_from_args(x=10, y=170)
-project.experiments['hrpt'].background.add_from_args(x=30, y=170)
-project.experiments['hrpt'].background.add_from_args(x=50, y=170)
-project.experiments['hrpt'].background.add_from_args(x=110, y=170)
-project.experiments['hrpt'].background.add_from_args(x=165, y=170)
+project.experiments['hrpt'].background.add(id='10', x=10, y=170)
+project.experiments['hrpt'].background.add(id='30', x=30, y=170)
+project.experiments['hrpt'].background.add(id='50', x=50, y=170)
+project.experiments['hrpt'].background.add(id='110', x=110, y=170)
+project.experiments['hrpt'].background.add(id='165', x=165, y=170)
 
 # %% [markdown]
 # Show current background points.
@@ -313,7 +309,7 @@ project.experiments['hrpt'].background.show()
 # Link the sample model defined in the previous step to the experiment.
 
 # %%
-project.experiments['hrpt'].linked_phases.add_from_args(id='lbco', scale=10.0)
+project.experiments['hrpt'].linked_phases.add(id='lbco', scale=10.0)
 
 # %% [markdown]
 # #### Show Experiment as CIF
@@ -373,7 +369,7 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=Tr
 # Show all parameters of the project.
 
 # %%
-project.analysis.show_all_params()
+# project.analysis.show_all_params()
 
 # %% [markdown]
 # Show all fittable parameters.
@@ -391,7 +387,7 @@ project.analysis.show_free_params()
 # Show how to access parameters in the code.
 
 # %%
-project.analysis.how_to_access_parameters()
+# project.analysis.how_to_access_parameters()
 
 # %% [markdown]
 # #### Set Fit Mode
@@ -564,11 +560,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Set aliases for parameters.
 
 # %%
-project.analysis.aliases.add_from_args(
+project.analysis.aliases.add(
     label='biso_La',
     param_uid=project.sample_models['lbco'].atom_sites['La'].b_iso.uid,
 )
-project.analysis.aliases.add_from_args(
+project.analysis.aliases.add(
     label='biso_Ba',
     param_uid=project.sample_models['lbco'].atom_sites['Ba'].b_iso.uid,
 )
@@ -577,7 +573,7 @@ project.analysis.aliases.add_from_args(
 # Set constraints.
 
 # %%
-project.analysis.constraints.add_from_args(lhs_alias='biso_Ba', rhs_expr='biso_La')
+project.analysis.constraints.add(lhs_alias='biso_Ba', rhs_expr='biso_La')
 
 # %% [markdown]
 # Show defined constraints.
@@ -632,11 +628,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Set more aliases for parameters.
 
 # %%
-project.analysis.aliases.add_from_args(
+project.analysis.aliases.add(
     label='occ_La',
     param_uid=project.sample_models['lbco'].atom_sites['La'].occupancy.uid,
 )
-project.analysis.aliases.add_from_args(
+project.analysis.aliases.add(
     label='occ_Ba',
     param_uid=project.sample_models['lbco'].atom_sites['Ba'].occupancy.uid,
 )
@@ -645,7 +641,7 @@ project.analysis.aliases.add_from_args(
 # Set more constraints.
 
 # %%
-project.analysis.constraints.add_from_args(
+project.analysis.constraints.add(
     lhs_alias='occ_Ba',
     rhs_expr='1 - occ_La',
 )
@@ -703,6 +699,7 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # %% [markdown]
 # #### Show Project Summary
 
-
 # %%
 project.summary.show_report()
+
+# %%

@@ -24,7 +24,12 @@ project = ed.Project()
 # ## Set Plotting Engine
 
 # %%
-project.plotter.engine = 'plotly'
+# Keep the auto-selected engine. Alternatively, you can uncomment the
+# line below to explicitly set the engine to the required one.
+# project.plotter.engine = 'plotly'
+
+# %%
+# Set global plot range for plots
 project.plotter.x_min = 2.0
 project.plotter.x_max = 30.0
 
@@ -32,16 +37,22 @@ project.plotter.x_max = 30.0
 # ## Add Sample Model
 
 # %%
-project.sample_models.add_minimal(name='nacl')
+project.sample_models.add(name='nacl')
 
 # %%
 project.sample_models['nacl'].space_group.name_h_m = 'F m -3 m'
 project.sample_models['nacl'].space_group.it_coordinate_system_code = '1'
 project.sample_models['nacl'].cell.length_a = 5.62
-project.sample_models['nacl'].atom_sites.add_from_args(
-    label='Na', type_symbol='Na', fract_x=0, fract_y=0, fract_z=0, wyckoff_letter='a', b_iso=1.0
+project.sample_models['nacl'].atom_sites.add(
+    label='Na',
+    type_symbol='Na',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=1.0,
 )
-project.sample_models['nacl'].atom_sites.add_from_args(
+project.sample_models['nacl'].atom_sites.add(
     label='Cl',
     type_symbol='Cl',
     fract_x=0.5,
@@ -55,12 +66,12 @@ project.sample_models['nacl'].atom_sites.add_from_args(
 # ## Add Experiment
 
 # %%
-ed.download_from_repository('NaCl.gr', destination='data')
+data_path = ed.download_data(id=4, destination='data')
 
 # %%
-project.experiments.add_from_data_path(
+project.experiments.add(
     name='xray_pdf',
-    data_path='data/NaCl.gr',
+    data_path=data_path,
     sample_form='powder',
     beam_mode='constant wavelength',
     radiation_probe='xray',
@@ -85,7 +96,7 @@ project.experiments['xray_pdf'].peak.sharp_delta_2 = 5
 project.experiments['xray_pdf'].peak.damp_particle_diameter = 0
 
 # %%
-project.experiments['xray_pdf'].linked_phases.add_from_args(id='nacl', scale=0.5)
+project.experiments['xray_pdf'].linked_phases.add(id='nacl', scale=0.5)
 
 # %% [markdown]
 # ## Select Fitting Parameters

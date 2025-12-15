@@ -19,6 +19,7 @@ class CwlBroadeningMixin:
     parameters.
     """
 
+    # TODO: Rename to cwl. Check other mixins for naming consistency.
     def _add_constant_wavelength_broadening(self) -> None:
         """Create CWL broadening parameters and attach them to the
         class.

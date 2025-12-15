@@ -10,6 +10,6 @@ def test_joint_fit_experiment_and_collection():
     assert j.id.value == 'ex1'
     assert j.weight.value == 0.5
     coll = JointFitExperiments()
-    coll.add(j)
+    coll.add(id='ex1', weight=0.5)
     assert 'ex1' in coll.names
     assert coll['ex1'].weight.value == 0.5

@@ -37,7 +37,10 @@ def test_get_reliability_inputs_collects_arrays_with_default_su():
 
     class Expt:
         def __init__(self):
-            self.datastore = DS()
+            self.data = DS()
+
+        def _update_categories(self, called_by_minimizer=False):
+            pass
 
     class Expts(dict):
         def values(self):
@@ -46,11 +49,6 @@ def test_get_reliability_inputs_collects_arrays_with_default_su():
     class SampleModels(dict):
         pass
 
-    class Calc:
-        def calculate_pattern(self, sample_models, experiment):
-            # no-op; calc already set in DS
-            return None
-
-    y_obs, y_calc, y_err = M.get_reliability_inputs(SampleModels(), Expts(), Calc())
+    y_obs, y_calc, y_err = M.get_reliability_inputs(SampleModels(), Expts())
     assert y_obs.shape == (2,) and y_calc.shape == (2,) and y_err.shape == (2,)
     assert np.allclose(y_err, 1.0)

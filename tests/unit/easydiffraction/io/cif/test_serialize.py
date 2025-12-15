@@ -12,8 +12,8 @@ def test_module_import():
 def test_format_value_quotes_whitespace_strings():
     import easydiffraction.io.cif.serialize as MUT
 
-    assert MUT.format_value('a b') == '"a b"'
-    assert MUT.format_value('ab') == 'ab'
+    assert MUT.format_value('a b') == '   "a b"'
+    assert MUT.format_value('ab') == '      ab'
 
 
 def test_param_to_cif_minimal():
@@ -26,7 +26,7 @@ def test_param_to_cif_minimal():
             self.value = 3
 
     p = P()
-    assert MUT.param_to_cif(p) == '_x.y 3'
+    assert MUT.param_to_cif(p) == '_x.y   3.0000'
 
 
 def test_category_collection_to_cif_empty_and_one_row():

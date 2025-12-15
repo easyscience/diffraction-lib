@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os
 import tempfile
 
 import pytest
@@ -16,12 +15,12 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     project = ed.Project()
 
     # Set sample model
-    project.sample_models.add_minimal(name='nacl')
+    project.sample_models.add(name='nacl')
     sample_model = project.sample_models['nacl']
     sample_model.space_group.name_h_m = 'F m -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
     sample_model.cell.length_a = 5.6018
-    sample_model.atom_sites.add_from_args(
+    sample_model.atom_sites.add(
         label='Na',
         type_symbol='Na',
         fract_x=0,
@@ -30,7 +29,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
         wyckoff_letter='a',
         b_iso=1.1053,
     )
-    sample_model.atom_sites.add_from_args(
+    sample_model.atom_sites.add(
         label='Cl',
         type_symbol='Cl',
         fract_x=0.5,
@@ -41,11 +40,10 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     )
 
     # Set experiment
-    data_file = 'NaCl.gr'
-    ed.download_from_repository(data_file, destination=TEMP_DIR)
-    project.experiments.add_from_data_path(
+    data_path = ed.download_data(id=4, destination=TEMP_DIR)
+    project.experiments.add(
         name='xray_pdf',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         sample_form='powder',
         beam_mode='constant wavelength',
         radiation_probe='xray',
@@ -59,7 +57,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     experiment.peak.sharp_delta_1 = 0
     experiment.peak.sharp_delta_2 = 3.5041
     experiment.peak.damp_particle_diameter = 0
-    experiment.linked_phases.add_from_args(id='nacl', scale=0.4254)
+    experiment.linked_phases.add(id='nacl', scale=0.4254)
 
     # Select fitting parameters
     sample_model.cell.length_a.free = True
@@ -83,12 +81,12 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     project = ed.Project()
 
     # Set sample model
-    project.sample_models.add_minimal(name='ni')
+    project.sample_models.add(name='ni')
     sample_model = project.sample_models['ni']
     sample_model.space_group.name_h_m.value = 'F m -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
     sample_model.cell.length_a = 3.526
-    sample_model.atom_sites.add_from_args(
+    sample_model.atom_sites.add(
         label='Ni',
         type_symbol='Ni',
         fract_x=0,
@@ -99,11 +97,10 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     )
 
     # Set experiment
-    data_file = 'ni-q27r100-neutron_from-2.gr'
-    ed.download_from_repository(data_file, destination=TEMP_DIR)
-    project.experiments.add_from_data_path(
+    data_path = ed.download_data(id=6, destination=TEMP_DIR)
+    project.experiments.add(
         name='pdf',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         sample_form='powder',
         beam_mode='constant wavelength',
         radiation_probe='neutron',
@@ -116,7 +113,7 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     experiment.peak.sharp_delta_1 = 0
     experiment.peak.sharp_delta_2 = 2.5587
     experiment.peak.damp_particle_diameter = 0
-    experiment.linked_phases.add_from_args(id='ni', scale=0.9892)
+    experiment.linked_phases.add(id='ni', scale=0.9892)
 
     # Select fitting parameters
     sample_model.cell.length_a.free = True
@@ -138,12 +135,12 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     project = ed.Project()
 
     # Set sample model
-    project.sample_models.add_minimal(name='si')
+    project.sample_models.add(name='si')
     sample_model = project.sample_models['si']
     sample_model.space_group.name_h_m.value = 'F d -3 m'
     sample_model.space_group.it_coordinate_system_code = '1'
     sample_model.cell.length_a = 5.4306
-    sample_model.atom_sites.add_from_args(
+    sample_model.atom_sites.add(
         label='Si',
         type_symbol='Si',
         fract_x=0,
@@ -154,11 +151,10 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     )
 
     # Set experiment
-    data_file = 'NOM_9999_Si_640g_PAC_50_ff_ftfrgr_up-to-50.gr'
-    ed.download_from_repository(data_file, destination=TEMP_DIR)
-    project.experiments.add_from_data_path(
+    data_path = ed.download_data(id=5, destination=TEMP_DIR)
+    project.experiments.add(
         name='nomad',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         sample_form='powder',
         beam_mode='time-of-flight',
         radiation_probe='neutron',
@@ -171,7 +167,7 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     experiment.peak.sharp_delta_1 = 2.54
     experiment.peak.sharp_delta_2 = -1.7525
     experiment.peak.damp_particle_diameter = 0
-    experiment.linked_phases.add_from_args(id='si', scale=1.2728)
+    experiment.linked_phases.add(id='si', scale=1.2728)
 
     # Select fitting parameters
     project.sample_models['si'].cell.length_a.free = True

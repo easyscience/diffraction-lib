@@ -3,6 +3,7 @@
 
 # Focused tests for package __init__: lazy attributes and error path
 import importlib
+from pathlib import Path
 
 import pytest
 
@@ -40,12 +41,28 @@ def test_lazy_functions_execute_with_monkeypatch(monkeypatch, capsys, tmp_path):
     out = capsys.readouterr().out
     assert 'Tutorials available for easydiffraction' in out
 
-    # 2) download_from_repository should call pooch.retrieve; avoid network
+    # 2) download_data should consult index and call pooch.retrieve without network
     import easydiffraction.utils.utils as utils
 
-    calls = {}
-    monkeypatch.setattr(utils.pooch, 'retrieve', lambda **kw: calls.setdefault('ok', True))
-    utils.download_from_repository(
-        'dummy.txt', branch='main', destination=str(tmp_path), overwrite=True
-    )
-    assert calls.get('ok') is True
+    fake_index = {
+        '12': {
+            'url': 'https://example.com/data.xye',
+            'hash': 'sha256:...',
+            'description': 'Demo dataset',
+        }
+    }
+    monkeypatch.setattr(utils, '_fetch_data_index', lambda: fake_index)
+
+    calls: dict = {}
+
+    def fake_retrieve(**kwargs):
+        calls['kwargs'] = kwargs
+        file_path = Path(kwargs['path']) / kwargs['fname']
+        file_path.write_text('dummy data')
+        return str(file_path)
+
+    monkeypatch.setattr(utils.pooch, 'retrieve', fake_retrieve)
+
+    result = utils.download_data(id=12, destination=str(tmp_path), overwrite=True)
+    assert Path(result).exists()
+    assert calls['kwargs']['url'] == 'https://example.com/data.xye'

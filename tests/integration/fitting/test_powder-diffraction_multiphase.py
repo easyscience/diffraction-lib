@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os
 import tempfile
 
 from numpy.testing import assert_almost_equal
@@ -9,7 +8,7 @@ from numpy.testing import assert_almost_equal
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import SampleModelFactory
-from easydiffraction import download_from_repository
+from easydiffraction import download_data
 
 TEMP_DIR = tempfile.gettempdir()
 
@@ -20,7 +19,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     model_1.space_group.name_h_m = 'P m -3 m'
     model_1.space_group.it_coordinate_system_code = '1'
     model_1.cell.length_a = 3.8909
-    model_1.atom_sites.add_from_args(
+    model_1.atom_sites.add(
         label='La',
         type_symbol='La',
         fract_x=0,
@@ -30,7 +29,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
         b_iso=0.2,
         occupancy=0.5,
     )
-    model_1.atom_sites.add_from_args(
+    model_1.atom_sites.add(
         label='Ba',
         type_symbol='Ba',
         fract_x=0,
@@ -40,7 +39,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
         b_iso=0.2,
         occupancy=0.5,
     )
-    model_1.atom_sites.add_from_args(
+    model_1.atom_sites.add(
         label='Co',
         type_symbol='Co',
         fract_x=0.5,
@@ -49,7 +48,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
         wyckoff_letter='b',
         b_iso=0.2567,
     )
-    model_1.atom_sites.add_from_args(
+    model_1.atom_sites.add(
         label='O',
         type_symbol='O',
         fract_x=0,
@@ -63,7 +62,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     model_2.space_group.name_h_m = 'F d -3 m'
     model_2.space_group.it_coordinate_system_code = '2'
     model_2.cell.length_a = 5.43146
-    model_2.atom_sites.add_from_args(
+    model_2.atom_sites.add(
         label='Si',
         type_symbol='Si',
         fract_x=0.0,
@@ -74,11 +73,10 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     )
 
     # Set experiment
-    data_file = 'mcstas_lbco-si.xys'
-    download_from_repository(data_file, destination=TEMP_DIR)
+    data_path = download_data(id=8, destination=TEMP_DIR)
     expt = ExperimentFactory.create(
         name='mcstas',
-        data_path=os.path.join(TEMP_DIR, data_file),
+        data_path=data_path,
         beam_mode='time-of-flight',
     )
     expt.instrument.setup_twotheta_bank = 94.90931761529106
@@ -93,19 +91,19 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     expt.peak.broad_mix_beta_1 = 0.0041
     expt.peak.asym_alpha_0 = 0.0
     expt.peak.asym_alpha_1 = 0.0097
-    expt.linked_phases.add_from_args(id='lbco', scale=4.0)
-    expt.linked_phases.add_from_args(id='si', scale=0.2)
+    expt.linked_phases.add(id='lbco', scale=4.0)
+    expt.linked_phases.add(id='si', scale=0.2)
     for x in range(45000, 115000, 5000):
-        expt.background.add_from_args(x=x, y=0.2)
+        expt.background.add(id=str(x), x=x, y=0.2)
 
     # Create project
     project = Project()
-    project.sample_models.add(model_1)
-    project.sample_models.add(model_2)
-    project.experiments.add(expt)
+    project.sample_models.add(sample_model=model_1)
+    project.sample_models.add(sample_model=model_2)
+    project.experiments.add(experiment=expt)
 
     # Exclude regions from fitting
-    project.experiments['mcstas'].excluded_regions.add_from_args(start=108000, end=200000)
+    project.experiments['mcstas'].excluded_regions.add(start=108000, end=200000)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
@@ -134,7 +132,11 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     project.analysis.fit()
 
     # Compare fit quality
-    assert_almost_equal(project.analysis.fit_results.reduced_chi_square, desired=2.87, decimal=1)
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=2.87,
+        decimal=1,
+    )
 
 
 if __name__ == '__main__':

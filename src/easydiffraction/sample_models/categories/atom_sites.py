@@ -17,6 +17,7 @@ from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
+from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.io.cif.handler import CifHandler
 
 
@@ -160,7 +161,7 @@ class AtomSite(CategoryItem):
                 value=b_iso,
                 type_=DataTypes.NUMERIC,
                 default=0.0,
-                content_validator=RangeValidator(),
+                content_validator=RangeValidator(ge=0.0),
             ),
             units='Å²',
             cif_handler=CifHandler(
@@ -293,3 +294,41 @@ class AtomSites(CategoryCollection):
 
     def __init__(self):
         super().__init__(item_type=AtomSite)
+
+    def _apply_atomic_coordinates_symmetry_constraints(self):
+        """Apply symmetry rules to fractional coordinates of atom
+        sites.
+        """
+        sample_model = self._parent
+        space_group_name = sample_model.space_group.name_h_m.value
+        space_group_coord_code = sample_model.space_group.it_coordinate_system_code.value
+        for atom in self._items:
+            dummy_atom = {
+                'fract_x': atom.fract_x.value,
+                'fract_y': atom.fract_y.value,
+                'fract_z': atom.fract_z.value,
+            }
+            wl = atom.wyckoff_letter.value
+            if not wl:
+                # TODO: Decide how to handle this case
+                #  For now, we just skip applying constraints if wyckoff
+                #  letter is not set. Alternatively, could raise an
+                #  error or warning
+                #  print(f"Warning: Wyckoff letter is not ...")
+                #  raise ValueError("Wyckoff letter is not ...")
+                continue
+            ecr.apply_atom_site_symmetry_constraints(
+                atom_site=dummy_atom,
+                name_hm=space_group_name,
+                coord_code=space_group_coord_code,
+                wyckoff_letter=wl,
+            )
+            atom.fract_x.value = dummy_atom['fract_x']
+            atom.fract_y.value = dummy_atom['fract_y']
+            atom.fract_z.value = dummy_atom['fract_z']
+
+    def _update(self, called_by_minimizer=False):
+        """Update atom sites by applying symmetry constraints."""
+        del called_by_minimizer
+
+        self._apply_atomic_coordinates_symmetry_constraints()

@@ -9,10 +9,17 @@ when provided, or an empty model with the given name.
 
 from __future__ import annotations
 
-import gemmi
+from typing import TYPE_CHECKING
 
 from easydiffraction.core.factory import FactoryBase
+from easydiffraction.io.cif.parse import document_from_path
+from easydiffraction.io.cif.parse import document_from_string
+from easydiffraction.io.cif.parse import name_from_block
+from easydiffraction.io.cif.parse import pick_sole_block
 from easydiffraction.sample_models.sample_model.base import SampleModelBase
+
+if TYPE_CHECKING:
+    import gemmi
 
 
 class SampleModelFactory(FactoryBase):
@@ -25,7 +32,47 @@ class SampleModelFactory(FactoryBase):
     ]
 
     @classmethod
-    def create(cls, **kwargs) -> SampleModelBase:
+    def _create_from_gemmi_block(
+        cls,
+        block: gemmi.cif.Block,
+    ) -> SampleModelBase:
+        """Build a model instance from a single CIF block."""
+        name = name_from_block(block)
+        sample_model = SampleModelBase(name=name)
+        for category in sample_model.categories:
+            category.from_cif(block)
+        return sample_model
+
+    @classmethod
+    def _create_from_cif_path(
+        cls,
+        cif_path: str,
+    ) -> SampleModelBase:
+        """Create a model by reading and parsing a CIF file."""
+        doc = document_from_path(cif_path)
+        block = pick_sole_block(doc)
+        return cls._create_from_gemmi_block(block)
+
+    @classmethod
+    def _create_from_cif_str(
+        cls,
+        cif_str: str,
+    ) -> SampleModelBase:
+        """Create a model by parsing a CIF string."""
+        doc = document_from_string(cif_str)
+        block = pick_sole_block(doc)
+        return cls._create_from_gemmi_block(block)
+
+    @classmethod
+    def _create_minimal(
+        cls,
+        name: str,
+    ) -> SampleModelBase:
+        """Create a minimal default model with just a name."""
+        return SampleModelBase(name=name)
+
+    @classmethod
+    def create(cls, **kwargs):
         """Create a model based on a validated argument combination.
 
         Keyword Args:
@@ -38,133 +85,19 @@ class SampleModelFactory(FactoryBase):
         Returns:
             SampleModelBase: A populated or empty model instance.
         """
+        # TODO: move to FactoryBase
         # Check for valid argument combinations
         user_args = {k for k, v in kwargs.items() if v is not None}
-        cls._validate_args(user_args, cls._ALLOWED_ARG_SPECS, cls.__name__)
+        cls._validate_args(
+            present=user_args,
+            allowed_specs=cls._ALLOWED_ARG_SPECS,
+            factory_name=cls.__name__,  # TODO: move to FactoryBase
+        )
 
+        # Dispatch to the appropriate creation method
         if 'cif_path' in kwargs:
             return cls._create_from_cif_path(kwargs['cif_path'])
         elif 'cif_str' in kwargs:
             return cls._create_from_cif_str(kwargs['cif_str'])
         elif 'name' in kwargs:
-            return SampleModelBase(name=kwargs['name'])
-
-    # -------------------------------
-    # Private creation helper methods
-    # -------------------------------
-
-    @classmethod
-    def _create_from_cif_path(
-        cls,
-        cif_path: str,
-    ) -> SampleModelBase:
-        """Create a model by reading and parsing a CIF file."""
-        # Parse CIF and build model
-        doc = cls._read_cif_document_from_path(cif_path)
-        block = cls._pick_first_structural_block(doc)
-        return cls._create_model_from_block(block)
-
-    @classmethod
-    def _create_from_cif_str(
-        cls,
-        cif_str: str,
-    ) -> SampleModelBase:
-        """Create a model by parsing a CIF string."""
-        # Parse CIF string and build model
-        doc = cls._read_cif_document_from_string(cif_str)
-        block = cls._pick_first_structural_block(doc)
-        return cls._create_model_from_block(block)
-
-    # TODO: Move to io.cif.parse?
-
-    # -------------
-    # gemmi helpers
-    # -------------
-
-    @staticmethod
-    def _read_cif_document_from_path(path: str) -> gemmi.cif.Document:
-        """Read a CIF document from a file path."""
-        return gemmi.cif.read_file(path)
-
-    @staticmethod
-    def _read_cif_document_from_string(text: str) -> gemmi.cif.Document:
-        """Read a CIF document from a raw text string."""
-        return gemmi.cif.read_string(text)
-
-    @staticmethod
-    def _has_structural_content(block: gemmi.cif.Block) -> bool:
-        """Return True if the CIF block contains structural content."""
-        # Basic heuristics: atom_site loop or full set of cell params
-        loop = block.find_loop('_atom_site.fract_x')
-        if loop is not None:
-            return True
-        required_cell = [
-            '_cell.length_a',
-            '_cell.length_b',
-            '_cell.length_c',
-            '_cell.angle_alpha',
-            '_cell.angle_beta',
-            '_cell.angle_gamma',
-        ]
-        return all(block.find_value(tag) for tag in required_cell)
-
-    @classmethod
-    def _pick_first_structural_block(
-        cls,
-        doc: gemmi.cif.Document,
-    ) -> gemmi.cif.Block:
-        """Pick the most likely structural block from a CIF document."""
-        # Prefer blocks with atom_site loop; else first block with cell
-        for block in doc:
-            if cls._has_structural_content(block):
-                return block
-        # As a fallback, return the sole or first block
-        try:
-            return doc.sole_block()
-        except Exception:
-            return doc[0]
-
-    @classmethod
-    def _create_model_from_block(
-        cls,
-        block: gemmi.cif.Block,
-    ) -> SampleModelBase:
-        """Build a model instance from a single CIF block."""
-        name = cls._extract_name_from_block(block)
-        model = SampleModelBase(name=name)
-        cls._set_space_group_from_cif_block(model, block)
-        cls._set_cell_from_cif_block(model, block)
-        cls._set_atom_sites_from_cif_block(model, block)
-        return model
-
-    @classmethod
-    def _extract_name_from_block(cls, block: gemmi.cif.Block) -> str:
-        """Extract a model name from the CIF block name."""
-        return block.name or 'model'
-
-    @classmethod
-    def _set_space_group_from_cif_block(
-        cls,
-        model: SampleModelBase,
-        block: gemmi.cif.Block,
-    ) -> None:
-        """Populate the model's space group from a CIF block."""
-        model.space_group.from_cif(block)
-
-    @classmethod
-    def _set_cell_from_cif_block(
-        cls,
-        model: SampleModelBase,
-        block: gemmi.cif.Block,
-    ) -> None:
-        """Populate the model's unit cell from a CIF block."""
-        model.cell.from_cif(block)
-
-    @classmethod
-    def _set_atom_sites_from_cif_block(
-        cls,
-        model: SampleModelBase,
-        block: gemmi.cif.Block,
-    ) -> None:
-        """Populate the model's atom sites from a CIF block."""
-        model.atom_sites.from_cif(block)
+            return cls._create_minimal(kwargs['name'])

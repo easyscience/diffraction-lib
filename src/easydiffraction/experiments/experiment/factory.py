@@ -1,6 +1,10 @@
 # SPDX-FileCopyrightText: 2021-2025 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.experiments.categories.experiment_type import ExperimentType
 from easydiffraction.experiments.experiment import BraggPdExperiment
@@ -10,6 +14,15 @@ from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiment.enums import RadiationProbeEnum
 from easydiffraction.experiments.experiment.enums import SampleFormEnum
 from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
+from easydiffraction.io.cif.parse import document_from_path
+from easydiffraction.io.cif.parse import document_from_string
+from easydiffraction.io.cif.parse import name_from_block
+from easydiffraction.io.cif.parse import pick_sole_block
+
+if TYPE_CHECKING:
+    import gemmi
+
+    from easydiffraction.experiments.experiment.base import ExperimentBase
 
 
 class ExperimentFactory(FactoryBase):
@@ -39,55 +52,67 @@ class ExperimentFactory(FactoryBase):
     }
 
     @classmethod
-    def create(cls, **kwargs):
-        """Create an `ExperimentBase` using a validated argument
-        combination.
+    def _make_experiment_type(cls, kwargs):
+        """Helper to construct an ExperimentType from keyword arguments,
+        using defaults as needed.
         """
-        # Check for valid argument combinations
-        user_args = {k for k, v in kwargs.items() if v is not None}
-        cls._validate_args(user_args, cls._ALLOWED_ARG_SPECS, cls.__name__)
+        # TODO: Defaults are already in the experiment type...
+        # TODO: Merging with experiment_type_from_block from
+        #  io.cif.parse
+        return ExperimentType(
+            sample_form=kwargs.get('sample_form', SampleFormEnum.default().value),
+            beam_mode=kwargs.get('beam_mode', BeamModeEnum.default().value),
+            radiation_probe=kwargs.get('radiation_probe', RadiationProbeEnum.default().value),
+            scattering_type=kwargs.get('scattering_type', ScatteringTypeEnum.default().value),
+        )
 
-        # Validate enum arguments if provided
-        if 'sample_form' in kwargs:
-            SampleFormEnum(kwargs['sample_form'])
-        if 'beam_mode' in kwargs:
-            BeamModeEnum(kwargs['beam_mode'])
-        if 'radiation_probe' in kwargs:
-            RadiationProbeEnum(kwargs['radiation_probe'])
-        if 'scattering_type' in kwargs:
-            ScatteringTypeEnum(kwargs['scattering_type'])
+    # TODO: Move to a common CIF utility module? io.cif.parse?
+    @classmethod
+    def _create_from_gemmi_block(
+        cls,
+        block: gemmi.cif.Block,
+    ) -> ExperimentBase:
+        """Build a model instance from a single CIF block."""
+        name = name_from_block(block)
 
-        # Dispatch to the appropriate creation method
-        if 'cif_path' in kwargs:
-            return cls._create_from_cif_path(kwargs['cif_path'])
-        elif 'cif_str' in kwargs:
-            return cls._create_from_cif_str(kwargs['cif_str'])
-        elif 'data_path' in kwargs:
-            return cls._create_from_data_path(kwargs)
-        elif 'name' in kwargs:
-            return cls._create_without_data(kwargs)
+        # TODO: move to io.cif.parse?
+        expt_type = ExperimentType()
+        for param in expt_type.parameters:
+            param.from_cif(block)
 
-    # -------------------------------
-    # Private creation helper methods
-    # -------------------------------
+        # Create experiment instance of appropriate class
+        # TODO: make helper method to create experiment from type
+        scattering_type = expt_type.scattering_type.value
+        sample_form = expt_type.sample_form.value
+        expt_class = cls._SUPPORTED[scattering_type][sample_form]
+        expt_obj = expt_class(name=name, type=expt_type)
 
-    @staticmethod
-    def _create_from_cif_path(cif_path):
-        """Create an experiment from a CIF file path.
+        # Read all categories from CIF block
+        # TODO: move to io.cif.parse?
+        for category in expt_obj.categories:
+            category.from_cif(block)
 
-        Not yet implemented.
-        """
-        # TODO: Implement CIF file loading logic
-        raise NotImplementedError('CIF file loading not implemented yet.')
+        return expt_obj
 
-    @staticmethod
-    def _create_from_cif_str(cif_str):
-        """Create an experiment from a CIF string.
+    @classmethod
+    def _create_from_cif_path(
+        cls,
+        cif_path: str,
+    ) -> ExperimentBase:
+        """Create an experiment from a CIF file path."""
+        doc = document_from_path(cif_path)
+        block = pick_sole_block(doc)
+        return cls._create_from_gemmi_block(block)
 
-        Not yet implemented.
-        """
-        # TODO: Implement CIF string loading logic
-        raise NotImplementedError('CIF string loading not implemented yet.')
+    @classmethod
+    def _create_from_cif_str(
+        cls,
+        cif_str: str,
+    ) -> ExperimentBase:
+        """Create an experiment from a CIF string."""
+        doc = document_from_string(cif_str)
+        block = pick_sole_block(doc)
+        return cls._create_from_gemmi_block(block)
 
     @classmethod
     def _create_from_data_path(cls, kwargs):
@@ -122,29 +147,35 @@ class ExperimentFactory(FactoryBase):
         return expt_obj
 
     @classmethod
-    def _make_experiment_type(cls, kwargs):
-        """Helper to construct an ExperimentType from keyword arguments,
-        using defaults as needed.
+    def create(cls, **kwargs):
+        """Create an `ExperimentBase` using a validated argument
+        combination.
         """
-        return ExperimentType(
-            sample_form=kwargs.get('sample_form', SampleFormEnum.default()),
-            beam_mode=kwargs.get('beam_mode', BeamModeEnum.default()),
-            radiation_probe=kwargs.get('radiation_probe', RadiationProbeEnum.default()),
-            scattering_type=kwargs.get('scattering_type', ScatteringTypeEnum.default()),
+        # TODO: move to FactoryBase
+        # Check for valid argument combinations
+        user_args = {k for k, v in kwargs.items() if v is not None}
+        cls._validate_args(
+            present=user_args,
+            allowed_specs=cls._ALLOWED_ARG_SPECS,
+            factory_name=cls.__name__,  # TODO: move to FactoryBase
         )
 
-    @staticmethod
-    def _is_valid_args(user_args):
-        """Validate user argument set against allowed combinations.
+        # Validate enum arguments if provided
+        if 'sample_form' in kwargs:
+            SampleFormEnum(kwargs['sample_form'])
+        if 'beam_mode' in kwargs:
+            BeamModeEnum(kwargs['beam_mode'])
+        if 'radiation_probe' in kwargs:
+            RadiationProbeEnum(kwargs['radiation_probe'])
+        if 'scattering_type' in kwargs:
+            ScatteringTypeEnum(kwargs['scattering_type'])
 
-        Returns True if the argument set matches any valid combination,
-        else False.
-        """
-        user_arg_set = set(user_args)
-        for arg_set in ExperimentFactory._valid_arg_sets:
-            required = set(arg_set['required'])
-            optional = set(arg_set['optional'])
-            # Must have all required, and only required+optional
-            if required.issubset(user_arg_set) and user_arg_set <= (required | optional):
-                return True
-        return False
+        # Dispatch to the appropriate creation method
+        if 'cif_path' in kwargs:
+            return cls._create_from_cif_path(kwargs['cif_path'])
+        elif 'cif_str' in kwargs:
+            return cls._create_from_cif_str(kwargs['cif_str'])
+        elif 'data_path' in kwargs:
+            return cls._create_from_data_path(kwargs)
+        elif 'name' in kwargs:
+            return cls._create_without_data(kwargs)

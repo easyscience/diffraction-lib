@@ -63,7 +63,7 @@ def test_parameter_string_repr_and_as_cif_and_flags():
     assert '± 0.1' in s and 'A' in s and '(free=True)' in s
 
     # CIF line is `<tag> <value>`
-    assert p.as_cif == '_param.a 2.5'
+    assert p.as_cif == '_param.a   2.5000'
 
     # CifHandler uid is owner's unique_name (parameter name here)
     assert p._cif_handler.uid == p.unique_name == 'a'

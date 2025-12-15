@@ -26,8 +26,8 @@ def test_experiments_show_and_remove(monkeypatch, capsys):
             pass
 
     exps = Experiments()
-    exps.add(DummyExp('a'))
-    exps.add(DummyExp('b'))
+    exps.add(experiment=DummyExp('a'))
+    exps.add(experiment=DummyExp('b'))
     exps.show_names()
     out = capsys.readouterr().out
     assert 'Defined experiments' in out

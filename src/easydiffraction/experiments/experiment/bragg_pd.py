@@ -49,7 +49,8 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
     # -------------
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load (x, y, sy) data from an ASCII file into the datastore.
+        """Load (x, y, sy) data from an ASCII file into the data
+        category.
 
         The file format is space/column separated with 2 or 3 columns:
         ``x y [sy]``. If ``sy`` is missing, it is approximated as
@@ -79,14 +80,10 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
         # Replace values smaller than 0.0001 with 1.0
         sy = np.where(sy < 0.0001, 1.0, sy)
 
-        # Attach the data to the experiment's datastore
-        self.datastore.full_x = x
-        self.datastore.full_meas = y
-        self.datastore.full_meas_su = sy
-        self.datastore.x = x
-        self.datastore.meas = y
-        self.datastore.meas_su = sy
-        self.datastore.excluded = np.full(x.shape, fill_value=False, dtype=bool)
+        # Set the experiment data
+        self.data._set_x(x)
+        self.data._set_meas(y)
+        self.data._set_meas_su(sy)
 
         console.paragraph('Data loaded successfully')
         console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")

@@ -86,8 +86,8 @@ jobs:
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  # Job 2: Run functional tests with coverage and upload to Codecov
-  func-tests-coverage:
+  # Job 2: Run integration tests with coverage and upload to Codecov
+  integration-tests-coverage:
     runs-on: ubuntu-latest
 
     steps:
@@ -108,23 +108,25 @@ jobs:
         shell: bash
         run: pixi run dev
 
-      - name: Run functional tests with coverage
-        run: pixi run func-tests-coverage --cov-report=xml:coverage-func.xml
+      - name: Run integration tests with coverage
+        run:
+          pixi run integration-tests-coverage
+          --cov-report=xml:coverage-integration.xml
 
-      - name: Upload functional tests coverage to Codecov
+      - name: Upload integration tests coverage to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/codecov-action@v5
         with:
-          name: func-tests-job
-          flags: functional
-          files: ./coverage-func.xml
+          name: integration-tests-job
+          flags: integration
+          files: ./coverage-integration.xml
           fail_ci_if_error: true
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
   # Job 4: Trigger dashboard build
   dashboard-build-trigger:
-    needs: [docstring-coverage, unit-tests-coverage, func-tests-coverage] # depend on the previous jobs
+    needs: [docstring-coverage, unit-tests-coverage, integration-tests-coverage] # depend on the previous jobs
 
     runs-on: ubuntu-latest
 
