@@ -10,7 +10,7 @@ model/experiment names), which can cause false failures.
 """
 
 import os
-import subprocess
+import subprocess  # noqa: S404
 import sys
 from pathlib import Path
 
@@ -38,12 +38,14 @@ def test_script_runs(script_path: Path):
     if _src_root.exists():
         existing = env.get('PYTHONPATH', '')
         env['PYTHONPATH'] = (
-            str(_src_root)
-            if not existing
-            else str(_src_root) + os.pathsep + existing
+            str(_src_root) if not existing else str(_src_root) + os.pathsep + existing
         )
 
-    result = subprocess.run(
+    # This is a test harness executing repo-local tutorial scripts.
+    # We intentionally use subprocess isolation to prevent cross-test
+    # global state leaks (e.g. calculator caches) that can cause false
+    # failures when running tutorials in a shared interpreter.
+    result = subprocess.run(  # noqa: S603
         [sys.executable, str(script_path)],
         cwd=str(_repo_root),
         env=env,
