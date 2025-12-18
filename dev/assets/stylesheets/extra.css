@@ -142,9 +142,24 @@ label.md-nav__title[for="__drawer"] {
 }
 
 /* Hide header title */
+/*
 .md-header__ellipsis {
   display: none;
 }
+*/
+/* Hide site title text */
+/*
+.md-header__title {
+  display: none;
+}
+*/
+/* Keep the header title area (needed for mike version selector),
+   but hide only the site title text, like "EasyDiffraction Library" */
+/*
+.md-header__title .md-header__topic {
+  display: none;
+}
+*/
 
 /* Increase logo size */
 .md-logo :is(img, svg) {
