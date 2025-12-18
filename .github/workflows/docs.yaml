@@ -50,7 +50,7 @@ env:
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
   IS_RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/v') }}
   #RELEASE_VERSION: ${{ github.ref_name }}
-  RELEASE_VERSION: 'v0.8.0'
+  RELEASE_VERSION: 'v0.8.1' # temporary hardcoded for debugging
   GITHUB_REPOSITORY: ${{ github.repository }}
   NOTEBOOKS_DIR: tutorials
   DEV_DEPLOYMENT_URL:
@@ -171,7 +171,7 @@ jobs:
       # the versioned prefix, e.g. /v1.2.3/, and also to /latest/.
       # All other branches go to /dev/.
       # "${RELEASE_VERSION#v}" for v0.8.3.post1 -> 0.8.3.post1
-      - name: Deploy docs with mike
+      - name: Rebuild and deploy docs with mike
         if:
           ${{ github.event_name == 'push' || github.event_name ==
           'workflow_dispatch' }}
