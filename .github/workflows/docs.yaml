@@ -187,9 +187,6 @@ jobs:
       # All other branches go to /dev/.
       # "${RELEASE_VERSION#v}" for v0.8.3.post1 -> 0.8.3.post1
       - name: Rebuild and deploy docs with mike
-        if:
-          ${{ github.event_name == 'push' || github.event_name ==
-          'workflow_dispatch' }}
         run: |
           if [[ "${IS_RELEASE_TAG}" == "true" ]]; then
             pixi run docs-deploy "${RELEASE_VERSION#v}" latest
