@@ -52,7 +52,7 @@ env:
   GITHUB_REPOSITORY: ${{ github.repository }}
   NOTEBOOKS_DIR: tutorials
   DEV_DEPLOYMENT_URL:
-    https://easyscience.github.io/${{ github.event.repository.name }}
+    https://easyscience.github.io/${{ github.event.repository.name }}/dev
   PROD_DEPLOYMENT_URL: https://docs.easydiffraction.org/lib
 
 jobs:
@@ -146,8 +146,8 @@ jobs:
         run: pixi run python -c "import easydiffraction"
 
       # Run the notebooks to generate the output cells using multiple cores
-      #- name: Run notebooks
-      #  run: pixi run notebook-exec
+      - name: Run notebooks
+        run: pixi run notebook-exec
 
       - name: Move notebooks to docs/tutorials
         run: pixi run docs-notebooks
