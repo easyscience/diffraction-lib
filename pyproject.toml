@@ -64,6 +64,7 @@ dev = [
   'interrogate',             # Check for missing docstrings
 ]
 docs = [
+  'mike',                            # MkDocs: Versioned documentation support
   'mkdocs',                          # Static site generator
   'mkdocs-material',                 # Documentation framework on top of MkDocs
   'mkdocs-autorefs<1.3.0',           # MkDocs: Auto-references support. 1.3.0 => DeprecationWarning: Setting a fallback anchor function is deprecated and ...
