@@ -148,7 +148,14 @@ label.md-nav__title[for="__drawer"] {
 }
 */
 /* Hide site title text */
+/*
 .md-header__title {
+  display: none;
+}
+*/
+/* Keep the header title area (needed for mike version selector),
+   but hide only the site title text, like "EasyDiffraction Library" */
+.md-header__title .md-header__topic {
   display: none;
 }
 
