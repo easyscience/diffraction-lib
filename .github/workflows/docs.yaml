@@ -176,9 +176,11 @@ jobs:
           'workflow_dispatch' }}
         run: |
           if [[ "${IS_RELEASE_TAG}" == "true" ]]; then
-            pixi run docs-deploy-prefix "${RELEASE_VERSION#v}" latest
+            pixi run docs-deploy "${RELEASE_VERSION#v}" latest
+            pixi run docs-set-default latest
             echo "🔗 PROD deployment url [${{ env.PROD_DEPLOYMENT_URL }}](${{ env.PROD_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
           else
-            pixi run docs-deploy-prefix dev
+            pixi run docs-deploy dev
+            pixi run docs-set-default dev
             echo "🔗 DEV deployment url [${{ env.DEV_DEPLOYMENT_URL }}](${{ env.DEV_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
           fi
