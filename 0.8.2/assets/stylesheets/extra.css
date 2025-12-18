@@ -142,9 +142,11 @@ label.md-nav__title[for="__drawer"] {
 }
 
 /* Hide header title */
+/*
 .md-header__ellipsis {
   display: none;
 }
+*/
 
 /* Increase logo size */
 .md-logo :is(img, svg) {
