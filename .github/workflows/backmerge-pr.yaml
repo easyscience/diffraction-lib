@@ -30,7 +30,7 @@ jobs:
         id: app-token
         uses: actions/create-github-app-token@v2
         with:
-          app-id: ${{ vars.ES_BACKMERGE_APP_ID }}
+          app-id: ${{ secrets.ES_BACKMERGE_APP_ID }} # in secrets or vars?
           private-key: ${{ secrets.ES_BACKMERGE_PRIVATE_KEY }}
 
       - name: Checkout tag commit
