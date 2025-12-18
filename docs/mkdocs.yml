@@ -3,7 +3,7 @@
 ###########################
 
 # Project information
-site_name: EasyDiffraction Library
+site_name: '' #EasyDiffraction Library
 site_url: https://easyscience.github.io/diffraction-lib/ #https://docs.easydiffraction.org/lib/
 
 # Repository
