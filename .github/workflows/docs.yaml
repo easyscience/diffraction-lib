@@ -40,9 +40,15 @@ concurrency:
 # Set the environment variables to be used in all jobs defined in this workflow
 env:
   # CI_BRANCH - the branch name (used in mkdocs.yml)
+  # For PRs: github.head_ref is the source branch
+  # For pushes: github.ref_name is the branch
+  # For tags: github.ref_name is the tag name
   # GITHUB_REPOSITORY - the repository name (used in mkdocs.yml)
   # NOTEBOOKS_DIR - the directory containing the Jupyter notebooks (used in mkdocs.yml)
+  DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+  DEVELOP_BRANCH: develop
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
+  IS_RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/v') }}
   GITHUB_REPOSITORY: ${{ github.repository }}
   NOTEBOOKS_DIR: tutorials
   DEV_DEPLOYMENT_URL:
@@ -138,11 +144,11 @@ jobs:
       # Output: site/ directory containing the generated HTML files
       - name: Build site with MkDocs
         run: |
-          if [[ "${CI_BRANCH}" == "develop" || "${CI_BRANCH}" == "master" || "${CI_BRANCH}" == "main" ]]; then
-            echo "📘 Building production docs for ${CI_BRANCH}"
+          if [[ "${IS_RELEASE_TAG}" == "true" || "${CI_BRANCH}" == "${DEFAULT_BRANCH}" || "${CI_BRANCH}" == "${DEVELOP_BRANCH}" ]]; then
+            echo "📘 Building docs to use online for ${CI_BRANCH} (ref=${GITHUB_REF})"
             pixi run docs-build
           else
-            echo "📗 Building local docs for ${CI_BRANCH}"
+            echo "📗 Building docs to use locally for ${CI_BRANCH} (ref=${GITHUB_REF})"
             pixi run docs-local
           fi
 
@@ -165,7 +171,14 @@ jobs:
 
   # Job 2: Deploy the built static files to GitHub Pages (DEV deployment)
   deploy-dev:
-    needs: build-docs # previous job 'build-docs' need to be finished first
+    needs: build-docs # uses the built artifact from build-docs
+
+    # Triggered on tagged releases and push to master/main or develop branch only
+    #if: ${{ startsWith(github.ref, 'refs/tags/v') || github.ref_name == 'master' || github.ref_name == 'main' || github.ref_name == 'develop' }}
+    if:
+      ${{ github.event_name == 'push' && (env.IS_RELEASE_TAG == 'true' ||
+      env.CI_BRANCH == 'master' || env.CI_BRANCH == 'main' || env.CI_BRANCH ==
+      env.DEVELOP_BRANCH) }}
 
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
@@ -186,9 +199,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # Triggered on push to develop or master branch only
-    if: ${{ github.ref_name == 'develop' || github.ref_name == 'master' }}
-
     steps:
       # Deploy the static files created in the previous job to GitHub Pages
       # To allow the deployment of the static files to GitHub Pages, no
@@ -205,7 +215,11 @@ jobs:
 
   # Job 3: Deploy the built static files to GitHub Pages (PROD deployment)
   deploy-prod:
-    needs: deploy-dev # previous job 'deploy-dev' needs to be finished first
+    needs: build-docs # uses the built artifact from build-docs
+
+    # Triggered on tagged releases only (tags starting with 'v', e.g., v1.0.3)
+    #if: startsWith(github.ref, 'refs/tags/v')
+    if: ${{ github.event_name == 'push' && env.IS_RELEASE_TAG == 'true' }}
 
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
@@ -218,9 +232,6 @@ jobs:
       cancel-in-progress: false
 
     runs-on: ubuntu-latest
-
-    # Triggered on tagged releases only (tags starting with 'v', e.g., v1.0.3)
-    if: startsWith(github.ref, 'refs/tags/v')
 
     steps:
       # Download built site as artifact from a previous job for gh_pages (tagged release)
@@ -250,7 +261,6 @@ jobs:
           FOLDER: site
 
       - name: Show PROD deployment url
-        if: startsWith(github.ref, 'refs/tags/v')
         run:
           echo "🔗 PROD deployment url [${{ env.PROD_DEPLOYMENT_URL }}](${{
           env.PROD_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
