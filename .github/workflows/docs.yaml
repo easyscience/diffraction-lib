@@ -71,10 +71,13 @@ jobs:
       contents: write # required for pushing to gh-pages branch
 
     steps:
+      # Setting DOCS_VERSION to be used in mkdocs.yml, and then in the
+      # main.html template. It defines the versioned docs subfolder name
+      # in the gh-pages branch.
       - name: Set DOCS_VERSION env variable (docs version folder)
         shell: bash
         run: |
-          if [[ "${IS_RELEASE_TAG}" == "true" ]]; then
+          if [[ "${IS_RELEASE_TAG}" != "true" ]]; then
             echo "DOCS_VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
           else
             echo "DOCS_VERSION=dev" >> "$GITHUB_ENV"
