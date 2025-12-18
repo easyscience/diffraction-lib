@@ -1,227 +1,227 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/api-reference/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/api-reference/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/api-reference/analysis/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/api-reference/analysis/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/api-reference/core/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/api-reference/core/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/api-reference/crystallography/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/api-reference/crystallography/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/api-reference/display/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/api-reference/display/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/api-reference/experiments/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/api-reference/experiments/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/api-reference/io/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/api-reference/io/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/api-reference/project/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/api-reference/project/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/api-reference/sample_models/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/api-reference/sample_models/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/api-reference/summary/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/api-reference/summary/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/api-reference/utils/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/api-reference/utils/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/architecture/package-structure-full/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/architecture/package-structure-full/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/architecture/package-structure-short/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/architecture/package-structure-short/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/installation-and-setup/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/installation-and-setup/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/introduction/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/introduction/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/advanced_joint-fit_pd-neut-xray-cwl_PbSO4/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/advanced_joint-fit_pd-neut-xray-cwl_PbSO4/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/cryst-struct_pd-neut-cwl_CoSiO4-D20/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/cryst-struct_pd-neut-cwl_CoSiO4-D20/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/cryst-struct_pd-neut-cwl_HS-HRPT/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/cryst-struct_pd-neut-cwl_HS-HRPT/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/cryst-struct_pd-neut-tof_Si-SEPD/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/cryst-struct_pd-neut-tof_Si-SEPD/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/cryst-struct_pd-neut-tof_multidata_NCAF-WISH/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/cryst-struct_pd-neut-tof_multidata_NCAF-WISH/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/cryst-struct_pd-neut-tof_multiphase-LBCO-Si_McStas/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/cryst-struct_pd-neut-tof_multiphase-LBCO-Si_McStas/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/dmsc-summer-school-2025_analysis-powder-diffraction/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/dmsc-summer-school-2025_analysis-powder-diffraction/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/pdf_pd-neut-cwl_Ni/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/pdf_pd-neut-cwl_Ni/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/pdf_pd-neut-tof_Si-NOMAD/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/pdf_pd-neut-tof_Si-NOMAD/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/pdf_pd-xray_NaCl/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/pdf_pd-xray_NaCl/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/quick_from-cif_pd-neut-cwl_LBCO-HRPT/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/quick_from-cif_pd-neut-cwl_LBCO-HRPT/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/tutorials/quick_from-code_pd-neut-cwl_LBCO-HRPT/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/tutorials/quick_from-code_pd-neut-cwl_LBCO-HRPT/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/concept/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/concept/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/data-format/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/data-format/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/first-steps/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/first-steps/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/glossary/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/glossary/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/analysis-workflow/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/analysis-workflow/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/analysis-workflow/analysis/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/analysis-workflow/analysis/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/analysis-workflow/experiment/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/analysis-workflow/experiment/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/analysis-workflow/model/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/analysis-workflow/model/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/analysis-workflow/project/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/analysis-workflow/project/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/analysis-workflow/summary/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/analysis-workflow/summary/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/_diffrn_radiation/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/_diffrn_radiation/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/_diffrn_radiation_wavelength/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/_diffrn_radiation_wavelength/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/_exptl_crystal/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/_exptl_crystal/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/_extinction/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/_extinction/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/_pd_calib/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/_pd_calib/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/atom_site/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/atom_site/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/background/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/background/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/cell/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/cell/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/expt_type/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/expt_type/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/instrument/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/instrument/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/linked_phases/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/linked_phases/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/pd_meas/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/pd_meas/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/peak/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/peak/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
     <url>
-         <loc>https://docs.easydiffraction.org/lib/0.8.0/user-guide/parameters/space_group/</loc>
+         <loc>https://easyscience.github.io/diffraction-lib/0.8.0/user-guide/parameters/space_group/</loc>
          <lastmod>2025-12-18</lastmod>
     </url>
 </urlset>
