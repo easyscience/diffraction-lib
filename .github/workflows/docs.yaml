@@ -7,7 +7,7 @@
 #  Job 2: deploy-dev
 #   - Deploys the built site to GitHub Pages for development (pushes to develop/master).
 #  Job 3: deploy-prod
-#   - Deploys the built site to gh_pages branch for production (release tags starting with v*).
+#   - Deploys the built site to gh-pages branch for production (release tags starting with v*).
 #   - This triggers deployment to a custom domain via webhook.
 #
 # The action summary page will contain links to the built artifact for downloading
@@ -49,10 +49,9 @@ env:
   DEVELOP_BRANCH: develop
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
   IS_RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/v') }}
-  DEBUG_A: ${{ github.ref }}
-  DEBUG_B: ${{ github.ref_name }}
-  DEBUG_C: ${REF_NAME#v}
-  RELEASE_VERSION: ${{ github.ref }}
+  VERSION:
+    ${{ startsWith(github.ref, 'refs/tags/v') && replace(github.ref_name, 'v',
+    '') || github.ref_name }}
   GITHUB_REPOSITORY: ${{ github.repository }}
   NOTEBOOKS_DIR: tutorials
   DEV_DEPLOYMENT_URL:
@@ -80,10 +79,10 @@ jobs:
       # Save the latest release version of easyscience/diffraction-lib to RELEASE_VERSION
       # RELEASE_VERSION is used in the mkdocs.yml file to set release_version.
       # The release_version is then needed to display the latest release version in the index.md file
-      - name: Set RELEASE_VERSION env variable (latest easydiffraction release)
-        run: |
-          git fetch --tags --force
-          echo "RELEASE_VERSION=$(git describe --tags --abbrev=0)" >> "$GITHUB_ENV"
+      #- name: Set RELEASE_VERSION env variable (latest easydiffraction release)
+      #  run: |
+      #    git fetch --tags --force
+      #    echo "RELEASE_VERSION=$(git describe --tags --abbrev=0)" >> "$GITHUB_ENV"
 
       # Activate dark mode to create documentation with Plotly charts in dark mode
       # Need a better solution to automatically switch the chart colour theme based on the mkdocs material switcher
@@ -157,7 +156,7 @@ jobs:
       - name: Upload built site as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: site-local_edl-${RELEASE_VERSION}_branch-${CI_BRANCH}
+          name: site-local_edl-${RELEASE_VERSION}
           path: site/
           if-no-files-found: 'error'
           compression-level: 0
@@ -173,11 +172,14 @@ jobs:
       # the versioned prefix, e.g. /v1.2.3/, and also to /latest/.
       # All other branches go to /dev/.
       - name: Deploy docs with mike
+        if:
+          ${{ github.event_name == 'push' || github.event_name ==
+          'workflow_dispatch' }}
         run: |
           if [[ "${IS_RELEASE_TAG}" == "true" ]]; then
             pixi run docs-deploy-prefix "${RELEASE_VERSION}" latest
-            echo "🔗 DEV deployment url [${{ env.DEV_DEPLOYMENT_URL }}](${{ env.DEV_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
+            echo "🔗 PROD deployment url [${{ env.PROD_DEPLOYMENT_URL }}](${{ env.PROD_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
           else
             pixi run docs-deploy-prefix dev dev
-            echo "🔗 PROD deployment url [${{ env.PROD_DEPLOYMENT_URL }}](${{ env.PROD_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
+            echo "🔗 DEV deployment url [${{ env.DEV_DEPLOYMENT_URL }}](${{ env.DEV_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
           fi
