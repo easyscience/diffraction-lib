@@ -51,7 +51,7 @@ env:
   IS_RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/v') }}
   #RELEASE_VERSION: ${{ github.ref_name }}
   RELEASE_VERSION: 'v0.8.0' # temporary hardcoded for debugging
-  DOC_VERSION: 'v0.8.0' # temporary hardcoded for debugging
+  DOCS_VERSION: 'v0.8.0' # temporary hardcoded for debugging
   GITHUB_REPOSITORY: ${{ github.repository }}
   NOTEBOOKS_DIR: tutorials
   DEV_DEPLOYMENT_URL:
@@ -71,6 +71,15 @@ jobs:
       contents: write # required for pushing to gh-pages branch
 
     steps:
+      - name: Set DOCS_VERSION env variable (docs version folder)
+        shell: bash
+        run: |
+          if [[ "${IS_RELEASE_TAG}" == "true" ]]; then
+            echo "DOCS_VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          else
+            echo "DOCS_VERSION=dev" >> "$GITHUB_ENV"
+          fi
+
       - name: Check-out repository
         uses: actions/checkout@v5
         with:
@@ -178,11 +187,9 @@ jobs:
           'workflow_dispatch' }}
         run: |
           if [[ "${IS_RELEASE_TAG}" != "true" ]]; then
-            echo "DOCS_VERSION=${RELEASE_VERSION#v}" >> "$GITHUB_ENV"
             pixi run docs-deploy "${RELEASE_VERSION#v}" latest
             echo "🔗 PROD deployment url [${{ env.PROD_DEPLOYMENT_URL }}](${{ env.PROD_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
           else
-            echo "DOCS_VERSION=dev" >> "$GITHUB_ENV"
             pixi run docs-deploy dev
             echo "🔗 DEV deployment url [${{ env.DEV_DEPLOYMENT_URL }}](${{ env.DEV_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
           fi
