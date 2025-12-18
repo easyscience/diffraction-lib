@@ -49,9 +49,7 @@ env:
   DEVELOP_BRANCH: develop
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
   IS_RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/v') }}
-  VERSION:
-    ${{ startsWith(github.ref, 'refs/tags/v') && replace(github.ref_name, 'v',
-    '') || github.ref_name }}
+  VERSION: ${{ github.ref_name }}
   GITHUB_REPOSITORY: ${{ github.repository }}
   NOTEBOOKS_DIR: tutorials
   DEV_DEPLOYMENT_URL:
@@ -60,7 +58,7 @@ env:
 
 jobs:
   # Job 1: Build the static files for the documentation site
-  build-docs:
+  build-deploy-docs:
     strategy:
       matrix:
         os: [macos-14] # Use macOS to switch to dark mode for Plotly charts
@@ -171,12 +169,14 @@ jobs:
       # Publish versioned docs with Mike. The tagged release docs go to
       # the versioned prefix, e.g. /v1.2.3/, and also to /latest/.
       # All other branches go to /dev/.
+      # VERSION="${VERSION#v}" for v0.8.3.post1 -> 0.8.3.post1
       - name: Deploy docs with mike
         if:
           ${{ github.event_name == 'push' || github.event_name ==
           'workflow_dispatch' }}
         run: |
           if [[ "${IS_RELEASE_TAG}" == "true" ]]; then
+            VERSION="${VERSION#v}"
             pixi run docs-deploy-prefix "${RELEASE_VERSION}" latest
             echo "🔗 PROD deployment url [${{ env.PROD_DEPLOYMENT_URL }}](${{ env.PROD_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
           else
