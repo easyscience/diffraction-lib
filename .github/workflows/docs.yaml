@@ -154,7 +154,7 @@ jobs:
       - name: Upload built site as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: site-local_edl-${RELEASE_VERSION}
+          name: site-local_edl-${{ env.RELEASE_VERSION }}
           path: site/
           if-no-files-found: 'error'
           compression-level: 0
@@ -179,6 +179,6 @@ jobs:
             pixi run docs-deploy-prefix "${RELEASE_VERSION#v}" latest
             echo "🔗 PROD deployment url [${{ env.PROD_DEPLOYMENT_URL }}](${{ env.PROD_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
           else
-            pixi run docs-deploy-prefix dev dev
+            pixi run docs-deploy-prefix dev
             echo "🔗 DEV deployment url [${{ env.DEV_DEPLOYMENT_URL }}](${{ env.DEV_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
           fi
