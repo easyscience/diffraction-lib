@@ -175,12 +175,12 @@ jobs:
           ${{ github.event_name == 'push' || github.event_name ==
           'workflow_dispatch' }}
         run: |
-          if [[ "${IS_RELEASE_TAG}" == "true" ]]; then
+          if [[ "${IS_RELEASE_TAG}" != "true" ]]; then
+            RELEASE_VERSION=v0.8.0
             pixi run docs-deploy "${RELEASE_VERSION#v}" latest
-            pixi run docs-set-default latest
             echo "🔗 PROD deployment url [${{ env.PROD_DEPLOYMENT_URL }}](${{ env.PROD_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
           else
             pixi run docs-deploy dev
-            pixi run docs-set-default dev
             echo "🔗 DEV deployment url [${{ env.DEV_DEPLOYMENT_URL }}](${{ env.DEV_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
           fi
+          pixi run docs-set-default latest
