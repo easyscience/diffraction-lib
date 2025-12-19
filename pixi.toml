@@ -176,6 +176,8 @@ notebook-prepare = { depends-on = [
 docs-assets = 'tools/add_assets_to_docs.sh'
 docs-notebooks = 'mv tutorials/*.ipynb docs/tutorials/'
 docs-config = 'python tools/create_mkdocs_yml.py'
+docs-deploy = 'mike deploy --push --branch gh-pages --update-aliases --alias-type redirect'
+docs-set-default = 'mike set-default --push --branch gh-pages'
 docs-serve = "JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS='ignore::RuntimeWarning' python -m mkdocs serve --dirty"
 docs-build = "JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS='ignore::RuntimeWarning' python -m mkdocs build"
 docs-local = "pixi run docs-build --no-directory-urls"

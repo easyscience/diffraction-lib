@@ -7,6 +7,8 @@
 #   The GitHub App must be added to the develop ruleset bypass list.
 #
 # Required repo config:
+# https://github.com/organizations/easyscience/settings/secrets/actions
+# https://github.com/organizations/easyscience/settings/variables/actions
 # - Actions secret:   ES_BACKMERGE_PRIVATE_KEY  (GitHub App private key PEM)
 # - Actions variable: ES_BACKMERGE_APP_ID       (GitHub App ID)
 
@@ -14,8 +16,8 @@ name: Backmerge PR (tag -> develop)
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: ['**']
+    tags: ['v*']
 
 permissions:
   contents: write
@@ -30,8 +32,8 @@ jobs:
         id: app-token
         uses: actions/create-github-app-token@v2
         with:
-          app-id: ${{ vars.ES_BACKMERGE_APP_ID }}
-          private-key: ${{ secrets.ES_BACKMERGE_PRIVATE_KEY }}
+          app-id: ${{ vars.BACKMERGE_APP_ID }}
+          private-key: ${{ secrets.BACKMERGE_PRIVATE_KEY }}
 
       - name: Checkout tag commit
         uses: actions/checkout@v5
