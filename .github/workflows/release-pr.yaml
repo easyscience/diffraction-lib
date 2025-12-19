@@ -6,7 +6,7 @@
 #   - Adds the label "[maintainer] auto-pull-request" so it is excluded from changelogs.
 #   - The PR body makes clear that this is automation only (no review needed).
 
-name: Release PR creation
+name: Release PR (develop -> master)
 
 on:
   # Allows you to run this workflow manually from the Actions tab
