@@ -141,6 +141,7 @@ jobs:
 
       # Run the notebooks to generate the output cells using multiple cores
       - name: Run notebooks
+        if: false # Temporarily disabled to speed up the docs build
         run: pixi run notebook-exec
 
       - name: Move notebooks to docs/tutorials
