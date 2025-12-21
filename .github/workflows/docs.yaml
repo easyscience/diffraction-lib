@@ -89,6 +89,8 @@ jobs:
 
       - name: Check-out repository
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # full history with tags; needed for mike to push/deploy docs
 
       # Activate dark mode to create documentation with Plotly charts in dark mode
       # Need a better solution to automatically switch the chart colour theme based on the mkdocs material switcher
