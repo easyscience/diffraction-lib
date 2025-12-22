@@ -3,13 +3,10 @@
 
 from __future__ import annotations
 
-import io
 import json
-import os
 import pathlib
 import re
 import urllib.request
-import zipfile
 from functools import lru_cache
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
@@ -92,6 +89,36 @@ def _fetch_data_index() -> dict:
 
     with pathlib.Path(index_path).open('r', encoding='utf-8') as f:
         return json.load(f)
+
+
+@lru_cache(maxsize=1)
+def _fetch_tutorials_index() -> dict:
+    """Fetch & cache the tutorials index.json from gh-pages and return
+    it as dict.
+
+    The index is fetched from:
+    https://easyscience.github.io/diffraction-lib/{version}/tutorials/index.json
+
+    For released versions, {version} is the public version string
+    (e.g., '0.8.0.post1'). For development versions, 'dev' is used.
+
+    Returns:
+        dict: The tutorials index as a dictionary, or empty dict if
+            fetch fails.
+    """
+    version = _get_version_for_url()
+    index_url = f'https://easyscience.github.io/diffraction-lib/{version}/tutorials/index.json'
+
+    try:
+        _validate_url(index_url)
+        with _safe_urlopen(index_url) as response:
+            return json.load(response)
+    except Exception as e:
+        log.warning(
+            f'Failed to fetch tutorials index from {index_url}: {e}',
+            exc_type=UserWarning,
+        )
+        return {}
 
 
 def download_data(
@@ -208,70 +235,53 @@ def stripped_package_version(package_name: str) -> str | None:
         return v_str
 
 
-def _get_release_info(tag: str | None) -> dict | None:
-    """Fetch release info from GitHub for the given tag (or latest if
-    None). Uses unauthenticated API by default, but includes
-    GITHUB_TOKEN from the environment if available to avoid rate
-    limiting.
+def _is_dev_version(package_name: str) -> bool:
+    """Check if the installed package version is a development/local
+    version.
+
+    A version is considered "dev" if:
+    - The raw version contains '+dev', '+dirty', or '+devdirty' (local
+      suffixes from versioningit)
+    - The public version is '999.0.0' (versioningit default-tag
+      fallback)
 
     Args:
-        tag (str | None): The tag of the release to fetch, or None for
-            latest.
+        package_name (str): The name of the package to query.
 
     Returns:
-        dict | None: The release info dictionary if retrievable, None
-        otherwise.
+        bool: True if the version is a development version, False
+            otherwise.
     """
-    if tag is not None:
-        api_url = f'https://api.github.com/repos/easyscience/diffraction-lib/releases/tags/{tag}'
-    else:
-        api_url = 'https://api.github.com/repos/easyscience/diffraction-lib/releases/latest'
-    try:
-        _validate_url(api_url)
-        headers = {}
-        token = os.environ.get('GITHUB_TOKEN')
-        if token:
-            headers['Authorization'] = f'token {token}'
-        request = urllib.request.Request(api_url, headers=headers)  # noqa: S310 - constructing request (validated URL)
-        # Safe network call: HTTPS enforced and validated
-        with _safe_urlopen(request) as response:
-            return json.load(response)
-    except Exception as e:
-        if tag is not None:
-            log.error(f'Failed to fetch release info for tag {tag}: {e}')
-        else:
-            log.error(f'Failed to fetch latest release info: {e}')
-        return None
+    raw_version = package_version(package_name)
+    if raw_version is None:
+        return True  # No version found, assume dev
+
+    # Check for local version suffixes from versioningit
+    if any(marker in raw_version for marker in ('+dev', '+dirty', '+devdirty')):
+        return True
+
+    # Check for default-tag fallback (999.0.0)
+    public_version = stripped_package_version(package_name)
+    return bool(public_version and public_version.startswith('999.'))
 
 
-def _get_tutorial_asset(release_info: dict) -> dict | None:
-    """Given a release_info dict, return the 'tutorials.zip' asset dict,
-    or None.
+def _get_version_for_url(package_name: str = 'easydiffraction') -> str:
+    """Get the version string to use in URLs for fetching remote
+    resources.
+
+    Returns the public version for released versions, or 'dev' for
+    development/local versions.
 
     Args:
-        release_info (dict): The release info dictionary.
+        package_name (str): The name of the package to query.
 
     Returns:
-        dict | None: The asset dictionary for 'tutorials.zip' if found,
-        None otherwise.
+        str: The version string to use in URLs ('dev' or a version like
+            '0.8.0.post1').
     """
-    assets = release_info.get('assets', [])
-    for asset in assets:
-        if asset.get('name') == 'tutorials.zip':
-            return asset
-    return None
-
-
-def _sort_notebooks(notebooks: list[str]) -> list[str]:
-    """Sorts the list of notebook filenames.
-
-    Args:
-        notebooks (list[str]): List of notebook filenames.
-
-    Returns:
-        list[str]: Sorted list of notebook filenames.
-    """
-    return sorted(notebooks)
+    if _is_dev_version(package_name):
+        return 'dev'
+    return stripped_package_version(package_name) or 'dev'
 
 
 def _safe_urlopen(request_or_url):  # type: ignore[no-untyped-def]
@@ -291,85 +301,47 @@ def _safe_urlopen(request_or_url):  # type: ignore[no-untyped-def]
     return urllib.request.urlopen(request_or_url)  # noqa: S310 - validated https only
 
 
-def _extract_notebooks_from_asset(download_url: str) -> list[str]:
-    """Download the tutorials.zip from download_url and return a sorted
-    list of .ipynb file names.
+def _resolve_tutorial_url(url_template: str) -> str:
+    """Replace {version} placeholder in URL template with actual
+    version.
 
     Args:
-        download_url (str): URL to download the tutorials.zip asset.
+        url_template (str): URL template containing {version}
+            placeholder.
 
     Returns:
-        list[str]: Sorted list of .ipynb filenames found in the archive.
+        str: URL with {version} replaced by actual version string.
     """
-    try:
-        _validate_url(download_url)
-        # Download & open zip (validated HTTPS) in combined context.
-        with (
-            _safe_urlopen(download_url) as resp,
-            zipfile.ZipFile(io.BytesIO(resp.read())) as zip_file,
-        ):
-            notebooks = [
-                pathlib.Path(name).name
-                for name in zip_file.namelist()
-                if name.endswith('.ipynb') and not name.endswith('/')
-            ]
-            return _sort_notebooks(notebooks)
-    except Exception as e:
-        log.error(f"Failed to download or parse 'tutorials.zip': {e}")
-        return []
+    version = _get_version_for_url()
+    return url_template.replace('{version}', version)
 
 
-def fetch_tutorial_list() -> list[str]:
-    """Return a list of available tutorial notebook filenames from the
-    GitHub release that matches the installed version of
-    `easydiffraction`, if possible. If the version-specific release is
-    unavailable, falls back to the latest release.
+def list_tutorials() -> None:
+    """Display a table of available tutorial notebooks.
 
-    This function does not fetch or display the tutorials themselves; it
-    only lists the notebook filenames (e.g., '01-intro.ipynb', ...)
-    found inside the 'tutorials.zip' asset of the appropriate GitHub
-    release.
-
-    Returns:
-        list[str]: A sorted list of tutorial notebook filenames (without
-        directories) extracted from the corresponding release's
-        tutorials.zip, or an empty list if unavailable.
+    Shows tutorial ID, filename, title, and description for all
+    tutorials available for the current version of easydiffraction.
     """
-    version_str = stripped_package_version('easydiffraction')
-    tag = f'v{version_str}' if version_str is not None else None
-    release_info = _get_release_info(tag)
-    # Fallback to latest if tag fetch failed and tag was attempted
-    if release_info is None and tag is not None:
-        # Non-fatal during listing; warn and fall back silently
-        log.warning('Falling back to latest release info...', exc_type=UserWarning)
-        release_info = _get_release_info(None)
-    if release_info is None:
-        return []
-    tutorial_asset = _get_tutorial_asset(release_info)
-    if not tutorial_asset:
-        log.warning("'tutorials.zip' not found in the release.", exc_type=UserWarning)
-        return []
-    download_url = tutorial_asset.get('browser_download_url')
-    if not download_url:
-        log.warning("'browser_download_url' not found for tutorials.zip.", exc_type=UserWarning)
-        return []
-    return _extract_notebooks_from_asset(download_url)
+    index = _fetch_tutorials_index()
+    if not index:
+        console.print('❌ No tutorials available.')
+        return
 
+    version = _get_version_for_url()
+    console.print(f'Tutorials available for easydiffraction v{version}:')
+    console.print('')
 
-def list_tutorials():
-    """List available tutorial notebooks.
+    columns_headers = ['id', 'file', 'title', 'description']
+    columns_alignment = ['right', 'left', 'left', 'left']
+    columns_data = []
 
-    Args:
-        None
-    """
-    tutorials = fetch_tutorial_list()
-    columns_headers = ['name']
-    columns_data = [[t] for t in tutorials]
-    columns_alignment = ['left']
+    for tutorial_id in sorted(index.keys(), key=lambda x: int(x) if x.isdigit() else x):
+        record = index[tutorial_id]
+        filename = f'ed-{tutorial_id}.ipynb'
+        title = record.get('title', '')
+        description = record.get('description', '')
+        columns_data.append([tutorial_id, filename, title, description])
 
-    released_ed_version = stripped_package_version('easydiffraction')
-
-    console.print(f'Tutorials available for easydiffraction v{released_ed_version}:')
     render_table(
         columns_headers=columns_headers,
         columns_data=columns_data,
@@ -377,52 +349,113 @@ def list_tutorials():
     )
 
 
-def fetch_tutorials() -> None:
-    """Download and extract the tutorials ZIP archive from the GitHub
-    release matching the installed version of `easydiffraction`, if
-    available. If the version-specific release is unavailable, falls
-    back to the latest release.
+def download_tutorial(
+    id: int | str,
+    destination: str = 'tutorials',
+    overwrite: bool = False,
+) -> str:
+    """Download a tutorial notebook by numeric ID.
 
-    The archive is extracted into the current working directory and then
-    removed.
+    Example:
+        path = download_tutorial(id=1, destination="tutorials")
 
     Args:
-        None
+        id: Numeric tutorial id (e.g. 1).
+        destination: Directory to save the file into (created if
+            missing).
+        overwrite: Whether to overwrite the file if it already exists.
+
+    Returns:
+        str: Full path to the downloaded file as string.
+
+    Raises:
+        KeyError: If the id is not found in the index.
+        ValueError: If the resolved URL is not HTTP/HTTPS.
     """
-    version_str = stripped_package_version('easydiffraction')
-    tag = f'v{version_str}' if version_str is not None else None
-    release_info = _get_release_info(tag)
-    # Fallback to latest if tag fetch failed and tag was attempted
-    if release_info is None and tag is not None:
-        log.error('Falling back to latest release info...')
-        release_info = _get_release_info(None)
-    if release_info is None:
-        log.error('Unable to fetch release info.')
-        return
-    tutorial_asset = _get_tutorial_asset(release_info)
-    if not tutorial_asset:
-        log.error("'tutorials.zip' not found in the release.")
-        return
-    file_url = tutorial_asset.get('browser_download_url')
-    if not file_url:
-        log.error("'browser_download_url' not found for tutorials.zip.")
-        return
-    file_name = 'tutorials.zip'
-    # Validate URL for security
-    _validate_url(file_url)
+    index = _fetch_tutorials_index()
+    key = str(id)
 
-    console.print('📥 Downloading tutorial notebooks...')
-    with _safe_urlopen(file_url) as resp:
-        pathlib.Path(file_name).write_bytes(resp.read())
+    if key not in index:
+        available = ', '.join(
+            sorted(index.keys(), key=lambda s: int(s) if s.isdigit() else s)[:20]
+        )
+        raise KeyError(f'Unknown tutorial id={id}. Available ids: {available}')
 
-    console.print('📦 Extracting tutorials to "tutorials/"...')
-    with zipfile.ZipFile(file_name, 'r') as zip_ref:
-        zip_ref.extractall()
+    record = index[key]
+    url_template = record['url']
+    url = _resolve_tutorial_url(url_template)
+    _validate_url(url)
 
-    console.print('🧹 Cleaning up...')
-    pathlib.Path(file_name).unlink()
+    fname = f'ed-{id}.ipynb'
 
-    console.print('✅ Tutorials fetched successfully.')
+    dest_path = pathlib.Path(destination)
+    dest_path.mkdir(parents=True, exist_ok=True)
+    file_path = dest_path / fname
+
+    title = record.get('title', '')
+    message = f'Tutorial #{id}'
+    if title:
+        message += f': {title}'
+
+    console.paragraph('Getting tutorial...')
+    console.print(f'{message}')
+
+    if file_path.exists():
+        if not overwrite:
+            console.print(
+                f"✅ Tutorial #{id} already present at '{file_path}'. Keeping existing file."
+            )
+            return str(file_path)
+        log.debug(f"Tutorial #{id} already present at '{file_path}', but will be overwritten.")
+        file_path.unlink()
+
+    # Download the notebook
+    with _safe_urlopen(url) as resp:
+        file_path.write_bytes(resp.read())
+
+    console.print(f"✅ Tutorial #{id} downloaded to '{file_path}'")
+    return str(file_path)
+
+
+def download_all_tutorials(
+    destination: str = 'tutorials',
+    overwrite: bool = False,
+) -> list[str]:
+    """Download all available tutorial notebooks.
+
+    Example:
+        paths = download_all_tutorials(destination="tutorials")
+
+    Args:
+        destination: Directory to save the files into (created if
+            missing).
+        overwrite: Whether to overwrite files if they already exist.
+
+    Returns:
+        list[str]: List of full paths to the downloaded files.
+    """
+    index = _fetch_tutorials_index()
+    if not index:
+        console.print('❌ No tutorials available to download.')
+        return []
+
+    version = _get_version_for_url()
+    console.print(f'📥 Downloading all tutorials for easydiffraction v{version}...')
+
+    downloaded_paths = []
+    for tutorial_id in sorted(index.keys(), key=lambda x: int(x) if x.isdigit() else x):
+        try:
+            path = download_tutorial(
+                id=tutorial_id,
+                destination=destination,
+                overwrite=overwrite,
+            )
+            downloaded_paths.append(path)
+        except Exception as e:
+            log.warning(f'Failed to download tutorial #{tutorial_id}: {e}')
+
+    console.print(f'✅ Downloaded {len(downloaded_paths)} tutorials to "{destination}/"')
+    return downloaded_paths
 
 
 def show_version() -> None:

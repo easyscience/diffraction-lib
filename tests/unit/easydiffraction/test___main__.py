@@ -45,10 +45,22 @@ def test_cli_subcommands_call_utils(monkeypatch):
 
     logs = []
     monkeypatch.setattr(ed, 'list_tutorials', lambda: logs.append('LIST'))
-    monkeypatch.setattr(ed, 'fetch_tutorials', lambda: logs.append('FETCH'))
+    monkeypatch.setattr(
+        ed,
+        'download_all_tutorials',
+        lambda destination='tutorials', overwrite=False: logs.append('DOWNLOAD_ALL'),
+    )
+    monkeypatch.setattr(
+        ed,
+        'download_tutorial',
+        lambda id, destination='tutorials', overwrite=False: logs.append(f'DOWNLOAD_{id}'),
+    )
 
     res1 = runner.invoke(main_mod.app, ['list-tutorials'])
-    res2 = runner.invoke(main_mod.app, ['fetch-tutorials'])
+    res2 = runner.invoke(main_mod.app, ['download-all-tutorials'])
+    res3 = runner.invoke(main_mod.app, ['download-tutorial', '1'])
 
-    assert res1.exit_code == 0 and res2.exit_code == 0
-    assert logs == ['LIST', 'FETCH']
+    assert res1.exit_code == 0
+    assert res2.exit_code == 0
+    assert res3.exit_code == 0
+    assert logs == ['LIST', 'DOWNLOAD_ALL', 'DOWNLOAD_1']
