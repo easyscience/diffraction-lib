@@ -32,7 +32,7 @@ project = ed.Project()
 ```
 
 A complete tutorial using the `import` syntax can be found
-[here](../../tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT/).
+[here](../../tutorials/ed-3/).
 
 ### Importing specific parts
 
@@ -59,7 +59,7 @@ project = Project()
 ```
 
 A complete tutorial using the `from` syntax can be found
-[here](../../tutorials/advanced_joint-fit_pd-neut-xray-cwl_PbSO4/).
+[here](../../tutorials/ed-4/).
 
 ## Utility functions
 
