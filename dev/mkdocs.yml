@@ -69,22 +69,22 @@ nav:
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:
-          - LBCO quick CIF: tutorials/quick_from-cif_pd-neut-cwl_LBCO-HRPT.ipynb
-          - LBCO quick code: tutorials/quick_from-code_pd-neut-cwl_LBCO-HRPT.ipynb
-          - LBCO basic: tutorials/basic_single-fit_pd-neut-cwl_LBCO-HRPT.ipynb
-          - PbSO4 advanced: tutorials/advanced_joint-fit_pd-neut-xray-cwl_PbSO4.ipynb
+          - LBCO quick CIF: tutorials/ed-1.ipynb
+          - LBCO quick code: tutorials/ed-2.ipynb
+          - LBCO basic: tutorials/ed-3.ipynb
+          - PbSO4 advanced: tutorials/ed-4.ipynb
       - Standard Diffraction:
-          - Co2SiO4 pd-neut-cwl: tutorials/cryst-struct_pd-neut-cwl_CoSiO4-D20.ipynb
-          - HS pd-neut-cwl: tutorials/cryst-struct_pd-neut-cwl_HS-HRPT.ipynb
-          - Si pd-neut-tof: tutorials/cryst-struct_pd-neut-tof_Si-SEPD.ipynb
-          - NCAF pd-neut-tof: tutorials/cryst-struct_pd-neut-tof_multidata_NCAF-WISH.ipynb
-          - LBCO+Si McStas: tutorials/cryst-struct_pd-neut-tof_multiphase-LBCO-Si_McStas.ipynb
+          - Co2SiO4 pd-neut-cwl: tutorials/ed-5.ipynb
+          - HS pd-neut-cwl: tutorials/ed-6.ipynb
+          - Si pd-neut-tof: tutorials/ed-7.ipynb
+          - NCAF pd-neut-tof: tutorials/ed-8.ipynb
+          - LBCO+Si McStas: tutorials/ed-9.ipynb
       - Pair Distribution Function:
-          - Ni pd-neut-cwl: tutorials/pdf_pd-neut-cwl_Ni.ipynb
-          - Si pd-neut-tof: tutorials/pdf_pd-neut-tof_Si-NOMAD.ipynb
-          - NaCl pd-xray: tutorials/pdf_pd-xray_NaCl.ipynb
+          - Ni pd-neut-cwl: tutorials/ed-10.ipynb
+          - Si pd-neut-tof: tutorials/ed-11.ipynb
+          - NaCl pd-xray: tutorials/ed-12.ipynb
       - Workshops & Schools:
-          - 2025 DMSC: tutorials/dmsc-summer-school-2025_analysis-powder-diffraction.ipynb
+          - 2025 DMSC: tutorials/ed-13.ipynb
   - API Reference:
       - API Reference: api-reference/index.md
       - analysis: api-reference/analysis.md
