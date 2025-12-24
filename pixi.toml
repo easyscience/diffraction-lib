@@ -174,7 +174,7 @@ notebook-prepare = { depends-on = [
 
 ## 📚 Documentation Tasks
 docs-assets = 'tools/add_assets_to_docs.sh'
-docs-notebooks = 'mv tutorials/*.ipynb docs/tutorials/'
+docs-notebooks = 'mv tutorials/*.* docs/tutorials/' # *.py, *.ipynb, index.json
 docs-config = 'python tools/create_mkdocs_yml.py'
 docs-deploy = 'mike deploy --push --branch gh-pages --update-aliases --alias-type redirect'
 docs-set-default = 'mike set-default --push --branch gh-pages'

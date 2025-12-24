@@ -43,10 +43,43 @@ def list_tutorials():
     ed.list_tutorials()
 
 
-@app.command('fetch-tutorials')
-def fetch_tutorials():
-    """Download and extract tutorial notebooks."""
-    ed.fetch_tutorials()
+@app.command('download-tutorial')
+def download_tutorial(
+    id: int = typer.Argument(..., help='Tutorial ID to download.'),
+    destination: str = typer.Option(
+        'tutorials',
+        '--destination',
+        '-d',
+        help='Directory to save the tutorial into.',
+    ),
+    overwrite: bool = typer.Option(
+        False,  # noqa: FBT003 - boolean option is intended
+        '--overwrite',
+        '-o',
+        help='Overwrite existing file if present.',
+    ),
+):
+    """Download a specific tutorial notebook by ID."""
+    ed.download_tutorial(id=id, destination=destination, overwrite=overwrite)
+
+
+@app.command('download-all-tutorials')
+def download_all_tutorials(
+    destination: str = typer.Option(
+        'tutorials',
+        '--destination',
+        '-d',
+        help='Directory to save the tutorials into.',
+    ),
+    overwrite: bool = typer.Option(
+        False,  # noqa: FBT003 - boolean option is intended
+        '--overwrite',
+        '-o',
+        help='Overwrite existing files if present.',
+    ),
+):
+    """Download all available tutorial notebooks."""
+    ed.download_all_tutorials(destination=destination, overwrite=overwrite)
 
 
 if __name__ == '__main__':

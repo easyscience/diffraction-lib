@@ -16,7 +16,6 @@ name: Backmerge PR (tag -> develop)
 
 on:
   push:
-    branches: ['**']
     tags: ['v*']
 
 permissions:
@@ -73,7 +72,7 @@ jobs:
 
           BODY="⚠️ This PR is created automatically for backmerge of a new release tag commit \`${{ steps.vars.outputs.tag }}\` into \`develop\`.
 
-          It is labeled '[maintainer] auto-pull-request' and is excluded from release notes and version bump logic."
+          It is labeled `[maintainer] auto-pull-request` and is excluded from release notes and version bump logic."
 
           if gh pr view --repo "${{ github.repository }}" --head "${{ steps.vars.outputs.branch }}" >/dev/null 2>&1; then
             echo "PR already exists for head=${{ steps.vars.outputs.branch }}"

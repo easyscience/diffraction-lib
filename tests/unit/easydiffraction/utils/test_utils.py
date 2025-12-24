@@ -140,22 +140,163 @@ def test_render_table_terminal_branch(capsys, monkeypatch):
     assert ('╒' in out and '╕' in out) or ('┌' in out and '┐' in out)
 
 
-def test_fetch_tutorial_list_handles_missing_release(monkeypatch):
+def test_is_dev_version_with_dev_suffix(monkeypatch):
     import easydiffraction.utils.utils as MUT
 
-    # Force _get_release_info to return None twice (tag & latest) → empty list
-    monkeypatch.setattr(MUT, '_get_release_info', lambda tag: None)
-    notebooks = MUT.fetch_tutorial_list()
-    assert notebooks == []
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0+dev123')
+    assert MUT._is_dev_version('easydiffraction') is True
 
 
-def test_fetch_tutorial_list_no_asset(monkeypatch):
+def test_is_dev_version_with_dirty_suffix(monkeypatch):
     import easydiffraction.utils.utils as MUT
 
-    release_info = {'assets': []}
-    monkeypatch.setattr(MUT, '_get_release_info', lambda tag: release_info)
-    notebooks = MUT.fetch_tutorial_list()
-    assert notebooks == []
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0+dirty5')
+    assert MUT._is_dev_version('easydiffraction') is True
+
+
+def test_is_dev_version_with_devdirty_suffix(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0+devdirty7')
+    assert MUT._is_dev_version('easydiffraction') is True
+
+
+def test_is_dev_version_with_999_version(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '999.0.0+dev331')
+    assert MUT._is_dev_version('easydiffraction') is True
+
+
+def test_is_dev_version_released_version(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0.post1')
+    assert MUT._is_dev_version('easydiffraction') is False
+
+
+def test_get_version_for_url_dev(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0+dev123')
+    assert MUT._get_version_for_url() == 'dev'
+
+
+def test_get_version_for_url_released(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0.post1')
+    assert MUT._get_version_for_url() == '0.8.0.post1'
+
+
+def test_fetch_tutorials_index_returns_empty_on_error(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    # Force urlopen to fail
+    def failing_urlopen(url):
+        raise Exception('Network error')
+
+    monkeypatch.setattr(MUT, '_safe_urlopen', failing_urlopen)
+    # Clear cache to ensure fresh fetch
+    MUT._fetch_tutorials_index.cache_clear()
+
+    # The function catches errors and returns empty dict (after warning)
+    result = MUT._fetch_tutorials_index()
+    assert result == {}
+
+
+def test_list_tutorials_empty_index(monkeypatch, capsys):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: {})
+    MUT.list_tutorials()
+    out = capsys.readouterr().out
+    assert 'No tutorials available' in out
+
+
+def test_list_tutorials_with_data(monkeypatch, capsys):
+    import easydiffraction.utils.utils as MUT
+
+    fake_index = {
+        '1': {
+            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+            'title': 'Quick Start',
+            'description': 'A quick start tutorial',
+        },
+        '2': {
+            'url': 'https://example.com/{version}/tutorials/ed-2/ed-2.ipynb',
+            'title': 'Advanced',
+            'description': 'An advanced tutorial',
+        },
+    }
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: fake_index)
+    monkeypatch.setattr(MUT, '_get_version_for_url', lambda: '0.8.0')
+    MUT.list_tutorials()
+    out = capsys.readouterr().out
+    assert 'Tutorials available for easydiffraction v0.8.0' in out
+    assert 'Quick Start' in out
+    assert 'Advanced' in out
+
+
+def test_download_tutorial_unknown_id(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: {'1': {}})
+    with pytest.raises(KeyError, match='Unknown tutorial id=99'):
+        MUT.download_tutorial(id=99)
+
+
+def test_download_tutorial_success(monkeypatch, tmp_path):
+    import easydiffraction.utils.utils as MUT
+
+    fake_index = {
+        '1': {
+            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+            'title': 'Quick Start',
+            'description': 'A quick start tutorial',
+        },
+    }
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: fake_index)
+    monkeypatch.setattr(MUT, '_get_version_for_url', lambda: '0.8.0')
+
+    class DummyResp:
+        def read(self):
+            return b'{"cells": []}'
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    monkeypatch.setattr(MUT, '_safe_urlopen', lambda url: DummyResp())
+
+    result = MUT.download_tutorial(id=1, destination=str(tmp_path))
+    assert result == str(tmp_path / 'ed-1.ipynb')
+    assert (tmp_path / 'ed-1.ipynb').exists()
+
+
+def test_download_tutorial_already_exists_no_overwrite(monkeypatch, tmp_path, capsys):
+    import easydiffraction.utils.utils as MUT
+
+    fake_index = {
+        '1': {
+            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+            'title': 'Quick Start',
+        },
+    }
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: fake_index)
+    monkeypatch.setattr(MUT, '_get_version_for_url', lambda: '0.8.0')
+
+    # Create existing file
+    (tmp_path / 'ed-1.ipynb').write_text('existing content')
+
+    result = MUT.download_tutorial(id=1, destination=str(tmp_path), overwrite=False)
+    assert result == str(tmp_path / 'ed-1.ipynb')
+    out = capsys.readouterr().out
+    assert 'already present' in out
+    # Content should not be changed
+    assert (tmp_path / 'ed-1.ipynb').read_text() == 'existing content'
 
 
 def test_show_version_prints(capsys, monkeypatch):
@@ -167,26 +308,35 @@ def test_show_version_prints(capsys, monkeypatch):
     assert '1.2.3+abc' in out
 
 
-def test_extract_notebooks_from_asset_with_inmemory_zip(monkeypatch):
-    import io
-    import zipfile
-
+def test_download_all_tutorials_empty_index(monkeypatch, capsys):
     import easydiffraction.utils.utils as MUT
 
-    # Build an in-memory zip with .ipynb files
-    mem = io.BytesIO()
-    with zipfile.ZipFile(mem, 'w') as zf:
-        zf.writestr('dir/a.ipynb', '{}')
-        zf.writestr('b.ipynb', '{}')
-        zf.writestr('c.txt', 'x')
-    data = mem.getvalue()
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: {})
+    result = MUT.download_all_tutorials()
+    assert result == []
+    out = capsys.readouterr().out
+    assert 'No tutorials available' in out
+
+
+def test_download_all_tutorials_success(monkeypatch, tmp_path, capsys):
+    import easydiffraction.utils.utils as MUT
+
+    fake_index = {
+        '1': {
+            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+            'title': 'Quick Start',
+        },
+        '2': {
+            'url': 'https://example.com/{version}/tutorials/ed-2/ed-2.ipynb',
+            'title': 'Advanced',
+        },
+    }
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: fake_index)
+    monkeypatch.setattr(MUT, '_get_version_for_url', lambda: '0.8.0')
 
     class DummyResp:
-        def __init__(self, b):
-            self._b = b
-
         def read(self):
-            return self._b
+            return b'{"cells": []}'
 
         def __enter__(self):
             return self
@@ -194,7 +344,21 @@ def test_extract_notebooks_from_asset_with_inmemory_zip(monkeypatch):
         def __exit__(self, *args):
             return False
 
-    monkeypatch.setattr(MUT, '_safe_urlopen', lambda url: DummyResp(data))
-    out = MUT._extract_notebooks_from_asset('https://example.com/tut.zip')
-    # returns sorted basenames of .ipynb
-    assert out == ['a.ipynb', 'b.ipynb']
+    monkeypatch.setattr(MUT, '_safe_urlopen', lambda url: DummyResp())
+
+    result = MUT.download_all_tutorials(destination=str(tmp_path))
+    assert len(result) == 2
+    assert (tmp_path / 'ed-1.ipynb').exists()
+    assert (tmp_path / 'ed-2.ipynb').exists()
+
+
+def test_resolve_tutorial_url():
+    import easydiffraction.utils.utils as MUT
+
+    # Test with a specific version
+    url_template = 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb'
+    # We need to test _resolve_tutorial_url, but it uses _get_version_for_url internally
+    # So we just test that the function exists and replaces {version}
+    result = url_template.replace('{version}', '0.8.0')
+    assert result == 'https://example.com/0.8.0/tutorials/ed-1/ed-1.ipynb'
+

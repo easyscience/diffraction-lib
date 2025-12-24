@@ -51,9 +51,6 @@ env:
   IS_RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/v') }}
   GITHUB_REPOSITORY: ${{ github.repository }}
   NOTEBOOKS_DIR: tutorials
-  DEV_DEPLOYMENT_URL:
-    https://easyscience.github.io/${{ github.event.repository.name }}/dev
-  PROD_DEPLOYMENT_URL: https://docs.easydiffraction.org/lib
 
 jobs:
   # Job 1: Build the static files for the documentation site
@@ -72,6 +69,10 @@ jobs:
       # main.html template. It defines the versioned docs subfolder name
       # in the gh-pages branch. If it's a release tag, use the version
       # number without the 'v' prefix, otherwise use 'dev'.
+      # Setting RELEASE_VERSION to be used in mkdocs.yml to show
+      # the latest release version in the index.md file. If it's a
+      # release tag, use the tag name, otherwise use the branch name
+      # for development builds.
       - name: Set extra env variables
         shell: bash
         run: |
@@ -84,19 +85,12 @@ jobs:
           fi
           echo "RELEASE_VERSION=${RELEASE_VERSION}" >> "$GITHUB_ENV"
           echo "DOCS_VERSION=${DOCS_VERSION}" >> "$GITHUB_ENV"
+          echo "DEPLOYMENT_URL=https://easyscience.github.io/${{ github.event.repository.name }}/${DOCS_VERSION}" >> "$GITHUB_ENV"
 
       - name: Check-out repository
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0 # full history + tags. needed to get the latest release version
-
-      # Save the latest release version of easyscience/diffraction-lib to RELEASE_VERSION
-      # RELEASE_VERSION is used in the mkdocs.yml file to set release_version.
-      # The release_version is then needed to display the latest release version in the index.md file
-      #- name: Set RELEASE_VERSION env variable (latest easydiffraction release)
-      #  run: |
-      #    git fetch --tags --force
-      #    echo "RELEASE_VERSION=$(git describe --tags --abbrev=0)" >> "$GITHUB_ENV"
+          fetch-depth: 0 # full history with tags; needed for mike to push/deploy docs
 
       # Activate dark mode to create documentation with Plotly charts in dark mode
       # Need a better solution to automatically switch the chart colour theme based on the mkdocs material switcher
@@ -147,6 +141,7 @@ jobs:
 
       # Run the notebooks to generate the output cells using multiple cores
       - name: Run notebooks
+        #  if: false # Temporarily disabled to speed up the docs build
         run: pixi run notebook-exec
 
       - name: Move notebooks to docs/tutorials
@@ -190,9 +185,8 @@ jobs:
         run: |
           if [[ "${IS_RELEASE_TAG}" == "true" ]]; then
             pixi run docs-deploy "${RELEASE_VERSION#v}" latest
-            echo "🔗 PROD deployment url [${{ env.PROD_DEPLOYMENT_URL }}](${{ env.PROD_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
           else
             pixi run docs-deploy dev
-            echo "🔗 DEV deployment url [${{ env.DEV_DEPLOYMENT_URL }}](${{ env.DEV_DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY
           fi
           pixi run docs-set-default latest
+          echo "🔗 deployment url [${{ env.DEPLOYMENT_URL }}](${{ env.DEPLOYMENT_URL }})" >> $GITHUB_STEP_SUMMARY

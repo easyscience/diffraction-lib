@@ -206,16 +206,16 @@ jobs:
             pixi run --environment $env wheel
           done
 
-      - name: Add easydiffraction package from the built wheel
+      - name: Install easydiffraction package from the built wheel
         shell: bash
         run: |
           for env in ${{ env.PIXI_ENVS }}; do
             echo "🔹🔸🔹🔸🔹   Current env: $env   🔹🔸🔹🔸🔹"
             env_prefix="${env%%-*}"
             echo "📦 Looking for wheel in dist/$env_prefix/"
-            whl_path="$(python3 -c "import pathlib; w = sorted(pathlib.Path('dist/${env_prefix}').glob('*.whl')); print(w[0].resolve().as_uri())")"
-            echo "📦 Adding easydiffraction from: $whl_path"
-            pixi add --feature $env_prefix --pypi "easydiffraction[all] @ $whl_path"
+            whl_path="$(find dist/${env_prefix} -name '*.whl' | head -1)"
+            echo "📦 Installing easydiffraction from: $whl_path"
+            pixi run --environment $env python -m uv pip install "${whl_path}[all]" --reinstall-package easydiffraction
             pixi run --environment $env easydiffraction --version
           done
 
