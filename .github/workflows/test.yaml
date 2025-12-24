@@ -215,7 +215,7 @@ jobs:
             echo "📦 Looking for wheel in dist/$env_prefix/"
             whl_path="$(find dist/${env_prefix} -name '*.whl' | head -1)"
             echo "📦 Installing easydiffraction from: $whl_path"
-            pixi add --feature $env_prefix --pypi "easydiffraction[all] @ $whl_path"
+            pixi run --environment $env python -m uv pip install "${whl_path}[all]" --reinstall-package easydiffraction
             pixi run --environment $env easydiffraction --version
           done
 
