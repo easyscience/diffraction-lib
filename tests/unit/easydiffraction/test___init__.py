@@ -35,8 +35,16 @@ def test_lazy_functions_execute_with_monkeypatch(monkeypatch, capsys, tmp_path):
     import easydiffraction as ed
     import easydiffraction.utils.utils as utils
 
-    # 1) list_tutorials uses utils.fetch_tutorial_list → monkeypatch there
-    monkeypatch.setattr(utils, 'fetch_tutorial_list', lambda: ['a.ipynb', 'b.ipynb'])
+    # 1) list_tutorials uses _fetch_tutorials_index → monkeypatch there
+    fake_tutorial_index = {
+        '1': {
+            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+            'title': 'Quick Start',
+            'description': 'A quick start tutorial',
+        },
+    }
+    monkeypatch.setattr(utils, '_fetch_tutorials_index', lambda: fake_tutorial_index)
+    monkeypatch.setattr(utils, '_get_version_for_url', lambda: '0.8.0')
     ed.list_tutorials()  # calls into utils.list_tutorials
     out = capsys.readouterr().out
     assert 'Tutorials available for easydiffraction' in out

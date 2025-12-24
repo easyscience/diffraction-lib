@@ -67,7 +67,7 @@ project.experiments.show_names()
 project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %% [markdown]
-# #### Step 5: Show Project Summary
+# ## Step 5: Show Project Summary
 
 # %%
 project.summary.show_report()

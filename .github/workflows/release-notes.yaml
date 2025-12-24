@@ -38,15 +38,6 @@ jobs:
         shell: bash
         run: pixi run dev
 
-      - name: Convert tutorial scripts to notebooks
-        run: pixi run notebook-prepare
-
-      - name: Clean up unnecessary script files
-        run: rm -rf tutorials/*.py
-
-      - name: Zip the tutorials directory
-        run: zip -9 -r tutorials.zip tutorials
-
       - name: Drafts the next release notes
         id: draft
         uses: enhantica/drafterino@v2
@@ -81,7 +72,5 @@ jobs:
           tag_name: ${{ steps.draft.outputs.tag_name }}
           name: ${{ steps.draft.outputs.release_name }}
           body: ${{ steps.draft.outputs.release_notes }}
-          files: |
-            tutorials.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

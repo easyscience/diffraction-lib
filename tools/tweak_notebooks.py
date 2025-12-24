@@ -19,17 +19,43 @@ import nbformat
 from nbformat.v4 import new_code_cell
 from nbformat.validator import normalize
 
-BOOTSTRAP_SOURCE = (
-    '# Check if the easydiffraction library is installed.\n'
-    "# If not, install it with the 'visualization' extras.\n"
-    '# Needed when running remotely (e.g. Colab) where the lib is absent.\n'
-    'import builtins\n'
-    'import importlib.util\n'
-    '\n'
-    "if (hasattr(builtins, '__IPYTHON__') and\n"
-    "    importlib.util.find_spec('easydiffraction') is None):\n"
-    "    !pip install 'easydiffraction[visualization]'\n"
-)
+from easydiffraction.utils import _is_dev_version
+from easydiffraction.utils import stripped_package_version
+
+PACKAGE_NAME = 'easydiffraction'
+
+
+def _get_pip_install_specifier() -> str:
+    """Get the pip install specifier for easydiffraction.
+
+    Returns a version-pinned specifier for tagged releases (e.g.,
+    'easydiffraction[visualization]==0.8.0'), or an unpinned specifier
+    for development versions ('easydiffraction[visualization]').
+    """
+    if _is_dev_version(PACKAGE_NAME):
+        return f'{PACKAGE_NAME}[visualization]'
+
+    version = stripped_package_version(PACKAGE_NAME)
+    return f'{PACKAGE_NAME}[visualization]=={version}'
+
+
+def _get_bootstrap_source() -> str:
+    """Generate the bootstrap source code with the appropriate version
+    specifier.
+    """
+    pip_specifier = _get_pip_install_specifier()
+    return (
+        '# Check if the easydiffraction library is installed.\n'
+        "# If not, install it with the 'visualization' extras.\n"
+        '# Needed when running remotely (e.g. Colab) where the lib is absent.\n'
+        'import builtins\n'
+        'import importlib.util\n'
+        '\n'
+        "if (hasattr(builtins, '__IPYTHON__') and\n"
+        "    importlib.util.find_spec('easydiffraction') is None):\n"
+        f"    !pip install '{pip_specifier}'\n"
+    )
+
 
 BOOTSTRAP_TAG = 'hide-in-docs'
 
@@ -42,7 +68,7 @@ def iter_notebooks(paths: list[Path]):
             yield p
 
 
-def has_bootstrap_first_cell(nb) -> bool:
+def has_bootstrap_first_cell(nb, bootstrap_source: str) -> bool:
     """Return True if the first cell exactly matches our bootstrap
     cell.
     """
@@ -51,29 +77,29 @@ def has_bootstrap_first_cell(nb) -> bool:
     first = nb.cells[0]
     if first.cell_type != 'code':
         return False
-    if (first.source or '') != BOOTSTRAP_SOURCE:
+    if (first.source or '') != bootstrap_source:
         return False
     tags = (first.metadata or {}).get('tags', [])
     return BOOTSTRAP_TAG in tags
 
 
-def ensure_bootstrap(nb) -> bool:
+def ensure_bootstrap(nb, bootstrap_source: str) -> bool:
     """Ensure the bootstrap cell exists as the very first cell.
 
     Returns True if a modification was made.
     """
-    if has_bootstrap_first_cell(nb):
+    if has_bootstrap_first_cell(nb, bootstrap_source):
         return False
 
     cell = new_code_cell(
-        source=BOOTSTRAP_SOURCE,
+        source=bootstrap_source,
         metadata={'tags': [BOOTSTRAP_TAG]},
     )
     nb.cells.insert(0, cell)
     return True
 
 
-def process_notebook(path: Path) -> int:
+def process_notebook(path: Path, bootstrap_source: str) -> int:
     nb = nbformat.read(path, as_version=4)
 
     # Remove all 'tags' metadata from cells
@@ -83,7 +109,7 @@ def process_notebook(path: Path) -> int:
 
     # Add the bootstrap cell if needed
     changed = 0
-    if ensure_bootstrap(nb):
+    if ensure_bootstrap(nb, bootstrap_source):
         changed += 1
 
     # Normalize to ensure cell ids exist and structure is valid
@@ -103,9 +129,14 @@ def main(argv: list[str]) -> int:
         print('No .ipynb files found.', file=sys.stderr)
         return 1
 
+    # Generate the bootstrap source once with the current version
+    bootstrap_source = _get_bootstrap_source()
+    pip_specifier = _get_pip_install_specifier()
+    print(f'Using pip install specifier: {pip_specifier}')
+
     updated = 0
     for nb_path in targets:
-        changes = process_notebook(nb_path)
+        changes = process_notebook(nb_path, bootstrap_source)
         if changes:
             print(f'UPDATED: {nb_path} (inserted bootstrap cell)')
             updated += 1
