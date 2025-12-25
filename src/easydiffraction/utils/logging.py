@@ -555,7 +555,7 @@ class ConsolePrinter:
         """Formats a section header with bold green text."""
         full_title = f'{title.upper()}'
         line = '━' * len(full_title)
-        formatted = f'[bold green]{full_title}\n{line}[/bold green]'
+        formatted = f'[bold green]\n{line}\n{full_title}\n{line}[/bold green]'
         if not in_jupyter():
             formatted = f'\n{formatted}'
         cls._console.print(formatted)
