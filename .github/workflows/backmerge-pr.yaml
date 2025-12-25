@@ -15,7 +15,6 @@ name: Backmerge PR (master -> develop)
 
 on:
   push:
-    branches: ['patch']
     tags: ['v*']
 
 permissions:
