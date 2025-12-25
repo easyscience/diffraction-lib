@@ -53,7 +53,7 @@ def _get_bootstrap_source() -> str:
         '\n'
         "if (hasattr(builtins, '__IPYTHON__') and\n"
         "    importlib.util.find_spec('easydiffraction') is None):\n"
-        f"    !pip install '{pip_specifier}'\n"
+        f"    !pip install '{pip_specifier}'"
     )
 
 
