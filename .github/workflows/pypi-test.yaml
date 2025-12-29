@@ -56,9 +56,6 @@ jobs:
       - name: Create the environment and install dependencies
         run: pixi install
 
-      - name: Install package from PyPI with all extras
-        run: pixi add --pypi "easydiffraction[all]"
-
       - name: Run unit tests to verify the installation
         run: pixi run unit-tests
 
