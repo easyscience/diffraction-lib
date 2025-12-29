@@ -30,12 +30,12 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Allow only one concurrent workflow, skipping runs queued between the run
-# in-progress and latest queued. And cancel in-progress runs.
+# Allow only one concurrent deployment to gh-pages at a time.
+# All docs workflows share the same concurrency group to prevent race conditions
+# when multiple branches/tags trigger simultaneous deployments.
 concurrency:
-  group:
-    ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: docs-gh-pages-deploy
+  cancel-in-progress: false
 
 # Set the environment variables to be used in all jobs defined in this workflow
 env:
@@ -89,8 +89,6 @@ jobs:
 
       - name: Check-out repository
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 0 # full history with tags; needed for mike to push/deploy docs
 
       # Activate dark mode to create documentation with Plotly charts in dark mode
       # Need a better solution to automatically switch the chart colour theme based on the mkdocs material switcher
@@ -176,6 +174,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      # Fetch the gh-pages branch to ensure mike has the latest state.
+      # This is needed because checkout with fetch-depth: 0 only fetches
+      # the current branch's history, not other branches like gh-pages.
+      - name: Fetch gh-pages branch
+        run: |
+          git fetch origin gh-pages:gh-pages
 
       # Publish versioned docs with Mike. The tagged release docs go to
       # the versioned prefix, e.g. /v1.2.3/, and also to /latest/.
