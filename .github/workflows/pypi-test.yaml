@@ -50,6 +50,7 @@ jobs:
           unzip ${DEFAULT_BRANCH}.zip -d .
           mkdir -p tests
           cp -r diffraction-lib-${DEFAULT_BRANCH}/tests/* tests/
+          cp diffraction-lib-${DEFAULT_BRANCH}/pytest.ini .
           rm -rf ${DEFAULT_BRANCH}.zip diffraction-lib-${DEFAULT_BRANCH}
 
       - name: Create the environment and install dependencies
