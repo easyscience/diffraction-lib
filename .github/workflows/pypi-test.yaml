@@ -69,7 +69,7 @@ jobs:
         run: |
           pixi run easydiffraction --version
           pixi run easydiffraction list-tutorials
-          pixi run easydiffraction fetch-tutorials
+          pixi run easydiffraction download-all-tutorials
 
       - name: Test tutorials as notebooks
         run: pixi run notebook-tests
