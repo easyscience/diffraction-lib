@@ -1,10 +1,16 @@
-# This workflow creates an automated release PR from `develop` into `main`.
+# This workflow creates an automated release PR from `develop` into `master`.
 #
 # Usage:
 #   - Triggered manually via workflow_dispatch.
 #   - Creates a PR titled "Release: merge develop into master".
 #   - Adds the label "[maintainer] auto-pull-request" so it is excluded from changelogs.
 #   - The PR body makes clear that this is automation only (no review needed).
+#
+# Required repo config:
+# https://github.com/organizations/easyscience/settings/secrets/actions
+# https://github.com/organizations/easyscience/settings/variables/actions
+# - Actions secret:   EASYSCIENCE_APP_KEY  (GitHub App private key PEM)
+# - Actions variable: EASYSCIENCE_APP_ID   (GitHub App ID)
 
 name: Release PR (develop -> master)
 
@@ -13,7 +19,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
 
 # Set the environment variables to be used in all jobs defined in this workflow
@@ -24,10 +30,18 @@ jobs:
   create-pull-request:
     runs-on: ubuntu-latest
     steps:
+      - name: Create GitHub App installation token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.EASYSCIENCE_APP_ID }}
+          private-key: ${{ secrets.EASYSCIENCE_APP_KEY }}
+
       - name: Checkout develop branch
         uses: actions/checkout@v5
         with:
           ref: develop
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Create PR from develop to ${{ env.DEFAULT_BRANCH }}
         run: |
@@ -36,8 +50,8 @@ jobs:
             --head develop \
             --title "Release: merge develop into ${{ env.DEFAULT_BRANCH }}" \
             --label "[maintainer] auto-pull-request" \
-            --body "⚠️ This PR is created automatically to trigger the release pipeline. It merges the accumulated changes from \`develop\` into \`${{ env.DEFAULT_BRANCH }}\`.
+            --body "This PR is created automatically to trigger the release pipeline. It merges the accumulated changes from \`develop\` into \`${{ env.DEFAULT_BRANCH }}\`.
 
             It is labeled \`[maintainer] auto-pull-request\` and is excluded from release notes and version bump logic."
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_API_PERSONAL_ACCESS_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
