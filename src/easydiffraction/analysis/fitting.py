@@ -37,6 +37,10 @@ class Fitter:
     ) -> None:
         """Run the fitting process.
 
+        This method performs the optimization but does not display
+        results. Use :meth:`show_fit_results` on the Analysis object
+        to display the fit results after fitting is complete.
+
         Args:
             sample_models: Collection of sample models.
             experiments: Collection of experiments.
@@ -66,15 +70,17 @@ class Fitter:
         # Perform fitting
         self.results = self.minimizer.fit(params, objective_function)
 
-        # Post-fit processing
-        self._process_fit_results(sample_models, experiments)
-
     def _process_fit_results(
         self,
         sample_models: SampleModels,
         experiments: Experiments,
     ) -> None:
-        """Collect reliability inputs and display results after fitting.
+        """Collect reliability inputs and display fit results.
+
+        This method is typically called by
+        :meth:`Analysis.show_fit_results` rather than directly. It
+        calculates R-factors and other metrics, then renders them to
+        the console.
 
         Args:
             sample_models: Collection of sample models.

@@ -501,10 +501,23 @@ class Analysis:
         """Execute fitting using the selected mode, calculator and
         minimizer.
 
+        This method performs the optimization but does not display
+        results automatically. Call :meth:`show_fit_results` after
+        fitting to see a summary of the fit quality and parameter
+        values.
+
         In 'single' mode, fits each experiment independently. In
         'joint' mode, performs a simultaneous fit across experiments
         with weights.
-            Sets :attr:`fit_results` on success.
+
+        Sets :attr:`fit_results` on success, which can be accessed
+        programmatically
+        (e.g., ``analysis.fit_results.reduced_chi_square``).
+
+        Example::
+
+            project.analysis.fit()
+            project.analysis.show_fit_results()  # Display results
         """
         sample_models = self.project.sample_models
         if not sample_models:
@@ -553,6 +566,30 @@ class Analysis:
 
         # After fitting, get the results
         self.fit_results = self.fitter.results
+
+    def show_fit_results(self) -> None:
+        """Display a summary of the fit results.
+
+        Renders the fit quality metrics (reduced χ², R-factors) and a
+        table of fitted parameters with their starting values, final
+        values, and uncertainties.
+
+        This method should be called after :meth:`fit` completes. If no
+        fit has been performed yet, a warning is logged.
+
+        Example::
+
+            project.analysis.fit()
+            project.analysis.show_fit_results()
+        """
+        if not hasattr(self, 'fit_results') or self.fit_results is None:
+            log.warning('No fit results available. Run fit() first.')
+            return
+
+        sample_models = self.project.sample_models
+        experiments = self.project.experiments
+
+        self.fitter._process_fit_results(sample_models, experiments)
 
     def _update_categories(self, called_by_minimizer=False) -> None:
         """Update all categories owned by Analysis.
