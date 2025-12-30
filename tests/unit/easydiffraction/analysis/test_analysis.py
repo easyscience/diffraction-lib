@@ -82,3 +82,56 @@ def test_fit_modes_show_and_switch_to_joint(monkeypatch, capsys):
     out2 = capsys.readouterr().out
     assert 'Current fit mode changed to' in out2
     assert a.fit_mode == 'joint'
+
+
+def test_show_fit_results_warns_when_no_results(capsys):
+    """Test that show_fit_results logs a warning when fit() has not been run."""
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+
+    # Ensure fit_results is not set
+    assert not hasattr(a, 'fit_results') or a.fit_results is None
+
+    a.show_fit_results()
+    out = capsys.readouterr().out
+    assert 'No fit results available' in out
+
+
+def test_show_fit_results_calls_process_fit_results(monkeypatch):
+    """Test that show_fit_results delegates to fitter._process_fit_results."""
+    from easydiffraction.analysis.analysis import Analysis
+
+    # Track if _process_fit_results was called
+    process_called = {'called': False, 'args': None}
+
+    def mock_process_fit_results(sample_models, experiments):
+        process_called['called'] = True
+        process_called['args'] = (sample_models, experiments)
+
+    # Create a mock project with sample_models and experiments
+    class MockProject:
+        sample_models = object()
+        experiments = object()
+        _varname = 'proj'
+
+        class experiments_cls:
+            names = []
+
+        experiments = experiments_cls()
+
+    project = MockProject()
+    project.sample_models = object()
+    project.experiments.names = []
+
+    a = Analysis(project=project)
+
+    # Set up fit_results so show_fit_results doesn't return early
+    a.fit_results = object()
+
+    # Mock the fitter's _process_fit_results method
+    monkeypatch.setattr(a.fitter, '_process_fit_results', mock_process_fit_results)
+
+    a.show_fit_results()
+
+    assert process_called['called'], '_process_fit_results should be called'

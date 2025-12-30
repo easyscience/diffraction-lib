@@ -614,6 +614,7 @@ project_1.plot_meas_vs_calc(expt_name='sim_si')
 
 # %%
 project_1.analysis.fit()
+project_1.analysis.show_fit_results()
 
 # %% [markdown]
 # #### Check Fit Results
@@ -1109,6 +1110,7 @@ for line_segment in project_2.experiments['sim_lbco'].background:
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
 project_2.analysis.fit()
+project_2.analysis.show_fit_results()
 
 # %% [markdown]
 # #### Exercise 5.3: Find the Misfit in the Fit
@@ -1177,6 +1179,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 project_2.sample_models['lbco'].cell.length_a.free = True
 
 project_2.analysis.fit()
+project_2.analysis.show_fit_results()
 
 project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 
@@ -1255,6 +1258,7 @@ project_2.experiments['sim_lbco'].peak.asym_alpha_0.free = True
 project_2.experiments['sim_lbco'].peak.asym_alpha_1.free = True
 
 project_2.analysis.fit()
+project_2.analysis.show_fit_results()
 
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_max=1.40)
 
@@ -1422,6 +1426,7 @@ project_2.experiments['sim_lbco'].linked_phases['si'].scale.free = True
 
 # Now we can perform the fit with both phases included.
 project_2.analysis.fit()
+project_2.analysis.show_fit_results()
 
 # Let's plot the measured diffraction pattern and the calculated
 # diffraction pattern both for the full range and for a zoomed-in region

@@ -1,18 +1,15 @@
 # This workflow builds and deploys documentation for the project.
 #
-# Steps overview:
-#  Job 1: build-docs
-#   - Builds documentation (including running Jupyter notebooks to generate output cells).
-#   - Uploads the built site as a Pages artifact.
-#  Job 2: deploy-dev
-#   - Deploys the built site to GitHub Pages for development (pushes to develop/master).
-#  Job 3: deploy-prod
-#   - Deploys the built site to gh-pages branch for production (release tags starting with v*).
-#   - This triggers deployment to a custom domain via webhook.
+# Overview:
+#  - Converts tutorial Python scripts to Jupyter notebooks and executes them.
+#  - Builds the documentation site using MkDocs with the Material theme.
+#  - Uploads the built site as an artifact for local inspection.
+#  - Deploys versioned documentation to the gh-pages branch using Mike:
+#    - For release tags (v*): deploys to a versioned folder (e.g., /0.9.1/) and updates /latest/.
+#    - For branches: deploys to /dev/.
 #
-# The action summary page will contain links to the built artifact for downloading
-# and inspecting, as well as links to both the development and production versions of
-# the deployed documentation site.
+# The action summary page will contain a link to the built artifact for downloading
+# and inspecting, as well as a link to the deployed documentation site.
 
 name: Docs build and deployment
 
@@ -30,12 +27,12 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Allow only one concurrent workflow, skipping runs queued between the run
-# in-progress and latest queued. And cancel in-progress runs.
+# Allow only one concurrent deployment to gh-pages at a time.
+# All docs workflows share the same concurrency group to prevent race conditions
+# when multiple branches/tags trigger simultaneous deployments.
 concurrency:
-  group:
-    ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: docs-gh-pages-deploy
+  cancel-in-progress: false
 
 # Set the environment variables to be used in all jobs defined in this workflow
 env:
@@ -53,16 +50,17 @@ env:
   NOTEBOOKS_DIR: tutorials
 
 jobs:
-  # Job 1: Build the static files for the documentation site
+  # Single job that builds and deploys documentation.
+  # Uses macOS runner for consistent Plotly chart rendering.
   build-deploy-docs:
     strategy:
       matrix:
-        os: [macos-14] # Use macOS to switch to dark mode for Plotly charts
+        os: [macos-14]
 
     runs-on: ${{ matrix.os }}
 
     permissions:
-      contents: write # required for pushing to gh-pages branch
+      contents: write # Required for pushing to the gh-pages branch
 
     steps:
       # Setting DOCS_VERSION to be used in mkdocs.yml, and then in the
@@ -87,10 +85,20 @@ jobs:
           echo "DOCS_VERSION=${DOCS_VERSION}" >> "$GITHUB_ENV"
           echo "DEPLOYMENT_URL=https://easyscience.github.io/${{ github.event.repository.name }}/${DOCS_VERSION}" >> "$GITHUB_ENV"
 
+      # Create GitHub App token for pushing to gh-pages as easyscience[bot].
+      - name: Create GitHub App installation token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.EASYSCIENCE_APP_ID }}
+          private-key: ${{ secrets.EASYSCIENCE_APP_KEY }}
+
+      # Check out the repository source code.
+      # Note: The gh-pages branch is fetched separately later for mike deployment.
       - name: Check-out repository
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0 # full history with tags; needed for mike to push/deploy docs
+          token: ${{ steps.app-token.outputs.token }}
 
       # Activate dark mode to create documentation with Plotly charts in dark mode
       # Need a better solution to automatically switch the chart colour theme based on the mkdocs material switcher
@@ -103,6 +111,8 @@ jobs:
       #    dark-mode on
       #    dark-mode status
 
+      # Set up the pixi package manager and install dependencies from pixi.toml.
+      # Uses frozen lockfile to ensure reproducible builds.
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.9.0
         with:
@@ -113,37 +123,43 @@ jobs:
           cache: false
           post-cleanup: false
 
+      # Install additional development dependencies (e.g., pre-commit hooks, dev tools).
       - name: Install and setup development dependencies
         shell: bash
         run: pixi run dev
 
+      # Clone shared documentation assets and branding resources from external repositories.
+      # These contain common MkDocs configuration, templates, stylesheets, and images.
       - name: Clone easyscience/assets-docs and easyscience/assets-branding
         run: |
           cd ..
           git clone https://github.com/easyscience/assets-docs.git
           git clone https://github.com/easyscience/assets-branding.git
 
+      # Copy assets from the cloned repositories into the docs/ directory.
+      # This includes stylesheets, images, templates, and other shared resources.
       - name: Add files from cloned repositories
         run: pixi run docs-assets
 
-      # Convert python scripts in the notebooks directory to Jupyter notebooks
-      # Strip output from the notebooks
-      # Prepare the notebooks for documentation (add colab cell, etc.)
-      # Run the notebooks to generate the output cells using multiple cores
-      # The notebooks are then used to build the documentation site
+      # Convert Python scripts in the tutorials/ directory to Jupyter notebooks.
+      # This step also strips any existing output from the notebooks and prepares
+      # them for documentation.
       - name: Convert tutorial scripts to notebooks
         run: pixi run notebook-prepare
 
-      # The following step is needed to avoid the following message during the build:
-      # "Matplotlib is building the font cache; this may take a moment"
+      # Pre-import the main package to trigger Matplotlib font cache building.
+      # This avoids "Matplotlib is building the font cache" messages during notebook execution.
       - name: Pre-build site step
         run: pixi run python -c "import easydiffraction"
 
-      # Run the notebooks to generate the output cells using multiple cores
+      # Execute all Jupyter notebooks to generate output cells (plots, tables, etc.).
+      # Uses multiple cores for parallel execution to speed up the process.
       - name: Run notebooks
         #  if: false # Temporarily disabled to speed up the docs build
         run: pixi run notebook-exec
 
+      # Move the executed notebooks to docs/tutorials/ directory
+      # so they can be included in the documentation site.
       - name: Move notebooks to docs/tutorials
         run: pixi run docs-notebooks
 
@@ -170,17 +186,24 @@ jobs:
           if-no-files-found: 'error'
           compression-level: 0
 
-      # Publish versioned docs with Mike (dev on branches, prod on tags)
-      # Configure git for pushing to gh-pages branch
+      # Configure git user for mike to commit and push to gh-pages branch.
       - name: Configure git for pushing
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "easyscience[bot]"
+          git config user.email "${{ vars.EASYSCIENCE_APP_ID }}+easyscience[bot]@users.noreply.github.com"
 
-      # Publish versioned docs with Mike. The tagged release docs go to
-      # the versioned prefix, e.g. /v1.2.3/, and also to /latest/.
-      # All other branches go to /dev/.
-      # "${RELEASE_VERSION#v}" for v0.8.3.post1 -> 0.8.3.post1
+      # Fetch the gh-pages branch to ensure mike has the latest remote state.
+      # This is required because the checkout step only fetches the source branch,
+      # not the gh-pages branch that mike needs to update.
+      - name: Fetch gh-pages branch
+        run: |
+          git fetch origin gh-pages:gh-pages 2>/dev/null || true
+
+      # Deploy versioned documentation using mike (MkDocs plugin for versioning).
+      # - For release tags (v*): deploys to versioned folder (e.g., /0.9.1/) and aliases to /latest/.
+      # - For branches: deploys to /dev/.
+      # The "${RELEASE_VERSION#v}" syntax strips the 'v' prefix (v0.9.1 -> 0.9.1).
+      # Also sets 'latest' as the default version for the version selector.
       - name: Rebuild and deploy docs with mike
         run: |
           if [[ "${IS_RELEASE_TAG}" == "true" ]]; then

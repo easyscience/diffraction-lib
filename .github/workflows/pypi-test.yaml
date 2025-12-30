@@ -50,13 +50,11 @@ jobs:
           unzip ${DEFAULT_BRANCH}.zip -d .
           mkdir -p tests
           cp -r diffraction-lib-${DEFAULT_BRANCH}/tests/* tests/
+          cp diffraction-lib-${DEFAULT_BRANCH}/pytest.ini .
           rm -rf ${DEFAULT_BRANCH}.zip diffraction-lib-${DEFAULT_BRANCH}
 
       - name: Create the environment and install dependencies
         run: pixi install
-
-      - name: Install package from PyPI with all extras
-        run: pixi add --pypi "easydiffraction[all]"
 
       - name: Run unit tests to verify the installation
         run: pixi run unit-tests
@@ -71,7 +69,7 @@ jobs:
         run: |
           pixi run easydiffraction --version
           pixi run easydiffraction list-tutorials
-          pixi run easydiffraction fetch-tutorials
+          pixi run easydiffraction download-all-tutorials
 
       - name: Test tutorials as notebooks
         run: pixi run notebook-tests
