@@ -9,8 +9,8 @@
 # Required repo config:
 # https://github.com/organizations/easyscience/settings/secrets/actions
 # https://github.com/organizations/easyscience/settings/variables/actions
-# - Actions secret:   ES_BACKMERGE_PRIVATE_KEY  (GitHub App private key PEM)
-# - Actions variable: ES_BACKMERGE_APP_ID       (GitHub App ID)
+# - Actions secret:   BACKMERGE_PRIVATE_KEY  (GitHub App private key PEM)
+# - Actions variable: BACKMERGE_APP_ID       (GitHub App ID)
 # The GitHub App must be added to the develop branch ruleset bypass list.
 
 name: Backmerge (master -> develop)
