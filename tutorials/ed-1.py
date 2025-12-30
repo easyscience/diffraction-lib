@@ -61,6 +61,10 @@ project.experiments.add(cif_path=expt_path)
 project.analysis.fit()
 
 # %%
+# Show fit results summary
+project.analysis.show_fit_results()
+
+# %%
 project.experiments.show_names()
 
 # %%

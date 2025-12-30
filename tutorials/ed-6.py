@@ -225,6 +225,9 @@ project.analysis.show_free_params()
 # %%
 project.analysis.fit()
 
+# %%
+project.analysis.show_fit_results()
+
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
@@ -260,6 +263,9 @@ project.analysis.show_free_params()
 # %%
 project.analysis.fit()
 
+# %%
+project.analysis.show_fit_results()
+
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
@@ -293,6 +299,9 @@ project.analysis.show_free_params()
 # %%
 project.analysis.fit()
 
+# %%
+project.analysis.show_fit_results()
+
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
@@ -325,6 +334,9 @@ project.analysis.show_free_params()
 
 # %%
 project.analysis.fit()
+
+# %%
+project.analysis.show_fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
