@@ -96,6 +96,7 @@ experiment.peak.sharp_delta_2.free = True
 # %%
 project.analysis.current_calculator = 'pdffit'
 project.analysis.fit()
+project.analysis.show_fit_results()
 
 # %% [markdown]
 # ## Plot Measured vs Calculated

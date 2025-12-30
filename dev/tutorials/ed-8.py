@@ -360,6 +360,7 @@ project.plot_meas_vs_calc(expt_name='wish_4_7', show_residual=True)
 
 # %%
 project.analysis.fit()
+project.analysis.show_fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated

@@ -3272,7 +3272,44 @@ calculator: Active calculator used for computations.
 <span class="normal">591</span>
 <span class="normal">592</span>
 <span class="normal">593</span>
-<span class="normal">594</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analysis</span><span class="p">:</span>
+<span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span>
+<span class="normal">598</span>
+<span class="normal">599</span>
+<span class="normal">600</span>
+<span class="normal">601</span>
+<span class="normal">602</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span>
+<span class="normal">606</span>
+<span class="normal">607</span>
+<span class="normal">608</span>
+<span class="normal">609</span>
+<span class="normal">610</span>
+<span class="normal">611</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span>
+<span class="normal">623</span>
+<span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
+<span class="normal">627</span>
+<span class="normal">628</span>
+<span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analysis</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;High-level orchestration of analysis tasks for a Project.</span>
 
 <span class="sd">    This class wires calculators and minimizers, exposes a compact</span>
@@ -3748,10 +3785,23 @@ calculator: Active calculator used for computations.
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute fitting using the selected mode, calculator and</span>
 <span class="sd">        minimizer.</span>
 
+<span class="sd">        This method performs the optimization but does not display</span>
+<span class="sd">        results automatically. Call :meth:`show_fit_results` after</span>
+<span class="sd">        fitting to see a summary of the fit quality and parameter</span>
+<span class="sd">        values.</span>
+
 <span class="sd">        In &#39;single&#39; mode, fits each experiment independently. In</span>
 <span class="sd">        &#39;joint&#39; mode, performs a simultaneous fit across experiments</span>
 <span class="sd">        with weights.</span>
-<span class="sd">            Sets :attr:`fit_results` on success.</span>
+
+<span class="sd">        Sets :attr:`fit_results` on success, which can be accessed</span>
+<span class="sd">        programmatically</span>
+<span class="sd">        (e.g., ``analysis.fit_results.reduced_chi_square``).</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            project.analysis.fit()</span>
+<span class="sd">            project.analysis.show_fit_results()  # Display results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sample_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sample_models</span><span class="p">:</span>
@@ -3800,6 +3850,30 @@ calculator: Active calculator used for computations.
 
         <span class="c1"># After fitting, get the results</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">results</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_fit_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Display a summary of the fit results.</span>
+
+<span class="sd">        Renders the fit quality metrics (reduced χ², R-factors) and a</span>
+<span class="sd">        table of fitted parameters with their starting values, final</span>
+<span class="sd">        values, and uncertainties.</span>
+
+<span class="sd">        This method should be called after :meth:`fit` completes. If no</span>
+<span class="sd">        fit has been performed yet, a warning is logged.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            project.analysis.fit()</span>
+<span class="sd">            project.analysis.show_fit_results()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;fit_results&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_results</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No fit results available. Run fit() first.&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">sample_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span>
+        <span class="n">experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">_process_fit_results</span><span class="p">(</span><span class="n">sample_models</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update all categories owned by Analysis.</span>
@@ -4020,16 +4094,16 @@ project.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span>
-<span class="normal">579</span>
-<span class="normal">580</span>
-<span class="normal">581</span>
-<span class="normal">582</span>
-<span class="normal">583</span>
-<span class="normal">584</span>
-<span class="normal">585</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize the analysis section to a CIF string.</span>
 
 <span class="sd">    Returns:</span>
@@ -4117,10 +4191,20 @@ project.</p>
 
         <p>Execute fitting using the selected mode, calculator and
 minimizer.</p>
+<p>This method performs the optimization but does not display
+results automatically. Call :meth:<code>show_fit_results</code> after
+fitting to see a summary of the fit quality and parameter
+values.</p>
 <p>In 'single' mode, fits each experiment independently. In
 'joint' mode, performs a simultaneous fit across experiments
-with weights.
-    Sets :attr:<code>fit_results</code> on success.</p>
+with weights.</p>
+<p>Sets :attr:<code>fit_results</code> on success, which can be accessed
+programmatically
+(e.g., <code>analysis.fit_results.reduced_chi_square</code>).</p>
+<p>Example::</p>
+<div class="language-text highlight"><pre><span></span><code>project.analysis.fit()
+project.analysis.show_fit_results()  # Display results
+</code></pre></div>
 
             <details class="quote">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
@@ -4179,14 +4263,40 @@ with weights.
 <span class="normal">552</span>
 <span class="normal">553</span>
 <span class="normal">554</span>
-<span class="normal">555</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute fitting using the selected mode, calculator and</span>
 <span class="sd">    minimizer.</span>
+
+<span class="sd">    This method performs the optimization but does not display</span>
+<span class="sd">    results automatically. Call :meth:`show_fit_results` after</span>
+<span class="sd">    fitting to see a summary of the fit quality and parameter</span>
+<span class="sd">    values.</span>
 
 <span class="sd">    In &#39;single&#39; mode, fits each experiment independently. In</span>
 <span class="sd">    &#39;joint&#39; mode, performs a simultaneous fit across experiments</span>
 <span class="sd">    with weights.</span>
-<span class="sd">        Sets :attr:`fit_results` on success.</span>
+
+<span class="sd">    Sets :attr:`fit_results` on success, which can be accessed</span>
+<span class="sd">    programmatically</span>
+<span class="sd">    (e.g., ``analysis.fit_results.reduced_chi_square``).</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        project.analysis.fit()</span>
+<span class="sd">        project.analysis.show_fit_results()  # Display results</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">sample_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">sample_models</span><span class="p">:</span>
@@ -4530,14 +4640,14 @@ view.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">587</span>
-<span class="normal">588</span>
-<span class="normal">589</span>
-<span class="normal">590</span>
-<span class="normal">591</span>
-<span class="normal">592</span>
-<span class="normal">593</span>
-<span class="normal">594</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
+<span class="normal">627</span>
+<span class="normal">628</span>
+<span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the analysis section as CIF in a formatted console</span>
 <span class="sd">    view.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4856,6 +4966,86 @@ engine.</p>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the name of the currently selected minimizer.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current minimizer&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_minimizer</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.analysis.analysis.Analysis.show_fit_results" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">show_fit_results</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Display a summary of the fit results.</p>
+<p>Renders the fit quality metrics (reduced χ², R-factors) and a
+table of fitted parameters with their starting values, final
+values, and uncertainties.</p>
+<p>This method should be called after :meth:<code>fit</code> completes. If no
+fit has been performed yet, a warning is logged.</p>
+<p>Example::</p>
+<div class="language-text highlight"><pre><span></span><code>project.analysis.fit()
+project.analysis.show_fit_results()
+</code></pre></div>
+
+            <details class="quote">
+              <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">570</span>
+<span class="normal">571</span>
+<span class="normal">572</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span>
+<span class="normal">577</span>
+<span class="normal">578</span>
+<span class="normal">579</span>
+<span class="normal">580</span>
+<span class="normal">581</span>
+<span class="normal">582</span>
+<span class="normal">583</span>
+<span class="normal">584</span>
+<span class="normal">585</span>
+<span class="normal">586</span>
+<span class="normal">587</span>
+<span class="normal">588</span>
+<span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_fit_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Display a summary of the fit results.</span>
+
+<span class="sd">    Renders the fit quality metrics (reduced χ², R-factors) and a</span>
+<span class="sd">    table of fitted parameters with their starting values, final</span>
+<span class="sd">    values, and uncertainties.</span>
+
+<span class="sd">    This method should be called after :meth:`fit` completes. If no</span>
+<span class="sd">    fit has been performed yet, a warning is logged.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        project.analysis.fit()</span>
+<span class="sd">        project.analysis.show_fit_results()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;fit_results&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_results</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No fit results available. Run fit() first.&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">sample_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span>
+    <span class="n">experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">_process_fit_results</span><span class="p">(</span><span class="n">sample_models</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -13322,7 +13512,13 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="normal">188</span>
 <span class="normal">189</span>
 <span class="normal">190</span>
-<span class="normal">191</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">:</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handles the fitting workflow using a pluggable minimizer.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;lmfit (leastsq)&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -13339,6 +13535,10 @@ a table in notebooks or a text UI in terminals.</p>
         <span class="n">analysis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the fitting process.</span>
+
+<span class="sd">        This method performs the optimization but does not display</span>
+<span class="sd">        results. Use :meth:`show_fit_results` on the Analysis object</span>
+<span class="sd">        to display the fit results after fitting is complete.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            sample_models: Collection of sample models.</span>
@@ -13369,15 +13569,17 @@ a table in notebooks or a text UI in terminals.</p>
         <span class="c1"># Perform fitting</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimizer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">objective_function</span><span class="p">)</span>
 
-        <span class="c1"># Post-fit processing</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_process_fit_results</span><span class="p">(</span><span class="n">sample_models</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_process_fit_results</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sample_models</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>
         <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collect reliability inputs and display results after fitting.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collect reliability inputs and display fit results.</span>
+
+<span class="sd">        This method is typically called by</span>
+<span class="sd">        :meth:`Analysis.show_fit_results` rather than directly. It</span>
+<span class="sd">        calculates R-factors and other metrics, then renders them to</span>
+<span class="sd">        the console.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            sample_models: Collection of sample models.</span>
@@ -13517,6 +13719,9 @@ a table in notebooks or a text UI in terminals.</p>
     <div class="doc doc-contents ">
 
         <p>Run the fitting process.</p>
+<p>This method performs the optimization but does not display
+results. Use :meth:<code>show_fit_results</code> on the Analysis object
+to display the fit results after fitting is complete.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -13638,7 +13843,8 @@ during fitting.</p>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+<span class="normal">70</span>
+<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">sample_models</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>
     <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
@@ -13646,6 +13852,10 @@ during fitting.</p>
     <span class="n">analysis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the fitting process.</span>
+
+<span class="sd">    This method performs the optimization but does not display</span>
+<span class="sd">    results. Use :meth:`show_fit_results` on the Analysis object</span>
+<span class="sd">    to display the fit results after fitting is complete.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        sample_models: Collection of sample models.</span>
@@ -13675,9 +13885,6 @@ during fitting.</p>
 
     <span class="c1"># Perform fitting</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimizer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">objective_function</span><span class="p">)</span>
-
-    <span class="c1"># Post-fit processing</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_process_fit_results</span><span class="p">(</span><span class="n">sample_models</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
