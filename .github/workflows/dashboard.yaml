@@ -25,12 +25,17 @@ jobs:
 
     steps:
       # Create GitHub App token for pushing to external dashboard repo.
+      # The 'repositories' parameter is required to grant access to repos
+      # other than the one where the workflow is running.
       - name: Create GitHub App installation token
         id: app-token
         uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ vars.EASYSCIENCE_APP_ID }}
           private-key: ${{ secrets.EASYSCIENCE_APP_KEY }}
+          repositories: |
+            ${{ github.event.repository.name }}
+            dashboard
 
       - name: Checkout repository
         uses: actions/checkout@v5
