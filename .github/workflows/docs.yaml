@@ -187,7 +187,7 @@ jobs:
       # not the gh-pages branch that mike needs to update.
       - name: Fetch gh-pages branch
         run: |
-          git fetch origin gh-pages:gh-pages
+          git fetch origin gh-pages:gh-pages 2>/dev/null || true
 
       # Deploy versioned documentation using mike (MkDocs plugin for versioning).
       # - For release tags (v*): deploys to versioned folder (e.g., /0.9.1/) and aliases to /latest/.
