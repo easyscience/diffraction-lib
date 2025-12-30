@@ -189,6 +189,7 @@ def test_get_version_for_url_released(monkeypatch):
     assert MUT._get_version_for_url() == '0.8.0.post1'
 
 
+@pytest.mark.filterwarnings('ignore:Failed to fetch tutorials index:UserWarning')
 def test_fetch_tutorials_index_returns_empty_on_error(monkeypatch):
     import easydiffraction.utils.utils as MUT
 

@@ -319,6 +319,7 @@ for term in expt2.background:
 
 # %%
 project.analysis.fit()
+project.analysis.show_fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated

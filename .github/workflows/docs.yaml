@@ -85,10 +85,20 @@ jobs:
           echo "DOCS_VERSION=${DOCS_VERSION}" >> "$GITHUB_ENV"
           echo "DEPLOYMENT_URL=https://easyscience.github.io/${{ github.event.repository.name }}/${DOCS_VERSION}" >> "$GITHUB_ENV"
 
+      # Create GitHub App token for pushing to gh-pages as easyscience[bot].
+      - name: Create GitHub App installation token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.EASYSCIENCE_APP_ID }}
+          private-key: ${{ secrets.EASYSCIENCE_APP_KEY }}
+
       # Check out the repository source code.
       # Note: The gh-pages branch is fetched separately later for mike deployment.
       - name: Check-out repository
         uses: actions/checkout@v5
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
       # Activate dark mode to create documentation with Plotly charts in dark mode
       # Need a better solution to automatically switch the chart colour theme based on the mkdocs material switcher
@@ -179,8 +189,8 @@ jobs:
       # Configure git user for mike to commit and push to gh-pages branch.
       - name: Configure git for pushing
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "easyscience[bot]"
+          git config user.email "${{ vars.EASYSCIENCE_APP_ID }}+easyscience[bot]@users.noreply.github.com"
 
       # Fetch the gh-pages branch to ensure mike has the latest remote state.
       # This is required because the checkout step only fetches the source branch,

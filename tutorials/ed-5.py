@@ -288,6 +288,7 @@ project.analysis.apply_constraints()
 
 # %%
 project.analysis.fit()
+project.analysis.show_fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
