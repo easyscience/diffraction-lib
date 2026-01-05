@@ -13,8 +13,9 @@ from abc import abstractmethod
 from typing import Any
 
 from IPython import get_ipython
-from jupyter_dark_detect import is_dark
 from rich.color import Color
+
+from easydiffraction.utils._vendored.theme_detect import is_dark
 
 
 class TableBackendBase(ABC):

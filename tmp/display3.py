@@ -35,7 +35,7 @@ pd_dim_color_dark = rich_to_hex(rich_dim_color_dark)
 pd_dim_color_light = rich_to_hex(rich_dim_color_light)
 
 # +
-from jupyter_dark_detect import is_dark
+from easydiffraction.utils._vendored.theme_detect import is_dark
 from IPython import get_ipython
 
 def is_dark_theme() -> bool:
