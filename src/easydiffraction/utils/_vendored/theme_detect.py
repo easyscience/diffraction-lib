@@ -70,12 +70,10 @@ def is_dark() -> bool:
         return result
 
     # System preferences as last resort
-    result = _check_system_preferences()
-    if result is not None:
-        return result
-
-    # Default to light mode if nothing detected
-    return False
+    # Returns True (dark), False (light), or None (unknown)
+    # Default to light mode (False) if nothing detected
+    system_result = _check_system_preferences()
+    return system_result if system_result is not None else False
 
 
 def get_detection_result() -> dict[str, Optional[bool]]:
