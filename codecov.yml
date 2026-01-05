@@ -1,0 +1,17 @@
+# Codecov configuration
+# https://docs.codecov.com/docs/codecovyml-reference
+
+coverage:
+  status:
+    project:
+      default:
+        # Allow small coverage decrease (vendored code adds uncovered lines)
+        threshold: 0.5%
+    patch:
+      default:
+        # Lower threshold for patches containing vendored code
+        threshold: 0.5%
+
+ignore:
+  # Vendored third-party code - not our code to test
+  - 'src/easydiffraction/utils/_vendored/jupyter_dark_detect/**'

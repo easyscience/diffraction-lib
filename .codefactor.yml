@@ -1,0 +1,6 @@
+# CodeFactor configuration
+# https://support.codefactor.io/i14-ignore-files-or-folders
+
+exclude_paths:
+  # Vendored third-party code - keep as-is from upstream
+  - 'src/easydiffraction/utils/_vendored/jupyter_dark_detect/**'
