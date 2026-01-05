@@ -77,7 +77,7 @@ docs = [
 ]
 visualization = [
   'darkdetect', # Detecting dark mode (system-level)
-  'pandas',     # Displaying tables in juptyer notebooks
+  'pandas',     # Displaying tables in Jupyter notebooks
   'plotly',     # Interactive plots
   'py3Dmol',    # Visualisation of crystal structures
 ]
