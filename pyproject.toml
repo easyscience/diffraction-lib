@@ -76,11 +76,10 @@ docs = [
   'pyyaml',                          # YAML parser
 ]
 visualization = [
-  'darkdetect',          # Detecting dark mode
-  'jupyter_dark_detect', # Jupyter notebook dark mode support
-  'pandas',              # Displaying tables in juptyer notebooks
-  'plotly',              # Interactive plots
-  'py3Dmol',             # Visualisation of crystal structures
+  'darkdetect', # Detecting dark mode (system-level)
+  'pandas',     # Displaying tables in Jupyter notebooks
+  'plotly',     # Interactive plots
+  'py3Dmol',    # Visualisation of crystal structures
 ]
 all = [
   'easydiffraction[dev]',
@@ -266,6 +265,18 @@ force-single-line = true
 
 [tool.ruff.lint.per-file-ignores]
 '*test_*.py' = ['S101'] # allow asserts in test files
+# Vendored jupyter_dark_detect: keep as-is from upstream for easy updates
+# https://github.com/OpenMined/jupyter-dark-detect/tree/main/jupyter_dark_detect
+'src/easydiffraction/utils/_vendored/jupyter_dark_detect/*' = [
+  'S110',   # try-except-pass
+  'S112',   # try-except-continue
+  'S404',   # subprocess module
+  'S607',   # partial executable path
+  'TID252', # relative imports
+  'W291',   # trailing whitespace (in JS strings)
+  'W505',   # doc line too long
+  'E501',   # line too long (in JS strings)
+]
 
 [tool.ruff.lint.pycodestyle]
 max-line-length = 100 #99# https://peps.python.org/pep-0008/#maximum-line-length

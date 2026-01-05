@@ -1,0 +1,18 @@
+# Codecov configuration
+# https://docs.codecov.com/docs/codecovyml-reference
+
+coverage:
+  status:
+    project:
+      default:
+        # Make project coverage informational (won't block PR)
+        informational: true
+    patch:
+      default:
+        # Require patch coverage but with threshold
+        threshold: 1%
+
+ignore:
+  # Vendored third-party code - not our code to test
+  - 'src/easydiffraction/utils/_vendored/**'
+  - 'src/easydiffraction/utils/_vendored/jupyter_dark_detect/**'

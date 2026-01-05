@@ -5,6 +5,7 @@
 """
 
 import datetime
+import fnmatch
 import re
 from pathlib import Path
 
@@ -14,6 +15,17 @@ COPYRIGHT_TEXT = (
     '<https://github.com/easyscience/diffraction>'
 )
 LICENSE_TEXT = '# SPDX-License-Identifier: BSD-3-Clause'
+
+# Patterns to exclude from SPDX header updates (vendored code)
+EXCLUDE_PATTERNS = [
+    '*/_vendored/jupyter_dark_detect/*',
+]
+
+
+def should_exclude(file_path: Path) -> bool:
+    """Check if a file should be excluded from SPDX header updates."""
+    path_str = str(file_path)
+    return any(fnmatch.fnmatch(path_str, pattern) for pattern in EXCLUDE_PATTERNS)
 
 
 def update_spdx_header(file_path: Path):
@@ -88,6 +100,8 @@ def main():
     """
     for base_dir in ('src', 'tests'):
         for py_file in Path(base_dir).rglob('*.py'):
+            if should_exclude(py_file):
+                continue
             update_spdx_header(py_file)
 
 
