@@ -1,0 +1,13 @@
+# CodeFactor exclude patterns configuration must be done online:
+# https://www.codefactor.io/repository/github/easyscience/diffraction-lib/ignore
+#
+# Last updated: 2026-01-05
+#
+# Exclude patterns:
+# deps/**
+# docs/**
+# src/easydiffraction/utils/_vendored/jupyter_dark_detect/**
+# tests/**
+# tmp/**
+# tools/**
+# tutorials/**
