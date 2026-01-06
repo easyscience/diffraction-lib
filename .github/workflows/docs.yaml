@@ -114,7 +114,7 @@ jobs:
       # Set up the pixi package manager and install dependencies from pixi.toml.
       # Uses frozen lockfile to ensure reproducible builds.
       - name: Set up pixi
-        uses: prefix-dev/setup-pixi@v0.9.0
+        uses: prefix-dev/setup-pixi@v0.9.3
         with:
           environments: default
           activate-environment: default
