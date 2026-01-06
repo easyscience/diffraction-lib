@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Set up pixi
-        uses: prefix-dev/setup-pixi@v0.9.0
+        uses: prefix-dev/setup-pixi@v0.9.3
         with:
           run-install: false
           cache: false
