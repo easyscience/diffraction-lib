@@ -88,7 +88,7 @@ jobs:
           fetch-depth: '0' # full history with tags to get the version number by versioningit
 
       - name: Set up pixi
-        uses: prefix-dev/setup-pixi@v0.9.0
+        uses: prefix-dev/setup-pixi@v0.9.3
         with:
           environments: ${{ env.PIXI_ENVS }}
           run-install: true
@@ -190,7 +190,7 @@ jobs:
           path: . # directory to extract downloaded zipped artifacts
 
       - name: Set up pixi
-        uses: prefix-dev/setup-pixi@v0.9.0
+        uses: prefix-dev/setup-pixi@v0.9.3
         with:
           environments: ${{ env.PIXI_ENVS }}
           run-install: true
