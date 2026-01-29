@@ -29,6 +29,7 @@ class CalculatorBase(ABC):
         self,
         sample_model: SampleModelBase,
         experiment: ExperimentBase,
+        called_by_minimizer: bool,
     ) -> None:
         """Calculate structure factors for a single sample model and
         experiment.

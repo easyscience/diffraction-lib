@@ -51,6 +51,7 @@ class CryspyCalculator(CalculatorBase):
         self,
         sample_model: SampleModelBase,
         experiment: ExperimentBase,
+        called_by_minimizer: bool = False,
     ) -> None:
         """Raises a NotImplementedError as HKL calculation is not
         implemented.
@@ -60,6 +61,8 @@ class CryspyCalculator(CalculatorBase):
                 factors for.
             experiment: The experiment associated with the sample
                 models.
+            called_by_minimizer: Whether the calculation is called by a
+                minimizer.
         """
         raise NotImplementedError('HKL calculation is not implemented for CryspyCalculator.')
 
@@ -82,7 +85,7 @@ class CryspyCalculator(CalculatorBase):
             sample_model: The sample model to calculate the pattern for.
             experiment: The experiment associated with the sample model.
             called_by_minimizer: Whether the calculation is called by a
-            minimizer.
+                minimizer.
 
         Returns:
             The calculated diffraction pattern as a NumPy array or a
