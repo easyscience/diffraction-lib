@@ -115,27 +115,6 @@ class ScExperimentBase(ExperimentBase):
             scattering_type=self.type.scattering_type.value,
         )
 
-    def _get_valid_linked_crystal(
-        self,
-        sample_models: SampleModels,
-    ) -> LinkedCrystal | None:
-        """Get valid linked crystal for this experiment.
-
-        Args:
-            sample_models: Collection of sample models.
-
-        Returns:
-            A valid linked crystal.
-        """
-        if self.linked_crystal._identity.category_entry_name not in sample_models.names:
-            print(
-                f"Warning: Crystal '{self.linked_crystal.id.value}' not "
-                f'found in Sample Models {sample_models.names}. Skipping it.'
-            )
-            return None
-
-        return self.linked_crystal
-
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """Load single crystal data from an ASCII file.

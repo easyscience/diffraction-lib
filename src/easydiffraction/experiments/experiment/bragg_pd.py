@@ -19,7 +19,10 @@ if TYPE_CHECKING:
     from easydiffraction.experiments.categories.experiment_type import ExperimentType
 
 
-class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
+class BraggPdExperiment(
+    InstrumentMixin,
+    PdExperimentBase,
+):
     """Powder diffraction experiment.
 
     Wraps background model, peak profile and linked phases for Bragg PD.

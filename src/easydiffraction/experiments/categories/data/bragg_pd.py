@@ -371,6 +371,8 @@ class PdCwlData(PdDataBase):
     def _set_x(self, values) -> None:
         """Helper method to set 2θ values."""
         # TODO: split into multiple methods
+        # TODO: do we set _items here and reuse them for all other
+        #  _set_XXX methods?
         self._items = [self._item_type() for _ in range(values.size)]
         for p, v in zip(self._items, values, strict=True):
             p.two_theta._value = v
