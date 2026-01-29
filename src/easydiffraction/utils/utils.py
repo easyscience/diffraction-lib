@@ -7,7 +7,6 @@ import json
 import pathlib
 import re
 import urllib.request
-from functools import lru_cache
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
 from typing import List
@@ -65,7 +64,6 @@ def _normalize_known_hash(value: str | None) -> str | None:
     return value
 
 
-@lru_cache(maxsize=1)
 def _fetch_data_index() -> dict:
     """Fetch & cache the diffraction data index.json and return it as
     dict.
@@ -74,7 +72,7 @@ def _fetch_data_index() -> dict:
     _validate_url(index_url)
 
     # macOS: sha256sum index.json
-    index_hash = 'sha256:e78f5dd2f229ea83bfeb606502da602fc0b07136889877d3ab601694625dd3d7'
+    index_hash = 'sha256:89be6dc7536c71a462122403baf39934233db07e4a7d618e1b054ebda8a031ee'
     destination_dirname = 'easydiffraction'
     destination_fname = 'data-index.json'
     cache_dir = pooch.os_cache(destination_dirname)
@@ -91,7 +89,6 @@ def _fetch_data_index() -> dict:
         return json.load(f)
 
 
-@lru_cache(maxsize=1)
 def _fetch_tutorials_index() -> dict:
     """Fetch & cache the tutorials index.json from gh-pages and return
     it as dict.
