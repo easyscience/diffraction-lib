@@ -8,6 +8,7 @@ from typing import Optional
 
 from easydiffraction.experiments.categories.data.bragg_pd import PdCwlData
 from easydiffraction.experiments.categories.data.bragg_pd import PdTofData
+from easydiffraction.experiments.categories.data.bragg_sc import ReflnData
 from easydiffraction.experiments.categories.data.total import TotalData
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiment.enums import SampleFormEnum
@@ -29,6 +30,11 @@ class DataFactory:
             ScatteringTypeEnum.TOTAL: {
                 BeamModeEnum.CONSTANT_WAVELENGTH: TotalData,
                 BeamModeEnum.TIME_OF_FLIGHT: TotalData,
+            },
+        },
+        SampleFormEnum.SINGLE_CRYSTAL: {
+            ScatteringTypeEnum.BRAGG: {
+                BeamModeEnum.CONSTANT_WAVELENGTH: ReflnData,
             },
         },
     }
