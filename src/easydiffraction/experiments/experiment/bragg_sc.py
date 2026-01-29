@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from easydiffraction.experiments.categories.extinction import Extinction
+from easydiffraction.experiments.categories.linked_crystal import LinkedCrystal
 from easydiffraction.experiments.experiment.base import ScExperimentBase
 from easydiffraction.experiments.experiment.instrument_mixin import InstrumentMixin
 from easydiffraction.utils.logging import console
@@ -13,7 +15,10 @@ if TYPE_CHECKING:
     from easydiffraction.experiments.categories.experiment_type import ExperimentType
 
 
-class BraggScExperiment(InstrumentMixin, ScExperimentBase):
+class BraggScExperiment(
+    InstrumentMixin,
+    ScExperimentBase,
+):
     """Single crystal experiment class with specific attributes."""
 
     def __init__(
@@ -24,7 +29,8 @@ class BraggScExperiment(InstrumentMixin, ScExperimentBase):
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self.linked_crystal = None
+        self._linked_crystal = LinkedCrystal()
+        self._extinction = Extinction()
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """Load (index_h, index_k, index_l, y, sy) data from an ASCII
@@ -44,18 +50,34 @@ class BraggScExperiment(InstrumentMixin, ScExperimentBase):
             raise ValueError('Data file must have five columns: h, k, l, Fobs, sFobs.')
 
         # Extract h, k, l
-        index_h: np.ndarray = data[:, 0].astype(int)
-        index_k: np.ndarray = data[:, 1].astype(int)
-        index_l: np.ndarray = data[:, 2].astype(int)
+        indices_h: np.ndarray = data[:, 0].astype(int)
+        indices_k: np.ndarray = data[:, 1].astype(int)
+        indices_l: np.ndarray = data[:, 2].astype(int)
 
         # Extract Fobs, sFobs data
         y: np.ndarray = data[:, 3]
         sy: np.ndarray = data[:, 4]
 
         # Set the experiment data
-        self.data._set_hkl(index_h, index_k, index_l)
+        self.data._set_hkl(indices_h, indices_k, indices_l)
         self.data._set_meas(y)
         self.data._set_meas_su(sy)
 
         console.paragraph('Data loaded successfully')
-        console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(index_h)}")
+        console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(indices_h)}")
+
+    @property
+    def linked_crystal(self):
+        return self._linked_crystal
+
+    @linked_crystal.setter
+    def linked_crystal(self, value):
+        self._linked_crystal = value
+
+    @property
+    def extinction(self):
+        return self._extinction
+
+    @extinction.setter
+    def extinction(self, value):
+        self._extinction = value

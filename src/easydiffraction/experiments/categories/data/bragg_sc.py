@@ -3,20 +3,42 @@
 
 from __future__ import annotations
 
+import numpy as np
+
 from easydiffraction.core.category import CategoryCollection
+from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.validation import RegexValidator
 from easydiffraction.io.cif.handler import CifHandler
 
 
-class Refln:
+class Refln(CategoryItem):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self._index_h = StringDescriptor(
+        # TODO: Check CIF name
+        self._refln_id = StringDescriptor(
+            name='refln_id',
+            description='Identifier for this...',
+            value_spec=AttributeSpec(
+                type_=DataTypes.STRING,
+                default='0',
+                # TODO: the following pattern is valid for dict key
+                #  (keywords are not checked). CIF label is less strict.
+                #  Do we need conversion between CIF and internal label?
+                content_validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
+            ),
+            cif_handler=CifHandler(
+                names=[
+                    '_refln.refln_id',
+                ]
+            ),
+        )
+        self._index_h = NumericDescriptor(
             name='index_h',
             description='...',
             value_spec=AttributeSpec(
@@ -30,7 +52,7 @@ class Refln:
                 ]
             ),
         )
-        self._index_k = StringDescriptor(
+        self._index_k = NumericDescriptor(
             name='index_k',
             description='...',
             value_spec=AttributeSpec(
@@ -44,7 +66,7 @@ class Refln:
                 ]
             ),
         )
-        self._index_l = StringDescriptor(
+        self._index_l = NumericDescriptor(
             name='index_l',
             description='...',
             value_spec=AttributeSpec(
@@ -86,11 +108,148 @@ class Refln:
                 ]
             ),
         )
+        self._intensity_calc = NumericDescriptor(
+            name='intensity_calc',
+            description='...',
+            value_spec=AttributeSpec(
+                type_=DataTypes.NUMERIC,
+                default=0.0,
+                content_validator=RangeValidator(ge=0),
+            ),
+            cif_handler=CifHandler(
+                names=[
+                    '_refln.intensity_calc',
+                ]
+            ),
+        )
 
-    class ReflnData(CategoryCollection):
-        """..."""
+        self._identity.category_code = 'refln'
+        self._identity.category_entry_name = lambda: str(self.refln_id.value)
 
-        _update_priority = 100
+    @property
+    def refln_id(self) -> StringDescriptor:
+        return self._refln_id
 
-        def __init__(self):
-            super().__init__(item_type=Refln)
+    @property
+    def index_h(self) -> NumericDescriptor:
+        return self._index_h
+
+    @property
+    def index_k(self) -> NumericDescriptor:
+        return self._index_k
+
+    @property
+    def index_l(self) -> NumericDescriptor:
+        return self._index_l
+
+    @property
+    def intensity_meas(self) -> NumericDescriptor:
+        return self._intensity_meas
+
+    @property
+    def intensity_meas_su(self) -> NumericDescriptor:
+        return self._intensity_meas_su
+
+    @property
+    def intensity_calc(self) -> NumericDescriptor:
+        return self._intensity_calc
+
+
+class ReflnData(CategoryCollection):
+    """..."""
+
+    _update_priority = 100
+
+    def __init__(self):
+        super().__init__(item_type=Refln)
+
+    # Should be set only once
+
+    def _set_hkl(self, indices_h, indices_k, indices_l) -> None:
+        """Helper method to set Miller indices."""
+        # TODO: split into multiple methods
+        # TODO: do we set _items here and reuse them for all other
+        #  _set_XXX methods?
+        self._items = [self._item_type() for _ in range(indices_h.size)]
+        for p, index_h, index_k, index_l in zip(
+            self._items, indices_h, indices_k, indices_l, strict=True
+        ):
+            p.index_h._value = index_h
+            p.index_k._value = index_k
+            p.index_l._value = index_l
+        self._set_refln_id([str(i + 1) for i in range(indices_h.size)])
+
+    def _set_refln_id(self, values) -> None:
+        """Helper method to set reflection IDs."""
+        for p, v in zip(self._items, values, strict=True):
+            p.refln_id._value = v
+
+    def _set_meas(self, values) -> None:
+        """Helper method to set measured intensity."""
+        for p, v in zip(self._items, values, strict=True):
+            p.intensity_meas._value = v
+
+    def _set_meas_su(self, values) -> None:
+        """Helper method to set standard uncertainty of measured
+        intensity.
+        """
+        for p, v in zip(self._items, values, strict=True):
+            p.intensity_meas_su._value = v
+
+    # Can be set multiple times
+
+    def _set_calc(self, values) -> None:
+        """Helper method to set calculated intensity."""
+        for p, v in zip(self._items, values, strict=True):
+            p.intensity_calc._value = v
+
+    @property
+    def indices_h(self) -> np.ndarray:
+        return np.fromiter((p.index_h.value for p in self._items), dtype=float)
+
+    @property
+    def indices_k(self) -> np.ndarray:
+        return np.fromiter((p.index_k.value for p in self._items), dtype=float)
+
+    @property
+    def indices_l(self) -> np.ndarray:
+        return np.fromiter((p.index_l.value for p in self._items), dtype=float)
+
+    @property
+    def meas(self) -> np.ndarray:
+        return np.fromiter((p.intensity_meas.value for p in self._items), dtype=float)
+
+    @property
+    def meas_su(self) -> np.ndarray:
+        return np.fromiter((p.intensity_meas_su.value for p in self._items), dtype=float)
+
+    @property
+    def calc(self) -> np.ndarray:
+        return np.fromiter((p.intensity_calc.value for p in self._items), dtype=float)
+
+    def _update(self, called_by_minimizer=False):
+        experiment = self._parent
+        experiments = experiment._parent
+        project = experiments._parent
+        sample_models = project.sample_models
+        # calculator = experiment.calculator  # TODO: move from analysis
+        calculator = project.analysis.calculator
+
+        initial_calc = np.zeros_like(self.indices_h)
+        calc = initial_calc
+        linked_crystal = experiment.linked_crystal
+        linked_crystal_id = experiment.linked_crystal.id.value
+        if linked_crystal_id in sample_models.names:
+            sample_model_id = linked_crystal_id
+            sample_model_scale = linked_crystal.scale.value
+            sample_model = sample_models[sample_model_id]
+
+            sample_model_calc = calculator.calculate_structure_factors(
+                sample_model,
+                experiment,
+                called_by_minimizer=called_by_minimizer,
+            )
+
+            calc = sample_model_scale * sample_model_calc
+
+        self._set_calc(calc)
