@@ -89,5 +89,12 @@
     "title": "DMSC Summer School 2025: Powder Diffraction Analysis",
     "description": "Comprehensive workshop tutorial covering Rietveld refinement of Si and La0.5Ba0.5CoO3 using simulated powder diffraction data",
     "level": "workshop"
+  },
+  "14": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-14/ed-14.ipynb",
+    "original_name": "",
+    "title": "Crystal Structure: Tb2TiO7, HEiDi",
+    "description": "Crystal structure refinement of Tb2TiO7 using single crystal neutron diffraction data from HEiDi at FRM II",
+    "level": "intermediate"
   }
 }
