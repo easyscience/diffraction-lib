@@ -11,6 +11,7 @@ from typing import List
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.experiments.categories.data.factory import DataFactory
 from easydiffraction.experiments.categories.excluded_regions import ExcludedRegions
+from easydiffraction.experiments.categories.linked_crystal import LinkedCrystal
 from easydiffraction.experiments.categories.linked_phases import LinkedPhases
 from easydiffraction.experiments.categories.peak.factory import PeakFactory
 from easydiffraction.experiments.categories.peak.factory import PeakProfileTypeEnum
@@ -93,6 +94,75 @@ class ExperimentBase(DatablockItem):
             data_path: Path to the ASCII file to load.
         """
         raise NotImplementedError()
+
+
+class ScExperimentBase(ExperimentBase):
+    """Base class for all single crystal experiments."""
+
+    def __init__(
+        self,
+        *,
+        name: str,
+        type: ExperimentType,
+    ) -> None:
+        super().__init__(name=name, type=type)
+
+        self._linked_crystal: LinkedCrystal = LinkedCrystal()
+
+        self._data = DataFactory.create(
+            sample_form=self.type.sample_form.value,
+            beam_mode=self.type.beam_mode.value,
+            scattering_type=self.type.scattering_type.value,
+        )
+
+    def _get_valid_linked_crystal(
+        self,
+        sample_models: SampleModels,
+    ) -> LinkedCrystal | None:
+        """Get valid linked crystal for this experiment.
+
+        Args:
+            sample_models: Collection of sample models.
+
+        Returns:
+            A valid linked crystal.
+        """
+        if self.linked_crystal._identity.category_entry_name not in sample_models.names:
+            print(
+                f"Warning: Crystal '{self.linked_crystal.id.value}' not "
+                f'found in Sample Models {sample_models.names}. Skipping it.'
+            )
+            return None
+
+        return self.linked_crystal
+
+    @abstractmethod
+    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+        """Load single crystal data from an ASCII file.
+
+        Args:
+            data_path: Path to data file with columns compatible with
+                the beam mode.
+        """
+        pass
+
+    @property
+    def linked_crystal(self):
+        """Linked crystal model for this experiment."""
+        return self._linked_crystal
+
+    @linked_crystal.setter
+    def linked_crystal(self, value):
+        """Set the linked crystal model for this experiment.
+
+        Args:
+            value: New linked crystal model.
+        """
+        self._linked_crystal = value
+
+    @property
+    def data(self):
+        return self._data
 
 
 class PdExperimentBase(ExperimentBase):
