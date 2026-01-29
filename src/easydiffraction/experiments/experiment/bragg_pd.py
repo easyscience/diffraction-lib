@@ -36,25 +36,16 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
         self._background_type: BackgroundTypeEnum = BackgroundTypeEnum.default()
         self._background = BackgroundFactory.create(background_type=self.background_type)
 
-    @property
-    def background(self):
-        return self._background
-
-    @background.setter
-    def background(self, value):
-        self._background = value
-
-    # -------------
-    # Measured data
-    # -------------
-
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """Load (x, y, sy) data from an ASCII file into the data
         category.
 
         The file format is space/column separated with 2 or 3 columns:
         ``x y [sy]``. If ``sy`` is missing, it is approximated as
-        ``sqrt(y)`` with small values clamped to ``1.0``.
+        ``sqrt(y)``.
+
+        If ``sy`` has values smaller than ``0.0001``, they are replaced
+        with ``1.0``.
         """
         try:
             data = np.loadtxt(data_path)
@@ -112,6 +103,14 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
         self._background_type = new_type
         console.paragraph(f"Background type for experiment '{self.name}' changed to")
         console.print(new_type)
+
+    @property
+    def background(self):
+        return self._background
+
+    @background.setter
+    def background(self, value):
+        self._background = value
 
     def show_supported_background_types(self):
         """Print a table of supported background types."""
