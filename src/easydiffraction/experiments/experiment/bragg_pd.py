@@ -72,6 +72,7 @@ class BraggPdExperiment(
         sy: np.ndarray = data[:, 2] if data.shape[1] > 2 else np.sqrt(y)
 
         # Replace values smaller than 0.0001 with 1.0
+        # TODO: Not used if loading from cif file?
         sy = np.where(sy < 0.0001, 1.0, sy)
 
         # Set the experiment data
