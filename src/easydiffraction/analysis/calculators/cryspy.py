@@ -98,9 +98,7 @@ class CryspyCalculator(CalculatorBase):
         cryspy_block_name = f'diffrn_{experiment.name}'
 
         try:
-            y_plus = cryspy_in_out_dict[cryspy_block_name]['y_plus']
-            y_minus = cryspy_in_out_dict[cryspy_block_name]['y_minus']
-            y_calc = y_plus + y_minus
+            y_calc = cryspy_in_out_dict[cryspy_block_name]['intensity_calc']
             stol = cryspy_in_out_dict[cryspy_block_name]['sthovl']
         except KeyError:
             print(f'[CryspyCalculator] Error: No calculated data for {cryspy_block_name}')
