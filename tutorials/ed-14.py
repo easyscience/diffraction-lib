@@ -54,7 +54,7 @@ experiment = project.experiments['heidi']  # TODO: <heidi (None)>
 
 # %%
 experiment.linked_crystal.id = 'tbti'
-experiment.linked_crystal.scale = 3.0
+experiment.linked_crystal.scale = 1.0
 
 # %%
 experiment.instrument.setup_wavelength = 0.793
@@ -62,7 +62,7 @@ experiment.instrument.setup_wavelength = 0.793
 
 # %%
 experiment.extinction.mosaicity = 29820
-experiment.extinction.radius = 27
+experiment.extinction.radius = 30
 
 # %% [markdown]
 # ## Step 4: Perform Analysis
@@ -72,7 +72,7 @@ project.plot_meas_vs_calc(expt_name='heidi', d_spacing=True)
 
 # %%
 experiment.linked_crystal.scale.free = True
-# experiment.extinction.radius.free = True
+experiment.extinction.radius.free = True
 
 # %%
 experiment.show_as_cif()
@@ -99,4 +99,6 @@ project.plot_meas_vs_calc(expt_name='heidi', d_spacing=True)
 # ## Step 5: Show Project Summary
 
 # %%
-# project.summary.show_report()
+project.summary.show_report()
+
+# %%
