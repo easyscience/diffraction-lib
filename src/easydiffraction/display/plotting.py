@@ -317,9 +317,15 @@ class Plotter(RendererBase):
             show_residual: If ``True``, add residual series.
             d_spacing: If ``True``, plot against d-spacing values.
         """
-        if pattern.x is None:
-            log.error(f'No data available for experiment {expt_name}')
-            return
+        if d_spacing is False:
+            if pattern.x is None:
+                log.error(f'No data available for experiment {expt_name}')
+                return
+        elif d_spacing is True:
+            if pattern.d is None:
+                log.error(f'No data available for experiment {expt_name}')
+                return
+
         if pattern.meas is None:
             log.error(f'No measured data available for experiment {expt_name}')
             return

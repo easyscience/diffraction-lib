@@ -53,7 +53,7 @@ class CryspyCalculator(CalculatorBase):
         sample_model: SampleModelBase,
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
-    ) -> None:
+    ):
         """Raises a NotImplementedError as HKL calculation is not
         implemented.
 

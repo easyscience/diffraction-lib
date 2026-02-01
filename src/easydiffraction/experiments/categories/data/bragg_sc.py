@@ -238,12 +238,12 @@ class ReflnData(CategoryCollection):
 
     def _set_d_spacing(self, values) -> None:
         """Helper method to set d-spacing values."""
-        for p, v in zip(self._calc_items, values, strict=True):
+        for p, v in zip(self._items, values, strict=True):
             p.d_spacing._value = v
 
     def _set_sin_theta_over_lambda(self, values) -> None:
         """Helper method to set sin(theta)/lambda values."""
-        for p, v in zip(self._calc_items, values, strict=True):
+        for p, v in zip(self._items, values, strict=True):
             p.sin_theta_over_lambda._value = v
 
     def _set_calc(self, values) -> None:
@@ -309,4 +309,5 @@ class ReflnData(CategoryCollection):
             calc = sample_model_scale * sample_model_calc
 
         self._set_sin_theta_over_lambda(stol)
+        self._set_d_spacing(0.5 / stol)  # TODO: Move to .utils.utils
         self._set_calc(calc)
