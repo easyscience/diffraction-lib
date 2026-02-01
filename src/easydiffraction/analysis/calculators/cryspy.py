@@ -101,11 +101,12 @@ class CryspyCalculator(CalculatorBase):
             y_plus = cryspy_in_out_dict[cryspy_block_name]['y_plus']
             y_minus = cryspy_in_out_dict[cryspy_block_name]['y_minus']
             y_calc = y_plus + y_minus
+            stol = cryspy_in_out_dict[cryspy_block_name]['sthovl']
         except KeyError:
             print(f'[CryspyCalculator] Error: No calculated data for {cryspy_block_name}')
-            return []
+            return [], []
 
-        return y_calc
+        return stol, y_calc
 
     def calculate_pattern(
         self,

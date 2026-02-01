@@ -20,7 +20,7 @@ class Refln(CategoryItem):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # TODO: Check CIF name
+        # TODO: Rename to _refln.id following coreCIF
         self._refln_id = StringDescriptor(
             name='refln_id',
             description='Identifier for this...',
@@ -35,6 +35,36 @@ class Refln(CategoryItem):
             cif_handler=CifHandler(
                 names=[
                     '_refln.refln_id',
+                ]
+            ),
+        )
+        self._d_spacing = NumericDescriptor(
+            name='d_spacing',
+            description='The distance between lattice planes in the crystal for this reflection.',
+            value_spec=AttributeSpec(
+                type_=DataTypes.NUMERIC,
+                default=0.0,
+                content_validator=RangeValidator(ge=0),
+            ),
+            units='Å',
+            cif_handler=CifHandler(
+                names=[
+                    '_refln.d_spacing',
+                ]
+            ),
+        )
+        self._sin_theta_over_lambda = NumericDescriptor(
+            name='sin_theta_over_lambda',
+            description='The sin(θ)/λ value for this reflection.',
+            value_spec=AttributeSpec(
+                type_=DataTypes.NUMERIC,
+                default=0.0,
+                content_validator=RangeValidator(ge=0),
+            ),
+            units='Å⁻¹',
+            cif_handler=CifHandler(
+                names=[
+                    '_refln.sin_theta_over_lambda',
                 ]
             ),
         )
@@ -131,6 +161,14 @@ class Refln(CategoryItem):
         return self._refln_id
 
     @property
+    def d_spacing(self) -> NumericDescriptor:
+        return self._d_spacing
+
+    @property
+    def sin_theta_over_lambda(self) -> NumericDescriptor:
+        return self._sin_theta_over_lambda
+
+    @property
     def index_h(self) -> NumericDescriptor:
         return self._index_h
 
@@ -198,10 +236,28 @@ class ReflnData(CategoryCollection):
 
     # Can be set multiple times
 
+    def _set_d_spacing(self, values) -> None:
+        """Helper method to set d-spacing values."""
+        for p, v in zip(self._calc_items, values, strict=True):
+            p.d_spacing._value = v
+
+    def _set_sin_theta_over_lambda(self, values) -> None:
+        """Helper method to set sin(theta)/lambda values."""
+        for p, v in zip(self._calc_items, values, strict=True):
+            p.sin_theta_over_lambda._value = v
+
     def _set_calc(self, values) -> None:
         """Helper method to set calculated intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_calc._value = v
+
+    @property
+    def d(self) -> np.ndarray:
+        return np.fromiter((p.d_spacing.value for p in self._items), dtype=float)
+
+    @property
+    def stol(self) -> np.ndarray:
+        return np.fromiter((p.sin_theta_over_lambda.value for p in self._items), dtype=float)
 
     @property
     def indices_h(self) -> np.ndarray:
@@ -244,7 +300,7 @@ class ReflnData(CategoryCollection):
             sample_model_scale = linked_crystal.scale.value
             sample_model = sample_models[sample_model_id]
 
-            sample_model_calc = calculator.calculate_structure_factors(
+            stol, sample_model_calc = calculator.calculate_structure_factors(
                 sample_model,
                 experiment,
                 called_by_minimizer=called_by_minimizer,
@@ -252,4 +308,5 @@ class ReflnData(CategoryCollection):
 
             calc = sample_model_scale * sample_model_calc
 
+        self._set_sin_theta_over_lambda(stol)
         self._set_calc(calc)
