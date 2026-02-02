@@ -26,10 +26,12 @@ project.plotter.engine = 'plotly'
 # %%
 # Download CIF file from repository
 model_path = ed.download_data(id=21, destination='data')
-# model_path = "data/ed-21.cif"
 
 # %%
 project.sample_models.add(cif_path=model_path)
+
+# %%
+project.sample_models.show_names()
 
 # %%
 sample_model = project.sample_models['taurine']
@@ -42,7 +44,6 @@ sample_model = project.sample_models['taurine']
 
 # %%
 data_path = ed.download_data(id=22, destination='data')
-# data_path = "data/ed-22.xye"
 
 # %%
 project.experiments.add(
@@ -58,21 +59,21 @@ experiment = project.experiments['senju']  # TODO: <senju (None)>
 
 # %%
 experiment.linked_crystal.id = 'taurine'
-experiment.linked_crystal.scale = 1.3
+experiment.linked_crystal.scale = 1.0
 
 # %%
-# experiment.instrument.setup_wavelength = 1.5# TODO: Remove in TOF SC
+# experiment.instrument.setup_wavelength = 1.5 # TODO: Remove in TOF SC
 # experiment.instrument.calib_twotheta_offset = 0.6 # TODO: Remove in SC
 
 # %%
-experiment.extinction.mosaicity = 1000
-experiment.extinction.radius = 1.0
+experiment.extinction.mosaicity = 1000.0
+experiment.extinction.radius = 100.0
 
 # %% [markdown]
 # ## Step 4: Perform Analysis
 
 # %%
-project.plot_meas_vs_calc(expt_name='senju', d_spacing=True)
+project.plot_meas_vs_calc(expt_name='senju')
 
 # %%
 experiment.linked_crystal.scale.free = True
@@ -94,10 +95,10 @@ project.analysis.show_fit_results()
 # experiment.show_as_cif()
 
 # %%
-# project.experiments.show_names()
+project.experiments.show_names()
 
 # %%
-project.plot_meas_vs_calc(expt_name='senju', d_spacing=True)
+project.plot_meas_vs_calc(expt_name='senju')
 
 # %% [markdown]
 # ## Step 5: Show Project Summary

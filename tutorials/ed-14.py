@@ -31,7 +31,12 @@ model_path = ed.download_data(id=20, destination='data')
 project.sample_models.add(cif_path=model_path)
 
 # %%
+project.sample_models.show_names()
+
+# %%
 sample_model = project.sample_models['tbti']
+
+# %%
 sample_model.show_as_cif()
 
 # %% [markdown]
@@ -68,7 +73,7 @@ experiment.extinction.radius = 30
 # ## Step 4: Perform Analysis
 
 # %%
-project.plot_meas_vs_calc(expt_name='heidi', d_spacing=True)
+project.plot_meas_vs_calc(expt_name='heidi')
 
 # %%
 experiment.linked_crystal.scale.free = True
@@ -90,15 +95,13 @@ project.analysis.show_fit_results()
 experiment.show_as_cif()
 
 # %%
-# project.experiments.show_names()
+project.experiments.show_names()
 
 # %%
-project.plot_meas_vs_calc(expt_name='heidi', d_spacing=True)
+project.plot_meas_vs_calc(expt_name='heidi')
 
 # %% [markdown]
 # ## Step 5: Show Project Summary
 
 # %%
 project.summary.show_report()
-
-# %%
