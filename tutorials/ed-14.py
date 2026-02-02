@@ -2,7 +2,7 @@
 # # Structure Refinement: Tb2TiO7, HEiDi
 #
 # Crystal structure refinement of Tb2TiO7 using single crystal neutron
-# diffraction data from HEiDi at FRM II
+# diffraction data from HEiDi at FRM II.
 
 # %% [markdown]
 # ## Import Library
