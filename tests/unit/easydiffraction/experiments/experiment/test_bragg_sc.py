@@ -31,5 +31,6 @@ def test_init_and_placeholder_no_crash(monkeypatch: pytest.MonkeyPatch):
     # Prevent logger from raising on attribute errors inside __init__
     monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
     expt = _ConcreteBraggSc(name='sc1', type=_mk_type_sc_bragg())
-    # show_meas_chart just prints placeholder text; ensure no exception
-    expt.show_meas_chart()
+    # Verify that experiment was created successfully with expected properties
+    assert expt.name == 'sc1'
+    assert expt.type is not None

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import functools
 import json
 import pathlib
 import re
@@ -89,6 +90,7 @@ def _fetch_data_index() -> dict:
         return json.load(f)
 
 
+@functools.lru_cache(maxsize=1)
 def _fetch_tutorials_index() -> dict:
     """Fetch & cache the tutorials index.json from gh-pages and return
     it as dict.
