@@ -8,9 +8,9 @@ from typing import TYPE_CHECKING
 from easydiffraction.experiments.categories.extinction import Extinction
 from easydiffraction.experiments.categories.linked_crystal import LinkedCrystal
 from easydiffraction.experiments.experiment.base import ScExperimentBase
+from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiment.instrument_mixin import InstrumentMixin
 from easydiffraction.utils.logging import console
-from easydiffraction.experiments.experiment.enums import BeamModeEnum
 
 if TYPE_CHECKING:
     from easydiffraction.experiments.categories.experiment_type import ExperimentType

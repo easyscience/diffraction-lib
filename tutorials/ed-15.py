@@ -26,7 +26,7 @@ project.plotter.engine = 'plotly'
 # %%
 # Download CIF file from repository
 model_path = ed.download_data(id=21, destination='data')
-#model_path = "data/ed-21.cif"
+# model_path = "data/ed-21.cif"
 
 # %%
 project.sample_models.add(cif_path=model_path)
@@ -35,14 +35,14 @@ project.sample_models.add(cif_path=model_path)
 sample_model = project.sample_models['taurine']
 
 # %%
-#sample_model.show_as_cif()
+# sample_model.show_as_cif()
 
 # %% [markdown]
 # ## Step 3: Define Experiment
 
 # %%
 data_path = ed.download_data(id=22, destination='data')
-#data_path = "data/ed-22.xye"
+# data_path = "data/ed-22.xye"
 
 # %%
 project.experiments.add(
@@ -79,7 +79,7 @@ experiment.linked_crystal.scale.free = True
 experiment.extinction.radius.free = True
 
 # %%
-#experiment.show_as_cif()
+# experiment.show_as_cif()
 
 # %%
 # Start refinement. All parameters, which have standard uncertainties
@@ -91,7 +91,7 @@ project.analysis.fit()
 project.analysis.show_fit_results()
 
 # %%
-#experiment.show_as_cif()
+# experiment.show_as_cif()
 
 # %%
 # project.experiments.show_names()

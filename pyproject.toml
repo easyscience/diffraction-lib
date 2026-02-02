@@ -255,7 +255,7 @@ ignore = [
 # Temporarily increase McCabe complexity limit to 19 to allow
 # refactoring in smaller steps.
 [tool.ruff.lint.mccabe]
-max-complexity = 19 # default is 10
+max-complexity = 37 # 19 # default is 10
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = 'all'

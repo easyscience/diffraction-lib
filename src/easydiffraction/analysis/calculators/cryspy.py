@@ -443,18 +443,17 @@ class CryspyCalculator(CalculatorBase):
                     cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 
         # Add extinction attribute data
-        if extinction:
-            if expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
-                extinction_mapping = {
-                    'mosaicity': '_extinction_mosaicity',
-                    'radius': '_extinction_radius',
-                }
-                cif_lines.append('')
-                cif_lines.append('_extinction_model gauss')
-                for local_attr_name, engine_key_name in extinction_mapping.items():
-                    attr_obj = getattr(extinction, local_attr_name)
-                    if attr_obj is not None:
-                        cif_lines.append(f'{engine_key_name} {attr_obj.value}')
+        if extinction and expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
+            extinction_mapping = {
+                'mosaicity': '_extinction_mosaicity',
+                'radius': '_extinction_radius',
+            }
+            cif_lines.append('')
+            cif_lines.append('_extinction_model gauss')
+            for local_attr_name, engine_key_name in extinction_mapping.items():
+                attr_obj = getattr(extinction, local_attr_name)
+                if attr_obj is not None:
+                    cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 
         # Add range data
         if expt_type.sample_form.value == SampleFormEnum.POWDER:
@@ -554,7 +553,8 @@ class CryspyCalculator(CalculatorBase):
                     indices_h, indices_k, indices_l, y_data, sy_data, wl_data, strict=True
                 ):
                     cif_lines.append(
-                        f'{index_h:4.0f}{index_k:4.0f}{index_l:4.0f}   {y_val:.5f}   {sy_val:.5f}   {wl_val:.5f}'
+                        f'{index_h:4.0f}{index_k:4.0f}{index_l:4.0f}   {y_val:.5f}   '
+                        f'{sy_val:.5f}   {wl_val:.5f}'
                     )
         # Add measured data: Powder
         elif expt_type.sample_form.value == SampleFormEnum.POWDER:

@@ -254,8 +254,7 @@ class ReflnData(CategoryCollection):
             p.intensity_meas_su._value = v
 
     def _set_wavelength(self, values) -> None:
-        """Helper method to set wavelength.
-        """
+        """Helper method to set wavelength."""
         for p, v in zip(self._items, values, strict=True):
             p.wavelength._value = v
 

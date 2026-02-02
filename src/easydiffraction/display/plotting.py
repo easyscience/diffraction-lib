@@ -321,10 +321,9 @@ class Plotter(RendererBase):
             if pattern.x is None:
                 log.error(f'No data available for experiment {expt_name}')
                 return
-        elif d_spacing is True:
-            if pattern.d is None:
-                log.error(f'No data available for experiment {expt_name}')
-                return
+        elif d_spacing is True and pattern.d is None:
+            log.error(f'No data available for experiment {expt_name}')
+            return
 
         if pattern.meas is None:
             log.error(f'No measured data available for experiment {expt_name}')
