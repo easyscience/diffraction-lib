@@ -287,7 +287,8 @@ class CryspyCalculator(CalculatorBase):
             cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
 
             # Instrument
-            cryspy_expt_dict['wavelength'][0] = experiment.instrument.setup_wavelength.value
+            if experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+                cryspy_expt_dict['wavelength'][0] = experiment.instrument.setup_wavelength.value
 
             # Extinction
             cryspy_expt_dict['extinction_radius'][0] = experiment.extinction.radius.value
@@ -402,6 +403,10 @@ class CryspyCalculator(CalculatorBase):
                     }
                 elif expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
                     instrument_mapping = {}  # TODO: Check this mapping!
+                    # Add dummy 0.0 value for _setup_field required by
+                    # Cryspy
+                    cif_lines.append('')
+                    cif_lines.append('_setup_field 0.0')
             cif_lines.append('')
             for local_attr_name, engine_key_name in instrument_mapping.items():
                 # attr_obj = instrument.__dict__.get(local_attr_name)
@@ -509,7 +514,7 @@ class CryspyCalculator(CalculatorBase):
                 cif_lines.append(f'{twotheta_min} 0.0')  # TODO: !!!!????
                 cif_lines.append(f'{twotheta_max} 0.0')  # TODO: !!!!????
 
-        # Add measured data
+        # Add measured data: Single crystal
         if expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
             if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
                 cif_lines.append('')
@@ -519,6 +524,17 @@ class CryspyCalculator(CalculatorBase):
                 cif_lines.append('_diffrn_refln_index_l')
                 cif_lines.append('_diffrn_refln_intensity')
                 cif_lines.append('_diffrn_refln_intensity_sigma')
+                indices_h: np.ndarray = experiment.data.indices_h
+                indices_k: np.ndarray = experiment.data.indices_k
+                indices_l: np.ndarray = experiment.data.indices_l
+                y_data: np.ndarray = experiment.data.meas
+                sy_data: np.ndarray = experiment.data.meas_su
+                for index_h, index_k, index_l, y_val, sy_val in zip(
+                    indices_h, indices_k, indices_l, y_data, sy_data, strict=True
+                ):
+                    cif_lines.append(
+                        f'{index_h:4.0f}{index_k:4.0f}{index_l:4.0f}   {y_val:.5f}   {sy_val:.5f}'
+                    )
             elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
                 cif_lines.append('')
                 cif_lines.append('loop_')
@@ -528,17 +544,19 @@ class CryspyCalculator(CalculatorBase):
                 cif_lines.append('_diffrn_refln_intensity')
                 cif_lines.append('_diffrn_refln_intensity_sigma')
                 cif_lines.append('_diffrn_refln_wavelength')
-            indices_h: np.ndarray = experiment.data.indices_h
-            indices_k: np.ndarray = experiment.data.indices_k
-            indices_l: np.ndarray = experiment.data.indices_l
-            y_data: np.ndarray = experiment.data.meas
-            sy_data: np.ndarray = experiment.data.meas_su
-            for index_h, index_k, index_l, y_val, sy_val in zip(
-                indices_h, indices_k, indices_l, y_data, sy_data, strict=True
-            ):
-                cif_lines.append(
-                    f'{index_h:4.0f}{index_k:4.0f}{index_l:4.0f}   {y_val:.5f}   {sy_val:.5f}'
-                )
+                indices_h: np.ndarray = experiment.data.indices_h
+                indices_k: np.ndarray = experiment.data.indices_k
+                indices_l: np.ndarray = experiment.data.indices_l
+                y_data: np.ndarray = experiment.data.meas
+                sy_data: np.ndarray = experiment.data.meas_su
+                wl_data: np.ndarray = experiment.data.wavelength
+                for index_h, index_k, index_l, y_val, sy_val, wl_val in zip(
+                    indices_h, indices_k, indices_l, y_data, sy_data, wl_data, strict=True
+                ):
+                    cif_lines.append(
+                        f'{index_h:4.0f}{index_k:4.0f}{index_l:4.0f}   {y_val:.5f}   {sy_val:.5f}   {wl_val:.5f}'
+                    )
+        # Add measured data: Powder
         elif expt_type.sample_form.value == SampleFormEnum.POWDER:
             if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
                 cif_lines.append('')

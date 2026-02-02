@@ -10,6 +10,7 @@ from easydiffraction.experiments.categories.linked_crystal import LinkedCrystal
 from easydiffraction.experiments.experiment.base import ScExperimentBase
 from easydiffraction.experiments.experiment.instrument_mixin import InstrumentMixin
 from easydiffraction.utils.logging import console
+from easydiffraction.experiments.experiment.enums import BeamModeEnum
 
 if TYPE_CHECKING:
     from easydiffraction.experiments.categories.experiment_type import ExperimentType
@@ -62,6 +63,12 @@ class BraggScExperiment(
         self.data._set_hkl(indices_h, indices_k, indices_l)
         self.data._set_meas(y)
         self.data._set_meas_su(sy)
+
+        if self.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
+            # Extract wavelength data if present
+            wavelength: np.ndarray = data[:, 5]
+            # Set the experiment data
+            self.data._set_wavelength(wavelength)
 
         console.paragraph('Data loaded successfully')
         console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(indices_h)}")

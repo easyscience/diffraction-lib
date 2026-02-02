@@ -25,8 +25,8 @@ project.plotter.engine = 'plotly'
 
 # %%
 # Download CIF file from repository
-#model_path = ed.download_data(id=20, destination='data')
-model_path = "data/ed-21.cif"
+model_path = ed.download_data(id=21, destination='data')
+#model_path = "data/ed-21.cif"
 
 # %%
 project.sample_models.add(cif_path=model_path)
@@ -41,15 +41,15 @@ sample_model = project.sample_models['taurine']
 # ## Step 3: Define Experiment
 
 # %%
-#data_path = ed.download_data(id=19, destination='data')
-data_path = "data/ed-22.xye"
+data_path = ed.download_data(id=22, destination='data')
+#data_path = "data/ed-22.xye"
 
 # %%
 project.experiments.add(
     name='senju',
     data_path=data_path,
     sample_form='single crystal',
-    beam_mode='constant wavelength',
+    beam_mode='time-of-flight',
     radiation_probe='neutron',
 )
 
@@ -58,15 +58,15 @@ experiment = project.experiments['senju']  # TODO: <senju (None)>
 
 # %%
 experiment.linked_crystal.id = 'taurine'
-experiment.linked_crystal.scale = 1.0
+experiment.linked_crystal.scale = 1.3
 
 # %%
-experiment.instrument.setup_wavelength = 1.5
+# experiment.instrument.setup_wavelength = 1.5# TODO: Remove in TOF SC
 # experiment.instrument.calib_twotheta_offset = 0.6 # TODO: Remove in SC
 
 # %%
-experiment.extinction.mosaicity = 29820
-experiment.extinction.radius = 30
+experiment.extinction.mosaicity = 1000
+experiment.extinction.radius = 1.0
 
 # %% [markdown]
 # ## Step 4: Perform Analysis
@@ -79,7 +79,7 @@ experiment.linked_crystal.scale.free = True
 experiment.extinction.radius.free = True
 
 # %%
-experiment.show_as_cif()
+#experiment.show_as_cif()
 
 # %%
 # Start refinement. All parameters, which have standard uncertainties
@@ -91,7 +91,7 @@ project.analysis.fit()
 project.analysis.show_fit_results()
 
 # %%
-experiment.show_as_cif()
+#experiment.show_as_cif()
 
 # %%
 # project.experiments.show_names()

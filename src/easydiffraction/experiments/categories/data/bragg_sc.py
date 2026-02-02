@@ -152,6 +152,21 @@ class Refln(CategoryItem):
                 ]
             ),
         )
+        self._wavelength = NumericDescriptor(
+            name='wavelength',
+            description='The mean wavelength of radiation used to measure this reflection.',
+            value_spec=AttributeSpec(
+                type_=DataTypes.NUMERIC,
+                default=0.0,
+                content_validator=RangeValidator(ge=0),
+            ),
+            units='Å',
+            cif_handler=CifHandler(
+                names=[
+                    '_refln.wavelength',
+                ]
+            ),
+        )
 
         self._identity.category_code = 'refln'
         self._identity.category_entry_name = lambda: str(self.refln_id.value)
@@ -191,6 +206,10 @@ class Refln(CategoryItem):
     @property
     def intensity_calc(self) -> NumericDescriptor:
         return self._intensity_calc
+
+    @property
+    def wavelength(self) -> NumericDescriptor:
+        return self._wavelength
 
 
 class ReflnData(CategoryCollection):
@@ -233,6 +252,12 @@ class ReflnData(CategoryCollection):
         """
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas_su._value = v
+
+    def _set_wavelength(self, values) -> None:
+        """Helper method to set wavelength.
+        """
+        for p, v in zip(self._items, values, strict=True):
+            p.wavelength._value = v
 
     # Can be set multiple times
 
@@ -282,6 +307,10 @@ class ReflnData(CategoryCollection):
     @property
     def calc(self) -> np.ndarray:
         return np.fromiter((p.intensity_calc.value for p in self._items), dtype=float)
+
+    @property
+    def wavelength(self) -> np.ndarray:
+        return np.fromiter((p.wavelength.value for p in self._items), dtype=float)
 
     def _update(self, called_by_minimizer=False):
         experiment = self._parent

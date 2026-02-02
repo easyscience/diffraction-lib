@@ -35,6 +35,7 @@ class DataFactory:
         SampleFormEnum.SINGLE_CRYSTAL: {
             ScatteringTypeEnum.BRAGG: {
                 BeamModeEnum.CONSTANT_WAVELENGTH: ReflnData,
+                BeamModeEnum.TIME_OF_FLIGHT: ReflnData,
             },
         },
     }
