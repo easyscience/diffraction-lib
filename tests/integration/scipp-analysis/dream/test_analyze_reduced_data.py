@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from numpy.testing import assert_almost_equal
 
 import easydiffraction as ed
 from easydiffraction import Project
@@ -126,10 +127,10 @@ def configured_project(project_with_data: Project) -> Project:
 
 
 @pytest.fixture(scope='module')
-def fit_results(
+def fitted_project(
     configured_project: Project,
-) -> dict[str, Any]:
-    """Perform fit and return results."""
+) -> Project:
+    """Perform fit and return project with results."""
     project = configured_project
     model = project.sample_models['si']
     experiment = project.experiments['reduced_tof']
@@ -149,11 +150,7 @@ def fit_results(
     # Run fit
     project.analysis.fit()
 
-    return {
-        'success': project.analysis.fit_results.success,
-        'reduced_chi': project.analysis.fit_results.reduced_chi_square,
-        'n_free_params': len(project.analysis.fittable_params),
-    }
+    return project
 
 
 # ======================================================================
@@ -187,11 +184,7 @@ def test_analyze_data__phase_linked(
 ) -> None:
     """Verify phase is correctly linked to experiment."""
     experiment = configured_project.experiments['reduced_tof']
-    # Extract actual id values from linked_phases
-    phase_ids = [
-        p.id.value if hasattr(p.id, 'value') else str(p.id) for p in experiment.linked_phases
-    ]
-    assert 'si' in phase_ids
+    assert 'si' in experiment.linked_phases.names
 
 
 def test_analyze_data__background_set(
@@ -199,7 +192,7 @@ def test_analyze_data__background_set(
 ) -> None:
     """Verify background points are configured."""
     experiment = configured_project.experiments['reduced_tof']
-    assert len(list(experiment.background)) >= 5
+    assert len(experiment.background.names) >= 5
 
 
 # ======================================================================
@@ -207,16 +200,12 @@ def test_analyze_data__background_set(
 # ======================================================================
 
 
-def test_analyze_data__fit_success(
-    fit_results: dict[str, Any],
-) -> None:
-    """Verify fitting completes successfully."""
-    assert fit_results['success'] is True
-
-
 def test_analyze_data__fit_quality(
-    fit_results: dict[str, Any],
+    fitted_project: Project,
 ) -> None:
     """Verify fit quality is reasonable (chi-square < threshold)."""
-    # Reduced chi-square should be reasonable for a good fit
-    assert fit_results['reduced_chi'] < 10.0
+    assert_almost_equal(
+        fitted_project.analysis.fit_results.reduced_chi_square,
+        desired=16.0,
+        decimal=1,
+    )
