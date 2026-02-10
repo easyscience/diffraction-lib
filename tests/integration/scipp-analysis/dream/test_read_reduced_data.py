@@ -1,6 +1,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2026 DMSC
-"""Tests for reading reduced data from CIF files."""
+"""Tests for reading reduced data from CIF files.
+
+These tests verify that the CIF file can be fetched, read as text,
+and parsed by gemmi without errors.
+"""
 
 import gemmi
 
@@ -16,11 +20,9 @@ def test_read_reduced_data__fetch_cif(
 def test_read_reduced_data__py_read_cif(
     cif_content: str,
 ) -> None:
-    """Verify that the CIF file can be read as text and has correct
-    format.
-    """
-    assert len(cif_content) > 0  # Check file is not empty
-    assert '#\\#CIF_1.1' in cif_content  # Check CIF version is 1.1
+    """Verify CIF file can be read as text with CIF 1.1 header."""
+    assert len(cif_content) > 0
+    assert '#\\#CIF_1.1' in cif_content
 
 
 def test_read_reduced_data__gemmi_parse_cif(

@@ -1,6 +1,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2026 DMSC
-"""Tests for validating metadata structure in CIF files."""
+"""Tests for validating metadata structure in CIF files.
+
+These tests verify that the CIF file contains the expected data blocks,
+loops, and calibration parameters required for TOF diffraction analysis.
+"""
 
 import gemmi
 import pytest

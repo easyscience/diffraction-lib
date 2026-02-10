@@ -1,7 +1,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2026 DMSC
-"""Tests for analyzing reduced diffraction data using
-easydiffraction.
+"""Tests for analyzing reduced diffraction data using easydiffraction.
+
+These tests verify the complete workflow: loading CIF data, configuring
+the experiment, and performing structure refinement.
 """
 
 from pathlib import Path
@@ -14,7 +16,8 @@ import easydiffraction as ed
 from easydiffraction import Project
 from easydiffraction import SampleModelFactory
 
-# Experiment type tags required for easydiffraction
+# CIF experiment type tags required by easydiffraction to identify
+# the experiment configuration (powder TOF neutron diffraction)
 EXPT_TYPE_TAGS = {
     '_expt_type.sample_form': 'powder',
     '_expt_type.beam_mode': 'time-of-flight',
@@ -153,9 +156,7 @@ def fitted_project(
     return project
 
 
-# ======================================================================
 # Test: Data Loading
-# ======================================================================
 
 
 def test_analyze_reduced_data__load_cif(
@@ -174,12 +175,10 @@ def test_analyze_reduced_data__data_size(
     assert experiment.data.x.size > 100
 
 
-# ======================================================================
 # Test: Configuration
-# ======================================================================
 
 
-def test_analyze_data__phase_linked(
+def test_analyze_reduced_data__phase_linked(
     configured_project: Project,
 ) -> None:
     """Verify phase is correctly linked to experiment."""
@@ -187,7 +186,7 @@ def test_analyze_data__phase_linked(
     assert 'si' in experiment.linked_phases.names
 
 
-def test_analyze_data__background_set(
+def test_analyze_reduced_data__background_set(
     configured_project: Project,
 ) -> None:
     """Verify background points are configured."""
@@ -195,12 +194,10 @@ def test_analyze_data__background_set(
     assert len(experiment.background.names) >= 5
 
 
-# ======================================================================
 # Test: Fitting
-# ======================================================================
 
 
-def test_analyze_data__fit_quality(
+def test_analyze_reduced_data__fit_quality(
     fitted_project: Project,
 ) -> None:
     """Verify fit quality is reasonable (chi-square < threshold)."""

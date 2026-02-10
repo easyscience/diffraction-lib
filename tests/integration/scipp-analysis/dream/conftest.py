@@ -1,6 +1,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2026 DMSC
-"""Shared fixtures for DREAM scipp-analysis integration tests."""
+"""Shared fixtures for DREAM scipp-analysis integration tests.
+
+This module provides pytest fixtures for downloading and parsing
+reduced diffraction data from the DREAM instrument in CIF format.
+"""
 
 from pathlib import Path
 
@@ -8,8 +12,10 @@ import gemmi
 import pytest
 from pooch import retrieve
 
-# CIF file URL and expected data block name
+# Remote CIF file URL (regenerated nightly by scipp reduction pipeline)
 CIF_URL = 'https://pub-6c25ef91903d4301a3338bd53b370098.r2.dev/dream_reduced.cif'
+
+# Expected datablock name in the CIF file
 DATABLOCK_NAME = 'reduced_tof'
 
 
@@ -17,7 +23,11 @@ DATABLOCK_NAME = 'reduced_tof'
 def cif_path(
     tmp_path_factory: pytest.TempPathFactory,
 ) -> str:
-    """Download CIF file fresh (no caching) and return its path."""
+    """Download CIF file fresh each test session and return its path.
+
+    Uses tmp_path_factory to avoid pooch caching, ensuring the latest
+    version of the nightly-regenerated CIF file is always used.
+    """
     tmp_dir = tmp_path_factory.mktemp('dream_data')
     return retrieve(url=CIF_URL, known_hash=None, path=tmp_dir)
 
@@ -42,15 +52,5 @@ def cif_document(
 def cif_block(
     cif_document: gemmi.cif.Document,
 ) -> gemmi.cif.Block:
-    """Return the expected data block from the CIF document."""
+    """Return the 'reduced_tof' data block from the CIF document."""
     return cif_document.find_block(DATABLOCK_NAME)
-
-
-@pytest.fixture(scope='module')
-def data_loop(
-    cif_block: gemmi.cif.Block,
-) -> gemmi.cif.Loop:
-    """Return the main data loop containing point_id, tof, and intensity
-    data.
-    """
-    return cif_block.find(['_pd_data.point_id']).loop

@@ -1,6 +1,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2026 DMSC
-"""Tests for verifying package installation and importability."""
+"""Tests for verifying package installation and version consistency.
+
+These tests check that easydiffraction and essdiffraction packages are
+installed and match the latest PyPI release (MAJOR.MINOR.PATCH only).
+"""
 
 import importlib.metadata
 
