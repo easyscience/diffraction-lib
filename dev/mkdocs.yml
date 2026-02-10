@@ -73,15 +73,12 @@ nav:
           - LBCO quick code: tutorials/ed-2.ipynb
           - LBCO basic: tutorials/ed-3.ipynb
           - PbSO4 advanced: tutorials/ed-4.ipynb
-      - Powder Diffraction:
+      - Standard Diffraction:
           - Co2SiO4 pd-neut-cwl: tutorials/ed-5.ipynb
           - HS pd-neut-cwl: tutorials/ed-6.ipynb
           - Si pd-neut-tof: tutorials/ed-7.ipynb
           - NCAF pd-neut-tof: tutorials/ed-8.ipynb
           - LBCO+Si McStas: tutorials/ed-9.ipynb
-      - Single Crystal Diffraction:
-          - Tb2TiO7 sg-neut-cwl: tutorials/ed-14.ipynb
-          - Taurine sg-neut-tof: tutorials/ed-15.ipynb
       - Pair Distribution Function:
           - Ni pd-neut-cwl: tutorials/ed-10.ipynb
           - Si pd-neut-tof: tutorials/ed-11.ipynb
