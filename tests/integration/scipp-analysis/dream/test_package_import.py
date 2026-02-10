@@ -3,7 +3,7 @@
 """Tests for verifying package installation and version consistency.
 
 These tests check that easydiffraction and essdiffraction packages are
-installed and match the latest PyPI release (MAJOR.MINOR.PATCH only).
+installed and are not older than the latest PyPI release.
 """
 
 import importlib.metadata
@@ -47,11 +47,14 @@ def get_base_version(
 
 
 @pytest.mark.parametrize('package_name', PACKAGE_NAMES)
-def test_package_import__latest(
+def test_package_import(
     package_name: str,
 ) -> None:
-    """Verify installed package matches PyPI latest version
-    (MAJOR.MINOR.PATCH).
+    """Verify installed package is not older than PyPI latest version.
+
+    Uses >= comparison to support both:
+    - Real releases where installed == latest
+    - Dev builds where installed (e.g., 999.0.0) > latest
     """
     installed_version = get_installed_version(package_name)
     latest_version = get_latest_version(package_name)
@@ -60,9 +63,9 @@ def test_package_import__latest(
     assert latest_version is not None, f'Could not fetch latest version for {package_name}.'
 
     # Compare only MAJOR.MINOR.PATCH, ignoring local version identifiers
-    installed_base = get_base_version(installed_version)
-    latest_base = get_base_version(latest_version)
+    installed_base = Version(get_base_version(installed_version))
+    latest_base = Version(get_base_version(latest_version))
 
-    assert installed_base == latest_base, (
+    assert installed_base >= latest_base, (
         f'Package {package_name} is outdated: Installed={installed_base}, Latest={latest_base}'
     )
