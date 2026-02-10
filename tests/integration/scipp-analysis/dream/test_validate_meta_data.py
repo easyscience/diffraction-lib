@@ -26,7 +26,9 @@ def test_validate_meta_data__diffrn_radiation(
 def test_validate_meta_data__d_to_tof_loop(
     cif_block: gemmi.cif.Block,
 ) -> None:
-    """Verify the d_to_tof calibration loop exists with correct structure."""
+    """Verify the d_to_tof calibration loop exists with correct
+    structure.
+    """
     loop = cif_block.find(['_pd_calib_d_to_tof.id']).loop
     assert loop is not None
 
@@ -40,7 +42,7 @@ def test_validate_meta_data__d_to_tof_loop(
 def test_validate_meta_data__d_to_tof_difc(
     cif_block: gemmi.cif.Block,
 ) -> None:
-    """Verify DIFC calibration coefficient is approximately 9819.35."""
+    """Verify DIFC calibration coefficient is approximately 28385.3."""
     table = cif_block.find([
         '_pd_calib_d_to_tof.id',
         '_pd_calib_d_to_tof.power',
@@ -55,7 +57,7 @@ def test_validate_meta_data__d_to_tof_difc(
 
     assert difc_row is not None, 'DIFC row not found in calibration loop'
     assert int(difc_row[1]) == 1, 'DIFC power should be 1'
-    assert pytest.approx(float(difc_row[2]), rel=0.01) == 9819.35
+    assert pytest.approx(float(difc_row[2]), rel=0.01) == 28385.3
 
 
 def test_validate_meta_data__data_loop_exists(

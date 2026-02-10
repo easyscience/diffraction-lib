@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 # Expected number of data points in the loop
-LOOP_SIZE = 200
+LOOP_SIZE = 2000
 
 
 def _get_column_values(cif_block: gemmi.cif.Block, tag: str) -> np.ndarray:
@@ -58,32 +58,34 @@ def test_validate_phys_data__tof_increasing(
 def test_validate_phys_data__tof_range(
     cif_block: gemmi.cif.Block,
 ) -> None:
-    """Verify TOF range: first ~57.53, last ~22953.14."""
+    """Verify TOF range: first ~8530.1, last ~66503.7."""
     tof_values = _get_column_values(cif_block, '_pd_meas.time_of_flight')
 
-    assert pytest.approx(tof_values[0], rel=0.01) == 57.53
-    assert pytest.approx(tof_values[-1], rel=0.01) == 22953.14
+    assert pytest.approx(tof_values[0], rel=0.01) == 8530.1
+    assert pytest.approx(tof_values[-1], rel=0.01) == 66503.7
 
 
 def test_validate_phys_data__intensity_range(
     cif_block: gemmi.cif.Block,
 ) -> None:
-    """Verify _pd_proc.intensity_norm is non-negative."""
+    """Verify _pd_proc.intensity_norm is non-negative with expected
+    bounds.
+    """
     intensity = _get_column_values(cif_block, '_pd_proc.intensity_norm')
 
     assert np.all(intensity >= 0), 'Intensity values must be non-negative'
-    # First and last values in actual file are 0.0
     assert intensity[0] == pytest.approx(0.0, abs=0.01)
-    assert intensity[-1] == pytest.approx(0.0, abs=0.01)
+    assert intensity[-1] == pytest.approx(0.68, rel=0.1)
 
 
 def test_validate_phys_data__intensity_su(
     cif_block: gemmi.cif.Block,
 ) -> None:
-    """Verify _pd_proc.intensity_norm_su is non-negative."""
+    """Verify _pd_proc.intensity_norm_su is non-negative with expected
+    bounds.
+    """
     intensity_su = _get_column_values(cif_block, '_pd_proc.intensity_norm_su')
 
     assert np.all(intensity_su >= 0), 'Intensity SU values must be non-negative'
-    # First and last values in actual file are 0.0
     assert intensity_su[0] == pytest.approx(0.0, abs=0.01)
-    assert intensity_su[-1] == pytest.approx(0.0, abs=0.01)
+    assert intensity_su[-1] == pytest.approx(0.04, rel=0.1)

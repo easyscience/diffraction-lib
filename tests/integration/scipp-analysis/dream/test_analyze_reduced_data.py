@@ -2,7 +2,8 @@
 # Copyright (c) 2026 DMSC
 """Tests for analyzing reduced diffraction data using easydiffraction.
 
-Based on the ed-15.py tutorial workflow for TOF powder diffraction analysis.
+Based on the ed-15.py tutorial workflow for TOF powder diffraction
+analysis.
 """
 
 from pathlib import Path
@@ -44,7 +45,9 @@ def sample_model() -> Any:
 
 @pytest.fixture(scope='module')
 def prepared_cif_path(cif_path: str, tmp_path_factory: pytest.TempPathFactory) -> str:
-    """Prepare CIF file with experiment type tags for easydiffraction."""
+    """Prepare CIF file with experiment type tags for
+    easydiffraction.
+    """
     with Path(cif_path).open() as f:
         content = f.read()
 
@@ -75,7 +78,9 @@ def project_with_data(sample_model: Any, prepared_cif_path: str) -> Project:
 
 @pytest.fixture(scope='module')
 def configured_project(project_with_data: Project) -> Project:
-    """Configure project with instrument and peak parameters for fitting."""
+    """Configure project with instrument and peak parameters for
+    fitting.
+    """
     project = project_with_data
     experiment = project.experiments['reduced_tof']
 
@@ -146,9 +151,9 @@ def fit_results(configured_project: Project) -> dict[str, Any]:
     }
 
 
-# =============================================================================
+# ======================================================================
 # Test: Data Loading
-# =============================================================================
+# ======================================================================
 
 
 def test_analyze_data__load_cif(project_with_data: Project) -> None:
@@ -163,9 +168,9 @@ def test_analyze_data__data_size(project_with_data: Project) -> None:
     assert experiment.data.x.size > 100
 
 
-# =============================================================================
+# ======================================================================
 # Test: Configuration
-# =============================================================================
+# ======================================================================
 
 
 def test_analyze_data__phase_linked(configured_project: Project) -> None:
@@ -184,9 +189,9 @@ def test_analyze_data__background_set(configured_project: Project) -> None:
     assert len(list(experiment.background)) >= 5
 
 
-# =============================================================================
+# ======================================================================
 # Test: Fitting
-# =============================================================================
+# ======================================================================
 
 
 @pytest.mark.skip(reason='Fitting not yet working with reduced DREAM data')

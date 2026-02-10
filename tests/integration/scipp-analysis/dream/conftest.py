@@ -14,9 +14,10 @@ DATABLOCK_NAME = 'reduced_tof'
 
 
 @pytest.fixture(scope='module')
-def cif_path() -> str:
-    """Retrieve the CIF file and return its path."""
-    return retrieve(url=CIF_URL, known_hash=None)
+def cif_path(tmp_path_factory: pytest.TempPathFactory) -> str:
+    """Download CIF file fresh (no caching) and return its path."""
+    tmp_dir = tmp_path_factory.mktemp('dream_data')
+    return retrieve(url=CIF_URL, known_hash=None, path=tmp_dir)
 
 
 @pytest.fixture(scope='module')
@@ -39,5 +40,7 @@ def cif_block(cif_document: gemmi.cif.Document) -> gemmi.cif.Block:
 
 @pytest.fixture(scope='module')
 def data_loop(cif_block: gemmi.cif.Block) -> gemmi.cif.Loop:
-    """Return the main data loop containing point_id, tof, and intensity data."""
+    """Return the main data loop containing point_id, tof, and intensity
+    data.
+    """
     return cif_block.find(['_pd_data.point_id']).loop

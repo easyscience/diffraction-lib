@@ -29,14 +29,18 @@ def get_latest_version(package_name: str) -> str | None:
 
 
 def get_base_version(version_str: str) -> str:
-    """Extract MAJOR.MINOR.PATCH from version string, ignoring local identifiers."""
+    """Extract MAJOR.MINOR.PATCH from version string, ignoring local
+    identifiers.
+    """
     v = Version(version_str)
     return v.base_version
 
 
 @pytest.mark.parametrize('package_name', PACKAGE_NAMES)
 def test_package_import__latest(package_name: str) -> None:
-    """Verify installed package matches PyPI latest version (MAJOR.MINOR.PATCH)."""
+    """Verify installed package matches PyPI latest version
+    (MAJOR.MINOR.PATCH).
+    """
     installed_version = get_installed_version(package_name)
     latest_version = get_latest_version(package_name)
 

@@ -12,7 +12,9 @@ def test_read_reduced_data__fetch_cif(cif_path: str) -> None:
 
 
 def test_read_reduced_data__py_read_cif(cif_content: str) -> None:
-    """Verify that the CIF file can be read as text and has correct format."""
+    """Verify that the CIF file can be read as text and has correct
+    format.
+    """
     assert len(cif_content) > 0  # Check file is not empty
     assert '#\\#CIF_1.1' in cif_content  # Check CIF version is 1.1
 
