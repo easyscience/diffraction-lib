@@ -361,8 +361,8 @@ class CryspyCalculator(CalculatorBase):
                     cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 
         x_data = experiment.data.x
-        twotheta_min = float(x_data.min())
-        twotheta_max = float(x_data.max())
+        twotheta_min = f'{np.round(x_data.min(), 5):.5f}'  # float(x_data.min())
+        twotheta_max = f'{np.round(x_data.max(), 5):.5f}'  # float(x_data.max())
         cif_lines.append('')
         if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
             cif_lines.append(f'_range_2theta_min {twotheta_min}')
