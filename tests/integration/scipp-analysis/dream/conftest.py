@@ -14,32 +14,42 @@ DATABLOCK_NAME = 'reduced_tof'
 
 
 @pytest.fixture(scope='module')
-def cif_path(tmp_path_factory: pytest.TempPathFactory) -> str:
+def cif_path(
+    tmp_path_factory: pytest.TempPathFactory,
+) -> str:
     """Download CIF file fresh (no caching) and return its path."""
     tmp_dir = tmp_path_factory.mktemp('dream_data')
     return retrieve(url=CIF_URL, known_hash=None, path=tmp_dir)
 
 
 @pytest.fixture(scope='module')
-def cif_content(cif_path: str) -> str:
+def cif_content(
+    cif_path: str,
+) -> str:
     """Read the CIF file content as text."""
     return Path(cif_path).read_text()
 
 
 @pytest.fixture(scope='module')
-def cif_document(cif_path: str) -> gemmi.cif.Document:
+def cif_document(
+    cif_path: str,
+) -> gemmi.cif.Document:
     """Read the CIF file with gemmi and return the document."""
     return gemmi.cif.read(cif_path)
 
 
 @pytest.fixture(scope='module')
-def cif_block(cif_document: gemmi.cif.Document) -> gemmi.cif.Block:
+def cif_block(
+    cif_document: gemmi.cif.Document,
+) -> gemmi.cif.Block:
     """Return the expected data block from the CIF document."""
     return cif_document.find_block(DATABLOCK_NAME)
 
 
 @pytest.fixture(scope='module')
-def data_loop(cif_block: gemmi.cif.Block) -> gemmi.cif.Loop:
+def data_loop(
+    cif_block: gemmi.cif.Block,
+) -> gemmi.cif.Loop:
     """Return the main data loop containing point_id, tof, and intensity
     data.
     """

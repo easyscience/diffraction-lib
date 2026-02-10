@@ -11,7 +11,7 @@ def test_validate_meta_data__block_exists(
 ) -> None:
     """Verify that single datablock 'reduced_tof' is present."""
     assert len(cif_document) == 1
-    assert cif_document[0].name == 'reduced_tof'
+    assert cif_document.sole_block().name == 'reduced_tof'
 
 
 def test_validate_meta_data__diffrn_radiation(
@@ -20,7 +20,8 @@ def test_validate_meta_data__diffrn_radiation(
     """Verify _diffrn_radiation.probe is 'neutron'."""
     probe = cif_block.find_value('_diffrn_radiation.probe')
     assert probe is not None
-    assert str(probe).strip('\'"') == 'neutron'
+    assert isinstance(probe, str)
+    assert probe == 'neutron'
 
 
 def test_validate_meta_data__d_to_tof_loop(
@@ -32,11 +33,13 @@ def test_validate_meta_data__d_to_tof_loop(
     loop = cif_block.find(['_pd_calib_d_to_tof.id']).loop
     assert loop is not None
 
+    # Check loop has exactly 1 row
+    assert loop.length() == 1
+
     # Check all expected columns exist
-    tags = [tag for tag in loop.tags]
-    assert '_pd_calib_d_to_tof.id' in tags
-    assert '_pd_calib_d_to_tof.power' in tags
-    assert '_pd_calib_d_to_tof.coeff' in tags
+    assert '_pd_calib_d_to_tof.id' in loop.tags
+    assert '_pd_calib_d_to_tof.power' in loop.tags
+    assert '_pd_calib_d_to_tof.coeff' in loop.tags
 
 
 def test_validate_meta_data__d_to_tof_difc(
@@ -48,16 +51,13 @@ def test_validate_meta_data__d_to_tof_difc(
         '_pd_calib_d_to_tof.power',
         '_pd_calib_d_to_tof.coeff',
     ])
+    loop = table.loop
+    assert loop is not None
 
-    difc_row = None
-    for row in table:
-        if row[0] == 'DIFC':
-            difc_row = row
-            break
-
-    assert difc_row is not None, 'DIFC row not found in calibration loop'
-    assert int(difc_row[1]) == 1, 'DIFC power should be 1'
-    assert pytest.approx(float(difc_row[2]), rel=0.01) == 28385.3
+    id, power, coeff = loop.values
+    assert id == 'DIFC'
+    assert int(power) == 1
+    assert pytest.approx(float(coeff), rel=0.01) == 28385.3
 
 
 def test_validate_meta_data__data_loop_exists(
@@ -68,8 +68,7 @@ def test_validate_meta_data__data_loop_exists(
     assert loop is not None
 
     # Check all expected columns exist
-    tags = [tag for tag in loop.tags]
-    assert '_pd_data.point_id' in tags
-    assert '_pd_meas.time_of_flight' in tags
-    assert '_pd_proc.intensity_norm' in tags
-    assert '_pd_proc.intensity_norm_su' in tags
+    assert '_pd_data.point_id' in loop.tags
+    assert '_pd_meas.time_of_flight' in loop.tags
+    assert '_pd_proc.intensity_norm' in loop.tags
+    assert '_pd_proc.intensity_norm_su' in loop.tags

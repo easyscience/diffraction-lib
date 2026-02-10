@@ -1,9 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2026 DMSC
-"""Tests for analyzing reduced diffraction data using easydiffraction.
-
-Based on the ed-15.py tutorial workflow for TOF powder diffraction
-analysis.
+"""Tests for analyzing reduced diffraction data using
+easydiffraction.
 """
 
 from pathlib import Path

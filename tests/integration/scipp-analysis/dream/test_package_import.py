@@ -12,7 +12,9 @@ PACKAGE_NAMES = ['easydiffraction', 'essdiffraction']
 PYPI_URL = 'https://pypi.org/pypi/{}/json'
 
 
-def get_installed_version(package_name: str) -> str | None:
+def get_installed_version(
+    package_name: str,
+) -> str | None:
     """Get the installed version of a package."""
     try:
         return importlib.metadata.version(package_name)
@@ -20,7 +22,9 @@ def get_installed_version(package_name: str) -> str | None:
         return None
 
 
-def get_latest_version(package_name: str) -> str | None:
+def get_latest_version(
+    package_name: str,
+) -> str | None:
     """Get the latest version of a package from PyPI."""
     response = requests.get(PYPI_URL.format(package_name), timeout=10)
     if response.status_code == 200:
@@ -28,7 +32,9 @@ def get_latest_version(package_name: str) -> str | None:
     return None
 
 
-def get_base_version(version_str: str) -> str:
+def get_base_version(
+    version_str: str,
+) -> str:
     """Extract MAJOR.MINOR.PATCH from version string, ignoring local
     identifiers.
     """
@@ -37,7 +43,9 @@ def get_base_version(version_str: str) -> str:
 
 
 @pytest.mark.parametrize('package_name', PACKAGE_NAMES)
-def test_package_import__latest(package_name: str) -> None:
+def test_package_import__latest(
+    package_name: str,
+) -> None:
     """Verify installed package matches PyPI latest version
     (MAJOR.MINOR.PATCH).
     """

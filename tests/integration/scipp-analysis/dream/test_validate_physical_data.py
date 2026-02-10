@@ -10,13 +10,16 @@ import pytest
 LOOP_SIZE = 2000
 
 
-def _get_column_values(cif_block: gemmi.cif.Block, tag: str) -> np.ndarray:
+def get_column_values(
+    cif_block: gemmi.cif.Block,
+    tag: str,
+) -> np.ndarray:
     """Helper to extract column values as numpy array."""
     column = cif_block.find([tag])
     return np.array([float(row[0]) for row in column])
 
 
-def test_validate_phys_data__data_size(
+def test_validate_physical_data__data_size(
     cif_block: gemmi.cif.Block,
 ) -> None:
     """Verify the data loop contains exactly 2000 points."""
@@ -24,11 +27,11 @@ def test_validate_phys_data__data_size(
     assert loop.length() == LOOP_SIZE
 
 
-def test_validate_phys_data__point_id_type(
+def test_validate_physical_data__point_id_type(
     cif_block: gemmi.cif.Block,
 ) -> None:
     """Verify _pd_data.point_id contains integers from 0 to 1999."""
-    point_ids = _get_column_values(cif_block, '_pd_data.point_id').astype(int)
+    point_ids = get_column_values(cif_block, '_pd_data.point_id').astype(int)
 
     assert len(point_ids) == LOOP_SIZE
     assert point_ids[0] == 0
@@ -37,54 +40,50 @@ def test_validate_phys_data__point_id_type(
     np.testing.assert_array_equal(point_ids, np.arange(LOOP_SIZE))
 
 
-def test_validate_phys_data__tof_positive(
+def test_validate_physical_data__tof_positive(
     cif_block: gemmi.cif.Block,
 ) -> None:
     """Verify _pd_meas.time_of_flight values are positive floats."""
-    tof_values = _get_column_values(cif_block, '_pd_meas.time_of_flight')
+    tof_values = get_column_values(cif_block, '_pd_meas.time_of_flight')
 
     assert np.all(tof_values > 0), 'TOF values must be positive'
 
 
-def test_validate_phys_data__tof_increasing(
+def test_validate_physical_data__tof_increasing(
     cif_block: gemmi.cif.Block,
 ) -> None:
     """Verify _pd_meas.time_of_flight values constantly increase."""
-    tof_values = _get_column_values(cif_block, '_pd_meas.time_of_flight')
+    tof_values = get_column_values(cif_block, '_pd_meas.time_of_flight')
 
     assert np.all(np.diff(tof_values) > 0), 'TOF values must be strictly increasing'
 
 
-def test_validate_phys_data__tof_range(
+def test_validate_physical_data__tof_range(
     cif_block: gemmi.cif.Block,
 ) -> None:
     """Verify TOF range: first ~8530.1, last ~66503.7."""
-    tof_values = _get_column_values(cif_block, '_pd_meas.time_of_flight')
+    tof_values = get_column_values(cif_block, '_pd_meas.time_of_flight')
 
     assert pytest.approx(tof_values[0], rel=0.01) == 8530.1
     assert pytest.approx(tof_values[-1], rel=0.01) == 66503.7
 
 
-def test_validate_phys_data__intensity_range(
+def test_validate_physical_data__some_intensities(
     cif_block: gemmi.cif.Block,
 ) -> None:
-    """Verify _pd_proc.intensity_norm is non-negative with expected
-    bounds.
-    """
-    intensity = _get_column_values(cif_block, '_pd_proc.intensity_norm')
+    """Verify _pd_proc.intensity_norm is non-negative."""
+    intensity = get_column_values(cif_block, '_pd_proc.intensity_norm')
 
     assert np.all(intensity >= 0), 'Intensity values must be non-negative'
     assert intensity[0] == pytest.approx(0.0, abs=0.01)
     assert intensity[-1] == pytest.approx(0.68, rel=0.1)
 
 
-def test_validate_phys_data__intensity_su(
+def test_validate_physical_data__some_intensities_su(
     cif_block: gemmi.cif.Block,
 ) -> None:
-    """Verify _pd_proc.intensity_norm_su is non-negative with expected
-    bounds.
-    """
-    intensity_su = _get_column_values(cif_block, '_pd_proc.intensity_norm_su')
+    """Verify _pd_proc.intensity_norm_su is non-negative."""
+    intensity_su = get_column_values(cif_block, '_pd_proc.intensity_norm_su')
 
     assert np.all(intensity_su >= 0), 'Intensity SU values must be non-negative'
     assert intensity_su[0] == pytest.approx(0.0, abs=0.01)
