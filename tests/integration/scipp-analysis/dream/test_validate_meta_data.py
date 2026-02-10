@@ -54,8 +54,8 @@ def test_validate_meta_data__d_to_tof_difc(
     loop = table.loop
     assert loop is not None
 
-    id, power, coeff = loop.values
-    assert id == 'DIFC'
+    id_, power, coeff = loop.values
+    assert id_ == 'DIFC'
     assert int(power) == 1
     assert pytest.approx(float(coeff), rel=0.01) == 28385.3
 

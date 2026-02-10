@@ -36,13 +36,16 @@ def sample_model() -> Any:
         fract_y=0.125,
         fract_z=0.125,
         wyckoff_letter='c',
-        b_iso=1.96,
+        b_iso=1.1,
     )
     return model
 
 
 @pytest.fixture(scope='module')
-def prepared_cif_path(cif_path: str, tmp_path_factory: pytest.TempPathFactory) -> str:
+def prepared_cif_path(
+    cif_path: str,
+    tmp_path_factory: pytest.TempPathFactory,
+) -> str:
     """Prepare CIF file with experiment type tags for
     easydiffraction.
     """
@@ -66,7 +69,10 @@ def prepared_cif_path(cif_path: str, tmp_path_factory: pytest.TempPathFactory) -
 
 
 @pytest.fixture(scope='module')
-def project_with_data(sample_model: Any, prepared_cif_path: str) -> Project:
+def project_with_data(
+    sample_model: Any,
+    prepared_cif_path: str,
+) -> Project:
     """Create project with sample model and loaded experiment data."""
     project = ed.Project()
     project.sample_models.add(sample_model=sample_model)
@@ -83,17 +89,17 @@ def configured_project(project_with_data: Project) -> Project:
     experiment = project.experiments['reduced_tof']
 
     # Link phase
-    experiment.linked_phases.add(id='si', scale=1.0)
+    experiment.linked_phases.add(id='si', scale=0.8)
 
     # Instrument setup
     experiment.instrument.setup_twotheta_bank = 90.0
-    experiment.instrument.calib_d_to_tof_linear = 18613.498
+    experiment.instrument.calib_d_to_tof_linear = 18630.0
 
     # Peak profile parameters
-    experiment.peak.broad_gauss_sigma_0 = 48649.0
-    experiment.peak.broad_gauss_sigma_1 = 2900.0
+    experiment.peak.broad_gauss_sigma_0 = 48500.0
+    experiment.peak.broad_gauss_sigma_1 = 3000.0
     experiment.peak.broad_gauss_sigma_2 = 0.0
-    experiment.peak.broad_mix_beta_0 = 0.0147
+    experiment.peak.broad_mix_beta_0 = 0.05
     experiment.peak.broad_mix_beta_1 = 0.0
     experiment.peak.asym_alpha_0 = 0.0
     experiment.peak.asym_alpha_1 = 0.26
@@ -104,14 +110,14 @@ def configured_project(project_with_data: Project) -> Project:
 
     # Background points
     background_points = [
-        ('2', 10000, 0.0),
-        ('3', 14000, 0.26),
-        ('4', 21000, 0.5),
-        ('5', 27500, 0.55),
-        ('6', 40000, 0.31),
+        ('2', 10000, 0.01),
+        ('3', 14000, 0.2),
+        ('4', 21000, 0.7),
+        ('5', 27500, 0.6),
+        ('6', 40000, 0.3),
         ('7', 50000, 0.6),
-        ('8', 61000, 0.53),
-        ('9', 70000, 0.58),
+        ('8', 61000, 0.7),
+        ('9', 70000, 0.6),
     ]
     for id_, x, y in background_points:
         experiment.background.add(id=id_, x=x, y=y)
@@ -120,7 +126,9 @@ def configured_project(project_with_data: Project) -> Project:
 
 
 @pytest.fixture(scope='module')
-def fit_results(configured_project: Project) -> dict[str, Any]:
+def fit_results(
+    configured_project: Project,
+) -> dict[str, Any]:
     """Perform fit and return results."""
     project = configured_project
     model = project.sample_models['si']
@@ -137,7 +145,6 @@ def fit_results(configured_project: Project) -> dict[str, Any]:
     experiment.peak.broad_gauss_sigma_0.free = True
     experiment.peak.broad_gauss_sigma_1.free = True
     experiment.peak.broad_mix_beta_0.free = True
-    experiment.peak.asym_alpha_1.free = True
 
     # Run fit
     project.analysis.fit()
@@ -154,12 +161,16 @@ def fit_results(configured_project: Project) -> dict[str, Any]:
 # ======================================================================
 
 
-def test_analyze_data__load_cif(project_with_data: Project) -> None:
+def test_analyze_reduced_data__load_cif(
+    project_with_data: Project,
+) -> None:
     """Verify CIF data loads into project correctly."""
     assert 'reduced_tof' in project_with_data.experiments.names
 
 
-def test_analyze_data__data_size(project_with_data: Project) -> None:
+def test_analyze_reduced_data__data_size(
+    project_with_data: Project,
+) -> None:
     """Verify loaded data has expected size."""
     experiment = project_with_data.experiments['reduced_tof']
     # Data should have substantial number of points
@@ -171,7 +182,9 @@ def test_analyze_data__data_size(project_with_data: Project) -> None:
 # ======================================================================
 
 
-def test_analyze_data__phase_linked(configured_project: Project) -> None:
+def test_analyze_data__phase_linked(
+    configured_project: Project,
+) -> None:
     """Verify phase is correctly linked to experiment."""
     experiment = configured_project.experiments['reduced_tof']
     # Extract actual id values from linked_phases
@@ -181,7 +194,9 @@ def test_analyze_data__phase_linked(configured_project: Project) -> None:
     assert 'si' in phase_ids
 
 
-def test_analyze_data__background_set(configured_project: Project) -> None:
+def test_analyze_data__background_set(
+    configured_project: Project,
+) -> None:
     """Verify background points are configured."""
     experiment = configured_project.experiments['reduced_tof']
     assert len(list(experiment.background)) >= 5
@@ -192,14 +207,16 @@ def test_analyze_data__background_set(configured_project: Project) -> None:
 # ======================================================================
 
 
-@pytest.mark.skip(reason='Fitting not yet working with reduced DREAM data')
-def test_analyze_data__fit_success(fit_results: dict[str, Any]) -> None:
+def test_analyze_data__fit_success(
+    fit_results: dict[str, Any],
+) -> None:
     """Verify fitting completes successfully."""
     assert fit_results['success'] is True
 
 
-@pytest.mark.skip(reason='Fitting not yet working with reduced DREAM data')
-def test_analyze_data__fit_quality(fit_results: dict[str, Any]) -> None:
+def test_analyze_data__fit_quality(
+    fit_results: dict[str, Any],
+) -> None:
     """Verify fit quality is reasonable (chi-square < threshold)."""
     # Reduced chi-square should be reasonable for a good fit
     assert fit_results['reduced_chi'] < 10.0
