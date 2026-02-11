@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Linked crystal category for single crystal experiments."""
 
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import Parameter
@@ -13,21 +12,17 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class LinkedCrystal(CategoryItem):
-    """Link to a crystal by id with a scale factor."""
+    """Linked crystal category for referencing from the experiment for
+    single crystal diffraction.
+    """
 
-    def __init__(
-        self,
-        *,
-        id=None,  # TODO: need new name instead of id
-        scale=None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
         self._id = StringDescriptor(
             name='id',
             description='Identifier of the linked crystal.',
             value_spec=AttributeSpec(
-                value=id,
                 type_=DataTypes.STRING,
                 default='Si',
                 content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
@@ -42,7 +37,6 @@ class LinkedCrystal(CategoryItem):
             name='scale',
             description='Scale factor of the linked crystal.',
             value_spec=AttributeSpec(
-                value=scale,
                 type_=DataTypes.NUMERIC,
                 default=1.0,
                 content_validator=RangeValidator(),

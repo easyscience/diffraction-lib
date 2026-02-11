@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Extinction correction category for single crystals."""
 
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import Parameter
@@ -13,19 +12,13 @@ from easydiffraction.io.cif.handler import CifHandler
 class Extinction(CategoryItem):
     """Extinction correction category for single crystals."""
 
-    def __init__(
-        self,
-        *,
-        mosaicity=None,
-        radius=None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
         self._mosaicity = Parameter(
             name='mosaicity',
             description='Mosaicity value for extinction correction.',
             value_spec=AttributeSpec(
-                value=mosaicity,
                 type_=DataTypes.NUMERIC,
                 default=1.0,
                 content_validator=RangeValidator(),
@@ -41,7 +34,6 @@ class Extinction(CategoryItem):
             name='radius',
             description='Crystal radius for extinction correction.',
             value_spec=AttributeSpec(
-                value=radius,
                 type_=DataTypes.NUMERIC,
                 default=1.0,
                 content_validator=RangeValidator(),
