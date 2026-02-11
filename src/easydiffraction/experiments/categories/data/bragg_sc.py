@@ -19,8 +19,8 @@ from easydiffraction.io.cif.handler import CifHandler
 class Refln(CategoryItem):
     """Single reflection for single crystal diffraction data."""
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self) -> None:
+        super().__init__()
 
         # TODO: Rename to _refln.id following coreCIF
         self._refln_id = StringDescriptor(
