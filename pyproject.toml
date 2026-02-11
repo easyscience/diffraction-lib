@@ -191,13 +191,7 @@ fail_under = 60     # Temporarily reduce to allow gradual improvement
 
 [tool.ruff]
 # Temporarily exclude some directories until we have improved the code quality there
-#exclude = ['tests', 'tmp']
-exclude = [
-  'tmp',
-  'tests/unit',
-  'tests/integration/fitting',
-  'tests/integration/scipp-analysis/tmp',
-]
+exclude = ['tmp', 'tests/unit']
 indent-width = 4
 line-length = 99
 # Enable new rules that are not yet stable, like DOC
