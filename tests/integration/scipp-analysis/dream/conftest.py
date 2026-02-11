@@ -55,6 +55,6 @@ def cif_block(
     """Return the 'reduced_tof' data block from the CIF document."""
     block = cif_document.find_block(DATABLOCK_NAME)
     assert block is not None, (
-        f"Expected CIF datablock {DATABLOCK_NAME!r} was not found in the document."
+        f'Expected CIF datablock {DATABLOCK_NAME!r} was not found in the document.'
     )
     return block

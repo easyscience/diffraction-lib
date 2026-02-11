@@ -271,7 +271,8 @@ ban-relative-imports = 'all'
 force-single-line = true
 
 [tool.ruff.lint.per-file-ignores]
-'*test_*.py' = ['S101'] # allow asserts in test files
+'*test_*.py' = ['S101']  # allow asserts in test files
+'conftest.py' = ['S101'] # allow asserts in test files
 # Vendored jupyter_dark_detect: keep as-is from upstream for easy updates
 # https://github.com/OpenMined/jupyter-dark-detect/tree/main/jupyter_dark_detect
 'src/easydiffraction/utils/_vendored/jupyter_dark_detect/*' = [

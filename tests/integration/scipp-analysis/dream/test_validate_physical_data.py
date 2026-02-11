@@ -35,12 +35,16 @@ def test_validate_physical_data__point_id_type(
     cif_block: gemmi.cif.Block,
 ) -> None:
     """Verify _pd_data.point_id contains sequential integers."""
-    point_ids = get_column_values(cif_block, '_pd_data.point_id').astype(int)
+    point_ids = get_column_values(cif_block, '_pd_data.point_id')
+
+    # Ensure all point IDs are integer-valued (no fractional part).
+    frac, _ = np.modf(point_ids)
+    assert np.all(frac == 0), '_pd_data.point_id values are expected to be integers'
 
     assert len(point_ids) == LOOP_SIZE
     assert point_ids[0] == 0
     assert point_ids[-1] == LOOP_SIZE - 1
-    np.testing.assert_array_equal(point_ids, np.arange(LOOP_SIZE))
+    np.testing.assert_array_equal(point_ids, np.arange(LOOP_SIZE, dtype=point_ids.dtype))
 
 
 def test_validate_physical_data__tof_positive(
