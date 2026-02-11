@@ -56,9 +56,6 @@ def prepared_cif_path(
     with Path(cif_path).open() as f:
         content = f.read()
 
-    # Replace zero ESDs with finite values (required for fitting)
-    content = content.replace(' 0.0 0.0', ' 0.0 1.0')
-
     # Add experiment type tags if missing
     for tag, value in EXPT_TYPE_TAGS.items():
         if tag not in content:

@@ -76,7 +76,7 @@ class PdDataPointBaseMixin:
             description='Standard uncertainty of the measured intensity at this data point.',
             value_spec=AttributeSpec(
                 type_=DataTypes.NUMERIC,
-                default=0.0,
+                default=1.0,
                 content_validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
@@ -321,7 +321,22 @@ class PdDataBase(CategoryCollection):
 
     @property
     def meas_su(self) -> np.ndarray:
-        return np.fromiter((p.intensity_meas_su.value for p in self._calc_items), dtype=float)
+        # TODO: The following is a temporary workaround to handle zero
+        #  or near-zero uncertainties in the data, when dats is loaded
+        #  from CIF files. This is necessary because zero uncertainties
+        #  cause fitting algorithms to fail.
+        #  The current implementation is inefficient.
+        #  In the future, we should extend the functionality of
+        #  the NumericDescriptor to automatically replace the value
+        #  outside of the valid range (`content_validator`) with a
+        #  default value (`default`), when the value is set.
+        #  BraggPdExperiment._load_ascii_data_to_experiment() handles
+        #  this for ASCII data, but we also need to handle CIF data and
+        #  come up with a consistent approach for both data sources.
+        original = np.fromiter((p.intensity_meas_su.value for p in self._calc_items), dtype=float)
+        # Replace values smaller than 0.0001 with 1.0
+        modified = np.where(original < 0.0001, 1.0, original)
+        return modified
 
     @property
     def calc(self) -> np.ndarray:
