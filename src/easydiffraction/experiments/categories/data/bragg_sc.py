@@ -17,6 +17,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class Refln(CategoryItem):
+    """Single reflection for single crystal diffraction data."""
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -70,7 +72,7 @@ class Refln(CategoryItem):
         )
         self._index_h = NumericDescriptor(
             name='index_h',
-            description='...',
+            description='Miller index h of a measured reflection.',
             value_spec=AttributeSpec(
                 type_=DataTypes.NUMERIC,
                 default=0.0,
@@ -84,7 +86,7 @@ class Refln(CategoryItem):
         )
         self._index_k = NumericDescriptor(
             name='index_k',
-            description='...',
+            description='Miller index k of a measured reflection.',
             value_spec=AttributeSpec(
                 type_=DataTypes.NUMERIC,
                 default=0.0,
@@ -98,7 +100,7 @@ class Refln(CategoryItem):
         )
         self._index_l = NumericDescriptor(
             name='index_l',
-            description='...',
+            description='Miller index l of a measured reflection.',
             value_spec=AttributeSpec(
                 type_=DataTypes.NUMERIC,
                 default=0.0,
@@ -112,7 +114,7 @@ class Refln(CategoryItem):
         )
         self._intensity_meas = NumericDescriptor(
             name='intensity_meas',
-            description='...',
+            description=' The intensity of the reflection derived from the measurements.',
             value_spec=AttributeSpec(
                 type_=DataTypes.NUMERIC,
                 default=0.0,
@@ -126,7 +128,7 @@ class Refln(CategoryItem):
         )
         self._intensity_meas_su = NumericDescriptor(
             name='intensity_meas_su',
-            description='...',
+            description='Standard uncertainty of the measured intensity.',
             value_spec=AttributeSpec(
                 type_=DataTypes.NUMERIC,
                 default=0.0,
@@ -140,7 +142,7 @@ class Refln(CategoryItem):
         )
         self._intensity_calc = NumericDescriptor(
             name='intensity_calc',
-            description='...',
+            description='The intensity of the reflection calculated from the atom site data.',
             value_spec=AttributeSpec(
                 type_=DataTypes.NUMERIC,
                 default=0.0,
@@ -213,7 +215,7 @@ class Refln(CategoryItem):
 
 
 class ReflnData(CategoryCollection):
-    """..."""
+    """Collection of reflections for single crystal diffraction data."""
 
     _update_priority = 100
 
