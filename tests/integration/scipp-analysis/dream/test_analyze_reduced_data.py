@@ -15,7 +15,6 @@ These tests verify the complete workflow:
 from pathlib import Path
 
 import pytest
-from numpy.testing import assert_almost_equal
 
 import easydiffraction as ed
 
@@ -210,8 +209,5 @@ def test_analyze_reduced_data__fit_quality(
     fitted_project: ed.Project,
 ) -> None:
     """Verify fit quality is reasonable (chi-square value)."""
-    assert_almost_equal(
-        fitted_project.analysis.fit_results.reduced_chi_square,
-        desired=16.0,
-        decimal=1,
-    )
+    chi_square = fitted_project.analysis.fit_results.reduced_chi_square
+    assert chi_square == pytest.approx(16.0, abs=0.1)
