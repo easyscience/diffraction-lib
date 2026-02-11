@@ -23,13 +23,14 @@ class Extinction(CategoryItem):
 
         self._mosaicity = Parameter(
             name='mosaicity',
-            description='Mosaicity value in degrees for extinction correction.',
+            description='Mosaicity value for extinction correction.',
             value_spec=AttributeSpec(
                 value=mosaicity,
                 type_=DataTypes.NUMERIC,
                 default=1.0,
                 content_validator=RangeValidator(),
             ),
+            units='deg',
             cif_handler=CifHandler(
                 names=[
                     '_extinction.mosaicity',
@@ -38,13 +39,14 @@ class Extinction(CategoryItem):
         )
         self._radius = Parameter(
             name='radius',
-            description='Crystal radius in micrometers for extinction correction.',
+            description='Crystal radius for extinction correction.',
             value_spec=AttributeSpec(
                 value=radius,
                 type_=DataTypes.NUMERIC,
                 default=1.0,
                 content_validator=RangeValidator(),
             ),
+            units='µm',
             cif_handler=CifHandler(
                 names=[
                     '_extinction.radius',
