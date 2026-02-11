@@ -53,4 +53,8 @@ def cif_block(
     cif_document: gemmi.cif.Document,
 ) -> gemmi.cif.Block:
     """Return the 'reduced_tof' data block from the CIF document."""
-    return cif_document.find_block(DATABLOCK_NAME)
+    block = cif_document.find_block(DATABLOCK_NAME)
+    assert block is not None, (
+        f"Expected CIF datablock {DATABLOCK_NAME!r} was not found in the document."
+    )
+    return block
