@@ -2,19 +2,22 @@
 # Copyright (c) 2026 DMSC
 """Tests for analyzing reduced diffraction data using easydiffraction.
 
-These tests verify the complete workflow: loading CIF data, configuring
-the experiment, and performing structure refinement.
+These tests verify the complete workflow:
+1. Define project
+2. Add sample model manually defined
+3. Modify experiment CIF file
+4. Add experiment from modified CIF file
+5. Modify default experiment configuration
+6. Select parameters to be fitted
+7. Do fitting
 """
 
 from pathlib import Path
-from typing import Any
 
 import pytest
 from numpy.testing import assert_almost_equal
 
 import easydiffraction as ed
-from easydiffraction import Project
-from easydiffraction import SampleModelFactory
 
 # CIF experiment type tags required by easydiffraction to identify
 # the experiment configuration (powder TOF neutron diffraction)
@@ -24,25 +27,6 @@ EXPT_TYPE_TAGS = {
     '_expt_type.radiation_probe': 'neutron',
     '_expt_type.scattering_type': 'bragg',
 }
-
-
-@pytest.fixture(scope='module')
-def sample_model() -> Any:
-    """Create a Silicon sample model for fitting."""
-    model = SampleModelFactory.create(name='si')
-    model.space_group.name_h_m = 'F d -3 m'
-    model.space_group.it_coordinate_system_code = '1'
-    model.cell.length_a = 5.43146
-    model.atom_sites.add(
-        label='Si',
-        type_symbol='Si',
-        fract_x=0.125,
-        fract_y=0.125,
-        fract_z=0.125,
-        wyckoff_letter='c',
-        b_iso=1.1,
-    )
-    return model
 
 
 @pytest.fixture(scope='module')
@@ -71,24 +55,44 @@ def prepared_cif_path(
 
 @pytest.fixture(scope='module')
 def project_with_data(
-    sample_model: Any,
     prepared_cif_path: str,
-) -> Project:
-    """Create project with sample model and loaded experiment data."""
-    project = ed.Project()
-    project.sample_models.add(sample_model=sample_model)
-    project.experiments.add(cif_path=prepared_cif_path)
-    return project
+) -> ed.Project:
+    """Create project with sample model, experiment data, and
+    configuration.
 
-
-@pytest.fixture(scope='module')
-def configured_project(project_with_data: Project) -> Project:
-    """Configure project with instrument and peak parameters for
-    fitting.
+    1. Define project
+    2. Add sample model manually defined
+    3. Modify experiment CIF file
+    4. Add experiment from modified CIF file
+    5. Modify default experiment configuration
     """
-    project = project_with_data
+    # Step 1: Define Project
+    project = ed.Project()
+
+    # Step 2: Define Sample Model manually
+    project.sample_models.add(name='si')
+    sample_model = project.sample_models['si']
+
+    sample_model.space_group.name_h_m = 'F d -3 m'
+    sample_model.space_group.it_coordinate_system_code = '1'
+
+    sample_model.cell.length_a = 5.43146
+
+    sample_model.atom_sites.add(
+        label='Si',
+        type_symbol='Si',
+        fract_x=0.125,
+        fract_y=0.125,
+        fract_z=0.125,
+        wyckoff_letter='c',
+        b_iso=1.1,
+    )
+
+    # Step 3: Add experiment from modified CIF file
+    project.experiments.add(cif_path=prepared_cif_path)
     experiment = project.experiments['reduced_tof']
 
+    # Step 4: Configure experiment
     # Link phase
     experiment.linked_phases.add(id='si', scale=0.8)
 
@@ -128,26 +132,34 @@ def configured_project(project_with_data: Project) -> Project:
 
 @pytest.fixture(scope='module')
 def fitted_project(
-    configured_project: Project,
-) -> Project:
-    """Perform fit and return project with results."""
-    project = configured_project
-    model = project.sample_models['si']
+    project_with_data: ed.Project,
+) -> ed.Project:
+    """Perform fit and return project with results.
+
+    6. Select parameters to be fitted
+    7. Do fitting
+    """
+    project = project_with_data
+    sample_model = project.sample_models['si']
     experiment = project.experiments['reduced_tof']
+
+    # Step 5: Select parameters to be fitted
+    # Set free parameters for sample model
+    sample_model.atom_sites['Si'].b_iso.free = True
+
+    # Set free parameters for experiment
+    experiment.linked_phases['si'].scale.free = True
+    experiment.instrument.calib_d_to_tof_linear.free = True
+
+    experiment.peak.broad_gauss_sigma_0.free = True
+    experiment.peak.broad_gauss_sigma_1.free = True
+    experiment.peak.broad_mix_beta_0.free = True
 
     # Set free parameters for background
     for point in experiment.background:
         point.y.free = True
 
-    # Set free parameters for fitting
-    model.atom_sites['Si'].b_iso.free = True
-    experiment.linked_phases['si'].scale.free = True
-    experiment.instrument.calib_d_to_tof_linear.free = True
-    experiment.peak.broad_gauss_sigma_0.free = True
-    experiment.peak.broad_gauss_sigma_1.free = True
-    experiment.peak.broad_mix_beta_0.free = True
-
-    # Run fit
+    # Step 6: Do fitting
     project.analysis.fit()
 
     return project
@@ -157,14 +169,14 @@ def fitted_project(
 
 
 def test_analyze_reduced_data__load_cif(
-    project_with_data: Project,
+    project_with_data: ed.Project,
 ) -> None:
     """Verify CIF data loads into project correctly."""
     assert 'reduced_tof' in project_with_data.experiments.names
 
 
 def test_analyze_reduced_data__data_size(
-    project_with_data: Project,
+    project_with_data: ed.Project,
 ) -> None:
     """Verify loaded data has expected size."""
     experiment = project_with_data.experiments['reduced_tof']
@@ -176,18 +188,18 @@ def test_analyze_reduced_data__data_size(
 
 
 def test_analyze_reduced_data__phase_linked(
-    configured_project: Project,
+    project_with_data: ed.Project,
 ) -> None:
     """Verify phase is correctly linked to experiment."""
-    experiment = configured_project.experiments['reduced_tof']
+    experiment = project_with_data.experiments['reduced_tof']
     assert 'si' in experiment.linked_phases.names
 
 
 def test_analyze_reduced_data__background_set(
-    configured_project: Project,
+    project_with_data: ed.Project,
 ) -> None:
     """Verify background points are configured."""
-    experiment = configured_project.experiments['reduced_tof']
+    experiment = project_with_data.experiments['reduced_tof']
     assert len(experiment.background.names) >= 5
 
 
@@ -195,9 +207,9 @@ def test_analyze_reduced_data__background_set(
 
 
 def test_analyze_reduced_data__fit_quality(
-    fitted_project: Project,
+    fitted_project: ed.Project,
 ) -> None:
-    """Verify fit quality is reasonable (chi-square < threshold)."""
+    """Verify fit quality is reasonable (chi-square value)."""
     assert_almost_equal(
         fitted_project.analysis.fit_results.reduced_chi_square,
         desired=16.0,
