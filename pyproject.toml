@@ -22,7 +22,7 @@ classifiers = [
 ]
 requires-python = '>=3.11,<3.14'
 dependencies = [
-  'essdiffraction', # ESS Diffraction library
+  'essdiffraction', # ESS-specific diffraction library
   'numpy',          # Numerical computing library
   'colorama',       # Color terminal output
   'tabulate',       # Pretty-print tabular data for terminal output
@@ -236,7 +236,7 @@ select = [
   #'RET',   # Return statement issues (e.g., inconsistent returns)
   #'RUF',   # Ruff-specific checks (e.g., enforcing best practices)
   #'SLF',   # Self argument-related issues (e.g., missing or misused self)
-  #'T20',   # Flake8-print-specific checks (e.g., print statements left in code) 
+  #'T20',   # Flake8-print-specific checks (e.g., print statements left in code)
   #'TD',    # Type definition issues (e.g., incorrect or missing type definitions)
   #'TRY',   # Tryceratops Try/Except-related issues (e.g., broad exceptions, empty except blocks)
   #'UP',    # Pyupgrade-specific checks
