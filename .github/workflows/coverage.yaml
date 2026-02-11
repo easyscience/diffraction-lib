@@ -86,7 +86,7 @@ jobs:
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  # Job 2: Run integration tests with coverage and upload to Codecov
+  # Job 3: Run integration tests with coverage and upload to Codecov
   integration-tests-coverage:
     runs-on: ubuntu-latest
 
