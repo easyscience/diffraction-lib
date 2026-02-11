@@ -214,8 +214,8 @@ class PdTofDataPointMixin:
 
 
 class PdCwlDataPoint(
-    PdDataPointBaseMixin,
-    PdCwlDataPointMixin,
+    PdDataPointBaseMixin,  # TODO: rename to BasePdDataPointMixin???
+    PdCwlDataPointMixin,  # TODO: rename to CwlPdDataPointMixin???
     CategoryItem,  # Must be last to ensure mixins initialized first
 ):
     """Powder diffraction data point for constant-wavelength

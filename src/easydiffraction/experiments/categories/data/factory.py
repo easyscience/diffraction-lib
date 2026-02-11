@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 class DataFactory:
-    """Factory for creating powder diffraction data collections."""
+    """Factory for creating diffraction data collections."""
 
     _supported = {
         SampleFormEnum.POWDER: {
