@@ -20,7 +20,9 @@ class BraggScExperiment(
     InstrumentMixin,
     ScExperimentBase,
 ):
-    """Single crystal experiment class with specific attributes."""
+    """Standard (Bragg) Single Crystal experiment class with specific
+    attributes.
+    """
 
     def __init__(
         self,
@@ -34,11 +36,12 @@ class BraggScExperiment(
         self._extinction = Extinction()
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load (index_h, index_k, index_l, y, sy) data from an ASCII
-        file into the data category.
+        """Load measured data from an ASCII file into the data category.
 
-        The file format is space/column separated with 5 columns:
-        ``h k l Fobs sFobs``.
+        The file format is space/column separated with either 5 or 6
+        columns depending on the beam mode:
+        - 5 for constant wavelength mode: ``h k l Iobs sIobs``.
+        - 6 for time-of-flight mode: ``h k l Iobs sIobs wavelength``.
         """
         import numpy as np
 
@@ -47,27 +50,30 @@ class BraggScExperiment(
         except Exception as e:
             raise IOError(f'Failed to read data from {data_path}: {e}') from e
 
-        if data.shape[1] < 5:
-            raise ValueError('Data file must have five columns: h, k, l, Fobs, sFobs.')
+        if self.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH and data.shape[1] < 5:
+            raise ValueError('Data file must have at least 5 columns: h, k, l, Iobs, sIobs.')
+        elif self.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT and data.shape[1] < 6:
+            raise ValueError(
+                'Data file must have at least 6 columns: h, k, l, Iobs, sIobs, wavelength.'
+            )
 
-        # Extract h, k, l
+        # Extract Miller indices h, k, l
         indices_h: np.ndarray = data[:, 0].astype(int)
         indices_k: np.ndarray = data[:, 1].astype(int)
         indices_l: np.ndarray = data[:, 2].astype(int)
 
-        # Extract Fobs, sFobs data
-        y: np.ndarray = data[:, 3]
-        sy: np.ndarray = data[:, 4]
+        # Extract intensities and their standard uncertainties
+        integrated_intensities: np.ndarray = data[:, 3]
+        integrated_intensities_su: np.ndarray = data[:, 4]
 
         # Set the experiment data
         self.data._set_hkl(indices_h, indices_k, indices_l)
-        self.data._set_meas(y)
-        self.data._set_meas_su(sy)
+        self.data._set_meas(integrated_intensities)
+        self.data._set_meas_su(integrated_intensities_su)
 
-        if self.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
-            # Extract wavelength data if present
+        # If wavelength data is present (column 6), extract and set it
+        if data.shape[1] >= 6:
             wavelength: np.ndarray = data[:, 5]
-            # Set the experiment data
             self.data._set_wavelength(wavelength)
 
         console.paragraph('Data loaded successfully')

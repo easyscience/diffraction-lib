@@ -23,9 +23,8 @@ class BraggPdExperiment(
     InstrumentMixin,
     PdExperimentBase,
 ):
-    """Powder diffraction experiment.
-
-    Wraps background model, peak profile and linked phases for Bragg PD.
+    """Standard (Bragg) Powder Diffraction experiment class with
+    specific attributes.
     """
 
     def __init__(
