@@ -17,15 +17,16 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class Refln(CategoryItem):
-    """Single reflection for single crystal diffraction data."""
+    """Single reflection for single crystal diffraction data
+    category.
+    """
 
     def __init__(self) -> None:
         super().__init__()
 
-        # TODO: Rename to _refln.id following coreCIF
-        self._refln_id = StringDescriptor(
-            name='refln_id',
-            description='Identifier for this...',
+        self._id = StringDescriptor(
+            name='id',
+            description='Identifier of the reflection.',
             value_spec=AttributeSpec(
                 type_=DataTypes.STRING,
                 default='0',
@@ -36,7 +37,7 @@ class Refln(CategoryItem):
             ),
             cif_handler=CifHandler(
                 names=[
-                    '_refln.refln_id',
+                    '_refln.id',
                 ]
             ),
         )
@@ -171,11 +172,11 @@ class Refln(CategoryItem):
         )
 
         self._identity.category_code = 'refln'
-        self._identity.category_entry_name = lambda: str(self.refln_id.value)
+        self._identity.category_entry_name = lambda: str(self.id.value)
 
     @property
-    def refln_id(self) -> StringDescriptor:
-        return self._refln_id
+    def id(self) -> StringDescriptor:
+        return self._id
 
     @property
     def d_spacing(self) -> NumericDescriptor:
@@ -236,12 +237,12 @@ class ReflnData(CategoryCollection):
             p.index_h._value = index_h
             p.index_k._value = index_k
             p.index_l._value = index_l
-        self._set_refln_id([str(i + 1) for i in range(indices_h.size)])
+        self._set_id([str(i + 1) for i in range(indices_h.size)])
 
-    def _set_refln_id(self, values) -> None:
+    def _set_id(self, values) -> None:
         """Helper method to set reflection IDs."""
         for p, v in zip(self._items, values, strict=True):
-            p.refln_id._value = v
+            p.id._value = v
 
     def _set_meas(self, values) -> None:
         """Helper method to set measured intensity."""
