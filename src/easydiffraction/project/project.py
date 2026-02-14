@@ -284,7 +284,7 @@ class Project(GuardedBase):
         #  refactor and move to a more appropriate location
         if experiment.type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
             plotter = PlotlyPlotter()
-            plotter.plot_sg(experiment)
+            plotter.plot_sc(experiment)
         elif experiment.type.sample_form.value == SampleFormEnum.POWDER:
             self.plotter.plot_meas_vs_calc(
                 experiment.data,

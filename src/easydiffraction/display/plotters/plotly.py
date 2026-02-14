@@ -157,7 +157,7 @@ class PlotlyPlotter(PlotterBase):
 
     # TODO: Temporary method for SG plotting
     #  refactor and move to a more appropriate location
-    def plot_sg(
+    def plot_sc(
         self,
         experiment,
     ):
