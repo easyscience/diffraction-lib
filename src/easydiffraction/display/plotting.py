@@ -205,7 +205,7 @@ class Plotter(RendererBase):
             ]
 
         # TODO: Before, it was self._plotter.plot. Check what is better.
-        self._backend.plot(
+        self._backend.plot_pattern(
             x=x,
             y_series=y_series,
             labels=y_labels,
@@ -286,7 +286,7 @@ class Plotter(RendererBase):
                 )
             ]
 
-        self._backend.plot(
+        self._backend.plot_pattern(
             x=x,
             y_series=y_series,
             labels=y_labels,
@@ -388,12 +388,53 @@ class Plotter(RendererBase):
             y_series.append(y_resid)
             y_labels.append('resid')
 
-        self._backend.plot(
+        self._backend.plot_pattern(
             x=x,
             y_series=y_series,
             labels=y_labels,
             axes_labels=axes_labels,
             title=f"Measured vs Calculated data for experiment 🔬 '{expt_name}'",
+            height=self.height,
+        )
+
+    def plot_sc_meas_vs_calc(
+        self,
+        pattern,
+        expt_name,
+    ):
+        """Plot measured vs calculated comparison for single crystal
+        data.
+
+        Renders a scatter plot of F²meas vs F²calc with error bars and
+        a diagonal reference line.
+
+        Args:
+            pattern: Object with ``meas``, ``calc``, and ``meas_su``
+                arrays for structure factor squared data.
+            expt_name: Experiment name for the title.
+        """
+        if pattern.meas is None:
+            log.error(f'No measured data available for experiment {expt_name}')
+            return
+        if pattern.calc is None:
+            log.error(f'No calculated data available for experiment {expt_name}')
+            return
+        if pattern.meas_su is None:
+            log.warning(f'No measurement uncertainties for experiment {expt_name}')
+            # Use zeros if no uncertainties available
+            meas_su = np.zeros_like(pattern.meas)
+        else:
+            meas_su = pattern.meas_su
+
+        title = f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"
+        axes_labels = ['F²calc', 'F²meas']
+
+        self._backend.plot_scatter_comparison(
+            x_calc=pattern.calc,
+            y_meas=pattern.meas,
+            y_meas_su=meas_su,
+            axes_labels=axes_labels,
+            title=title,
             height=self.height,
         )
 

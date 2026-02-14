@@ -10,7 +10,6 @@ from varname import varname
 
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guard import GuardedBase
-from easydiffraction.display.plotters.plotly import PlotlyPlotter
 from easydiffraction.display.plotting import Plotter
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.experiments.experiment.enums import SampleFormEnum
@@ -280,11 +279,11 @@ class Project(GuardedBase):
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
 
-        # TODO: Temporary method for SG plotting
-        #  refactor and move to a more appropriate location
         if experiment.type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
-            plotter = PlotlyPlotter()
-            plotter.plot_sc(experiment)
+            self.plotter.plot_sc_meas_vs_calc(
+                experiment.data,
+                expt_name,
+            )
         elif experiment.type.sample_form.value == SampleFormEnum.POWDER:
             self.plotter.plot_meas_vs_calc(
                 experiment.data,

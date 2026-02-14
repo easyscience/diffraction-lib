@@ -63,7 +63,7 @@ class PlotlyPlotter(PlotterBase):
 
         return trace
 
-    def plot(
+    def plot_pattern(
         self,
         x,
         y_series,
@@ -72,7 +72,10 @@ class PlotlyPlotter(PlotterBase):
         title,
         height=None,
     ):
-        """Render an interactive Plotly figure.
+        """Render an interactive Plotly line plot for pattern data.
+
+        Suitable for powder diffraction data where intensity is plotted
+        against an x-axis variable (2θ, TOF, d-spacing).
 
         Args:
             x: 1D array-like of x-axis values.
@@ -155,33 +158,35 @@ class PlotlyPlotter(PlotterBase):
             )
             display(HTML(html_fig))
 
-    # TODO: Temporary method for SG plotting
-    #  refactor and move to a more appropriate location
-    def plot_sc(
+    def plot_scatter_comparison(
         self,
-        experiment,
+        x_calc,
+        y_meas,
+        y_meas_su,
+        axes_labels,
+        title,
+        height=None,
     ):
-        """Plot measured vs calculated structure factor squared data for
-        a single crystal experiment.
+        """Render a scatter comparison plot.
+
+        Suitable for single crystal data where measured values are
+        plotted against calculated values with error bars and a
+        diagonal reference line.
 
         Args:
-            experiment: Experiment instance with data to plot.
+            x_calc: 1D array-like of calculated values (x-axis).
+            y_meas: 1D array-like of measured values (y-axis).
+            y_meas_su: 1D array-like of measurement uncertainties.
+            axes_labels: Pair of strings for the x and y titles.
+            title: Figure title.
+            height: Ignored; Plotly auto-sizes based on renderer.
         """
-        # Calculate/update data
-        # experiment.data._update() # done before calling this method
-
-        # Extract data
-        meas = experiment.data.meas
-        meas_su = experiment.data.meas_su
-        calc = experiment.data.calc
-
-        # Setup figure title and axes labels
-        title = f"Measured vs Calculated data for experiment 🔬 '{experiment.name}'"
-        axes_labels = ['F²calc', 'F²meas']
+        # Intentionally unused; accepted for API compatibility
+        del height
 
         # Determine axis limits
-        vmin = float(min(meas.min(), calc.min()))
-        vmax = float(max(meas.max(), calc.max()))
+        vmin = float(min(y_meas.min(), x_calc.min()))
+        vmax = float(max(y_meas.max(), x_calc.max()))
 
         # Update limits with some padding
         pad = 0.05 * (vmax - vmin) if vmax > vmin else 1.0
@@ -191,8 +196,8 @@ class PlotlyPlotter(PlotterBase):
         # Create data trace
         data = [
             go.Scatter(
-                x=calc,
-                y=meas,
+                x=x_calc,
+                y=y_meas,
                 mode='markers',
                 marker=dict(
                     symbol='circle',
@@ -205,7 +210,7 @@ class PlotlyPlotter(PlotterBase):
                 ),
                 error_y=dict(
                     type='data',
-                    array=meas_su,
+                    array=y_meas_su,
                     visible=True,
                 ),
                 hovertemplate=('calc: %{x}<br>meas: %{y}<br><extra></extra>'),

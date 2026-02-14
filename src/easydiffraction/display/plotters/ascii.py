@@ -8,6 +8,7 @@ CLI environments and keeps a consistent API with other plotters.
 """
 
 import asciichartpy
+import numpy as np
 
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import SERIES_CONFIG
@@ -43,7 +44,7 @@ class AsciiPlotter(PlotterBase):
         item = f'{color_start}{line}{color_end} {name}'
         return item
 
-    def plot(
+    def plot_pattern(
         self,
         x,
         y_series,
@@ -52,7 +53,10 @@ class AsciiPlotter(PlotterBase):
         title,
         height=None,
     ):
-        """Render a compact ASCII chart in the terminal.
+        """Render a compact ASCII line chart in the terminal.
+
+        Suitable for powder diffraction data where intensity is plotted
+        against an x-axis variable (2θ, TOF, d-spacing).
 
         Args:
             x: 1D array-like of x values (only used for range
@@ -84,3 +88,74 @@ class AsciiPlotter(PlotterBase):
         padded = '\n'.join(' ' + line for line in chart.splitlines())
 
         print(padded)
+
+    def plot_scatter_comparison(
+        self,
+        x_calc,
+        y_meas,
+        y_meas_su,
+        axes_labels,
+        title,
+        height=None,
+    ):
+        """Render a scatter comparison plot in the terminal.
+
+        Creates an ASCII scatter plot showing measured vs calculated
+        values with a diagonal reference line.
+
+        Args:
+            x_calc: 1D array-like of calculated values (x-axis).
+            y_meas: 1D array-like of measured values (y-axis).
+            y_meas_su: 1D array-like of measurement uncertainties
+                (ignored in ASCII mode).
+            axes_labels: Pair of strings for the x and y titles.
+            title: Figure title.
+            height: Number of text rows for the chart (default: 15).
+        """
+        # Intentionally unused; ASCII scatter doesn't show error bars
+        del y_meas_su
+
+        if height is None:
+            height = DEFAULT_HEIGHT
+        width = 60  # TODO: Make width configurable
+
+        # Determine axis limits
+        vmin = float(min(np.min(y_meas), np.min(x_calc)))
+        vmax = float(max(np.max(y_meas), np.max(x_calc)))
+        pad = 0.05 * (vmax - vmin) if vmax > vmin else 1.0
+        vmin -= pad
+        vmax += pad
+
+        # Create empty grid
+        grid = [[' ' for _ in range(width)] for _ in range(height)]
+
+        # Draw diagonal line (calc == meas)
+        for i in range(min(width, height)):
+            row = height - 1 - int(i * height / width)
+            col = i
+            if 0 <= row < height and 0 <= col < width:
+                grid[row][col] = '·'
+
+        # Plot data points
+        for xv, yv in zip(x_calc, y_meas, strict=False):
+            col = int((xv - vmin) / (vmax - vmin) * (width - 1))
+            row = height - 1 - int((yv - vmin) / (vmax - vmin) * (height - 1))
+            if 0 <= row < height and 0 <= col < width:
+                grid[row][col] = '●'
+
+        # Build chart string with axes
+        chart_lines = []
+        for row in grid:
+            label = '│'
+            chart_lines.append(label + ''.join(row))
+
+        # X-axis
+        x_axis = '└' + '─' * width
+
+        # Print output
+        console.paragraph(f'{title}')
+        console.print(f'{axes_labels[1]}')
+        for line in chart_lines:
+            print(f'  {line}')
+        print(f'  {x_axis}')
+        console.print(f'{" " * (width - 3)}{axes_labels[0]}')

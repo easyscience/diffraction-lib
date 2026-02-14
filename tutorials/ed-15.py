@@ -17,9 +17,6 @@ import easydiffraction as ed
 # Create minimal project without name and description
 project = ed.Project()
 
-# %%
-project.plotter.engine = 'plotly'
-
 # %% [markdown]
 # ## Step 2: Define Sample Model
 
