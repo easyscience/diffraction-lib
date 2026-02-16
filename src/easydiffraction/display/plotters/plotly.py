@@ -36,8 +36,8 @@ class PlotlyPlotter(PlotterBase):
     if in_pycharm():
         pio.renderers.default = 'browser'
 
-    def _get_trace(self, x, y, label):
-        """Create a Plotly trace for a single data series.
+    def _get_powder_trace(self, x, y, label):
+        """Create a Plotly trace for powder diffraction data.
 
         Args:
             x: 1D array-like of x-axis values.
@@ -63,8 +63,8 @@ class PlotlyPlotter(PlotterBase):
 
         return trace
 
-    def _get_scatter_trace(self, x_calc, y_meas, y_meas_su):
-        """Create a Plotly scatter trace for comparison plots.
+    def _get_single_crystal_trace(self, x_calc, y_meas, y_meas_su):
+        """Create a Plotly scatter trace for single crystal data.
 
         Args:
             x_calc: 1D array-like of calculated values (x-axis).
@@ -123,7 +123,7 @@ class PlotlyPlotter(PlotterBase):
         data = []
         for idx, y in enumerate(y_series):
             label = labels[idx]
-            trace = self._get_trace(x, y, label)
+            trace = self._get_powder_trace(x, y, label)
             data.append(trace)
 
         layout = go.Layout(
@@ -226,7 +226,7 @@ class PlotlyPlotter(PlotterBase):
         vmax += pad
 
         # Create data trace
-        data = [self._get_scatter_trace(x_calc, y_meas, y_meas_su)]
+        data = [self._get_single_crystal_trace(x_calc, y_meas, y_meas_su)]
 
         # Setup layout
         layout = go.Layout(
