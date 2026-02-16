@@ -112,20 +112,31 @@ class PlotlyPlotter(PlotterBase):
             ],
         )
 
+    def _get_figure(self, data, layout):
+        """Create and configure a Plotly figure.
+
+        Args:
+            data: List of traces to include in the figure.
+            layout: Layout configuration dict.
+
+        Returns:
+            A configured :class:`plotly.graph_objects.Figure`.
+        """
+        fig = go.Figure(data=data, layout=layout)
+        # Format axis ticks: decimals for small numbers, grouped thousands for large
+        fig.update_xaxes(tickformat=',.6~g', separatethousands=True)
+        fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
+        return fig
+
     def _show_figure(self, fig):
         """Display a Plotly figure.
 
-        Formats axis ticks and renders the figure using the appropriate
-        method for the current environment.
+        Renders the figure using the appropriate method for the current
+        environment (browser for PyCharm, inline HTML for Jupyter).
 
         Args:
             fig: A :class:`plotly.graph_objects.Figure` to display.
         """
-        # Format the axes ticks.
-        # Keeps decimals for small numbers; groups thousands for large ones
-        fig.update_xaxes(tickformat=',.6~g', separatethousands=True)
-        fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
-
         config = self._get_config()
 
         if in_pycharm() or display is None or HTML is None:
@@ -200,11 +211,7 @@ class PlotlyPlotter(PlotterBase):
             ),
         )
 
-        fig = go.Figure(
-            data=data,
-            layout=layout,
-        )
-
+        fig = self._get_figure(data, layout)
         self._show_figure(fig)
 
     def plot_scatter_comparison(
@@ -283,10 +290,5 @@ class PlotlyPlotter(PlotterBase):
             ],
         )
 
-        # Create figure
-        fig = go.Figure(
-            data=data,
-            layout=layout,
-        )
-
+        fig = self._get_figure(data, layout)
         self._show_figure(fig)
