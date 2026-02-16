@@ -119,12 +119,12 @@ def test_plotter_routes_to_ascii_plotter(monkeypatch):
 
     called = {}
 
-    def fake_plot_pattern(self, x, y_series, labels, axes_labels, title, height=None):
+    def fake_plot_powder(self, x, y_series, labels, axes_labels, title, height=None):
         called['labels'] = tuple(labels)
         called['axes'] = tuple(axes_labels)
         called['title'] = title
 
-    monkeypatch.setattr(ascii_mod.AsciiPlotter, 'plot_pattern', fake_plot_pattern)
+    monkeypatch.setattr(ascii_mod.AsciiPlotter, 'plot_powder', fake_plot_powder)
 
     class Ptn:
         def __init__(self):

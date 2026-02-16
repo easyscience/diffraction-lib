@@ -213,7 +213,7 @@ class PlotlyPlotter(PlotterBase):
             **kwargs,
         )
 
-    def plot_pattern(
+    def plot_powder(
         self,
         x,
         y_series,
@@ -222,7 +222,7 @@ class PlotlyPlotter(PlotterBase):
         title,
         height=None,
     ):
-        """Render an interactive Plotly line plot for pattern data.
+        """Render an interactive Plotly line plot for powder data.
 
         Suitable for powder diffraction data where intensity is plotted
         against an x-axis variable (2θ, TOF, d-spacing).
@@ -249,7 +249,7 @@ class PlotlyPlotter(PlotterBase):
         fig = self._get_figure(data, layout)
         self._show_figure(fig)
 
-    def plot_scatter_comparison(
+    def plot_single_crystal(
         self,
         x_calc,
         y_meas,
@@ -258,7 +258,7 @@ class PlotlyPlotter(PlotterBase):
         title,
         height=None,
     ):
-        """Render a scatter comparison plot.
+        """Render a scatter comparison plot for single crystal data.
 
         Suitable for single crystal data where measured values are
         plotted against calculated values with error bars and a

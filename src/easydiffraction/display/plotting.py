@@ -205,7 +205,7 @@ class Plotter(RendererBase):
             ]
 
         # TODO: Before, it was self._plotter.plot. Check what is better.
-        self._backend.plot_pattern(
+        self._backend.plot_powder(
             x=x,
             y_series=y_series,
             labels=y_labels,
@@ -286,7 +286,7 @@ class Plotter(RendererBase):
                 )
             ]
 
-        self._backend.plot_pattern(
+        self._backend.plot_powder(
             x=x,
             y_series=y_series,
             labels=y_labels,
@@ -388,7 +388,7 @@ class Plotter(RendererBase):
             y_series.append(y_resid)
             y_labels.append('resid')
 
-        self._backend.plot_pattern(
+        self._backend.plot_powder(
             x=x,
             y_series=y_series,
             labels=y_labels,
@@ -429,7 +429,7 @@ class Plotter(RendererBase):
         title = f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"
         axes_labels = ['F²calc', 'F²meas']
 
-        self._backend.plot_scatter_comparison(
+        self._backend.plot_single_crystal(
             x_calc=pattern.calc,
             y_meas=pattern.meas,
             y_meas_su=meas_su,

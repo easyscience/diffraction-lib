@@ -60,14 +60,14 @@ class PlotterBase(ABC):
     and render a plot to the chosen medium.
 
     Two main plot types are supported:
-    - ``plot_pattern``: Line plots for powder diffraction patterns
+    - ``plot_powder``: Line plots for powder diffraction patterns
       (intensity vs. 2θ/TOF/d-spacing).
-    - ``plot_scatter_comparison``: Scatter plots comparing measured vs.
+    - ``plot_single_crystal``: Scatter plots comparing measured vs.
       calculated values (e.g., F²meas vs F²calc for single crystal).
     """
 
     @abstractmethod
-    def plot_pattern(
+    def plot_powder(
         self,
         x,
         y_series,
@@ -92,7 +92,7 @@ class PlotterBase(ABC):
         pass
 
     @abstractmethod
-    def plot_scatter_comparison(
+    def plot_single_crystal(
         self,
         x_calc,
         y_meas,
@@ -101,7 +101,7 @@ class PlotterBase(ABC):
         title,
         height,
     ):
-        """Render a scatter comparison plot.
+        """Render a scatter comparison plot for single crystal data.
 
         Suitable for single crystal data where measured values are
         plotted against calculated values with error bars.
@@ -128,7 +128,7 @@ class PlotterBase(ABC):
         """Render a pattern plot (backward-compatible alias).
 
         .. deprecated::
-            Use :meth:`plot_pattern` instead.
+            Use :meth:`plot_powder` instead.
 
         Args:
             x: 1D array of x-axis values.
@@ -138,4 +138,4 @@ class PlotterBase(ABC):
             title: Figure title.
             height: Backend-specific height (text rows or pixels).
         """
-        return self.plot_pattern(x, y_series, labels, axes_labels, title, height)
+        return self.plot_powder(x, y_series, labels, axes_labels, title, height)

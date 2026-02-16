@@ -66,10 +66,10 @@ def test_get_trace_and_plot(monkeypatch):
 
     plotter = pp.PlotlyPlotter()
 
-    # Exercise _get_trace
+    # Exercise _get_powder_trace
     x = [0, 1, 2]
     y = [1, 2, 3]
-    trace = plotter._get_trace(x, y, label='calc')
+    trace = plotter._get_powder_trace(x, y, label='calc')
     assert hasattr(trace, 'kwargs')
     assert trace.kwargs['x'] == x and trace.kwargs['y'] == y
 
