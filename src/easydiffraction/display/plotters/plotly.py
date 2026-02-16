@@ -150,6 +150,48 @@ class PlotlyPlotter(PlotterBase):
             )
             display(HTML(html_fig))
 
+    def _get_layout(self, title, axes_labels, **kwargs):
+        """Create a Plotly layout configuration.
+
+        Args:
+            title: Figure title.
+            axes_labels: Pair of strings for the x and y titles.
+            **kwargs: Additional layout parameters (e.g., shapes).
+
+        Returns:
+            A configured :class:`plotly.graph_objects.Layout`.
+        """
+        return go.Layout(
+            margin=dict(
+                autoexpand=True,
+                r=30,
+                t=40,
+                b=45,
+            ),
+            title=dict(
+                text=title,
+            ),
+            legend=dict(
+                xanchor='right',
+                x=1.0,
+                yanchor='top',
+                y=1.0,
+            ),
+            xaxis=dict(
+                title_text=axes_labels[0],
+                showline=True,
+                mirror=True,
+                zeroline=False,
+            ),
+            yaxis=dict(
+                title_text=axes_labels[1],
+                showline=True,
+                mirror=True,
+                zeroline=False,
+            ),
+            **kwargs,
+        )
+
     def plot_pattern(
         self,
         x,
@@ -181,35 +223,7 @@ class PlotlyPlotter(PlotterBase):
             trace = self._get_powder_trace(x, y, label)
             data.append(trace)
 
-        layout = go.Layout(
-            margin=dict(
-                autoexpand=True,
-                r=30,
-                t=40,
-                b=45,
-            ),
-            title=dict(
-                text=title,
-            ),
-            legend=dict(
-                xanchor='right',
-                x=1.0,
-                yanchor='top',
-                y=1.0,
-            ),
-            xaxis=dict(
-                title_text=axes_labels[0],
-                showline=True,
-                mirror=True,
-                zeroline=False,
-            ),
-            yaxis=dict(
-                title_text=axes_labels[1],
-                showline=True,
-                mirror=True,
-                zeroline=False,
-            ),
-        )
+        layout = self._get_layout(title, axes_labels)
 
         fig = self._get_figure(data, layout)
         self._show_figure(fig)
@@ -243,51 +257,22 @@ class PlotlyPlotter(PlotterBase):
         # Create data trace
         data = [self._get_single_crystal_trace(x_calc, y_meas, y_meas_su)]
 
-        # Setup layout
-        layout = go.Layout(
-            margin=dict(
-                autoexpand=True,
-                r=30,
-                t=40,
-                b=45,
-            ),
-            title=dict(
-                text=title,
-            ),
-            legend=dict(
-                xanchor='right',
-                x=1.0,
-                yanchor='top',
-                y=1.0,
-            ),
-            xaxis=dict(
-                title_text=axes_labels[0],
-                showline=True,
-                mirror=True,
-                zeroline=False,
-            ),
-            yaxis=dict(
-                title_text=axes_labels[1],
-                showline=True,
-                mirror=True,
-                zeroline=False,
-            ),
-            shapes=[
-                dict(
-                    type='line',
-                    x0=0,
-                    y0=0,
-                    x1=1,
-                    y1=1,
-                    xref='paper',
-                    yref='paper',
-                    layer='below',  # diagonal behind points
-                    line=dict(
-                        width=0.5,
-                    ),
-                )
-            ],
-        )
+        # Diagonal reference line (corner to corner in paper coordinates)
+        shapes = [
+            dict(
+                type='line',
+                x0=0,
+                y0=0,
+                x1=1,
+                y1=1,
+                xref='paper',
+                yref='paper',
+                layer='below',
+                line=dict(width=0.5),
+            )
+        ]
+
+        layout = self._get_layout(title, axes_labels, shapes=shapes)
 
         fig = self._get_figure(data, layout)
         self._show_figure(fig)
