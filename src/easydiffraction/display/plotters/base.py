@@ -76,7 +76,7 @@ class PlotterBase(ABC):
         title,
         height,
     ):
-        """Render a pattern line plot.
+        """Render a line plot for powder diffraction data.
 
         Suitable for powder diffraction data where intensity is plotted
         against an x-axis variable (2θ, TOF, d-spacing).
@@ -101,10 +101,10 @@ class PlotterBase(ABC):
         title,
         height,
     ):
-        """Render a scatter comparison plot for single crystal data.
+        """Render a scatter plot for single crystal diffraction data.
 
-        Suitable for single crystal data where measured values are
-        plotted against calculated values with error bars.
+        Suitable for single crystal diffraction data where measured
+        values are plotted against calculated values with error bars.
 
         Args:
             x_calc: 1D array of calculated values (x-axis).

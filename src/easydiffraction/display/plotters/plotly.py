@@ -64,7 +64,7 @@ class PlotlyPlotter(PlotterBase):
         return trace
 
     def _get_single_crystal_trace(self, x_calc, y_meas, y_meas_su):
-        """Create a Plotly scatter trace for single crystal data.
+        """Create a Plotly trace for single crystal diffraction data.
 
         Args:
             x_calc: 1D array-like of calculated values (x-axis).
@@ -223,7 +223,7 @@ class PlotlyPlotter(PlotterBase):
         title,
         height=None,
     ):
-        """Render an interactive Plotly line plot for powder data.
+        """Render a line plot for powder diffraction data.
 
         Suitable for powder diffraction data where intensity is plotted
         against an x-axis variable (2θ, TOF, d-spacing).
@@ -262,11 +262,11 @@ class PlotlyPlotter(PlotterBase):
         title,
         height=None,
     ):
-        """Render a scatter comparison plot for single crystal data.
+        """Render a scatter plot for single crystal diffraction data.
 
-        Suitable for single crystal data where measured values are
-        plotted against calculated values with error bars and a
-        diagonal reference line.
+        Suitable for single crystal diffraction data where measured
+        values are plotted against calculated values with error bars
+        and a diagonal reference line.
 
         Args:
             x_calc: 1D array-like of calculated values (x-axis).

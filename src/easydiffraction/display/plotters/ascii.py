@@ -53,10 +53,11 @@ class AsciiPlotter(PlotterBase):
         title,
         height=None,
     ):
-        """Render a compact ASCII line chart for powder data.
+        """Render a line plot for powder diffraction data.
 
         Suitable for powder diffraction data where intensity is plotted
-        against an x-axis variable (2θ, TOF, d-spacing).
+        against an x-axis variable (2θ, TOF, d-spacing). Uses ASCII
+        characters for terminal display.
 
         Args:
             x: 1D array-like of x values (only used for range
@@ -98,7 +99,7 @@ class AsciiPlotter(PlotterBase):
         title,
         height=None,
     ):
-        """Render a scatter comparison plot for single crystal data.
+        """Render a scatter plot for single crystal diffraction data.
 
         Creates an ASCII scatter plot showing measured vs calculated
         values with a diagonal reference line.
