@@ -112,6 +112,33 @@ class PlotlyPlotter(PlotterBase):
             ],
         )
 
+    def _show_figure(self, fig):
+        """Display a Plotly figure.
+
+        Formats axis ticks and renders the figure using the appropriate
+        method for the current environment.
+
+        Args:
+            fig: A :class:`plotly.graph_objects.Figure` to display.
+        """
+        # Format the axes ticks.
+        # Keeps decimals for small numbers; groups thousands for large ones
+        fig.update_xaxes(tickformat=',.6~g', separatethousands=True)
+        fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
+
+        config = self._get_config()
+
+        if in_pycharm() or display is None or HTML is None:
+            fig.show(config=config)
+        else:
+            html_fig = pio.to_html(
+                fig,
+                include_plotlyjs='cdn',
+                full_html=False,
+                config=config,
+            )
+            display(HTML(html_fig))
+
     def plot_pattern(
         self,
         x,
@@ -173,30 +200,12 @@ class PlotlyPlotter(PlotterBase):
             ),
         )
 
-        config = self._get_config()
-
         fig = go.Figure(
             data=data,
             layout=layout,
         )
 
-        # Format the axes ticks.
-        # Keeps decimals for small numbers; groups thousands for large
-        # ones
-        fig.update_xaxes(tickformat=',.6~g', separatethousands=True)
-        fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
-
-        # Show the figure
-        if in_pycharm() or display is None or HTML is None:
-            fig.show(config=config)
-        else:
-            html_fig = pio.to_html(
-                fig,
-                include_plotlyjs='cdn',
-                full_html=False,
-                config=config,
-            )
-            display(HTML(html_fig))
+        self._show_figure(fig)
 
     def plot_scatter_comparison(
         self,
@@ -274,28 +283,10 @@ class PlotlyPlotter(PlotterBase):
             ],
         )
 
-        config = self._get_config()
-
         # Create figure
         fig = go.Figure(
             data=data,
             layout=layout,
         )
 
-        # Format the axes ticks.
-        # Keeps decimals for small numbers; groups thousands for large
-        # ones
-        fig.update_xaxes(tickformat=',.6~g', separatethousands=True)
-        fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
-
-        # Show the figure
-        if in_pycharm() or display is None or HTML is None:
-            fig.show(config=config)
-        else:
-            html_fig = pio.to_html(
-                fig,
-                include_plotlyjs='cdn',
-                full_html=False,
-                config=config,
-            )
-            display(HTML(html_fig))
+        self._show_figure(fig)
