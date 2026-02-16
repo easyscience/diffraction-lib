@@ -216,15 +216,6 @@ class PlotlyPlotter(PlotterBase):
         # Intentionally unused; accepted for API compatibility
         del height
 
-        # Determine axis limits
-        vmin = float(min(y_meas.min(), x_calc.min()))
-        vmax = float(max(y_meas.max(), x_calc.max()))
-
-        # Update limits with some padding
-        pad = 0.05 * (vmax - vmin) if vmax > vmin else 1.0
-        vmin -= pad
-        vmax += pad
-
         # Create data trace
         data = [self._get_single_crystal_trace(x_calc, y_meas, y_meas_su)]
 
@@ -250,16 +241,12 @@ class PlotlyPlotter(PlotterBase):
                 showline=True,
                 mirror=True,
                 zeroline=False,
-                range=[vmin, vmax],
-                # scaleanchor="y", # make 1 unit on x == 1 unit on y
             ),
             yaxis=dict(
                 title_text=axes_labels[1],
                 showline=True,
                 mirror=True,
                 zeroline=False,
-                range=[vmin, vmax],
-                # constrain="domain", # helps keep the plot square-ish
             ),
             shapes=[
                 dict(
