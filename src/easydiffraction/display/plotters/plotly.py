@@ -275,16 +275,15 @@ class PlotlyPlotter(PlotterBase):
             shapes=[
                 dict(
                     type='line',
-                    x0=vmin,
-                    y0=vmin,
-                    x1=vmax,
-                    y1=vmax,
-                    xref='x',
-                    yref='y',
+                    x0=0,
+                    y0=0,
+                    x1=1,
+                    y1=1,
+                    xref='paper',
+                    yref='paper',
                     layer='below',  # diagonal behind points
                     line=dict(
                         width=0.5,
-                        # dash='dash',
                     ),
                 )
             ],
