@@ -63,6 +63,38 @@ class PlotlyPlotter(PlotterBase):
 
         return trace
 
+    def _get_scatter_trace(self, x_calc, y_meas, y_meas_su):
+        """Create a Plotly scatter trace for comparison plots.
+
+        Args:
+            x_calc: 1D array-like of calculated values (x-axis).
+            y_meas: 1D array-like of measured values (y-axis).
+            y_meas_su: 1D array-like of measurement uncertainties.
+
+        Returns:
+            A configured :class:`plotly.graph_objects.Scatter` trace
+            with markers and error bars.
+        """
+        trace = go.Scatter(
+            x=x_calc,
+            y=y_meas,
+            mode='markers',
+            marker=dict(
+                symbol='circle',
+                size=10,
+                line=dict(width=0.5),
+                color=DEFAULT_COLORS['meas'],
+            ),
+            error_y=dict(
+                type='data',
+                array=y_meas_su,
+                visible=True,
+            ),
+            hovertemplate='calc: %{x}<br>meas: %{y}<br><extra></extra>',
+        )
+
+        return trace
+
     def plot_pattern(
         self,
         x,
@@ -194,28 +226,7 @@ class PlotlyPlotter(PlotterBase):
         vmax += pad
 
         # Create data trace
-        data = [
-            go.Scatter(
-                x=x_calc,
-                y=y_meas,
-                mode='markers',
-                marker=dict(
-                    symbol='circle',
-                    size=10,
-                    line=dict(
-                        width=0.5,
-                        # color=DEFAULT_COLORS['meas'],
-                    ),
-                    color=DEFAULT_COLORS['meas'],
-                ),
-                error_y=dict(
-                    type='data',
-                    array=y_meas_su,
-                    visible=True,
-                ),
-                hovertemplate=('calc: %{x}<br>meas: %{y}<br><extra></extra>'),
-            )
-        ]
+        data = [self._get_scatter_trace(x_calc, y_meas, y_meas_su)]
 
         # Setup layout
         layout = go.Layout(
