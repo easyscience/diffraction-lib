@@ -144,7 +144,8 @@ class PlotlyPlotter(PlotterBase):
             A configured :class:`plotly.graph_objects.Figure`.
         """
         fig = go.Figure(data=data, layout=layout)
-        # Format axis ticks: decimals for small numbers, grouped thousands for large
+        # Format axis ticks:
+        # decimals for small numbers, grouped thousands for large
         fig.update_xaxes(tickformat=',.6~g', separatethousands=True)
         fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
         return fig
@@ -244,7 +245,10 @@ class PlotlyPlotter(PlotterBase):
             trace = self._get_powder_trace(x, y, label)
             data.append(trace)
 
-        layout = self._get_layout(title, axes_labels)
+        layout = self._get_layout(
+            title,
+            axes_labels,
+        )
 
         fig = self._get_figure(data, layout)
         self._show_figure(fig)
@@ -275,10 +279,19 @@ class PlotlyPlotter(PlotterBase):
         # Intentionally unused; accepted for API compatibility
         del height
 
-        # Create data trace
-        data = [self._get_single_crystal_trace(x_calc, y_meas, y_meas_su)]
+        data = [
+            self._get_single_crystal_trace(
+                x_calc,
+                y_meas,
+                y_meas_su,
+            )
+        ]
 
-        layout = self._get_layout(title, axes_labels, shapes=[self._get_diagonal_shape()])
+        layout = self._get_layout(
+            title,
+            axes_labels,
+            shapes=[self._get_diagonal_shape()],
+        )
 
         fig = self._get_figure(data, layout)
         self._show_figure(fig)
