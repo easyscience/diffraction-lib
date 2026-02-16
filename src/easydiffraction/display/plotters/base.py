@@ -115,27 +115,3 @@ class PlotterBase(ABC):
             height: Backend-specific height (text rows or pixels).
         """
         pass
-
-    def plot(
-        self,
-        x,
-        y_series,
-        labels,
-        axes_labels,
-        title,
-        height,
-    ):
-        """Render a pattern plot (backward-compatible alias).
-
-        .. deprecated::
-            Use :meth:`plot_powder` instead.
-
-        Args:
-            x: 1D array of x-axis values.
-            y_series: Sequence of y arrays to plot.
-            labels: Identifiers corresponding to y_series.
-            axes_labels: Pair of strings for the x and y titles.
-            title: Figure title.
-            height: Backend-specific height (text rows or pixels).
-        """
-        return self.plot_powder(x, y_series, labels, axes_labels, title, height)

@@ -36,7 +36,12 @@ class PlotlyPlotter(PlotterBase):
     if in_pycharm():
         pio.renderers.default = 'browser'
 
-    def _get_powder_trace(self, x, y, label):
+    def _get_powder_trace(
+        self,
+        x,
+        y,
+        label,
+    ):
         """Create a Plotly trace for powder diffraction data.
 
         Args:
@@ -63,7 +68,12 @@ class PlotlyPlotter(PlotterBase):
 
         return trace
 
-    def _get_single_crystal_trace(self, x_calc, y_meas, y_meas_su):
+    def _get_single_crystal_trace(
+        self,
+        x_calc,
+        y_meas,
+        y_meas_su,
+    ):
         """Create a Plotly trace for single crystal diffraction data.
 
         Args:
@@ -133,7 +143,11 @@ class PlotlyPlotter(PlotterBase):
             ],
         )
 
-    def _get_figure(self, data, layout):
+    def _get_figure(
+        self,
+        data,
+        layout,
+    ):
         """Create and configure a Plotly figure.
 
         Args:
@@ -150,7 +164,10 @@ class PlotlyPlotter(PlotterBase):
         fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
         return fig
 
-    def _show_figure(self, fig):
+    def _show_figure(
+        self,
+        fig,
+    ):
         """Display a Plotly figure.
 
         Renders the figure using the appropriate method for the current
@@ -172,7 +189,12 @@ class PlotlyPlotter(PlotterBase):
             )
             display(HTML(html_fig))
 
-    def _get_layout(self, title, axes_labels, **kwargs):
+    def _get_layout(
+        self,
+        title,
+        axes_labels,
+        **kwargs,
+    ):
         """Create a Plotly layout configuration.
 
         Args:

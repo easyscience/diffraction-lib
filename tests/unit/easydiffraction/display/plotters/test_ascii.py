@@ -18,7 +18,7 @@ def test_ascii_plotter_plot_minimal(capsys):
     x = np.array([0.0, 1.0, 2.0])
     y = np.array([1.0, 2.0, 3.0])
     p = AsciiPlotter()
-    p.plot(x=x, y_series=[y], labels=['meas'], axes_labels=['x', 'y'], title='T', height=5)
+    p.plot_powder(x=x, y_series=[y], labels=['meas'], axes_labels=['x', 'y'], title='T', height=5)
     out = capsys.readouterr().out
     assert 'Displaying data for selected x-range' in out
 
