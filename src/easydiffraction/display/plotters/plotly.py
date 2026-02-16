@@ -95,6 +95,27 @@ class PlotlyPlotter(PlotterBase):
 
         return trace
 
+    def _get_diagonal_shape(self):
+        """Create a diagonal reference line shape.
+
+        Returns a y=x diagonal line spanning the plot area using paper
+        coordinates (0,0) to (1,1).
+
+        Returns:
+            A dict configuring a diagonal line shape.
+        """
+        return dict(
+            type='line',
+            x0=0,
+            y0=0,
+            x1=1,
+            y1=1,
+            xref='paper',
+            yref='paper',
+            layer='below',
+            line=dict(width=0.5),
+        )
+
     def _get_config(self):
         """Return the Plotly figure configuration.
 
@@ -257,22 +278,7 @@ class PlotlyPlotter(PlotterBase):
         # Create data trace
         data = [self._get_single_crystal_trace(x_calc, y_meas, y_meas_su)]
 
-        # Diagonal reference line (corner to corner in paper coordinates)
-        shapes = [
-            dict(
-                type='line',
-                x0=0,
-                y0=0,
-                x1=1,
-                y1=1,
-                xref='paper',
-                yref='paper',
-                layer='below',
-                line=dict(width=0.5),
-            )
-        ]
-
-        layout = self._get_layout(title, axes_labels, shapes=shapes)
+        layout = self._get_layout(title, axes_labels, shapes=[self._get_diagonal_shape()])
 
         fig = self._get_figure(data, layout)
         self._show_figure(fig)
