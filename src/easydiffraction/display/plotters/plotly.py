@@ -95,6 +95,23 @@ class PlotlyPlotter(PlotterBase):
 
         return trace
 
+    def _get_config(self):
+        """Return the Plotly figure configuration.
+
+        Returns:
+            A dict with display and mode bar settings.
+        """
+        return dict(
+            displaylogo=False,
+            modeBarButtonsToRemove=[
+                'select2d',
+                'lasso2d',
+                'zoomIn2d',
+                'zoomOut2d',
+                'autoScale2d',
+            ],
+        )
+
     def plot_pattern(
         self,
         x,
@@ -156,16 +173,7 @@ class PlotlyPlotter(PlotterBase):
             ),
         )
 
-        config = dict(
-            displaylogo=False,
-            modeBarButtonsToRemove=[
-                'select2d',
-                'lasso2d',
-                'zoomIn2d',
-                'zoomOut2d',
-                'autoScale2d',
-            ],
-        )
+        config = self._get_config()
 
         fig = go.Figure(
             data=data,
@@ -266,17 +274,7 @@ class PlotlyPlotter(PlotterBase):
             ],
         )
 
-        # Setup config
-        config = dict(
-            displaylogo=False,
-            modeBarButtonsToRemove=[
-                'select2d',
-                'lasso2d',
-                'zoomIn2d',
-                'zoomOut2d',
-                'autoScale2d',
-            ],
-        )
+        config = self._get_config()
 
         # Create figure
         fig = go.Figure(
