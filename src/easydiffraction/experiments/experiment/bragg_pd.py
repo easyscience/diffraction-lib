@@ -9,6 +9,7 @@ import numpy as np
 
 from easydiffraction.experiments.categories.background.enums import BackgroundTypeEnum
 from easydiffraction.experiments.categories.background.factory import BackgroundFactory
+from easydiffraction.experiments.categories.instrument.factory import InstrumentFactory
 from easydiffraction.experiments.experiment.base import PdExperimentBase
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
@@ -31,6 +32,11 @@ class BraggPdExperiment(PdExperimentBase):
     ) -> None:
         super().__init__(name=name, type=type)
 
+        self._instrument = InstrumentFactory.create(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            sample_form=self.type.sample_form.value,
+        )
         self._background_type: BackgroundTypeEnum = BackgroundTypeEnum.default()
         self._background = BackgroundFactory.create(background_type=self.background_type)
 
@@ -77,6 +83,10 @@ class BraggPdExperiment(PdExperimentBase):
 
         console.paragraph('Data loaded successfully')
         console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
+
+    @property
+    def instrument(self):
+        return self._instrument
 
     @property
     def background_type(self):

@@ -167,11 +167,6 @@ class PdExperimentBase(ExperimentBase):
             self.type.scattering_type.value,
             self.type.beam_mode.value,
         )
-        self._instrument = InstrumentFactory.create(
-            scattering_type=self.type.scattering_type.value,
-            beam_mode=self.type.beam_mode.value,
-            sample_form=self.type.sample_form.value,
-        )
         self._data = DataFactory.create(
             sample_form=self.type.sample_form.value,
             beam_mode=self.type.beam_mode.value,
@@ -236,10 +231,6 @@ class PdExperimentBase(ExperimentBase):
     def excluded_regions(self):
         """Collection of excluded regions for the x-grid."""
         return self._excluded_regions
-
-    @property
-    def instrument(self):
-        return self._instrument
 
     @property
     def data(self):
