@@ -257,7 +257,7 @@ class TotalData(TotalDataBase):
         self._set_point_id([str(i + 1) for i in range(values.size)])
 
     @property
-    def all_x(self) -> np.ndarray:
+    def unfiltered_x(self) -> np.ndarray:
         """Get the r values for all data points."""
         return np.fromiter((p.r.value for p in self._items), dtype=float)
 
