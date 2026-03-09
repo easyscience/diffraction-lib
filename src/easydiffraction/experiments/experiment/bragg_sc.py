@@ -67,9 +67,9 @@ class BraggScExperiment(
         integrated_intensities_su: np.ndarray = data[:, 4]
 
         # Set the experiment data
-        self.data._set_hkl(indices_h, indices_k, indices_l)
-        self.data._set_meas(integrated_intensities)
-        self.data._set_meas_su(integrated_intensities_su)
+        self.data._set_hkl_and_id(indices_h, indices_k, indices_l)
+        self.data._set_intensity_meas(integrated_intensities)
+        self.data._set_intensity_meas_su(integrated_intensities_su)
 
         # If wavelength data is present (column 6), extract and set it
         if data.shape[1] >= 6:

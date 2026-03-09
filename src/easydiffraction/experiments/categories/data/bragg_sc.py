@@ -14,6 +14,8 @@ from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import sin_theta_over_lambda_to_d_spacing
 
 
 class Refln(CategoryItem):
@@ -223,20 +225,24 @@ class ReflnData(CategoryCollection):
     def __init__(self):
         super().__init__(item_type=Refln)
 
+    #################
+    # Private methods
+    #################
+
     # Should be set only once
 
-    def _set_hkl(self, indices_h, indices_k, indices_l) -> None:
+    def _set_hkl_and_id(self, indices_h, indices_k, indices_l) -> None:
         """Helper method to set Miller indices."""
         # TODO: split into multiple methods
         # TODO: do we set _items here and reuse them for all other
         #  _set_XXX methods?
         self._items = [self._item_type() for _ in range(indices_h.size)]
-        for p, index_h, index_k, index_l in zip(
+        for item, index_h, index_k, index_l in zip(
             self._items, indices_h, indices_k, indices_l, strict=True
         ):
-            p.index_h._value = index_h
-            p.index_k._value = index_k
-            p.index_l._value = index_l
+            item.index_h._value = index_h
+            item.index_k._value = index_k
+            item.index_l._value = index_l
         self._set_id([str(i + 1) for i in range(indices_h.size)])
 
     def _set_id(self, values) -> None:
@@ -244,12 +250,12 @@ class ReflnData(CategoryCollection):
         for p, v in zip(self._items, values, strict=True):
             p.id._value = v
 
-    def _set_meas(self, values) -> None:
+    def _set_intensity_meas(self, values) -> None:
         """Helper method to set measured intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas._value = v
 
-    def _set_meas_su(self, values) -> None:
+    def _set_intensity_meas_su(self, values) -> None:
         """Helper method to set standard uncertainty of measured
         intensity.
         """
@@ -273,46 +279,12 @@ class ReflnData(CategoryCollection):
         for p, v in zip(self._items, values, strict=True):
             p.sin_theta_over_lambda._value = v
 
-    def _set_calc(self, values) -> None:
+    def _set_intensity_calc(self, values) -> None:
         """Helper method to set calculated intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_calc._value = v
 
-    @property
-    def d(self) -> np.ndarray:
-        return np.fromiter((p.d_spacing.value for p in self._items), dtype=float)
-
-    @property
-    def stol(self) -> np.ndarray:
-        return np.fromiter((p.sin_theta_over_lambda.value for p in self._items), dtype=float)
-
-    @property
-    def indices_h(self) -> np.ndarray:
-        return np.fromiter((p.index_h.value for p in self._items), dtype=float)
-
-    @property
-    def indices_k(self) -> np.ndarray:
-        return np.fromiter((p.index_k.value for p in self._items), dtype=float)
-
-    @property
-    def indices_l(self) -> np.ndarray:
-        return np.fromiter((p.index_l.value for p in self._items), dtype=float)
-
-    @property
-    def meas(self) -> np.ndarray:
-        return np.fromiter((p.intensity_meas.value for p in self._items), dtype=float)
-
-    @property
-    def meas_su(self) -> np.ndarray:
-        return np.fromiter((p.intensity_meas_su.value for p in self._items), dtype=float)
-
-    @property
-    def calc(self) -> np.ndarray:
-        return np.fromiter((p.intensity_calc.value for p in self._items), dtype=float)
-
-    @property
-    def wavelength(self) -> np.ndarray:
-        return np.fromiter((p.wavelength.value for p in self._items), dtype=float)
+    # Misc
 
     def _update(self, called_by_minimizer=False):
         experiment = self._parent
@@ -322,23 +294,120 @@ class ReflnData(CategoryCollection):
         # calculator = experiment.calculator  # TODO: move from analysis
         calculator = project.analysis.calculator
 
-        initial_calc = np.zeros_like(self.indices_h)
-        calc = initial_calc
         linked_crystal = experiment.linked_crystal
         linked_crystal_id = experiment.linked_crystal.id.value
-        if linked_crystal_id in sample_models.names:
-            sample_model_id = linked_crystal_id
-            sample_model_scale = linked_crystal.scale.value
-            sample_model = sample_models[sample_model_id]
 
-            stol, sample_model_calc = calculator.calculate_structure_factors(
-                sample_model,
-                experiment,
-                called_by_minimizer=called_by_minimizer,
+        if linked_crystal_id not in sample_models.names:
+            log.error(
+                f"Linked crystal ID '{linked_crystal_id}' not found in "
+                f'sample model IDs {sample_models.names}.'
             )
+            return
 
-            calc = sample_model_scale * sample_model_calc
+        sample_model_id = linked_crystal_id
+        sample_model_scale = linked_crystal.scale.value
+        sample_model = sample_models[sample_model_id]
 
+        stol, raw_calc = calculator.calculate_structure_factors(
+            sample_model,
+            experiment,
+            called_by_minimizer=called_by_minimizer,
+        )
+
+        d_spacing = sin_theta_over_lambda_to_d_spacing(stol)
+        calc = sample_model_scale * raw_calc
+
+        self._set_d_spacing(d_spacing)
         self._set_sin_theta_over_lambda(stol)
-        self._set_d_spacing(0.5 / stol)  # TODO: Move to .utils.utils
-        self._set_calc(calc)
+        self._set_intensity_calc(calc)
+
+    ###################
+    # Public properties
+    ###################
+
+    @property
+    def d_spacing(self) -> np.ndarray:
+        return np.fromiter(
+            (p.d_spacing.value for p in self._items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def d(self) -> np.ndarray:
+        """Alias for d_spacing."""
+        # TODO: check if really needed.
+        return self.d_spacing
+
+    @property
+    def sin_theta_over_lambda(self) -> np.ndarray:
+        return np.fromiter(
+            (p.sin_theta_over_lambda.value for p in self._items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def index_h(self) -> np.ndarray:
+        return np.fromiter(
+            (p.index_h.value for p in self._items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def index_k(self) -> np.ndarray:
+        return np.fromiter(
+            (p.index_k.value for p in self._items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def index_l(self) -> np.ndarray:
+        return np.fromiter(
+            (p.index_l.value for p in self._items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def intensity_meas(self) -> np.ndarray:
+        return np.fromiter(
+            (p.intensity_meas.value for p in self._items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def meas(self) -> np.ndarray:
+        """Alias for intensity_meas."""
+        # TODO: check if really needed.
+        return self.intensity_meas
+
+    @property
+    def intensity_meas_su(self) -> np.ndarray:
+        return np.fromiter(
+            (p.intensity_meas_su.value for p in self._items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def meas_su(self) -> np.ndarray:
+        """Alias for intensity_meas_su."""
+        # TODO: check if really needed.
+        return self.intensity_meas_su
+
+    @property
+    def intensity_calc(self) -> np.ndarray:
+        return np.fromiter(
+            (p.intensity_calc.value for p in self._items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def calc(self) -> np.ndarray:
+        """Alias for intensity_calc."""
+        # TODO: check if really needed.
+        return self.intensity_calc
+
+    @property
+    def wavelength(self) -> np.ndarray:
+        return np.fromiter(
+            (p.wavelength.value for p in self._items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
