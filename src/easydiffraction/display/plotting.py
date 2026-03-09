@@ -160,8 +160,9 @@ class Plotter(RendererBase):
         """
         # Determine x-axis type
         sample_form = expt_type.sample_form.value
+        scattering_type = expt_type.scattering_type.value
         beam_mode = expt_type.beam_mode.value
-        x_axis = DEFAULT_X_AXIS[(sample_form, beam_mode)] if x is None else x
+        x_axis = DEFAULT_X_AXIS[(sample_form, scattering_type, beam_mode)] if x is None else x
 
         # Get attribute name for error messages
         # (works for both enum and string)
@@ -247,8 +248,9 @@ class Plotter(RendererBase):
         """
         # Determine x-axis type
         sample_form = expt_type.sample_form.value
+        scattering_type = expt_type.scattering_type.value
         beam_mode = expt_type.beam_mode.value
-        x_axis = DEFAULT_X_AXIS[(sample_form, beam_mode)] if x is None else x
+        x_axis = DEFAULT_X_AXIS[(sample_form, scattering_type, beam_mode)] if x is None else x
 
         # Get attribute name for error messages
         # (works for both enum and string)
@@ -345,8 +347,9 @@ class Plotter(RendererBase):
         """
         # Determine x-axis type from sample form and beam mode
         sample_form = expt_type.sample_form.value
+        scattering_type = expt_type.scattering_type.value
         beam_mode = expt_type.beam_mode.value
-        x_axis = DEFAULT_X_AXIS[(sample_form, beam_mode)] if x is None else x
+        x_axis = DEFAULT_X_AXIS[(sample_form, scattering_type, beam_mode)] if x is None else x
 
         # Get attribute name for error messages
         # (works for both enum and string)

@@ -26,6 +26,7 @@ class XAxisType(str, Enum):
 
     TWO_THETA = 'two_theta'
     TIME_OF_FLIGHT = 'time_of_flight'
+    R = 'x'
 
     INTENSITY_CALC = 'intensity_calc'
 
@@ -33,22 +34,39 @@ class XAxisType(str, Enum):
     SIN_THETA_OVER_LAMBDA = 'sin_theta_over_lambda'
 
 
-# Map (SampleFormEnum, BeamModeEnum) to default x-axis type
+# Map (SampleFormEnum, ScatteringTypeEnum, BeamModeEnum) to default x-axis type
 DEFAULT_X_AXIS = {
+    # Powder Bragg diffraction
     (
         SampleFormEnum.POWDER,
+        ScatteringTypeEnum.BRAGG,
         BeamModeEnum.CONSTANT_WAVELENGTH,
     ): XAxisType.TWO_THETA,
     (
         SampleFormEnum.POWDER,
+        ScatteringTypeEnum.BRAGG,
         BeamModeEnum.TIME_OF_FLIGHT,
     ): XAxisType.TIME_OF_FLIGHT,
+    # Powder total scattering (PDF) — always r-space
+    (
+        SampleFormEnum.POWDER,
+        ScatteringTypeEnum.TOTAL,
+        BeamModeEnum.CONSTANT_WAVELENGTH,
+    ): XAxisType.R,
+    (
+        SampleFormEnum.POWDER,
+        ScatteringTypeEnum.TOTAL,
+        BeamModeEnum.TIME_OF_FLIGHT,
+    ): XAxisType.R,
+    # Single crystal Bragg diffraction
     (
         SampleFormEnum.SINGLE_CRYSTAL,
+        ScatteringTypeEnum.BRAGG,
         BeamModeEnum.CONSTANT_WAVELENGTH,
     ): XAxisType.INTENSITY_CALC,
     (
         SampleFormEnum.SINGLE_CRYSTAL,
+        ScatteringTypeEnum.BRAGG,
         BeamModeEnum.TIME_OF_FLIGHT,
     ): XAxisType.INTENSITY_CALC,
 }
@@ -83,15 +101,7 @@ DEFAULT_AXES_LABELS = {
     (
         SampleFormEnum.POWDER,
         ScatteringTypeEnum.TOTAL,
-        XAxisType.TWO_THETA,
-    ): [
-        'r (Å)',
-        'G(r) (Å)',
-    ],
-    (
-        SampleFormEnum.POWDER,
-        ScatteringTypeEnum.TOTAL,
-        XAxisType.TIME_OF_FLIGHT,
+        XAxisType.R,
     ): [
         'r (Å)',
         'G(r) (Å)',
