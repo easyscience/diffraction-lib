@@ -2076,10 +2076,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#easydiffraction.experiments.experiment.BraggScExperiment" class="md-nav__link">
+  <a href="#easydiffraction.experiments.experiment.CwlScExperiment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        BraggScExperiment
+        CwlScExperiment
       
     </span>
   </a>
@@ -2102,6 +2102,17 @@
     <span class="md-ellipsis">
       
         PdExperimentBase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#easydiffraction.experiments.experiment.TofScExperiment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TofScExperiment
       
     </span>
   </a>
@@ -2168,17 +2179,6 @@
     <span class="md-ellipsis">
       
         factory
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#easydiffraction.experiments.experiment.instrument_mixin" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        instrument_mixin
       
     </span>
   </a>
@@ -2540,10 +2540,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#easydiffraction.experiments.experiment.BraggScExperiment" class="md-nav__link">
+  <a href="#easydiffraction.experiments.experiment.CwlScExperiment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        BraggScExperiment
+        CwlScExperiment
       
     </span>
   </a>
@@ -2566,6 +2566,17 @@
     <span class="md-ellipsis">
       
         PdExperimentBase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#easydiffraction.experiments.experiment.TofScExperiment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TofScExperiment
       
     </span>
   </a>
@@ -2632,17 +2643,6 @@
     <span class="md-ellipsis">
       
         factory
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#easydiffraction.experiments.experiment.instrument_mixin" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        instrument_mixin
       
     </span>
   </a>
@@ -5966,8 +5966,8 @@ for concrete CWL/TOF instrument definitions.</p>
 
 
 
-<h5 id="easydiffraction.experiments.categories.instrument.cwl.CwlInstrument" class="doc doc-heading">
-            <code>CwlInstrument</code>
+<h5 id="easydiffraction.experiments.categories.instrument.cwl.CwlInstrumentBase" class="doc doc-heading">
+            <code>CwlInstrumentBase</code>
 
 
 </h5>
@@ -6016,15 +6016,112 @@ for concrete CWL/TOF instrument definitions.</p>
 <span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CwlInstrumentBase</span><span class="p">(</span><span class="n">InstrumentBase</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_wavelength</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;wavelength&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Incident neutron or X-ray wavelength&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">1.5406</span><span class="p">,</span>
+                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
+            <span class="p">),</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
+                    <span class="s1">&#39;_instr.wavelength&#39;</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_wavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Incident wavelength parameter (Å).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_wavelength</span>
+
+    <span class="nd">@setup_wavelength</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_wavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set incident wavelength value (Å).&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_wavelength</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="easydiffraction.experiments.categories.instrument.cwl.CwlInstrumentBase.setup_wavelength" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_wavelength</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Incident wavelength parameter (Å).</p>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h5 id="easydiffraction.experiments.categories.instrument.cwl.CwlPdInstrument" class="doc doc-heading">
+            <code>CwlPdInstrument</code>
+
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;CwlInstrumentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.categories.instrument.cwl.CwlInstrumentBase&lt;/code&gt;)" href="#easydiffraction.experiments.categories.instrument.cwl.CwlInstrumentBase">CwlInstrumentBase</a></code></p>
+
+
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/experiments/categories/instrument/cwl.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
@@ -6048,36 +6145,18 @@ for concrete CWL/TOF instrument definitions.</p>
 <span class="normal">69</span>
 <span class="normal">70</span>
 <span class="normal">71</span>
-<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CwlInstrument</span><span class="p">(</span><span class="n">InstrumentBase</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">setup_wavelength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">calib_twotheta_offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CwlPdInstrument</span><span class="p">(</span><span class="n">CwlInstrumentBase</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_wavelength</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;wavelength&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Incident neutron or X-ray wavelength&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">setup_wavelength</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">1.5406</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
-            <span class="p">),</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_instr.wavelength&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_calib_twotheta_offset</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;twotheta_offset&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Instrument misalignment offset&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">calib_twotheta_offset</span><span class="p">,</span>
                 <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -6089,16 +6168,6 @@ for concrete CWL/TOF instrument definitions.</p>
                 <span class="p">]</span>
             <span class="p">),</span>
         <span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">setup_wavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Incident wavelength parameter (Å).&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_wavelength</span>
-
-    <span class="nd">@setup_wavelength</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">setup_wavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set incident wavelength value (Å).&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_wavelength</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">calib_twotheta_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -6126,7 +6195,7 @@ for concrete CWL/TOF instrument definitions.</p>
 
 
 
-<h6 id="easydiffraction.experiments.categories.instrument.cwl.CwlInstrument.calib_twotheta_offset" class="doc doc-heading">
+<h6 id="easydiffraction.experiments.categories.instrument.cwl.CwlPdInstrument.calib_twotheta_offset" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">calib_twotheta_offset</span></code>
 
   <span class="doc doc-labels">
@@ -6140,34 +6209,6 @@ for concrete CWL/TOF instrument definitions.</p>
     <div class="doc doc-contents ">
 
         <p>Instrument misalignment two-theta offset (deg).</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h6 id="easydiffraction.experiments.categories.instrument.cwl.CwlInstrument.setup_wavelength" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">setup_wavelength</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h6>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Incident wavelength parameter (Å).</p>
 
     </div>
 
@@ -6281,8 +6322,7 @@ instrument classes to avoid circular imports.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/experiments/categories/instrument/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
-<span class="normal">23</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
@@ -6333,7 +6373,28 @@ instrument classes to avoid circular imports.</p>
 <span class="normal">71</span>
 <span class="normal">72</span>
 <span class="normal">73</span>
-<span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InstrumentFactory</span><span class="p">:</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InstrumentFactory</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create instrument instances for supported modes.</span>
 
 <span class="sd">    The factory hides implementation details and lazy-loads concrete</span>
@@ -6342,17 +6403,26 @@ instrument classes to avoid circular imports.</p>
 
     <span class="n">ST</span> <span class="o">=</span> <span class="n">ScatteringTypeEnum</span>
     <span class="n">BM</span> <span class="o">=</span> <span class="n">BeamModeEnum</span>
+    <span class="n">SF</span> <span class="o">=</span> <span class="n">SampleFormEnum</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_supported_map</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="c1"># Lazy import to avoid circulars</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.experiments.categories.instrument.cwl</span><span class="w"> </span><span class="kn">import</span> <span class="n">CwlInstrument</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.experiments.categories.instrument.tof</span><span class="w"> </span><span class="kn">import</span> <span class="n">TofInstrument</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.experiments.categories.instrument.cwl</span><span class="w"> </span><span class="kn">import</span> <span class="n">CwlPdInstrument</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.experiments.categories.instrument.cwl</span><span class="w"> </span><span class="kn">import</span> <span class="n">CwlScInstrument</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.experiments.categories.instrument.tof</span><span class="w"> </span><span class="kn">import</span> <span class="n">TofPdInstrument</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.experiments.categories.instrument.tof</span><span class="w"> </span><span class="kn">import</span> <span class="n">TofScInstrument</span>
 
         <span class="k">return</span> <span class="p">{</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">ST</span><span class="o">.</span><span class="n">BRAGG</span><span class="p">:</span> <span class="p">{</span>
-                <span class="bp">cls</span><span class="o">.</span><span class="n">BM</span><span class="o">.</span><span class="n">CONSTANT_WAVELENGTH</span><span class="p">:</span> <span class="n">CwlInstrument</span><span class="p">,</span>
-                <span class="bp">cls</span><span class="o">.</span><span class="n">BM</span><span class="o">.</span><span class="n">TIME_OF_FLIGHT</span><span class="p">:</span> <span class="n">TofInstrument</span><span class="p">,</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">BM</span><span class="o">.</span><span class="n">CONSTANT_WAVELENGTH</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">SF</span><span class="o">.</span><span class="n">POWDER</span><span class="p">:</span> <span class="n">CwlPdInstrument</span><span class="p">,</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">SF</span><span class="o">.</span><span class="n">SINGLE_CRYSTAL</span><span class="p">:</span> <span class="n">CwlScInstrument</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">BM</span><span class="o">.</span><span class="n">TIME_OF_FLIGHT</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">SF</span><span class="o">.</span><span class="n">POWDER</span><span class="p">:</span> <span class="n">TofPdInstrument</span><span class="p">,</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">SF</span><span class="o">.</span><span class="n">SINGLE_CRYSTAL</span><span class="p">:</span> <span class="n">TofScInstrument</span><span class="p">,</span>
+                <span class="p">},</span>
             <span class="p">}</span>
         <span class="p">}</span>
 
@@ -6361,11 +6431,14 @@ instrument classes to avoid circular imports.</p>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">scattering_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ScatteringTypeEnum</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">beam_mode</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BeamModeEnum</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sample_form</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SampleFormEnum</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InstrumentBase</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">beam_mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">scattering_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">ScatteringTypeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">sample_form</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sample_form</span> <span class="o">=</span> <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
 
         <span class="n">supported</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_supported_map</span><span class="p">()</span>
 
@@ -6384,7 +6457,15 @@ instrument classes to avoid circular imports.</p>
                 <span class="sa">f</span><span class="s1">&#39;Supported beam modes: </span><span class="si">{</span><span class="n">supported_beam_modes</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span>
 
-        <span class="n">instrument_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">InstrumentBase</span><span class="p">]</span> <span class="o">=</span> <span class="n">supported</span><span class="p">[</span><span class="n">scattering_type</span><span class="p">][</span><span class="n">beam_mode</span><span class="p">]</span>
+        <span class="n">supported_sample_forms</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">supported</span><span class="p">[</span><span class="n">scattering_type</span><span class="p">][</span><span class="n">beam_mode</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">sample_form</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported_sample_forms</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unsupported sample form: &#39;</span><span class="si">{</span><span class="n">sample_form</span><span class="si">}</span><span class="s2">&#39; for scattering type: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">scattering_type</span><span class="si">}</span><span class="s2">&#39; and beam mode: &#39;</span><span class="si">{</span><span class="n">beam_mode</span><span class="si">}</span><span class="s2">&#39;.</span><span class="se">\n</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s1">&#39;Supported sample forms: </span><span class="si">{</span><span class="n">supported_sample_forms</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+
+        <span class="n">instrument_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">InstrumentBase</span><span class="p">]</span> <span class="o">=</span> <span class="n">supported</span><span class="p">[</span><span class="n">scattering_type</span><span class="p">][</span><span class="n">beam_mode</span><span class="p">][</span><span class="n">sample_form</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">instrument_class</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -6402,6 +6483,10 @@ instrument classes to avoid circular imports.</p>
     </div>
 
 </div>
+
+
+
+
 
 
 
@@ -6478,8 +6563,8 @@ instrument classes to avoid circular imports.</p>
 
 
 
-<h5 id="easydiffraction.experiments.categories.instrument.tof.TofInstrument" class="doc doc-heading">
-            <code>TofInstrument</code>
+<h5 id="easydiffraction.experiments.categories.instrument.tof.TofPdInstrument" class="doc doc-heading">
+            <code>TofPdInstrument</code>
 
 
 </h5>
@@ -6500,12 +6585,7 @@ instrument classes to avoid circular imports.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/experiments/categories/instrument/tof.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 12</span>
-<span class="normal"> 13</span>
-<span class="normal"> 14</span>
-<span class="normal"> 15</span>
-<span class="normal"> 16</span>
-<span class="normal"> 17</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 17</span>
 <span class="normal"> 18</span>
 <span class="normal"> 19</span>
 <span class="normal"> 20</span>
@@ -6633,31 +6713,14 @@ instrument classes to avoid circular imports.</p>
 <span class="normal">142</span>
 <span class="normal">143</span>
 <span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofInstrument</span><span class="p">(</span><span class="n">InstrumentBase</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">setup_twotheta_bank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">calib_d_to_tof_offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">calib_d_to_tof_linear</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">calib_d_to_tof_quad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">calib_d_to_tof_recip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">145</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofPdInstrument</span><span class="p">(</span><span class="n">InstrumentBase</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_twotheta_bank</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;twotheta_bank&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Detector bank position&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">setup_twotheta_bank</span><span class="p">,</span>
                 <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">150.0</span><span class="p">,</span>
                 <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -6673,7 +6736,6 @@ instrument classes to avoid circular imports.</p>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;d_to_tof_offset&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;TOF offset&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">calib_d_to_tof_offset</span><span class="p">,</span>
                 <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -6689,7 +6751,6 @@ instrument classes to avoid circular imports.</p>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;d_to_tof_linear&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;TOF linear conversion&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">calib_d_to_tof_linear</span><span class="p">,</span>
                 <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">10000.0</span><span class="p">,</span>
                 <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -6705,7 +6766,6 @@ instrument classes to avoid circular imports.</p>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;d_to_tof_quad&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;TOF quadratic correction&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">calib_d_to_tof_quad</span><span class="p">,</span>
                 <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
                 <span class="n">default</span><span class="o">=-</span><span class="mf">0.00001</span><span class="p">,</span>
                 <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -6721,7 +6781,6 @@ instrument classes to avoid circular imports.</p>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;d_to_tof_recip&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;TOF reciprocal velocity correction&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">calib_d_to_tof_recip</span><span class="p">,</span>
                 <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -6800,7 +6859,7 @@ instrument classes to avoid circular imports.</p>
 
 
 
-<h6 id="easydiffraction.experiments.categories.instrument.tof.TofInstrument.calib_d_to_tof_linear" class="doc doc-heading">
+<h6 id="easydiffraction.experiments.categories.instrument.tof.TofPdInstrument.calib_d_to_tof_linear" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">calib_d_to_tof_linear</span></code>
 
   <span class="doc doc-labels">
@@ -6828,7 +6887,7 @@ instrument classes to avoid circular imports.</p>
 
 
 
-<h6 id="easydiffraction.experiments.categories.instrument.tof.TofInstrument.calib_d_to_tof_offset" class="doc doc-heading">
+<h6 id="easydiffraction.experiments.categories.instrument.tof.TofPdInstrument.calib_d_to_tof_offset" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">calib_d_to_tof_offset</span></code>
 
   <span class="doc doc-labels">
@@ -6856,7 +6915,7 @@ instrument classes to avoid circular imports.</p>
 
 
 
-<h6 id="easydiffraction.experiments.categories.instrument.tof.TofInstrument.calib_d_to_tof_quad" class="doc doc-heading">
+<h6 id="easydiffraction.experiments.categories.instrument.tof.TofPdInstrument.calib_d_to_tof_quad" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">calib_d_to_tof_quad</span></code>
 
   <span class="doc doc-labels">
@@ -6884,7 +6943,7 @@ instrument classes to avoid circular imports.</p>
 
 
 
-<h6 id="easydiffraction.experiments.categories.instrument.tof.TofInstrument.calib_d_to_tof_recip" class="doc doc-heading">
+<h6 id="easydiffraction.experiments.categories.instrument.tof.TofPdInstrument.calib_d_to_tof_recip" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">calib_d_to_tof_recip</span></code>
 
   <span class="doc doc-labels">
@@ -6912,7 +6971,7 @@ instrument classes to avoid circular imports.</p>
 
 
 
-<h6 id="easydiffraction.experiments.categories.instrument.tof.TofInstrument.setup_twotheta_bank" class="doc doc-heading">
+<h6 id="easydiffraction.experiments.categories.instrument.tof.TofPdInstrument.setup_twotheta_bank" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">setup_twotheta_bank</span></code>
 
   <span class="doc doc-labels">
@@ -11813,7 +11872,7 @@ pair distribution function (PDF) modeling.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;InstrumentMixin&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.instrument_mixin.InstrumentMixin&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.instrument_mixin.InstrumentMixin">InstrumentMixin</a></code>, <code><a class="autorefs autorefs-internal" title="&lt;code&gt;PdExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.PdExperimentBase&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.base.PdExperimentBase">PdExperimentBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;PdExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.PdExperimentBase&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.base.PdExperimentBase">PdExperimentBase</a></code></p>
 
 
 
@@ -11943,10 +12002,13 @@ specific attributes.</p>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
-<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BraggPdExperiment</span><span class="p">(</span>
-    <span class="n">InstrumentMixin</span><span class="p">,</span>
-    <span class="n">PdExperimentBase</span><span class="p">,</span>
-<span class="p">):</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BraggPdExperiment</span><span class="p">(</span><span class="n">PdExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard (Bragg) Powder Diffraction experiment class with</span>
 <span class="sd">    specific attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -11959,6 +12021,11 @@ specific attributes.</p>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instrument</span> <span class="o">=</span> <span class="n">InstrumentFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">scattering_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">beam_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">sample_form</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_background_type</span><span class="p">:</span> <span class="n">BackgroundTypeEnum</span> <span class="o">=</span> <span class="n">BackgroundTypeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_background</span> <span class="o">=</span> <span class="n">BackgroundFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">background_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">background_type</span><span class="p">)</span>
 
@@ -12005,6 +12072,10 @@ specific attributes.</p>
 
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instrument</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instrument</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">background_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -12115,10 +12186,10 @@ specific attributes.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/experiments/experiment/bragg_pd.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_background_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_background_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently used background type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current background type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">background_type</span><span class="p">)</span>
@@ -12149,20 +12220,20 @@ specific attributes.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/experiments/experiment/bragg_pd.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span>
-<span class="normal">131</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_background_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_background_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported background types.&quot;&quot;&quot;</span>
     <span class="n">columns_headers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Background type&#39;</span><span class="p">,</span> <span class="s1">&#39;Description&#39;</span><span class="p">]</span>
     <span class="n">columns_alignment</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">]</span>
@@ -12200,8 +12271,8 @@ specific attributes.</p>
 
 
 
-<h3 id="easydiffraction.experiments.experiment.BraggScExperiment" class="doc doc-heading">
-            <code>BraggScExperiment</code>
+<h3 id="easydiffraction.experiments.experiment.CwlScExperiment" class="doc doc-heading">
+            <code>CwlScExperiment</code>
 
 
 </h3>
@@ -12209,12 +12280,12 @@ specific attributes.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;InstrumentMixin&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.instrument_mixin.InstrumentMixin&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.instrument_mixin.InstrumentMixin">InstrumentMixin</a></code>, <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ScExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.ScExperimentBase&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.base.ScExperimentBase">ScExperimentBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ScExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.ScExperimentBase&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.base.ScExperimentBase">ScExperimentBase</a></code></p>
 
 
 
-        <p>Standard (Bragg) Single Crystal experiment class with specific
-attributes.</p>
+        <p>Standard (Bragg) constant wavelength single srystal experiment
+class with specific attributes.</p>
 
 
 
@@ -12225,7 +12296,8 @@ attributes.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/experiments/experiment/bragg_sc.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+<span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
@@ -12274,40 +12346,9 @@ attributes.</p>
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BraggScExperiment</span><span class="p">(</span>
-    <span class="n">InstrumentMixin</span><span class="p">,</span>
-    <span class="n">ScExperimentBase</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard (Bragg) Single Crystal experiment class with specific</span>
-<span class="sd">    attributes.</span>
+<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CwlScExperiment</span><span class="p">(</span><span class="n">ScExperimentBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard (Bragg) constant wavelength single srystal experiment</span>
+<span class="sd">    class with specific attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -12318,30 +12359,27 @@ attributes.</p>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_linked_crystal</span> <span class="o">=</span> <span class="n">LinkedCrystal</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_extinction</span> <span class="o">=</span> <span class="n">Extinction</span><span class="p">()</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load measured data from an ASCII file into the data category.</span>
 
-<span class="sd">        The file format is space/column separated with either 5 or 6</span>
-<span class="sd">        columns depending on the beam mode:</span>
-<span class="sd">        - 5 for constant wavelength mode: ``h k l Iobs sIobs``.</span>
-<span class="sd">        - 6 for time-of-flight mode: ``h k l Iobs sIobs wavelength``.</span>
+<span class="sd">        The file format is space/column separated with 5 columns:</span>
+<span class="sd">        ``h k l Iobs sIobs``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
         <span class="k">try</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Failed to read data from </span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">CONSTANT_WAVELENGTH</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Data file must have at least 5 columns: h, k, l, Iobs, sIobs.&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">TIME_OF_FLIGHT</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s1">&#39;Data file must have at least 6 columns: h, k, l, Iobs, sIobs, wavelength.&#39;</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Failed to read data from </span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">exc_type</span><span class="o">=</span><span class="ne">IOError</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s1">&#39;Data file must have at least 5 columns: h, k, l, Iobs, sIobs.&#39;</span><span class="p">,</span>
+                <span class="n">exc_type</span><span class="o">=</span><span class="ne">ValueError</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
 
         <span class="c1"># Extract Miller indices h, k, l</span>
         <span class="n">indices_h</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
@@ -12357,29 +12395,8 @@ attributes.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas</span><span class="p">(</span><span class="n">integrated_intensities</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas_su</span><span class="p">(</span><span class="n">integrated_intensities_su</span><span class="p">)</span>
 
-        <span class="c1"># If wavelength data is present (column 6), extract and set it</span>
-        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">6</span><span class="p">:</span>
-            <span class="n">wavelength</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_wavelength</span><span class="p">(</span><span class="n">wavelength</span><span class="p">)</span>
-
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices_h</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">linked_crystal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linked_crystal</span>
-
-    <span class="nd">@linked_crystal</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">linked_crystal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_linked_crystal</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">extinction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extinction</span>
-
-    <span class="nd">@extinction</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">extinction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_extinction</span> <span class="o">=</span> <span class="n">value</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -12431,9 +12448,7 @@ attributes.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/experiments/experiment/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
@@ -12498,7 +12513,9 @@ attributes.</p>
 <span class="normal">93</span>
 <span class="normal">94</span>
 <span class="normal">95</span>
-<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentBase</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentBase</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all experiments with only core attributes.</span>
 
 <span class="sd">    Wraps experiment type and instrument.</span>
@@ -12677,12 +12694,12 @@ attributes.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/experiments/experiment/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">84</span>
 <span class="normal">85</span>
 <span class="normal">86</span>
-<span class="normal">87</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pretty-print the experiment as CIF text.&quot;&quot;&quot;</span>
     <span class="n">experiment_cif</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_cif</span>
     <span class="n">paragraph_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; as cif&quot;</span>
@@ -12764,13 +12781,7 @@ mode).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/experiments/experiment/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
@@ -12930,7 +12941,11 @@ mode).</p>
 <span class="normal">310</span>
 <span class="normal">311</span>
 <span class="normal">312</span>
-<span class="normal">313</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all powder experiments.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -12943,21 +12958,19 @@ mode).</p>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_linked_phases</span><span class="p">:</span> <span class="n">LinkedPhases</span> <span class="o">=</span> <span class="n">LinkedPhases</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_excluded_regions</span><span class="p">:</span> <span class="n">ExcludedRegions</span> <span class="o">=</span> <span class="n">ExcludedRegions</span><span class="p">()</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_peak_profile_type</span><span class="p">:</span> <span class="n">PeakProfileTypeEnum</span> <span class="o">=</span> <span class="n">PeakProfileTypeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">DataFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">sample_form</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">beam_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">scattering_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span> <span class="o">=</span> <span class="n">PeakFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
             <span class="n">scattering_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="n">beam_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="n">profile_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_peak_profile_type</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">DataFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-            <span class="n">sample_form</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-            <span class="n">beam_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-            <span class="n">scattering_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_valid_linked_phases</span><span class="p">(</span>
@@ -13015,6 +13028,10 @@ mode).</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_excluded_regions</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">peak</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Peak category object with profile parameters and mixins.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span>
@@ -13027,10 +13044,6 @@ mode).</p>
 <span class="sd">            value: New peak object created by the `PeakFactory`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">peak_profile_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -13236,10 +13249,10 @@ mode).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/experiments/experiment/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_peak_profile_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_peak_profile_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently selected peak profile type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current peak profile type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peak_profile_type</span><span class="p">)</span>
@@ -13270,11 +13283,7 @@ mode).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/experiments/experiment/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span>
@@ -13287,7 +13296,11 @@ mode).</p>
 <span class="normal">305</span>
 <span class="normal">306</span>
 <span class="normal">307</span>
-<span class="normal">308</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_peak_profile_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_peak_profile_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print available peak profile types for this experiment.&quot;&quot;&quot;</span>
     <span class="n">columns_headers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Peak profile type&#39;</span><span class="p">,</span> <span class="s1">&#39;Description&#39;</span><span class="p">]</span>
     <span class="n">columns_alignment</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">]</span>
@@ -13310,6 +13323,166 @@ mode).</p>
     </div>
 
 </div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="easydiffraction.experiments.experiment.TofScExperiment" class="doc doc-heading">
+            <code>TofScExperiment</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ScExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.ScExperimentBase&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.base.ScExperimentBase">ScExperimentBase</a></code></p>
+
+
+
+        <p>Standard (Bragg) time-of-flight single srystal experiment class
+with specific attributes.</p>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/experiments/experiment/bragg_sc.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofScExperiment</span><span class="p">(</span><span class="n">ScExperimentBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard (Bragg) time-of-flight single srystal experiment class</span>
+<span class="sd">    with specific attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="n">ExperimentType</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load measured data from an ASCII file into the data category.</span>
+
+<span class="sd">        The file format is space/column separated with 6 columns:</span>
+<span class="sd">        ``h k l Iobs sIobs wavelength``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Failed to read data from </span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">exc_type</span><span class="o">=</span><span class="ne">IOError</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s1">&#39;Data file must have at least 6 columns: h, k, l, Iobs, sIobs, wavelength.&#39;</span><span class="p">,</span>
+                <span class="n">exc_type</span><span class="o">=</span><span class="ne">ValueError</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Extract Miller indices h, k, l</span>
+        <span class="n">indices_h</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">indices_k</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">indices_l</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># Extract intensities and their standard uncertainties</span>
+        <span class="n">integrated_intensities</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="n">integrated_intensities_su</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
+
+        <span class="c1"># Extract wavelength values</span>
+        <span class="n">wavelength</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
+
+        <span class="c1"># Set the experiment data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_create_items_set_hkl_and_id</span><span class="p">(</span><span class="n">indices_h</span><span class="p">,</span> <span class="n">indices_k</span><span class="p">,</span> <span class="n">indices_l</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas</span><span class="p">(</span><span class="n">integrated_intensities</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas_su</span><span class="p">(</span><span class="n">integrated_intensities_su</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_wavelength</span><span class="p">(</span><span class="n">wavelength</span><span class="p">)</span>
+
+        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices_h</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
 
 
 
@@ -13526,9 +13699,7 @@ mode).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/experiments/experiment/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
@@ -13593,7 +13764,9 @@ mode).</p>
 <span class="normal">93</span>
 <span class="normal">94</span>
 <span class="normal">95</span>
-<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentBase</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentBase</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all experiments with only core attributes.</span>
 
 <span class="sd">    Wraps experiment type and instrument.</span>
@@ -13772,12 +13945,12 @@ mode).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/experiments/experiment/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">84</span>
 <span class="normal">85</span>
 <span class="normal">86</span>
-<span class="normal">87</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pretty-print the experiment as CIF text.&quot;&quot;&quot;</span>
     <span class="n">experiment_cif</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_cif</span>
     <span class="n">paragraph_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; as cif&quot;</span>
@@ -13843,6 +14016,14 @@ mode).</p>
 
 
 
+
+
+
+
+
+
+
+
 <div class="doc doc-object doc-class">
 
 
@@ -13871,13 +14052,7 @@ mode).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/experiments/experiment/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
@@ -14037,7 +14212,11 @@ mode).</p>
 <span class="normal">310</span>
 <span class="normal">311</span>
 <span class="normal">312</span>
-<span class="normal">313</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all powder experiments.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -14050,21 +14229,19 @@ mode).</p>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_linked_phases</span><span class="p">:</span> <span class="n">LinkedPhases</span> <span class="o">=</span> <span class="n">LinkedPhases</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_excluded_regions</span><span class="p">:</span> <span class="n">ExcludedRegions</span> <span class="o">=</span> <span class="n">ExcludedRegions</span><span class="p">()</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_peak_profile_type</span><span class="p">:</span> <span class="n">PeakProfileTypeEnum</span> <span class="o">=</span> <span class="n">PeakProfileTypeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">DataFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">sample_form</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">beam_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">scattering_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span> <span class="o">=</span> <span class="n">PeakFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
             <span class="n">scattering_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="n">beam_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="n">profile_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_peak_profile_type</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">DataFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-            <span class="n">sample_form</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-            <span class="n">beam_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-            <span class="n">scattering_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_valid_linked_phases</span><span class="p">(</span>
@@ -14122,6 +14299,10 @@ mode).</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_excluded_regions</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">peak</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Peak category object with profile parameters and mixins.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span>
@@ -14134,10 +14315,6 @@ mode).</p>
 <span class="sd">            value: New peak object created by the `PeakFactory`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">peak_profile_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -14343,10 +14520,10 @@ mode).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/experiments/experiment/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_peak_profile_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_peak_profile_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently selected peak profile type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current peak profile type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peak_profile_type</span><span class="p">)</span>
@@ -14377,11 +14554,7 @@ mode).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/experiments/experiment/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span>
@@ -14394,7 +14567,11 @@ mode).</p>
 <span class="normal">305</span>
 <span class="normal">306</span>
 <span class="normal">307</span>
-<span class="normal">308</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_peak_profile_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_peak_profile_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print available peak profile types for this experiment.&quot;&quot;&quot;</span>
     <span class="n">columns_headers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Peak profile type&#39;</span><span class="p">,</span> <span class="s1">&#39;Description&#39;</span><span class="p">]</span>
     <span class="n">columns_alignment</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">]</span>
@@ -14472,9 +14649,7 @@ mode).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/experiments/experiment/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span>
@@ -14517,7 +14692,13 @@ mode).</p>
 <span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span>
-<span class="normal">144</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ScExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ScExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all single crystal experiments.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -14529,7 +14710,12 @@ mode).</p>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_linked_crystal</span><span class="p">:</span> <span class="n">LinkedCrystal</span> <span class="o">=</span> <span class="n">LinkedCrystal</span><span class="p">()</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_extinction</span><span class="p">:</span> <span class="n">Extinction</span> <span class="o">=</span> <span class="n">Extinction</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instrument</span> <span class="o">=</span> <span class="n">InstrumentFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">scattering_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">beam_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">sample_form</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">DataFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
             <span class="n">sample_form</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="n">beam_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -14551,14 +14737,13 @@ mode).</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Linked crystal model for this experiment.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linked_crystal</span>
 
-    <span class="nd">@linked_crystal</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">linked_crystal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the linked crystal model for this experiment.</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extinction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extinction</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            value: New linked crystal model.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_linked_crystal</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instrument</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instrument</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -14585,7 +14770,6 @@ mode).</p>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
   </span>
 
 </h5>
@@ -14680,7 +14864,7 @@ mode).</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;InstrumentMixin&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.instrument_mixin.InstrumentMixin&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.instrument_mixin.InstrumentMixin">InstrumentMixin</a></code>, <code><a class="autorefs autorefs-internal" title="&lt;code&gt;PdExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.PdExperimentBase&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.base.PdExperimentBase">PdExperimentBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;PdExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.PdExperimentBase&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.base.PdExperimentBase">PdExperimentBase</a></code></p>
 
 
 
@@ -14810,10 +14994,13 @@ specific attributes.</p>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
-<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BraggPdExperiment</span><span class="p">(</span>
-    <span class="n">InstrumentMixin</span><span class="p">,</span>
-    <span class="n">PdExperimentBase</span><span class="p">,</span>
-<span class="p">):</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BraggPdExperiment</span><span class="p">(</span><span class="n">PdExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard (Bragg) Powder Diffraction experiment class with</span>
 <span class="sd">    specific attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -14826,6 +15013,11 @@ specific attributes.</p>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instrument</span> <span class="o">=</span> <span class="n">InstrumentFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">scattering_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">beam_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">sample_form</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_background_type</span><span class="p">:</span> <span class="n">BackgroundTypeEnum</span> <span class="o">=</span> <span class="n">BackgroundTypeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_background</span> <span class="o">=</span> <span class="n">BackgroundFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">background_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">background_type</span><span class="p">)</span>
 
@@ -14872,6 +15064,10 @@ specific attributes.</p>
 
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instrument</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instrument</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">background_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -14982,10 +15178,10 @@ specific attributes.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/experiments/experiment/bragg_pd.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_background_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_background_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently used background type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current background type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">background_type</span><span class="p">)</span>
@@ -15016,20 +15212,20 @@ specific attributes.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/experiments/experiment/bragg_pd.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span>
-<span class="normal">131</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_background_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_background_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported background types.&quot;&quot;&quot;</span>
     <span class="n">columns_headers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Background type&#39;</span><span class="p">,</span> <span class="s1">&#39;Description&#39;</span><span class="p">]</span>
     <span class="n">columns_alignment</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">]</span>
@@ -15113,16 +15309,12 @@ specific attributes.</p>
 
 
 
-
-
-
-
 <div class="doc doc-object doc-class">
 
 
 
-<h4 id="easydiffraction.experiments.experiment.bragg_sc.BraggScExperiment" class="doc doc-heading">
-            <code>BraggScExperiment</code>
+<h4 id="easydiffraction.experiments.experiment.bragg_sc.CwlScExperiment" class="doc doc-heading">
+            <code>CwlScExperiment</code>
 
 
 </h4>
@@ -15130,12 +15322,12 @@ specific attributes.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;InstrumentMixin&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.instrument_mixin.InstrumentMixin&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.instrument_mixin.InstrumentMixin">InstrumentMixin</a></code>, <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ScExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.ScExperimentBase&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.base.ScExperimentBase">ScExperimentBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ScExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.ScExperimentBase&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.base.ScExperimentBase">ScExperimentBase</a></code></p>
 
 
 
-        <p>Standard (Bragg) Single Crystal experiment class with specific
-attributes.</p>
+        <p>Standard (Bragg) constant wavelength single srystal experiment
+class with specific attributes.</p>
 
 
 
@@ -15146,7 +15338,8 @@ attributes.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/experiments/experiment/bragg_sc.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+<span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
@@ -15195,40 +15388,9 @@ attributes.</p>
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BraggScExperiment</span><span class="p">(</span>
-    <span class="n">InstrumentMixin</span><span class="p">,</span>
-    <span class="n">ScExperimentBase</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard (Bragg) Single Crystal experiment class with specific</span>
-<span class="sd">    attributes.</span>
+<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CwlScExperiment</span><span class="p">(</span><span class="n">ScExperimentBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard (Bragg) constant wavelength single srystal experiment</span>
+<span class="sd">    class with specific attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -15239,30 +15401,27 @@ attributes.</p>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_linked_crystal</span> <span class="o">=</span> <span class="n">LinkedCrystal</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_extinction</span> <span class="o">=</span> <span class="n">Extinction</span><span class="p">()</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load measured data from an ASCII file into the data category.</span>
 
-<span class="sd">        The file format is space/column separated with either 5 or 6</span>
-<span class="sd">        columns depending on the beam mode:</span>
-<span class="sd">        - 5 for constant wavelength mode: ``h k l Iobs sIobs``.</span>
-<span class="sd">        - 6 for time-of-flight mode: ``h k l Iobs sIobs wavelength``.</span>
+<span class="sd">        The file format is space/column separated with 5 columns:</span>
+<span class="sd">        ``h k l Iobs sIobs``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
         <span class="k">try</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Failed to read data from </span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">CONSTANT_WAVELENGTH</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Data file must have at least 5 columns: h, k, l, Iobs, sIobs.&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">TIME_OF_FLIGHT</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s1">&#39;Data file must have at least 6 columns: h, k, l, Iobs, sIobs, wavelength.&#39;</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Failed to read data from </span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">exc_type</span><span class="o">=</span><span class="ne">IOError</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s1">&#39;Data file must have at least 5 columns: h, k, l, Iobs, sIobs.&#39;</span><span class="p">,</span>
+                <span class="n">exc_type</span><span class="o">=</span><span class="ne">ValueError</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
 
         <span class="c1"># Extract Miller indices h, k, l</span>
         <span class="n">indices_h</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
@@ -15278,29 +15437,8 @@ attributes.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas</span><span class="p">(</span><span class="n">integrated_intensities</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas_su</span><span class="p">(</span><span class="n">integrated_intensities_su</span><span class="p">)</span>
 
-        <span class="c1"># If wavelength data is present (column 6), extract and set it</span>
-        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">6</span><span class="p">:</span>
-            <span class="n">wavelength</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_wavelength</span><span class="p">(</span><span class="n">wavelength</span><span class="p">)</span>
-
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices_h</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">linked_crystal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linked_crystal</span>
-
-    <span class="nd">@linked_crystal</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">linked_crystal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_linked_crystal</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">extinction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extinction</span>
-
-    <span class="nd">@extinction</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">extinction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_extinction</span> <span class="o">=</span> <span class="n">value</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -15331,12 +15469,160 @@ attributes.</p>
 
 
 
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="easydiffraction.experiments.experiment.bragg_sc.TofScExperiment" class="doc doc-heading">
+            <code>TofScExperiment</code>
+
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ScExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.ScExperimentBase&lt;/code&gt;)" href="#easydiffraction.experiments.experiment.base.ScExperimentBase">ScExperimentBase</a></code></p>
+
+
+
+        <p>Standard (Bragg) time-of-flight single srystal experiment class
+with specific attributes.</p>
 
 
 
 
 
 
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/experiments/experiment/bragg_sc.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofScExperiment</span><span class="p">(</span><span class="n">ScExperimentBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard (Bragg) time-of-flight single srystal experiment class</span>
+<span class="sd">    with specific attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="n">ExperimentType</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load measured data from an ASCII file into the data category.</span>
+
+<span class="sd">        The file format is space/column separated with 6 columns:</span>
+<span class="sd">        ``h k l Iobs sIobs wavelength``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Failed to read data from </span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">exc_type</span><span class="o">=</span><span class="ne">IOError</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s1">&#39;Data file must have at least 6 columns: h, k, l, Iobs, sIobs, wavelength.&#39;</span><span class="p">,</span>
+                <span class="n">exc_type</span><span class="o">=</span><span class="ne">ValueError</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Extract Miller indices h, k, l</span>
+        <span class="n">indices_h</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">indices_k</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">indices_l</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># Extract intensities and their standard uncertainties</span>
+        <span class="n">integrated_intensities</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="n">integrated_intensities_su</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
+
+        <span class="c1"># Extract wavelength values</span>
+        <span class="n">wavelength</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
+
+        <span class="c1"># Set the experiment data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_create_items_set_hkl_and_id</span><span class="p">(</span><span class="n">indices_h</span><span class="p">,</span> <span class="n">indices_k</span><span class="p">,</span> <span class="n">indices_l</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas</span><span class="p">(</span><span class="n">integrated_intensities</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas_su</span><span class="p">(</span><span class="n">integrated_intensities_su</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_wavelength</span><span class="p">(</span><span class="n">wavelength</span><span class="p">)</span>
+
+        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices_h</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 
@@ -15918,8 +16204,7 @@ attributes.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/experiments/experiment/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 28</span>
-<span class="normal"> 29</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 29</span>
 <span class="normal"> 30</span>
 <span class="normal"> 31</span>
 <span class="normal"> 32</span>
@@ -16071,29 +16356,89 @@ attributes.</p>
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
-<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates Experiment instances with only relevant attributes.&quot;&quot;&quot;</span>
 
     <span class="n">_ALLOWED_ARG_SPECS</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span><span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;cif_path&#39;</span><span class="p">],</span> <span class="s1">&#39;optional&#39;</span><span class="p">:</span> <span class="p">[]},</span>
-        <span class="p">{</span><span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;cif_str&#39;</span><span class="p">],</span> <span class="s1">&#39;optional&#39;</span><span class="p">:</span> <span class="p">[]},</span>
         <span class="p">{</span>
-            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;data_path&#39;</span><span class="p">],</span>
-            <span class="s1">&#39;optional&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;sample_form&#39;</span><span class="p">,</span> <span class="s1">&#39;beam_mode&#39;</span><span class="p">,</span> <span class="s1">&#39;radiation_probe&#39;</span><span class="p">,</span> <span class="s1">&#39;scattering_type&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;cif_path&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;optional&#39;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;cif_str&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;optional&#39;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;data_path&#39;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="s1">&#39;optional&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s1">&#39;sample_form&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;beam_mode&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;radiation_probe&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;scattering_type&#39;</span><span class="p">,</span>
+            <span class="p">],</span>
         <span class="p">},</span>
         <span class="p">{</span>
             <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
-            <span class="s1">&#39;optional&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;sample_form&#39;</span><span class="p">,</span> <span class="s1">&#39;beam_mode&#39;</span><span class="p">,</span> <span class="s1">&#39;radiation_probe&#39;</span><span class="p">,</span> <span class="s1">&#39;scattering_type&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;optional&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s1">&#39;sample_form&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;beam_mode&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;radiation_probe&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;scattering_type&#39;</span><span class="p">,</span>
+            <span class="p">],</span>
         <span class="p">},</span>
     <span class="p">]</span>
 
     <span class="n">_SUPPORTED</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">ScatteringTypeEnum</span><span class="o">.</span><span class="n">BRAGG</span><span class="p">:</span> <span class="p">{</span>
-            <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">POWDER</span><span class="p">:</span> <span class="n">BraggPdExperiment</span><span class="p">,</span>
-            <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">SINGLE_CRYSTAL</span><span class="p">:</span> <span class="n">BraggScExperiment</span><span class="p">,</span>
+            <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">POWDER</span><span class="p">:</span> <span class="p">{</span>
+                <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">CONSTANT_WAVELENGTH</span><span class="p">:</span> <span class="n">BraggPdExperiment</span><span class="p">,</span>
+                <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">TIME_OF_FLIGHT</span><span class="p">:</span> <span class="n">BraggPdExperiment</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">SINGLE_CRYSTAL</span><span class="p">:</span> <span class="p">{</span>
+                <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">CONSTANT_WAVELENGTH</span><span class="p">:</span> <span class="n">CwlScExperiment</span><span class="p">,</span>
+                <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">TIME_OF_FLIGHT</span><span class="p">:</span> <span class="n">TofScExperiment</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">},</span>
         <span class="n">ScatteringTypeEnum</span><span class="o">.</span><span class="n">TOTAL</span><span class="p">:</span> <span class="p">{</span>
-            <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">POWDER</span><span class="p">:</span> <span class="n">TotalPdExperiment</span><span class="p">,</span>
+            <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">POWDER</span><span class="p">:</span> <span class="p">{</span>
+                <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">CONSTANT_WAVELENGTH</span><span class="p">:</span> <span class="n">TotalPdExperiment</span><span class="p">,</span>
+                <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">TIME_OF_FLIGHT</span><span class="p">:</span> <span class="n">TotalPdExperiment</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">},</span>
     <span class="p">}</span>
 
@@ -16130,7 +16475,8 @@ attributes.</p>
         <span class="c1"># TODO: make helper method to create experiment from type</span>
         <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
         <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">expt_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_SUPPORTED</span><span class="p">[</span><span class="n">scattering_type</span><span class="p">][</span><span class="n">sample_form</span><span class="p">]</span>
+        <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">expt_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_SUPPORTED</span><span class="p">[</span><span class="n">scattering_type</span><span class="p">][</span><span class="n">sample_form</span><span class="p">][</span><span class="n">beam_mode</span><span class="p">]</span>
         <span class="n">expt_obj</span> <span class="o">=</span> <span class="n">expt_class</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">expt_type</span><span class="p">)</span>
 
         <span class="c1"># Read all categories from CIF block</span>
@@ -16170,7 +16516,8 @@ attributes.</p>
         <span class="n">expt_type</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_experiment_type</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
         <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">expt_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_SUPPORTED</span><span class="p">[</span><span class="n">scattering_type</span><span class="p">][</span><span class="n">sample_form</span><span class="p">]</span>
+        <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">expt_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_SUPPORTED</span><span class="p">[</span><span class="n">scattering_type</span><span class="p">][</span><span class="n">sample_form</span><span class="p">][</span><span class="n">beam_mode</span><span class="p">]</span>
         <span class="n">expt_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
         <span class="n">expt_obj</span> <span class="o">=</span> <span class="n">expt_class</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">expt_type</span><span class="p">)</span>
         <span class="n">data_path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;data_path&#39;</span><span class="p">]</span>
@@ -16187,7 +16534,8 @@ attributes.</p>
         <span class="n">expt_type</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_experiment_type</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
         <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">expt_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_SUPPORTED</span><span class="p">[</span><span class="n">scattering_type</span><span class="p">][</span><span class="n">sample_form</span><span class="p">]</span>
+        <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">expt_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_SUPPORTED</span><span class="p">[</span><span class="n">scattering_type</span><span class="p">][</span><span class="n">sample_form</span><span class="p">][</span><span class="n">beam_mode</span><span class="p">]</span>
         <span class="n">expt_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
         <span class="n">expt_obj</span> <span class="o">=</span> <span class="n">expt_class</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">expt_type</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">expt_obj</span>
@@ -16259,39 +16607,39 @@ combination.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/experiments/experiment/factory.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an `ExperimentBase` using a validated argument</span>
 <span class="sd">    combination.</span>
@@ -16382,187 +16730,6 @@ combination.</p>
 
 
 
-  </div>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-module">
-
-
-
-<h3 id="easydiffraction.experiments.experiment.instrument_mixin" class="doc doc-heading">
-            <code>instrument_mixin</code>
-
-
-</h3>
-
-    <div class="doc doc-contents ">
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-class">
-
-
-
-<h4 id="easydiffraction.experiments.experiment.instrument_mixin.InstrumentMixin" class="doc doc-heading">
-            <code>InstrumentMixin</code>
-
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-
-
-        <p>Mixin that wires an experiment to an instrument category.</p>
-<p>Creates a default instrument via <code>InstrumentFactory</code> using the
-experiment type (scattering type and beam mode) at initialization.</p>
-
-
-
-
-
-
-
-
-              <details class="mkdocstrings-source">
-                <summary>Source code in <code>src/easydiffraction/experiments/experiment/instrument_mixin.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InstrumentMixin</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin that wires an experiment to an instrument category.</span>
-
-<span class="sd">    Creates a default instrument via `InstrumentFactory` using the</span>
-<span class="sd">    experiment type (scattering type and beam mode) at initialization.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">expt_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_instrument</span> <span class="o">=</span> <span class="n">InstrumentFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-            <span class="n">scattering_type</span><span class="o">=</span><span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-            <span class="n">beam_mode</span><span class="o">=</span><span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-        <span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">instrument</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instrument category object associated with the experiment.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instrument</span>
-
-    <span class="nd">@instrument</span><span class="o">.</span><span class="n">setter</span>
-    <span class="nd">@typechecked</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">instrument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_instrument</span><span class="p">:</span> <span class="n">InstrumentBase</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replace the instrument and re-parent it to this experiment.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            new_instrument: Instrument instance compatible with the</span>
-<span class="sd">                experiment type.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_instrument</span> <span class="o">=</span> <span class="n">new_instrument</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_instrument</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="bp">self</span>
-</code></pre></div></td></tr></table></div>
-              </details>
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.experiments.experiment.instrument_mixin.InstrumentMixin.instrument" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">instrument</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Instrument category object associated with the experiment.</p>
-
-    </div>
-
-</div>
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
 
 
 

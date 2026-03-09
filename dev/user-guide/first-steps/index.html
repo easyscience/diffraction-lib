@@ -2422,12 +2422,10 @@ like this:</p>
 <p>Alternatively, you can import specific classes or methods from the package. For
 example, you can import the <code>Project</code>, <code>SampleModel</code>, <code>Experiment</code> classes and
 <code>download_from_repository</code> method like this:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Project</span><span class="p">,</span>
-    <span class="n">SampleModel</span><span class="p">,</span>
-    <span class="n">Experiment</span><span class="p">,</span>
-    <span class="n">download_from_repository</span>
-<span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">SampleModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">Experiment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_from_repository</span>
 </code></pre></div>
 <p>This enables you to use these classes and methods directly without the package
 prefix. This is especially useful when you're using only a few components and
@@ -2445,9 +2443,11 @@ and use them while experimenting with EasyDiffraction.</p>
 <p>For example, you can download a sample data file like this:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ed</span>
 
-<span class="n">ed</span><span class="o">.</span><span class="n">download_from_repository</span><span class="p">(</span><span class="s1">&#39;hrpt_lbco.xye&#39;</span><span class="p">,</span>
-                            <span class="n">branch</span><span class="o">=</span><span class="s1">&#39;docs&#39;</span><span class="p">,</span>
-                            <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+<span class="n">ed</span><span class="o">.</span><span class="n">download_from_repository</span><span class="p">(</span>
+    <span class="s1">&#39;hrpt_lbco.xye&#39;</span><span class="p">,</span>
+    <span class="n">branch</span><span class="o">=</span><span class="s1">&#39;docs&#39;</span><span class="p">,</span>
+    <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 <p>This command will download the <code>hrpt_lbco.xye</code> file from the <code>docs</code> branch of
 the EasyDiffraction repository and save it in the <code>data</code> directory of your

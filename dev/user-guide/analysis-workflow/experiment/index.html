@@ -2628,36 +2628,45 @@ or redefine the existing one.</p>
 <p>Here is an example of how to add an experiment with all relevant components
 explicitly defined:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Add an experiment with default parameters, based on the specified type.</span>
-<span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">add_from_data_path</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">,</span>
-                                       <span class="n">data_path</span><span class="o">=</span><span class="s1">&#39;data/hrpt_lbco.xye&#39;</span><span class="p">,</span>
-                                       <span class="n">sample_form</span><span class="o">=</span><span class="s1">&#39;powder&#39;</span><span class="p">,</span>
-                                       <span class="n">beam_mode</span><span class="o">=</span><span class="s1">&#39;constant wavelength&#39;</span><span class="p">,</span>
-                                       <span class="n">radiation_probe</span><span class="o">=</span><span class="s1">&#39;neutron&#39;</span><span class="p">,</span>
-                                       <span class="n">scattering_type</span><span class="o">=</span><span class="s1">&#39;bragg&#39;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">add_from_data_path</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">,</span>
+    <span class="n">data_path</span><span class="o">=</span><span class="s1">&#39;data/hrpt_lbco.xye&#39;</span><span class="p">,</span>
+    <span class="n">sample_form</span><span class="o">=</span><span class="s1">&#39;powder&#39;</span><span class="p">,</span>
+    <span class="n">beam_mode</span><span class="o">=</span><span class="s1">&#39;constant wavelength&#39;</span><span class="p">,</span>
+    <span class="n">radiation_probe</span><span class="o">=</span><span class="s1">&#39;neutron&#39;</span><span class="p">,</span>
+    <span class="n">scattering_type</span><span class="o">=</span><span class="s1">&#39;bragg&#39;</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 <p>To add an experiment of default type, you can simply do:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Add an experiment of default type</span>
-<span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">add_from_data_path</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">,</span>
-                                       <span class="n">data_path</span><span class="o">=</span><span class="s1">&#39;data/hrpt_lbco.xye&#39;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">add_from_data_path</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">,</span>
+    <span class="n">data_path</span><span class="o">=</span><span class="s1">&#39;data/hrpt_lbco.xye&#39;</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 <p>If you do not have measured data for fitting and only want to view the simulated
 pattern, you can define an experiment without measured data using the
 <code>add_without_data</code> method:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Add an experiment without measured data</span>
-<span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">add_without_data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">,</span>
-                                     <span class="n">sample_form</span><span class="o">=</span><span class="s1">&#39;powder&#39;</span><span class="p">,</span>
-                                     <span class="n">beam_mode</span><span class="o">=</span><span class="s1">&#39;constant wavelength&#39;</span><span class="p">,</span>
-                                     <span class="n">radiation_probe</span><span class="o">=</span><span class="s1">&#39;x-ray&#39;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">add_without_data</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">,</span>
+    <span class="n">sample_form</span><span class="o">=</span><span class="s1">&#39;powder&#39;</span><span class="p">,</span>
+    <span class="n">beam_mode</span><span class="o">=</span><span class="s1">&#39;constant wavelength&#39;</span><span class="p">,</span>
+    <span class="n">radiation_probe</span><span class="o">=</span><span class="s1">&#39;x-ray&#39;</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 <p>Finally, you can also add an experiment by passing the experiment object
 directly using the <code>add</code> method:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Add an experiment by passing the experiment object directly</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">Experiment</span>
-<span class="n">experiment</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">,</span>
-                        <span class="n">sample_form</span><span class="o">=</span><span class="s1">&#39;powder&#39;</span><span class="p">,</span>
-                        <span class="n">beam_mode</span><span class="o">=</span><span class="s1">&#39;constant wavelength&#39;</span><span class="p">,</span>
-                        <span class="n">radiation_probe</span><span class="o">=</span><span class="s1">&#39;neutron&#39;</span><span class="p">,</span>
-                        <span class="n">scattering_type</span><span class="o">=</span><span class="s1">&#39;bragg&#39;</span><span class="p">)</span>
+
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">,</span>
+    <span class="n">sample_form</span><span class="o">=</span><span class="s1">&#39;powder&#39;</span><span class="p">,</span>
+    <span class="n">beam_mode</span><span class="o">=</span><span class="s1">&#39;constant wavelength&#39;</span><span class="p">,</span>
+    <span class="n">radiation_probe</span><span class="o">=</span><span class="s1">&#39;neutron&#39;</span><span class="p">,</span>
+    <span class="n">scattering_type</span><span class="o">=</span><span class="s1">&#39;bragg&#39;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="modifying-parameters">Modifying Parameters</h2>

@@ -4431,18 +4431,7 @@ and render a plot to the chosen medium.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotters/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
@@ -4492,7 +4481,18 @@ and render a plot to the chosen medium.</p>
 <span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
-<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base for plotting backends.</span>
 
 <span class="sd">    Implementations accept x values, multiple y-series, optional labels</span>
@@ -4694,18 +4694,7 @@ against an x-axis variable (2θ, TOF, d-spacing).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span>
@@ -4717,7 +4706,18 @@ against an x-axis variable (2θ, TOF, d-spacing).</p>
 <span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
-<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_powder</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">x</span><span class="p">,</span>
@@ -4879,18 +4879,7 @@ values are plotted against calculated values with error bars.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
@@ -4902,7 +4891,18 @@ values are plotted against calculated values with error bars.</p>
 <span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
-<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_single_crystal</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">x_calc</span><span class="p">,</span>
@@ -4997,7 +4997,8 @@ with <code>getattr(pattern, x_axis)</code>.</p>
 <span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span>
-<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">XAxisType</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">XAxisType</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;X-axis types for diffraction plots.</span>
 
 <span class="sd">    Values match attribute names in data models for direct use</span>
@@ -5006,6 +5007,7 @@ with <code>getattr(pattern, x_axis)</code>.</p>
 
     <span class="n">TWO_THETA</span> <span class="o">=</span> <span class="s1">&#39;two_theta&#39;</span>
     <span class="n">TIME_OF_FLIGHT</span> <span class="o">=</span> <span class="s1">&#39;time_of_flight&#39;</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>
 
     <span class="n">INTENSITY_CALC</span> <span class="o">=</span> <span class="s1">&#39;intensity_calc&#39;</span>
 
@@ -6644,7 +6646,10 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">470</span>
 <span class="normal">471</span>
 <span class="normal">472</span>
-<span class="normal">473</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;User-facing plotting facade backed by concrete plotters.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -6755,8 +6760,9 @@ consistent configuration surface and engine handling.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Determine x-axis type</span>
         <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
         <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
+        <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
 
         <span class="c1"># Get attribute name for error messages</span>
         <span class="c1"># (works for both enum and string)</span>
@@ -6842,8 +6848,9 @@ consistent configuration surface and engine handling.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Determine x-axis type</span>
         <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
         <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
+        <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
 
         <span class="c1"># Get attribute name for error messages</span>
         <span class="c1"># (works for both enum and string)</span>
@@ -6940,8 +6947,9 @@ consistent configuration surface and engine handling.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Determine x-axis type from sample form and beam mode</span>
         <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
         <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
+        <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
 
         <span class="c1"># Get attribute name for error messages</span>
         <span class="c1"># (works for both enum and string)</span>
@@ -7231,8 +7239,7 @@ beam mode.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">226</span>
-<span class="normal">227</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
 <span class="normal">230</span>
@@ -7313,7 +7320,9 @@ beam mode.</p>
 <span class="normal">305</span>
 <span class="normal">306</span>
 <span class="normal">307</span>
-<span class="normal">308</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_calc</span><span class="p">(</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">pattern</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">,</span>
@@ -7337,8 +7346,9 @@ beam mode.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Determine x-axis type</span>
     <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
     <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
+    <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
 
     <span class="c1"># Get attribute name for error messages</span>
     <span class="c1"># (works for both enum and string)</span>
@@ -7614,7 +7624,8 @@ beam mode.</p>
 <span class="normal">219</span>
 <span class="normal">220</span>
 <span class="normal">221</span>
-<span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas</span><span class="p">(</span>
+<span class="normal">222</span>
+<span class="normal">223</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">pattern</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">,</span>
@@ -7638,8 +7649,9 @@ beam mode.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Determine x-axis type</span>
     <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
     <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
+    <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
 
     <span class="c1"># Get attribute name for error messages</span>
     <span class="c1"># (works for both enum and string)</span>
@@ -7865,9 +7877,7 @@ and beam mode.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">314</span>
 <span class="normal">315</span>
 <span class="normal">316</span>
 <span class="normal">317</span>
@@ -7996,7 +8006,10 @@ and beam mode.</p>
 <span class="normal">440</span>
 <span class="normal">441</span>
 <span class="normal">442</span>
-<span class="normal">443</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas_vs_calc</span><span class="p">(</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas_vs_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">pattern</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">,</span>
@@ -8032,8 +8045,9 @@ and beam mode.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Determine x-axis type from sample form and beam mode</span>
     <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
     <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
+    <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
 
     <span class="c1"># Get attribute name for error messages</span>
     <span class="c1"># (works for both enum and string)</span>
@@ -8459,10 +8473,7 @@ and beam mode.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">476</span>
-<span class="normal">477</span>
-<span class="normal">478</span>
-<span class="normal">479</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">479</span>
 <span class="normal">480</span>
 <span class="normal">481</span>
 <span class="normal">482</span>
@@ -8473,7 +8484,10 @@ and beam mode.</p>
 <span class="normal">487</span>
 <span class="normal">488</span>
 <span class="normal">489</span>
-<span class="normal">490</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
+<span class="normal">490</span>
+<span class="normal">491</span>
+<span class="normal">492</span>
+<span class="normal">493</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory for plotter implementations.&quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>

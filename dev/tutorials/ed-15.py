@@ -52,15 +52,11 @@ project.experiments.add(
 )
 
 # %%
-experiment = project.experiments['senju']  # TODO: <senju (None)>
+experiment = project.experiments['senju']
 
 # %%
 experiment.linked_crystal.id = 'taurine'
 experiment.linked_crystal.scale = 1.0
-
-# %%
-# experiment.instrument.setup_wavelength = 1.5 # TODO: Remove in TOF SC
-# experiment.instrument.calib_twotheta_offset = 0.6 # TODO: Remove in SC
 
 # %%
 experiment.extinction.mosaicity = 1000.0

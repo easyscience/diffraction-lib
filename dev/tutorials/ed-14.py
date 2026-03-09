@@ -66,7 +66,6 @@ experiment.linked_crystal.scale = 1.0
 
 # %%
 experiment.instrument.setup_wavelength = 0.793
-# experiment.instrument.calib_twotheta_offset = 0.6 # TODO: Remove in SC
 
 # %%
 experiment.extinction.mosaicity = 29820
