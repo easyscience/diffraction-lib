@@ -172,14 +172,14 @@ class Plotter(RendererBase):
         if x_array is None:
             log.error(f'No {x_name} data available for experiment {expt_name}')
             return
-        if pattern.meas is None:
+        if pattern.intensity_meas is None:
             log.error(f'No measured data available for experiment {expt_name}')
             return
 
         # For asciichartpy, if x_min or x_max is not provided, center
         # around the maximum intensity peak
         if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
-            max_intensity_pos = np.argmax(pattern.meas)
+            max_intensity_pos = np.argmax(pattern.intensity_meas)
             half_range = 50
             start = max(0, max_intensity_pos - half_range)
             end = min(len(x_array) - 1, max_intensity_pos + half_range)
@@ -194,7 +194,7 @@ class Plotter(RendererBase):
             x_max=x_max,
         )
         y_meas = self._filtered_y_array(
-            y_array=pattern.meas,
+            y_array=pattern.intensity_meas,
             x_array=x_array,
             x_min=x_min,
             x_max=x_max,
@@ -259,14 +259,14 @@ class Plotter(RendererBase):
         if x_array is None:
             log.error(f'No {x_name} data available for experiment {expt_name}')
             return
-        if pattern.calc is None:
+        if pattern.intensity_calc is None:
             log.error(f'No calculated data available for experiment {expt_name}')
             return
 
         # For asciichartpy, if x_min or x_max is not provided, center
         # around the maximum intensity peak
         if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
-            max_intensity_pos = np.argmax(pattern.meas)
+            max_intensity_pos = np.argmax(pattern.intensity_meas)
             half_range = 50
             start = max(0, max_intensity_pos - half_range)
             end = min(len(x_array) - 1, max_intensity_pos + half_range)
@@ -281,7 +281,7 @@ class Plotter(RendererBase):
             x_max=x_max,
         )
         y_calc = self._filtered_y_array(
-            y_array=pattern.calc,
+            y_array=pattern.intensity_calc,
             x_array=x_array,
             x_min=x_min,
             x_max=x_max,
@@ -353,10 +353,10 @@ class Plotter(RendererBase):
         x_name = getattr(x_axis, 'value', x_axis)
 
         # Validate required data
-        if pattern.meas is None:
+        if pattern.intensity_meas is None:
             log.error(f'No measured data available for experiment {expt_name}')
             return
-        if pattern.calc is None:
+        if pattern.intensity_calc is None:
             log.error(f'No calculated data available for experiment {expt_name}')
             return
 
@@ -373,15 +373,15 @@ class Plotter(RendererBase):
 
         # Single crystal scatter plot (I²calc vs I²meas)
         if x_axis == XAxisType.INTENSITY_CALC or x_axis == 'intensity_calc':
-            if pattern.meas_su is None:
+            if pattern.intensity_meas_su is None:
                 log.warning(f'No measurement uncertainties for experiment {expt_name}')
-                meas_su = np.zeros_like(pattern.meas)
+                meas_su = np.zeros_like(pattern.intensity_meas)
             else:
-                meas_su = pattern.meas_su
+                meas_su = pattern.intensity_meas_su
 
             self._backend.plot_single_crystal(
-                x_calc=pattern.calc,
-                y_meas=pattern.meas,
+                x_calc=pattern.intensity_calc,
+                y_meas=pattern.intensity_meas,
                 y_meas_su=meas_su,
                 axes_labels=axes_labels,
                 title=title,
@@ -398,7 +398,7 @@ class Plotter(RendererBase):
         # For asciichartpy, if x_min or x_max is not provided, center
         # around the maximum intensity peak
         if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
-            max_intensity_pos = np.argmax(pattern.meas)
+            max_intensity_pos = np.argmax(pattern.intensity_meas)
             half_range = 50
             start = max(0, max_intensity_pos - half_range)
             end = min(len(x_array) - 1, max_intensity_pos + half_range)
@@ -413,13 +413,13 @@ class Plotter(RendererBase):
             x_max=x_max,
         )
         y_meas = self._filtered_y_array(
-            y_array=pattern.meas,
+            y_array=pattern.intensity_meas,
             x_array=x_array,
             x_min=x_min,
             x_max=x_max,
         )
         y_calc = self._filtered_y_array(
-            y_array=pattern.calc,
+            y_array=pattern.intensity_calc,
             x_array=x_array,
             x_min=x_min,
             x_max=x_max,

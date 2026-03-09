@@ -139,7 +139,7 @@ class LineSegmentBackground(BackgroundBase):
 
         if not self._items:
             log.debug('No background points found. Setting background to zero.')
-            data._set_bkg(np.zeros_like(x))
+            data._set_intensity_bkg(np.zeros_like(x))
             return
 
         segments_x = np.array([point.x.value for point in self._items])
@@ -153,7 +153,7 @@ class LineSegmentBackground(BackgroundBase):
         )
 
         y = interp_func(x)
-        data._set_bkg(y)
+        data._set_intensity_bkg(y)
 
     def show(self) -> None:
         """Print a table of control points (x, intensity)."""

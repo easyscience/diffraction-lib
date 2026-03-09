@@ -75,9 +75,9 @@ class BraggPdExperiment(
         sy = np.where(sy < 0.0001, 1.0, sy)
 
         # Set the experiment data
-        self.data._set_x(x)
-        self.data._set_meas(y)
-        self.data._set_meas_su(sy)
+        self.data._create_items_set_xcoord_and_id(x)
+        self.data._set_intensity_meas(y)
+        self.data._set_intensity_meas_su(sy)
 
         console.paragraph('Data loaded successfully')
         console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")

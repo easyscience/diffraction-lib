@@ -231,18 +231,22 @@ class ReflnData(CategoryCollection):
 
     # Should be set only once
 
-    def _set_hkl_and_id(self, indices_h, indices_k, indices_l) -> None:
+    def _create_items_set_hkl_and_id(self, indices_h, indices_k, indices_l) -> None:
         """Helper method to set Miller indices."""
         # TODO: split into multiple methods
-        # TODO: do we set _items here and reuse them for all other
-        #  _set_XXX methods?
+
+        # Create items
         self._items = [self._item_type() for _ in range(indices_h.size)]
+
+        # Set indices
         for item, index_h, index_k, index_l in zip(
             self._items, indices_h, indices_k, indices_l, strict=True
         ):
             item.index_h._value = index_h
             item.index_k._value = index_k
             item.index_l._value = index_l
+
+        # Set reflection IDs
         self._set_id([str(i + 1) for i in range(indices_h.size)])
 
     def _set_id(self, values) -> None:
@@ -333,12 +337,6 @@ class ReflnData(CategoryCollection):
         )
 
     @property
-    def d(self) -> np.ndarray:
-        """Alias for d_spacing."""
-        # TODO: check if really needed.
-        return self.d_spacing
-
-    @property
     def sin_theta_over_lambda(self) -> np.ndarray:
         return np.fromiter(
             (p.sin_theta_over_lambda.value for p in self._items),
@@ -374,12 +372,6 @@ class ReflnData(CategoryCollection):
         )
 
     @property
-    def meas(self) -> np.ndarray:
-        """Alias for intensity_meas."""
-        # TODO: check if really needed.
-        return self.intensity_meas
-
-    @property
     def intensity_meas_su(self) -> np.ndarray:
         return np.fromiter(
             (p.intensity_meas_su.value for p in self._items),
@@ -387,23 +379,11 @@ class ReflnData(CategoryCollection):
         )
 
     @property
-    def meas_su(self) -> np.ndarray:
-        """Alias for intensity_meas_su."""
-        # TODO: check if really needed.
-        return self.intensity_meas_su
-
-    @property
     def intensity_calc(self) -> np.ndarray:
         return np.fromiter(
             (p.intensity_calc.value for p in self._items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
         )
-
-    @property
-    def calc(self) -> np.ndarray:
-        """Alias for intensity_calc."""
-        # TODO: check if really needed.
-        return self.intensity_calc
 
     @property
     def wavelength(self) -> np.ndarray:

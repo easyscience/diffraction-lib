@@ -67,7 +67,7 @@ class BraggScExperiment(
         integrated_intensities_su: np.ndarray = data[:, 4]
 
         # Set the experiment data
-        self.data._set_hkl_and_id(indices_h, indices_k, indices_l)
+        self.data._create_items_set_hkl_and_id(indices_h, indices_k, indices_l)
         self.data._set_intensity_meas(integrated_intensities)
         self.data._set_intensity_meas_su(integrated_intensities_su)
 

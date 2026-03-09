@@ -138,14 +138,14 @@ class ChebyshevPolynomialBackground(BackgroundBase):
 
         if not self._items:
             log.warning('No background points found. Setting background to zero.')
-            data._set_bkg(np.zeros_like(x))
+            data._set_intensity_bkg(np.zeros_like(x))
             return
 
         u = (x - x.min()) / (x.max() - x.min()) * 2 - 1
         coefs = [term.coef.value for term in self._items]
 
         y = chebval(u, coefs)
-        data._set_bkg(y)
+        data._set_intensity_bkg(y)
 
     def show(self) -> None:
         """Print a table of polynomial orders and coefficients."""

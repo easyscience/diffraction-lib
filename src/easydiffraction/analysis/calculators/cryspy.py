@@ -526,8 +526,8 @@ class CryspyCalculator(CalculatorBase):
                 indices_h: np.ndarray = experiment.data.index_h
                 indices_k: np.ndarray = experiment.data.index_k
                 indices_l: np.ndarray = experiment.data.index_l
-                y_data: np.ndarray = experiment.data.meas
-                sy_data: np.ndarray = experiment.data.meas_su
+                y_data: np.ndarray = experiment.data.intensity_meas
+                sy_data: np.ndarray = experiment.data.intensity_meas_su
                 for index_h, index_k, index_l, y_val, sy_val in zip(
                     indices_h, indices_k, indices_l, y_data, sy_data, strict=True
                 ):
@@ -546,8 +546,8 @@ class CryspyCalculator(CalculatorBase):
                 indices_h: np.ndarray = experiment.data.index_h
                 indices_k: np.ndarray = experiment.data.index_k
                 indices_l: np.ndarray = experiment.data.index_l
-                y_data: np.ndarray = experiment.data.meas
-                sy_data: np.ndarray = experiment.data.meas_su
+                y_data: np.ndarray = experiment.data.intensity_meas
+                sy_data: np.ndarray = experiment.data.intensity_meas_su
                 wl_data: np.ndarray = experiment.data.wavelength
                 for index_h, index_k, index_l, y_val, sy_val, wl_val in zip(
                     indices_h, indices_k, indices_l, y_data, sy_data, wl_data, strict=True
@@ -570,8 +570,8 @@ class CryspyCalculator(CalculatorBase):
                 cif_lines.append('_tof_meas_time')
                 cif_lines.append('_tof_meas_intensity')
                 cif_lines.append('_tof_meas_intensity_sigma')
-            y_data: np.ndarray = experiment.data.meas
-            sy_data: np.ndarray = experiment.data.meas_su
+            y_data: np.ndarray = experiment.data.intensity_meas
+            sy_data: np.ndarray = experiment.data.intensity_meas_su
             for x_val, y_val, sy_val in zip(x_data, y_data, sy_data, strict=True):
                 cif_lines.append(f'  {x_val:.5f}   {y_val:.5f}   {sy_val:.5f}')
 
