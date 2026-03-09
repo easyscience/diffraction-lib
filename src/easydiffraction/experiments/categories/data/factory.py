@@ -9,7 +9,7 @@ from typing import Optional
 from easydiffraction.experiments.categories.data.bragg_pd import PdCwlData
 from easydiffraction.experiments.categories.data.bragg_pd import PdTofData
 from easydiffraction.experiments.categories.data.bragg_sc import ReflnData
-from easydiffraction.experiments.categories.data.total import TotalData
+from easydiffraction.experiments.categories.data.total_pd import TotalData
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiment.enums import SampleFormEnum
 from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
