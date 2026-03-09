@@ -523,9 +523,9 @@ class CryspyCalculator(CalculatorBase):
                 cif_lines.append('_diffrn_refln_index_l')
                 cif_lines.append('_diffrn_refln_intensity')
                 cif_lines.append('_diffrn_refln_intensity_sigma')
-                indices_h: np.ndarray = experiment.data.indices_h
-                indices_k: np.ndarray = experiment.data.indices_k
-                indices_l: np.ndarray = experiment.data.indices_l
+                indices_h: np.ndarray = experiment.data.index_h
+                indices_k: np.ndarray = experiment.data.index_k
+                indices_l: np.ndarray = experiment.data.index_l
                 y_data: np.ndarray = experiment.data.meas
                 sy_data: np.ndarray = experiment.data.meas_su
                 for index_h, index_k, index_l, y_val, sy_val in zip(
@@ -543,9 +543,9 @@ class CryspyCalculator(CalculatorBase):
                 cif_lines.append('_diffrn_refln_intensity')
                 cif_lines.append('_diffrn_refln_intensity_sigma')
                 cif_lines.append('_diffrn_refln_wavelength')
-                indices_h: np.ndarray = experiment.data.indices_h
-                indices_k: np.ndarray = experiment.data.indices_k
-                indices_l: np.ndarray = experiment.data.indices_l
+                indices_h: np.ndarray = experiment.data.index_h
+                indices_k: np.ndarray = experiment.data.index_k
+                indices_l: np.ndarray = experiment.data.index_l
                 y_data: np.ndarray = experiment.data.meas
                 sy_data: np.ndarray = experiment.data.meas_su
                 wl_data: np.ndarray = experiment.data.wavelength
