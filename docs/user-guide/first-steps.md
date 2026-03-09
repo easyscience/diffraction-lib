@@ -41,12 +41,10 @@ example, you can import the `Project`, `SampleModel`, `Experiment` classes and
 `download_from_repository` method like this:
 
 ```python
-from easydiffraction import (
-    Project,
-    SampleModel,
-    Experiment,
-    download_from_repository
-)
+from easydiffraction import Project
+from easydiffraction import SampleModel
+from easydiffraction import Experiment
+from easydiffraction import download_from_repository
 ```
 
 This enables you to use these classes and methods directly without the package
@@ -73,9 +71,11 @@ For example, you can download a sample data file like this:
 ```python
 import easydiffraction as ed
 
-ed.download_from_repository('hrpt_lbco.xye',
-                            branch='docs',
-                            destination='data')
+ed.download_from_repository(
+    'hrpt_lbco.xye',
+    branch='docs',
+    destination='data',
+)
 ```
 
 This command will download the `hrpt_lbco.xye` file from the `docs` branch of

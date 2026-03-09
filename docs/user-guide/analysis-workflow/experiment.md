@@ -105,20 +105,24 @@ explicitly defined:
 
 ```python
 # Add an experiment with default parameters, based on the specified type.
-project.experiments.add_from_data_path(name='hrpt',
-                                       data_path='data/hrpt_lbco.xye',
-                                       sample_form='powder',
-                                       beam_mode='constant wavelength',
-                                       radiation_probe='neutron',
-                                       scattering_type='bragg')
+project.experiments.add_from_data_path(
+    name='hrpt',
+    data_path='data/hrpt_lbco.xye',
+    sample_form='powder',
+    beam_mode='constant wavelength',
+    radiation_probe='neutron',
+    scattering_type='bragg',
+)
 ```
 
 To add an experiment of default type, you can simply do:
 
 ```python
 # Add an experiment of default type
-project.experiments.add_from_data_path(name='hrpt',
-                                       data_path='data/hrpt_lbco.xye')
+project.experiments.add_from_data_path(
+    name='hrpt',
+    data_path='data/hrpt_lbco.xye',
+)
 ```
 
 If you do not have measured data for fitting and only want to view the simulated
@@ -127,10 +131,12 @@ pattern, you can define an experiment without measured data using the
 
 ```python
 # Add an experiment without measured data
-project.experiments.add_without_data(name='hrpt',
-                                     sample_form='powder',
-                                     beam_mode='constant wavelength',
-                                     radiation_probe='x-ray')
+project.experiments.add_without_data(
+    name='hrpt',
+    sample_form='powder',
+    beam_mode='constant wavelength',
+    radiation_probe='x-ray',
+)
 ```
 
 Finally, you can also add an experiment by passing the experiment object
@@ -139,11 +145,14 @@ directly using the `add` method:
 ```python
 # Add an experiment by passing the experiment object directly
 from easydiffraction import Experiment
-experiment = Experiment(name='hrpt',
-                        sample_form='powder',
-                        beam_mode='constant wavelength',
-                        radiation_probe='neutron',
-                        scattering_type='bragg')
+
+experiment = Experiment(
+    name='hrpt',
+    sample_form='powder',
+    beam_mode='constant wavelength',
+    radiation_probe='neutron',
+    scattering_type='bragg',
+)
 project.experiments.add(experiment)
 ```
 

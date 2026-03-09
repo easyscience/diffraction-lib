@@ -104,7 +104,7 @@ project.sample_models['nacl'].atom_sites.append(
     fract_y=0,
     fract_z=0,
     occupancy=1,
-    b_iso_or_equiv=0.5
+    b_iso_or_equiv=0.5,
 )
 project.sample_models['nacl'].atom_sites.append(
     label='Cl',
@@ -113,7 +113,7 @@ project.sample_models['nacl'].atom_sites.append(
     fract_y=0,
     fract_z=0.5,
     occupancy=1,
-    b_iso_or_equiv=0.5
+    b_iso_or_equiv=0.5,
 )
 ```
 
