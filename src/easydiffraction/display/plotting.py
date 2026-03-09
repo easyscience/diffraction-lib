@@ -18,6 +18,8 @@ from easydiffraction.display.plotters.base import DEFAULT_AXES_LABELS
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import DEFAULT_MAX
 from easydiffraction.display.plotters.base import DEFAULT_MIN
+from easydiffraction.display.plotters.base import DEFAULT_X_AXIS
+from easydiffraction.display.plotters.base import XAxisType
 from easydiffraction.display.plotters.plotly import PlotlyPlotter
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.utils.environment import in_jupyter
@@ -132,6 +134,8 @@ class Plotter(RendererBase):
         else:
             self._height = DEFAULT_HEIGHT
 
+    # TODO: Extract common code from
+    #  plot_meas, plot_calc and plot_meas_vs_calc
     def plot_meas(
         self,
         pattern,
@@ -139,28 +143,38 @@ class Plotter(RendererBase):
         expt_type,
         x_min=None,
         x_max=None,
-        d_spacing=False,
+        x=None,
     ):
         """Plot measured pattern using the current engine.
 
         Args:
-            pattern: Object with ``x`` and ``meas`` arrays (and
-                ``d`` when ``d_spacing`` is true).
+            pattern: Object with x-axis arrays (``two_theta``,
+                ``time_of_flight``, ``d_spacing``) and ``meas`` array.
             expt_name: Experiment name for the title.
             expt_type: Experiment type with scattering/beam enums.
             x_min: Optional minimum x-axis limit.
             x_max: Optional maximum x-axis limit.
-            d_spacing: If ``True``, plot against d-spacing values.
+            x: X-axis type (``'two_theta'``, ``'time_of_flight'``, or
+                ``'d_spacing'``). If ``None``, auto-detected from
+                beam mode.
         """
-        if pattern.x is None:
-            log.error(f'No data available for experiment {expt_name}')
+        # Determine x-axis type
+        sample_form = expt_type.sample_form.value
+        beam_mode = expt_type.beam_mode.value
+        x_axis = DEFAULT_X_AXIS[(sample_form, beam_mode)] if x is None else x
+
+        # Get attribute name for error messages
+        # (works for both enum and string)
+        x_name = getattr(x_axis, 'value', x_axis)
+
+        # Get x-array from pattern
+        x_array = getattr(pattern, x_axis, None)
+        if x_array is None:
+            log.error(f'No {x_name} data available for experiment {expt_name}')
             return
         if pattern.meas is None:
             log.error(f'No measured data available for experiment {expt_name}')
             return
-
-        # Select x-axis data based on d-spacing or original x values
-        x_array = pattern.d if d_spacing else pattern.x
 
         # For asciichartpy, if x_min or x_max is not provided, center
         # around the maximum intensity peak
@@ -189,20 +203,13 @@ class Plotter(RendererBase):
         y_series = [y_meas]
         y_labels = ['meas']
 
-        if d_spacing:
-            axes_labels = DEFAULT_AXES_LABELS[
-                (
-                    expt_type.scattering_type.value,
-                    'd-spacing',
-                )
-            ]
-        else:
-            axes_labels = DEFAULT_AXES_LABELS[
-                (
-                    expt_type.scattering_type.value,
-                    expt_type.beam_mode.value,
-                )
-            ]
+        axes_labels = DEFAULT_AXES_LABELS[
+            (
+                expt_type.sample_form.value,
+                expt_type.scattering_type.value,
+                x_axis,
+            )
+        ]
 
         # TODO: Before, it was self._plotter.plot. Check what is better.
         self._backend.plot_powder(
@@ -214,6 +221,8 @@ class Plotter(RendererBase):
             height=self.height,
         )
 
+    # TODO: Extract common code from
+    #  plot_meas, plot_calc and plot_meas_vs_calc
     def plot_calc(
         self,
         pattern,
@@ -221,28 +230,38 @@ class Plotter(RendererBase):
         expt_type,
         x_min=None,
         x_max=None,
-        d_spacing=False,
+        x=None,
     ):
         """Plot calculated pattern using the current engine.
 
         Args:
-            pattern: Object with ``x`` and ``calc`` arrays (and
-                ``d`` when ``d_spacing`` is true).
+            pattern: Object with x-axis arrays (``two_theta``,
+                ``time_of_flight``, ``d_spacing``) and ``calc`` array.
             expt_name: Experiment name for the title.
             expt_type: Experiment type with scattering/beam enums.
             x_min: Optional minimum x-axis limit.
             x_max: Optional maximum x-axis limit.
-            d_spacing: If ``True``, plot against d-spacing values.
+            x: X-axis type (``'two_theta'``, ``'time_of_flight'``, or
+                ``'d_spacing'``). If ``None``, auto-detected from
+                beam mode.
         """
-        if pattern.x is None:
-            log.error(f'No data available for experiment {expt_name}')
+        # Determine x-axis type
+        sample_form = expt_type.sample_form.value
+        beam_mode = expt_type.beam_mode.value
+        x_axis = DEFAULT_X_AXIS[(sample_form, beam_mode)] if x is None else x
+
+        # Get attribute name for error messages
+        # (works for both enum and string)
+        x_name = getattr(x_axis, 'value', x_axis)
+
+        # Get x-array from pattern
+        x_array = getattr(pattern, x_axis, None)
+        if x_array is None:
+            log.error(f'No {x_name} data available for experiment {expt_name}')
             return
         if pattern.calc is None:
             log.error(f'No calculated data available for experiment {expt_name}')
             return
-
-        # Select x-axis data based on d-spacing or original x values
-        x_array = pattern.d if d_spacing else pattern.x
 
         # For asciichartpy, if x_min or x_max is not provided, center
         # around the maximum intensity peak
@@ -271,20 +290,13 @@ class Plotter(RendererBase):
         y_series = [y_calc]
         y_labels = ['calc']
 
-        if d_spacing:
-            axes_labels = DEFAULT_AXES_LABELS[
-                (
-                    expt_type.scattering_type.value,
-                    'd-spacing',
-                )
-            ]
-        else:
-            axes_labels = DEFAULT_AXES_LABELS[
-                (
-                    expt_type.scattering_type.value,
-                    expt_type.beam_mode.value,
-                )
-            ]
+        axes_labels = DEFAULT_AXES_LABELS[
+            (
+                expt_type.sample_form.value,
+                expt_type.scattering_type.value,
+                x_axis,
+            )
+        ]
 
         self._backend.plot_powder(
             x=x,
@@ -295,6 +307,8 @@ class Plotter(RendererBase):
             height=self.height,
         )
 
+    # TODO: Extract common code from
+    #  plot_meas, plot_calc and plot_meas_vs_calc
     def plot_meas_vs_calc(
         self,
         pattern,
@@ -303,28 +317,42 @@ class Plotter(RendererBase):
         x_min=None,
         x_max=None,
         show_residual=False,
-        d_spacing=False,
+        x=None,
     ):
         """Plot measured and calculated series and optional residual.
 
+        Supports both powder and single crystal data with a unified API.
+
+        For powder diffraction:
+            - x='two_theta', 'time_of_flight', or 'd_spacing'
+            - Auto-detected from beam mode if not specified
+
+        For single crystal diffraction:
+            - x='intensity_calc' (default): scatter plot
+            - x='d_spacing' or 'sin_theta_over_lambda': line plot
+
         Args:
-            pattern: Object with ``x``, ``meas`` and ``calc`` arrays
-                (and ``d`` when ``d_spacing`` is true).
+            pattern: Data pattern object with meas/calc arrays.
             expt_name: Experiment name for the title.
-            expt_type: Experiment type with scattering/beam enums.
+            expt_type: Experiment type with sample_form,
+                scattering, and beam enums.
             x_min: Optional minimum x-axis limit.
             x_max: Optional maximum x-axis limit.
-            show_residual: If ``True``, add residual series.
-            d_spacing: If ``True``, plot against d-spacing values.
+            show_residual: If ``True``, add residual series
+                (powder only).
+            x: X-axis type. If ``None``, auto-detected from sample form
+                and beam mode.
         """
-        if d_spacing is False:
-            if pattern.x is None:
-                log.error(f'No data available for experiment {expt_name}')
-                return
-        elif d_spacing is True and pattern.d is None:
-            log.error(f'No data available for experiment {expt_name}')
-            return
+        # Determine x-axis type from sample form and beam mode
+        sample_form = expt_type.sample_form.value
+        beam_mode = expt_type.beam_mode.value
+        x_axis = DEFAULT_X_AXIS[(sample_form, beam_mode)] if x is None else x
 
+        # Get attribute name for error messages
+        # (works for both enum and string)
+        x_name = getattr(x_axis, 'value', x_axis)
+
+        # Validate required data
         if pattern.meas is None:
             log.error(f'No measured data available for experiment {expt_name}')
             return
@@ -332,8 +360,40 @@ class Plotter(RendererBase):
             log.error(f'No calculated data available for experiment {expt_name}')
             return
 
-        # Select x-axis data based on d-spacing or original x values
-        x_array = pattern.d if d_spacing else pattern.x
+        # Get axes labels
+        axes_labels = DEFAULT_AXES_LABELS[
+            (
+                sample_form,
+                expt_type.scattering_type.value,
+                x_axis,
+            )
+        ]
+
+        title = f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"
+
+        # Single crystal scatter plot (I²calc vs I²meas)
+        if x_axis == XAxisType.INTENSITY_CALC or x_axis == 'intensity_calc':
+            if pattern.meas_su is None:
+                log.warning(f'No measurement uncertainties for experiment {expt_name}')
+                meas_su = np.zeros_like(pattern.meas)
+            else:
+                meas_su = pattern.meas_su
+
+            self._backend.plot_single_crystal(
+                x_calc=pattern.calc,
+                y_meas=pattern.meas,
+                y_meas_su=meas_su,
+                axes_labels=axes_labels,
+                title=title,
+                height=self.height,
+            )
+            return
+
+        # Line plot (powder or SC with d_spacing/sin_theta_over_lambda)
+        x_array = getattr(pattern, x_axis, None)
+        if x_array is None:
+            log.error(f'No {x_name} data available for experiment {expt_name}')
+            return
 
         # For asciichartpy, if x_min or x_max is not provided, center
         # around the maximum intensity peak
@@ -368,21 +428,6 @@ class Plotter(RendererBase):
         y_series = [y_meas, y_calc]
         y_labels = ['meas', 'calc']
 
-        if d_spacing:
-            axes_labels = DEFAULT_AXES_LABELS[
-                (
-                    expt_type.scattering_type.value,
-                    'd-spacing',
-                )
-            ]
-        else:
-            axes_labels = DEFAULT_AXES_LABELS[
-                (
-                    expt_type.scattering_type.value,
-                    expt_type.beam_mode.value,
-                )
-            ]
-
         if show_residual:
             y_resid = y_meas - y_calc
             y_series.append(y_resid)
@@ -392,47 +437,6 @@ class Plotter(RendererBase):
             x=x,
             y_series=y_series,
             labels=y_labels,
-            axes_labels=axes_labels,
-            title=f"Measured vs Calculated data for experiment 🔬 '{expt_name}'",
-            height=self.height,
-        )
-
-    def plot_sc_meas_vs_calc(
-        self,
-        pattern,
-        expt_name,
-    ):
-        """Plot measured vs calculated comparison for single crystal
-        data.
-
-        Renders a scatter plot of F²meas vs F²calc with error bars and
-        a diagonal reference line.
-
-        Args:
-            pattern: Object with ``meas``, ``calc``, and ``meas_su``
-                arrays for structure factor squared data.
-            expt_name: Experiment name for the title.
-        """
-        if pattern.meas is None:
-            log.error(f'No measured data available for experiment {expt_name}')
-            return
-        if pattern.calc is None:
-            log.error(f'No calculated data available for experiment {expt_name}')
-            return
-        if pattern.meas_su is None:
-            log.warning(f'No measurement uncertainties for experiment {expt_name}')
-            # Use zeros if no uncertainties available
-            meas_su = np.zeros_like(pattern.meas)
-        else:
-            meas_su = pattern.meas_su
-
-        title = f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"
-        axes_labels = ['F²calc', 'F²meas']
-
-        self._backend.plot_single_crystal(
-            x_calc=pattern.calc,
-            y_meas=pattern.meas,
-            y_meas_su=meas_su,
             axes_labels=axes_labels,
             title=title,
             height=self.height,
