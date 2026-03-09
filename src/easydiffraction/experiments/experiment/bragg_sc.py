@@ -5,12 +5,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import numpy as np
+
 from easydiffraction.experiments.categories.extinction import Extinction
 from easydiffraction.experiments.categories.linked_crystal import LinkedCrystal
 from easydiffraction.experiments.experiment.base import ScExperimentBase
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiment.instrument_mixin import InstrumentMixin
 from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
     from easydiffraction.experiments.categories.experiment_type import ExperimentType
@@ -43,19 +46,26 @@ class BraggScExperiment(
         - 5 for constant wavelength mode: ``h k l Iobs sIobs``.
         - 6 for time-of-flight mode: ``h k l Iobs sIobs wavelength``.
         """
-        import numpy as np
-
         try:
             data = np.loadtxt(data_path)
         except Exception as e:
-            raise IOError(f'Failed to read data from {data_path}: {e}') from e
+            log.error(
+                f'Failed to read data from {data_path}: {e}',
+                exc_type=IOError,
+            )
 
         if self.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH and data.shape[1] < 5:
-            raise ValueError('Data file must have at least 5 columns: h, k, l, Iobs, sIobs.')
-        elif self.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT and data.shape[1] < 6:
-            raise ValueError(
-                'Data file must have at least 6 columns: h, k, l, Iobs, sIobs, wavelength.'
+            log.error(
+                'Data file must have at least 5 columns: h, k, l, Iobs, sIobs.',
+                exc_type=ValueError,
             )
+            return
+        elif self.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT and data.shape[1] < 6:
+            log.error(
+                'Data file must have at least 6 columns: h, k, l, Iobs, sIobs, wavelength.',
+                exc_type=ValueError,
+            )
+            return
 
         # Extract Miller indices h, k, l
         indices_h: np.ndarray = data[:, 0].astype(int)
