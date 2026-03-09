@@ -14,7 +14,7 @@ def test_line_segment_background_calculate_and_cif():
     # Create mock parent with data
     x = np.array([0.0, 1.0, 2.0])
     mock_data = SimpleNamespace(x=x, _bkg=None)
-    mock_data._set_bkg = lambda y: setattr(mock_data, '_bkg', y)
+    mock_data._set_intensity_bkg = lambda y: setattr(mock_data, '_bkg', y)
     mock_parent = SimpleNamespace(data=mock_data)
 
     bkg = LineSegmentBackground()
