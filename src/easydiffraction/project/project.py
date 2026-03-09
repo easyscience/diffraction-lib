@@ -12,7 +12,6 @@ from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.display.plotting import Plotter
 from easydiffraction.display.tables import TableRenderer
-from easydiffraction.experiments.experiment.enums import SampleFormEnum
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.project.project_info import ProjectInfo
@@ -235,7 +234,7 @@ class Project(GuardedBase):
         expt_name,
         x_min=None,
         x_max=None,
-        d_spacing=False,
+        x=None,
     ):
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
@@ -246,7 +245,7 @@ class Project(GuardedBase):
             experiment.type,
             x_min=x_min,
             x_max=x_max,
-            d_spacing=d_spacing,
+            x=x,
         )
 
     def plot_calc(
@@ -254,7 +253,7 @@ class Project(GuardedBase):
         expt_name,
         x_min=None,
         x_max=None,
-        d_spacing=False,
+        x=None,
     ):
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
@@ -265,7 +264,7 @@ class Project(GuardedBase):
             experiment.type,
             x_min=x_min,
             x_max=x_max,
-            d_spacing=d_spacing,
+            x=x,
         )
 
     def plot_meas_vs_calc(
@@ -274,23 +273,17 @@ class Project(GuardedBase):
         x_min=None,
         x_max=None,
         show_residual=False,
-        d_spacing=False,
+        x=None,
     ):
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
 
-        if experiment.type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
-            self.plotter.plot_sc_meas_vs_calc(
-                experiment.data,
-                expt_name,
-            )
-        elif experiment.type.sample_form.value == SampleFormEnum.POWDER:
-            self.plotter.plot_meas_vs_calc(
-                experiment.data,
-                expt_name,
-                experiment.type,
-                x_min=x_min,
-                x_max=x_max,
-                show_residual=show_residual,
-                d_spacing=d_spacing,
-            )
+        self.plotter.plot_meas_vs_calc(
+            experiment.data,
+            expt_name,
+            experiment.type,
+            x_min=x_min,
+            x_max=x_max,
+            show_residual=show_residual,
+            x=x,
+        )
