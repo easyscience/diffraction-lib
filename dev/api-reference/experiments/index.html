@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.4">
     
     
       
@@ -3080,14 +3080,14 @@ compute background intensities on the experiment grid.</p>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No background points found. Setting background to zero.&#39;</span><span class="p">)</span>
-            <span class="n">data</span><span class="o">.</span><span class="n">_set_bkg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_bkg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
             <span class="k">return</span>
 
         <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="n">coefs</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">coef</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">]</span>
 
         <span class="n">y</span> <span class="o">=</span> <span class="n">chebval</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">_set_bkg</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_bkg</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of polynomial orders and coefficients.&quot;&quot;&quot;</span>
@@ -4288,7 +4288,7 @@ and are re-exported here for a stable and readable API.</p>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;No background points found. Setting background to zero.&#39;</span><span class="p">)</span>
-            <span class="n">data</span><span class="o">.</span><span class="n">_set_bkg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_bkg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
             <span class="k">return</span>
 
         <span class="n">segments_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">])</span>
@@ -4302,7 +4302,7 @@ and are re-exported here for a stable and readable API.</p>
         <span class="p">)</span>
 
         <span class="n">y</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">_set_bkg</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_bkg</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of control points (x, intensity).&quot;&quot;&quot;</span>
@@ -4799,7 +4799,7 @@ fitting and plotting.</p>
         <span class="k">del</span> <span class="n">called_by_minimizer</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">data</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">all_x</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">unfiltered_x</span>
 
         <span class="c1"># Start with a mask of all False (nothing excluded yet)</span>
         <span class="n">combined_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
@@ -11999,9 +11999,9 @@ specific attributes.</p>
         <span class="n">sy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sy</span> <span class="o">&lt;</span> <span class="mf">0.0001</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">sy</span><span class="p">)</span>
 
         <span class="c1"># Set the experiment data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_x</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_meas</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_meas_su</span><span class="p">(</span><span class="n">sy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_create_items_set_xcoord_and_id</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas_su</span><span class="p">(</span><span class="n">sy</span><span class="p">)</span>
 
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -12353,9 +12353,9 @@ attributes.</p>
         <span class="n">integrated_intensities_su</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
 
         <span class="c1"># Set the experiment data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_hkl</span><span class="p">(</span><span class="n">indices_h</span><span class="p">,</span> <span class="n">indices_k</span><span class="p">,</span> <span class="n">indices_l</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_meas</span><span class="p">(</span><span class="n">integrated_intensities</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_meas_su</span><span class="p">(</span><span class="n">integrated_intensities_su</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_create_items_set_hkl_and_id</span><span class="p">(</span><span class="n">indices_h</span><span class="p">,</span> <span class="n">indices_k</span><span class="p">,</span> <span class="n">indices_l</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas</span><span class="p">(</span><span class="n">integrated_intensities</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas_su</span><span class="p">(</span><span class="n">integrated_intensities_su</span><span class="p">)</span>
 
         <span class="c1"># If wavelength data is present (column 6), extract and set it</span>
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">6</span><span class="p">:</span>
@@ -13432,9 +13432,9 @@ mode).</p>
         <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
         <span class="n">sy</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">default_sy</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_x</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_meas</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_meas_su</span><span class="p">(</span><span class="n">sy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_create_items_set_xcoord_and_id</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_g_r_meas</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_g_r_meas_su</span><span class="p">(</span><span class="n">sy</span><span class="p">)</span>
 
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -14866,9 +14866,9 @@ specific attributes.</p>
         <span class="n">sy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sy</span> <span class="o">&lt;</span> <span class="mf">0.0001</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">sy</span><span class="p">)</span>
 
         <span class="c1"># Set the experiment data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_x</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_meas</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_meas_su</span><span class="p">(</span><span class="n">sy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_create_items_set_xcoord_and_id</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas_su</span><span class="p">(</span><span class="n">sy</span><span class="p">)</span>
 
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -15274,9 +15274,9 @@ attributes.</p>
         <span class="n">integrated_intensities_su</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
 
         <span class="c1"># Set the experiment data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_hkl</span><span class="p">(</span><span class="n">indices_h</span><span class="p">,</span> <span class="n">indices_k</span><span class="p">,</span> <span class="n">indices_l</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_meas</span><span class="p">(</span><span class="n">integrated_intensities</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_meas_su</span><span class="p">(</span><span class="n">integrated_intensities_su</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_create_items_set_hkl_and_id</span><span class="p">(</span><span class="n">indices_h</span><span class="p">,</span> <span class="n">indices_k</span><span class="p">,</span> <span class="n">indices_l</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas</span><span class="p">(</span><span class="n">integrated_intensities</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_intensity_meas_su</span><span class="p">(</span><span class="n">integrated_intensities_su</span><span class="p">)</span>
 
         <span class="c1"># If wavelength data is present (column 6), extract and set it</span>
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">6</span><span class="p">:</span>
@@ -16722,9 +16722,9 @@ experiment type (scattering type and beam mode) at initialization.</p>
         <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
         <span class="n">sy</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">default_sy</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_x</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_meas</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_meas_su</span><span class="p">(</span><span class="n">sy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_create_items_set_xcoord_and_id</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_g_r_meas</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_g_r_meas_su</span><span class="p">(</span><span class="n">sy</span><span class="p">)</span>
 
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
