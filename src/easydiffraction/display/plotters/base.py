@@ -4,36 +4,122 @@
 
 from abc import ABC
 from abc import abstractmethod
+from enum import Enum
 
 import numpy as np
 
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
+from easydiffraction.experiments.experiment.enums import SampleFormEnum
 from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 
 DEFAULT_HEIGHT = 25
 DEFAULT_MIN = -np.inf
 DEFAULT_MAX = np.inf
 
+
+class XAxisType(str, Enum):
+    """X-axis types for diffraction plots.
+
+    Values match attribute names in data models for direct use
+    with ``getattr(pattern, x_axis)``.
+    """
+
+    TWO_THETA = 'two_theta'
+    TIME_OF_FLIGHT = 'time_of_flight'
+
+    INTENSITY_CALC = 'intensity_calc'
+
+    D_SPACING = 'd_spacing'
+    SIN_THETA_OVER_LAMBDA = 'sin_theta_over_lambda'
+
+
+# Map (SampleFormEnum, BeamModeEnum) to default x-axis type
+DEFAULT_X_AXIS = {
+    (
+        SampleFormEnum.POWDER,
+        BeamModeEnum.CONSTANT_WAVELENGTH,
+    ): XAxisType.TWO_THETA,
+    (
+        SampleFormEnum.POWDER,
+        BeamModeEnum.TIME_OF_FLIGHT,
+    ): XAxisType.TIME_OF_FLIGHT,
+    (
+        SampleFormEnum.SINGLE_CRYSTAL,
+        BeamModeEnum.CONSTANT_WAVELENGTH,
+    ): XAxisType.INTENSITY_CALC,
+    (
+        SampleFormEnum.SINGLE_CRYSTAL,
+        BeamModeEnum.TIME_OF_FLIGHT,
+    ): XAxisType.INTENSITY_CALC,
+}
+
 DEFAULT_AXES_LABELS = {
-    (ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH): [
+    # Powder Bragg diffraction
+    (
+        SampleFormEnum.POWDER,
+        ScatteringTypeEnum.BRAGG,
+        XAxisType.TWO_THETA,
+    ): [
         '2θ (degree)',
         'Intensity (arb. units)',
     ],
-    (ScatteringTypeEnum.BRAGG, BeamModeEnum.TIME_OF_FLIGHT): [
+    (
+        SampleFormEnum.POWDER,
+        ScatteringTypeEnum.BRAGG,
+        XAxisType.TIME_OF_FLIGHT,
+    ): [
         'TOF (µs)',
         'Intensity (arb. units)',
     ],
-    (ScatteringTypeEnum.BRAGG, 'd-spacing'): [
+    (
+        SampleFormEnum.POWDER,
+        ScatteringTypeEnum.BRAGG,
+        XAxisType.D_SPACING,
+    ): [
         'd (Å)',
         'Intensity (arb. units)',
     ],
-    (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): [
-        'r (Å)',
-        'G(r) (Å)',
+    # Powder total scattering (PDF)
+    (
+        SampleFormEnum.POWDER,
+        ScatteringTypeEnum.TOTAL,
+        XAxisType.TWO_THETA,
+    ): [
+        'r (Å)',
+        'G(r) (Å)',
     ],
-    (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): [
-        'r (Å)',
-        'G(r) (Å)',
+    (
+        SampleFormEnum.POWDER,
+        ScatteringTypeEnum.TOTAL,
+        XAxisType.TIME_OF_FLIGHT,
+    ): [
+        'r (Å)',
+        'G(r) (Å)',
+    ],
+    # Single crystal Bragg diffraction
+    (
+        SampleFormEnum.SINGLE_CRYSTAL,
+        ScatteringTypeEnum.BRAGG,
+        XAxisType.INTENSITY_CALC,
+    ): [
+        'I²calc',
+        'I²meas',
+    ],
+    (
+        SampleFormEnum.SINGLE_CRYSTAL,
+        ScatteringTypeEnum.BRAGG,
+        XAxisType.D_SPACING,
+    ): [
+        'd (Å)',
+        'Intensity (arb. units)',
+    ],
+    (
+        SampleFormEnum.SINGLE_CRYSTAL,
+        ScatteringTypeEnum.BRAGG,
+        XAxisType.SIN_THETA_OVER_LAMBDA,
+    ): [
+        'sin(θ)/λ (Å⁻¹)',
+        'Intensity (arb. units)',
     ],
 }
 
