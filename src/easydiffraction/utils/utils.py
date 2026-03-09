@@ -613,6 +613,24 @@ def twotheta_to_d(twotheta, wavelength):
     return d
 
 
+def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda):
+    """Convert sin(theta)/lambda to d-spacing.
+
+    Parameters:
+        sin_theta_over_lambda (float or np.ndarray): sin(theta)/lambda
+            in 1/Å.
+
+    Returns:
+        d (float or np.ndarray): d-spacing in Å.
+    """
+    # Avoid division by zero
+    with np.errstate(divide='ignore', invalid='ignore'):
+        d = 1 / (2 * sin_theta_over_lambda)
+        # Set non-positive inputs to NaN
+        d = np.where(sin_theta_over_lambda > 0, d, np.nan)
+    return d
+
+
 def get_value_from_xye_header(file_path, key):
     """Extracts a floating point value from the first line of the file,
     corresponding to the given key.
