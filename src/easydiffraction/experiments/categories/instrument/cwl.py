@@ -9,20 +9,14 @@ from easydiffraction.experiments.categories.instrument.base import InstrumentBas
 from easydiffraction.io.cif.handler import CifHandler
 
 
-class CwlInstrument(InstrumentBase):
-    def __init__(
-        self,
-        *,
-        setup_wavelength=None,
-        calib_twotheta_offset=None,
-    ) -> None:
+class CwlInstrumentBase(InstrumentBase):
+    def __init__(self) -> None:
         super().__init__()
 
         self._setup_wavelength: Parameter = Parameter(
             name='wavelength',
             description='Incident neutron or X-ray wavelength',
             value_spec=AttributeSpec(
-                value=setup_wavelength,
                 type_=DataTypes.NUMERIC,
                 default=1.5406,
                 content_validator=RangeValidator(),
@@ -31,22 +25,6 @@ class CwlInstrument(InstrumentBase):
             cif_handler=CifHandler(
                 names=[
                     '_instr.wavelength',
-                ]
-            ),
-        )
-        self._calib_twotheta_offset: Parameter = Parameter(
-            name='twotheta_offset',
-            description='Instrument misalignment offset',
-            value_spec=AttributeSpec(
-                value=calib_twotheta_offset,
-                type_=DataTypes.NUMERIC,
-                default=0.0,
-                content_validator=RangeValidator(),
-            ),
-            units='deg',
-            cif_handler=CifHandler(
-                names=[
-                    '_instr.2theta_offset',
                 ]
             ),
         )
@@ -60,6 +38,32 @@ class CwlInstrument(InstrumentBase):
     def setup_wavelength(self, value):
         """Set incident wavelength value (Å)."""
         self._setup_wavelength.value = value
+
+
+class CwlScInstrument(CwlInstrumentBase):
+    def __init__(self) -> None:
+        super().__init__()
+
+
+class CwlPdInstrument(CwlInstrumentBase):
+    def __init__(self) -> None:
+        super().__init__()
+
+        self._calib_twotheta_offset: Parameter = Parameter(
+            name='twotheta_offset',
+            description='Instrument misalignment offset',
+            value_spec=AttributeSpec(
+                type_=DataTypes.NUMERIC,
+                default=0.0,
+                content_validator=RangeValidator(),
+            ),
+            units='deg',
+            cif_handler=CifHandler(
+                names=[
+                    '_instr.2theta_offset',
+                ]
+            ),
+        )
 
     @property
     def calib_twotheta_offset(self):

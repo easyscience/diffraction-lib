@@ -10,7 +10,6 @@ import numpy as np
 from easydiffraction.experiments.categories.background.enums import BackgroundTypeEnum
 from easydiffraction.experiments.categories.background.factory import BackgroundFactory
 from easydiffraction.experiments.experiment.base import PdExperimentBase
-from easydiffraction.experiments.experiment.instrument_mixin import InstrumentMixin
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
@@ -19,10 +18,7 @@ if TYPE_CHECKING:
     from easydiffraction.experiments.categories.experiment_type import ExperimentType
 
 
-class BraggPdExperiment(
-    InstrumentMixin,
-    PdExperimentBase,
-):
+class BraggPdExperiment(PdExperimentBase):
     """Standard (Bragg) Powder Diffraction experiment class with
     specific attributes.
     """
