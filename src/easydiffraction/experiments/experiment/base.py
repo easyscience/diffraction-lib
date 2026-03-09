@@ -11,6 +11,8 @@ from typing import List
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.experiments.categories.data.factory import DataFactory
 from easydiffraction.experiments.categories.excluded_regions import ExcludedRegions
+from easydiffraction.experiments.categories.extinction import Extinction
+from easydiffraction.experiments.categories.instrument.factory import InstrumentFactory
 from easydiffraction.experiments.categories.linked_crystal import LinkedCrystal
 from easydiffraction.experiments.categories.linked_phases import LinkedPhases
 from easydiffraction.experiments.categories.peak.factory import PeakFactory
@@ -108,7 +110,11 @@ class ScExperimentBase(ExperimentBase):
         super().__init__(name=name, type=type)
 
         self._linked_crystal: LinkedCrystal = LinkedCrystal()
-
+        self._extinction: Extinction = Extinction()
+        self._instrument = InstrumentFactory.create(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+        )
         self._data = DataFactory.create(
             sample_form=self.type.sample_form.value,
             beam_mode=self.type.beam_mode.value,
@@ -130,14 +136,13 @@ class ScExperimentBase(ExperimentBase):
         """Linked crystal model for this experiment."""
         return self._linked_crystal
 
-    @linked_crystal.setter
-    def linked_crystal(self, value):
-        """Set the linked crystal model for this experiment.
+    @property
+    def extinction(self):
+        return self._extinction
 
-        Args:
-            value: New linked crystal model.
-        """
-        self._linked_crystal = value
+    @property
+    def instrument(self):
+        return self._instrument
 
     @property
     def data(self):
