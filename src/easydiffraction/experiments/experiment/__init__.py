@@ -4,7 +4,8 @@
 from easydiffraction.experiments.experiment.base import ExperimentBase
 from easydiffraction.experiments.experiment.base import PdExperimentBase
 from easydiffraction.experiments.experiment.bragg_pd import BraggPdExperiment
-from easydiffraction.experiments.experiment.bragg_sc import BraggScExperiment
+from easydiffraction.experiments.experiment.bragg_sc import CwlScExperiment
+from easydiffraction.experiments.experiment.bragg_sc import TofScExperiment
 from easydiffraction.experiments.experiment.total_pd import TotalPdExperiment
 
 __all__ = [
@@ -12,5 +13,6 @@ __all__ = [
     'PdExperimentBase',
     'BraggPdExperiment',
     'TotalPdExperiment',
-    'BraggScExperiment',
+    'CwlScExperiment',
+    'TofScExperiment',
 ]

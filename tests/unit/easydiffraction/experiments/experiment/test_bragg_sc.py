@@ -4,7 +4,7 @@
 import pytest
 
 from easydiffraction.experiments.categories.experiment_type import ExperimentType
-from easydiffraction.experiments.experiment.bragg_sc import BraggScExperiment
+from easydiffraction.experiments.experiment.bragg_sc import CwlScExperiment
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiment.enums import RadiationProbeEnum
 from easydiffraction.experiments.experiment.enums import SampleFormEnum
@@ -21,7 +21,7 @@ def _mk_type_sc_bragg():
     )
 
 
-class _ConcreteBraggSc(BraggScExperiment):
+class _ConcreteCwlSc(CwlScExperiment):
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         # Not used in this test
         pass
@@ -30,7 +30,7 @@ class _ConcreteBraggSc(BraggScExperiment):
 def test_init_and_placeholder_no_crash(monkeypatch: pytest.MonkeyPatch):
     # Prevent logger from raising on attribute errors inside __init__
     monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
-    expt = _ConcreteBraggSc(name='sc1', type=_mk_type_sc_bragg())
+    expt = _ConcreteCwlSc(name='sc1', type=_mk_type_sc_bragg())
     # Verify that experiment was created successfully with expected properties
     assert expt.name == 'sc1'
     assert expt.type is not None
