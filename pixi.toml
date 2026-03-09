@@ -46,11 +46,12 @@ gsl = '*' # GNU Scientific Library; required for pdffit2.
 #libcblas = '*' # CBLAS library for linear algebra; required for pdffit2.
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
-pip = '*'                                             # Native package installer
-uv = '*'                                              # Package manager
-jupyterlab = '*'                                      # Jupyter notebooks
-pixi-kernel = '*'                                     # Pixi Jupyter kernel
-easydiffraction = { version = '*', extras = ['all'] } # Main package
+pip = '*'         # Native package installer
+uv = '*'          # Package manager
+jupyterlab = '*'  # Jupyter notebooks
+pixi-kernel = '*' # Pixi Jupyter kernel
+#easydiffraction = { version = '*', extras = ['all'] } # Main package
+easydiffraction = { path = ".", editable = true, extras = ['all'] }
 
 # Specific features
 
@@ -190,7 +191,7 @@ docs-setup = { depends-on = [
 dist-build = 'python -m build --wheel --outdir dist'
 spdx-update = 'python tools/update_spdx.py'
 #dev-install = 'uv pip install --requirements pyproject.toml --extra all'
-dev-install = "python -m uv pip install --force-reinstall --editable '.[all]'"
+#dev-install = "python -m uv pip install --force-reinstall --editable '.[all]'"
 npm-config = 'npm config set registry https://registry.npmjs.org/'
 prettier-install = 'npm install --no-save --no-audit --no-fund prettier prettier-plugin-toml'
 pre-commit-setup = 'pre-commit clean && pre-commit uninstall && pre-commit install --hook-type pre-commit --hook-type pre-push --overwrite'
@@ -198,10 +199,10 @@ pre-commit-update = 'pre-commit autoupdate'
 clean-pycache = "find . -type d -name '__pycache__' -prune -exec rm -rf '{}' +"
 
 dev = { depends-on = [
-  'dev-install',
+  #'dev-install',
   'npm-config',
   'prettier-install',
-  'pre-commit-setup',
+  #'pre-commit-setup',
 ] }
 
 wheel = { depends-on = ['npm-config', 'prettier-install'] }

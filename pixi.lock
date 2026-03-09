@@ -98,7 +98,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/b4/a7ec1eaee86761a9dbfd339732b4706db3c6b65e970c12f0f56cfcce3dcf/docformatter-1.7.7-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/70/205e8e2ab3621690a9feebe881d2787bcf4861d65c16d4798628b973f13a/easydiffraction-0.10.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/06/42/75a6098682e3d4d7d5dfcb94d0dd48dccd9e106112992a99524243bc63e6/essdiffraction-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a8/bf/530a2b63de72bdb8e518049a1e6639d1e6d79e591bfcdaaae08a9a3a7b84/essreduce-26.3.1-py3-none-any.whl
@@ -254,7 +253,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/b7/de/f7192e12b21b9e9a68a6d0f249b4af3fdcdff8418be0767a627564afa1f1/rpds_py-0.30.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/d3/01/a10fe54b653061585e655f5286c2662ebddb68831ed3eaebfb0eb08c0a16/ruff-0.15.5-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/af/46/661159ad844034ba8b3f4e0516215c41e4ee17db4213d13a82227670764f/sciline-25.11.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/ed/65/e6aecd0a185e1ebe019ec45426574600356830bdf0a014ac514f44d114b4/scipp-26.3.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/94/98/aa2d4b9d28969cc7f62409f9f9fc5b5a853af651255eba03e9bee8546dd9/scipp-25.12.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/fb/46/e50b38629e9e3f4a1dd55fb36d8b8abd1d59768c31151c1c8ed696f7b865/scippneutron-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/01/6cb4d63c6b6933be4b7945b2f64638336420f04ea71ca5b9a7539c008bc5/scippnexus-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5f/f17563f28ff03c7b6799c50d01d5d856a1d55f2676f537ca8d28c7f627cd/scipy-1.17.1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
@@ -303,6 +302,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a4/f5/10b68b7b1544245097b2a1b8238f66f2fc6dcaeb24ba5d917f52bd2eed4f/wsproto-1.3.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/66/fe/b1e10b08d287f518994f1e2ff9b6d26f0adeecd8dd7d533b01bab29a3eda/yarl-1.23.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: ./
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/_openmp_mutex-4.5-7_kmp_llvm.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/bzip2-1.0.8-h500dc9f_9.conda
@@ -391,7 +391,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/b4/a7ec1eaee86761a9dbfd339732b4706db3c6b65e970c12f0f56cfcce3dcf/docformatter-1.7.7-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/70/205e8e2ab3621690a9feebe881d2787bcf4861d65c16d4798628b973f13a/easydiffraction-0.10.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/06/42/75a6098682e3d4d7d5dfcb94d0dd48dccd9e106112992a99524243bc63e6/essdiffraction-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a8/bf/530a2b63de72bdb8e518049a1e6639d1e6d79e591bfcdaaae08a9a3a7b84/essreduce-26.3.1-py3-none-any.whl
@@ -547,7 +546,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/ed/dc/d61221eb88ff410de3c49143407f6f3147acf2538c86f2ab7ce65ae7d5f9/rpds_py-0.30.0-cp313-cp313-macosx_10_12_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/44/ed/e81dd668547da281e5dce710cf0bc60193f8d3d43833e8241d006720e42b/ruff-0.15.5-py3-none-macosx_10_12_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/af/46/661159ad844034ba8b3f4e0516215c41e4ee17db4213d13a82227670764f/sciline-25.11.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/db/55/ba24a6e3e60857eab1cb0024d3b6b11f937252fa71e2b96a8391072b63a1/scipp-26.3.0.tar.gz
+      - pypi: https://files.pythonhosted.org/packages/e5/22/75e119e0a200914f88f121cd956e1eb7f72c8ace4b63171f52ba0334d142/scipp-25.12.0-cp313-cp313-macosx_11_0_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/fb/46/e50b38629e9e3f4a1dd55fb36d8b8abd1d59768c31151c1c8ed696f7b865/scippneutron-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/01/6cb4d63c6b6933be4b7945b2f64638336420f04ea71ca5b9a7539c008bc5/scippnexus-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/76/27/07ee1b57b65e92645f219b37148a7e7928b82e2b5dbeccecb4dff7c64f0b/scipy-1.17.1-cp313-cp313-macosx_10_14_x86_64.whl
@@ -596,6 +595,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a4/f5/10b68b7b1544245097b2a1b8238f66f2fc6dcaeb24ba5d917f52bd2eed4f/wsproto-1.3.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/67/b6/8925d68af039b835ae876db5838e82e76ec87b9782ecc97e192b809c4831/yarl-1.23.0-cp313-cp313-macosx_10_13_x86_64.whl
+      - pypi: ./
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/bzip2-1.0.8-hd037594_9.conda
@@ -684,7 +684,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/b4/a7ec1eaee86761a9dbfd339732b4706db3c6b65e970c12f0f56cfcce3dcf/docformatter-1.7.7-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/70/205e8e2ab3621690a9feebe881d2787bcf4861d65c16d4798628b973f13a/easydiffraction-0.10.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/06/42/75a6098682e3d4d7d5dfcb94d0dd48dccd9e106112992a99524243bc63e6/essdiffraction-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a8/bf/530a2b63de72bdb8e518049a1e6639d1e6d79e591bfcdaaae08a9a3a7b84/essreduce-26.3.1-py3-none-any.whl
@@ -839,7 +838,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/fd/32/55fb50ae104061dbc564ef15cc43c013dc4a9f4527a1f4d99baddf56fe5f/rpds_py-0.30.0-cp313-cp313-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/c4/8f/533075f00aaf19b07c5cd6aa6e5d89424b06b3b3f4583bfa9c640a079059/ruff-0.15.5-py3-none-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/af/46/661159ad844034ba8b3f4e0516215c41e4ee17db4213d13a82227670764f/sciline-25.11.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/db/55/ba24a6e3e60857eab1cb0024d3b6b11f937252fa71e2b96a8391072b63a1/scipp-26.3.0.tar.gz
+      - pypi: https://files.pythonhosted.org/packages/18/5c/bc0ca94bff65fe0d206a369b54625f8ec7852dfd1d835174692026f34df9/scipp-25.12.0-cp313-cp313-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/fb/46/e50b38629e9e3f4a1dd55fb36d8b8abd1d59768c31151c1c8ed696f7b865/scippneutron-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/01/6cb4d63c6b6933be4b7945b2f64638336420f04ea71ca5b9a7539c008bc5/scippnexus-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ec/ae/db19f8ab842e9b724bf5dbb7db29302a91f1e55bc4d04b1025d6d605a2c5/scipy-1.17.1-cp313-cp313-macosx_12_0_arm64.whl
@@ -888,6 +887,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a4/f5/10b68b7b1544245097b2a1b8238f66f2fc6dcaeb24ba5d917f52bd2eed4f/wsproto-1.3.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ae/50/06d511cc4b8e0360d3c94af051a768e84b755c5eb031b12adaaab6dec6e5/yarl-1.23.0-cp313-cp313-macosx_11_0_arm64.whl
+      - pypi: ./
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h0ad9c76_9.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.2.25-h4c7d964_0.conda
@@ -968,7 +968,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/b4/a7ec1eaee86761a9dbfd339732b4706db3c6b65e970c12f0f56cfcce3dcf/docformatter-1.7.7-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/70/205e8e2ab3621690a9feebe881d2787bcf4861d65c16d4798628b973f13a/easydiffraction-0.10.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/06/42/75a6098682e3d4d7d5dfcb94d0dd48dccd9e106112992a99524243bc63e6/essdiffraction-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a8/bf/530a2b63de72bdb8e518049a1e6639d1e6d79e591bfcdaaae08a9a3a7b84/essreduce-26.3.1-py3-none-any.whl
@@ -1123,7 +1122,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/f2/e1/485132437d20aa4d3e1d8b3fb5a5e65aa8139f1e097080c2a8443201742c/rpds_py-0.30.0-cp313-cp313-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/b8/00/bf077a505b4e649bdd3c47ff8ec967735ce2544c8e4a43aba42ee9bf935d/ruff-0.15.5-py3-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/af/46/661159ad844034ba8b3f4e0516215c41e4ee17db4213d13a82227670764f/sciline-25.11.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/dc/95/bf3b69776c5f2bf1285545b1cb79d16bb8f4a6bbea75f83f88e9a959e06f/scipp-26.3.0-cp313-cp313-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/eb/d1/b3cd2733a96a36c54c36889b2cfdd0331c1e5b57fa1757485a22d0ec3142/scipp-25.12.0-cp313-cp313-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/fb/46/e50b38629e9e3f4a1dd55fb36d8b8abd1d59768c31151c1c8ed696f7b865/scippneutron-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/01/6cb4d63c6b6933be4b7945b2f64638336420f04ea71ca5b9a7539c008bc5/scippnexus-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/35/e5/d6d0e51fc888f692a35134336866341c08655d92614f492c6860dc45bb2c/scipy-1.17.1-cp313-cp313-win_amd64.whl
@@ -1172,6 +1171,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a4/f5/10b68b7b1544245097b2a1b8238f66f2fc6dcaeb24ba5d917f52bd2eed4f/wsproto-1.3.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/7a/84/266e8da36879c6edcd37b02b547e2d9ecdfea776be49598e75696e3316e1/yarl-1.23.0-cp313-cp313-win_amd64.whl
+      - pypi: ./
   py311-dev:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -1270,7 +1270,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/b4/a7ec1eaee86761a9dbfd339732b4706db3c6b65e970c12f0f56cfcce3dcf/docformatter-1.7.7-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/70/205e8e2ab3621690a9feebe881d2787bcf4861d65c16d4798628b973f13a/easydiffraction-0.10.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/06/42/75a6098682e3d4d7d5dfcb94d0dd48dccd9e106112992a99524243bc63e6/essdiffraction-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a8/bf/530a2b63de72bdb8e518049a1e6639d1e6d79e591bfcdaaae08a9a3a7b84/essreduce-26.3.1-py3-none-any.whl
@@ -1428,7 +1427,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/f8/1e/372195d326549bb51f0ba0f2ecb9874579906b97e08880e7a65c3bef1a99/rpds_py-0.30.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/d3/01/a10fe54b653061585e655f5286c2662ebddb68831ed3eaebfb0eb08c0a16/ruff-0.15.5-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/af/46/661159ad844034ba8b3f4e0516215c41e4ee17db4213d13a82227670764f/sciline-25.11.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/73/53/a2eec9df77ffdb199cd52b4346a8329f29c0af02364e1efcdc4a6db2e692/scipp-26.3.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/4e/b6/ffe0bb67cec66cd450acff599bb07507bbf5ffda1a3a15dd2d8dbe7a6da7/scipp-25.12.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/fb/46/e50b38629e9e3f4a1dd55fb36d8b8abd1d59768c31151c1c8ed696f7b865/scippneutron-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/01/6cb4d63c6b6933be4b7945b2f64638336420f04ea71ca5b9a7539c008bc5/scippnexus-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/09/7d/af933f0f6e0767995b4e2d705a0665e454d1c19402aa7e895de3951ebb04/scipy-1.17.1-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
@@ -1478,6 +1477,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9a/64/c53487d9f4968045b8afa51aed7ca44f58b2589e772f32745f3744476c82/yarl-1.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/2e/54/647ade08bf0db230bfea292f893923872fd20be6ac6f53b2b936ba839d75/zipp-3.23.0-py3-none-any.whl
+      - pypi: ./
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/_openmp_mutex-4.5-7_kmp_llvm.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/bzip2-1.0.8-h500dc9f_9.conda
@@ -1564,7 +1564,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/b4/a7ec1eaee86761a9dbfd339732b4706db3c6b65e970c12f0f56cfcce3dcf/docformatter-1.7.7-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/70/205e8e2ab3621690a9feebe881d2787bcf4861d65c16d4798628b973f13a/easydiffraction-0.10.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/06/42/75a6098682e3d4d7d5dfcb94d0dd48dccd9e106112992a99524243bc63e6/essdiffraction-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a8/bf/530a2b63de72bdb8e518049a1e6639d1e6d79e591bfcdaaae08a9a3a7b84/essreduce-26.3.1-py3-none-any.whl
@@ -1722,7 +1721,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/4d/6e/f964e88b3d2abee2a82c1ac8366da848fce1c6d834dc2132c3fda3970290/rpds_py-0.30.0-cp311-cp311-macosx_10_12_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/44/ed/e81dd668547da281e5dce710cf0bc60193f8d3d43833e8241d006720e42b/ruff-0.15.5-py3-none-macosx_10_12_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/af/46/661159ad844034ba8b3f4e0516215c41e4ee17db4213d13a82227670764f/sciline-25.11.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/db/55/ba24a6e3e60857eab1cb0024d3b6b11f937252fa71e2b96a8391072b63a1/scipp-26.3.0.tar.gz
+      - pypi: https://files.pythonhosted.org/packages/12/0d/3f98a936a30bff4a460b51b9f85c4d994f94249930b2d8bedeb8111a359e/scipp-25.12.0-cp311-cp311-macosx_11_0_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/fb/46/e50b38629e9e3f4a1dd55fb36d8b8abd1d59768c31151c1c8ed696f7b865/scippneutron-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/01/6cb4d63c6b6933be4b7945b2f64638336420f04ea71ca5b9a7539c008bc5/scippnexus-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/df/75/b4ce781849931fef6fd529afa6b63711d5a733065722d0c3e2724af9e40a/scipy-1.17.1-cp311-cp311-macosx_10_14_x86_64.whl
@@ -1772,6 +1771,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/24/84/e237607faf4e099dbb8a4f511cfd5efcb5f75918baad200ff7380635631b/yarl-1.23.0-cp311-cp311-macosx_10_9_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/2e/54/647ade08bf0db230bfea292f893923872fd20be6ac6f53b2b936ba839d75/zipp-3.23.0-py3-none-any.whl
+      - pypi: ./
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/bzip2-1.0.8-hd037594_9.conda
@@ -1858,7 +1858,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/b4/a7ec1eaee86761a9dbfd339732b4706db3c6b65e970c12f0f56cfcce3dcf/docformatter-1.7.7-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/70/205e8e2ab3621690a9feebe881d2787bcf4861d65c16d4798628b973f13a/easydiffraction-0.10.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/06/42/75a6098682e3d4d7d5dfcb94d0dd48dccd9e106112992a99524243bc63e6/essdiffraction-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a8/bf/530a2b63de72bdb8e518049a1e6639d1e6d79e591bfcdaaae08a9a3a7b84/essreduce-26.3.1-py3-none-any.whl
@@ -2015,7 +2014,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/94/ba/24e5ebb7c1c82e74c4e4f33b2112a5573ddc703915b13a073737b59b86e0/rpds_py-0.30.0-cp311-cp311-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/c4/8f/533075f00aaf19b07c5cd6aa6e5d89424b06b3b3f4583bfa9c640a079059/ruff-0.15.5-py3-none-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/af/46/661159ad844034ba8b3f4e0516215c41e4ee17db4213d13a82227670764f/sciline-25.11.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/db/55/ba24a6e3e60857eab1cb0024d3b6b11f937252fa71e2b96a8391072b63a1/scipp-26.3.0.tar.gz
+      - pypi: https://files.pythonhosted.org/packages/6a/3a/ab0eb61593569d5a0d080002e4b8c0998cb1116d8710781b7225c304b880/scipp-25.12.0-cp311-cp311-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/fb/46/e50b38629e9e3f4a1dd55fb36d8b8abd1d59768c31151c1c8ed696f7b865/scippneutron-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/01/6cb4d63c6b6933be4b7945b2f64638336420f04ea71ca5b9a7539c008bc5/scippnexus-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f7/58/bccc2861b305abdd1b8663d6130c0b3d7cc22e8d86663edbc8401bfd40d4/scipy-1.17.1-cp311-cp311-macosx_12_0_arm64.whl
@@ -2065,6 +2064,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b2/0d/71ceabc14c146ba8ee3804ca7b3d42b1664c8440439de5214d366fec7d3a/yarl-1.23.0-cp311-cp311-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/2e/54/647ade08bf0db230bfea292f893923872fd20be6ac6f53b2b936ba839d75/zipp-3.23.0-py3-none-any.whl
+      - pypi: ./
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h0ad9c76_9.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.2.25-h4c7d964_0.conda
@@ -2143,7 +2143,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/b4/a7ec1eaee86761a9dbfd339732b4706db3c6b65e970c12f0f56cfcce3dcf/docformatter-1.7.7-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/70/205e8e2ab3621690a9feebe881d2787bcf4861d65c16d4798628b973f13a/easydiffraction-0.10.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/06/42/75a6098682e3d4d7d5dfcb94d0dd48dccd9e106112992a99524243bc63e6/essdiffraction-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a8/bf/530a2b63de72bdb8e518049a1e6639d1e6d79e591bfcdaaae08a9a3a7b84/essreduce-26.3.1-py3-none-any.whl
@@ -2300,7 +2299,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/fa/5b/e7b7aa136f28462b344e652ee010d4de26ee9fd16f1bfd5811f5153ccf89/rpds_py-0.30.0-cp311-cp311-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/b8/00/bf077a505b4e649bdd3c47ff8ec967735ce2544c8e4a43aba42ee9bf935d/ruff-0.15.5-py3-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/af/46/661159ad844034ba8b3f4e0516215c41e4ee17db4213d13a82227670764f/sciline-25.11.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/40/ec93fa158fb2f0a0ea88efe19a34267955b6cec809866e7f934618ff476f/scipp-26.3.0-cp311-cp311-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/bd/75/6a3786de6645ac2ccd94fbf83c59cc6b929bfa3a89cb62c8cb3be4de0606/scipp-25.12.0-cp311-cp311-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/fb/46/e50b38629e9e3f4a1dd55fb36d8b8abd1d59768c31151c1c8ed696f7b865/scippneutron-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/01/6cb4d63c6b6933be4b7945b2f64638336420f04ea71ca5b9a7539c008bc5/scippnexus-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/95/da/0d1df507cf574b3f224ccc3d45244c9a1d732c81dcb26b1e8a766ae271a8/scipy-1.17.1-cp311-cp311-win_amd64.whl
@@ -2350,6 +2349,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/93/22/b85eca6fa2ad9491af48c973e4c8cf6b103a73dbb271fe3346949449fca0/yarl-1.23.0-cp311-cp311-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/2e/54/647ade08bf0db230bfea292f893923872fd20be6ac6f53b2b936ba839d75/zipp-3.23.0-py3-none-any.whl
+      - pypi: ./
   py313-dev:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -2448,7 +2448,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/b4/a7ec1eaee86761a9dbfd339732b4706db3c6b65e970c12f0f56cfcce3dcf/docformatter-1.7.7-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/70/205e8e2ab3621690a9feebe881d2787bcf4861d65c16d4798628b973f13a/easydiffraction-0.10.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/06/42/75a6098682e3d4d7d5dfcb94d0dd48dccd9e106112992a99524243bc63e6/essdiffraction-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a8/bf/530a2b63de72bdb8e518049a1e6639d1e6d79e591bfcdaaae08a9a3a7b84/essreduce-26.3.1-py3-none-any.whl
@@ -2604,7 +2603,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/b7/de/f7192e12b21b9e9a68a6d0f249b4af3fdcdff8418be0767a627564afa1f1/rpds_py-0.30.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/d3/01/a10fe54b653061585e655f5286c2662ebddb68831ed3eaebfb0eb08c0a16/ruff-0.15.5-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/af/46/661159ad844034ba8b3f4e0516215c41e4ee17db4213d13a82227670764f/sciline-25.11.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/ed/65/e6aecd0a185e1ebe019ec45426574600356830bdf0a014ac514f44d114b4/scipp-26.3.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/94/98/aa2d4b9d28969cc7f62409f9f9fc5b5a853af651255eba03e9bee8546dd9/scipp-25.12.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/fb/46/e50b38629e9e3f4a1dd55fb36d8b8abd1d59768c31151c1c8ed696f7b865/scippneutron-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/01/6cb4d63c6b6933be4b7945b2f64638336420f04ea71ca5b9a7539c008bc5/scippnexus-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5f/f17563f28ff03c7b6799c50d01d5d856a1d55f2676f537ca8d28c7f627cd/scipy-1.17.1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
@@ -2653,6 +2652,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a4/f5/10b68b7b1544245097b2a1b8238f66f2fc6dcaeb24ba5d917f52bd2eed4f/wsproto-1.3.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/66/fe/b1e10b08d287f518994f1e2ff9b6d26f0adeecd8dd7d533b01bab29a3eda/yarl-1.23.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: ./
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/_openmp_mutex-4.5-7_kmp_llvm.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/bzip2-1.0.8-h500dc9f_9.conda
@@ -2741,7 +2741,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/b4/a7ec1eaee86761a9dbfd339732b4706db3c6b65e970c12f0f56cfcce3dcf/docformatter-1.7.7-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/70/205e8e2ab3621690a9feebe881d2787bcf4861d65c16d4798628b973f13a/easydiffraction-0.10.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/06/42/75a6098682e3d4d7d5dfcb94d0dd48dccd9e106112992a99524243bc63e6/essdiffraction-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a8/bf/530a2b63de72bdb8e518049a1e6639d1e6d79e591bfcdaaae08a9a3a7b84/essreduce-26.3.1-py3-none-any.whl
@@ -2897,7 +2896,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/ed/dc/d61221eb88ff410de3c49143407f6f3147acf2538c86f2ab7ce65ae7d5f9/rpds_py-0.30.0-cp313-cp313-macosx_10_12_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/44/ed/e81dd668547da281e5dce710cf0bc60193f8d3d43833e8241d006720e42b/ruff-0.15.5-py3-none-macosx_10_12_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/af/46/661159ad844034ba8b3f4e0516215c41e4ee17db4213d13a82227670764f/sciline-25.11.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/db/55/ba24a6e3e60857eab1cb0024d3b6b11f937252fa71e2b96a8391072b63a1/scipp-26.3.0.tar.gz
+      - pypi: https://files.pythonhosted.org/packages/e5/22/75e119e0a200914f88f121cd956e1eb7f72c8ace4b63171f52ba0334d142/scipp-25.12.0-cp313-cp313-macosx_11_0_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/fb/46/e50b38629e9e3f4a1dd55fb36d8b8abd1d59768c31151c1c8ed696f7b865/scippneutron-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/01/6cb4d63c6b6933be4b7945b2f64638336420f04ea71ca5b9a7539c008bc5/scippnexus-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/76/27/07ee1b57b65e92645f219b37148a7e7928b82e2b5dbeccecb4dff7c64f0b/scipy-1.17.1-cp313-cp313-macosx_10_14_x86_64.whl
@@ -2946,6 +2945,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a4/f5/10b68b7b1544245097b2a1b8238f66f2fc6dcaeb24ba5d917f52bd2eed4f/wsproto-1.3.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/67/b6/8925d68af039b835ae876db5838e82e76ec87b9782ecc97e192b809c4831/yarl-1.23.0-cp313-cp313-macosx_10_13_x86_64.whl
+      - pypi: ./
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/bzip2-1.0.8-hd037594_9.conda
@@ -3034,7 +3034,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/b4/a7ec1eaee86761a9dbfd339732b4706db3c6b65e970c12f0f56cfcce3dcf/docformatter-1.7.7-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/70/205e8e2ab3621690a9feebe881d2787bcf4861d65c16d4798628b973f13a/easydiffraction-0.10.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/06/42/75a6098682e3d4d7d5dfcb94d0dd48dccd9e106112992a99524243bc63e6/essdiffraction-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a8/bf/530a2b63de72bdb8e518049a1e6639d1e6d79e591bfcdaaae08a9a3a7b84/essreduce-26.3.1-py3-none-any.whl
@@ -3189,7 +3188,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/fd/32/55fb50ae104061dbc564ef15cc43c013dc4a9f4527a1f4d99baddf56fe5f/rpds_py-0.30.0-cp313-cp313-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/c4/8f/533075f00aaf19b07c5cd6aa6e5d89424b06b3b3f4583bfa9c640a079059/ruff-0.15.5-py3-none-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/af/46/661159ad844034ba8b3f4e0516215c41e4ee17db4213d13a82227670764f/sciline-25.11.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/db/55/ba24a6e3e60857eab1cb0024d3b6b11f937252fa71e2b96a8391072b63a1/scipp-26.3.0.tar.gz
+      - pypi: https://files.pythonhosted.org/packages/18/5c/bc0ca94bff65fe0d206a369b54625f8ec7852dfd1d835174692026f34df9/scipp-25.12.0-cp313-cp313-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/fb/46/e50b38629e9e3f4a1dd55fb36d8b8abd1d59768c31151c1c8ed696f7b865/scippneutron-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/01/6cb4d63c6b6933be4b7945b2f64638336420f04ea71ca5b9a7539c008bc5/scippnexus-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ec/ae/db19f8ab842e9b724bf5dbb7db29302a91f1e55bc4d04b1025d6d605a2c5/scipy-1.17.1-cp313-cp313-macosx_12_0_arm64.whl
@@ -3238,6 +3237,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a4/f5/10b68b7b1544245097b2a1b8238f66f2fc6dcaeb24ba5d917f52bd2eed4f/wsproto-1.3.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ae/50/06d511cc4b8e0360d3c94af051a768e84b755c5eb031b12adaaab6dec6e5/yarl-1.23.0-cp313-cp313-macosx_11_0_arm64.whl
+      - pypi: ./
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h0ad9c76_9.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.2.25-h4c7d964_0.conda
@@ -3318,7 +3318,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/b4/a7ec1eaee86761a9dbfd339732b4706db3c6b65e970c12f0f56cfcce3dcf/docformatter-1.7.7-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/70/205e8e2ab3621690a9feebe881d2787bcf4861d65c16d4798628b973f13a/easydiffraction-0.10.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/06/42/75a6098682e3d4d7d5dfcb94d0dd48dccd9e106112992a99524243bc63e6/essdiffraction-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a8/bf/530a2b63de72bdb8e518049a1e6639d1e6d79e591bfcdaaae08a9a3a7b84/essreduce-26.3.1-py3-none-any.whl
@@ -3473,7 +3472,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/f2/e1/485132437d20aa4d3e1d8b3fb5a5e65aa8139f1e097080c2a8443201742c/rpds_py-0.30.0-cp313-cp313-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/b8/00/bf077a505b4e649bdd3c47ff8ec967735ce2544c8e4a43aba42ee9bf935d/ruff-0.15.5-py3-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/af/46/661159ad844034ba8b3f4e0516215c41e4ee17db4213d13a82227670764f/sciline-25.11.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/dc/95/bf3b69776c5f2bf1285545b1cb79d16bb8f4a6bbea75f83f88e9a959e06f/scipp-26.3.0-cp313-cp313-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/eb/d1/b3cd2733a96a36c54c36889b2cfdd0331c1e5b57fa1757485a22d0ec3142/scipp-25.12.0-cp313-cp313-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/fb/46/e50b38629e9e3f4a1dd55fb36d8b8abd1d59768c31151c1c8ed696f7b865/scippneutron-26.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/01/6cb4d63c6b6933be4b7945b2f64638336420f04ea71ca5b9a7539c008bc5/scippnexus-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/35/e5/d6d0e51fc888f692a35134336866341c08655d92614f492c6860dc45bb2c/scipy-1.17.1-cp313-cp313-win_amd64.whl
@@ -3522,6 +3521,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a4/f5/10b68b7b1544245097b2a1b8238f66f2fc6dcaeb24ba5d917f52bd2eed4f/wsproto-1.3.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/7a/84/266e8da36879c6edcd37b02b547e2d9ecdfea776be49598e75696e3316e1/yarl-1.23.0-cp313-cp313-win_amd64.whl
+      - pypi: ./
 packages:
 - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
   build_number: 20
@@ -4667,10 +4667,10 @@ packages:
   - tomli>=2.0.0,<3.0.0 ; python_full_version < '3.11' and extra == 'tomli'
   - untokenize>=0.1.1,<0.2.0
   requires_python: '>=3.9,<4.0'
-- pypi: https://files.pythonhosted.org/packages/93/70/205e8e2ab3621690a9feebe881d2787bcf4861d65c16d4798628b973f13a/easydiffraction-0.10.2-py3-none-any.whl
+- pypi: ./
   name: easydiffraction
-  version: 0.10.2
-  sha256: 239403ddc3f3bd2634f39dc93ed13bce26b1e830bcedfd852e08b94c6256eebe
+  version: 0.10.2+devdirty75
+  sha256: ce52bd0ea7079776480fbae5f044d2ef6d448a1367fb004d46b2a3343e5a66c3
   requires_dist:
   - asciichartpy
   - asteval
@@ -4686,6 +4686,7 @@ packages:
   - numpy
   - pooch
   - rich
+  - scipp<26.1.0
   - scipy
   - sympy
   - tabulate
@@ -10808,10 +10809,10 @@ packages:
   - rich ; extra == 'test'
   - rich ; extra == 'progress'
   requires_python: '>=3.11'
-- pypi: https://files.pythonhosted.org/packages/73/53/a2eec9df77ffdb199cd52b4346a8329f29c0af02364e1efcdc4a6db2e692/scipp-26.3.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+- pypi: https://files.pythonhosted.org/packages/12/0d/3f98a936a30bff4a460b51b9f85c4d994f94249930b2d8bedeb8111a359e/scipp-25.12.0-cp311-cp311-macosx_11_0_x86_64.whl
   name: scipp
-  version: 26.3.0
-  sha256: 019e21a8187fcf47c4a615425d1e90c6cffaa2a8199dbc189175255a896a2090
+  version: 25.12.0
+  sha256: 6391dc46739006e1e4eb7f2fcbcdbdd40f11a3cbae53e93b63b5ba32909bd792
   requires_dist:
   - numpy>=2
   - pytest ; extra == 'test'
@@ -10834,10 +10835,10 @@ packages:
   - nodejs ; extra == 'all'
   - pythreejs ; extra == 'all'
   requires_python: '>=3.11'
-- pypi: https://files.pythonhosted.org/packages/93/40/ec93fa158fb2f0a0ea88efe19a34267955b6cec809866e7f934618ff476f/scipp-26.3.0-cp311-cp311-win_amd64.whl
+- pypi: https://files.pythonhosted.org/packages/18/5c/bc0ca94bff65fe0d206a369b54625f8ec7852dfd1d835174692026f34df9/scipp-25.12.0-cp313-cp313-macosx_11_0_arm64.whl
   name: scipp
-  version: 26.3.0
-  sha256: d9f946d92c0e8b9e33453499b53a6207a98d6910067ebea915fae67b733c6855
+  version: 25.12.0
+  sha256: 0285c91b202dea9aeb18f29d73ff135208a19b2068cd30e17ee81fc435b1943c
   requires_dist:
   - numpy>=2
   - pytest ; extra == 'test'
@@ -10860,10 +10861,10 @@ packages:
   - nodejs ; extra == 'all'
   - pythreejs ; extra == 'all'
   requires_python: '>=3.11'
-- pypi: https://files.pythonhosted.org/packages/db/55/ba24a6e3e60857eab1cb0024d3b6b11f937252fa71e2b96a8391072b63a1/scipp-26.3.0.tar.gz
+- pypi: https://files.pythonhosted.org/packages/4e/b6/ffe0bb67cec66cd450acff599bb07507bbf5ffda1a3a15dd2d8dbe7a6da7/scipp-25.12.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
   name: scipp
-  version: 26.3.0
-  sha256: 206d7a78faff360d9da5d46ccbea6aadfd4e946dd2afecbd07199e9739e633f9
+  version: 25.12.0
+  sha256: 9ec0200eeb660965056b27f5f05505a961d8921b78d0a92c04743d1c22ce7203
   requires_dist:
   - numpy>=2
   - pytest ; extra == 'test'
@@ -10886,10 +10887,10 @@ packages:
   - nodejs ; extra == 'all'
   - pythreejs ; extra == 'all'
   requires_python: '>=3.11'
-- pypi: https://files.pythonhosted.org/packages/dc/95/bf3b69776c5f2bf1285545b1cb79d16bb8f4a6bbea75f83f88e9a959e06f/scipp-26.3.0-cp313-cp313-win_amd64.whl
+- pypi: https://files.pythonhosted.org/packages/6a/3a/ab0eb61593569d5a0d080002e4b8c0998cb1116d8710781b7225c304b880/scipp-25.12.0-cp311-cp311-macosx_11_0_arm64.whl
   name: scipp
-  version: 26.3.0
-  sha256: afefcfc04cf7a7ece3f7f38b164557ec294c6517a2a88fa56d9a830c417a5899
+  version: 25.12.0
+  sha256: e27082f5bd3655f15479ce87be495235b9bcd9b5db654a7219261be0c6117b31
   requires_dist:
   - numpy>=2
   - pytest ; extra == 'test'
@@ -10912,10 +10913,88 @@ packages:
   - nodejs ; extra == 'all'
   - pythreejs ; extra == 'all'
   requires_python: '>=3.11'
-- pypi: https://files.pythonhosted.org/packages/ed/65/e6aecd0a185e1ebe019ec45426574600356830bdf0a014ac514f44d114b4/scipp-26.3.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+- pypi: https://files.pythonhosted.org/packages/94/98/aa2d4b9d28969cc7f62409f9f9fc5b5a853af651255eba03e9bee8546dd9/scipp-25.12.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
   name: scipp
-  version: 26.3.0
-  sha256: 421f12cf37ce2785b210ee8a0b25eaf6bf430a827954b69c952a283df25cca59
+  version: 25.12.0
+  sha256: e5694bef45299c4813ee2fe863fab600c3b0f5e13e2735072dbbb5cf1804d0e0
+  requires_dist:
+  - numpy>=2
+  - pytest ; extra == 'test'
+  - matplotlib ; extra == 'test'
+  - beautifulsoup4 ; extra == 'test'
+  - ipython ; extra == 'test'
+  - h5py ; extra == 'extra'
+  - scipy>=1.7.0 ; extra == 'extra'
+  - graphviz ; extra == 'extra'
+  - pooch ; extra == 'extra'
+  - plopp ; extra == 'extra'
+  - matplotlib ; extra == 'extra'
+  - scipp[extra] ; extra == 'all'
+  - ipympl ; extra == 'all'
+  - ipython ; extra == 'all'
+  - ipywidgets ; extra == 'all'
+  - jupyterlab ; extra == 'all'
+  - jupyterlab-widgets ; extra == 'all'
+  - jupyter-nbextensions-configurator ; extra == 'all'
+  - nodejs ; extra == 'all'
+  - pythreejs ; extra == 'all'
+  requires_python: '>=3.11'
+- pypi: https://files.pythonhosted.org/packages/bd/75/6a3786de6645ac2ccd94fbf83c59cc6b929bfa3a89cb62c8cb3be4de0606/scipp-25.12.0-cp311-cp311-win_amd64.whl
+  name: scipp
+  version: 25.12.0
+  sha256: aee5f585232e2a7a664f57bb9695164715271b74896704e7ee8a669dd7b06008
+  requires_dist:
+  - numpy>=2
+  - pytest ; extra == 'test'
+  - matplotlib ; extra == 'test'
+  - beautifulsoup4 ; extra == 'test'
+  - ipython ; extra == 'test'
+  - h5py ; extra == 'extra'
+  - scipy>=1.7.0 ; extra == 'extra'
+  - graphviz ; extra == 'extra'
+  - pooch ; extra == 'extra'
+  - plopp ; extra == 'extra'
+  - matplotlib ; extra == 'extra'
+  - scipp[extra] ; extra == 'all'
+  - ipympl ; extra == 'all'
+  - ipython ; extra == 'all'
+  - ipywidgets ; extra == 'all'
+  - jupyterlab ; extra == 'all'
+  - jupyterlab-widgets ; extra == 'all'
+  - jupyter-nbextensions-configurator ; extra == 'all'
+  - nodejs ; extra == 'all'
+  - pythreejs ; extra == 'all'
+  requires_python: '>=3.11'
+- pypi: https://files.pythonhosted.org/packages/e5/22/75e119e0a200914f88f121cd956e1eb7f72c8ace4b63171f52ba0334d142/scipp-25.12.0-cp313-cp313-macosx_11_0_x86_64.whl
+  name: scipp
+  version: 25.12.0
+  sha256: 27ebc37f3b7e20c9dca9cf1a0ac53c4ffaea31c02dfc8ba2b5aa008a252cbcba
+  requires_dist:
+  - numpy>=2
+  - pytest ; extra == 'test'
+  - matplotlib ; extra == 'test'
+  - beautifulsoup4 ; extra == 'test'
+  - ipython ; extra == 'test'
+  - h5py ; extra == 'extra'
+  - scipy>=1.7.0 ; extra == 'extra'
+  - graphviz ; extra == 'extra'
+  - pooch ; extra == 'extra'
+  - plopp ; extra == 'extra'
+  - matplotlib ; extra == 'extra'
+  - scipp[extra] ; extra == 'all'
+  - ipympl ; extra == 'all'
+  - ipython ; extra == 'all'
+  - ipywidgets ; extra == 'all'
+  - jupyterlab ; extra == 'all'
+  - jupyterlab-widgets ; extra == 'all'
+  - jupyter-nbextensions-configurator ; extra == 'all'
+  - nodejs ; extra == 'all'
+  - pythreejs ; extra == 'all'
+  requires_python: '>=3.11'
+- pypi: https://files.pythonhosted.org/packages/eb/d1/b3cd2733a96a36c54c36889b2cfdd0331c1e5b57fa1757485a22d0ec3142/scipp-25.12.0-cp313-cp313-win_amd64.whl
+  name: scipp
+  version: 25.12.0
+  sha256: 015db5035749750cf026db56fe537af10f159dc3cd0f51f0ea9f4ecc3a7a5da8
   requires_dist:
   - numpy>=2
   - pytest ; extra == 'test'

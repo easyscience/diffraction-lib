@@ -22,6 +22,7 @@ classifiers = [
 ]
 requires-python = '>=3.11,<3.14'
 dependencies = [
+  'scipp<26.1.0',   # TEMPORARY: ARM macOS fails with higher versions
   'essdiffraction', # ESS-specific diffraction library
   'numpy',          # Numerical computing library
   'colorama',       # Color terminal output

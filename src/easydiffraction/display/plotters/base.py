@@ -34,7 +34,8 @@ class XAxisType(str, Enum):
     SIN_THETA_OVER_LAMBDA = 'sin_theta_over_lambda'
 
 
-# Map (SampleFormEnum, ScatteringTypeEnum, BeamModeEnum) to default x-axis type
+# Map (SampleFormEnum, ScatteringTypeEnum, BeamModeEnum) to default
+# x-axis type
 DEFAULT_X_AXIS = {
     # Powder Bragg diffraction
     (
