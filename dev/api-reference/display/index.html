@@ -6649,8 +6649,31 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">473</span>
 <span class="normal">474</span>
 <span class="normal">475</span>
-<span class="normal">476</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span>
+<span class="normal">486</span>
+<span class="normal">487</span>
+<span class="normal">488</span>
+<span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span>
+<span class="normal">492</span>
+<span class="normal">493</span>
+<span class="normal">494</span>
+<span class="normal">495</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;User-facing plotting facade backed by concrete plotters.&quot;&quot;&quot;</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Private special methods</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -6660,6 +6683,10 @@ consistent configuration surface and engine handling.</p>
         <span class="c1"># Chart height</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">DEFAULT_HEIGHT</span>
 
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Private class methods</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_factory</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">RendererFactoryBase</span><span class="p">]:</span>  <span class="c1"># type: ignore[override]</span>
         <span class="k">return</span> <span class="n">PlotterFactory</span>
@@ -6668,20 +6695,174 @@ consistent configuration surface and engine handling.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_default_engine</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">PlotterEngineEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span><span class="o">.</span><span class="n">value</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Display the current plotting configuration.&quot;&quot;&quot;</span>
-        <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">(</span><span class="s1">&#39;Parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;Value&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">),</span>
-        <span class="p">]</span>
-        <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">[</span><span class="s1">&#39;Plotting engine&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">],</span>
-            <span class="p">[</span><span class="s1">&#39;x-axis limits&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x_min</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x_max</span><span class="si">}</span><span class="s1">]&#39;</span><span class="p">],</span>
-            <span class="p">[</span><span class="s1">&#39;Chart height&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">],</span>
-        <span class="p">]</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">headers</span><span class="p">))</span>
-        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current plotter configuration&#39;</span><span class="p">)</span>
-        <span class="n">TableRenderer</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Private helper methods</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_auto_x_range_for_ascii</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">x_array</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;For the ASCII engine, narrow the range around the tallest</span>
+<span class="sd">        peak.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pattern: Data pattern object (needs ``intensity_meas``).</span>
+<span class="sd">            x_array: Full x-axis array.</span>
+<span class="sd">            x_min: Current minimum (may be ``None``).</span>
+<span class="sd">            x_max: Current maximum (may be ``None``).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple of ``(x_min, x_max)``, possibly narrowed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span> <span class="o">==</span> <span class="s1">&#39;asciichartpy&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">max_intensity_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">)</span>
+            <span class="n">half_range</span> <span class="o">=</span> <span class="mi">50</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">-</span> <span class="n">half_range</span><span class="p">)</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_array</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">+</span> <span class="n">half_range</span><span class="p">)</span>
+            <span class="n">x_min</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">start</span><span class="p">]</span>
+            <span class="n">x_max</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">end</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_filtered_y_array</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">y_array</span><span class="p">,</span>
+        <span class="n">x_array</span><span class="p">,</span>
+        <span class="n">x_min</span><span class="p">,</span>
+        <span class="n">x_max</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter an array by the inclusive x-range limits.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            y_array: 1D array-like of y values.</span>
+<span class="sd">            x_array: 1D array-like of x values (same length as</span>
+<span class="sd">                ``y_array``).</span>
+<span class="sd">            x_min: Minimum x limit (or ``None`` to use default).</span>
+<span class="sd">            x_max: Maximum x limit (or ``None`` to use default).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered ``y_array`` values where ``x_array`` lies within</span>
+<span class="sd">            ``[x_min, x_max]``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">x_min</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_min</span>
+        <span class="k">if</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_max</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_array</span> <span class="o">&gt;=</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x_array</span> <span class="o">&lt;=</span> <span class="n">x_max</span><span class="p">)</span>
+        <span class="n">filtered_y_array</span> <span class="o">=</span> <span class="n">y_array</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">filtered_y_array</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_axes_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Look up axis labels for the given experiment / x-axis</span>
+<span class="sd">        combination.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DEFAULT_AXES_LABELS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_powder_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pattern</span><span class="p">,</span>
+        <span class="n">expt_name</span><span class="p">,</span>
+        <span class="n">expt_type</span><span class="p">,</span>
+        <span class="n">x_min</span><span class="p">,</span>
+        <span class="n">x_max</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">need_meas</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">need_calc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">show_residual</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate, resolve axes, auto-range, and filter arrays.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pattern: Data pattern object with intensity arrays.</span>
+<span class="sd">            expt_name: Experiment name for error messages.</span>
+<span class="sd">            expt_type: Experiment type with sample_form, scattering,</span>
+<span class="sd">                and beam enums.</span>
+<span class="sd">            x_min: Optional minimum x-axis limit.</span>
+<span class="sd">            x_max: Optional maximum x-axis limit.</span>
+<span class="sd">            x: Explicit x-axis type or ``None``.</span>
+<span class="sd">            need_meas: Whether ``intensity_meas`` is required.</span>
+<span class="sd">            need_calc: Whether ``intensity_calc`` is required.</span>
+<span class="sd">            show_residual: If ``True``, compute meas − calc residual.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A dict with keys ``x_filtered``, ``y_series``, ``y_labels``,</span>
+<span class="sd">            ``axes_labels``, and ``x_axis``; or ``None`` when a required</span>
+<span class="sd">            array is missing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x_axis</span><span class="p">,</span> <span class="n">x_name</span><span class="p">,</span> <span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_x_axis</span><span class="p">(</span><span class="n">expt_type</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Get x-array from pattern</span>
+        <span class="n">x_array</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x_array</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No </span><span class="si">{</span><span class="n">x_name</span><span class="si">}</span><span class="s1"> data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Validate required intensities</span>
+        <span class="k">if</span> <span class="n">need_meas</span> <span class="ow">and</span> <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No measured data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">need_calc</span> <span class="ow">and</span> <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_calc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No calculated data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Auto-range for ASCII engine</span>
+        <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_x_range_for_ascii</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">x_array</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+
+        <span class="c1"># Filter x</span>
+        <span class="n">x_filtered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span><span class="n">x_array</span><span class="p">,</span> <span class="n">x_array</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+
+        <span class="c1"># Filter y arrays and build series / labels</span>
+        <span class="n">y_series</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">y_labels</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">y_meas</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">need_meas</span><span class="p">:</span>
+            <span class="n">y_meas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">,</span> <span class="n">x_array</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+            <span class="n">y_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_meas</span><span class="p">)</span>
+            <span class="n">y_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;meas&#39;</span><span class="p">)</span>
+
+        <span class="n">y_calc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">need_calc</span><span class="p">:</span>
+            <span class="n">y_calc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_calc</span><span class="p">,</span> <span class="n">x_array</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+            <span class="n">y_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_calc</span><span class="p">)</span>
+            <span class="n">y_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;calc&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">show_residual</span> <span class="ow">and</span> <span class="n">y_meas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">y_calc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">y_resid</span> <span class="o">=</span> <span class="n">y_meas</span> <span class="o">-</span> <span class="n">y_calc</span>
+            <span class="n">y_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_resid</span><span class="p">)</span>
+            <span class="n">y_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;resid&#39;</span><span class="p">)</span>
+
+        <span class="n">axes_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_axes_labels</span><span class="p">(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;x_filtered&#39;</span><span class="p">:</span> <span class="n">x_filtered</span><span class="p">,</span>
+            <span class="s1">&#39;y_series&#39;</span><span class="p">:</span> <span class="n">y_series</span><span class="p">,</span>
+            <span class="s1">&#39;y_labels&#39;</span><span class="p">:</span> <span class="n">y_labels</span><span class="p">,</span>
+            <span class="s1">&#39;axes_labels&#39;</span><span class="p">:</span> <span class="n">axes_labels</span><span class="p">,</span>
+            <span class="s1">&#39;x_axis&#39;</span><span class="p">:</span> <span class="n">x_axis</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_x_axis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expt_type</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine the x-axis type from experiment metadata.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            expt_type: Experiment type with sample_form,</span>
+<span class="sd">                scattering_type, and beam_mode enums.</span>
+<span class="sd">            x: Explicit x-axis type or ``None`` to auto-detect.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple of ``(x_axis, x_name, sample_form, scattering_type,</span>
+<span class="sd">            beam_mode)``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
+        <span class="n">x_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x_axis</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x_axis</span><span class="p">,</span> <span class="n">x_name</span><span class="p">,</span> <span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Public properties</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">x_min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -6734,8 +6915,25 @@ consistent configuration surface and engine handling.</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_height</span> <span class="o">=</span> <span class="n">DEFAULT_HEIGHT</span>
 
-    <span class="c1"># TODO: Extract common code from</span>
-    <span class="c1">#  plot_meas, plot_calc and plot_meas_vs_calc</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Public methods</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Display the current plotting configuration.&quot;&quot;&quot;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s1">&#39;Parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Value&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="s1">&#39;Plotting engine&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">],</span>
+            <span class="p">[</span><span class="s1">&#39;x-axis limits&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x_min</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x_max</span><span class="si">}</span><span class="s1">]&#39;</span><span class="p">],</span>
+            <span class="p">[</span><span class="s1">&#39;Chart height&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">],</span>
+        <span class="p">]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">headers</span><span class="p">))</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current plotter configuration&#39;</span><span class="p">)</span>
+        <span class="n">TableRenderer</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_meas</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">pattern</span><span class="p">,</span>
@@ -6758,72 +6956,27 @@ consistent configuration surface and engine handling.</p>
 <span class="sd">                ``&#39;d_spacing&#39;``). If ``None``, auto-detected from</span>
 <span class="sd">                beam mode.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Determine x-axis type</span>
-        <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
-
-        <span class="c1"># Get attribute name for error messages</span>
-        <span class="c1"># (works for both enum and string)</span>
-        <span class="n">x_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x_axis</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
-
-        <span class="c1"># Get x-array from pattern</span>
-        <span class="n">x_array</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">x_array</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No </span><span class="si">{</span><span class="n">x_name</span><span class="si">}</span><span class="s1"> data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No measured data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_powder_data</span><span class="p">(</span>
+            <span class="n">pattern</span><span class="p">,</span>
+            <span class="n">expt_name</span><span class="p">,</span>
+            <span class="n">expt_type</span><span class="p">,</span>
+            <span class="n">x_min</span><span class="p">,</span>
+            <span class="n">x_max</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">need_meas</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ctx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="c1"># For asciichartpy, if x_min or x_max is not provided, center</span>
-        <span class="c1"># around the maximum intensity peak</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span> <span class="o">==</span> <span class="s1">&#39;asciichartpy&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">max_intensity_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">)</span>
-            <span class="n">half_range</span> <span class="o">=</span> <span class="mi">50</span>
-            <span class="n">start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">-</span> <span class="n">half_range</span><span class="p">)</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_array</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">+</span> <span class="n">half_range</span><span class="p">)</span>
-            <span class="n">x_min</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">start</span><span class="p">]</span>
-            <span class="n">x_max</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">end</span><span class="p">]</span>
-
-        <span class="c1"># Filter x, y_meas, and y_calc based on x_min and x_max</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-            <span class="n">y_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-            <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-            <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-            <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">y_meas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-            <span class="n">y_array</span><span class="o">=</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">,</span>
-            <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-            <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-            <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">y_series</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_meas</span><span class="p">]</span>
-        <span class="n">y_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">]</span>
-
-        <span class="n">axes_labels</span> <span class="o">=</span> <span class="n">DEFAULT_AXES_LABELS</span><span class="p">[</span>
-            <span class="p">(</span>
-                <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="n">x_axis</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">]</span>
-
-        <span class="c1"># TODO: Before, it was self._plotter.plot. Check what is better.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">plot_powder</span><span class="p">(</span>
-            <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
-            <span class="n">y_series</span><span class="o">=</span><span class="n">y_series</span><span class="p">,</span>
-            <span class="n">labels</span><span class="o">=</span><span class="n">y_labels</span><span class="p">,</span>
-            <span class="n">axes_labels</span><span class="o">=</span><span class="n">axes_labels</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_filtered&#39;</span><span class="p">],</span>
+            <span class="n">y_series</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;y_series&#39;</span><span class="p">],</span>
+            <span class="n">labels</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;y_labels&#39;</span><span class="p">],</span>
+            <span class="n">axes_labels</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;axes_labels&#39;</span><span class="p">],</span>
             <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Measured data for experiment 🔬 &#39;</span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
             <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="c1"># TODO: Extract common code from</span>
-    <span class="c1">#  plot_meas, plot_calc and plot_meas_vs_calc</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_calc</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">pattern</span><span class="p">,</span>
@@ -6846,71 +6999,27 @@ consistent configuration surface and engine handling.</p>
 <span class="sd">                ``&#39;d_spacing&#39;``). If ``None``, auto-detected from</span>
 <span class="sd">                beam mode.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Determine x-axis type</span>
-        <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
-
-        <span class="c1"># Get attribute name for error messages</span>
-        <span class="c1"># (works for both enum and string)</span>
-        <span class="n">x_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x_axis</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
-
-        <span class="c1"># Get x-array from pattern</span>
-        <span class="n">x_array</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">x_array</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No </span><span class="si">{</span><span class="n">x_name</span><span class="si">}</span><span class="s1"> data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_calc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No calculated data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="c1"># For asciichartpy, if x_min or x_max is not provided, center</span>
-        <span class="c1"># around the maximum intensity peak</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span> <span class="o">==</span> <span class="s1">&#39;asciichartpy&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">max_intensity_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">)</span>
-            <span class="n">half_range</span> <span class="o">=</span> <span class="mi">50</span>
-            <span class="n">start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">-</span> <span class="n">half_range</span><span class="p">)</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_array</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">+</span> <span class="n">half_range</span><span class="p">)</span>
-            <span class="n">x_min</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">start</span><span class="p">]</span>
-            <span class="n">x_max</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">end</span><span class="p">]</span>
-
-        <span class="c1"># Filter x, y_meas, and y_calc based on x_min and x_max</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-            <span class="n">y_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-            <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-            <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-            <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_powder_data</span><span class="p">(</span>
+            <span class="n">pattern</span><span class="p">,</span>
+            <span class="n">expt_name</span><span class="p">,</span>
+            <span class="n">expt_type</span><span class="p">,</span>
+            <span class="n">x_min</span><span class="p">,</span>
+            <span class="n">x_max</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">need_calc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">y_calc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-            <span class="n">y_array</span><span class="o">=</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_calc</span><span class="p">,</span>
-            <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-            <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-            <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">y_series</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_calc</span><span class="p">]</span>
-        <span class="n">y_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;calc&#39;</span><span class="p">]</span>
-
-        <span class="n">axes_labels</span> <span class="o">=</span> <span class="n">DEFAULT_AXES_LABELS</span><span class="p">[</span>
-            <span class="p">(</span>
-                <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="n">x_axis</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">ctx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">plot_powder</span><span class="p">(</span>
-            <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
-            <span class="n">y_series</span><span class="o">=</span><span class="n">y_series</span><span class="p">,</span>
-            <span class="n">labels</span><span class="o">=</span><span class="n">y_labels</span><span class="p">,</span>
-            <span class="n">axes_labels</span><span class="o">=</span><span class="n">axes_labels</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_filtered&#39;</span><span class="p">],</span>
+            <span class="n">y_series</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;y_series&#39;</span><span class="p">],</span>
+            <span class="n">labels</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;y_labels&#39;</span><span class="p">],</span>
+            <span class="n">axes_labels</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;axes_labels&#39;</span><span class="p">],</span>
             <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Calculated data for experiment 🔬 &#39;</span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
             <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="c1"># TODO: Extract common code from</span>
-    <span class="c1">#  plot_meas, plot_calc and plot_meas_vs_calc</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_meas_vs_calc</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">pattern</span><span class="p">,</span>
@@ -6945,17 +7054,10 @@ consistent configuration surface and engine handling.</p>
 <span class="sd">            x: X-axis type. If ``None``, auto-detected from sample form</span>
 <span class="sd">                and beam mode.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Determine x-axis type from sample form and beam mode</span>
-        <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
+        <span class="n">x_axis</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_x_axis</span><span class="p">(</span><span class="n">expt_type</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 
-        <span class="c1"># Get attribute name for error messages</span>
-        <span class="c1"># (works for both enum and string)</span>
-        <span class="n">x_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x_axis</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
-
-        <span class="c1"># Validate required data</span>
+        <span class="c1"># Validate required data (before x-array check, matching</span>
+        <span class="c1"># original behavior for plot_meas_vs_calc)</span>
         <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No measured data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">return</span>
@@ -6963,19 +7065,12 @@ consistent configuration surface and engine handling.</p>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No calculated data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># Get axes labels</span>
-        <span class="n">axes_labels</span> <span class="o">=</span> <span class="n">DEFAULT_AXES_LABELS</span><span class="p">[</span>
-            <span class="p">(</span>
-                <span class="n">sample_form</span><span class="p">,</span>
-                <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="n">x_axis</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">]</span>
-
         <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Measured vs Calculated data for experiment 🔬 &#39;</span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
 
         <span class="c1"># Single crystal scatter plot (I²calc vs I²meas)</span>
         <span class="k">if</span> <span class="n">x_axis</span> <span class="o">==</span> <span class="n">XAxisType</span><span class="o">.</span><span class="n">INTENSITY_CALC</span> <span class="ow">or</span> <span class="n">x_axis</span> <span class="o">==</span> <span class="s1">&#39;intensity_calc&#39;</span><span class="p">:</span>
+            <span class="n">axes_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_axes_labels</span><span class="p">(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas_su</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No measurement uncertainties for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="n">meas_su</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">)</span>
@@ -6987,93 +7082,36 @@ consistent configuration surface and engine handling.</p>
                 <span class="n">y_meas</span><span class="o">=</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">,</span>
                 <span class="n">y_meas_su</span><span class="o">=</span><span class="n">meas_su</span><span class="p">,</span>
                 <span class="n">axes_labels</span><span class="o">=</span><span class="n">axes_labels</span><span class="p">,</span>
-                <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Measured vs Calculated data for experiment 🔬 &#39;</span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
                 <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># Line plot (powder or SC with d_spacing/sin_theta_over_lambda)</span>
-        <span class="n">x_array</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">x_array</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No </span><span class="si">{</span><span class="n">x_name</span><span class="si">}</span><span class="s1"> data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># Line plot (PD or SC with d_spacing/sin_theta_over_lambda)</span>
+        <span class="c1"># TODO: Rename from _prepare_powder_data as it also supports</span>
+        <span class="c1">#  single crystal line plots</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_powder_data</span><span class="p">(</span>
+            <span class="n">pattern</span><span class="p">,</span>
+            <span class="n">expt_name</span><span class="p">,</span>
+            <span class="n">expt_type</span><span class="p">,</span>
+            <span class="n">x_min</span><span class="p">,</span>
+            <span class="n">x_max</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">need_meas</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">need_calc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_residual</span><span class="o">=</span><span class="n">show_residual</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ctx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="c1"># For asciichartpy, if x_min or x_max is not provided, center</span>
-        <span class="c1"># around the maximum intensity peak</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span> <span class="o">==</span> <span class="s1">&#39;asciichartpy&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">max_intensity_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">)</span>
-            <span class="n">half_range</span> <span class="o">=</span> <span class="mi">50</span>
-            <span class="n">start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">-</span> <span class="n">half_range</span><span class="p">)</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_array</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">+</span> <span class="n">half_range</span><span class="p">)</span>
-            <span class="n">x_min</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">start</span><span class="p">]</span>
-            <span class="n">x_max</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">end</span><span class="p">]</span>
-
-        <span class="c1"># Filter x, y_meas, and y_calc based on x_min and x_max</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-            <span class="n">y_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-            <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-            <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-            <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">y_meas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-            <span class="n">y_array</span><span class="o">=</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">,</span>
-            <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-            <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-            <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">y_calc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-            <span class="n">y_array</span><span class="o">=</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_calc</span><span class="p">,</span>
-            <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-            <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-            <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">y_series</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_meas</span><span class="p">,</span> <span class="n">y_calc</span><span class="p">]</span>
-        <span class="n">y_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">,</span> <span class="s1">&#39;calc&#39;</span><span class="p">]</span>
-
-        <span class="k">if</span> <span class="n">show_residual</span><span class="p">:</span>
-            <span class="n">y_resid</span> <span class="o">=</span> <span class="n">y_meas</span> <span class="o">-</span> <span class="n">y_calc</span>
-            <span class="n">y_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_resid</span><span class="p">)</span>
-            <span class="n">y_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;resid&#39;</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">plot_powder</span><span class="p">(</span>
-            <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
-            <span class="n">y_series</span><span class="o">=</span><span class="n">y_series</span><span class="p">,</span>
-            <span class="n">labels</span><span class="o">=</span><span class="n">y_labels</span><span class="p">,</span>
-            <span class="n">axes_labels</span><span class="o">=</span><span class="n">axes_labels</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_filtered&#39;</span><span class="p">],</span>
+            <span class="n">y_series</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;y_series&#39;</span><span class="p">],</span>
+            <span class="n">labels</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;y_labels&#39;</span><span class="p">],</span>
+            <span class="n">axes_labels</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;axes_labels&#39;</span><span class="p">],</span>
             <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
             <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
         <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_filtered_y_array</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">y_array</span><span class="p">,</span>
-        <span class="n">x_array</span><span class="p">,</span>
-        <span class="n">x_min</span><span class="p">,</span>
-        <span class="n">x_max</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter an array by the inclusive x-range limits.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            y_array: 1D array-like of y values.</span>
-<span class="sd">            x_array: 1D array-like of x values (same length as</span>
-<span class="sd">                ``y_array``).</span>
-<span class="sd">            x_min: Minimum x limit (or ``None`` to use default).</span>
-<span class="sd">            x_max: Maximum x limit (or ``None`` to use default).</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Filtered ``y_array`` values where ``x_array`` lies within</span>
-<span class="sd">            ``[x_min, x_max]``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">x_min</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">x_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_min</span>
-        <span class="k">if</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">x_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_max</span>
-
-        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_array</span> <span class="o">&gt;=</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x_array</span> <span class="o">&lt;=</span> <span class="n">x_max</span><span class="p">)</span>
-        <span class="n">filtered_y_array</span> <span class="o">=</span> <span class="n">y_array</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">filtered_y_array</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -7239,90 +7277,48 @@ beam mode.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span>
-<span class="normal">303</span>
-<span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_calc</span><span class="p">(</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">pattern</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">,</span>
@@ -7344,65 +7340,23 @@ beam mode.</p>
 <span class="sd">            ``&#39;d_spacing&#39;``). If ``None``, auto-detected from</span>
 <span class="sd">            beam mode.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Determine x-axis type</span>
-    <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
-
-    <span class="c1"># Get attribute name for error messages</span>
-    <span class="c1"># (works for both enum and string)</span>
-    <span class="n">x_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x_axis</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
-
-    <span class="c1"># Get x-array from pattern</span>
-    <span class="n">x_array</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x_array</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No </span><span class="si">{</span><span class="n">x_name</span><span class="si">}</span><span class="s1"> data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">return</span>
-    <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_calc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No calculated data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">return</span>
-
-    <span class="c1"># For asciichartpy, if x_min or x_max is not provided, center</span>
-    <span class="c1"># around the maximum intensity peak</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span> <span class="o">==</span> <span class="s1">&#39;asciichartpy&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">max_intensity_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">)</span>
-        <span class="n">half_range</span> <span class="o">=</span> <span class="mi">50</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">-</span> <span class="n">half_range</span><span class="p">)</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_array</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">+</span> <span class="n">half_range</span><span class="p">)</span>
-        <span class="n">x_min</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">start</span><span class="p">]</span>
-        <span class="n">x_max</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">end</span><span class="p">]</span>
-
-    <span class="c1"># Filter x, y_meas, and y_calc based on x_min and x_max</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-        <span class="n">y_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-        <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-        <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-        <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_powder_data</span><span class="p">(</span>
+        <span class="n">pattern</span><span class="p">,</span>
+        <span class="n">expt_name</span><span class="p">,</span>
+        <span class="n">expt_type</span><span class="p">,</span>
+        <span class="n">x_min</span><span class="p">,</span>
+        <span class="n">x_max</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">need_calc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">y_calc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-        <span class="n">y_array</span><span class="o">=</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_calc</span><span class="p">,</span>
-        <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-        <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-        <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">y_series</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_calc</span><span class="p">]</span>
-    <span class="n">y_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;calc&#39;</span><span class="p">]</span>
-
-    <span class="n">axes_labels</span> <span class="o">=</span> <span class="n">DEFAULT_AXES_LABELS</span><span class="p">[</span>
-        <span class="p">(</span>
-            <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-            <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-            <span class="n">x_axis</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">ctx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">plot_powder</span><span class="p">(</span>
-        <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
-        <span class="n">y_series</span><span class="o">=</span><span class="n">y_series</span><span class="p">,</span>
-        <span class="n">labels</span><span class="o">=</span><span class="n">y_labels</span><span class="p">,</span>
-        <span class="n">axes_labels</span><span class="o">=</span><span class="n">axes_labels</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_filtered&#39;</span><span class="p">],</span>
+        <span class="n">y_series</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;y_series&#39;</span><span class="p">],</span>
+        <span class="n">labels</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;y_labels&#39;</span><span class="p">],</span>
+        <span class="n">axes_labels</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;axes_labels&#39;</span><span class="p">],</span>
         <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Calculated data for experiment 🔬 &#39;</span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
         <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
     <span class="p">)</span>
@@ -7541,91 +7495,48 @@ beam mode.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas</span><span class="p">(</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">pattern</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">,</span>
@@ -7647,66 +7558,23 @@ beam mode.</p>
 <span class="sd">            ``&#39;d_spacing&#39;``). If ``None``, auto-detected from</span>
 <span class="sd">            beam mode.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Determine x-axis type</span>
-    <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
-
-    <span class="c1"># Get attribute name for error messages</span>
-    <span class="c1"># (works for both enum and string)</span>
-    <span class="n">x_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x_axis</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
-
-    <span class="c1"># Get x-array from pattern</span>
-    <span class="n">x_array</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x_array</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No </span><span class="si">{</span><span class="n">x_name</span><span class="si">}</span><span class="s1"> data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">return</span>
-    <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No measured data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_powder_data</span><span class="p">(</span>
+        <span class="n">pattern</span><span class="p">,</span>
+        <span class="n">expt_name</span><span class="p">,</span>
+        <span class="n">expt_type</span><span class="p">,</span>
+        <span class="n">x_min</span><span class="p">,</span>
+        <span class="n">x_max</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">need_meas</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">ctx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span>
 
-    <span class="c1"># For asciichartpy, if x_min or x_max is not provided, center</span>
-    <span class="c1"># around the maximum intensity peak</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span> <span class="o">==</span> <span class="s1">&#39;asciichartpy&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">max_intensity_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">)</span>
-        <span class="n">half_range</span> <span class="o">=</span> <span class="mi">50</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">-</span> <span class="n">half_range</span><span class="p">)</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_array</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">+</span> <span class="n">half_range</span><span class="p">)</span>
-        <span class="n">x_min</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">start</span><span class="p">]</span>
-        <span class="n">x_max</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">end</span><span class="p">]</span>
-
-    <span class="c1"># Filter x, y_meas, and y_calc based on x_min and x_max</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-        <span class="n">y_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-        <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-        <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-        <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">y_meas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-        <span class="n">y_array</span><span class="o">=</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">,</span>
-        <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-        <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-        <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">y_series</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_meas</span><span class="p">]</span>
-    <span class="n">y_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">]</span>
-
-    <span class="n">axes_labels</span> <span class="o">=</span> <span class="n">DEFAULT_AXES_LABELS</span><span class="p">[</span>
-        <span class="p">(</span>
-            <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-            <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-            <span class="n">x_axis</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">]</span>
-
-    <span class="c1"># TODO: Before, it was self._plotter.plot. Check what is better.</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">plot_powder</span><span class="p">(</span>
-        <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
-        <span class="n">y_series</span><span class="o">=</span><span class="n">y_series</span><span class="p">,</span>
-        <span class="n">labels</span><span class="o">=</span><span class="n">y_labels</span><span class="p">,</span>
-        <span class="n">axes_labels</span><span class="o">=</span><span class="n">axes_labels</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_filtered&#39;</span><span class="p">],</span>
+        <span class="n">y_series</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;y_series&#39;</span><span class="p">],</span>
+        <span class="n">labels</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;y_labels&#39;</span><span class="p">],</span>
+        <span class="n">axes_labels</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;axes_labels&#39;</span><span class="p">],</span>
         <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Measured data for experiment 🔬 &#39;</span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
         <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
     <span class="p">)</span>
@@ -7877,97 +7745,7 @@ and beam mode.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
-<span class="normal">373</span>
-<span class="normal">374</span>
-<span class="normal">375</span>
-<span class="normal">376</span>
-<span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
-<span class="normal">380</span>
-<span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span>
-<span class="normal">385</span>
-<span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span>
-<span class="normal">394</span>
-<span class="normal">395</span>
-<span class="normal">396</span>
-<span class="normal">397</span>
-<span class="normal">398</span>
-<span class="normal">399</span>
-<span class="normal">400</span>
-<span class="normal">401</span>
-<span class="normal">402</span>
-<span class="normal">403</span>
-<span class="normal">404</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">404</span>
 <span class="normal">405</span>
 <span class="normal">406</span>
 <span class="normal">407</span>
@@ -8009,7 +7787,56 @@ and beam mode.</p>
 <span class="normal">443</span>
 <span class="normal">444</span>
 <span class="normal">445</span>
-<span class="normal">446</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas_vs_calc</span><span class="p">(</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span>
+<span class="normal">486</span>
+<span class="normal">487</span>
+<span class="normal">488</span>
+<span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span>
+<span class="normal">492</span>
+<span class="normal">493</span>
+<span class="normal">494</span>
+<span class="normal">495</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas_vs_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">pattern</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">,</span>
@@ -8043,17 +7870,10 @@ and beam mode.</p>
 <span class="sd">        x: X-axis type. If ``None``, auto-detected from sample form</span>
 <span class="sd">            and beam mode.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Determine x-axis type from sample form and beam mode</span>
-    <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
+    <span class="n">x_axis</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_x_axis</span><span class="p">(</span><span class="n">expt_type</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 
-    <span class="c1"># Get attribute name for error messages</span>
-    <span class="c1"># (works for both enum and string)</span>
-    <span class="n">x_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x_axis</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
-
-    <span class="c1"># Validate required data</span>
+    <span class="c1"># Validate required data (before x-array check, matching</span>
+    <span class="c1"># original behavior for plot_meas_vs_calc)</span>
     <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No measured data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span>
@@ -8061,19 +7881,12 @@ and beam mode.</p>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No calculated data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span>
 
-    <span class="c1"># Get axes labels</span>
-    <span class="n">axes_labels</span> <span class="o">=</span> <span class="n">DEFAULT_AXES_LABELS</span><span class="p">[</span>
-        <span class="p">(</span>
-            <span class="n">sample_form</span><span class="p">,</span>
-            <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-            <span class="n">x_axis</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">]</span>
-
     <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Measured vs Calculated data for experiment 🔬 &#39;</span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
 
     <span class="c1"># Single crystal scatter plot (I²calc vs I²meas)</span>
     <span class="k">if</span> <span class="n">x_axis</span> <span class="o">==</span> <span class="n">XAxisType</span><span class="o">.</span><span class="n">INTENSITY_CALC</span> <span class="ow">or</span> <span class="n">x_axis</span> <span class="o">==</span> <span class="s1">&#39;intensity_calc&#39;</span><span class="p">:</span>
+        <span class="n">axes_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_axes_labels</span><span class="p">(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas_su</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No measurement uncertainties for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">meas_su</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">)</span>
@@ -8085,60 +7898,33 @@ and beam mode.</p>
             <span class="n">y_meas</span><span class="o">=</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">,</span>
             <span class="n">y_meas_su</span><span class="o">=</span><span class="n">meas_su</span><span class="p">,</span>
             <span class="n">axes_labels</span><span class="o">=</span><span class="n">axes_labels</span><span class="p">,</span>
-            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Measured vs Calculated data for experiment 🔬 &#39;</span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
             <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span>
 
-    <span class="c1"># Line plot (powder or SC with d_spacing/sin_theta_over_lambda)</span>
-    <span class="n">x_array</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x_array</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No </span><span class="si">{</span><span class="n">x_name</span><span class="si">}</span><span class="s1"> data available for experiment </span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="c1"># Line plot (PD or SC with d_spacing/sin_theta_over_lambda)</span>
+    <span class="c1"># TODO: Rename from _prepare_powder_data as it also supports</span>
+    <span class="c1">#  single crystal line plots</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_powder_data</span><span class="p">(</span>
+        <span class="n">pattern</span><span class="p">,</span>
+        <span class="n">expt_name</span><span class="p">,</span>
+        <span class="n">expt_type</span><span class="p">,</span>
+        <span class="n">x_min</span><span class="p">,</span>
+        <span class="n">x_max</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">need_meas</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">need_calc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">show_residual</span><span class="o">=</span><span class="n">show_residual</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">ctx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span>
 
-    <span class="c1"># For asciichartpy, if x_min or x_max is not provided, center</span>
-    <span class="c1"># around the maximum intensity peak</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span> <span class="o">==</span> <span class="s1">&#39;asciichartpy&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">max_intensity_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">)</span>
-        <span class="n">half_range</span> <span class="o">=</span> <span class="mi">50</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">-</span> <span class="n">half_range</span><span class="p">)</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_array</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_intensity_pos</span> <span class="o">+</span> <span class="n">half_range</span><span class="p">)</span>
-        <span class="n">x_min</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">start</span><span class="p">]</span>
-        <span class="n">x_max</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">[</span><span class="n">end</span><span class="p">]</span>
-
-    <span class="c1"># Filter x, y_meas, and y_calc based on x_min and x_max</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-        <span class="n">y_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-        <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-        <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-        <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">y_meas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-        <span class="n">y_array</span><span class="o">=</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">,</span>
-        <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-        <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-        <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">y_calc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-        <span class="n">y_array</span><span class="o">=</span><span class="n">pattern</span><span class="o">.</span><span class="n">intensity_calc</span><span class="p">,</span>
-        <span class="n">x_array</span><span class="o">=</span><span class="n">x_array</span><span class="p">,</span>
-        <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
-        <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">y_series</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_meas</span><span class="p">,</span> <span class="n">y_calc</span><span class="p">]</span>
-    <span class="n">y_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">,</span> <span class="s1">&#39;calc&#39;</span><span class="p">]</span>
-
-    <span class="k">if</span> <span class="n">show_residual</span><span class="p">:</span>
-        <span class="n">y_resid</span> <span class="o">=</span> <span class="n">y_meas</span> <span class="o">-</span> <span class="n">y_calc</span>
-        <span class="n">y_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_resid</span><span class="p">)</span>
-        <span class="n">y_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;resid&#39;</span><span class="p">)</span>
-
     <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">plot_powder</span><span class="p">(</span>
-        <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
-        <span class="n">y_series</span><span class="o">=</span><span class="n">y_series</span><span class="p">,</span>
-        <span class="n">labels</span><span class="o">=</span><span class="n">y_labels</span><span class="p">,</span>
-        <span class="n">axes_labels</span><span class="o">=</span><span class="n">axes_labels</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_filtered&#39;</span><span class="p">],</span>
+        <span class="n">y_series</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;y_series&#39;</span><span class="p">],</span>
+        <span class="n">labels</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;y_labels&#39;</span><span class="p">],</span>
+        <span class="n">axes_labels</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;axes_labels&#39;</span><span class="p">],</span>
         <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
         <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
     <span class="p">)</span>
@@ -8169,20 +7955,20 @@ and beam mode.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Display the current plotting configuration.&quot;&quot;&quot;</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s1">&#39;Parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">),</span>
@@ -8473,21 +8259,21 @@ and beam mode.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">479</span>
-<span class="normal">480</span>
-<span class="normal">481</span>
-<span class="normal">482</span>
-<span class="normal">483</span>
-<span class="normal">484</span>
-<span class="normal">485</span>
-<span class="normal">486</span>
-<span class="normal">487</span>
-<span class="normal">488</span>
-<span class="normal">489</span>
-<span class="normal">490</span>
-<span class="normal">491</span>
-<span class="normal">492</span>
-<span class="normal">493</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">498</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory for plotter implementations.&quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
