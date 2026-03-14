@@ -10,7 +10,6 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.io.cif.handler import CifHandler
@@ -30,7 +29,6 @@ class Refln(CategoryItem):
             name='id',
             description='Identifier of the reflection.',
             value_spec=AttributeSpec(
-                type_=DataTypes.STRING,
                 default='0',
                 # TODO: the following pattern is valid for dict key
                 #  (keywords are not checked). CIF label is less strict.
@@ -47,7 +45,6 @@ class Refln(CategoryItem):
             name='d_spacing',
             description='The distance between lattice planes in the crystal for this reflection.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0),
             ),
@@ -62,7 +59,6 @@ class Refln(CategoryItem):
             name='sin_theta_over_lambda',
             description='The sin(θ)/λ value for this reflection.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0),
             ),
@@ -77,7 +73,6 @@ class Refln(CategoryItem):
             name='index_h',
             description='Miller index h of a measured reflection.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -91,7 +86,6 @@ class Refln(CategoryItem):
             name='index_k',
             description='Miller index k of a measured reflection.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -105,7 +99,6 @@ class Refln(CategoryItem):
             name='index_l',
             description='Miller index l of a measured reflection.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -119,7 +112,6 @@ class Refln(CategoryItem):
             name='intensity_meas',
             description=' The intensity of the reflection derived from the measurements.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0),
             ),
@@ -133,7 +125,6 @@ class Refln(CategoryItem):
             name='intensity_meas_su',
             description='Standard uncertainty of the measured intensity.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0),
             ),
@@ -147,7 +138,6 @@ class Refln(CategoryItem):
             name='intensity_calc',
             description='The intensity of the reflection calculated from the atom site data.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0),
             ),
@@ -161,7 +151,6 @@ class Refln(CategoryItem):
             name='wavelength',
             description='The mean wavelength of radiation used to measure this reflection.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0),
             ),

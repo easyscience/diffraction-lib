@@ -1348,7 +1348,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1.53, x_m
 # confirm this hypothesis.
 
 # %% tags=["solution", "hide-input"]
-project_1.plot_meas_vs_calc(expt_name='sim_si',  x='d_spacing', x_min=1, x_max=1.7)
+project_1.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing', x_min=1, x_max=1.7)
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=1.7)
 
 # %% [markdown]

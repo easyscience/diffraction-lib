@@ -4,7 +4,6 @@
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.io.cif.handler import CifHandler
 
@@ -19,7 +18,6 @@ class Extinction(CategoryItem):
             name='mosaicity',
             description='Mosaicity value for extinction correction.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=1.0,
                 content_validator=RangeValidator(),
             ),
@@ -34,7 +32,6 @@ class Extinction(CategoryItem):
             name='radius',
             description='Crystal radius for extinction correction.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=1.0,
                 content_validator=RangeValidator(),
             ),

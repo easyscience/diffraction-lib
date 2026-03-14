@@ -3,7 +3,6 @@
 
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.experiments.categories.instrument.base import InstrumentBase
 from easydiffraction.io.cif.handler import CifHandler
@@ -22,7 +21,6 @@ class TofPdInstrument(InstrumentBase):
             name='twotheta_bank',
             description='Detector bank position',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=150.0,
                 content_validator=RangeValidator(),
             ),
@@ -37,7 +35,6 @@ class TofPdInstrument(InstrumentBase):
             name='d_to_tof_offset',
             description='TOF offset',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -52,7 +49,6 @@ class TofPdInstrument(InstrumentBase):
             name='d_to_tof_linear',
             description='TOF linear conversion',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=10000.0,
                 content_validator=RangeValidator(),
             ),
@@ -67,7 +63,6 @@ class TofPdInstrument(InstrumentBase):
             name='d_to_tof_quad',
             description='TOF quadratic correction',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=-0.00001,
                 content_validator=RangeValidator(),
             ),
@@ -82,7 +77,6 @@ class TofPdInstrument(InstrumentBase):
             name='d_to_tof_recip',
             description='TOF reciprocal velocity correction',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),

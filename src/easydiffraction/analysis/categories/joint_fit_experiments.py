@@ -11,7 +11,6 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.io.cif.handler import CifHandler
@@ -38,7 +37,6 @@ class JointFitExperiment(CategoryItem):
             description='...',
             value_spec=AttributeSpec(
                 value=id,
-                type_=DataTypes.STRING,
                 default='...',
                 content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
@@ -53,7 +51,6 @@ class JointFitExperiment(CategoryItem):
             description='...',
             value_spec=AttributeSpec(
                 value=weight,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),

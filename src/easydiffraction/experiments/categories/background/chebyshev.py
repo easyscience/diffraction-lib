@@ -18,7 +18,6 @@ from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.experiments.categories.background.base import BackgroundBase
@@ -50,7 +49,6 @@ class PolynomialTerm(CategoryItem):
             name='id',
             description='Identifier for this background polynomial term.',
             value_spec=AttributeSpec(
-                type_=DataTypes.STRING,
                 value=id,
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -69,7 +67,6 @@ class PolynomialTerm(CategoryItem):
             description='Order used in a Chebyshev polynomial background term',
             value_spec=AttributeSpec(
                 value=order,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -84,7 +81,6 @@ class PolynomialTerm(CategoryItem):
             description='Coefficient used in a Chebyshev polynomial background term',
             value_spec=AttributeSpec(
                 value=coef,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),

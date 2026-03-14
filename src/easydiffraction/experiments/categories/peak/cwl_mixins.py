@@ -9,7 +9,6 @@ composed into concrete peak classes elsewhere.
 
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.io.cif.handler import CifHandler
 
@@ -34,7 +33,6 @@ class CwlBroadeningMixin:
             'sample size and instrument resolution)',
             value_spec=AttributeSpec(
                 value=0.01,
-                type_=DataTypes.NUMERIC,
                 default=0.01,
                 content_validator=RangeValidator(),
             ),
@@ -50,7 +48,6 @@ class CwlBroadeningMixin:
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
             value_spec=AttributeSpec(
                 value=-0.01,
-                type_=DataTypes.NUMERIC,
                 default=-0.01,
                 content_validator=RangeValidator(),
             ),
@@ -66,7 +63,6 @@ class CwlBroadeningMixin:
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
             value_spec=AttributeSpec(
                 value=0.02,
-                type_=DataTypes.NUMERIC,
                 default=0.02,
                 content_validator=RangeValidator(),
             ),
@@ -82,7 +78,6 @@ class CwlBroadeningMixin:
             description='Lorentzian broadening coefficient (dependent on sample strain effects)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -99,7 +94,6 @@ class CwlBroadeningMixin:
             'microstructural defects and strain)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -172,7 +166,6 @@ class EmpiricalAsymmetryMixin:
             description='Empirical asymmetry coefficient p1',
             value_spec=AttributeSpec(
                 value=0.1,
-                type_=DataTypes.NUMERIC,
                 default=0.1,
                 content_validator=RangeValidator(),
             ),
@@ -188,7 +181,6 @@ class EmpiricalAsymmetryMixin:
             description='Empirical asymmetry coefficient p2',
             value_spec=AttributeSpec(
                 value=0.2,
-                type_=DataTypes.NUMERIC,
                 default=0.2,
                 content_validator=RangeValidator(),
             ),
@@ -204,7 +196,6 @@ class EmpiricalAsymmetryMixin:
             description='Empirical asymmetry coefficient p3',
             value_spec=AttributeSpec(
                 value=0.3,
-                type_=DataTypes.NUMERIC,
                 default=0.3,
                 content_validator=RangeValidator(),
             ),
@@ -220,7 +211,6 @@ class EmpiricalAsymmetryMixin:
             description='Empirical asymmetry coefficient p4',
             value_spec=AttributeSpec(
                 value=0.4,
-                type_=DataTypes.NUMERIC,
                 default=0.4,
                 content_validator=RangeValidator(),
             ),
@@ -283,7 +273,6 @@ class FcjAsymmetryMixin:
             description='Finger-Cox-Jephcoat asymmetry parameter 1',
             value_spec=AttributeSpec(
                 value=0.01,
-                type_=DataTypes.NUMERIC,
                 default=0.01,
                 content_validator=RangeValidator(),
             ),
@@ -299,7 +288,6 @@ class FcjAsymmetryMixin:
             description='Finger-Cox-Jephcoat asymmetry parameter 2',
             value_spec=AttributeSpec(
                 value=0.02,
-                type_=DataTypes.NUMERIC,
                 default=0.02,
                 content_validator=RangeValidator(),
             ),

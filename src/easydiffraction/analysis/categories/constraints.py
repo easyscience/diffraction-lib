@@ -11,7 +11,6 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.singletons import ConstraintsHandler
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.io.cif.handler import CifHandler
 
@@ -37,7 +36,6 @@ class Constraint(CategoryItem):
             description='...',
             value_spec=AttributeSpec(
                 value=lhs_alias,
-                type_=DataTypes.STRING,
                 default='...',
                 content_validator=RegexValidator(pattern=r'.*'),
             ),
@@ -52,7 +50,6 @@ class Constraint(CategoryItem):
             description='...',
             value_spec=AttributeSpec(
                 value=rhs_expr,
-                type_=DataTypes.STRING,
                 default='...',
                 content_validator=RegexValidator(pattern=r'.*'),
             ),

@@ -11,7 +11,6 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
@@ -32,7 +31,6 @@ class TotalDataPoint(CategoryItem):
             name='point_id',
             description='Identifier for this data point in the dataset.',
             value_spec=AttributeSpec(
-                type_=DataTypes.STRING,
                 default='0',
                 content_validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
@@ -46,7 +44,6 @@ class TotalDataPoint(CategoryItem):
             name='r',
             description='Interatomic distance in real space.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0),
             ),
@@ -61,7 +58,6 @@ class TotalDataPoint(CategoryItem):
             name='g_r_meas',
             description='Measured pair distribution function G(r).',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
             ),
             cif_handler=CifHandler(
@@ -74,7 +70,6 @@ class TotalDataPoint(CategoryItem):
             name='g_r_meas_su',
             description='Standard uncertainty of measured G(r).',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0),
             ),
@@ -88,7 +83,6 @@ class TotalDataPoint(CategoryItem):
             name='g_r_calc',
             description='Calculated pair distribution function G(r).',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
             ),
             cif_handler=CifHandler(
@@ -101,7 +95,6 @@ class TotalDataPoint(CategoryItem):
             name='calc_status',
             description='Status code of the data point in calculation.',
             value_spec=AttributeSpec(
-                type_=DataTypes.STRING,
                 default='incl',
                 content_validator=MembershipValidator(allowed=['incl', 'excl']),
             ),

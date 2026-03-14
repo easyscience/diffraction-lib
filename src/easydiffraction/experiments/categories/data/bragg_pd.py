@@ -10,7 +10,6 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
@@ -29,7 +28,6 @@ class PdDataPointBaseMixin:
             name='point_id',
             description='Identifier for this data point in the dataset.',
             value_spec=AttributeSpec(
-                type_=DataTypes.STRING,
                 default='0',
                 # TODO: the following pattern is valid for dict key
                 #  (keywords are not checked). CIF label is less strict.
@@ -46,7 +44,6 @@ class PdDataPointBaseMixin:
             name='d_spacing',
             description='d-spacing value corresponding to this data point.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0),
             ),
@@ -60,7 +57,6 @@ class PdDataPointBaseMixin:
             name='intensity_meas',
             description='Intensity recorded at each measurement point as a function of angle/time',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0),
             ),
@@ -75,7 +71,6 @@ class PdDataPointBaseMixin:
             name='intensity_meas_su',
             description='Standard uncertainty of the measured intensity at this data point.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=1.0,
                 content_validator=RangeValidator(ge=0),
             ),
@@ -90,7 +85,6 @@ class PdDataPointBaseMixin:
             name='intensity_calc',
             description='Intensity value for a computed diffractogram at this data point.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0),
             ),
@@ -104,7 +98,6 @@ class PdDataPointBaseMixin:
             name='intensity_bkg',
             description='Intensity value for a computed background at this data point.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0),
             ),
@@ -118,7 +111,6 @@ class PdDataPointBaseMixin:
             name='calc_status',
             description='Status code of the data point in the calculation process.',
             value_spec=AttributeSpec(
-                type_=DataTypes.STRING,
                 default='incl',  # TODO: Make Enum
                 content_validator=MembershipValidator(allowed=['incl', 'excl']),
             ),
@@ -169,7 +161,6 @@ class PdCwlDataPointMixin:
             name='two_theta',
             description='Measured 2θ diffraction angle.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0, le=180),
             ),
@@ -196,7 +187,6 @@ class PdTofDataPointMixin:
             name='time_of_flight',
             description='Measured time for time-of-flight neutron measurement.',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(ge=0),
             ),

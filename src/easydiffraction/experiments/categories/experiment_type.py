@@ -10,7 +10,6 @@ an experiment configuration and handles CIF serialization via
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiment.enums import RadiationProbeEnum
@@ -45,7 +44,6 @@ class ExperimentType(CategoryItem):
             'powder diffraction or single crystal diffraction',
             value_spec=AttributeSpec(
                 value=sample_form,
-                type_=DataTypes.STRING,
                 default=SampleFormEnum.default().value,
                 content_validator=MembershipValidator(
                     allowed=[member.value for member in SampleFormEnum]
@@ -64,7 +62,6 @@ class ExperimentType(CategoryItem):
             'constant wavelength (CW) or time-of-flight (TOF) method',
             value_spec=AttributeSpec(
                 value=beam_mode,
-                type_=DataTypes.STRING,
                 default=BeamModeEnum.default().value,
                 content_validator=MembershipValidator(
                     allowed=[member.value for member in BeamModeEnum]
@@ -81,7 +78,6 @@ class ExperimentType(CategoryItem):
             description='Specifies whether the measurement uses neutrons or X-rays',
             value_spec=AttributeSpec(
                 value=radiation_probe,
-                type_=DataTypes.STRING,
                 default=RadiationProbeEnum.default().value,
                 content_validator=MembershipValidator(
                     allowed=[member.value for member in RadiationProbeEnum]
@@ -100,7 +96,6 @@ class ExperimentType(CategoryItem):
             '(for pair distribution function analysis - PDF)',
             value_spec=AttributeSpec(
                 value=scattering_type,
-                type_=DataTypes.STRING,
                 default=ScatteringTypeEnum.default().value,
                 content_validator=MembershipValidator(
                     allowed=[member.value for member in ScatteringTypeEnum]

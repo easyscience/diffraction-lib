@@ -8,7 +8,6 @@ pair distribution function (PDF) modeling.
 
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.io.cif.handler import CifHandler
 
@@ -26,7 +25,6 @@ class TotalBroadeningMixin:
             '(affects high-r PDF peak amplitude)',
             value_spec=AttributeSpec(
                 value=0.05,
-                type_=DataTypes.NUMERIC,
                 default=0.05,
                 content_validator=RangeValidator(),
             ),
@@ -43,7 +41,6 @@ class TotalBroadeningMixin:
             '(thermal and model uncertainty contribution)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -60,7 +57,6 @@ class TotalBroadeningMixin:
             'transform (controls real-space resolution)',
             value_spec=AttributeSpec(
                 value=25.0,
-                type_=DataTypes.NUMERIC,
                 default=25.0,
                 content_validator=RangeValidator(),
             ),
@@ -76,7 +72,6 @@ class TotalBroadeningMixin:
             description='PDF peak sharpening coefficient (1/r dependence)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -92,7 +87,6 @@ class TotalBroadeningMixin:
             description='PDF peak sharpening coefficient (1/r² dependence)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -108,7 +102,6 @@ class TotalBroadeningMixin:
             description='Particle diameter for spherical envelope damping correction in PDF',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),

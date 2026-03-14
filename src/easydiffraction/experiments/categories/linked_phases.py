@@ -7,7 +7,6 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.io.cif.handler import CifHandler
@@ -29,7 +28,6 @@ class LinkedPhase(CategoryItem):
             description='Identifier of the linked phase.',
             value_spec=AttributeSpec(
                 value=id,
-                type_=DataTypes.STRING,
                 default='Si',
                 content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
@@ -44,7 +42,6 @@ class LinkedPhase(CategoryItem):
             description='Scale factor of the linked phase.',
             value_spec=AttributeSpec(
                 value=scale,
-                type_=DataTypes.NUMERIC,
                 default=1.0,
                 content_validator=RangeValidator(),
             ),

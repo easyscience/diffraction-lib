@@ -3,7 +3,6 @@
 
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.experiments.categories.instrument.base import InstrumentBase
 from easydiffraction.io.cif.handler import CifHandler
@@ -17,7 +16,6 @@ class CwlInstrumentBase(InstrumentBase):
             name='wavelength',
             description='Incident neutron or X-ray wavelength',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=1.5406,
                 content_validator=RangeValidator(),
             ),
@@ -53,7 +51,6 @@ class CwlPdInstrument(CwlInstrumentBase):
             name='twotheta_offset',
             description='Instrument misalignment offset',
             value_spec=AttributeSpec(
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),

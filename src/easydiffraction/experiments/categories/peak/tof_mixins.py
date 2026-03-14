@@ -8,7 +8,6 @@ Ikeda–Carpenter asymmetry parameters used by TOF peak shapes.
 
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.io.cif.handler import CifHandler
 
@@ -25,7 +24,6 @@ class TofBroadeningMixin:
             description='Gaussian broadening coefficient (instrumental resolution)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -41,7 +39,6 @@ class TofBroadeningMixin:
             description='Gaussian broadening coefficient (dependent on d-spacing)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -57,7 +54,6 @@ class TofBroadeningMixin:
             description='Gaussian broadening coefficient (instrument-dependent term)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -73,7 +69,6 @@ class TofBroadeningMixin:
             description='Lorentzian broadening coefficient (dependent on microstrain effects)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -89,7 +84,6 @@ class TofBroadeningMixin:
             description='Lorentzian broadening coefficient (dependent on d-spacing)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -105,7 +99,6 @@ class TofBroadeningMixin:
             description='Lorentzian broadening coefficient (instrument-dependent term)',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -122,7 +115,6 @@ class TofBroadeningMixin:
             'to Lorentzian contributions in TOF profiles',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -139,7 +131,6 @@ class TofBroadeningMixin:
             'to Lorentzian contributions in TOF profiles',
             value_spec=AttributeSpec(
                 value=0.0,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -244,7 +235,6 @@ class IkedaCarpenterAsymmetryMixin:
             description='Ikeda-Carpenter asymmetry parameter α₀',
             value_spec=AttributeSpec(
                 value=0.01,
-                type_=DataTypes.NUMERIC,
                 default=0.01,
                 content_validator=RangeValidator(),
             ),
@@ -260,7 +250,6 @@ class IkedaCarpenterAsymmetryMixin:
             description='Ikeda-Carpenter asymmetry parameter α₁',
             value_spec=AttributeSpec(
                 value=0.02,
-                type_=DataTypes.NUMERIC,
                 default=0.02,
                 content_validator=RangeValidator(),
             ),

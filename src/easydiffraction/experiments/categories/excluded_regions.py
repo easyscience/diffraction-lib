@@ -11,7 +11,6 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import NumericDescriptor
 from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.io.cif.handler import CifHandler
@@ -36,7 +35,6 @@ class ExcludedRegion(CategoryItem):
             name='id',
             description='Identifier for this excluded region.',
             value_spec=AttributeSpec(
-                type_=DataTypes.STRING,
                 value=id,
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -55,7 +53,6 @@ class ExcludedRegion(CategoryItem):
             description='Start of the excluded region.',
             value_spec=AttributeSpec(
                 value=start,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
@@ -70,7 +67,6 @@ class ExcludedRegion(CategoryItem):
             description='End of the excluded region.',
             value_spec=AttributeSpec(
                 value=end,
-                type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
             ),
