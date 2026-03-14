@@ -16,8 +16,10 @@ def test_cell_defaults_and_overrides():
     assert pytest.approx(c.angle_beta.value) == 90.0
     assert pytest.approx(c.angle_gamma.value) == 90.0
 
-    # Override through constructor
-    c2 = Cell(length_a=12.3, angle_beta=100.0)
+    # Override defaults by setting attributes
+    c2 = Cell()
+    c2.length_a=12.3
+    c2.angle_beta=100.0
     assert pytest.approx(c2.length_a.value) == 12.3
     assert pytest.approx(c2.angle_beta.value) == 100.0
 

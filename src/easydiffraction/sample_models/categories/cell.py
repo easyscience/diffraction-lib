@@ -2,8 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Unit cell parameters category for sample models."""
 
-from typing import Optional
-
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import Parameter
 from easydiffraction.core.validation import AttributeSpec
@@ -15,23 +13,13 @@ from easydiffraction.io.cif.handler import CifHandler
 class Cell(CategoryItem):
     """Unit cell with lengths a, b, c and angles alpha, beta, gamma."""
 
-    def __init__(
-        self,
-        *,
-        length_a: Optional[int | float] = None,
-        length_b: Optional[int | float] = None,
-        length_c: Optional[int | float] = None,
-        angle_alpha: Optional[int | float] = None,
-        angle_beta: Optional[int | float] = None,
-        angle_gamma: Optional[int | float] = None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
         self._length_a = Parameter(
             name='length_a',
             description='Length of the a axis of the unit cell.',
             value_spec=AttributeSpec(
-                value=length_a,
                 default=10.0,
                 validator=RangeValidator(ge=0, le=1000),
             ),
@@ -42,7 +30,6 @@ class Cell(CategoryItem):
             name='length_b',
             description='Length of the b axis of the unit cell.',
             value_spec=AttributeSpec(
-                value=length_b,
                 default=10.0,
                 validator=RangeValidator(ge=0, le=1000),
             ),
@@ -53,7 +40,6 @@ class Cell(CategoryItem):
             name='length_c',
             description='Length of the c axis of the unit cell.',
             value_spec=AttributeSpec(
-                value=length_c,
                 default=10.0,
                 validator=RangeValidator(ge=0, le=1000),
             ),
@@ -64,7 +50,6 @@ class Cell(CategoryItem):
             name='angle_alpha',
             description='Angle between edges b and c.',
             value_spec=AttributeSpec(
-                value=angle_alpha,
                 default=90.0,
                 validator=RangeValidator(ge=0, le=180),
             ),
@@ -75,7 +60,6 @@ class Cell(CategoryItem):
             name='angle_beta',
             description='Angle between edges a and c.',
             value_spec=AttributeSpec(
-                value=angle_beta,
                 default=90.0,
                 validator=RangeValidator(ge=0, le=180),
             ),
@@ -86,7 +70,6 @@ class Cell(CategoryItem):
             name='angle_gamma',
             description='Angle between edges a and b.',
             value_spec=AttributeSpec(
-                value=angle_gamma,
                 default=90.0,
                 validator=RangeValidator(ge=0, le=180),
             ),
@@ -96,23 +79,20 @@ class Cell(CategoryItem):
 
         self._identity.category_code = 'cell'
 
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
+
     @property
     def length_a(self):
-        """Getter for a-axis length."""
         return self._length_a
 
     @length_a.setter
     def length_a(self, value):
-        """Setter for a-axis length.
-
-        Args:
-            value (float): Length of the a-axis in Å.
-        """
         self._length_a.value = value
 
     @property
     def length_b(self):
-        """Descriptor for b-axis length in Å."""
         return self._length_b
 
     @length_b.setter
@@ -121,7 +101,6 @@ class Cell(CategoryItem):
 
     @property
     def length_c(self):
-        """Descriptor for c-axis length in Å."""
         return self._length_c
 
     @length_c.setter
@@ -130,7 +109,6 @@ class Cell(CategoryItem):
 
     @property
     def angle_alpha(self):
-        """Descriptor for angle alpha in degrees."""
         return self._angle_alpha
 
     @angle_alpha.setter
@@ -139,7 +117,6 @@ class Cell(CategoryItem):
 
     @property
     def angle_beta(self):
-        """Descriptor for angle beta in degrees."""
         return self._angle_beta
 
     @angle_beta.setter
@@ -148,12 +125,15 @@ class Cell(CategoryItem):
 
     @property
     def angle_gamma(self):
-        """Descriptor for angle gamma in degrees."""
         return self._angle_gamma
 
     @angle_gamma.setter
     def angle_gamma(self, value):
         self._angle_gamma.value = value
+
+    # ------------------------------------------------------------------
+    #  Private helper methods
+    # ------------------------------------------------------------------
 
     def _apply_cell_symmetry_constraints(self):
         """Apply symmetry constraints to cell parameters."""
@@ -181,6 +161,6 @@ class Cell(CategoryItem):
 
     def _update(self, called_by_minimizer=False):
         """Update cell parameters by applying symmetry constraints."""
-        del called_by_minimizer
+        del called_by_minimizer  # TODO: ???
 
         self._apply_cell_symmetry_constraints()

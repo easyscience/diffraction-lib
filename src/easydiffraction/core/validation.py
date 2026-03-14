@@ -25,8 +25,15 @@ from easydiffraction.utils.logging import log
 # ==============================================================
 
 
+# TODO: MkDocs doesn't unpack types
+class DataTypeHints:
+    Numeric = int | float | np.integer | np.floating
+    String = str
+    Bool = bool
+
+
 class DataTypes(Enum):
-    NUMERIC = (int, float, np.integer, np.floating, np.number)
+    NUMERIC = (int, float, np.integer, np.floating)
     STRING = (str,)
     BOOL = (bool,)
     ANY = (object,)  # fallback for unconstrained
