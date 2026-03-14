@@ -21,7 +21,7 @@ def test_background_base_minimal_impl_and_collection_cif():
             self._identity.category_entry_name = name
             self._level = Parameter(
                 name='level',
-                value_spec=AttributeSpec(value=value, type_=DataTypes.NUMERIC, default=0.0),
+                value_spec=AttributeSpec(value=value, data_type=DataTypes.NUMERIC, default=0.0),
                 cif_handler=CifHandler(names=['_bkg.level']),
             )
 

@@ -13,7 +13,7 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     def make_param(db, cat, entry, name, val):
         p = Parameter(
             name=name,
-            value_spec=AttributeSpec(value=val, type_=DataTypes.NUMERIC, default=0.0),
+            value_spec=AttributeSpec(value=val, data_type=DataTypes.NUMERIC, default=0.0),
             cif_handler=CifHandler(names=[f'_{cat}.{name}']),
         )
         # Inject identity metadata (avoid parent chain)

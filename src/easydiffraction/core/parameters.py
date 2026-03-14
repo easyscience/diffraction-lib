@@ -40,7 +40,7 @@ class GenericDescriptorBase(GuardedBase):
     """
 
     _BOOL_SPEC_TEMPLATE = AttributeSpec(
-        type_=DataTypes.BOOL,
+        data_type=DataTypes.BOOL,
         default=False,
     )
 
@@ -64,8 +64,8 @@ class GenericDescriptorBase(GuardedBase):
 
         if expected_type:
             user_type = (
-                value_spec._type_validator.expected_type
-                if value_spec._type_validator is not None
+                value_spec._data_type_validator.expected_type
+                if value_spec._data_type_validator is not None
                 else None
             )
             if user_type and user_type is not expected_type:
@@ -76,7 +76,7 @@ class GenericDescriptorBase(GuardedBase):
                 )
             else:
                 # Enforce descriptor's own type if not already defined
-                value_spec._type_validator = TypeValidator(expected_type)
+                value_spec._data_type_validator = TypeValidator(expected_type)
 
         self._value_spec = value_spec
         self._name = name
@@ -232,16 +232,16 @@ class GenericParameter(GenericNumericDescriptor):
         self._free_spec = self._BOOL_SPEC_TEMPLATE
         self._free = self._free_spec.default
         self._uncertainty_spec = AttributeSpec(
-            type_=DataTypes.NUMERIC,
+            data_type=DataTypes.NUMERIC,
             content_validator=RangeValidator(ge=0),
             allow_none=True,
         )
         self._uncertainty = self._uncertainty_spec.default
-        self._fit_min_spec = AttributeSpec(type_=DataTypes.NUMERIC, default=-np.inf)
+        self._fit_min_spec = AttributeSpec(data_type=DataTypes.NUMERIC, default=-np.inf)
         self._fit_min = self._fit_min_spec.default
-        self._fit_max_spec = AttributeSpec(type_=DataTypes.NUMERIC, default=np.inf)
+        self._fit_max_spec = AttributeSpec(data_type=DataTypes.NUMERIC, default=np.inf)
         self._fit_max = self._fit_max_spec.default
-        self._start_value_spec = AttributeSpec(type_=DataTypes.NUMERIC, default=0.0)
+        self._start_value_spec = AttributeSpec(data_type=DataTypes.NUMERIC, default=0.0)
         self._start_value = self._start_value_spec.default
         self._constrained_spec = self._BOOL_SPEC_TEMPLATE
         self._constrained = self._constrained_spec.default

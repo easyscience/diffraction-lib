@@ -20,7 +20,7 @@ class SimpleItem(CategoryItem):
             StringDescriptor(
                 name='a',
                 description='',
-                value_spec=AttributeSpec(value='x', type_=DataTypes.STRING, default=''),
+                value_spec=AttributeSpec(value='x', data_type=DataTypes.STRING, default=''),
                 cif_handler=CifHandler(names=['_simple.a']),
             ),
         )
@@ -30,7 +30,7 @@ class SimpleItem(CategoryItem):
             StringDescriptor(
                 name='b',
                 description='',
-                value_spec=AttributeSpec(value='y', type_=DataTypes.STRING, default=''),
+                value_spec=AttributeSpec(value='y', data_type=DataTypes.STRING, default=''),
                 cif_handler=CifHandler(names=['_simple.b']),
             ),
         )

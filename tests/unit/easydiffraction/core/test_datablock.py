@@ -19,14 +19,14 @@ def test_datablock_collection_add_and_filters_with_real_parameters():
             self._p1 = Parameter(
                 name='p1',
                 description='',
-                value_spec=AttributeSpec(value=1.0, type_=DataTypes.NUMERIC, default=0.0),
+                value_spec=AttributeSpec(value=1.0, data_type=DataTypes.NUMERIC, default=0.0),
                 units='',
                 cif_handler=CifHandler(names=['_cat.p1']),
             )
             self._p2 = Parameter(
                 name='p2',
                 description='',
-                value_spec=AttributeSpec(value=2.0, type_=DataTypes.NUMERIC, default=0.0),
+                value_spec=AttributeSpec(value=2.0, data_type=DataTypes.NUMERIC, default=0.0),
                 units='',
                 cif_handler=CifHandler(names=['_cat.p2']),
             )

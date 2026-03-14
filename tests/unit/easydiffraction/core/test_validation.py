@@ -9,7 +9,7 @@ def test_module_import():
     assert expected_module_name == actual_module_name
 
 
-def test_type_validator_accepts_and_rejects(monkeypatch):
+def test_data_type_validator_accepts_and_rejects(monkeypatch):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.validation import DataTypes
     from easydiffraction.utils.logging import log
@@ -17,7 +17,7 @@ def test_type_validator_accepts_and_rejects(monkeypatch):
     # So that errors do not raise in test process
     log.configure(reaction=log.Reaction.WARN)
 
-    spec = AttributeSpec(type_=DataTypes.STRING, default='abc')
+    spec = AttributeSpec(data_type=DataTypes.STRING, default='abc')
     # valid
     expected = 'xyz'
     actual = spec.validated('xyz', name='p')
@@ -36,7 +36,7 @@ def test_range_validator_bounds(monkeypatch):
 
     log.configure(reaction=log.Reaction.WARN)
     spec = AttributeSpec(
-        type_=DataTypes.NUMERIC, default=1.0, content_validator=RangeValidator(ge=0, le=2)
+        data_type=DataTypes.NUMERIC, default=1.0, content_validator=RangeValidator(ge=0, le=2)
     )
     # inside range
     expected = 1.5

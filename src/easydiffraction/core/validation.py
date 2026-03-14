@@ -121,7 +121,7 @@ class ValidatorBase(ABC):
 
 
 class TypeValidator(ValidatorBase):
-    """Ensure a value is of the expected Python type."""
+    """Ensure a value is of the expected data type."""
 
     def __init__(self, expected_type: DataTypes):
         if isinstance(expected_type, DataTypes):
@@ -292,15 +292,15 @@ class AttributeSpec:
         self,
         *,
         value=None,
-        type_=None,
         default=None,
+        data_type=None,
         content_validator=None,
         allow_none: bool = False,
     ):
         self.value = value
         self.default = default
         self.allow_none = allow_none
-        self._type_validator = TypeValidator(type_) if type_ else None
+        self._data_type_validator = TypeValidator(data_type) if data_type else None
         self._content_validator = content_validator
 
     def validated(
@@ -319,8 +319,8 @@ class AttributeSpec:
         default = self.default() if callable(self.default) else self.default
 
         # Type validation
-        if self._type_validator:
-            val = self._type_validator.validated(
+        if self._data_type_validator:
+            val = self._data_type_validator.validated(
                 val,
                 name,
                 default=default,
