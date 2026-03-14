@@ -145,6 +145,10 @@ class TotalDataBase(CategoryCollection):
 
     _update_priority = 100
 
+    #################
+    # Private methods
+    #################
+
     # Should be set only once
 
     def _set_point_id(self, values) -> None:
@@ -152,12 +156,12 @@ class TotalDataBase(CategoryCollection):
         for p, v in zip(self._items, values, strict=True):
             p.point_id._value = v
 
-    def _set_meas(self, values) -> None:
+    def _set_g_r_meas(self, values) -> None:
         """Helper method to set measured G(r)."""
         for p, v in zip(self._items, values, strict=True):
             p.g_r_meas._value = v
 
-    def _set_meas_su(self, values) -> None:
+    def _set_g_r_meas_su(self, values) -> None:
         """Helper method to set standard uncertainty of measured
         G(r).
         """
@@ -166,7 +170,7 @@ class TotalDataBase(CategoryCollection):
 
     # Can be set multiple times
 
-    def _set_calc(self, values) -> None:
+    def _set_g_r_calc(self, values) -> None:
         """Helper method to set calculated G(r)."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.g_r_calc._value = v
@@ -192,36 +196,23 @@ class TotalDataBase(CategoryCollection):
         """Get only the items included in calculations."""
         return [item for item, mask in zip(self._items, self._calc_mask, strict=False) if mask]
 
-    @property
-    def calc_status(self) -> np.ndarray:
-        return np.fromiter((p.calc_status.value for p in self._items), dtype=object)
-
-    @property
-    def meas(self) -> np.ndarray:
-        return np.fromiter((p.g_r_meas.value for p in self._calc_items), dtype=float)
-
-    @property
-    def meas_su(self) -> np.ndarray:
-        return np.fromiter((p.g_r_meas_su.value for p in self._calc_items), dtype=float)
-
-    @property
-    def calc(self) -> np.ndarray:
-        return np.fromiter((p.g_r_calc.value for p in self._calc_items), dtype=float)
-
-    @property
-    def bkg(self) -> np.ndarray:
-        """Background is always zero for PDF data."""
-        return np.zeros_like(self.calc)
+    # Misc
 
     def _update(self, called_by_minimizer=False):
         experiment = self._parent
         experiments = experiment._parent
         project = experiments._parent
         sample_models = project.sample_models
+        # calculator = experiment.calculator  # TODO: move from analysis
         calculator = project.analysis.calculator
 
         initial_calc = np.zeros_like(self.x)
         calc = initial_calc
+
+        # TODO: refactor _get_valid_linked_phases to only be responsible
+        #  for returning list. Warning message should be defined here,
+        #  at least some of them.
+        # TODO: Adapt following the _update method in bragg_sc.py
         for linked_phase in experiment._get_valid_linked_phases(sample_models):
             sample_model_id = linked_phase._identity.category_entry_name
             sample_model_scale = linked_phase.scale.value
@@ -236,7 +227,44 @@ class TotalDataBase(CategoryCollection):
             sample_model_scaled_calc = sample_model_scale * sample_model_calc
             calc += sample_model_scaled_calc
 
-        self._set_calc(calc)
+        self._set_g_r_calc(calc)
+
+    ###################
+    # Public properties
+    ###################
+
+    @property
+    def calc_status(self) -> np.ndarray:
+        return np.fromiter(
+            (p.calc_status.value for p in self._items),
+            dtype=object,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def intensity_meas(self) -> np.ndarray:
+        return np.fromiter(
+            (p.g_r_meas.value for p in self._calc_items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def intensity_meas_su(self) -> np.ndarray:
+        return np.fromiter(
+            (p.g_r_meas_su.value for p in self._calc_items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def intensity_calc(self) -> np.ndarray:
+        return np.fromiter(
+            (p.g_r_calc.value for p in self._calc_items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def intensity_bkg(self) -> np.ndarray:
+        """Background is always zero for PDF data."""
+        return np.zeros_like(self.intensity_calc)
 
 
 class TotalData(TotalDataBase):
@@ -249,19 +277,42 @@ class TotalData(TotalDataBase):
     def __init__(self):
         super().__init__(item_type=TotalDataPoint)
 
-    def _set_x(self, values) -> None:
+    #################
+    # Private methods
+    #################
+
+    # Should be set only once
+
+    def _create_items_set_xcoord_and_id(self, values) -> None:
         """Helper method to set r values."""
+        # TODO: split into multiple methods
+
+        # Create items
         self._items = [self._item_type() for _ in range(values.size)]
+
+        # Set r values
         for p, v in zip(self._items, values, strict=True):
             p.r._value = v
+
+        # Set point IDs
         self._set_point_id([str(i + 1) for i in range(values.size)])
 
-    @property
-    def all_x(self) -> np.ndarray:
-        """Get the r values for all data points."""
-        return np.fromiter((p.r.value for p in self._items), dtype=float)
+    ###################
+    # Public properties
+    ###################
 
     @property
     def x(self) -> np.ndarray:
         """Get the r values for data points included in calculations."""
-        return np.fromiter((p.r.value for p in self._calc_items), dtype=float)
+        return np.fromiter(
+            (p.r.value for p in self._calc_items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def unfiltered_x(self) -> np.ndarray:
+        """Get the r values for all data points."""
+        return np.fromiter(
+            (p.r.value for p in self._items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )

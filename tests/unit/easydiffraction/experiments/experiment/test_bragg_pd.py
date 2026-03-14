@@ -53,7 +53,7 @@ def test_load_ascii_data_rounds_and_defaults_sy(tmp_path: pytest.TempPathFactory
     # sy = sqrt(y) with values < 1e-4 replaced by 1.0
     expected_sy = np.sqrt(y)
     expected_sy = np.where(expected_sy < 1e-4, 1.0, expected_sy)
-    assert np.allclose(expt.data.meas_su, expected_sy)
+    assert np.allclose(expt.data.intensity_meas_su, expected_sy)
     # Check that data array shapes match
     assert len(expt.data.x) == len(x)
 
@@ -64,7 +64,7 @@ def test_load_ascii_data_rounds_and_defaults_sy(tmp_path: pytest.TempPathFactory
     np.savetxt(p3, data3)
     expt._load_ascii_data_to_experiment(str(p3))
     expected_sy3 = np.where(sy < 1e-4, 1.0, sy)
-    assert np.allclose(expt.data.meas_su, expected_sy3)
+    assert np.allclose(expt.data.intensity_meas_su, expected_sy3)
 
     # Case 3: invalid shape -> currently triggers an exception (IndexError on shape[1])
     pinv = tmp_path / 'invalid.dat'

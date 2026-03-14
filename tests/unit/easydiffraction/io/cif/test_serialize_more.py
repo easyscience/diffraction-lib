@@ -112,7 +112,7 @@ def test_experiment_to_cif_with_and_without_data():
     assert '_k' in out_with and '1' in out_with
 
     out_without = MUT.experiment_to_cif(Exp(''))
-    assert out_without.startswith('data_expA') and out_without.endswith('1.0000')
+    assert out_without.startswith('data_expA') and out_without.endswith('1.00000000')
 
 
 def test_analysis_to_cif_renders_all_sections():

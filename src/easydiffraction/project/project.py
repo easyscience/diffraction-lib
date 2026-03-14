@@ -234,7 +234,7 @@ class Project(GuardedBase):
         expt_name,
         x_min=None,
         x_max=None,
-        d_spacing=False,
+        x=None,
     ):
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
@@ -245,7 +245,7 @@ class Project(GuardedBase):
             experiment.type,
             x_min=x_min,
             x_max=x_max,
-            d_spacing=d_spacing,
+            x=x,
         )
 
     def plot_calc(
@@ -253,7 +253,7 @@ class Project(GuardedBase):
         expt_name,
         x_min=None,
         x_max=None,
-        d_spacing=False,
+        x=None,
     ):
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
@@ -264,7 +264,7 @@ class Project(GuardedBase):
             experiment.type,
             x_min=x_min,
             x_max=x_max,
-            d_spacing=d_spacing,
+            x=x,
         )
 
     def plot_meas_vs_calc(
@@ -273,7 +273,7 @@ class Project(GuardedBase):
         x_min=None,
         x_max=None,
         show_residual=False,
-        d_spacing=False,
+        x=None,
     ):
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
@@ -285,5 +285,5 @@ class Project(GuardedBase):
             x_min=x_min,
             x_max=x_max,
             show_residual=show_residual,
-            d_spacing=d_spacing,
+            x=x,
         )

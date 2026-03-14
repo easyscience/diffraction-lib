@@ -36,8 +36,13 @@ class PlotlyPlotter(PlotterBase):
     if in_pycharm():
         pio.renderers.default = 'browser'
 
-    def _get_trace(self, x, y, label):
-        """Create a Plotly trace for a single data series.
+    def _get_powder_trace(
+        self,
+        x,
+        y,
+        label,
+    ):
+        """Create a Plotly trace for powder diffraction data.
 
         Args:
             x: 1D array-like of x-axis values.
@@ -63,34 +68,144 @@ class PlotlyPlotter(PlotterBase):
 
         return trace
 
-    def plot(
+    def _get_single_crystal_trace(
         self,
-        x,
-        y_series,
-        labels,
-        axes_labels,
-        title,
-        height=None,
+        x_calc,
+        y_meas,
+        y_meas_su,
     ):
-        """Render an interactive Plotly figure.
+        """Create a Plotly trace for single crystal diffraction data.
 
         Args:
-            x: 1D array-like of x-axis values.
-            y_series: Sequence of y arrays to plot.
-            labels: Series identifiers corresponding to y_series.
-            axes_labels: Pair of strings for the x and y titles.
-            title: Figure title.
-            height: Ignored; Plotly auto-sizes based on renderer.
-        """
-        # Intentionally unused; accepted for API compatibility
-        del height
-        data = []
-        for idx, y in enumerate(y_series):
-            label = labels[idx]
-            trace = self._get_trace(x, y, label)
-            data.append(trace)
+            x_calc: 1D array-like of calculated values (x-axis).
+            y_meas: 1D array-like of measured values (y-axis).
+            y_meas_su: 1D array-like of measurement uncertainties.
 
-        layout = go.Layout(
+        Returns:
+            A configured :class:`plotly.graph_objects.Scatter` trace
+            with markers and error bars.
+        """
+        trace = go.Scatter(
+            x=x_calc,
+            y=y_meas,
+            mode='markers',
+            marker=dict(
+                symbol='circle',
+                size=10,
+                line=dict(width=0.5),
+                color=DEFAULT_COLORS['meas'],
+            ),
+            error_y=dict(
+                type='data',
+                array=y_meas_su,
+                visible=True,
+            ),
+            hovertemplate='calc: %{x}<br>meas: %{y}<br><extra></extra>',
+        )
+
+        return trace
+
+    def _get_diagonal_shape(self):
+        """Create a diagonal reference line shape.
+
+        Returns a y=x diagonal line spanning the plot area using paper
+        coordinates (0,0) to (1,1).
+
+        Returns:
+            A dict configuring a diagonal line shape.
+        """
+        return dict(
+            type='line',
+            x0=0,
+            y0=0,
+            x1=1,
+            y1=1,
+            xref='paper',
+            yref='paper',
+            layer='below',
+            line=dict(width=0.5),
+        )
+
+    def _get_config(self):
+        """Return the Plotly figure configuration.
+
+        Returns:
+            A dict with display and mode bar settings.
+        """
+        return dict(
+            displaylogo=False,
+            modeBarButtonsToRemove=[
+                'select2d',
+                'lasso2d',
+                'zoomIn2d',
+                'zoomOut2d',
+                'autoScale2d',
+            ],
+        )
+
+    def _get_figure(
+        self,
+        data,
+        layout,
+    ):
+        """Create and configure a Plotly figure.
+
+        Args:
+            data: List of traces to include in the figure.
+            layout: Layout configuration dict.
+
+        Returns:
+            A configured :class:`plotly.graph_objects.Figure`.
+        """
+        fig = go.Figure(data=data, layout=layout)
+        # Format axis ticks:
+        # decimals for small numbers, grouped thousands for large
+        fig.update_xaxes(tickformat=',.6~g', separatethousands=True)
+        fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
+        return fig
+
+    def _show_figure(
+        self,
+        fig,
+    ):
+        """Display a Plotly figure.
+
+        Renders the figure using the appropriate method for the current
+        environment (browser for PyCharm, inline HTML for Jupyter).
+
+        Args:
+            fig: A :class:`plotly.graph_objects.Figure` to display.
+        """
+        config = self._get_config()
+
+        if in_pycharm() or display is None or HTML is None:
+            fig.show(config=config)
+        else:
+            html_fig = pio.to_html(
+                fig,
+                include_plotlyjs='cdn',
+                full_html=False,
+                config=config,
+            )
+            display(HTML(html_fig))
+
+    def _get_layout(
+        self,
+        title,
+        axes_labels,
+        **kwargs,
+    ):
+        """Create a Plotly layout configuration.
+
+        Args:
+            title: Figure title.
+            axes_labels: Pair of strings for the x and y titles.
+            **kwargs: Additional layout parameters (e.g., shapes).
+
+        Returns:
+            A configured :class:`plotly.graph_objects.Layout`.
+        """
+        return go.Layout(
             margin=dict(
                 autoexpand=True,
                 r=30,
@@ -118,38 +233,87 @@ class PlotlyPlotter(PlotterBase):
                 mirror=True,
                 zeroline=False,
             ),
+            **kwargs,
         )
 
-        config = dict(
-            displaylogo=False,
-            modeBarButtonsToRemove=[
-                'select2d',
-                'lasso2d',
-                'zoomIn2d',
-                'zoomOut2d',
-                'autoScale2d',
-            ],
+    def plot_powder(
+        self,
+        x,
+        y_series,
+        labels,
+        axes_labels,
+        title,
+        height=None,
+    ):
+        """Render a line plot for powder diffraction data.
+
+        Suitable for powder diffraction data where intensity is plotted
+        against an x-axis variable (2θ, TOF, d-spacing).
+
+        Args:
+            x: 1D array-like of x-axis values.
+            y_series: Sequence of y arrays to plot.
+            labels: Series identifiers corresponding to y_series.
+            axes_labels: Pair of strings for the x and y titles.
+            title: Figure title.
+            height: Ignored; Plotly auto-sizes based on renderer.
+        """
+        # Intentionally unused; accepted for API compatibility
+        del height
+
+        data = []
+        for idx, y in enumerate(y_series):
+            label = labels[idx]
+            trace = self._get_powder_trace(x, y, label)
+            data.append(trace)
+
+        layout = self._get_layout(
+            title,
+            axes_labels,
         )
 
-        fig = go.Figure(
-            data=data,
-            layout=layout,
-        )
+        fig = self._get_figure(data, layout)
+        self._show_figure(fig)
 
-        # Format the axes ticks.
-        # Keeps decimals for small numbers; groups thousands for large
-        # ones
-        fig.update_xaxes(tickformat=',.6~g', separatethousands=True)
-        fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
+    def plot_single_crystal(
+        self,
+        x_calc,
+        y_meas,
+        y_meas_su,
+        axes_labels,
+        title,
+        height=None,
+    ):
+        """Render a scatter plot for single crystal diffraction data.
 
-        # Show the figure
-        if in_pycharm() or display is None or HTML is None:
-            fig.show(config=config)
-        else:
-            html_fig = pio.to_html(
-                fig,
-                include_plotlyjs='cdn',
-                full_html=False,
-                config=config,
+        Suitable for single crystal diffraction data where measured
+        values are plotted against calculated values with error bars
+        and a diagonal reference line.
+
+        Args:
+            x_calc: 1D array-like of calculated values (x-axis).
+            y_meas: 1D array-like of measured values (y-axis).
+            y_meas_su: 1D array-like of measurement uncertainties.
+            axes_labels: Pair of strings for the x and y titles.
+            title: Figure title.
+            height: Ignored; Plotly auto-sizes based on renderer.
+        """
+        # Intentionally unused; accepted for API compatibility
+        del height
+
+        data = [
+            self._get_single_crystal_trace(
+                x_calc,
+                y_meas,
+                y_meas_su,
             )
-            display(HTML(html_fig))
+        ]
+
+        layout = self._get_layout(
+            title,
+            axes_labels,
+            shapes=[self._get_diagonal_shape()],
+        )
+
+        fig = self._get_figure(data, layout)
+        self._show_figure(fig)

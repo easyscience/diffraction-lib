@@ -670,7 +670,7 @@ project_1.plot_meas_vs_calc(expt_name='sim_si')
 # setting the `d_spacing` parameter to `True`.
 
 # %%
-project_1.plot_meas_vs_calc(expt_name='sim_si', d_spacing=True)
+project_1.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing')
 
 # %% [markdown]
 # As you can see, the calculated diffraction pattern now matches the
@@ -1208,7 +1208,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True)
+project_2.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing')
 
 # %% [markdown]
 # #### Exercise 5.6: Refine the Peak Profile Parameters
@@ -1225,7 +1225,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True)
 # perfectly describe the peak at about 1.38 Å, as can be seen below:
 
 # %%
-project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_max=1.40)
+project_2.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40)
 
 # %% [markdown]
 # The peak profile parameters are determined based on both the
@@ -1260,7 +1260,7 @@ project_2.experiments['sim_lbco'].peak.asym_alpha_1.free = True
 project_2.analysis.fit()
 project_2.analysis.show_fit_results()
 
-project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_max=1.40)
+project_2.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40)
 
 # %% [markdown]
 # #### Exercise 5.7: Find Undefined Features
@@ -1283,7 +1283,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', d_spacing=True, x_min=1.35, x_
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spacing=True)
+project_2.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1.53, x_max=1.7)
 
 # %% [markdown]
 # #### Exercise 5.8: Identify the Cause of the Unexplained Peaks
@@ -1348,8 +1348,8 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1.53, x_max=1.7, d_spaci
 # confirm this hypothesis.
 
 # %% tags=["solution", "hide-input"]
-project_1.plot_meas_vs_calc(expt_name='sim_si', x_min=1, x_max=1.7, d_spacing=True)
-project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=1, x_max=1.7, d_spacing=True)
+project_1.plot_meas_vs_calc(expt_name='sim_si',  x='d_spacing', x_min=1, x_max=1.7)
+project_2.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=1.7)
 
 # %% [markdown]
 # #### Exercise 5.10: Create a Second Sample Model – Si as Impurity

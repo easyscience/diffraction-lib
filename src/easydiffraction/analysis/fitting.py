@@ -182,9 +182,9 @@ class Fitter:
 
             # Calculate the difference between measured and calculated
             # patterns
-            y_calc: np.ndarray = experiment.data.calc
-            y_meas: np.ndarray = experiment.data.meas
-            y_meas_su: np.ndarray = experiment.data.meas_su
+            y_calc: np.ndarray = experiment.data.intensity_calc
+            y_meas: np.ndarray = experiment.data.intensity_meas
+            y_meas_su: np.ndarray = experiment.data.intensity_meas_su
             diff = (y_meas - y_calc) / y_meas_su
 
             # Residuals are squared before going into reduced

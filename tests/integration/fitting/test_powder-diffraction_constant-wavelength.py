@@ -217,15 +217,15 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
 
     background = expt.background
     background.add(id='10', x=10, y=174.3)
-    background.add(id='20',x=20, y=159.8)
-    background.add(id='30',x=30, y=167.9)
-    background.add(id='50',x=50, y=166.1)
-    background.add(id='70',x=70, y=172.3)
-    background.add(id='90',x=90, y=171.1)
-    background.add(id='110',x=110, y=172.4)
-    background.add(id='130',x=130, y=182.5)
-    background.add(id='150',x=150, y=173.0)
-    background.add(id='165',x=165, y=171.1)
+    background.add(id='20', x=20, y=159.8)
+    background.add(id='30', x=30, y=167.9)
+    background.add(id='50', x=50, y=166.1)
+    background.add(id='70', x=70, y=172.3)
+    background.add(id='90', x=90, y=171.1)
+    background.add(id='110', x=110, y=172.4)
+    background.add(id='130', x=130, y=182.5)
+    background.add(id='150', x=150, y=173.0)
+    background.add(id='165', x=165, y=171.1)
 
     expt.linked_phases.add(id='lbco', scale=9.0976)
 
@@ -279,12 +279,8 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Set aliases for parameters
     project.analysis.aliases.add(label='biso_La', param_uid=atom_sites['La'].b_iso.uid)
     project.analysis.aliases.add(label='biso_Ba', param_uid=atom_sites['Ba'].b_iso.uid)
-    project.analysis.aliases.add(
-        label='occ_La', param_uid=atom_sites['La'].occupancy.uid
-    )
-    project.analysis.aliases.add(
-        label='occ_Ba', param_uid=atom_sites['Ba'].occupancy.uid
-    )
+    project.analysis.aliases.add(label='occ_La', param_uid=atom_sites['La'].occupancy.uid)
+    project.analysis.aliases.add(label='occ_Ba', param_uid=atom_sites['Ba'].occupancy.uid)
 
     # Set constraints
     project.analysis.constraints.add(lhs_alias='biso_Ba', rhs_expr='biso_La')

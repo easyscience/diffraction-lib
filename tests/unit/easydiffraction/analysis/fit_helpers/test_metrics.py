@@ -31,9 +31,9 @@ def test_get_reliability_inputs_collects_arrays_with_default_su():
     # Minimal fakes for experiments
     class DS:
         def __init__(self):
-            self.meas = np.array([1.0, 2.0])
-            self.meas_su = None  # triggers default ones
-            self.calc = np.array([1.1, 1.9])
+            self.intensity_meas = np.array([1.0, 2.0])
+            self.intensity_meas_su = None  # triggers default ones
+            self.intensity_calc = np.array([1.1, 1.9])
 
     class Expt:
         def __init__(self):

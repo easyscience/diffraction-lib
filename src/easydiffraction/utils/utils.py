@@ -3,11 +3,11 @@
 
 from __future__ import annotations
 
+import functools
 import json
 import pathlib
 import re
 import urllib.request
-from functools import lru_cache
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
 from typing import List
@@ -65,7 +65,6 @@ def _normalize_known_hash(value: str | None) -> str | None:
     return value
 
 
-@lru_cache(maxsize=1)
 def _fetch_data_index() -> dict:
     """Fetch & cache the diffraction data index.json and return it as
     dict.
@@ -91,7 +90,7 @@ def _fetch_data_index() -> dict:
         return json.load(f)
 
 
-@lru_cache(maxsize=1)
+@functools.lru_cache(maxsize=1)
 def _fetch_tutorials_index() -> dict:
     """Fetch & cache the tutorials index.json from gh-pages and return
     it as dict.
@@ -611,6 +610,24 @@ def twotheta_to_d(twotheta, wavelength):
     # Calculate d-spacing using Bragg's law
     d = wavelength / (2 * np.sin(theta_rad))
 
+    return d
+
+
+def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda):
+    """Convert sin(theta)/lambda to d-spacing.
+
+    Parameters:
+        sin_theta_over_lambda (float or np.ndarray): sin(theta)/lambda
+            in 1/Å.
+
+    Returns:
+        d (float or np.ndarray): d-spacing in Å.
+    """
+    # Avoid division by zero
+    with np.errstate(divide='ignore', invalid='ignore'):
+        d = 1 / (2 * sin_theta_over_lambda)
+        # Set non-positive inputs to NaN
+        d = np.where(sin_theta_over_lambda > 0, d, np.nan)
     return d
 
 

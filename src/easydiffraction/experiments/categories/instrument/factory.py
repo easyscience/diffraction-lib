@@ -13,6 +13,7 @@ from typing import Optional
 from typing import Type
 
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
+from easydiffraction.experiments.experiment.enums import SampleFormEnum
 from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 
 if TYPE_CHECKING:
@@ -28,17 +29,26 @@ class InstrumentFactory:
 
     ST = ScatteringTypeEnum
     BM = BeamModeEnum
+    SF = SampleFormEnum
 
     @classmethod
     def _supported_map(cls) -> dict:
         # Lazy import to avoid circulars
-        from easydiffraction.experiments.categories.instrument.cwl import CwlInstrument
-        from easydiffraction.experiments.categories.instrument.tof import TofInstrument
+        from easydiffraction.experiments.categories.instrument.cwl import CwlPdInstrument
+        from easydiffraction.experiments.categories.instrument.cwl import CwlScInstrument
+        from easydiffraction.experiments.categories.instrument.tof import TofPdInstrument
+        from easydiffraction.experiments.categories.instrument.tof import TofScInstrument
 
         return {
             cls.ST.BRAGG: {
-                cls.BM.CONSTANT_WAVELENGTH: CwlInstrument,
-                cls.BM.TIME_OF_FLIGHT: TofInstrument,
+                cls.BM.CONSTANT_WAVELENGTH: {
+                    cls.SF.POWDER: CwlPdInstrument,
+                    cls.SF.SINGLE_CRYSTAL: CwlScInstrument,
+                },
+                cls.BM.TIME_OF_FLIGHT: {
+                    cls.SF.POWDER: TofPdInstrument,
+                    cls.SF.SINGLE_CRYSTAL: TofScInstrument,
+                },
             }
         }
 
@@ -47,11 +57,14 @@ class InstrumentFactory:
         cls,
         scattering_type: Optional[ScatteringTypeEnum] = None,
         beam_mode: Optional[BeamModeEnum] = None,
+        sample_form: Optional[SampleFormEnum] = None,
     ) -> InstrumentBase:
         if beam_mode is None:
             beam_mode = BeamModeEnum.default()
         if scattering_type is None:
             scattering_type = ScatteringTypeEnum.default()
+        if sample_form is None:
+            sample_form = SampleFormEnum.default()
 
         supported = cls._supported_map()
 
@@ -70,5 +83,13 @@ class InstrumentFactory:
                 f'Supported beam modes: {supported_beam_modes}'
             )
 
-        instrument_class: Type[InstrumentBase] = supported[scattering_type][beam_mode]
+        supported_sample_forms = list(supported[scattering_type][beam_mode].keys())
+        if sample_form not in supported_sample_forms:
+            raise ValueError(
+                f"Unsupported sample form: '{sample_form}' for scattering type: "
+                f"'{scattering_type}' and beam mode: '{beam_mode}'.\n "
+                f'Supported sample forms: {supported_sample_forms}'
+            )
+
+        instrument_class: Type[InstrumentBase] = supported[scattering_type][beam_mode][sample_form]
         return instrument_class()

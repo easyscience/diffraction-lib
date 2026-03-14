@@ -126,7 +126,7 @@ class ExcludedRegions(CategoryCollection):
         del called_by_minimizer
 
         data = self._parent.data
-        x = data.all_x
+        x = data.unfiltered_x
 
         # Start with a mask of all False (nothing excluded yet)
         combined_mask = np.full_like(x, fill_value=False, dtype=bool)

@@ -214,8 +214,8 @@ class PdTofDataPointMixin:
 
 
 class PdCwlDataPoint(
-    PdDataPointBaseMixin,
-    PdCwlDataPointMixin,
+    PdDataPointBaseMixin,  # TODO: rename to BasePdDataPointMixin???
+    PdCwlDataPointMixin,  # TODO: rename to CwlPdDataPointMixin???
     CategoryItem,  # Must be last to ensure mixins initialized first
 ):
     """Powder diffraction data point for constant-wavelength
@@ -250,6 +250,10 @@ class PdDataBase(CategoryCollection):
     # default
     _update_priority = 100
 
+    #################
+    # Private methods
+    #################
+
     # Should be set only once
 
     def _set_point_id(self, values) -> None:
@@ -257,12 +261,12 @@ class PdDataBase(CategoryCollection):
         for p, v in zip(self._items, values, strict=True):
             p.point_id._value = v
 
-    def _set_meas(self, values) -> None:
+    def _set_intensity_meas(self, values) -> None:
         """Helper method to set measured intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas._value = v
 
-    def _set_meas_su(self, values) -> None:
+    def _set_intensity_meas_su(self, values) -> None:
         """Helper method to set standard uncertainty of measured
         intensity.
         """
@@ -276,12 +280,12 @@ class PdDataBase(CategoryCollection):
         for p, v in zip(self._calc_items, values, strict=True):
             p.d_spacing._value = v
 
-    def _set_calc(self, values) -> None:
+    def _set_intensity_calc(self, values) -> None:
         """Helper method to set calculated intensity."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_calc._value = v
 
-    def _set_bkg(self, values) -> None:
+    def _set_intensity_bkg(self, values) -> None:
         """Helper method to set background intensity."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_bkg._value = v
@@ -307,44 +311,7 @@ class PdDataBase(CategoryCollection):
         """Get only the items included in calculations."""
         return [item for item, mask in zip(self._items, self._calc_mask, strict=False) if mask]
 
-    @property
-    def calc_status(self) -> np.ndarray:
-        return np.fromiter((p.calc_status.value for p in self._items), dtype=object)
-
-    @property
-    def d(self) -> np.ndarray:
-        return np.fromiter((p.d_spacing.value for p in self._calc_items), dtype=float)
-
-    @property
-    def meas(self) -> np.ndarray:
-        return np.fromiter((p.intensity_meas.value for p in self._calc_items), dtype=float)
-
-    @property
-    def meas_su(self) -> np.ndarray:
-        # TODO: The following is a temporary workaround to handle zero
-        #  or near-zero uncertainties in the data, when dats is loaded
-        #  from CIF files. This is necessary because zero uncertainties
-        #  cause fitting algorithms to fail.
-        #  The current implementation is inefficient.
-        #  In the future, we should extend the functionality of
-        #  the NumericDescriptor to automatically replace the value
-        #  outside of the valid range (`content_validator`) with a
-        #  default value (`default`), when the value is set.
-        #  BraggPdExperiment._load_ascii_data_to_experiment() handles
-        #  this for ASCII data, but we also need to handle CIF data and
-        #  come up with a consistent approach for both data sources.
-        original = np.fromiter((p.intensity_meas_su.value for p in self._calc_items), dtype=float)
-        # Replace values smaller than 0.0001 with 1.0
-        modified = np.where(original < 0.0001, 1.0, original)
-        return modified
-
-    @property
-    def calc(self) -> np.ndarray:
-        return np.fromiter((p.intensity_calc.value for p in self._calc_items), dtype=float)
-
-    @property
-    def bkg(self) -> np.ndarray:
-        return np.fromiter((p.intensity_bkg.value for p in self._calc_items), dtype=float)
+    # Misc
 
     def _update(self, called_by_minimizer=False):
         experiment = self._parent
@@ -356,6 +323,11 @@ class PdDataBase(CategoryCollection):
 
         initial_calc = np.zeros_like(self.x)
         calc = initial_calc
+
+        # TODO: refactor _get_valid_linked_phases to only be responsible
+        #  for returning list. Warning message should be defined here,
+        #  at least some of them.
+        # TODO: Adapt following the _update method in bragg_sc.py
         for linked_phase in experiment._get_valid_linked_phases(sample_models):
             sample_model_id = linked_phase._identity.category_entry_name
             sample_model_scale = linked_phase.scale.value
@@ -370,7 +342,68 @@ class PdDataBase(CategoryCollection):
             sample_model_scaled_calc = sample_model_scale * sample_model_calc
             calc += sample_model_scaled_calc
 
-        self._set_calc(calc + self.bkg)
+        self._set_intensity_calc(calc + self.intensity_bkg)
+
+    ###################
+    # Public properties
+    ###################
+
+    @property
+    def calc_status(self) -> np.ndarray:
+        return np.fromiter(
+            (p.calc_status.value for p in self._items),
+            dtype=object,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def d_spacing(self) -> np.ndarray:
+        return np.fromiter(
+            (p.d_spacing.value for p in self._calc_items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def intensity_meas(self) -> np.ndarray:
+        return np.fromiter(
+            (p.intensity_meas.value for p in self._calc_items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def intensity_meas_su(self) -> np.ndarray:
+        # TODO: The following is a temporary workaround to handle zero
+        #  or near-zero uncertainties in the data, when dats is loaded
+        #  from CIF files. This is necessary because zero uncertainties
+        #  cause fitting algorithms to fail.
+        #  The current implementation is inefficient.
+        #  In the future, we should extend the functionality of
+        #  the NumericDescriptor to automatically replace the value
+        #  outside of the valid range (`content_validator`) with a
+        #  default value (`default`), when the value is set.
+        #  BraggPdExperiment._load_ascii_data_to_experiment() handles
+        #  this for ASCII data, but we also need to handle CIF data and
+        #  come up with a consistent approach for both data sources.
+        original = np.fromiter(
+            (p.intensity_meas_su.value for p in self._calc_items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+        # Replace values smaller than 0.0001 with 1.0
+        modified = np.where(original < 0.0001, 1.0, original)
+        return modified
+
+    @property
+    def intensity_calc(self) -> np.ndarray:
+        return np.fromiter(
+            (p.intensity_calc.value for p in self._calc_items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def intensity_bkg(self) -> np.ndarray:
+        return np.fromiter(
+            (p.intensity_bkg.value for p in self._calc_items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
 
 
 class PdCwlData(PdDataBase):
@@ -381,27 +414,27 @@ class PdCwlData(PdDataBase):
     def __init__(self):
         super().__init__(item_type=PdCwlDataPoint)
 
+    #################
+    # Private methods
+    #################
+
     # Should be set only once
 
-    def _set_x(self, values) -> None:
+    def _create_items_set_xcoord_and_id(self, values) -> None:
         """Helper method to set 2θ values."""
         # TODO: split into multiple methods
+
+        # Create items
         self._items = [self._item_type() for _ in range(values.size)]
+
+        # Set two-theta values
         for p, v in zip(self._items, values, strict=True):
             p.two_theta._value = v
+
+        # Set point IDs
         self._set_point_id([str(i + 1) for i in range(values.size)])
 
-    @property
-    def all_x(self) -> np.ndarray:
-        """Get the 2θ values for all data points in this collection."""
-        return np.fromiter((p.two_theta.value for p in self._items), dtype=float)
-
-    @property
-    def x(self) -> np.ndarray:
-        """Get the 2θ values for data points included in
-        calculations.
-        """
-        return np.fromiter((p.two_theta.value for p in self._calc_items), dtype=float)
+    # Misc
 
     def _update(self, called_by_minimizer=False):
         super()._update(called_by_minimizer)
@@ -413,6 +446,33 @@ class PdCwlData(PdDataBase):
         )
         self._set_d_spacing(d_spacing)
 
+    ###################
+    # Public properties
+    ###################
+
+    @property
+    def two_theta(self) -> np.ndarray:
+        """Get the 2θ values for data points included in
+        calculations.
+        """
+        return np.fromiter(
+            (p.two_theta.value for p in self._calc_items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def x(self) -> np.ndarray:
+        """Alias for two_theta."""
+        return self.two_theta
+
+    @property
+    def unfiltered_x(self) -> np.ndarray:
+        """Get the 2θ values for all data points in this collection."""
+        return np.fromiter(
+            (p.two_theta.value for p in self._items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
 
 class PdTofData(PdDataBase):
     # TODO: ???
@@ -422,25 +482,27 @@ class PdTofData(PdDataBase):
     def __init__(self):
         super().__init__(item_type=PdTofDataPoint)
 
-    def _set_x(self, values) -> None:
+    #################
+    # Private methods
+    #################
+
+    # Should be set only once
+
+    def _create_items_set_xcoord_and_id(self, values) -> None:
         """Helper method to set time-of-flight values."""
         # TODO: split into multiple methods
+
+        # Create items
         self._items = [self._item_type() for _ in range(values.size)]
+
+        # Set time-of-flight values
         for p, v in zip(self._items, values, strict=True):
             p.time_of_flight._value = v
+
+        # Set point IDs
         self._set_point_id([str(i + 1) for i in range(values.size)])
 
-    @property
-    def all_x(self) -> np.ndarray:
-        """Get the TOF values for all data points in this collection."""
-        return np.fromiter((p.time_of_flight.value for p in self._items), dtype=float)
-
-    @property
-    def x(self) -> np.ndarray:
-        """Get the TOF values for data points included in
-        calculations.
-        """
-        return np.fromiter((p.time_of_flight.value for p in self._calc_items), dtype=float)
+    # Misc
 
     def _update(self, called_by_minimizer=False):
         super()._update(called_by_minimizer)
@@ -453,3 +515,30 @@ class PdTofData(PdDataBase):
             experiment.instrument.calib_d_to_tof_quad.value,
         )
         self._set_d_spacing(d_spacing)
+
+    ###################
+    # Public properties
+    ###################
+
+    @property
+    def time_of_flight(self) -> np.ndarray:
+        """Get the TOF values for data points included in
+        calculations.
+        """
+        return np.fromiter(
+            (p.time_of_flight.value for p in self._calc_items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )
+
+    @property
+    def x(self) -> np.ndarray:
+        """Alias for time_of_flight."""
+        return self.time_of_flight
+
+    @property
+    def unfiltered_x(self) -> np.ndarray:
+        """Get the TOF values for all data points in this collection."""
+        return np.fromiter(
+            (p.time_of_flight.value for p in self._items),
+            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+        )

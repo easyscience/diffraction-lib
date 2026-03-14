@@ -11,6 +11,9 @@ from typing import List
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.experiments.categories.data.factory import DataFactory
 from easydiffraction.experiments.categories.excluded_regions import ExcludedRegions
+from easydiffraction.experiments.categories.extinction import Extinction
+from easydiffraction.experiments.categories.instrument.factory import InstrumentFactory
+from easydiffraction.experiments.categories.linked_crystal import LinkedCrystal
 from easydiffraction.experiments.categories.linked_phases import LinkedPhases
 from easydiffraction.experiments.categories.peak.factory import PeakFactory
 from easydiffraction.experiments.categories.peak.factory import PeakProfileTypeEnum
@@ -95,6 +98,58 @@ class ExperimentBase(DatablockItem):
         raise NotImplementedError()
 
 
+class ScExperimentBase(ExperimentBase):
+    """Base class for all single crystal experiments."""
+
+    def __init__(
+        self,
+        *,
+        name: str,
+        type: ExperimentType,
+    ) -> None:
+        super().__init__(name=name, type=type)
+
+        self._linked_crystal: LinkedCrystal = LinkedCrystal()
+        self._extinction: Extinction = Extinction()
+        self._instrument = InstrumentFactory.create(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            sample_form=self.type.sample_form.value,
+        )
+        self._data = DataFactory.create(
+            sample_form=self.type.sample_form.value,
+            beam_mode=self.type.beam_mode.value,
+            scattering_type=self.type.scattering_type.value,
+        )
+
+    @abstractmethod
+    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+        """Load single crystal data from an ASCII file.
+
+        Args:
+            data_path: Path to data file with columns compatible with
+                the beam mode.
+        """
+        pass
+
+    @property
+    def linked_crystal(self):
+        """Linked crystal model for this experiment."""
+        return self._linked_crystal
+
+    @property
+    def extinction(self):
+        return self._extinction
+
+    @property
+    def instrument(self):
+        return self._instrument
+
+    @property
+    def data(self):
+        return self._data
+
+
 class PdExperimentBase(ExperimentBase):
     """Base class for all powder experiments."""
 
@@ -108,21 +163,19 @@ class PdExperimentBase(ExperimentBase):
 
         self._linked_phases: LinkedPhases = LinkedPhases()
         self._excluded_regions: ExcludedRegions = ExcludedRegions()
-
         self._peak_profile_type: PeakProfileTypeEnum = PeakProfileTypeEnum.default(
             self.type.scattering_type.value,
             self.type.beam_mode.value,
+        )
+        self._data = DataFactory.create(
+            sample_form=self.type.sample_form.value,
+            beam_mode=self.type.beam_mode.value,
+            scattering_type=self.type.scattering_type.value,
         )
         self._peak = PeakFactory.create(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
             profile_type=self._peak_profile_type,
-        )
-
-        self._data = DataFactory.create(
-            sample_form=self.type.sample_form.value,
-            beam_mode=self.type.beam_mode.value,
-            scattering_type=self.type.scattering_type.value,
         )
 
     def _get_valid_linked_phases(
@@ -180,6 +233,10 @@ class PdExperimentBase(ExperimentBase):
         return self._excluded_regions
 
     @property
+    def data(self):
+        return self._data
+
+    @property
     def peak(self) -> str:
         """Peak category object with profile parameters and mixins."""
         return self._peak
@@ -192,10 +249,6 @@ class PdExperimentBase(ExperimentBase):
             value: New peak object created by the `PeakFactory`.
         """
         self._peak = value
-
-    @property
-    def data(self):
-        return self._data
 
     @property
     def peak_profile_type(self):

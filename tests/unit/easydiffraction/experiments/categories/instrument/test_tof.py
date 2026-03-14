@@ -5,9 +5,9 @@ import numpy as np
 
 
 def test_tof_instrument_defaults_and_setters_and_parameters_and_cif():
-    from easydiffraction.experiments.categories.instrument.tof import TofInstrument
+    from easydiffraction.experiments.categories.instrument.tof import TofPdInstrument
 
-    inst = TofInstrument()
+    inst = TofPdInstrument()
 
     # Defaults
     assert np.isclose(inst.setup_twotheta_bank.value, 150.0)

@@ -8,7 +8,8 @@ from typing import TYPE_CHECKING
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.experiments.categories.experiment_type import ExperimentType
 from easydiffraction.experiments.experiment import BraggPdExperiment
-from easydiffraction.experiments.experiment import BraggScExperiment
+from easydiffraction.experiments.experiment import CwlScExperiment
+from easydiffraction.experiments.experiment import TofScExperiment
 from easydiffraction.experiments.experiment import TotalPdExperiment
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiment.enums import RadiationProbeEnum
@@ -29,25 +30,53 @@ class ExperimentFactory(FactoryBase):
     """Creates Experiment instances with only relevant attributes."""
 
     _ALLOWED_ARG_SPECS = [
-        {'required': ['cif_path'], 'optional': []},
-        {'required': ['cif_str'], 'optional': []},
         {
-            'required': ['name', 'data_path'],
-            'optional': ['sample_form', 'beam_mode', 'radiation_probe', 'scattering_type'],
+            'required': ['cif_path'],
+            'optional': [],
+        },
+        {
+            'required': ['cif_str'],
+            'optional': [],
+        },
+        {
+            'required': [
+                'name',
+                'data_path',
+            ],
+            'optional': [
+                'sample_form',
+                'beam_mode',
+                'radiation_probe',
+                'scattering_type',
+            ],
         },
         {
             'required': ['name'],
-            'optional': ['sample_form', 'beam_mode', 'radiation_probe', 'scattering_type'],
+            'optional': [
+                'sample_form',
+                'beam_mode',
+                'radiation_probe',
+                'scattering_type',
+            ],
         },
     ]
 
     _SUPPORTED = {
         ScatteringTypeEnum.BRAGG: {
-            SampleFormEnum.POWDER: BraggPdExperiment,
-            SampleFormEnum.SINGLE_CRYSTAL: BraggScExperiment,
+            SampleFormEnum.POWDER: {
+                BeamModeEnum.CONSTANT_WAVELENGTH: BraggPdExperiment,
+                BeamModeEnum.TIME_OF_FLIGHT: BraggPdExperiment,
+            },
+            SampleFormEnum.SINGLE_CRYSTAL: {
+                BeamModeEnum.CONSTANT_WAVELENGTH: CwlScExperiment,
+                BeamModeEnum.TIME_OF_FLIGHT: TofScExperiment,
+            },
         },
         ScatteringTypeEnum.TOTAL: {
-            SampleFormEnum.POWDER: TotalPdExperiment,
+            SampleFormEnum.POWDER: {
+                BeamModeEnum.CONSTANT_WAVELENGTH: TotalPdExperiment,
+                BeamModeEnum.TIME_OF_FLIGHT: TotalPdExperiment,
+            },
         },
     }
 
@@ -84,7 +113,8 @@ class ExperimentFactory(FactoryBase):
         # TODO: make helper method to create experiment from type
         scattering_type = expt_type.scattering_type.value
         sample_form = expt_type.sample_form.value
-        expt_class = cls._SUPPORTED[scattering_type][sample_form]
+        beam_mode = expt_type.beam_mode.value
+        expt_class = cls._SUPPORTED[scattering_type][sample_form][beam_mode]
         expt_obj = expt_class(name=name, type=expt_type)
 
         # Read all categories from CIF block
@@ -124,7 +154,8 @@ class ExperimentFactory(FactoryBase):
         expt_type = cls._make_experiment_type(kwargs)
         scattering_type = expt_type.scattering_type.value
         sample_form = expt_type.sample_form.value
-        expt_class = cls._SUPPORTED[scattering_type][sample_form]
+        beam_mode = expt_type.beam_mode.value
+        expt_class = cls._SUPPORTED[scattering_type][sample_form][beam_mode]
         expt_name = kwargs['name']
         expt_obj = expt_class(name=expt_name, type=expt_type)
         data_path = kwargs['data_path']
@@ -141,7 +172,8 @@ class ExperimentFactory(FactoryBase):
         expt_type = cls._make_experiment_type(kwargs)
         scattering_type = expt_type.scattering_type.value
         sample_form = expt_type.sample_form.value
-        expt_class = cls._SUPPORTED[scattering_type][sample_form]
+        beam_mode = expt_type.beam_mode.value
+        expt_class = cls._SUPPORTED[scattering_type][sample_form][beam_mode]
         expt_name = kwargs['name']
         expt_obj = expt_class(name=expt_name, type=expt_type)
         return expt_obj

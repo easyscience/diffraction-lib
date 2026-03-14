@@ -14,7 +14,7 @@ def test_excluded_regions_add_updates_datastore_and_cif():
     full_meas = np.array([10.0, 11.0, 12.0, 13.0])
     full_meas_su = np.array([1.0, 1.0, 1.0, 1.0])
     ds = SimpleNamespace(
-        all_x=full_x,  # ExcludedRegions._update uses all_x not full_x
+        unfiltered_x=full_x,
         full_x=full_x,
         full_meas=full_meas,
         full_meas_su=full_meas_su,

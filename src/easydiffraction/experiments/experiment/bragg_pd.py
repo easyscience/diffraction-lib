@@ -9,8 +9,8 @@ import numpy as np
 
 from easydiffraction.experiments.categories.background.enums import BackgroundTypeEnum
 from easydiffraction.experiments.categories.background.factory import BackgroundFactory
+from easydiffraction.experiments.categories.instrument.factory import InstrumentFactory
 from easydiffraction.experiments.experiment.base import PdExperimentBase
-from easydiffraction.experiments.experiment.instrument_mixin import InstrumentMixin
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
@@ -19,10 +19,9 @@ if TYPE_CHECKING:
     from easydiffraction.experiments.categories.experiment_type import ExperimentType
 
 
-class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
-    """Powder diffraction experiment.
-
-    Wraps background model, peak profile and linked phases for Bragg PD.
+class BraggPdExperiment(PdExperimentBase):
+    """Standard (Bragg) Powder Diffraction experiment class with
+    specific attributes.
     """
 
     def __init__(
@@ -33,20 +32,13 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
     ) -> None:
         super().__init__(name=name, type=type)
 
+        self._instrument = InstrumentFactory.create(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            sample_form=self.type.sample_form.value,
+        )
         self._background_type: BackgroundTypeEnum = BackgroundTypeEnum.default()
         self._background = BackgroundFactory.create(background_type=self.background_type)
-
-    @property
-    def background(self):
-        return self._background
-
-    @background.setter
-    def background(self, value):
-        self._background = value
-
-    # -------------
-    # Measured data
-    # -------------
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """Load (x, y, sy) data from an ASCII file into the data
@@ -54,7 +46,10 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
 
         The file format is space/column separated with 2 or 3 columns:
         ``x y [sy]``. If ``sy`` is missing, it is approximated as
-        ``sqrt(y)`` with small values clamped to ``1.0``.
+        ``sqrt(y)``.
+
+        If ``sy`` has values smaller than ``0.0001``, they are replaced
+        with ``1.0``.
         """
         try:
             data = np.loadtxt(data_path)
@@ -78,15 +73,20 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
         sy: np.ndarray = data[:, 2] if data.shape[1] > 2 else np.sqrt(y)
 
         # Replace values smaller than 0.0001 with 1.0
+        # TODO: Not used if loading from cif file?
         sy = np.where(sy < 0.0001, 1.0, sy)
 
         # Set the experiment data
-        self.data._set_x(x)
-        self.data._set_meas(y)
-        self.data._set_meas_su(sy)
+        self.data._create_items_set_xcoord_and_id(x)
+        self.data._set_intensity_meas(y)
+        self.data._set_intensity_meas_su(sy)
 
         console.paragraph('Data loaded successfully')
         console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
+
+    @property
+    def instrument(self):
+        return self._instrument
 
     @property
     def background_type(self):
@@ -112,6 +112,14 @@ class BraggPdExperiment(InstrumentMixin, PdExperimentBase):
         self._background_type = new_type
         console.paragraph(f"Background type for experiment '{self.name}' changed to")
         console.print(new_type)
+
+    @property
+    def background(self):
+        return self._background
+
+    @background.setter
+    def background(self, value):
+        self._background = value
 
     def show_supported_background_types(self):
         """Print a table of supported background types."""

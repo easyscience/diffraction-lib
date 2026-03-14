@@ -42,7 +42,7 @@ The tutorials are organized into the following categories.
   refinement of the PbSO4 crystal structure based on the joint fit of both X-ray
   and neutron diffraction data.
 
-## Standard Diffraction
+## Powder Diffraction
 
 - [Co2SiO4 `pd-neut-cwl`](ed-5.ipynb) – Demonstrates a Rietveld refinement of
   the Co2SiO4 crystal structure using constant wavelength neutron powder
@@ -60,6 +60,15 @@ The tutorials are organized into the following categories.
   La0.5Ba0.5CoO3 crystal structure with a small amount of Si impurity as a
   secondary phase using time-of-flight neutron powder diffraction data simulated
   with McStas.
+
+## Single Crystal Diffraction
+
+- [Tb2TiO7 `sg-neut-cwl`](ed-14.ipynb) – Demonstrates structure refinement of
+  Tb2TiO7 using constant wavelength neutron single crystal diffraction data from
+  HEiDi at FRM II.
+- [Taurine `sg-neut-tof`](ed-15.ipynb) – Demonstrates structure refinement of
+  Taurine using time-of-flight neutron single crystal diffraction data from
+  SENJU at J-PARC.
 
 ## Pair Distribution Function (PDF)
 

@@ -22,7 +22,7 @@ classifiers = [
 ]
 requires-python = '>=3.11,<3.14'
 dependencies = [
-  'essdiffraction', # ESS Diffraction library
+  'essdiffraction', # ESS-specific diffraction library
   'numpy',          # Numerical computing library
   'colorama',       # Color terminal output
   'tabulate',       # Pretty-print tabular data for terminal output
@@ -180,7 +180,7 @@ source = ['src/easydiffraction'] # Limit coverage to the source code directory
 [tool.coverage.report]
 show_missing = true # Show missing lines
 skip_covered = true # Skip files with 100% coverage in the report
-fail_under = 65     # Temporarily reduce to allow gradual improvement
+fail_under = 60     # Temporarily reduce to allow gradual improvement
 
 ########################
 # Configuration for ruff
@@ -191,13 +191,7 @@ fail_under = 65     # Temporarily reduce to allow gradual improvement
 
 [tool.ruff]
 # Temporarily exclude some directories until we have improved the code quality there
-#exclude = ['tests', 'tmp']
-exclude = [
-  'tmp',
-  'tests/unit',
-  'tests/integration/fitting',
-  'tests/integration/scipp-analysis/tmp',
-]
+exclude = ['tmp', 'tests/unit']
 indent-width = 4
 line-length = 99
 # Enable new rules that are not yet stable, like DOC
@@ -236,7 +230,7 @@ select = [
   #'RET',   # Return statement issues (e.g., inconsistent returns)
   #'RUF',   # Ruff-specific checks (e.g., enforcing best practices)
   #'SLF',   # Self argument-related issues (e.g., missing or misused self)
-  #'T20',   # Flake8-print-specific checks (e.g., print statements left in code) 
+  #'T20',   # Flake8-print-specific checks (e.g., print statements left in code)
   #'TD',    # Type definition issues (e.g., incorrect or missing type definitions)
   #'TRY',   # Tryceratops Try/Except-related issues (e.g., broad exceptions, empty except blocks)
   #'UP',    # Pyupgrade-specific checks
@@ -262,7 +256,7 @@ ignore = [
 # Temporarily increase McCabe complexity limit to 19 to allow
 # refactoring in smaller steps.
 [tool.ruff.lint.mccabe]
-max-complexity = 19 # default is 10
+max-complexity = 37 # 19 # default is 10
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = 'all'

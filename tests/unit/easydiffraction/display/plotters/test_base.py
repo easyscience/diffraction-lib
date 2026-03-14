@@ -32,8 +32,14 @@ def test_default_engine_switches_with_notebook(monkeypatch):
 
 def test_default_axes_labels_keys_present():
     import easydiffraction.display.plotters.base as pb
-    from easydiffraction.experiments.experiment.enums import BeamModeEnum
+    from easydiffraction.experiments.experiment.enums import SampleFormEnum
     from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
 
-    assert (ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH) in pb.DEFAULT_AXES_LABELS
-    assert (ScatteringTypeEnum.BRAGG, BeamModeEnum.TIME_OF_FLIGHT) in pb.DEFAULT_AXES_LABELS
+    # Powder Bragg
+    assert (SampleFormEnum.POWDER, ScatteringTypeEnum.BRAGG, pb.XAxisType.TWO_THETA) in pb.DEFAULT_AXES_LABELS
+    assert (SampleFormEnum.POWDER, ScatteringTypeEnum.BRAGG, pb.XAxisType.TIME_OF_FLIGHT) in pb.DEFAULT_AXES_LABELS
+    assert (SampleFormEnum.POWDER, ScatteringTypeEnum.BRAGG, pb.XAxisType.D_SPACING) in pb.DEFAULT_AXES_LABELS
+    # Single crystal Bragg
+    assert (SampleFormEnum.SINGLE_CRYSTAL, ScatteringTypeEnum.BRAGG, pb.XAxisType.INTENSITY_CALC) in pb.DEFAULT_AXES_LABELS
+    assert (SampleFormEnum.SINGLE_CRYSTAL, ScatteringTypeEnum.BRAGG, pb.XAxisType.D_SPACING) in pb.DEFAULT_AXES_LABELS
+    assert (SampleFormEnum.SINGLE_CRYSTAL, ScatteringTypeEnum.BRAGG, pb.XAxisType.SIN_THETA_OVER_LAMBDA) in pb.DEFAULT_AXES_LABELS

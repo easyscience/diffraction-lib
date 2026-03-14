@@ -14,13 +14,13 @@ def test_instrument_factory_default_and_errors():
         return
 
     inst = InstrumentFactory.create()  # defaults
-    assert inst.__class__.__name__ in {'CwlInstrument', 'TofInstrument'}
+    assert inst.__class__.__name__ in {'CwlPdInstrument', 'CwlScInstrument', 'TofPdInstrument', 'TofScInstrument'}
 
     # Valid combinations
     inst2 = InstrumentFactory.create(ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH)
-    assert inst2.__class__.__name__ == 'CwlInstrument'
+    assert inst2.__class__.__name__ == 'CwlPdInstrument'
     inst3 = InstrumentFactory.create(ScatteringTypeEnum.BRAGG, BeamModeEnum.TIME_OF_FLIGHT)
-    assert inst3.__class__.__name__ == 'TofInstrument'
+    assert inst3.__class__.__name__ == 'TofPdInstrument'
 
     # Invalid scattering type
     class FakeST:

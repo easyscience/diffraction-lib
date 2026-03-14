@@ -51,9 +51,9 @@ class TotalPdExperiment(PdExperimentBase):
         y = data[:, 1]
         sy = data[:, 2] if data.shape[1] > 2 else np.full_like(y, fill_value=default_sy)
 
-        self.data._set_x(x)
-        self.data._set_meas(y)
-        self.data._set_meas_su(sy)
+        self.data._create_items_set_xcoord_and_id(x)
+        self.data._set_g_r_meas(y)
+        self.data._set_g_r_meas_su(sy)
 
         console.paragraph('Data loaded successfully')
         console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")

@@ -9,23 +9,19 @@ from easydiffraction.experiments.categories.instrument.base import InstrumentBas
 from easydiffraction.io.cif.handler import CifHandler
 
 
-class TofInstrument(InstrumentBase):
-    def __init__(
-        self,
-        *,
-        setup_twotheta_bank=None,
-        calib_d_to_tof_offset=None,
-        calib_d_to_tof_linear=None,
-        calib_d_to_tof_quad=None,
-        calib_d_to_tof_recip=None,
-    ) -> None:
+class TofScInstrument(InstrumentBase):
+    def __init__(self) -> None:
+        super().__init__()
+
+
+class TofPdInstrument(InstrumentBase):
+    def __init__(self) -> None:
         super().__init__()
 
         self._setup_twotheta_bank: Parameter = Parameter(
             name='twotheta_bank',
             description='Detector bank position',
             value_spec=AttributeSpec(
-                value=setup_twotheta_bank,
                 type_=DataTypes.NUMERIC,
                 default=150.0,
                 content_validator=RangeValidator(),
@@ -41,7 +37,6 @@ class TofInstrument(InstrumentBase):
             name='d_to_tof_offset',
             description='TOF offset',
             value_spec=AttributeSpec(
-                value=calib_d_to_tof_offset,
                 type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
@@ -57,7 +52,6 @@ class TofInstrument(InstrumentBase):
             name='d_to_tof_linear',
             description='TOF linear conversion',
             value_spec=AttributeSpec(
-                value=calib_d_to_tof_linear,
                 type_=DataTypes.NUMERIC,
                 default=10000.0,
                 content_validator=RangeValidator(),
@@ -73,7 +67,6 @@ class TofInstrument(InstrumentBase):
             name='d_to_tof_quad',
             description='TOF quadratic correction',
             value_spec=AttributeSpec(
-                value=calib_d_to_tof_quad,
                 type_=DataTypes.NUMERIC,
                 default=-0.00001,
                 content_validator=RangeValidator(),
@@ -89,7 +82,6 @@ class TofInstrument(InstrumentBase):
             name='d_to_tof_recip',
             description='TOF reciprocal velocity correction',
             value_spec=AttributeSpec(
-                value=calib_d_to_tof_recip,
                 type_=DataTypes.NUMERIC,
                 default=0.0,
                 content_validator=RangeValidator(),
