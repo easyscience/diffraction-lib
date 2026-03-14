@@ -40,7 +40,7 @@ class Alias(CategoryItem):
             value_spec=AttributeSpec(
                 value=label,
                 default='...',
-                content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
+                validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -54,7 +54,7 @@ class Alias(CategoryItem):
             value_spec=AttributeSpec(
                 value=param_uid,
                 default='...',
-                content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
+                validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
                 names=[

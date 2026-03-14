@@ -294,14 +294,14 @@ class AttributeSpec:
         value=None,
         default=None,
         data_type=None,
-        content_validator=None,
+        validator=None,
         allow_none: bool = False,
     ):
         self.value = value
         self.default = default
         self.allow_none = allow_none
         self._data_type_validator = TypeValidator(data_type) if data_type else None
-        self._content_validator = content_validator
+        self._validator = validator
 
     def validated(
         self,
@@ -334,8 +334,8 @@ class AttributeSpec:
             return None
 
         # Content validation
-        if self._content_validator and val is not None:
-            val = self._content_validator.validated(
+        if self._validator and val is not None:
+            val = self._validator.validated(
                 val,
                 name,
                 default=default,

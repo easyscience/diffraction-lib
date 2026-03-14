@@ -29,7 +29,7 @@ class LinkedPhase(CategoryItem):
             value_spec=AttributeSpec(
                 value=id,
                 default='Si',
-                content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
+                validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -43,7 +43,7 @@ class LinkedPhase(CategoryItem):
             value_spec=AttributeSpec(
                 value=scale,
                 default=1.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
                 names=[

@@ -47,7 +47,7 @@ class LineSegment(CategoryItem):
                 # TODO: the following pattern is valid for dict key
                 #  (keywords are not checked). CIF label is less strict.
                 #  Do we need conversion between CIF and internal label?
-                content_validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
+                validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -64,7 +64,7 @@ class LineSegment(CategoryItem):
             value_spec=AttributeSpec(
                 value=x,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -82,7 +82,7 @@ class LineSegment(CategoryItem):
             value_spec=AttributeSpec(
                 value=y,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),  # TODO: rename to intensity
             cif_handler=CifHandler(
                 names=[

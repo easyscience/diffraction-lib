@@ -40,7 +40,7 @@ class ExcludedRegion(CategoryItem):
                 # TODO: the following pattern is valid for dict key
                 #  (keywords are not checked). CIF label is less strict.
                 #  Do we need conversion between CIF and internal label?
-                content_validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
+                validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -54,7 +54,7 @@ class ExcludedRegion(CategoryItem):
             value_spec=AttributeSpec(
                 value=start,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -68,7 +68,7 @@ class ExcludedRegion(CategoryItem):
             value_spec=AttributeSpec(
                 value=end,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
                 names=[

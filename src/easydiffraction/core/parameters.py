@@ -233,7 +233,7 @@ class GenericParameter(GenericNumericDescriptor):
         self._free = self._free_spec.default
         self._uncertainty_spec = AttributeSpec(
             data_type=DataTypes.NUMERIC,
-            content_validator=RangeValidator(ge=0),
+            validator=RangeValidator(ge=0),
             allow_none=True,
         )
         self._uncertainty = self._uncertainty_spec.default

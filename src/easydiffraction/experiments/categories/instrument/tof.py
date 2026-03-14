@@ -22,7 +22,7 @@ class TofPdInstrument(InstrumentBase):
             description='Detector bank position',
             value_spec=AttributeSpec(
                 default=150.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='deg',
             cif_handler=CifHandler(
@@ -36,7 +36,7 @@ class TofPdInstrument(InstrumentBase):
             description='TOF offset',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='µs',
             cif_handler=CifHandler(
@@ -50,7 +50,7 @@ class TofPdInstrument(InstrumentBase):
             description='TOF linear conversion',
             value_spec=AttributeSpec(
                 default=10000.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='µs/Å',
             cif_handler=CifHandler(
@@ -64,7 +64,7 @@ class TofPdInstrument(InstrumentBase):
             description='TOF quadratic correction',
             value_spec=AttributeSpec(
                 default=-0.00001,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='µs/Å²',
             cif_handler=CifHandler(
@@ -78,7 +78,7 @@ class TofPdInstrument(InstrumentBase):
             description='TOF reciprocal velocity correction',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='µs·Å',
             cif_handler=CifHandler(

@@ -32,7 +32,7 @@ class PdDataPointBaseMixin:
                 # TODO: the following pattern is valid for dict key
                 #  (keywords are not checked). CIF label is less strict.
                 #  Do we need conversion between CIF and internal label?
-                content_validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
+                validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -45,7 +45,7 @@ class PdDataPointBaseMixin:
             description='d-spacing value corresponding to this data point.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -58,7 +58,7 @@ class PdDataPointBaseMixin:
             description='Intensity recorded at each measurement point as a function of angle/time',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -72,7 +72,7 @@ class PdDataPointBaseMixin:
             description='Standard uncertainty of the measured intensity at this data point.',
             value_spec=AttributeSpec(
                 default=1.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -86,7 +86,7 @@ class PdDataPointBaseMixin:
             description='Intensity value for a computed diffractogram at this data point.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -99,7 +99,7 @@ class PdDataPointBaseMixin:
             description='Intensity value for a computed background at this data point.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -112,7 +112,7 @@ class PdDataPointBaseMixin:
             description='Status code of the data point in the calculation process.',
             value_spec=AttributeSpec(
                 default='incl',  # TODO: Make Enum
-                content_validator=MembershipValidator(allowed=['incl', 'excl']),
+                validator=MembershipValidator(allowed=['incl', 'excl']),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -162,7 +162,7 @@ class PdCwlDataPointMixin:
             description='Measured 2θ diffraction angle.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0, le=180),
+                validator=RangeValidator(ge=0, le=180),
             ),
             units='deg',
             cif_handler=CifHandler(
@@ -188,7 +188,7 @@ class PdTofDataPointMixin:
             description='Measured time for time-of-flight neutron measurement.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             units='µs',
             cif_handler=CifHandler(
@@ -368,7 +368,7 @@ class PdDataBase(CategoryCollection):
         #  The current implementation is inefficient.
         #  In the future, we should extend the functionality of
         #  the NumericDescriptor to automatically replace the value
-        #  outside of the valid range (`content_validator`) with a
+        #  outside of the valid range (`validator`) with a
         #  default value (`default`), when the value is set.
         #  BraggPdExperiment._load_ascii_data_to_experiment() handles
         #  this for ASCII data, but we also need to handle CIF data and

@@ -17,7 +17,7 @@ class CwlInstrumentBase(InstrumentBase):
             description='Incident neutron or X-ray wavelength',
             value_spec=AttributeSpec(
                 default=1.5406,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='Å',
             cif_handler=CifHandler(
@@ -52,7 +52,7 @@ class CwlPdInstrument(CwlInstrumentBase):
             description='Instrument misalignment offset',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='deg',
             cif_handler=CifHandler(

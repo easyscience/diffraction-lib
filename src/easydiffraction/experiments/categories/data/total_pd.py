@@ -32,7 +32,7 @@ class TotalDataPoint(CategoryItem):
             description='Identifier for this data point in the dataset.',
             value_spec=AttributeSpec(
                 default='0',
-                content_validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
+                validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -45,7 +45,7 @@ class TotalDataPoint(CategoryItem):
             description='Interatomic distance in real space.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             units='Å',
             cif_handler=CifHandler(
@@ -71,7 +71,7 @@ class TotalDataPoint(CategoryItem):
             description='Standard uncertainty of measured G(r).',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -96,7 +96,7 @@ class TotalDataPoint(CategoryItem):
             description='Status code of the data point in calculation.',
             value_spec=AttributeSpec(
                 default='incl',
-                content_validator=MembershipValidator(allowed=['incl', 'excl']),
+                validator=MembershipValidator(allowed=['incl', 'excl']),
             ),
             cif_handler=CifHandler(
                 names=[

@@ -33,7 +33,7 @@ class Refln(CategoryItem):
                 # TODO: the following pattern is valid for dict key
                 #  (keywords are not checked). CIF label is less strict.
                 #  Do we need conversion between CIF and internal label?
-                content_validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
+                validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -46,7 +46,7 @@ class Refln(CategoryItem):
             description='The distance between lattice planes in the crystal for this reflection.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             units='Å',
             cif_handler=CifHandler(
@@ -60,7 +60,7 @@ class Refln(CategoryItem):
             description='The sin(θ)/λ value for this reflection.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             units='Å⁻¹',
             cif_handler=CifHandler(
@@ -74,7 +74,7 @@ class Refln(CategoryItem):
             description='Miller index h of a measured reflection.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -87,7 +87,7 @@ class Refln(CategoryItem):
             description='Miller index k of a measured reflection.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -100,7 +100,7 @@ class Refln(CategoryItem):
             description='Miller index l of a measured reflection.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -113,7 +113,7 @@ class Refln(CategoryItem):
             description=' The intensity of the reflection derived from the measurements.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -126,7 +126,7 @@ class Refln(CategoryItem):
             description='Standard uncertainty of the measured intensity.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -139,7 +139,7 @@ class Refln(CategoryItem):
             description='The intensity of the reflection calculated from the atom site data.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -152,7 +152,7 @@ class Refln(CategoryItem):
             description='The mean wavelength of radiation used to measure this reflection.',
             value_spec=AttributeSpec(
                 default=0.0,
-                content_validator=RangeValidator(ge=0),
+                validator=RangeValidator(ge=0),
             ),
             units='Å',
             cif_handler=CifHandler(

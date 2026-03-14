@@ -34,7 +34,7 @@ class CwlBroadeningMixin:
             value_spec=AttributeSpec(
                 value=0.01,
                 default=0.01,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='deg²',
             cif_handler=CifHandler(
@@ -49,7 +49,7 @@ class CwlBroadeningMixin:
             value_spec=AttributeSpec(
                 value=-0.01,
                 default=-0.01,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='deg²',
             cif_handler=CifHandler(
@@ -64,7 +64,7 @@ class CwlBroadeningMixin:
             value_spec=AttributeSpec(
                 value=0.02,
                 default=0.02,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='deg²',
             cif_handler=CifHandler(
@@ -79,7 +79,7 @@ class CwlBroadeningMixin:
             value_spec=AttributeSpec(
                 value=0.0,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='deg',
             cif_handler=CifHandler(
@@ -95,7 +95,7 @@ class CwlBroadeningMixin:
             value_spec=AttributeSpec(
                 value=0.0,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='deg',
             cif_handler=CifHandler(
@@ -167,7 +167,7 @@ class EmpiricalAsymmetryMixin:
             value_spec=AttributeSpec(
                 value=0.1,
                 default=0.1,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='',
             cif_handler=CifHandler(
@@ -182,7 +182,7 @@ class EmpiricalAsymmetryMixin:
             value_spec=AttributeSpec(
                 value=0.2,
                 default=0.2,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='',
             cif_handler=CifHandler(
@@ -197,7 +197,7 @@ class EmpiricalAsymmetryMixin:
             value_spec=AttributeSpec(
                 value=0.3,
                 default=0.3,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='',
             cif_handler=CifHandler(
@@ -212,7 +212,7 @@ class EmpiricalAsymmetryMixin:
             value_spec=AttributeSpec(
                 value=0.4,
                 default=0.4,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='',
             cif_handler=CifHandler(
@@ -274,7 +274,7 @@ class FcjAsymmetryMixin:
             value_spec=AttributeSpec(
                 value=0.01,
                 default=0.01,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='',
             cif_handler=CifHandler(
@@ -289,7 +289,7 @@ class FcjAsymmetryMixin:
             value_spec=AttributeSpec(
                 value=0.02,
                 default=0.02,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='',
             cif_handler=CifHandler(

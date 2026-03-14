@@ -51,7 +51,7 @@ class AtomSite(CategoryItem):
                 # TODO: the following pattern is valid for dict key
                 #  (keywords are not checked). CIF label is less strict.
                 #  Do we need conversion between CIF and internal label?
-                content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
+                validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -65,7 +65,7 @@ class AtomSite(CategoryItem):
             value_spec=AttributeSpec(
                 value=type_symbol,
                 default='Tb',
-                content_validator=MembershipValidator(allowed=self._type_symbol_allowed_values),
+                validator=MembershipValidator(allowed=self._type_symbol_allowed_values),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -79,7 +79,7 @@ class AtomSite(CategoryItem):
             value_spec=AttributeSpec(
                 value=fract_x,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -93,7 +93,7 @@ class AtomSite(CategoryItem):
             value_spec=AttributeSpec(
                 value=fract_y,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -107,7 +107,7 @@ class AtomSite(CategoryItem):
             value_spec=AttributeSpec(
                 value=fract_z,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -122,7 +122,7 @@ class AtomSite(CategoryItem):
             value_spec=AttributeSpec(
                 value=wyckoff_letter,
                 default=self._wyckoff_letter_default_value,
-                content_validator=MembershipValidator(allowed=self._wyckoff_letter_allowed_values),
+                validator=MembershipValidator(allowed=self._wyckoff_letter_allowed_values),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -138,7 +138,7 @@ class AtomSite(CategoryItem):
             value_spec=AttributeSpec(
                 value=occupancy,
                 default=1.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -152,7 +152,7 @@ class AtomSite(CategoryItem):
             value_spec=AttributeSpec(
                 value=b_iso,
                 default=0.0,
-                content_validator=RangeValidator(ge=0.0),
+                validator=RangeValidator(ge=0.0),
             ),
             units='Å²',
             cif_handler=CifHandler(
@@ -168,7 +168,7 @@ class AtomSite(CategoryItem):
             value_spec=AttributeSpec(
                 value=adp_type,
                 default='Biso',
-                content_validator=MembershipValidator(allowed=['Biso']),
+                validator=MembershipValidator(allowed=['Biso']),
             ),
             cif_handler=CifHandler(
                 names=[

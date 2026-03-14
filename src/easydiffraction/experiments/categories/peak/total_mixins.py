@@ -26,7 +26,7 @@ class TotalBroadeningMixin:
             value_spec=AttributeSpec(
                 value=0.05,
                 default=0.05,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='Å⁻¹',
             cif_handler=CifHandler(
@@ -42,7 +42,7 @@ class TotalBroadeningMixin:
             value_spec=AttributeSpec(
                 value=0.0,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='Å⁻²',
             cif_handler=CifHandler(
@@ -58,7 +58,7 @@ class TotalBroadeningMixin:
             value_spec=AttributeSpec(
                 value=25.0,
                 default=25.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='Å⁻¹',
             cif_handler=CifHandler(
@@ -73,7 +73,7 @@ class TotalBroadeningMixin:
             value_spec=AttributeSpec(
                 value=0.0,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='Å',
             cif_handler=CifHandler(
@@ -88,7 +88,7 @@ class TotalBroadeningMixin:
             value_spec=AttributeSpec(
                 value=0.0,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='Å²',
             cif_handler=CifHandler(
@@ -103,7 +103,7 @@ class TotalBroadeningMixin:
             value_spec=AttributeSpec(
                 value=0.0,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='Å',
             cif_handler=CifHandler(

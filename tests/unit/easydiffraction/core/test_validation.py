@@ -36,7 +36,7 @@ def test_range_validator_bounds(monkeypatch):
 
     log.configure(reaction=log.Reaction.WARN)
     spec = AttributeSpec(
-        data_type=DataTypes.NUMERIC, default=1.0, content_validator=RangeValidator(ge=0, le=2)
+        data_type=DataTypes.NUMERIC, default=1.0, validator=RangeValidator(ge=0, le=2)
     )
     # inside range
     expected = 1.5
@@ -55,11 +55,11 @@ def test_membership_and_regex_validators(monkeypatch):
     from easydiffraction.utils.logging import log
 
     log.configure(reaction=log.Reaction.WARN)
-    mspec = AttributeSpec(default='b', content_validator=MembershipValidator(['a', 'b']))
+    mspec = AttributeSpec(default='b', validator=MembershipValidator(['a', 'b']))
     assert mspec.validated('a', name='m') == 'a'
     # reject -> fallback default
     assert mspec.validated('c', name='m') == 'b'
 
-    rspec = AttributeSpec(default='a1', content_validator=RegexValidator(r'^[a-z]\d$'))
+    rspec = AttributeSpec(default='a1', validator=RegexValidator(r'^[a-z]\d$'))
     assert rspec.validated('b2', name='r') == 'b2'
     assert rspec.validated('BAD', name='r') == 'a1'

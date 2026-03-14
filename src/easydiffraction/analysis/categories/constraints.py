@@ -37,7 +37,7 @@ class Constraint(CategoryItem):
             value_spec=AttributeSpec(
                 value=lhs_alias,
                 default='...',
-                content_validator=RegexValidator(pattern=r'.*'),
+                validator=RegexValidator(pattern=r'.*'),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -51,7 +51,7 @@ class Constraint(CategoryItem):
             value_spec=AttributeSpec(
                 value=rhs_expr,
                 default='...',
-                content_validator=RegexValidator(pattern=r'.*'),
+                validator=RegexValidator(pattern=r'.*'),
             ),
             cif_handler=CifHandler(
                 names=[

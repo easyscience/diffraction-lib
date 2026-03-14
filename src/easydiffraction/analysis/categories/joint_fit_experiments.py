@@ -38,7 +38,7 @@ class JointFitExperiment(CategoryItem):
             value_spec=AttributeSpec(
                 value=id,
                 default='...',
-                content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
+                validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -52,7 +52,7 @@ class JointFitExperiment(CategoryItem):
             value_spec=AttributeSpec(
                 value=weight,
                 default=0.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
                 names=[

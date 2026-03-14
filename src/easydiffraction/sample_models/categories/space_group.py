@@ -31,9 +31,7 @@ class SpaceGroup(CategoryItem):
             value_spec=AttributeSpec(
                 value=name_h_m,
                 default='P 1',
-                content_validator=MembershipValidator(
-                    allowed=lambda: self._name_h_m_allowed_values
-                ),
+                validator=MembershipValidator(allowed=lambda: self._name_h_m_allowed_values),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -50,7 +48,7 @@ class SpaceGroup(CategoryItem):
             value_spec=AttributeSpec(
                 value=it_coordinate_system_code,
                 default=lambda: self._it_coordinate_system_code_default_value,
-                content_validator=MembershipValidator(
+                validator=MembershipValidator(
                     allowed=lambda: self._it_coordinate_system_code_allowed_values
                 ),
             ),

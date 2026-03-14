@@ -19,7 +19,7 @@ class Extinction(CategoryItem):
             description='Mosaicity value for extinction correction.',
             value_spec=AttributeSpec(
                 default=1.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='deg',
             cif_handler=CifHandler(
@@ -33,7 +33,7 @@ class Extinction(CategoryItem):
             description='Crystal radius for extinction correction.',
             value_spec=AttributeSpec(
                 default=1.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             units='µm',
             cif_handler=CifHandler(

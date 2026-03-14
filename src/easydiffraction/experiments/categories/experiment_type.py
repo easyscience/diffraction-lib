@@ -45,9 +45,7 @@ class ExperimentType(CategoryItem):
             value_spec=AttributeSpec(
                 value=sample_form,
                 default=SampleFormEnum.default().value,
-                content_validator=MembershipValidator(
-                    allowed=[member.value for member in SampleFormEnum]
-                ),
+                validator=MembershipValidator(allowed=[member.value for member in SampleFormEnum]),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -63,9 +61,7 @@ class ExperimentType(CategoryItem):
             value_spec=AttributeSpec(
                 value=beam_mode,
                 default=BeamModeEnum.default().value,
-                content_validator=MembershipValidator(
-                    allowed=[member.value for member in BeamModeEnum]
-                ),
+                validator=MembershipValidator(allowed=[member.value for member in BeamModeEnum]),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -79,7 +75,7 @@ class ExperimentType(CategoryItem):
             value_spec=AttributeSpec(
                 value=radiation_probe,
                 default=RadiationProbeEnum.default().value,
-                content_validator=MembershipValidator(
+                validator=MembershipValidator(
                     allowed=[member.value for member in RadiationProbeEnum]
                 ),
             ),
@@ -97,7 +93,7 @@ class ExperimentType(CategoryItem):
             value_spec=AttributeSpec(
                 value=scattering_type,
                 default=ScatteringTypeEnum.default().value,
-                content_validator=MembershipValidator(
+                validator=MembershipValidator(
                     allowed=[member.value for member in ScatteringTypeEnum]
                 ),
             ),

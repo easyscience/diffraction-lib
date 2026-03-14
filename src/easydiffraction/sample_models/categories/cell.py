@@ -33,7 +33,7 @@ class Cell(CategoryItem):
             value_spec=AttributeSpec(
                 value=length_a,
                 default=10.0,
-                content_validator=RangeValidator(ge=0, le=1000),
+                validator=RangeValidator(ge=0, le=1000),
             ),
             units='Å',
             cif_handler=CifHandler(names=['_cell.length_a']),
@@ -44,7 +44,7 @@ class Cell(CategoryItem):
             value_spec=AttributeSpec(
                 value=length_b,
                 default=10.0,
-                content_validator=RangeValidator(ge=0, le=1000),
+                validator=RangeValidator(ge=0, le=1000),
             ),
             units='Å',
             cif_handler=CifHandler(names=['_cell.length_b']),
@@ -55,7 +55,7 @@ class Cell(CategoryItem):
             value_spec=AttributeSpec(
                 value=length_c,
                 default=10.0,
-                content_validator=RangeValidator(ge=0, le=1000),
+                validator=RangeValidator(ge=0, le=1000),
             ),
             units='Å',
             cif_handler=CifHandler(names=['_cell.length_c']),
@@ -66,7 +66,7 @@ class Cell(CategoryItem):
             value_spec=AttributeSpec(
                 value=angle_alpha,
                 default=90.0,
-                content_validator=RangeValidator(ge=0, le=180),
+                validator=RangeValidator(ge=0, le=180),
             ),
             units='deg',
             cif_handler=CifHandler(names=['_cell.angle_alpha']),
@@ -77,7 +77,7 @@ class Cell(CategoryItem):
             value_spec=AttributeSpec(
                 value=angle_beta,
                 default=90.0,
-                content_validator=RangeValidator(ge=0, le=180),
+                validator=RangeValidator(ge=0, le=180),
             ),
             units='deg',
             cif_handler=CifHandler(names=['_cell.angle_beta']),
@@ -88,7 +88,7 @@ class Cell(CategoryItem):
             value_spec=AttributeSpec(
                 value=angle_gamma,
                 default=90.0,
-                content_validator=RangeValidator(ge=0, le=180),
+                validator=RangeValidator(ge=0, le=180),
             ),
             units='deg',
             cif_handler=CifHandler(names=['_cell.angle_gamma']),

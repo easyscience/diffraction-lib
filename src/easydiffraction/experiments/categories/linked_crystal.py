@@ -23,7 +23,7 @@ class LinkedCrystal(CategoryItem):
             description='Identifier of the linked crystal.',
             value_spec=AttributeSpec(
                 default='Si',
-                content_validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
+                validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -36,7 +36,7 @@ class LinkedCrystal(CategoryItem):
             description='Scale factor of the linked crystal.',
             value_spec=AttributeSpec(
                 default=1.0,
-                content_validator=RangeValidator(),
+                validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
                 names=[
