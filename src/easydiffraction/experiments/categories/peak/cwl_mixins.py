@@ -32,127 +32,96 @@ class CwlBroadeningMixin:
             description='Gaussian broadening coefficient (dependent on '
             'sample size and instrument resolution)',
             value_spec=AttributeSpec(
-                value=0.01,
                 default=0.01,
                 validator=RangeValidator(),
             ),
             units='deg²',
-            cif_handler=CifHandler(
-                names=[
-                    '_peak.broad_gauss_u',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_peak.broad_gauss_u']),
         )
         self._broad_gauss_v: Parameter = Parameter(
             name='broad_gauss_v',
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
             value_spec=AttributeSpec(
-                value=-0.01,
                 default=-0.01,
                 validator=RangeValidator(),
             ),
             units='deg²',
-            cif_handler=CifHandler(
-                names=[
-                    '_peak.broad_gauss_v',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_peak.broad_gauss_v']),
         )
         self._broad_gauss_w: Parameter = Parameter(
             name='broad_gauss_w',
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
             value_spec=AttributeSpec(
-                value=0.02,
                 default=0.02,
                 validator=RangeValidator(),
             ),
             units='deg²',
-            cif_handler=CifHandler(
-                names=[
-                    '_peak.broad_gauss_w',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_peak.broad_gauss_w']),
         )
         self._broad_lorentz_x: Parameter = Parameter(
             name='broad_lorentz_x',
             description='Lorentzian broadening coefficient (dependent on sample strain effects)',
             value_spec=AttributeSpec(
-                value=0.0,
                 default=0.0,
                 validator=RangeValidator(),
             ),
             units='deg',
-            cif_handler=CifHandler(
-                names=[
-                    '_peak.broad_lorentz_x',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_peak.broad_lorentz_x']),
         )
         self._broad_lorentz_y: Parameter = Parameter(
             name='broad_lorentz_y',
             description='Lorentzian broadening coefficient (dependent on '
             'microstructural defects and strain)',
             value_spec=AttributeSpec(
-                value=0.0,
                 default=0.0,
                 validator=RangeValidator(),
             ),
             units='deg',
-            cif_handler=CifHandler(
-                names=[
-                    '_peak.broad_lorentz_y',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_peak.broad_lorentz_y']),
         )
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def broad_gauss_u(self) -> Parameter:
-        """Get Gaussian U broadening parameter."""
         return self._broad_gauss_u
 
     @broad_gauss_u.setter
-    def broad_gauss_u(self, value: float) -> None:
-        """Set Gaussian U broadening parameter."""
+    def broad_gauss_u(self, value) -> None:
         self._broad_gauss_u.value = value
 
     @property
     def broad_gauss_v(self) -> Parameter:
-        """Get Gaussian V broadening parameter."""
         return self._broad_gauss_v
 
     @broad_gauss_v.setter
-    def broad_gauss_v(self, value: float) -> None:
-        """Set Gaussian V broadening parameter."""
+    def broad_gauss_v(self, value) -> None:
         self._broad_gauss_v.value = value
 
     @property
     def broad_gauss_w(self) -> Parameter:
-        """Get Gaussian W broadening parameter."""
         return self._broad_gauss_w
 
     @broad_gauss_w.setter
-    def broad_gauss_w(self, value: float) -> None:
-        """Set Gaussian W broadening parameter."""
+    def broad_gauss_w(self, value) -> None:
         self._broad_gauss_w.value = value
 
     @property
     def broad_lorentz_x(self) -> Parameter:
-        """Get Lorentz X broadening parameter."""
         return self._broad_lorentz_x
 
     @broad_lorentz_x.setter
-    def broad_lorentz_x(self, value: float) -> None:
-        """Set Lorentz X broadening parameter."""
+    def broad_lorentz_x(self, value) -> None:
         self._broad_lorentz_x.value = value
 
     @property
     def broad_lorentz_y(self) -> Parameter:
-        """Get Lorentz Y broadening parameter."""
         return self._broad_lorentz_y
 
     @broad_lorentz_y.setter
-    def broad_lorentz_y(self, value: float) -> None:
-        """Set Lorentz Y broadening parameter."""
+    def broad_lorentz_y(self, value) -> None:
         self._broad_lorentz_y.value = value
 
 
@@ -165,101 +134,77 @@ class EmpiricalAsymmetryMixin:
             name='asym_empir_1',
             description='Empirical asymmetry coefficient p1',
             value_spec=AttributeSpec(
-                value=0.1,
                 default=0.1,
                 validator=RangeValidator(),
             ),
             units='',
-            cif_handler=CifHandler(
-                names=[
-                    '_peak.asym_empir_1',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_peak.asym_empir_1']),
         )
         self._asym_empir_2: Parameter = Parameter(
             name='asym_empir_2',
             description='Empirical asymmetry coefficient p2',
             value_spec=AttributeSpec(
-                value=0.2,
                 default=0.2,
                 validator=RangeValidator(),
             ),
             units='',
-            cif_handler=CifHandler(
-                names=[
-                    '_peak.asym_empir_2',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_peak.asym_empir_2']),
         )
         self._asym_empir_3: Parameter = Parameter(
             name='asym_empir_3',
             description='Empirical asymmetry coefficient p3',
             value_spec=AttributeSpec(
-                value=0.3,
                 default=0.3,
                 validator=RangeValidator(),
             ),
             units='',
-            cif_handler=CifHandler(
-                names=[
-                    '_peak.asym_empir_3',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_peak.asym_empir_3']),
         )
         self._asym_empir_4: Parameter = Parameter(
             name='asym_empir_4',
             description='Empirical asymmetry coefficient p4',
             value_spec=AttributeSpec(
-                value=0.4,
                 default=0.4,
                 validator=RangeValidator(),
             ),
             units='',
-            cif_handler=CifHandler(
-                names=[
-                    '_peak.asym_empir_4',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_peak.asym_empir_4']),
         )
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def asym_empir_1(self) -> Parameter:
-        """Get empirical asymmetry coefficient p1."""
         return self._asym_empir_1
 
     @asym_empir_1.setter
-    def asym_empir_1(self, value: float) -> None:
-        """Set empirical asymmetry coefficient p1."""
+    def asym_empir_1(self, value) -> None:
         self._asym_empir_1.value = value
 
     @property
     def asym_empir_2(self) -> Parameter:
-        """Get empirical asymmetry coefficient p2."""
         return self._asym_empir_2
 
     @asym_empir_2.setter
-    def asym_empir_2(self, value: float) -> None:
-        """Set empirical asymmetry coefficient p2."""
+    def asym_empir_2(self, value) -> None:
         self._asym_empir_2.value = value
 
     @property
     def asym_empir_3(self) -> Parameter:
-        """Get empirical asymmetry coefficient p3."""
         return self._asym_empir_3
 
     @asym_empir_3.setter
-    def asym_empir_3(self, value: float) -> None:
-        """Set empirical asymmetry coefficient p3."""
+    def asym_empir_3(self, value) -> None:
         self._asym_empir_3.value = value
 
     @property
     def asym_empir_4(self) -> Parameter:
-        """Get empirical asymmetry coefficient p4."""
         return self._asym_empir_4
 
     @asym_empir_4.setter
-    def asym_empir_4(self, value: float) -> None:
-        """Set empirical asymmetry coefficient p4."""
+    def asym_empir_4(self, value) -> None:
         self._asym_empir_4.value = value
 
 
@@ -272,49 +217,39 @@ class FcjAsymmetryMixin:
             name='asym_fcj_1',
             description='Finger-Cox-Jephcoat asymmetry parameter 1',
             value_spec=AttributeSpec(
-                value=0.01,
                 default=0.01,
                 validator=RangeValidator(),
             ),
             units='',
-            cif_handler=CifHandler(
-                names=[
-                    '_peak.asym_fcj_1',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_peak.asym_fcj_1']),
         )
         self._asym_fcj_2: Parameter = Parameter(
             name='asym_fcj_2',
             description='Finger-Cox-Jephcoat asymmetry parameter 2',
             value_spec=AttributeSpec(
-                value=0.02,
                 default=0.02,
                 validator=RangeValidator(),
             ),
             units='',
-            cif_handler=CifHandler(
-                names=[
-                    '_peak.asym_fcj_2',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_peak.asym_fcj_2']),
         )
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def asym_fcj_1(self) -> Parameter:
-        """Get FCJ asymmetry parameter 1."""
         return self._asym_fcj_1
 
     @asym_fcj_1.setter
-    def asym_fcj_1(self, value: float) -> None:
-        """Set FCJ asymmetry parameter 1."""
+    def asym_fcj_1(self, value) -> None:
         self._asym_fcj_1.value = value
 
     @property
     def asym_fcj_2(self) -> Parameter:
-        """Get FCJ asymmetry parameter 2."""
         return self._asym_fcj_2
 
     @asym_fcj_2.setter
-    def asym_fcj_2(self, value: float) -> None:
-        """Set FCJ asymmetry parameter 2."""
+    def asym_fcj_2(self, value) -> None:
         self._asym_fcj_2.value = value
