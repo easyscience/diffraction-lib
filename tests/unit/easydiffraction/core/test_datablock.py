@@ -7,7 +7,6 @@ def test_datablock_collection_add_and_filters_with_real_parameters():
     from easydiffraction.core.datablock import DatablockItem
     from easydiffraction.core.parameters import Parameter
     from easydiffraction.core.validation import AttributeSpec
-    from easydiffraction.core.validation import DataTypes
     from easydiffraction.io.cif.handler import CifHandler
 
     class Cat(CategoryItem):
@@ -19,17 +18,20 @@ def test_datablock_collection_add_and_filters_with_real_parameters():
             self._p1 = Parameter(
                 name='p1',
                 description='',
-                value_spec=AttributeSpec(value=1.0, data_type=DataTypes.NUMERIC, default=0.0),
+                value_spec=AttributeSpec(default=0.0),
                 units='',
                 cif_handler=CifHandler(names=['_cat.p1']),
             )
             self._p2 = Parameter(
                 name='p2',
                 description='',
-                value_spec=AttributeSpec(value=2.0, data_type=DataTypes.NUMERIC, default=0.0),
+                value_spec=AttributeSpec(default=0.0),
                 units='',
                 cif_handler=CifHandler(names=['_cat.p2']),
             )
+            # Set actual values via setter
+            self._p1.value = 1.0
+            self._p2.value = 2.0
             # Make p2 constrained and not free
             self._p2._constrained = True
             self._p2._free = False

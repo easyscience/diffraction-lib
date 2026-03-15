@@ -5,7 +5,6 @@ from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.parameters import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import DataTypes
 from easydiffraction.io.cif.handler import CifHandler
 
 
@@ -19,7 +18,7 @@ class SimpleItem(CategoryItem):
             StringDescriptor(
                 name='a',
                 description='',
-                value_spec=AttributeSpec(value='x', data_type=DataTypes.STRING, default=''),
+                value_spec=AttributeSpec(default='_'),
                 cif_handler=CifHandler(names=['_simple.a']),
             ),
         )
@@ -29,7 +28,7 @@ class SimpleItem(CategoryItem):
             StringDescriptor(
                 name='b',
                 description='',
-                value_spec=AttributeSpec(value='y', data_type=DataTypes.STRING, default=''),
+                value_spec=AttributeSpec(default='_'),
                 cif_handler=CifHandler(names=['_simple.b']),
             ),
         )

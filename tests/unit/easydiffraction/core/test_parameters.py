@@ -21,7 +21,7 @@ def test_string_descriptor_type_override_raises_type_error():
     with pytest.raises(TypeError):
         StringDescriptor(
             name='title',
-            value_spec=AttributeSpec(value='abc', data_type=DataTypes.NUMERIC, default='x'),
+            value_spec=AttributeSpec(data_type=DataTypes.NUMERIC, default='x'),
             description='Title text',
             cif_handler=CifHandler(names=['_proj.title']),
         )
@@ -30,12 +30,11 @@ def test_string_descriptor_type_override_raises_type_error():
 def test_numeric_descriptor_str_includes_units():
     from easydiffraction.core.parameters import NumericDescriptor
     from easydiffraction.core.validation import AttributeSpec
-    from easydiffraction.core.validation import DataTypes
     from easydiffraction.io.cif.handler import CifHandler
 
     d = NumericDescriptor(
         name='w',
-        value_spec=AttributeSpec(value=1.23, data_type=DataTypes.NUMERIC, default=0.0),
+        value_spec=AttributeSpec(default=1.23),
         units='deg',
         cif_handler=CifHandler(names=['_x.w']),
     )
@@ -46,15 +45,15 @@ def test_numeric_descriptor_str_includes_units():
 def test_parameter_string_repr_and_as_cif_and_flags():
     from easydiffraction.core.parameters import Parameter
     from easydiffraction.core.validation import AttributeSpec
-    from easydiffraction.core.validation import DataTypes
     from easydiffraction.io.cif.handler import CifHandler
 
     p = Parameter(
         name='a',
-        value_spec=AttributeSpec(value=2.5, data_type=DataTypes.NUMERIC, default=0.0),
+        value_spec=AttributeSpec(default=0.0),
         units='A',
         cif_handler=CifHandler(names=['_param.a']),
     )
+    p.value = 2.5
     # Update extra attributes
     p.uncertainty = 0.1
     p.free = True
@@ -72,12 +71,11 @@ def test_parameter_string_repr_and_as_cif_and_flags():
 def test_parameter_uncertainty_must_be_non_negative():
     from easydiffraction.core.parameters import Parameter
     from easydiffraction.core.validation import AttributeSpec
-    from easydiffraction.core.validation import DataTypes
     from easydiffraction.io.cif.handler import CifHandler
 
     p = Parameter(
         name='b',
-        value_spec=AttributeSpec(value=1.0, data_type=DataTypes.NUMERIC, default=0.0),
+        value_spec=AttributeSpec(default=1.0),
         cif_handler=CifHandler(names=['_param.b']),
     )
     with pytest.raises(TypeError):
@@ -87,12 +85,11 @@ def test_parameter_uncertainty_must_be_non_negative():
 def test_parameter_fit_bounds_assign_and_read():
     from easydiffraction.core.parameters import Parameter
     from easydiffraction.core.validation import AttributeSpec
-    from easydiffraction.core.validation import DataTypes
     from easydiffraction.io.cif.handler import CifHandler
 
     p = Parameter(
         name='c',
-        value_spec=AttributeSpec(value=0.0, data_type=DataTypes.NUMERIC, default=0.0),
+        value_spec=AttributeSpec(default=0.0),
         cif_handler=CifHandler(names=['_param.c']),
     )
     p.fit_min = -1.0

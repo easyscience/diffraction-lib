@@ -5,7 +5,6 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     from easydiffraction.analysis.analysis import Analysis
     from easydiffraction.core.parameters import Parameter
     from easydiffraction.core.validation import AttributeSpec
-    from easydiffraction.core.validation import DataTypes
     from easydiffraction.io.cif.handler import CifHandler
     import easydiffraction.analysis.analysis as analysis_mod
 
@@ -13,9 +12,10 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     def make_param(db, cat, entry, name, val):
         p = Parameter(
             name=name,
-            value_spec=AttributeSpec(value=val, data_type=DataTypes.NUMERIC, default=0.0),
+            value_spec=AttributeSpec(default=0.0),
             cif_handler=CifHandler(names=[f'_{cat}.{name}']),
         )
+        p.value = val
         # Inject identity metadata (avoid parent chain)
         p._identity.datablock_entry_name = lambda: db
         p._identity.category_code = cat
