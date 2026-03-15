@@ -21,8 +21,8 @@ from easydiffraction.utils.utils import twotheta_to_d
 class PdDataPointBaseMixin:
     """Single base data point mixin for powder diffraction data."""
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self):
+        super().__init__()
 
         self._point_id = StringDescriptor(
             name='point_id',
@@ -147,8 +147,8 @@ class PdCwlDataPointMixin:
     wavelength.
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self):
+        super().__init__()
 
         self._two_theta = NumericDescriptor(
             name='two_theta',
@@ -178,8 +178,8 @@ class PdCwlDataPointMixin:
 class PdTofDataPointMixin:
     """Mixin for powder diffraction data points with time-of-flight."""
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self):
+        super().__init__()
 
         self._time_of_flight = NumericDescriptor(
             name='time_of_flight',
@@ -205,6 +205,14 @@ class PdCwlDataPoint(
     PdDataPointBaseMixin,  # TODO: rename to BasePdDataPointMixin???
     PdCwlDataPointMixin,  # TODO: rename to CwlPdDataPointMixin???
     CategoryItem,  # Must be last to ensure mixins initialized first
+    # TODO: Check this. AI suggest class
+    #  CwlThompsonCoxHastings(
+    #     PeakBase, # From CategoryItem
+    #     CwlBroadeningMixin,
+    #     FcjAsymmetryMixin,
+    #  ):
+    #  But also says, that in fact, it is just for consistency. And both
+    #  orders work.
 ):
     """Powder diffraction data point for constant-wavelength
     experiments.
