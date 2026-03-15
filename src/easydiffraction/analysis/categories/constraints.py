@@ -23,45 +23,34 @@ class Constraint(CategoryItem):
         rhs_expr: Right-hand side expression as a string.
     """
 
-    def __init__(
-        self,
-        *,
-        lhs_alias: str,
-        rhs_expr: str,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
         self._lhs_alias: StringDescriptor = StringDescriptor(
             name='lhs_alias',
-            description='...',
+            description='...', # TODO
             value_spec=AttributeSpec(
-                value=lhs_alias,
-                default='...',
+                default='...', # TODO
                 validator=RegexValidator(pattern=r'.*'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_constraint.lhs_alias',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_constraint.lhs_alias']),
         )
         self._rhs_expr: StringDescriptor = StringDescriptor(
             name='rhs_expr',
-            description='...',
+            description='...', # TODO
             value_spec=AttributeSpec(
-                value=rhs_expr,
-                default='...',
+                default='...', # TODO
                 validator=RegexValidator(pattern=r'.*'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_constraint.rhs_expr',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_constraint.rhs_expr']),
         )
 
         self._identity.category_code = 'constraint'
         self._identity.category_entry_name = lambda: str(self.lhs_alias.value)
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def lhs_alias(self):

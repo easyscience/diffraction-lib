@@ -24,45 +24,34 @@ class JointFitExperiment(CategoryItem):
         weight: Relative weight factor in the combined objective.
     """
 
-    def __init__(
-        self,
-        *,
-        id: str,
-        weight: float,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
         self._id: StringDescriptor = StringDescriptor(
             name='id',  # TODO: need new name instead of id
-            description='...',
+            description='...', # TODO
             value_spec=AttributeSpec(
-                value=id,
-                default='...',
+                default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_joint_fit_experiment.id',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_joint_fit_experiment.id']),
         )
         self._weight: NumericDescriptor = NumericDescriptor(
             name='weight',
-            description='...',
+            description='...', # TODO
             value_spec=AttributeSpec(
-                value=weight,
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_joint_fit_experiment.weight',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_joint_fit_experiment.weight']),
         )
 
         self._identity.category_code = 'joint_fit_experiment'
         self._identity.category_entry_name = lambda: str(self.id.value)
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def id(self):

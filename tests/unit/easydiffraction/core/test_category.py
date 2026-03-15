@@ -10,10 +10,9 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class SimpleItem(CategoryItem):
-    def __init__(self, entry_name):
+    def __init__(self):
         super().__init__()
         self._identity.category_code = 'simple'
-        self._identity.category_entry_name = entry_name
         object.__setattr__(
             self,
             '_a',
@@ -34,14 +33,23 @@ class SimpleItem(CategoryItem):
                 cif_handler=CifHandler(names=['_simple.b']),
             ),
         )
+        self._identity.category_entry_name = lambda: str(self._a.value)
 
     @property
     def a(self):
         return self._a
 
+    @a.setter
+    def a(self, value):
+        self._a.value = value
+
     @property
     def b(self):
         return self._b
+
+    @b.setter
+    def b(self, value):
+        self._b.value = value
 
 
 class SimpleCollection(CategoryCollection):
@@ -50,7 +58,8 @@ class SimpleCollection(CategoryCollection):
 
 
 def test_category_item_str_and_properties():
-    it = SimpleItem('name1')
+    it = SimpleItem()
+    it.a = 'name1'
     s = str(it)
     assert '<' in s and 'a=' in s and 'b=' in s
     assert it.unique_name.endswith('.simple.name1') or it.unique_name == 'simple.name1'
@@ -59,8 +68,8 @@ def test_category_item_str_and_properties():
 
 def test_category_collection_str_and_cif_calls():
     c = SimpleCollection()
-    c.add('n1')
-    c.add('n2')
+    c.add(a='n1')
+    c.add(a='n2')
     s = str(c)
     assert 'collection' in s and '2 items' in s
     # as_cif delegates to serializer; should be a string (possibly empty)

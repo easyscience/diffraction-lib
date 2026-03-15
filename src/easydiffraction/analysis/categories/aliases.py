@@ -26,45 +26,34 @@ class Alias(CategoryItem):
             ``label``.
     """
 
-    def __init__(
-        self,
-        *,
-        label: str,
-        param_uid: str,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
         self._label: StringDescriptor = StringDescriptor(
             name='label',
-            description='...',
+            description='...', # TODO
             value_spec=AttributeSpec(
-                value=label,
-                default='...',
+                default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_alias.label',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_alias.label']),
         )
         self._param_uid: StringDescriptor = StringDescriptor(
             name='param_uid',
-            description='...',
+            description='...', # TODO
             value_spec=AttributeSpec(
-                value=param_uid,
-                default='...',
+                default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_alias.param_uid',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_alias.param_uid']),
         )
 
         self._identity.category_code = 'alias'
         self._identity.category_entry_name = lambda: str(self.label.value)
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def label(self):

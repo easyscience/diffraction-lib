@@ -14,16 +14,23 @@ def test_background_base_minimal_impl_and_collection_cif():
     from easydiffraction.io.cif.handler import CifHandler
 
     class ConstantBackground(CategoryItem):
-        def __init__(self, name: str, value: float):
-            # CategoryItem doesn't define __init__; call GuardedBase via super()
+        def __init__(self):
             super().__init__()
             self._identity.category_code = 'background'
-            self._identity.category_entry_name = name
             self._level = Parameter(
                 name='level',
-                value_spec=AttributeSpec(value=value, data_type=DataTypes.NUMERIC, default=0.0),
+                value_spec=AttributeSpec(data_type=DataTypes.NUMERIC, default=0.0),
                 cif_handler=CifHandler(names=['_bkg.level']),
             )
+            self._identity.category_entry_name = lambda: str(self._level.value)
+
+        @property
+        def level(self):
+            return self._level
+
+        @level.setter
+        def level(self, value):
+            self._level.value = value
 
         def calculate(self, x_data):
             return np.full_like(np.asarray(x_data), fill_value=self._level.value, dtype=float)
@@ -48,9 +55,10 @@ def test_background_base_minimal_impl_and_collection_cif():
             return None
 
     coll = BackgroundCollection()
-    a = ConstantBackground('a', 1.0)
-    coll.add('a', 1.0)
-    coll.add('b', 2.0)
+    a = ConstantBackground()
+    a.level = 1.0
+    coll.add(level=1.0)
+    coll.add(level=2.0)
 
     # calculate sums two backgrounds externally (out of scope), here just verify item.calculate
     x = np.array([0.0, 1.0, 2.0])
