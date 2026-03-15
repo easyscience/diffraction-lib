@@ -298,13 +298,11 @@ class AttributeSpec:
     def __init__(
         self,
         *,
-        value=None,
         default=None,
         data_type=None,
         validator=None,
         allow_none: bool = False,
     ):
-        self.value = value
         self.default = default
         self.allow_none = allow_none
         self._data_type_validator = TypeValidator(data_type) if data_type else None
