@@ -16,6 +16,7 @@ class GuardedBase(ABC):
     _diagnoser = Diagnostics()
 
     def __init__(self):
+        super().__init__()
         self._identity = Identity(owner=self)
 
     def __str__(self) -> str:
