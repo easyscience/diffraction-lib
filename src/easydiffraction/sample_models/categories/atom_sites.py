@@ -27,100 +27,62 @@ class AtomSite(CategoryItem):
     CIF serialization.
     """
 
-    def __init__(
-        self,
-        *,
-        label=None,
-        type_symbol=None,
-        fract_x=None,
-        fract_y=None,
-        fract_z=None,
-        wyckoff_letter=None,
-        occupancy=None,
-        b_iso=None,
-        adp_type=None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
-        self._label: StringDescriptor = StringDescriptor(
+        self._label = StringDescriptor(
             name='label',
             description='Unique identifier for the atom site.',
             value_spec=AttributeSpec(
-                value=label,
                 default='Si',
                 # TODO: the following pattern is valid for dict key
                 #  (keywords are not checked). CIF label is less strict.
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_atom_site.label',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_atom_site.label']),
         )
-        self._type_symbol: StringDescriptor = StringDescriptor(
+        self._type_symbol = StringDescriptor(
             name='type_symbol',
             description='Chemical symbol of the atom at this site.',
             value_spec=AttributeSpec(
-                value=type_symbol,
                 default='Tb',
                 validator=MembershipValidator(allowed=self._type_symbol_allowed_values),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_atom_site.type_symbol',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_atom_site.type_symbol']),
         )
-        self._fract_x: Parameter = Parameter(
+        self._fract_x = Parameter(
             name='fract_x',
             description='Fractional x-coordinate of the atom site within the unit cell.',
             value_spec=AttributeSpec(
-                value=fract_x,
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_atom_site.fract_x',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_atom_site.fract_x']),
         )
-        self._fract_y: Parameter = Parameter(
+        self._fract_y = Parameter(
             name='fract_y',
             description='Fractional y-coordinate of the atom site within the unit cell.',
             value_spec=AttributeSpec(
-                value=fract_y,
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_atom_site.fract_y',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_atom_site.fract_y']),
         )
-        self._fract_z: Parameter = Parameter(
+        self._fract_z = Parameter(
             name='fract_z',
             description='Fractional z-coordinate of the atom site within the unit cell.',
             value_spec=AttributeSpec(
-                value=fract_z,
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_atom_site.fract_z',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_atom_site.fract_z']),
         )
-        self._wyckoff_letter: StringDescriptor = StringDescriptor(
+        self._wyckoff_letter = StringDescriptor(
             name='wyckoff_letter',
             description='Wyckoff letter indicating the symmetry of the '
             'atom site within the space group.',
             value_spec=AttributeSpec(
-                value=wyckoff_letter,
                 default=self._wyckoff_letter_default_value,
                 validator=MembershipValidator(allowed=self._wyckoff_letter_allowed_values),
             ),
@@ -131,12 +93,11 @@ class AtomSite(CategoryItem):
                 ]
             ),
         )
-        self._occupancy: Parameter = Parameter(
+        self._occupancy = Parameter(
             name='occupancy',
             description='Occupancy of the atom site, representing the '
             'fraction of the site occupied by the atom type.',
             value_spec=AttributeSpec(
-                value=occupancy,
                 default=1.0,
                 validator=RangeValidator(),
             ),
@@ -146,11 +107,10 @@ class AtomSite(CategoryItem):
                 ]
             ),
         )
-        self._b_iso: Parameter = Parameter(
+        self._b_iso = Parameter(
             name='b_iso',
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
             value_spec=AttributeSpec(
-                value=b_iso,
                 default=0.0,
                 validator=RangeValidator(ge=0.0),
             ),
@@ -161,12 +121,11 @@ class AtomSite(CategoryItem):
                 ]
             ),
         )
-        self._adp_type: StringDescriptor = StringDescriptor(
+        self._adp_type = StringDescriptor(
             name='adp_type',
             description='Type of atomic displacement parameter (ADP) '
             'used (e.g., Biso, Uiso, Uani, Bani).',
             value_spec=AttributeSpec(
-                value=adp_type,
                 default='Biso',
                 validator=MembershipValidator(allowed=['Biso']),
             ),
@@ -180,12 +139,18 @@ class AtomSite(CategoryItem):
         self._identity.category_code = 'atom_site'
         self._identity.category_entry_name = lambda: str(self.label.value)
 
+    # ------------------------------------------------------------------
+    #  Private helper methods
+    # ------------------------------------------------------------------
+
     @property
     def _type_symbol_allowed_values(self):
+        """Allowed values for atom type symbols."""
         return list({key[1] for key in DATABASE['Isotopes']})
 
     @property
     def _wyckoff_letter_allowed_values(self):
+        """Allowed values for wyckoff letter symbols."""
         # TODO: Need to now current space group. How to access it? Via
         #  parent Cell? Then letters =
         #  list(SPACE_GROUPS[62, 'cab']['Wyckoff_positions'].keys())
@@ -194,12 +159,16 @@ class AtomSite(CategoryItem):
 
     @property
     def _wyckoff_letter_default_value(self):
+        """Default value for wyckoff letter symbol."""
         # TODO: What to pass as default?
         return self._wyckoff_letter_allowed_values[0]
 
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
+
     @property
     def label(self):
-        """Label descriptor for the site (unique key)."""
         return self._label
 
     @label.setter
@@ -208,7 +177,6 @@ class AtomSite(CategoryItem):
 
     @property
     def type_symbol(self):
-        """Chemical symbol descriptor (e.g. 'Si')."""
         return self._type_symbol
 
     @type_symbol.setter
@@ -217,7 +185,6 @@ class AtomSite(CategoryItem):
 
     @property
     def adp_type(self):
-        """ADP type descriptor (e.g. 'Biso')."""
         return self._adp_type
 
     @adp_type.setter
@@ -226,7 +193,6 @@ class AtomSite(CategoryItem):
 
     @property
     def wyckoff_letter(self):
-        """Wyckoff letter descriptor (space-group position)."""
         return self._wyckoff_letter
 
     @wyckoff_letter.setter
@@ -235,7 +201,6 @@ class AtomSite(CategoryItem):
 
     @property
     def fract_x(self):
-        """Fractional x coordinate descriptor."""
         return self._fract_x
 
     @fract_x.setter
@@ -244,7 +209,6 @@ class AtomSite(CategoryItem):
 
     @property
     def fract_y(self):
-        """Fractional y coordinate descriptor."""
         return self._fract_y
 
     @fract_y.setter
@@ -253,7 +217,6 @@ class AtomSite(CategoryItem):
 
     @property
     def fract_z(self):
-        """Fractional z coordinate descriptor."""
         return self._fract_z
 
     @fract_z.setter
@@ -262,7 +225,6 @@ class AtomSite(CategoryItem):
 
     @property
     def occupancy(self):
-        """Occupancy descriptor (0..1)."""
         return self._occupancy
 
     @occupancy.setter
@@ -271,7 +233,6 @@ class AtomSite(CategoryItem):
 
     @property
     def b_iso(self):
-        """Isotropic ADP descriptor in Å²."""
         return self._b_iso
 
     @b_iso.setter
@@ -284,6 +245,10 @@ class AtomSites(CategoryCollection):
 
     def __init__(self):
         super().__init__(item_type=AtomSite)
+
+    # ------------------------------------------------------------------
+    #  Private helper methods
+    # ------------------------------------------------------------------
 
     def _apply_atomic_coordinates_symmetry_constraints(self):
         """Apply symmetry rules to fractional coordinates of atom

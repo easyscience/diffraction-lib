@@ -6,7 +6,9 @@ from easydiffraction.sample_models.categories.atom_sites import AtomSites
 
 
 def test_atom_site_defaults_and_setters():
-    a = AtomSite(label='Si1', type_symbol='Si')
+    a = AtomSite()
+    a.label='Si1'
+    a.type_symbol='Si'
     a.fract_x = 0.1
     a.fract_y = 0.2
     a.fract_z = 0.3
