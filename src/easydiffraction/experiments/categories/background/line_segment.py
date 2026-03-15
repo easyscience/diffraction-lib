@@ -29,20 +29,13 @@ from easydiffraction.utils.utils import render_table
 class LineSegment(CategoryItem):
     """Single background control point for interpolation."""
 
-    def __init__(
-        self,
-        *,
-        id=None,  # TODO: rename as in the case of data points?
-        x=None,
-        y=None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
         self._id = StringDescriptor(
             name='id',
             description='Identifier for this background line segment.',
             value_spec=AttributeSpec(
-                value=id,
                 default='0',
                 # TODO: the following pattern is valid for dict key
                 #  (keywords are not checked). CIF label is less strict.
@@ -62,7 +55,6 @@ class LineSegment(CategoryItem):
                 'representing the background in a calculated diffractogram.'
             ),
             value_spec=AttributeSpec(
-                value=x,
                 default=0.0,
                 validator=RangeValidator(),
             ),
@@ -80,7 +72,6 @@ class LineSegment(CategoryItem):
                 'representing the background in a calculated diffractogram'
             ),
             value_spec=AttributeSpec(
-                value=y,
                 default=0.0,
                 validator=RangeValidator(),
             ),  # TODO: rename to intensity
@@ -94,6 +85,10 @@ class LineSegment(CategoryItem):
 
         self._identity.category_code = 'background'
         self._identity.category_entry_name = lambda: str(self._id.value)
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def id(self):

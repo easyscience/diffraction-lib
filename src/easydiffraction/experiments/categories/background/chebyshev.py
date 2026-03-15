@@ -36,63 +36,46 @@ class PolynomialTerm(CategoryItem):
     not break immediately. Tests should migrate to the short names.
     """
 
-    def __init__(
-        self,
-        *,
-        id=None,  # TODO: rename as in the case of data points?
-        order=None,
-        coef=None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
         self._id = StringDescriptor(
             name='id',
             description='Identifier for this background polynomial term.',
             value_spec=AttributeSpec(
-                value=id,
                 default='0',
                 # TODO: the following pattern is valid for dict key
                 #  (keywords are not checked). CIF label is less strict.
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_background.id',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_pd_background.id']),
         )
         self._order = NumericDescriptor(
             name='order',
             description='Order used in a Chebyshev polynomial background term',
             value_spec=AttributeSpec(
-                value=order,
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_background.Chebyshev_order',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_pd_background.Chebyshev_order']),
         )
         self._coef = Parameter(
             name='coef',
             description='Coefficient used in a Chebyshev polynomial background term',
             value_spec=AttributeSpec(
-                value=coef,
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_background.Chebyshev_coef',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_pd_background.Chebyshev_coef']),
         )
 
         self._identity.category_code = 'background'
         self._identity.category_entry_name = lambda: str(self._id.value)
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def id(self):

@@ -5,7 +5,9 @@ def test_linked_phases_add_and_cif_headers():
     from easydiffraction.experiments.categories.linked_phases import LinkedPhase
     from easydiffraction.experiments.categories.linked_phases import LinkedPhases
 
-    lp = LinkedPhase(id='Si', scale=2.0)
+    lp = LinkedPhase()
+    lp.id = 'Si'
+    lp.scale = 2.0
     assert lp.id.value == 'Si' and lp.scale.value == 2.0
 
     coll = LinkedPhases()

@@ -21,13 +21,7 @@ from easydiffraction.utils.utils import render_table
 class ExcludedRegion(CategoryItem):
     """Closed interval [start, end] to be excluded."""
 
-    def __init__(
-        self,
-        *,
-        id=None,  # TODO: rename as in the case of data points?
-        start=None,
-        end=None,
-    ):
+    def __init__(self):
         super().__init__()
 
         # TODO: Add point_id as for the background
@@ -35,52 +29,41 @@ class ExcludedRegion(CategoryItem):
             name='id',
             description='Identifier for this excluded region.',
             value_spec=AttributeSpec(
-                value=id,
                 default='0',
                 # TODO: the following pattern is valid for dict key
                 #  (keywords are not checked). CIF label is less strict.
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_excluded_region.id',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_excluded_region.id']),
         )
         self._start = NumericDescriptor(
             name='start',
             description='Start of the excluded region.',
             value_spec=AttributeSpec(
-                value=start,
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_excluded_region.start',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_excluded_region.start']),
         )
         self._end = NumericDescriptor(
             name='end',
             description='End of the excluded region.',
             value_spec=AttributeSpec(
-                value=end,
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_excluded_region.end',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_excluded_region.end']),
         )
         # self._category_entry_attr_name = f'{start}-{end}'
         # self._category_entry_attr_name = self.start.name
         # self.name = self.start.value
         self._identity.category_code = 'excluded_regions'
         self._identity.category_entry_name = lambda: str(self._id.value)
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def id(self):

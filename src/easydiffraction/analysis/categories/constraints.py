@@ -26,20 +26,20 @@ class Constraint(CategoryItem):
     def __init__(self) -> None:
         super().__init__()
 
-        self._lhs_alias: StringDescriptor = StringDescriptor(
+        self._lhs_alias = StringDescriptor(
             name='lhs_alias',
-            description='...', # TODO
+            description='Left-hand side of the equation.',  # TODO
             value_spec=AttributeSpec(
-                default='...', # TODO
+                default='...',  # TODO
                 validator=RegexValidator(pattern=r'.*'),
             ),
             cif_handler=CifHandler(names=['_constraint.lhs_alias']),
         )
-        self._rhs_expr: StringDescriptor = StringDescriptor(
+        self._rhs_expr = StringDescriptor(
             name='rhs_expr',
-            description='...', # TODO
+            description='Right-hand side expression.',  # TODO
             value_spec=AttributeSpec(
-                default='...', # TODO
+                default='...',  # TODO
                 validator=RegexValidator(pattern=r'.*'),
             ),
             cif_handler=CifHandler(names=['_constraint.rhs_expr']),
@@ -54,30 +54,18 @@ class Constraint(CategoryItem):
 
     @property
     def lhs_alias(self):
-        """Alias name on the left-hand side of the equation."""
         return self._lhs_alias
 
     @lhs_alias.setter
     def lhs_alias(self, value):
-        """Set the left-hand side alias.
-
-        Args:
-            value: New alias string.
-        """
         self._lhs_alias.value = value
 
     @property
     def rhs_expr(self):
-        """Right-hand side expression string."""
         return self._rhs_expr
 
     @rhs_expr.setter
     def rhs_expr(self, value):
-        """Set the right-hand side expression.
-
-        Args:
-            value: New expression string.
-        """
         self._rhs_expr.value = value
 
 

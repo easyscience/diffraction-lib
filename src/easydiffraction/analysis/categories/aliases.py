@@ -29,18 +29,18 @@ class Alias(CategoryItem):
     def __init__(self) -> None:
         super().__init__()
 
-        self._label: StringDescriptor = StringDescriptor(
+        self._label = StringDescriptor(
             name='label',
-            description='...', # TODO
+            description='...',  # TODO
             value_spec=AttributeSpec(
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(names=['_alias.label']),
         )
-        self._param_uid: StringDescriptor = StringDescriptor(
+        self._param_uid = StringDescriptor(
             name='param_uid',
-            description='...', # TODO
+            description='...',  # TODO
             value_spec=AttributeSpec(
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
@@ -57,30 +57,18 @@ class Alias(CategoryItem):
 
     @property
     def label(self):
-        """Alias label descriptor."""
         return self._label
 
     @label.setter
     def label(self, value):
-        """Set alias label.
-
-        Args:
-            value: New label.
-        """
         self._label.value = value
 
     @property
     def param_uid(self):
-        """Parameter uid descriptor the alias points to."""
         return self._param_uid
 
     @param_uid.setter
     def param_uid(self, value):
-        """Set the parameter uid.
-
-        Args:
-            value: New uid.
-        """
         self._param_uid.value = value
 
 

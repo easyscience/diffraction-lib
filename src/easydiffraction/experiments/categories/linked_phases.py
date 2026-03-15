@@ -15,64 +15,49 @@ from easydiffraction.io.cif.handler import CifHandler
 class LinkedPhase(CategoryItem):
     """Link to a phase by id with a scale factor."""
 
-    def __init__(
-        self,
-        *,
-        id=None,  # TODO: need new name instead of id
-        scale=None,
-    ):
+    def __init__(self):
         super().__init__()
 
         self._id = StringDescriptor(
             name='id',
             description='Identifier of the linked phase.',
             value_spec=AttributeSpec(
-                value=id,
                 default='Si',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_phase_block.id',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_pd_phase_block.id']),
         )
         self._scale = Parameter(
             name='scale',
             description='Scale factor of the linked phase.',
             value_spec=AttributeSpec(
-                value=scale,
                 default=1.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_phase_block.scale',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_pd_phase_block.scale']),
         )
 
         self._identity.category_code = 'linked_phases'
         self._identity.category_entry_name = lambda: str(self.id.value)
 
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
+
     @property
     def id(self) -> StringDescriptor:
-        """Identifier of the linked phase."""
         return self._id
 
     @id.setter
     def id(self, value: str):
-        """Set the linked phase identifier."""
         self._id.value = value
 
     @property
     def scale(self) -> Parameter:
-        """Scale factor parameter."""
         return self._scale
 
     @scale.setter
     def scale(self, value: float):
-        """Set scale factor value."""
         self._scale.value = value
 
 

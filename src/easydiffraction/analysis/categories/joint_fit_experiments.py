@@ -29,7 +29,7 @@ class JointFitExperiment(CategoryItem):
 
         self._id: StringDescriptor = StringDescriptor(
             name='id',  # TODO: need new name instead of id
-            description='...', # TODO
+            description='Experiment identifier',  # TODO
             value_spec=AttributeSpec(
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
@@ -38,7 +38,7 @@ class JointFitExperiment(CategoryItem):
         )
         self._weight: NumericDescriptor = NumericDescriptor(
             name='weight',
-            description='...', # TODO
+            description='Weight factor',  # TODO
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -55,30 +55,18 @@ class JointFitExperiment(CategoryItem):
 
     @property
     def id(self):
-        """Experiment identifier descriptor."""
         return self._id
 
     @id.setter
     def id(self, value):
-        """Set the experiment identifier.
-
-        Args:
-            value: New id string.
-        """
         self._id.value = value
 
     @property
     def weight(self):
-        """Weight factor descriptor."""
         return self._weight
 
     @weight.setter
     def weight(self, value):
-        """Set the weight factor.
-
-        Args:
-            value: New weight value.
-        """
         self._weight.value = value
 
 
