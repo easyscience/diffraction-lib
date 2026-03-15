@@ -72,6 +72,10 @@ class CwlBroadeningMixin:
             cif_handler=CifHandler(names=['_peak.broad_lorentz_y']),
         )
 
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
+
     @property
     def broad_gauss_u(self) -> Parameter:
         return self._broad_gauss_u
@@ -160,6 +164,10 @@ class EmpiricalAsymmetryMixin:
             cif_handler=CifHandler(names=['_peak.asym_empir_4']),
         )
 
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
+
     @property
     def asym_empir_1(self) -> Parameter:
         return self._asym_empir_1
@@ -219,6 +227,10 @@ class FcjAsymmetryMixin:
             ),
             cif_handler=CifHandler(names=['_peak.asym_fcj_2']),
         )
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def asym_fcj_1(self):

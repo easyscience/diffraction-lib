@@ -47,11 +47,7 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_proc.d_spacing',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_pd_proc.d_spacing']),
         )
         self._intensity_meas = NumericDescriptor(
             name='intensity_meas',
@@ -88,11 +84,7 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_calc.intensity_total',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_pd_calc.intensity_total']),
         )
         self._intensity_bkg = NumericDescriptor(
             name='intensity_bkg',
@@ -101,11 +93,7 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_calc.intensity_bkg',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_pd_calc.intensity_bkg']),
         )
         self._calc_status = StringDescriptor(
             name='calc_status',
@@ -120,6 +108,10 @@ class PdDataPointBaseMixin:
                 ]
             ),
         )
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def point_id(self) -> StringDescriptor:
@@ -157,6 +149,7 @@ class PdCwlDataPointMixin:
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
         self._two_theta = NumericDescriptor(
             name='two_theta',
             description='Measured 2θ diffraction angle.',
@@ -173,8 +166,12 @@ class PdCwlDataPointMixin:
             ),
         )
 
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
+
     @property
-    def two_theta(self) -> NumericDescriptor:
+    def two_theta(self):
         return self._two_theta
 
 
@@ -183,6 +180,7 @@ class PdTofDataPointMixin:
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
         self._time_of_flight = NumericDescriptor(
             name='time_of_flight',
             description='Measured time for time-of-flight neutron measurement.',
@@ -191,15 +189,15 @@ class PdTofDataPointMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_meas.time_of_flight',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_pd_meas.time_of_flight']),
         )
 
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
+
     @property
-    def time_of_flight(self) -> NumericDescriptor:
+    def time_of_flight(self):
         return self._time_of_flight
 
 
