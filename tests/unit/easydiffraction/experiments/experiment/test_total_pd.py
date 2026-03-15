@@ -13,12 +13,12 @@ from easydiffraction.experiments.experiment.total_pd import TotalPdExperiment
 
 
 def _mk_type_powder_total():
-    return ExperimentType(
-        sample_form=SampleFormEnum.POWDER.value,
-        beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH.value,
-        radiation_probe=RadiationProbeEnum.NEUTRON.value,
-        scattering_type=ScatteringTypeEnum.TOTAL.value,
-    )
+    et = ExperimentType()
+    et.sample_form = SampleFormEnum.POWDER.value
+    et.beam_mode = BeamModeEnum.CONSTANT_WAVELENGTH.value
+    et.radiation_probe = RadiationProbeEnum.NEUTRON.value
+    et.scattering_type = ScatteringTypeEnum.TOTAL.value
+    return et
 
 
 def test_load_ascii_data_pdf(tmp_path: pytest.TempPathFactory):

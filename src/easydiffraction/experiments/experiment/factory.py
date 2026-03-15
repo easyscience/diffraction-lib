@@ -88,12 +88,12 @@ class ExperimentFactory(FactoryBase):
         # TODO: Defaults are already in the experiment type...
         # TODO: Merging with experiment_type_from_block from
         #  io.cif.parse
-        return ExperimentType(
-            sample_form=kwargs.get('sample_form', SampleFormEnum.default().value),
-            beam_mode=kwargs.get('beam_mode', BeamModeEnum.default().value),
-            radiation_probe=kwargs.get('radiation_probe', RadiationProbeEnum.default().value),
-            scattering_type=kwargs.get('scattering_type', ScatteringTypeEnum.default().value),
-        )
+        et = ExperimentType()
+        et.sample_form = kwargs.get('sample_form', SampleFormEnum.default().value)
+        et.beam_mode = kwargs.get('beam_mode', BeamModeEnum.default().value)
+        et.radiation_probe = kwargs.get('radiation_probe', RadiationProbeEnum.default().value)
+        et.scattering_type = kwargs.get('scattering_type', ScatteringTypeEnum.default().value)
+        return et
 
     # TODO: Move to a common CIF utility module? io.cif.parse?
     @classmethod

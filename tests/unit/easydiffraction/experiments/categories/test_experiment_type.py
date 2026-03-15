@@ -19,12 +19,12 @@ def test_experiment_type_properties_and_validation(monkeypatch):
 
     log.configure(reaction=log.Reaction.WARN)
 
-    et = ExperimentType(
-        sample_form=SampleFormEnum.POWDER.value,
-        beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH.value,
-        radiation_probe=RadiationProbeEnum.NEUTRON.value,
-        scattering_type=ScatteringTypeEnum.BRAGG.value,
-    )
+    et = ExperimentType()
+    et.sample_form = SampleFormEnum.POWDER.value
+    et.beam_mode = BeamModeEnum.CONSTANT_WAVELENGTH.value
+    et.radiation_probe = RadiationProbeEnum.NEUTRON.value
+    et.scattering_type = ScatteringTypeEnum.BRAGG.value
+
     # getters nominal
     assert et.sample_form.value == SampleFormEnum.POWDER.value
     assert et.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH.value
