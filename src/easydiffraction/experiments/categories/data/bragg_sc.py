@@ -40,21 +40,21 @@ class Refln(CategoryItem):
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
             description='The distance between lattice planes in the crystal for this reflection.',
+            units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            units='Å',
             cif_handler=CifHandler(names=['_refln.d_spacing']),
         )
         self._sin_theta_over_lambda = NumericDescriptor(
             name='sin_theta_over_lambda',
             description='The sin(θ)/λ value for this reflection.',
+            units='Å⁻¹',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            units='Å⁻¹',
             cif_handler=CifHandler(names=['_refln.sin_theta_over_lambda']),
         )
         self._index_h = NumericDescriptor(
@@ -114,11 +114,11 @@ class Refln(CategoryItem):
         self._wavelength = NumericDescriptor(
             name='wavelength',
             description='The mean wavelength of radiation used to measure this reflection.',
+            units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            units='Å',
             cif_handler=CifHandler(names=['_refln.wavelength']),
         )
 

@@ -24,83 +24,83 @@ class TofBroadeningMixin:
         self._broad_gauss_sigma_0 = Parameter(
             name='gauss_sigma_0',
             description='Gaussian broadening coefficient (instrumental resolution)',
+            units='µs²',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='µs²',
             cif_handler=CifHandler(names=['_peak.gauss_sigma_0']),
         )
         self._broad_gauss_sigma_1 = Parameter(
             name='gauss_sigma_1',
             description='Gaussian broadening coefficient (dependent on d-spacing)',
+            units='µs/Å',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='µs/Å',
             cif_handler=CifHandler(names=['_peak.gauss_sigma_1']),
         )
         self._broad_gauss_sigma_2 = Parameter(
             name='gauss_sigma_2',
             description='Gaussian broadening coefficient (instrument-dependent term)',
+            units='µs²/Å²',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='µs²/Å²',
             cif_handler=CifHandler(names=['_peak.gauss_sigma_2']),
         )
         self._broad_lorentz_gamma_0 = Parameter(
             name='lorentz_gamma_0',
             description='Lorentzian broadening coefficient (dependent on microstrain effects)',
+            units='µs',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='µs',
             cif_handler=CifHandler(names=['_peak.lorentz_gamma_0']),
         )
         self._broad_lorentz_gamma_1 = Parameter(
             name='lorentz_gamma_1',
             description='Lorentzian broadening coefficient (dependent on d-spacing)',
+            units='µs/Å',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='µs/Å',
             cif_handler=CifHandler(names=['_peak.lorentz_gamma_1']),
         )
         self._broad_lorentz_gamma_2 = Parameter(
             name='lorentz_gamma_2',
             description='Lorentzian broadening coefficient (instrument-dependent term)',
+            units='µs²/Å²',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='µs²/Å²',
             cif_handler=CifHandler(names=['_peak.lorentz_gamma_2']),
         )
         self._broad_mix_beta_0 = Parameter(
             name='mix_beta_0',
             description='Mixing parameter. Defines the ratio of Gaussian '
             'to Lorentzian contributions in TOF profiles',
+            units='deg',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='deg',
             cif_handler=CifHandler(names=['_peak.mix_beta_0']),
         )
         self._broad_mix_beta_1 = Parameter(
             name='mix_beta_1',
             description='Mixing parameter. Defines the ratio of Gaussian '
             'to Lorentzian contributions in TOF profiles',
+            units='deg',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='deg',
             cif_handler=CifHandler(names=['_peak.mix_beta_1']),
         )
 
@@ -183,21 +183,21 @@ class IkedaCarpenterAsymmetryMixin:
         self._asym_alpha_0 = Parameter(
             name='asym_alpha_0',
             description='Ikeda-Carpenter asymmetry parameter α₀',
+            units='',  # TODO
             value_spec=AttributeSpec(
                 default=0.01,
                 validator=RangeValidator(),
             ),
-            units='',
             cif_handler=CifHandler(names=['_peak.asym_alpha_0']),
         )
         self._asym_alpha_1 = Parameter(
             name='asym_alpha_1',
             description='Ikeda-Carpenter asymmetry parameter α₁',
+            units='',  # TODO
             value_spec=AttributeSpec(
                 default=0.02,
                 validator=RangeValidator(),
             ),
-            units='',
             cif_handler=CifHandler(names=['_peak.asym_alpha_1']),
         )
 

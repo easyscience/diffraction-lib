@@ -160,11 +160,11 @@ class PdCwlDataPointMixin:
         self._two_theta = NumericDescriptor(
             name='two_theta',
             description='Measured 2θ diffraction angle.',
+            units='deg',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0, le=180),
             ),
-            units='deg',
             cif_handler=CifHandler(
                 names=[
                     '_pd_proc.2theta_scan',
@@ -186,11 +186,11 @@ class PdTofDataPointMixin:
         self._time_of_flight = NumericDescriptor(
             name='time_of_flight',
             description='Measured time for time-of-flight neutron measurement.',
+            units='µs',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            units='µs',
             cif_handler=CifHandler(
                 names=[
                     '_pd_meas.time_of_flight',

@@ -101,25 +101,17 @@ class AtomSite(CategoryItem):
                 default=1.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_atom_site.occupancy',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_atom_site.occupancy']),
         )
         self._b_iso = Parameter(
             name='b_iso',
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
+            units='Å²',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0.0),
             ),
-            units='Å²',
-            cif_handler=CifHandler(
-                names=[
-                    '_atom_site.B_iso_or_equiv',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_atom_site.B_iso_or_equiv']),
         )
         self._adp_type = StringDescriptor(
             name='adp_type',
@@ -129,11 +121,7 @@ class AtomSite(CategoryItem):
                 default='Biso',
                 validator=MembershipValidator(allowed=['Biso']),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_atom_site.adp_type',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_atom_site.adp_type']),
         )
 
         self._identity.category_code = 'atom_site'

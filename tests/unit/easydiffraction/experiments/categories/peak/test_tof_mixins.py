@@ -9,7 +9,7 @@ def test_tof_broadening_and_asymmetry_mixins():
     from easydiffraction.experiments.categories.peak.tof_mixins import IkedaCarpenterAsymmetryMixin
     from easydiffraction.experiments.categories.peak.tof_mixins import TofBroadeningMixin
 
-    class TofPeak(PeakBase, TofBroadeningMixin, IkedaCarpenterAsymmetryMixin):
+    class TofPeak(PeakBase, TofBroadeningMixin, IkedaCarpenterAsymmetryMixin,):
         def __init__(self):
             super().__init__()
 

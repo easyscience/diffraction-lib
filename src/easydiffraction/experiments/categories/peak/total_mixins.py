@@ -24,63 +24,63 @@ class TotalBroadeningMixin:
             name='damp_q',
             description='Instrumental Q-resolution damping factor '
             '(affects high-r PDF peak amplitude)',
+            units='Å⁻¹',
             value_spec=AttributeSpec(
                 default=0.05,
                 validator=RangeValidator(),
             ),
-            units='Å⁻¹',
             cif_handler=CifHandler(names=['_peak.damp_q']),
         )
         self._broad_q = Parameter(
             name='broad_q',
             description='Quadratic PDF peak broadening coefficient '
             '(thermal and model uncertainty contribution)',
+            units='Å⁻²',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='Å⁻²',
             cif_handler=CifHandler(names=['_peak.broad_q']),
         )
         self._cutoff_q = Parameter(
             name='cutoff_q',
             description='Q-value cutoff applied to model PDF for Fourier '
             'transform (controls real-space resolution)',
+            units='Å⁻¹',
             value_spec=AttributeSpec(
                 default=25.0,
                 validator=RangeValidator(),
             ),
-            units='Å⁻¹',
             cif_handler=CifHandler(names=['_peak.cutoff_q']),
         )
         self._sharp_delta_1 = Parameter(
             name='sharp_delta_1',
             description='PDF peak sharpening coefficient (1/r dependence)',
+            units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='Å',
             cif_handler=CifHandler(names=['_peak.sharp_delta_1']),
         )
         self._sharp_delta_2 = Parameter(
             name='sharp_delta_2',
             description='PDF peak sharpening coefficient (1/r² dependence)',
+            units='Å²',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='Å²',
             cif_handler=CifHandler(names=['_peak.sharp_delta_2']),
         )
         self._damp_particle_diameter = Parameter(
             name='damp_particle_diameter',
             description='Particle diameter for spherical envelope damping correction in PDF',
+            units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='Å',
             cif_handler=CifHandler(names=['_peak.damp_particle_diameter']),
         )
 

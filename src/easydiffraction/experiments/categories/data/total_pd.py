@@ -43,11 +43,11 @@ class TotalDataPoint(CategoryItem):
         self._r = NumericDescriptor(
             name='r',
             description='Interatomic distance in real space.',
+            units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            units='Å',
             cif_handler=CifHandler(
                 names=[
                     '_pd_proc.r',  # TODO: Use PDF-specific CIF names

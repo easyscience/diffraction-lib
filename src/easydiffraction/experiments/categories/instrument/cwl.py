@@ -15,11 +15,11 @@ class CwlInstrumentBase(InstrumentBase):
         self._setup_wavelength: Parameter = Parameter(
             name='wavelength',
             description='Incident neutron or X-ray wavelength',
+            units='Å',
             value_spec=AttributeSpec(
                 default=1.5406,
                 validator=RangeValidator(),
             ),
-            units='Å',
             cif_handler=CifHandler(
                 names=[
                     '_instr.wavelength',
@@ -50,11 +50,11 @@ class CwlPdInstrument(CwlInstrumentBase):
         self._calib_twotheta_offset: Parameter = Parameter(
             name='twotheta_offset',
             description='Instrument misalignment offset',
+            units='deg',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='deg',
             cif_handler=CifHandler(
                 names=[
                     '_instr.2theta_offset',

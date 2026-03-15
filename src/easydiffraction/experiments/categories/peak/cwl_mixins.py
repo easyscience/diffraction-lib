@@ -23,52 +23,52 @@ class CwlBroadeningMixin:
             name='broad_gauss_u',
             description='Gaussian broadening coefficient (dependent on '
             'sample size and instrument resolution)',
+            units='deg²',
             value_spec=AttributeSpec(
                 default=0.01,
                 validator=RangeValidator(),
             ),
-            units='deg²',
             cif_handler=CifHandler(names=['_peak.broad_gauss_u']),
         )
         self._broad_gauss_v: Parameter = Parameter(
             name='broad_gauss_v',
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
+            units='deg²',
             value_spec=AttributeSpec(
                 default=-0.01,
                 validator=RangeValidator(),
             ),
-            units='deg²',
             cif_handler=CifHandler(names=['_peak.broad_gauss_v']),
         )
         self._broad_gauss_w: Parameter = Parameter(
             name='broad_gauss_w',
             description='Gaussian broadening coefficient (instrumental broadening contribution)',
+            units='deg²',
             value_spec=AttributeSpec(
                 default=0.02,
                 validator=RangeValidator(),
             ),
-            units='deg²',
             cif_handler=CifHandler(names=['_peak.broad_gauss_w']),
         )
         self._broad_lorentz_x: Parameter = Parameter(
             name='broad_lorentz_x',
             description='Lorentzian broadening coefficient (dependent on sample strain effects)',
+            units='deg',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='deg',
             cif_handler=CifHandler(names=['_peak.broad_lorentz_x']),
         )
         self._broad_lorentz_y: Parameter = Parameter(
             name='broad_lorentz_y',
             description='Lorentzian broadening coefficient (dependent on '
             'microstructural defects and strain)',
+            units='deg',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='deg',
             cif_handler=CifHandler(names=['_peak.broad_lorentz_y']),
         )
 
@@ -122,41 +122,41 @@ class EmpiricalAsymmetryMixin:
         self._asym_empir_1: Parameter = Parameter(
             name='asym_empir_1',
             description='Empirical asymmetry coefficient p1',
+            units='',
             value_spec=AttributeSpec(
                 default=0.1,
                 validator=RangeValidator(),
             ),
-            units='',
             cif_handler=CifHandler(names=['_peak.asym_empir_1']),
         )
         self._asym_empir_2: Parameter = Parameter(
             name='asym_empir_2',
             description='Empirical asymmetry coefficient p2',
+            units='',
             value_spec=AttributeSpec(
                 default=0.2,
                 validator=RangeValidator(),
             ),
-            units='',
             cif_handler=CifHandler(names=['_peak.asym_empir_2']),
         )
         self._asym_empir_3: Parameter = Parameter(
             name='asym_empir_3',
             description='Empirical asymmetry coefficient p3',
+            units='',
             value_spec=AttributeSpec(
                 default=0.3,
                 validator=RangeValidator(),
             ),
-            units='',
             cif_handler=CifHandler(names=['_peak.asym_empir_3']),
         )
         self._asym_empir_4: Parameter = Parameter(
             name='asym_empir_4',
             description='Empirical asymmetry coefficient p4',
+            units='',
             value_spec=AttributeSpec(
                 default=0.4,
                 validator=RangeValidator(),
             ),
-            units='',
             cif_handler=CifHandler(names=['_peak.asym_empir_4']),
         )
 
@@ -202,21 +202,21 @@ class FcjAsymmetryMixin:
         self._asym_fcj_1: Parameter = Parameter(
             name='asym_fcj_1',
             description='Finger-Cox-Jephcoat asymmetry parameter 1',
+            units='',
             value_spec=AttributeSpec(
                 default=0.01,
                 validator=RangeValidator(),
             ),
-            units='',
             cif_handler=CifHandler(names=['_peak.asym_fcj_1']),
         )
         self._asym_fcj_2: Parameter = Parameter(
             name='asym_fcj_2',
             description='Finger-Cox-Jephcoat asymmetry parameter 2',
+            units='',
             value_spec=AttributeSpec(
                 default=0.02,
                 validator=RangeValidator(),
             ),
-            units='',
             cif_handler=CifHandler(names=['_peak.asym_fcj_2']),
         )
 
