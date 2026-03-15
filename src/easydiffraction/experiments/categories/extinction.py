@@ -45,6 +45,10 @@ class Extinction(CategoryItem):
 
         self._identity.category_code = 'extinction'
 
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
+
     @property
     def mosaicity(self):
         return self._mosaicity

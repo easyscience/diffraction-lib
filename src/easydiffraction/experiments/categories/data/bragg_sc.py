@@ -35,11 +35,7 @@ class Refln(CategoryItem):
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_refln.id',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_refln.id']),
         )
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
@@ -49,11 +45,7 @@ class Refln(CategoryItem):
                 validator=RangeValidator(ge=0),
             ),
             units='Å',
-            cif_handler=CifHandler(
-                names=[
-                    '_refln.d_spacing',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_refln.d_spacing']),
         )
         self._sin_theta_over_lambda = NumericDescriptor(
             name='sin_theta_over_lambda',
@@ -63,11 +55,7 @@ class Refln(CategoryItem):
                 validator=RangeValidator(ge=0),
             ),
             units='Å⁻¹',
-            cif_handler=CifHandler(
-                names=[
-                    '_refln.sin_theta_over_lambda',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_refln.sin_theta_over_lambda']),
         )
         self._index_h = NumericDescriptor(
             name='index_h',
@@ -76,11 +64,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_refln.index_h',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_refln.index_h']),
         )
         self._index_k = NumericDescriptor(
             name='index_k',
@@ -89,11 +73,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_refln.index_k',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_refln.index_k']),
         )
         self._index_l = NumericDescriptor(
             name='index_l',
@@ -102,11 +82,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_refln.index_l',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_refln.index_l']),
         )
         self._intensity_meas = NumericDescriptor(
             name='intensity_meas',
@@ -115,11 +91,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_refln.intensity_meas',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_refln.intensity_meas']),
         )
         self._intensity_meas_su = NumericDescriptor(
             name='intensity_meas_su',
@@ -128,11 +100,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_refln.intensity_meas_su',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_refln.intensity_meas_su']),
         )
         self._intensity_calc = NumericDescriptor(
             name='intensity_calc',
@@ -141,11 +109,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_refln.intensity_calc',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_refln.intensity_calc']),
         )
         self._wavelength = NumericDescriptor(
             name='wavelength',
@@ -155,15 +119,15 @@ class Refln(CategoryItem):
                 validator=RangeValidator(ge=0),
             ),
             units='Å',
-            cif_handler=CifHandler(
-                names=[
-                    '_refln.wavelength',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_refln.wavelength']),
         )
 
         self._identity.category_code = 'refln'
         self._identity.category_entry_name = lambda: str(self.id.value)
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def id(self) -> StringDescriptor:
@@ -314,9 +278,9 @@ class ReflnData(CategoryCollection):
         self._set_sin_theta_over_lambda(stol)
         self._set_intensity_calc(calc)
 
-    ###################
-    # Public properties
-    ###################
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def d_spacing(self) -> np.ndarray:

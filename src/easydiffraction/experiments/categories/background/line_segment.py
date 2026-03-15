@@ -42,11 +42,7 @@ class LineSegment(CategoryItem):
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_background.id',
-                ]
-            ),
+            cif_handler=CifHandler(names=['_pd_background.id']),
         )
         self._x = NumericDescriptor(
             name='x',

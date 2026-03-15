@@ -108,6 +108,10 @@ class TotalDataPoint(CategoryItem):
         self._identity.category_code = 'total_data'
         self._identity.category_entry_name = lambda: str(self.point_id.value)
 
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
+
     @property
     def point_id(self) -> StringDescriptor:
         return self._point_id
@@ -222,9 +226,9 @@ class TotalDataBase(CategoryCollection):
 
         self._set_g_r_calc(calc)
 
-    ###################
-    # Public properties
-    ###################
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def calc_status(self) -> np.ndarray:
@@ -290,9 +294,9 @@ class TotalData(TotalDataBase):
         # Set point IDs
         self._set_point_id([str(i + 1) for i in range(values.size)])
 
-    ###################
-    # Public properties
-    ###################
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
 
     @property
     def x(self) -> np.ndarray:
