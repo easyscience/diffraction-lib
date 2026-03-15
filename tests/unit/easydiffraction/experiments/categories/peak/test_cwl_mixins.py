@@ -8,7 +8,7 @@ from easydiffraction.experiments.categories.peak.cwl import CwlThompsonCoxHastin
 
 def test_cwl_pseudo_voigt_params_exist_and_settable():
     peak = CwlPseudoVoigt()
-    # Created by _add_constant_wavelength_broadening
+    # CwlBroadening parameters
     assert peak.broad_gauss_u.name == 'broad_gauss_u'
     peak.broad_gauss_u = 0.123
     assert peak.broad_gauss_u.value == 0.123

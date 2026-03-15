@@ -12,8 +12,6 @@ def test_tof_broadening_and_asymmetry_mixins():
     class TofPeak(PeakBase, TofBroadeningMixin, IkedaCarpenterAsymmetryMixin):
         def __init__(self):
             super().__init__()
-            self._add_time_of_flight_broadening()
-            self._add_ikeda_carpenter_asymmetry()
 
     p = TofPeak()
     names = {param.name for param in p.parameters}
