@@ -103,13 +103,14 @@ class CategoryCollection(CollectionBase):
         """Add an item to the collection."""
         self[item._identity.category_entry_name] = item
 
-    # TODO: Disallow args and only allow kwargs?
-    # TODO: Check kwargs as for, e.g.,
-    #  ExperimentFactory.create(**kwargs)?
     @checktype
-    def add(self, *args, **kwargs) -> None:
+    def add(self, **kwargs) -> None:
         """Create and add a new child instance from the provided
         arguments.
         """
-        child_obj = self._item_type(*args, **kwargs)
+        child_obj = self._item_type()
+
+        for attr, val in kwargs.items():
+            setattr(child_obj, attr, val)
+
         self._add(child_obj)
