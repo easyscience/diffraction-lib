@@ -83,10 +83,17 @@ class GenericDescriptorBase(GuardedBase):
         self._description = description
 
         # Initial validated states
-        self._value = self._value_spec.validated(
-            value_spec.value,
-            name=self.unique_name,
-        )
+        # self._value = self._value_spec.validated(
+        #    value_spec.value,
+        #    name=self.unique_name,
+        # )
+
+        # Assign default directly.
+        # Skip validation — defaults are trusted.
+        # Callable is needed for dynamic defaults like SpaceGroup
+        # it_coordinate_system_code, and similar cases.
+        default = value_spec.default
+        self._value = default() if callable(default) else default
 
     def __str__(self) -> str:
         return f'<{self.unique_name} = {self.value!r}>'
