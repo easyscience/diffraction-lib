@@ -2507,7 +2507,8 @@ Only documentation was added; behavior remains unchanged.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/sample_models/categories/atom_sites.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 24</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 23</span>
+<span class="normal"> 24</span>
 <span class="normal"> 25</span>
 <span class="normal"> 26</span>
 <span class="normal"> 27</span>
@@ -2723,10 +2724,275 @@ Only documentation was added; behavior remains unchanged.</p>
 <span class="normal">237</span>
 <span class="normal">238</span>
 <span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
+<span class="normal">240</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSite</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Single atom site with fractional coordinates and ADP.</span>
+
+<span class="sd">    Attributes are represented by descriptors to support validation and</span>
+<span class="sd">    CIF serialization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Unique identifier for the atom site.&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Si&#39;</span><span class="p">,</span>
+                <span class="c1"># TODO: the following pattern is valid for dict key</span>
+                <span class="c1">#  (keywords are not checked). CIF label is less strict.</span>
+                <span class="c1">#  Do we need conversion between CIF and internal label?</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^[A-Za-z_][A-Za-z0-9_]*$&#39;</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_atom_site.label&#39;</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type_symbol</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;type_symbol&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Chemical symbol of the atom at this site.&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Tb&#39;</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_type_symbol_allowed_values</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_atom_site.type_symbol&#39;</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fract_x</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fract_x&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Fractional x-coordinate of the atom site within the unit cell.&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
+            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_atom_site.fract_x&#39;</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fract_y</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fract_y&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Fractional y-coordinate of the atom site within the unit cell.&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
+            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_atom_site.fract_y&#39;</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fract_z</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fract_z&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Fractional z-coordinate of the atom site within the unit cell.&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
+            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_atom_site.fract_z&#39;</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;wyckoff_letter&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Wyckoff letter indicating the symmetry of the &#39;</span>
+            <span class="s1">&#39;atom site within the space group.&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_default_value</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_allowed_values</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
+                    <span class="s1">&#39;_atom_site.Wyckoff_letter&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;_atom_site.Wyckoff_symbol&#39;</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_occupancy</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;occupancy&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Occupancy of the atom site, representing the &#39;</span>
+            <span class="s1">&#39;fraction of the site occupied by the atom type.&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
+            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
+                    <span class="s1">&#39;_atom_site.occupancy&#39;</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_b_iso</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b_iso&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Isotropic atomic displacement parameter (ADP) for the atom site.&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
+                    <span class="s1">&#39;_atom_site.B_iso_or_equiv&#39;</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_adp_type</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_type&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Type of atomic displacement parameter (ADP) &#39;</span>
+            <span class="s1">&#39;used (e.g., Biso, Uiso, Uani, Bani).&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Biso&#39;</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Biso&#39;</span><span class="p">]),</span>
+            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
+                    <span class="s1">&#39;_atom_site.adp_type&#39;</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;atom_site&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Private helper methods</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_type_symbol_allowed_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Allowed values for atom type symbols.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">({</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">DATABASE</span><span class="p">[</span><span class="s1">&#39;Isotopes&#39;</span><span class="p">]})</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wyckoff_letter_allowed_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Allowed values for wyckoff letter symbols.&quot;&quot;&quot;</span>
+        <span class="c1"># TODO: Need to now current space group. How to access it? Via</span>
+        <span class="c1">#  parent Cell? Then letters =</span>
+        <span class="c1">#  list(SPACE_GROUPS[62, &#39;cab&#39;][&#39;Wyckoff_positions&#39;].keys())</span>
+        <span class="c1">#  Temporarily return hardcoded list:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wyckoff_letter_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Default value for wyckoff letter symbol.&quot;&quot;&quot;</span>
+        <span class="c1"># TODO: What to pass as default?</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_allowed_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Public properties</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span>
+
+    <span class="nd">@label</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">type_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_symbol</span>
+
+    <span class="nd">@type_symbol</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">type_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type_symbol</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adp_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adp_type</span>
+
+    <span class="nd">@adp_type</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adp_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_adp_type</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wyckoff_letter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter</span>
+
+    <span class="nd">@wyckoff_letter</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wyckoff_letter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fract_x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fract_x</span>
+
+    <span class="nd">@fract_x</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fract_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fract_x</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fract_y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fract_y</span>
+
+    <span class="nd">@fract_y</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fract_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fract_y</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fract_z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fract_z</span>
+
+    <span class="nd">@fract_z</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fract_z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fract_z</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">occupancy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_occupancy</span>
+
+    <span class="nd">@occupancy</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">occupancy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_occupancy</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">b_iso</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b_iso</span>
+
+    <span class="nd">@b_iso</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">b_iso</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_b_iso</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="easydiffraction.sample_models.categories.atom_sites.AtomSites" class="doc doc-heading">
+            <code>AtomSites</code>
+
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;CategoryCollection&lt;/code&gt; (&lt;code&gt;easydiffraction.core.category.CategoryCollection&lt;/code&gt;)" href="../core/#easydiffraction.core.category.CategoryCollection">CategoryCollection</a></code></p>
+
+
+
+        <p>Collection of AtomSite instances.</p>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/sample_models/categories/atom_sites.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span>
 <span class="normal">246</span>
@@ -2772,621 +3038,15 @@ Only documentation was added; behavior remains unchanged.</p>
 <span class="normal">286</span>
 <span class="normal">287</span>
 <span class="normal">288</span>
-<span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSite</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Single atom site with fractional coordinates and ADP.</span>
-
-<span class="sd">    Attributes are represented by descriptors to support validation and</span>
-<span class="sd">    CIF serialization.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">type_symbol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">fract_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">fract_y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">fract_z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">wyckoff_letter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">occupancy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">b_iso</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">adp_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">:</span> <span class="n">StringDescriptor</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Unique identifier for the atom site.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Si&#39;</span><span class="p">,</span>
-                <span class="c1"># TODO: the following pattern is valid for dict key</span>
-                <span class="c1">#  (keywords are not checked). CIF label is less strict.</span>
-                <span class="c1">#  Do we need conversion between CIF and internal label?</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^[A-Za-z_][A-Za-z0-9_]*$&#39;</span><span class="p">),</span>
-            <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_atom_site.label&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_type_symbol</span><span class="p">:</span> <span class="n">StringDescriptor</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;type_symbol&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Chemical symbol of the atom at this site.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">type_symbol</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Tb&#39;</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_type_symbol_allowed_values</span><span class="p">),</span>
-            <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_atom_site.type_symbol&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_fract_x</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fract_x&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Fractional x-coordinate of the atom site within the unit cell.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">fract_x</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
-            <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_atom_site.fract_x&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_fract_y</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fract_y&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Fractional y-coordinate of the atom site within the unit cell.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">fract_y</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
-            <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_atom_site.fract_y&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_fract_z</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fract_z&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Fractional z-coordinate of the atom site within the unit cell.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">fract_z</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
-            <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_atom_site.fract_z&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter</span><span class="p">:</span> <span class="n">StringDescriptor</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;wyckoff_letter&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Wyckoff letter indicating the symmetry of the &#39;</span>
-            <span class="s1">&#39;atom site within the space group.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">wyckoff_letter</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_default_value</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_allowed_values</span><span class="p">),</span>
-            <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_atom_site.Wyckoff_letter&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;_atom_site.Wyckoff_symbol&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_occupancy</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;occupancy&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Occupancy of the atom site, representing the &#39;</span>
-            <span class="s1">&#39;fraction of the site occupied by the atom type.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">occupancy</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
-            <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_atom_site.occupancy&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_b_iso</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b_iso&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Isotropic atomic displacement parameter (ADP) for the atom site.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">b_iso</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">),</span>
-            <span class="p">),</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_atom_site.B_iso_or_equiv&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_adp_type</span><span class="p">:</span> <span class="n">StringDescriptor</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_type&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Type of atomic displacement parameter (ADP) &#39;</span>
-            <span class="s1">&#39;used (e.g., Biso, Uiso, Uani, Bani).&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">adp_type</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Biso&#39;</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Biso&#39;</span><span class="p">]),</span>
-            <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_atom_site.adp_type&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;atom_site&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_type_symbol_allowed_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">({</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">DATABASE</span><span class="p">[</span><span class="s1">&#39;Isotopes&#39;</span><span class="p">]})</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_wyckoff_letter_allowed_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># TODO: Need to now current space group. How to access it? Via</span>
-        <span class="c1">#  parent Cell? Then letters =</span>
-        <span class="c1">#  list(SPACE_GROUPS[62, &#39;cab&#39;][&#39;Wyckoff_positions&#39;].keys())</span>
-        <span class="c1">#  Temporarily return hardcoded list:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">]</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_wyckoff_letter_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># TODO: What to pass as default?</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_allowed_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Label descriptor for the site (unique key).&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span>
-
-    <span class="nd">@label</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">type_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Chemical symbol descriptor (e.g. &#39;Si&#39;).&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_symbol</span>
-
-    <span class="nd">@type_symbol</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">type_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_type_symbol</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">adp_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;ADP type descriptor (e.g. &#39;Biso&#39;).&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adp_type</span>
-
-    <span class="nd">@adp_type</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">adp_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_adp_type</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">wyckoff_letter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wyckoff letter descriptor (space-group position).&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter</span>
-
-    <span class="nd">@wyckoff_letter</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">wyckoff_letter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fract_x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fractional x coordinate descriptor.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fract_x</span>
-
-    <span class="nd">@fract_x</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fract_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_fract_x</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fract_y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fractional y coordinate descriptor.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fract_y</span>
-
-    <span class="nd">@fract_y</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fract_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_fract_y</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fract_z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fractional z coordinate descriptor.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fract_z</span>
-
-    <span class="nd">@fract_z</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fract_z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_fract_z</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">occupancy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Occupancy descriptor (0..1).&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_occupancy</span>
-
-    <span class="nd">@occupancy</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">occupancy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_occupancy</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">b_iso</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Isotropic ADP descriptor in Å².&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b_iso</span>
-
-    <span class="nd">@b_iso</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">b_iso</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_b_iso</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-</code></pre></div></td></tr></table></div>
-              </details>
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.atom_sites.AtomSite.adp_type" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">adp_type</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>ADP type descriptor (e.g. 'Biso').</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.atom_sites.AtomSite.b_iso" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">b_iso</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Isotropic ADP descriptor in Å².</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.atom_sites.AtomSite.fract_x" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">fract_x</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Fractional x coordinate descriptor.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.atom_sites.AtomSite.fract_y" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">fract_y</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Fractional y coordinate descriptor.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.atom_sites.AtomSite.fract_z" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">fract_z</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Fractional z coordinate descriptor.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.atom_sites.AtomSite.label" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">label</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Label descriptor for the site (unique key).</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.atom_sites.AtomSite.occupancy" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">occupancy</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Occupancy descriptor (0..1).</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.atom_sites.AtomSite.type_symbol" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">type_symbol</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Chemical symbol descriptor (e.g. 'Si').</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.atom_sites.AtomSite.wyckoff_letter" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">wyckoff_letter</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Wyckoff letter descriptor (space-group position).</p>
-
-    </div>
-
-</div>
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-class">
-
-
-
-<h4 id="easydiffraction.sample_models.categories.atom_sites.AtomSites" class="doc doc-heading">
-            <code>AtomSites</code>
-
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;CategoryCollection&lt;/code&gt; (&lt;code&gt;easydiffraction.core.category.CategoryCollection&lt;/code&gt;)" href="../core/#easydiffraction.core.category.CategoryCollection">CategoryCollection</a></code></p>
-
-
-
-        <p>Collection of AtomSite instances.</p>
-
-
-
-
-
-
-
-
-              <details class="mkdocstrings-source">
-                <summary>Source code in <code>src/easydiffraction/sample_models/categories/atom_sites.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span>
-<span class="normal">303</span>
-<span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSites</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
+<span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSites</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collection of AtomSite instances.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">item_type</span><span class="o">=</span><span class="n">AtomSite</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Private helper methods</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_apply_atomic_coordinates_symmetry_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply symmetry rules to fractional coordinates of atom</span>
@@ -3441,10 +3101,6 @@ Only documentation was added; behavior remains unchanged.</p>
     </div>
 
 </div>
-
-
-
-
 
 
 
@@ -3567,7 +3223,10 @@ Only documentation was added; behavior remains unchanged.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/sample_models/categories/cell.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 16</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
 <span class="normal"> 17</span>
 <span class="normal"> 18</span>
 <span class="normal"> 19</span>
@@ -3717,171 +3376,78 @@ Only documentation was added; behavior remains unchanged.</p>
 <span class="normal">163</span>
 <span class="normal">164</span>
 <span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Cell</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">166</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Cell</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Unit cell with lengths a, b, c and angles alpha, beta, gamma.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">length_a</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">length_b</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">length_c</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">angle_alpha</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">angle_beta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">angle_gamma</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_length_a</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_length_a</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_a&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the a axis of the unit cell.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">length_a</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">1000</span><span class="p">),</span>
-            <span class="p">),</span>
             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">1000</span><span class="p">),</span>
+            <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_cell.length_a&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_length_b</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_length_b</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_b&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the b axis of the unit cell.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">length_b</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">1000</span><span class="p">),</span>
-            <span class="p">),</span>
             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">1000</span><span class="p">),</span>
+            <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_cell.length_b&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_length_c</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_length_c</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_c&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the c axis of the unit cell.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">length_c</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">1000</span><span class="p">),</span>
-            <span class="p">),</span>
             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">1000</span><span class="p">),</span>
+            <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_cell.length_c&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_alpha</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_alpha</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_alpha&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges b and c.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">angle_alpha</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">180</span><span class="p">),</span>
-            <span class="p">),</span>
             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">180</span><span class="p">),</span>
+            <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_cell.angle_alpha&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_beta</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_beta</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_beta&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and c.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">angle_beta</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">180</span><span class="p">),</span>
-            <span class="p">),</span>
             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">180</span><span class="p">),</span>
+            <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_cell.angle_beta&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_gamma</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_gamma</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_gamma&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and b.&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">angle_gamma</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">180</span><span class="p">),</span>
-            <span class="p">),</span>
             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">180</span><span class="p">),</span>
+            <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_cell.angle_gamma&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;cell&#39;</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">length_a</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Descriptor for a-axis length in Å.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length_a</span>
-
-    <span class="nd">@length_a</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">length_a</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_length_a</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">length_b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Descriptor for b-axis length in Å.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length_b</span>
-
-    <span class="nd">@length_b</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">length_b</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_length_b</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">length_c</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Descriptor for c-axis length in Å.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length_c</span>
-
-    <span class="nd">@length_c</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">length_c</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_length_c</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">angle_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Descriptor for angle alpha in degrees.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angle_alpha</span>
-
-    <span class="nd">@angle_alpha</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">angle_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_alpha</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">angle_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Descriptor for angle beta in degrees.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angle_beta</span>
-
-    <span class="nd">@angle_beta</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">angle_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_beta</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">angle_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Descriptor for angle gamma in degrees.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angle_gamma</span>
-
-    <span class="nd">@angle_gamma</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">angle_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_gamma</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Private helper methods</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_apply_cell_symmetry_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply symmetry constraints to cell parameters.&quot;&quot;&quot;</span>
@@ -3909,9 +3475,61 @@ Only documentation was added; behavior remains unchanged.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update cell parameters by applying symmetry constraints.&quot;&quot;&quot;</span>
-        <span class="k">del</span> <span class="n">called_by_minimizer</span>
+        <span class="k">del</span> <span class="n">called_by_minimizer</span>  <span class="c1"># TODO: ???</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_apply_cell_symmetry_constraints</span><span class="p">()</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Public properties</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">length_a</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length_a</span>
+
+    <span class="nd">@length_a</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">length_a</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_length_a</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">length_b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length_b</span>
+
+    <span class="nd">@length_b</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">length_b</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_length_b</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">length_c</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length_c</span>
+
+    <span class="nd">@length_c</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">length_c</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_length_c</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">angle_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angle_alpha</span>
+
+    <span class="nd">@angle_alpha</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">angle_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_alpha</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">angle_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angle_beta</span>
+
+    <span class="nd">@angle_beta</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">angle_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_beta</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">angle_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angle_gamma</span>
+
+    <span class="nd">@angle_gamma</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">angle_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_gamma</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3923,183 +3541,11 @@ Only documentation was added; behavior remains unchanged.</p>
 
 
 
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.cell.Cell.angle_alpha" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">angle_alpha</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Descriptor for angle alpha in degrees.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.cell.Cell.angle_beta" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">angle_beta</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Descriptor for angle beta in degrees.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.cell.Cell.angle_gamma" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">angle_gamma</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Descriptor for angle gamma in degrees.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.cell.Cell.length_a" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">length_a</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Descriptor for a-axis length in Å.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.cell.Cell.length_b" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">length_b</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Descriptor for b-axis length in Å.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.cell.Cell.length_c" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">length_c</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Descriptor for c-axis length in Å.</p>
-
-    </div>
-
-</div>
-
-
-
-
   </div>
 
     </div>
 
 </div>
-
-
-
-
 
 
 
@@ -4178,10 +3624,6 @@ Only documentation was added; behavior remains unchanged.</p>
 
 
 
-
-
-
-
 <div class="doc doc-object doc-class">
 
 
@@ -4210,7 +3652,8 @@ Only documentation was added; behavior remains unchanged.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/sample_models/categories/space_group.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 19</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 18</span>
+<span class="normal"> 19</span>
 <span class="normal"> 20</span>
 <span class="normal"> 21</span>
 <span class="normal"> 22</span>
@@ -4298,28 +3741,26 @@ Only documentation was added; behavior remains unchanged.</p>
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
-<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SpaceGroup</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SpaceGroup</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Space group with Hermann–Mauguin symbol and IT code.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">name_h_m</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">it_coordinate_system_code</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_name_h_m</span><span class="p">:</span> <span class="n">StringDescriptor</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name_h_m</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;name_h_m&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Hermann-Mauguin symbol of the space group.&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">name_h_m</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
                 <span class="n">default</span><span class="o">=</span><span class="s1">&#39;P 1&#39;</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span>
-                    <span class="n">allowed</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_h_m_allowed_values</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span>
+                    <span class="n">allowed</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_h_m_allowed_values</span><span class="p">,</span>
                 <span class="p">),</span>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="c1"># TODO: Keep only version with &quot;.&quot; and automate ...</span>
                 <span class="n">names</span><span class="o">=</span><span class="p">[</span>
                     <span class="s1">&#39;_space_group.name_H-M_alt&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;_space_group_name_H-M_alt&#39;</span><span class="p">,</span>
@@ -4328,14 +3769,12 @@ Only documentation was added; behavior remains unchanged.</p>
                 <span class="p">]</span>
             <span class="p">),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code</span><span class="p">:</span> <span class="n">StringDescriptor</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;it_coordinate_system_code&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;A qualifier identifying which setting in IT is used.&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">it_coordinate_system_code</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
                 <span class="n">default</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code_default_value</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span>
                     <span class="n">allowed</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code_allowed_values</span>
                 <span class="p">),</span>
             <span class="p">),</span>
@@ -4348,17 +3787,25 @@ Only documentation was added; behavior remains unchanged.</p>
                 <span class="p">]</span>
             <span class="p">),</span>
         <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;space_group&#39;</span>
 
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Private helper methods</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_reset_it_coordinate_system_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset the IT coordinate system code.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code_default_value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_name_h_m_allowed_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Allowed values for Hermann-Mauguin symbol.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ACCESIBLE_NAME_HM_SHORT</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_it_coordinate_system_code_allowed_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Allowed values for IT coordinate system code.&quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_h_m</span><span class="o">.</span><span class="n">value</span>
         <span class="n">it_number</span> <span class="o">=</span> <span class="n">get_it_number_by_name_hm_short</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="n">codes</span> <span class="o">=</span> <span class="n">get_it_coordinate_system_codes_by_it_number</span><span class="p">(</span><span class="n">it_number</span><span class="p">)</span>
@@ -4367,11 +3814,15 @@ Only documentation was added; behavior remains unchanged.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_it_coordinate_system_code_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Default value for IT coordinate system code.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code_allowed_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Public properties</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">name_h_m</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Descriptor for Hermann–Mauguin symbol.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_h_m</span>
 
     <span class="nd">@name_h_m</span><span class="o">.</span><span class="n">setter</span>
@@ -4381,7 +3832,6 @@ Only documentation was added; behavior remains unchanged.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">it_coordinate_system_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Descriptor for IT coordinate system code.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code</span>
 
     <span class="nd">@it_coordinate_system_code</span><span class="o">.</span><span class="n">setter</span>
@@ -4394,62 +3844,6 @@ Only documentation was added; behavior remains unchanged.</p>
 
 <div class="doc doc-children">
 
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.space_group.SpaceGroup.it_coordinate_system_code" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">it_coordinate_system_code</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Descriptor for IT coordinate system code.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.sample_models.categories.space_group.SpaceGroup.name_h_m" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">name_h_m</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Descriptor for Hermann–Mauguin symbol.</p>
-
-    </div>
-
-</div>
 
 
 

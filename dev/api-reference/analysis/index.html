@@ -9412,7 +9412,6 @@ the engine.</p>
                 <code>label</code>
             </td>
             <td>
-                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -9428,7 +9427,6 @@ the engine.</p>
                 <code>param_uid</code>
             </td>
             <td>
-                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -9452,7 +9450,8 @@ the engine.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/analysis/categories/aliases.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
+<span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
@@ -9506,33 +9505,7 @@ the engine.</p>
 <span class="normal">69</span>
 <span class="normal">70</span>
 <span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Alias</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Alias</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Single alias entry.</span>
 
 <span class="sd">    Maps a human-readable ``label`` to a concrete ``param_uid`` used by</span>
@@ -9544,74 +9517,49 @@ the engine.</p>
 <span class="sd">            ``label``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">param_uid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">:</span> <span class="n">StringDescriptor</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>  <span class="c1"># TODO</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^[A-Za-z_][A-Za-z0-9_]*$&#39;</span><span class="p">),</span>
+                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;_&#39;</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^[A-Za-z_][A-Za-z0-9_]*$&#39;</span><span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_alias.label&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_alias.label&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_param_uid</span><span class="p">:</span> <span class="n">StringDescriptor</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_uid</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;param_uid&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>  <span class="c1"># TODO</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">param_uid</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^[A-Za-z_][A-Za-z0-9_]*$&#39;</span><span class="p">),</span>
+                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;_&#39;</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^[A-Za-z_][A-Za-z0-9_]*$&#39;</span><span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_alias.param_uid&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_alias.param_uid&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;alias&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Public properties</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Alias label descriptor.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span>
 
     <span class="nd">@label</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set alias label.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value: New label.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">param_uid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parameter uid descriptor the alias points to.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_param_uid</span>
 
     <span class="nd">@param_uid</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">param_uid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the parameter uid.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value: New uid.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_param_uid</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -9620,62 +9568,6 @@ the engine.</p>
 
 <div class="doc doc-children">
 
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.analysis.categories.aliases.Alias.label" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">label</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Alias label descriptor.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.analysis.categories.aliases.Alias.param_uid" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">param_uid</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Parameter uid descriptor the alias points to.</p>
-
-    </div>
-
-</div>
 
 
 
@@ -9719,12 +9611,12 @@ the engine.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/analysis/categories/aliases.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Aliases</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Aliases</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collection of :class:`Alias` items.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -9759,9 +9651,9 @@ the engine.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/categories/aliases.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an empty collection of aliases.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">item_type</span><span class="o">=</span><span class="n">Alias</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -9778,10 +9670,6 @@ the engine.</p>
     </div>
 
 </div>
-
-
-
-
 
 
 
@@ -9906,7 +9794,6 @@ the engine.</p>
                 <code>lhs_alias</code>
             </td>
             <td>
-                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -9922,7 +9809,6 @@ the engine.</p>
                 <code>rhs_expr</code>
             </td>
             <td>
-                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -9945,7 +9831,8 @@ the engine.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/analysis/categories/constraints.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+<span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
@@ -9995,33 +9882,7 @@ the engine.</p>
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Constraint</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Constraint</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Single constraint item.</span>
 
 <span class="sd">    Args:</span>
@@ -10029,74 +9890,49 @@ the engine.</p>
 <span class="sd">        rhs_expr: Right-hand side expression as a string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">lhs_alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">rhs_expr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_lhs_alias</span><span class="p">:</span> <span class="n">StringDescriptor</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lhs_alias</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lhs_alias&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Left-hand side of the equation.&#39;</span><span class="p">,</span>  <span class="c1"># TODO</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">lhs_alias</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;.*&#39;</span><span class="p">),</span>
+                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>  <span class="c1"># TODO</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;.*&#39;</span><span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_constraint.lhs_alias&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_constraint.lhs_alias&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_rhs_expr</span><span class="p">:</span> <span class="n">StringDescriptor</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rhs_expr</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;rhs_expr&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Right-hand side expression.&#39;</span><span class="p">,</span>  <span class="c1"># TODO</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">rhs_expr</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;.*&#39;</span><span class="p">),</span>
+                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>  <span class="c1"># TODO</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;.*&#39;</span><span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_constraint.rhs_expr&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_constraint.rhs_expr&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;constraint&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs_alias</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Public properties</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">lhs_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Alias name on the left-hand side of the equation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lhs_alias</span>
 
     <span class="nd">@lhs_alias</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">lhs_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the left-hand side alias.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value: New alias string.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lhs_alias</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rhs_expr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Right-hand side expression string.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rhs_expr</span>
 
     <span class="nd">@rhs_expr</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rhs_expr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the right-hand side expression.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value: New expression string.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rhs_expr</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -10105,62 +9941,6 @@ the engine.</p>
 
 <div class="doc doc-children">
 
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.analysis.categories.constraints.Constraint.lhs_alias" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">lhs_alias</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Alias name on the left-hand side of the equation.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.analysis.categories.constraints.Constraint.rhs_expr" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">rhs_expr</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Right-hand side expression string.</p>
-
-    </div>
-
-</div>
 
 
 
@@ -10204,20 +9984,20 @@ the engine.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/analysis/categories/constraints.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Constraints</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Constraints</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collection of :class:`Constraint` items.&quot;&quot;&quot;</span>
 
     <span class="n">_update_priority</span> <span class="o">=</span> <span class="mi">90</span>  <span class="c1"># After most others, but before data categories</span>
@@ -10260,9 +10040,9 @@ the engine.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/categories/constraints.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an empty constraints collection.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">item_type</span><span class="o">=</span><span class="n">Constraint</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -10279,10 +10059,6 @@ the engine.</p>
     </div>
 
 </div>
-
-
-
-
 
 
 
@@ -10359,10 +10135,6 @@ fitted simultaneously.</p>
 
 
 
-
-
-
-
 <div class="doc doc-object doc-class">
 
 
@@ -10399,7 +10171,6 @@ fitted simultaneously.</p>
                 <code>id</code>
             </td>
             <td>
-                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10415,7 +10186,6 @@ fitted simultaneously.</p>
                 <code>weight</code>
             </td>
             <td>
-                  <code><span title="float">float</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10438,7 +10208,8 @@ fitted simultaneously.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/analysis/categories/joint_fit_experiments.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">20</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
+<span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
 <span class="normal">23</span>
@@ -10488,33 +10259,7 @@ fitted simultaneously.</p>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">JointFitExperiment</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">JointFitExperiment</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A single joint-fit entry.</span>
 
 <span class="sd">    Args:</span>
@@ -10522,74 +10267,49 @@ fitted simultaneously.</p>
 <span class="sd">        weight: Relative weight factor in the combined objective.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">:</span> <span class="n">StringDescriptor</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">,</span>  <span class="c1"># TODO: need new name instead of id</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Experiment identifier&#39;</span><span class="p">,</span>  <span class="c1"># TODO</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^[A-Za-z_][A-Za-z0-9_]*$&#39;</span><span class="p">),</span>
+                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;_&#39;</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^[A-Za-z_][A-Za-z0-9_]*$&#39;</span><span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_joint_fit_experiment.id&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_joint_fit_experiment.id&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_weight</span><span class="p">:</span> <span class="n">NumericDescriptor</span> <span class="o">=</span> <span class="n">NumericDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Weight factor&#39;</span><span class="p">,</span>  <span class="c1"># TODO</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-                <span class="n">content_validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
-                <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s1">&#39;_joint_fit_experiment.weight&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_joint_fit_experiment.weight&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;joint_fit_experiment&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Public properties</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Experiment identifier descriptor.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
 
     <span class="nd">@id</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the experiment identifier.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value: New id string.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Weight factor descriptor.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weight</span>
 
     <span class="nd">@weight</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the weight factor.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value: New weight value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_weight</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -10598,62 +10318,6 @@ fitted simultaneously.</p>
 
 <div class="doc doc-children">
 
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.analysis.categories.joint_fit_experiments.JointFitExperiment.id" class="doc doc-heading">
-            <code class="highlight language-python"><span class="nb">id</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Experiment identifier descriptor.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h5 id="easydiffraction.analysis.categories.joint_fit_experiments.JointFitExperiment.weight" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">weight</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Weight factor descriptor.</p>
-
-    </div>
-
-</div>
 
 
 
@@ -10697,12 +10361,12 @@ fitted simultaneously.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/analysis/categories/joint_fit_experiments.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">JointFitExperiments</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">JointFitExperiments</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collection of :class:`JointFitExperiment` items.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -10737,9 +10401,9 @@ fitted simultaneously.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/categories/joint_fit_experiments.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an empty joint-fit experiments collection.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">item_type</span><span class="o">=</span><span class="n">JointFitExperiment</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
