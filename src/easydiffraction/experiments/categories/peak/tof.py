@@ -15,7 +15,6 @@ class TofPseudoVoigt(
 
     def __init__(self) -> None:
         super().__init__()
-        self._add_time_of_flight_broadening()
 
 
 class TofPseudoVoigtIkedaCarpenter(
@@ -27,8 +26,6 @@ class TofPseudoVoigtIkedaCarpenter(
 
     def __init__(self) -> None:
         super().__init__()
-        self._add_time_of_flight_broadening()
-        self._add_ikeda_carpenter_asymmetry()
 
 
 class TofPseudoVoigtBackToBack(
@@ -40,5 +37,3 @@ class TofPseudoVoigtBackToBack(
 
     def __init__(self) -> None:
         super().__init__()
-        self._add_time_of_flight_broadening()
-        self._add_ikeda_carpenter_asymmetry()

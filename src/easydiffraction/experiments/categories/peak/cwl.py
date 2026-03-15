@@ -16,7 +16,6 @@ class CwlPseudoVoigt(
 
     def __init__(self) -> None:
         super().__init__()
-        self._add_constant_wavelength_broadening()
 
 
 class CwlSplitPseudoVoigt(
@@ -28,8 +27,6 @@ class CwlSplitPseudoVoigt(
 
     def __init__(self) -> None:
         super().__init__()
-        self._add_constant_wavelength_broadening()
-        self._add_empirical_asymmetry()
 
 
 class CwlThompsonCoxHastings(
@@ -41,5 +38,3 @@ class CwlThompsonCoxHastings(
 
     def __init__(self) -> None:
         super().__init__()
-        self._add_constant_wavelength_broadening()
-        self._add_fcj_asymmetry()

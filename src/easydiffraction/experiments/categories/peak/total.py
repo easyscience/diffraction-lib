@@ -14,4 +14,3 @@ class TotalGaussianDampedSinc(
 
     def __init__(self) -> None:
         super().__init__()
-        self._add_pair_distribution_function_broadening()

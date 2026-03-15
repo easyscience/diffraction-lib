@@ -1,9 +1,12 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Time-of-flight (TOF) peak-profile mixins.
+"""Time-of-flight (TOF) peak-profile component classes.
 
-Defines mixins that add Gaussian/Lorentz broadening, mixing, and
-Ikeda–Carpenter asymmetry parameters used by TOF peak shapes.
+Defines classes that add Gaussian/Lorentz broadening, mixing, and
+Ikeda–Carpenter asymmetry parameters used by TOF peak shapes. This
+module provides classes that add broadening and asymmetry parameters.
+They are composed into concrete peak classes elsewhere via multiple
+inheritance.
 """
 
 from easydiffraction.core.parameters import Parameter
@@ -13,12 +16,11 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class TofBroadeningMixin:
-    """Mixin that adds TOF Gaussian/Lorentz broadening and mixing
-    terms.
-    """
+    """TOF Gaussian/Lorentz broadening and mixing parameters."""
 
-    def _add_time_of_flight_broadening(self) -> None:
-        """Create TOF broadening and mixing parameters."""
+    def __init__(self):
+        super().__init__()
+
         self._broad_gauss_sigma_0 = Parameter(
             name='gauss_sigma_0',
             description='Gaussian broadening coefficient (instrumental resolution)',
@@ -36,7 +38,7 @@ class TofBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='µs/Å',
+            units='µs/Å',
             cif_handler=CifHandler(names=['_peak.gauss_sigma_1']),
         )
         self._broad_gauss_sigma_2 = Parameter(
@@ -46,7 +48,7 @@ class TofBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='µs²/Å²',
+            units='µs²/Å²',
             cif_handler=CifHandler(names=['_peak.gauss_sigma_2']),
         )
         self._broad_lorentz_gamma_0 = Parameter(
@@ -66,7 +68,7 @@ class TofBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='µs/Å',
+            units='µs/Å',
             cif_handler=CifHandler(names=['_peak.lorentz_gamma_1']),
         )
         self._broad_lorentz_gamma_2 = Parameter(
@@ -76,7 +78,7 @@ class TofBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            units='µs²/Å²',
+            units='µs²/Å²',
             cif_handler=CifHandler(names=['_peak.lorentz_gamma_2']),
         )
         self._broad_mix_beta_0 = Parameter(
@@ -111,7 +113,7 @@ class TofBroadeningMixin:
         return self._broad_gauss_sigma_0
 
     @broad_gauss_sigma_0.setter
-    def broad_gauss_sigma_0(self, value) -> None:
+    def broad_gauss_sigma_0(self, value):
         self._broad_gauss_sigma_0.value = value
 
     @property
@@ -119,7 +121,7 @@ class TofBroadeningMixin:
         return self._broad_gauss_sigma_1
 
     @broad_gauss_sigma_1.setter
-    def broad_gauss_sigma_1(self, value) -> None:
+    def broad_gauss_sigma_1(self, value):
         self._broad_gauss_sigma_1.value = value
 
     @property
@@ -127,7 +129,7 @@ class TofBroadeningMixin:
         return self._broad_gauss_sigma_2
 
     @broad_gauss_sigma_2.setter
-    def broad_gauss_sigma_2(self, value) -> None:
+    def broad_gauss_sigma_2(self, value):
         """Set Gaussian sigma_2 parameter."""
         self._broad_gauss_sigma_2.value = value
 
@@ -136,7 +138,7 @@ class TofBroadeningMixin:
         return self._broad_lorentz_gamma_0
 
     @broad_lorentz_gamma_0.setter
-    def broad_lorentz_gamma_0(self, value) -> None:
+    def broad_lorentz_gamma_0(self, value):
         self._broad_lorentz_gamma_0.value = value
 
     @property
@@ -144,7 +146,7 @@ class TofBroadeningMixin:
         return self._broad_lorentz_gamma_1
 
     @broad_lorentz_gamma_1.setter
-    def broad_lorentz_gamma_1(self, value) -> None:
+    def broad_lorentz_gamma_1(self, value):
         self._broad_lorentz_gamma_1.value = value
 
     @property
@@ -152,7 +154,7 @@ class TofBroadeningMixin:
         return self._broad_lorentz_gamma_2
 
     @broad_lorentz_gamma_2.setter
-    def broad_lorentz_gamma_2(self, value) -> None:
+    def broad_lorentz_gamma_2(self, value):
         self._broad_lorentz_gamma_2.value = value
 
     @property
@@ -160,7 +162,7 @@ class TofBroadeningMixin:
         return self._broad_mix_beta_0
 
     @broad_mix_beta_0.setter
-    def broad_mix_beta_0(self, value) -> None:
+    def broad_mix_beta_0(self, value):
         self._broad_mix_beta_0.value = value
 
     @property
@@ -168,17 +170,16 @@ class TofBroadeningMixin:
         return self._broad_mix_beta_1
 
     @broad_mix_beta_1.setter
-    def broad_mix_beta_1(self, value) -> None:
+    def broad_mix_beta_1(self, value):
         self._broad_mix_beta_1.value = value
 
 
 class IkedaCarpenterAsymmetryMixin:
-    """Mixin that adds Ikeda–Carpenter asymmetry parameters."""
+    """Ikeda–Carpenter asymmetry parameters."""
 
-    def _add_ikeda_carpenter_asymmetry(self) -> None:
-        """Create Ikeda–Carpenter asymmetry parameters alpha_0 and
-        alpha_1.
-        """
+    def __init__(self):
+        super().__init__()
+
         self._asym_alpha_0 = Parameter(
             name='asym_alpha_0',
             description='Ikeda-Carpenter asymmetry parameter α₀',
@@ -201,17 +202,17 @@ class IkedaCarpenterAsymmetryMixin:
         )
 
     @property
-    def asym_alpha_0(self) -> Parameter:
+    def asym_alpha_0(self):
         return self._asym_alpha_0
 
     @asym_alpha_0.setter
-    def asym_alpha_0(self, value) -> None:
+    def asym_alpha_0(self, value):
         self._asym_alpha_0.value = value
 
     @property
-    def asym_alpha_1(self) -> Parameter:
+    def asym_alpha_1(self):
         return self._asym_alpha_1
 
     @asym_alpha_1.setter
-    def asym_alpha_1(self, value) -> None:
+    def asym_alpha_1(self, value):
         self._asym_alpha_1.value = value

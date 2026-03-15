@@ -1,10 +1,10 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Constant-wavelength (CWL) peak-profile mixins.
+"""Constant-wavelength (CWL) peak-profile component classes.
 
-This module provides mixins that add broadening and asymmetry parameters
-for constant-wavelength powder diffraction peak profiles. They are
-composed into concrete peak classes elsewhere.
+This module provides classes that add broadening and asymmetry
+parameters. They are composed into concrete peak classes elsewhere via
+multiple inheritance.
 """
 
 from easydiffraction.core.parameters import Parameter
@@ -14,19 +14,11 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class CwlBroadeningMixin:
-    """Mixin that adds CWL Gaussian and Lorentz broadening
-    parameters.
-    """
+    """CWL Gaussian and Lorentz broadening parameters."""
 
-    # TODO: Rename to cwl. Check other mixins for naming consistency.
-    def _add_constant_wavelength_broadening(self) -> None:
-        """Create CWL broadening parameters and attach them to the
-        class.
+    def __init__(self):
+        super().__init__()
 
-        Defines Gaussian (U, V, W) and Lorentz (X, Y) terms
-        often used in the TCH formulation. Values are stored as
-        ``Parameter`` objects.
-        """
         self._broad_gauss_u: Parameter = Parameter(
             name='broad_gauss_u',
             description='Gaussian broadening coefficient (dependent on '
@@ -80,16 +72,12 @@ class CwlBroadeningMixin:
             cif_handler=CifHandler(names=['_peak.broad_lorentz_y']),
         )
 
-    # ------------------------------------------------------------------
-    #  Public properties
-    # ------------------------------------------------------------------
-
     @property
     def broad_gauss_u(self) -> Parameter:
         return self._broad_gauss_u
 
     @broad_gauss_u.setter
-    def broad_gauss_u(self, value) -> None:
+    def broad_gauss_u(self, value):
         self._broad_gauss_u.value = value
 
     @property
@@ -97,7 +85,7 @@ class CwlBroadeningMixin:
         return self._broad_gauss_v
 
     @broad_gauss_v.setter
-    def broad_gauss_v(self, value) -> None:
+    def broad_gauss_v(self, value):
         self._broad_gauss_v.value = value
 
     @property
@@ -105,7 +93,7 @@ class CwlBroadeningMixin:
         return self._broad_gauss_w
 
     @broad_gauss_w.setter
-    def broad_gauss_w(self, value) -> None:
+    def broad_gauss_w(self, value):
         self._broad_gauss_w.value = value
 
     @property
@@ -113,7 +101,7 @@ class CwlBroadeningMixin:
         return self._broad_lorentz_x
 
     @broad_lorentz_x.setter
-    def broad_lorentz_x(self, value) -> None:
+    def broad_lorentz_x(self, value):
         self._broad_lorentz_x.value = value
 
     @property
@@ -121,15 +109,16 @@ class CwlBroadeningMixin:
         return self._broad_lorentz_y
 
     @broad_lorentz_y.setter
-    def broad_lorentz_y(self, value) -> None:
+    def broad_lorentz_y(self, value):
         self._broad_lorentz_y.value = value
 
 
 class EmpiricalAsymmetryMixin:
-    """Mixin that adds empirical CWL peak asymmetry parameters."""
+    """Empirical CWL peak asymmetry parameters."""
 
-    def _add_empirical_asymmetry(self) -> None:
-        """Create empirical asymmetry parameters p1..p4."""
+    def __init__(self):
+        super().__init__()
+
         self._asym_empir_1: Parameter = Parameter(
             name='asym_empir_1',
             description='Empirical asymmetry coefficient p1',
@@ -171,16 +160,12 @@ class EmpiricalAsymmetryMixin:
             cif_handler=CifHandler(names=['_peak.asym_empir_4']),
         )
 
-    # ------------------------------------------------------------------
-    #  Public properties
-    # ------------------------------------------------------------------
-
     @property
     def asym_empir_1(self) -> Parameter:
         return self._asym_empir_1
 
     @asym_empir_1.setter
-    def asym_empir_1(self, value) -> None:
+    def asym_empir_1(self, value):
         self._asym_empir_1.value = value
 
     @property
@@ -188,7 +173,7 @@ class EmpiricalAsymmetryMixin:
         return self._asym_empir_2
 
     @asym_empir_2.setter
-    def asym_empir_2(self, value) -> None:
+    def asym_empir_2(self, value):
         self._asym_empir_2.value = value
 
     @property
@@ -196,7 +181,7 @@ class EmpiricalAsymmetryMixin:
         return self._asym_empir_3
 
     @asym_empir_3.setter
-    def asym_empir_3(self, value) -> None:
+    def asym_empir_3(self, value):
         self._asym_empir_3.value = value
 
     @property
@@ -204,15 +189,16 @@ class EmpiricalAsymmetryMixin:
         return self._asym_empir_4
 
     @asym_empir_4.setter
-    def asym_empir_4(self, value) -> None:
+    def asym_empir_4(self, value):
         self._asym_empir_4.value = value
 
 
 class FcjAsymmetryMixin:
-    """Mixin that adds Finger–Cox–Jephcoat (FCJ) asymmetry params."""
+    """Finger–Cox–Jephcoat (FCJ) asymmetry parameters."""
 
-    def _add_fcj_asymmetry(self) -> None:
-        """Create FCJ asymmetry parameters."""
+    def __init__(self):
+        super().__init__()
+
         self._asym_fcj_1: Parameter = Parameter(
             name='asym_fcj_1',
             description='Finger-Cox-Jephcoat asymmetry parameter 1',
@@ -234,22 +220,18 @@ class FcjAsymmetryMixin:
             cif_handler=CifHandler(names=['_peak.asym_fcj_2']),
         )
 
-    # ------------------------------------------------------------------
-    #  Public properties
-    # ------------------------------------------------------------------
-
     @property
-    def asym_fcj_1(self) -> Parameter:
+    def asym_fcj_1(self):
         return self._asym_fcj_1
 
     @asym_fcj_1.setter
-    def asym_fcj_1(self, value) -> None:
+    def asym_fcj_1(self, value):
         self._asym_fcj_1.value = value
 
     @property
-    def asym_fcj_2(self) -> Parameter:
+    def asym_fcj_2(self):
         return self._asym_fcj_2
 
     @asym_fcj_2.setter
-    def asym_fcj_2(self, value) -> None:
+    def asym_fcj_2(self, value):
         self._asym_fcj_2.value = value
