@@ -93,10 +93,12 @@ nav:
       - analysis: api-reference/analysis.md
       - core: api-reference/core.md
       - crystallography: api-reference/crystallography.md
+      - datablocks:
+          - experiment: api-reference/datablocks/experiment.md
+          - structure: api-reference/datablocks/structure.md
       - display: api-reference/display.md
-      - experiments: api-reference/experiments.md
+      - experiments: api-reference/experiment.md
       - io: api-reference/io.md
       - project: api-reference/project.md
-      - structures: api-reference/structures.md
       - summary: api-reference/summary.md
       - utils: api-reference/utils.md
