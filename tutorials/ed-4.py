@@ -29,27 +29,27 @@ from easydiffraction import download_data
 # #### Create Structure
 
 # %%
-model = StructureFactory.create(name='pbso4')
+structure = StructureFactory.create(name='pbso4')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model.space_group.name_h_m = 'P n m a'
+structure.space_group.name_h_m = 'P n m a'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-model.cell.length_a = 8.47
-model.cell.length_b = 5.39
-model.cell.length_c = 6.95
+structure.cell.length_a = 8.47
+structure.cell.length_b = 5.39
+structure.cell.length_c = 6.95
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add(
+structure.atom_sites.add(
     label='Pb',
     type_symbol='Pb',
     fract_x=0.1876,
@@ -58,7 +58,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=1.37,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='S',
     type_symbol='S',
     fract_x=0.0654,
@@ -67,7 +67,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.3777,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='O1',
     type_symbol='O',
     fract_x=0.9082,
@@ -76,7 +76,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=1.9764,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='O2',
     type_symbol='O',
     fract_x=0.1935,
@@ -85,7 +85,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=1.4456,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='O3',
     type_symbol='O',
     fract_x=0.0811,
@@ -246,7 +246,7 @@ project = Project()
 # #### Add Structure
 
 # %%
-project.structures.add(structure=model)
+project.structures.add(structure=structure)
 
 # %% [markdown]
 # #### Add Experiments
@@ -284,9 +284,9 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 # Set structure parameters to be optimized.
 
 # %%
-model.cell.length_a.free = True
-model.cell.length_b.free = True
-model.cell.length_c.free = True
+structure.cell.length_a.free = True
+structure.cell.length_b.free = True
+structure.cell.length_c.free = True
 
 # %% [markdown]
 # Set experiment parameters to be optimized.

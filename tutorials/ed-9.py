@@ -23,26 +23,26 @@ from easydiffraction import download_data
 # ### Create Structure 1: LBCO
 
 # %%
-model_1 = StructureFactory.create(name='lbco')
+structure_1 = StructureFactory.create(name='lbco')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model_1.space_group.name_h_m = 'P m -3 m'
-model_1.space_group.it_coordinate_system_code = '1'
+structure_1.space_group.name_h_m = 'P m -3 m'
+structure_1.space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-model_1.cell.length_a = 3.8909
+structure_1.cell.length_a = 3.8909
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model_1.atom_sites.add(
+structure_1.atom_sites.add(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -52,7 +52,7 @@ model_1.atom_sites.add(
     b_iso=0.2,
     occupancy=0.5,
 )
-model_1.atom_sites.add(
+structure_1.atom_sites.add(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -62,7 +62,7 @@ model_1.atom_sites.add(
     b_iso=0.2,
     occupancy=0.5,
 )
-model_1.atom_sites.add(
+structure_1.atom_sites.add(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -71,7 +71,7 @@ model_1.atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.2567,
 )
-model_1.atom_sites.add(
+structure_1.atom_sites.add(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -85,26 +85,26 @@ model_1.atom_sites.add(
 # ### Create Structure 2: Si
 
 # %%
-model_2 = StructureFactory.create(name='si')
+structure_2 = StructureFactory.create(name='si')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model_2.space_group.name_h_m = 'F d -3 m'
-model_2.space_group.it_coordinate_system_code = '2'
+structure_2.space_group.name_h_m = 'F d -3 m'
+structure_2.space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-model_2.cell.length_a = 5.43146
+structure_2.cell.length_a = 5.43146
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model_2.atom_sites.add(
+structure_2.atom_sites.add(
     label='Si',
     type_symbol='Si',
     fract_x=0.0,
@@ -209,8 +209,8 @@ project = Project()
 # #### Add Structures
 
 # %%
-project.structures.add(structure=model_1)
-project.structures.add(structure=model_2)
+project.structures.add(structure=structure_1)
+project.structures.add(structure=structure_2)
 
 # %% [markdown]
 # #### Show Structures
@@ -280,11 +280,11 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 # Set structure parameters to be optimized.
 
 # %%
-model_1.cell.length_a.free = True
-model_1.atom_sites['Co'].b_iso.free = True
-model_1.atom_sites['O'].b_iso.free = True
+structure_1.cell.length_a.free = True
+structure_1.atom_sites['Co'].b_iso.free = True
+structure_1.atom_sites['O'].b_iso.free = True
 
-model_2.cell.length_a.free = True
+structure_2.cell.length_a.free = True
 
 # %% [markdown]
 # Set experiment parameters to be optimized.

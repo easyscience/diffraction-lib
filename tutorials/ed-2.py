@@ -2,9 +2,9 @@
 # # Structure Refinement: LBCO, HRPT
 #
 # This minimalistic example is designed to show how Rietveld refinement
-# of a crystal structure can be performed when both the structure and
-# experiment are defined directly in code. Only the experimentally
-# measured data is loaded from an external file.
+# can be performed when both the crystal structure and experiment are
+# defined directly in code. Only the experimentally measured data is
+# loaded from an external file.
 #
 # For this example, constant-wavelength neutron powder diffraction data
 # for La0.5Ba0.5CoO3 from HRPT at PSI is used.

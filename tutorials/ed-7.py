@@ -23,26 +23,26 @@ from easydiffraction import download_data
 # #### Create Structure
 
 # %%
-model = StructureFactory.create(name='si')
+structure = StructureFactory.create(name='si')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model.space_group.name_h_m = 'F d -3 m'
-model.space_group.it_coordinate_system_code = '2'
+structure.space_group.name_h_m = 'F d -3 m'
+structure.space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-model.cell.length_a = 5.431
+structure.cell.length_a = 5.431
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add(
+structure.atom_sites.add(
     label='Si',
     type_symbol='Si',
     fract_x=0.125,
@@ -124,7 +124,7 @@ project = Project()
 # #### Add Structure
 
 # %%
-project.structures.add(structure=model)
+project.structures.add(structure=structure)
 
 # %% [markdown]
 # #### Add Experiment
@@ -162,7 +162,7 @@ project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_resid
 # Set parameters to be refined.
 
 # %%
-model.cell.length_a.free = True
+structure.cell.length_a.free = True
 
 expt.linked_phases['si'].scale.free = True
 expt.instrument.calib_d_to_tof_offset.free = True
@@ -265,7 +265,7 @@ project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_resid
 # Set more parameters to be refined.
 
 # %%
-model.atom_sites['Si'].b_iso.free = True
+structure.atom_sites['Si'].b_iso.free = True
 
 # %% [markdown]
 # Show free parameters after selection.

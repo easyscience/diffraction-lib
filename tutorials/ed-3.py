@@ -8,8 +8,9 @@
 #
 # It is intended for users with minimal programming experience who want
 # to learn how to perform standard crystal structure fitting using
-# diffraction data. This script covers creating a project, adding sample
-# models and experiments, performing analysis, and refining parameters.
+# diffraction data. This script covers creating a project, adding
+# crystal structures and experiments, performing analysis, and refining
+# parameters.
 #
 # Only a single import of `easydiffraction` is required, and all
 # operations are performed through high-level components of the
@@ -98,9 +99,10 @@ project.structures.add(name='lbco')
 # %% [markdown]
 # #### Show Defined Structures
 #
-# Show the names of the models added. These names are used to access the
-# model using the syntax: `project.structures['model_name']`. All
-# model parameters can be accessed via the `project` object.
+# Show the names of the crystal structures added. These names are used
+# to access the structure using the syntax:
+# `project.structures[name]`. All structure parameters can be accessed
+# via the `project` object.
 
 # %%
 project.structures.show_names()

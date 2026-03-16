@@ -20,7 +20,7 @@ EasyDiffraction relies on third-party crystallographic libraries, referred to as
 **calculation engines** or just **calculators**, to perform the calculations.
 
 The calculation engines are used to calculate the diffraction pattern for the
-defined model of the studied sample using the instrumental and other required
+defined model of the studied structure using the instrumental and other required
 experiment-related parameters, such as the wavelength, resolution, etc.
 
 You do not necessarily need the measured data to perform the calculations, but

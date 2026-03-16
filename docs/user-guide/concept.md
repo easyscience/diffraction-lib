@@ -58,8 +58,8 @@ Credits: DOI 10.1126/science.1238932
 ## Data Analysis
 
 Data analysis uses the reduced data to extract meaningful information about the
-sample. This may include determining the crystal or magnetic structure,
-identifying phases, performing quantitative analysis, etc.
+crystallographic structure. This may include determining the crystal or magnetic
+structure, identifying phases, performing quantitative analysis, etc.
 
 Analysis often involves comparing experimental data with data calculated from a
 crystallographic model to validate and interpret the results. For powder

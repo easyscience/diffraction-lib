@@ -22,10 +22,10 @@ project = ed.Project()
 
 # %%
 # Download CIF file from repository
-model_path = ed.download_data(id=21, destination='data')
+structure_path = ed.download_data(id=21, destination='data')
 
 # %%
-project.structures.add(cif_path=model_path)
+project.structures.add(cif_path=structure_path)
 
 # %%
 project.structures.show_names()

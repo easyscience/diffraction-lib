@@ -127,7 +127,7 @@ hrpt.cif
 
 ### 2. structures / <span class="orange">lbco.cif</span>
 
-This file contains crystallographic information associated with the sample
+This file contains crystallographic information associated with the structure
 model, including **space group**, **unit cell parameters**, and **atomic
 positions**.
 

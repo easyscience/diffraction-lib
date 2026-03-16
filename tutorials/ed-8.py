@@ -26,26 +26,26 @@ from easydiffraction import download_data
 # #### Create Structure
 
 # %%
-model = StructureFactory.create(name='ncaf')
+structure = StructureFactory.create(name='ncaf')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model.space_group.name_h_m = 'I 21 3'
-model.space_group.it_coordinate_system_code = '1'
+structure.space_group.name_h_m = 'I 21 3'
+structure.space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-model.cell.length_a = 10.250256
+structure.cell.length_a = 10.250256
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add(
+structure.atom_sites.add(
     label='Ca',
     type_symbol='Ca',
     fract_x=0.4663,
@@ -54,7 +54,7 @@ model.atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.92,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='Al',
     type_symbol='Al',
     fract_x=0.2521,
@@ -63,7 +63,7 @@ model.atom_sites.add(
     wyckoff_letter='a',
     b_iso=0.73,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='Na',
     type_symbol='Na',
     fract_x=0.0851,
@@ -72,7 +72,7 @@ model.atom_sites.add(
     wyckoff_letter='a',
     b_iso=2.08,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='F1',
     type_symbol='F',
     fract_x=0.1377,
@@ -81,7 +81,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.90,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='F2',
     type_symbol='F',
     fract_x=0.3625,
@@ -90,7 +90,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=1.37,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='F3',
     type_symbol='F',
     fract_x=0.4612,
@@ -286,7 +286,7 @@ project = Project()
 # #### Add Structure
 
 # %%
-project.structures.add(structure=model)
+project.structures.add(structure=structure)
 
 # %% [markdown]
 # #### Add Experiment
@@ -322,12 +322,12 @@ project.analysis.fit_mode = 'joint'
 # #### Set Free Parameters
 
 # %%
-model.atom_sites['Ca'].b_iso.free = True
-model.atom_sites['Al'].b_iso.free = True
-model.atom_sites['Na'].b_iso.free = True
-model.atom_sites['F1'].b_iso.free = True
-model.atom_sites['F2'].b_iso.free = True
-model.atom_sites['F3'].b_iso.free = True
+structure.atom_sites['Ca'].b_iso.free = True
+structure.atom_sites['Al'].b_iso.free = True
+structure.atom_sites['Na'].b_iso.free = True
+structure.atom_sites['F1'].b_iso.free = True
+structure.atom_sites['F2'].b_iso.free = True
+structure.atom_sites['F3'].b_iso.free = True
 
 # %%
 expt56.linked_phases['ncaf'].scale.free = True

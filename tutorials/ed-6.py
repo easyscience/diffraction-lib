@@ -23,28 +23,28 @@ from easydiffraction import download_data
 # #### Create Structure
 
 # %%
-model = StructureFactory.create(name='hs')
+structure = StructureFactory.create(name='hs')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model.space_group.name_h_m = 'R -3 m'
-model.space_group.it_coordinate_system_code = 'h'
+structure.space_group.name_h_m = 'R -3 m'
+structure.space_group.it_coordinate_system_code = 'h'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 
 # %%
-model.cell.length_a = 6.9
-model.cell.length_c = 14.1
+structure.cell.length_a = 6.9
+structure.cell.length_c = 14.1
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add(
+structure.atom_sites.add(
     label='Zn',
     type_symbol='Zn',
     fract_x=0,
@@ -53,7 +53,7 @@ model.atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='Cu',
     type_symbol='Cu',
     fract_x=0.5,
@@ -62,7 +62,7 @@ model.atom_sites.add(
     wyckoff_letter='e',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='O',
     type_symbol='O',
     fract_x=0.21,
@@ -71,7 +71,7 @@ model.atom_sites.add(
     wyckoff_letter='h',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='Cl',
     type_symbol='Cl',
     fract_x=0,
@@ -80,7 +80,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='H',
     type_symbol='2H',
     fract_x=0.13,
@@ -167,7 +167,7 @@ project = Project()
 # #### Add Structure
 
 # %%
-project.structures.add(structure=model)
+project.structures.add(structure=structure)
 
 # %% [markdown]
 # #### Add Experiment
@@ -207,8 +207,8 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=Tr
 # Set parameters to be refined.
 
 # %%
-model.cell.length_a.free = True
-model.cell.length_c.free = True
+structure.cell.length_a.free = True
+structure.cell.length_c.free = True
 
 expt.linked_phases['hs'].scale.free = True
 expt.instrument.calib_twotheta_offset.free = True
@@ -281,11 +281,11 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=Tr
 # Set more parameters to be refined.
 
 # %%
-model.atom_sites['O'].fract_x.free = True
-model.atom_sites['O'].fract_z.free = True
-model.atom_sites['Cl'].fract_z.free = True
-model.atom_sites['H'].fract_x.free = True
-model.atom_sites['H'].fract_z.free = True
+structure.atom_sites['O'].fract_x.free = True
+structure.atom_sites['O'].fract_z.free = True
+structure.atom_sites['Cl'].fract_z.free = True
+structure.atom_sites['H'].fract_x.free = True
+structure.atom_sites['H'].fract_z.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
@@ -317,11 +317,11 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=Tr
 # Set more parameters to be refined.
 
 # %%
-model.atom_sites['Zn'].b_iso.free = True
-model.atom_sites['Cu'].b_iso.free = True
-model.atom_sites['O'].b_iso.free = True
-model.atom_sites['Cl'].b_iso.free = True
-model.atom_sites['H'].b_iso.free = True
+structure.atom_sites['Zn'].b_iso.free = True
+structure.atom_sites['Cu'].b_iso.free = True
+structure.atom_sites['O'].b_iso.free = True
+structure.atom_sites['Cl'].b_iso.free = True
+structure.atom_sites['H'].b_iso.free = True
 
 # %% [markdown]
 # Show free parameters after selection.

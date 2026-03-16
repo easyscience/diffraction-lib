@@ -66,7 +66,7 @@ workflow. One of them is the `download_from_repository` function, which allows
 you to download data files from our remote repository, making it easy to access
 and use them while experimenting with EasyDiffraction.
 
-For example, you can download a sample data file like this:
+For example, you can download a data file like this:
 
 ```python
 import easydiffraction as ed

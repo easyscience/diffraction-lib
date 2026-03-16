@@ -52,11 +52,11 @@ import easydiffraction as ed
 #
 # In EasyDiffraction, a project serves as a container for all
 # information related to the analysis of a specific experiment or set of
-# experiments. It enables you to organize your data, experiments, sample
-# models, and fitting parameters in a structured manner. You can think
-# of it as a folder containing all the essential details about your
-# analysis. The project also allows us to visualize both the measured
-# and calculated diffraction patterns, among other things.
+# experiments. It enables you to organize your data, experiments,
+# crystal structures, and fitting parameters in an organized manner. You
+# can think of it as a folder containing all the essential details about
+# your analysis. The project also allows us to visualize both the
+# measured and calculated diffraction patterns, among other things.
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
@@ -440,7 +440,7 @@ project_1.experiments['sim_si'].background.add(id='7', x=110000, y=0.01)
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/model/)
+# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/structure/)
 # for more details about structures and their purpose in the data
 # analysis workflow.
 
@@ -455,7 +455,7 @@ project_1.structures.add(name='si')
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/model/#space-group-category)
+# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/structure/#space-group-category)
 # for more details about the space group.
 
 # %%
@@ -467,7 +467,7 @@ project_1.structures['si'].space_group.it_coordinate_system_code = '2'
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/model/#cell-category)
+# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/structure/#cell-category)
 # for more details about the unit cell parameters.
 
 # %%
@@ -478,7 +478,7 @@ project_1.structures['si'].cell.length_a = 5.43
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/model/#atom-sites-category)
+# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/structure/#atom-sites-category)
 # for more details about the atom sites category.
 
 # %%
@@ -528,12 +528,12 @@ project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
 # %% [markdown] **Reminder:**
 #
 # The fitting process involves comparing the measured diffraction
-# pattern with the calculated diffraction pattern based on the sample
-# model and instrument parameters. The goal is to adjust the parameters
-# of the structure and the experiment to minimize the difference
-# between the measured and calculated diffraction patterns. This is done
-# by refining the parameters of the structure and the instrument
-# settings to achieve a better fit.
+# pattern with the calculated diffraction pattern based on the crystal
+# structure and instrument parameters. The goal is to adjust the
+# parameters of the structure and the experiment to minimize the
+# difference between the measured and calculated diffraction patterns.
+# This is done by refining the parameters of the structure and the
+# instrument settings to achieve a better fit.
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
@@ -872,7 +872,7 @@ project_2.experiments['sim_lbco'].background.add(id='7', x=110000, y=0.2)
 # %% [markdown]
 # ### 🧩 Exercise 3: Define a Structure – LBCO
 #
-# The LBSO structure is not as simple as the Si model, as it contains
+# The LBSO structure is not as simple as the Si one, as it contains
 # multiple atoms in the unit cell. It is not in COD, so we give you the
 # structural parameters in CIF format to create the structure.
 #
@@ -946,7 +946,7 @@ project_2.experiments['sim_lbco'].background.add(id='7', x=110000, y=0.2)
 
 # %% [markdown] tags=["dmsc-school-hint"]
 # You can use the same approach as in the previous part of the notebook,
-# but this time you need to use the model name corresponding to the LBCO
+# but this time you need to use the name corresponding to the LBCO
 # structure, e.g. 'lbco'.
 
 # %% [markdown]
@@ -1055,8 +1055,8 @@ project_2.structures['lbco'].atom_sites.add(
 # **Hint:**
 
 # %% [markdown] tags=["dmsc-school-hint"]
-# Use the `linked_phases` attribute of the experiment to link the sample
-# model.
+# Use the `linked_phases` attribute of the experiment to link the
+# crystal structure.
 
 # %% [markdown]
 # **Solution:**

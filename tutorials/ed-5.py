@@ -23,28 +23,28 @@ from easydiffraction import download_data
 # #### Create Structure
 
 # %%
-model = StructureFactory.create(name='cosio')
+structure = StructureFactory.create(name='cosio')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model.space_group.name_h_m = 'P n m a'
-model.space_group.it_coordinate_system_code = 'abc'
+structure.space_group.name_h_m = 'P n m a'
+structure.space_group.it_coordinate_system_code = 'abc'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-model.cell.length_a = 10.3
-model.cell.length_b = 6.0
-model.cell.length_c = 4.8
+structure.cell.length_a = 10.3
+structure.cell.length_b = 6.0
+structure.cell.length_c = 4.8
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add(
+structure.atom_sites.add(
     label='Co1',
     type_symbol='Co',
     fract_x=0,
@@ -53,7 +53,7 @@ model.atom_sites.add(
     wyckoff_letter='a',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='Co2',
     type_symbol='Co',
     fract_x=0.279,
@@ -62,7 +62,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='Si',
     type_symbol='Si',
     fract_x=0.094,
@@ -71,7 +71,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='O1',
     type_symbol='O',
     fract_x=0.091,
@@ -80,7 +80,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='O2',
     type_symbol='O',
     fract_x=0.448,
@@ -89,7 +89,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.add(
     label='O3',
     type_symbol='O',
     fract_x=0.164,
@@ -179,7 +179,7 @@ project = Project()
 # #### Add Structure
 
 # %%
-project.structures.add(structure=model)
+project.structures.add(structure=structure)
 
 # %% [markdown]
 # #### Add Experiment
@@ -217,28 +217,28 @@ project.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=Tru
 # #### Set Free Parameters
 
 # %%
-model.cell.length_a.free = True
-model.cell.length_b.free = True
-model.cell.length_c.free = True
+structure.cell.length_a.free = True
+structure.cell.length_b.free = True
+structure.cell.length_c.free = True
 
-model.atom_sites['Co2'].fract_x.free = True
-model.atom_sites['Co2'].fract_z.free = True
-model.atom_sites['Si'].fract_x.free = True
-model.atom_sites['Si'].fract_z.free = True
-model.atom_sites['O1'].fract_x.free = True
-model.atom_sites['O1'].fract_z.free = True
-model.atom_sites['O2'].fract_x.free = True
-model.atom_sites['O2'].fract_z.free = True
-model.atom_sites['O3'].fract_x.free = True
-model.atom_sites['O3'].fract_y.free = True
-model.atom_sites['O3'].fract_z.free = True
+structure.atom_sites['Co2'].fract_x.free = True
+structure.atom_sites['Co2'].fract_z.free = True
+structure.atom_sites['Si'].fract_x.free = True
+structure.atom_sites['Si'].fract_z.free = True
+structure.atom_sites['O1'].fract_x.free = True
+structure.atom_sites['O1'].fract_z.free = True
+structure.atom_sites['O2'].fract_x.free = True
+structure.atom_sites['O2'].fract_z.free = True
+structure.atom_sites['O3'].fract_x.free = True
+structure.atom_sites['O3'].fract_y.free = True
+structure.atom_sites['O3'].fract_z.free = True
 
-model.atom_sites['Co1'].b_iso.free = True
-model.atom_sites['Co2'].b_iso.free = True
-model.atom_sites['Si'].b_iso.free = True
-model.atom_sites['O1'].b_iso.free = True
-model.atom_sites['O2'].b_iso.free = True
-model.atom_sites['O3'].b_iso.free = True
+structure.atom_sites['Co1'].b_iso.free = True
+structure.atom_sites['Co2'].b_iso.free = True
+structure.atom_sites['Si'].b_iso.free = True
+structure.atom_sites['O1'].b_iso.free = True
+structure.atom_sites['O2'].b_iso.free = True
+structure.atom_sites['O3'].b_iso.free = True
 
 # %%
 expt.linked_phases['cosio'].scale.free = True
