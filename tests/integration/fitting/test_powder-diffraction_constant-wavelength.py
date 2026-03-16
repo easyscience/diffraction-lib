@@ -8,15 +8,15 @@ from numpy.testing import assert_almost_equal
 
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 TEMP_DIR = tempfile.gettempdir()
 
 
 def test_single_fit_neutron_pd_cwl_lbco() -> None:
-    # Set sample model
-    model = SampleModelFactory.create(name='lbco')
+    # Set structure
+    model = StructureFactory.create(name='lbco')
     model.space_group.name_h_m = 'P m -3 m'
     model.cell.length_a = 3.88
     model.atom_sites.add(
@@ -82,7 +82,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
 
     # Create project
     project = Project()
-    project.sample_models.add(sample_model=model)
+    project.structures.add(structure=model)
     project.experiments.add(experiment=expt)
 
     # Prepare for fitting
@@ -147,8 +147,8 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
 
 @pytest.mark.fast
 def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
-    # Set sample model
-    model = SampleModelFactory.create(name='lbco')
+    # Set structure
+    model = StructureFactory.create(name='lbco')
 
     space_group = model.space_group
     space_group.name_h_m = 'P m -3 m'
@@ -231,7 +231,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
 
     # Create project
     project = Project()
-    project.sample_models.add(sample_model=model)
+    project.structures.add(structure=model)
     project.experiments.add(experiment=expt)
 
     # Prepare for fitting
@@ -309,8 +309,8 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
 
 
 def test_fit_neutron_pd_cwl_hs() -> None:
-    # Set sample model
-    model = SampleModelFactory.create(name='hs')
+    # Set structure
+    model = StructureFactory.create(name='hs')
     model.space_group.name_h_m = 'R -3 m'
     model.space_group.it_coordinate_system_code = 'h'
     model.cell.length_a = 6.8615
@@ -389,7 +389,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
 
     # Create project
     project = Project()
-    project.sample_models.add(sample_model=model)
+    project.structures.add(structure=model)
     project.experiments.add(experiment=expt)
 
     # Prepare for fitting

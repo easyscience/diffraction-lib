@@ -30,17 +30,17 @@ project = ed.Project()
 project.plotter.x_max = 40
 
 # %% [markdown]
-# ## Add Sample Model
+# ## Add Structure
 
 # %%
-project.sample_models.add(name='si')
+project.structures.add(name='si')
 
 # %%
-sample_model = project.sample_models['si']
-sample_model.space_group.name_h_m.value = 'F d -3 m'
-sample_model.space_group.it_coordinate_system_code = '1'
-sample_model.cell.length_a = 5.43146
-sample_model.atom_sites.add(
+structure = project.structures['si']
+structure.space_group.name_h_m.value = 'F d -3 m'
+structure.space_group.it_coordinate_system_code = '1'
+structure.cell.length_a = 5.43146
+structure.atom_sites.add(
     label='Si',
     type_symbol='Si',
     fract_x=0,
@@ -80,8 +80,8 @@ experiment.peak.damp_particle_diameter = 0
 # ## Select Fitting Parameters
 
 # %%
-project.sample_models['si'].cell.length_a.free = True
-project.sample_models['si'].atom_sites['Si'].b_iso.free = True
+project.structures['si'].cell.length_a.free = True
+project.structures['si'].atom_sites['Si'].b_iso.free = True
 experiment.linked_phases['si'].scale.free = True
 
 # %%

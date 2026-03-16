@@ -21,5 +21,5 @@ def test_cryspy_calculator_engine_flag_and_converters():
         def as_cif(self):
             return 'data_x'
 
-    # _convert_sample_model_to_cryspy_cif returns input as_cif
-    assert calc._convert_sample_model_to_cryspy_cif(DummySample()) == 'data_x'
+    # _convert_structure_to_cryspy_cif returns input as_cif
+    assert calc._convert_structure_to_cryspy_cif(DummySample()) == 'data_x'

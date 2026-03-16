@@ -9,10 +9,10 @@ from typing import Union
 import numpy as np
 
 from easydiffraction.analysis.calculators.base import CalculatorBase
-from easydiffraction.experiments.experiment.base import ExperimentBase
-from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.sample_models.sample_model.base import SampleModelBase
-from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.datablocks.experiment.collection import Experiments
+from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+from easydiffraction.datablocks.structure.collection import Structures
+from easydiffraction.datablocks.structure.item.base import Structure
 
 try:
     from pycrysfml import cfml_py_utilities
@@ -38,13 +38,13 @@ class CrysfmlCalculator(CalculatorBase):
 
     def calculate_structure_factors(
         self,
-        sample_models: SampleModels,
+        structures: Structures,
         experiments: Experiments,
     ) -> None:
         """Call Crysfml to calculate structure factors.
 
         Args:
-            sample_models: The sample models to calculate structure
+            structures: The structures to calculate structure
                 factors for.
             experiments: The experiments associated with the sample
                 models.
@@ -53,16 +53,16 @@ class CrysfmlCalculator(CalculatorBase):
 
     def calculate_pattern(
         self,
-        sample_model: SampleModels,
+        structure: Structures,
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
         """Calculates the diffraction pattern using Crysfml for the
-        given sample model and experiment.
+        given structure and experiment.
 
         Args:
-            sample_model: The sample model to calculate the pattern for.
-            experiment: The experiment associated with the sample model.
+            structure: The structure to calculate the pattern for.
+            experiment: The experiment associated with the structure.
             called_by_minimizer: Whether the calculation is called by a
             minimizer.
 
@@ -73,7 +73,7 @@ class CrysfmlCalculator(CalculatorBase):
         # Intentionally unused, required by public API/signature
         del called_by_minimizer
 
-        crysfml_dict = self._crysfml_dict(sample_model, experiment)
+        crysfml_dict = self._crysfml_dict(structure, experiment)
         try:
             _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
             y = self._adjust_pattern_length(y, len(experiment.data.x))
@@ -104,53 +104,53 @@ class CrysfmlCalculator(CalculatorBase):
 
     def _crysfml_dict(
         self,
-        sample_model: SampleModels,
+        structure: Structures,
         experiment: ExperimentBase,
-    ) -> Dict[str, Union[ExperimentBase, SampleModelBase]]:
-        """Converts the sample model and experiment into a dictionary
+    ) -> Dict[str, Union[ExperimentBase, Structure]]:
+        """Converts the structure and experiment into a dictionary
         format for Crysfml.
 
         Args:
-            sample_model: The sample model to convert.
+            structure: The structure to convert.
             experiment: The experiment to convert.
 
         Returns:
-            A dictionary representation of the sample model and
+            A dictionary representation of the structure and
                 experiment.
         """
-        sample_model_dict = self._convert_sample_model_to_dict(sample_model)
+        structure_dict = self._convert_structure_to_dict(structure)
         experiment_dict = self._convert_experiment_to_dict(experiment)
         return {
-            'phases': [sample_model_dict],
+            'phases': [structure_dict],
             'experiments': [experiment_dict],
         }
 
-    def _convert_sample_model_to_dict(
+    def _convert_structure_to_dict(
         self,
-        sample_model: SampleModelBase,
+        structure: Structure,
     ) -> Dict[str, Any]:
-        """Converts a sample model into a dictionary format.
+        """Converts a structure into a dictionary format.
 
         Args:
-            sample_model: The sample model to convert.
+            structure: The structure to convert.
 
         Returns:
-            A dictionary representation of the sample model.
+            A dictionary representation of the structure.
         """
-        sample_model_dict = {
-            sample_model.name: {
-                '_space_group_name_H-M_alt': sample_model.space_group.name_h_m.value,
-                '_cell_length_a': sample_model.cell.length_a.value,
-                '_cell_length_b': sample_model.cell.length_b.value,
-                '_cell_length_c': sample_model.cell.length_c.value,
-                '_cell_angle_alpha': sample_model.cell.angle_alpha.value,
-                '_cell_angle_beta': sample_model.cell.angle_beta.value,
-                '_cell_angle_gamma': sample_model.cell.angle_gamma.value,
+        structure_dict = {
+            structure.name: {
+                '_space_group_name_H-M_alt': structure.space_group.name_h_m.value,
+                '_cell_length_a': structure.cell.length_a.value,
+                '_cell_length_b': structure.cell.length_b.value,
+                '_cell_length_c': structure.cell.length_c.value,
+                '_cell_angle_alpha': structure.cell.angle_alpha.value,
+                '_cell_angle_beta': structure.cell.angle_beta.value,
+                '_cell_angle_gamma': structure.cell.angle_gamma.value,
                 '_atom_site': [],
             }
         }
 
-        for atom in sample_model.atom_sites:
+        for atom in structure.atom_sites:
             atom_site = {
                 '_label': atom.label.value,
                 '_type_symbol': atom.type_symbol.value,
@@ -161,9 +161,9 @@ class CrysfmlCalculator(CalculatorBase):
                 '_adp_type': 'Biso',  # Assuming Biso for simplicity
                 '_B_iso_or_equiv': atom.b_iso.value,
             }
-            sample_model_dict[sample_model.name]['_atom_site'].append(atom_site)
+            structure_dict[structure.name]['_atom_site'].append(atom_site)
 
-        return sample_model_dict
+        return structure_dict
 
     def _convert_experiment_to_dict(
         self,

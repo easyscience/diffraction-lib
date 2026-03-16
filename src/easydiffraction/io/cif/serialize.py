@@ -189,8 +189,8 @@ def project_to_cif(project) -> str:
     parts: list[str] = []
     if hasattr(project, 'info'):
         parts.append(project.info.as_cif)
-    if getattr(project, 'sample_models', None):
-        parts.append(project.sample_models.as_cif)
+    if getattr(project, 'structures', None):
+        parts.append(project.structures.as_cif)
     if getattr(project, 'experiments', None):
         parts.append(project.experiments.as_cif)
     if getattr(project, 'analysis', None):

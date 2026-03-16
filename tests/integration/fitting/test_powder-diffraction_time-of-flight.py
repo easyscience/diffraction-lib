@@ -7,15 +7,15 @@ from numpy.testing import assert_almost_equal
 
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 TEMP_DIR = tempfile.gettempdir()
 
 
 def test_single_fit_neutron_pd_tof_si() -> None:
-    # Set sample model
-    model = SampleModelFactory.create(name='si')
+    # Set structure
+    model = StructureFactory.create(name='si')
     model.space_group.name_h_m = 'F d -3 m'
     model.space_group.it_coordinate_system_code = '2'
     model.cell.length_a = 5.4315
@@ -54,7 +54,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
     # Create project
     project = Project()
-    project.sample_models.add(sample_model=model)
+    project.structures.add(structure=model)
     project.experiments.add(experiment=expt)
 
     # Prepare for fitting
@@ -81,8 +81,8 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
 
 def test_single_fit_neutron_pd_tof_ncaf() -> None:
-    # Set sample model
-    model = SampleModelFactory.create(name='ncaf')
+    # Set structure
+    model = StructureFactory.create(name='ncaf')
     model.space_group.name_h_m = 'I 21 3'
     model.space_group.it_coordinate_system_code = '1'
     model.cell.length_a = 10.250256
@@ -197,7 +197,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
 
     # Create project
     project = Project()
-    project.sample_models.add(sample_model=model)
+    project.structures.add(structure=model)
     project.experiments.add(experiment=expt)
 
     # Prepare for fitting

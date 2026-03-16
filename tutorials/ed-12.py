@@ -34,16 +34,16 @@ project.plotter.x_min = 2.0
 project.plotter.x_max = 30.0
 
 # %% [markdown]
-# ## Add Sample Model
+# ## Add Structure
 
 # %%
-project.sample_models.add(name='nacl')
+project.structures.add(name='nacl')
 
 # %%
-project.sample_models['nacl'].space_group.name_h_m = 'F m -3 m'
-project.sample_models['nacl'].space_group.it_coordinate_system_code = '1'
-project.sample_models['nacl'].cell.length_a = 5.62
-project.sample_models['nacl'].atom_sites.add(
+project.structures['nacl'].space_group.name_h_m = 'F m -3 m'
+project.structures['nacl'].space_group.it_coordinate_system_code = '1'
+project.structures['nacl'].cell.length_a = 5.62
+project.structures['nacl'].atom_sites.add(
     label='Na',
     type_symbol='Na',
     fract_x=0,
@@ -52,7 +52,7 @@ project.sample_models['nacl'].atom_sites.add(
     wyckoff_letter='a',
     b_iso=1.0,
 )
-project.sample_models['nacl'].atom_sites.add(
+project.structures['nacl'].atom_sites.add(
     label='Cl',
     type_symbol='Cl',
     fract_x=0.5,
@@ -102,9 +102,9 @@ project.experiments['xray_pdf'].linked_phases.add(id='nacl', scale=0.5)
 # ## Select Fitting Parameters
 
 # %%
-project.sample_models['nacl'].cell.length_a.free = True
-project.sample_models['nacl'].atom_sites['Na'].b_iso.free = True
-project.sample_models['nacl'].atom_sites['Cl'].b_iso.free = True
+project.structures['nacl'].cell.length_a.free = True
+project.structures['nacl'].atom_sites['Na'].b_iso.free = True
+project.structures['nacl'].atom_sites['Cl'].b_iso.free = True
 
 # %%
 project.experiments['xray_pdf'].linked_phases['nacl'].scale.free = True

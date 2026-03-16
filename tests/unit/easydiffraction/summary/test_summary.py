@@ -23,7 +23,7 @@ def test_summary_show_report_prints_sections(capsys):
     class Project:
         def __init__(self):
             self.info = Info()
-            self.sample_models = {}  # empty mapping to exercise loops safely
+            self.structures = {}  # empty mapping to exercise loops safely
             self.experiments = {}  # empty mapping to exercise loops safely
 
             class A:

@@ -20,7 +20,7 @@ def _make_project_with_names(names):
 
     class P:
         experiments = ExpCol(names)
-        sample_models = object()
+        structures = object()
         _varname = 'proj'
 
     return P()
@@ -105,13 +105,13 @@ def test_show_fit_results_calls_process_fit_results(monkeypatch):
     # Track if _process_fit_results was called
     process_called = {'called': False, 'args': None}
 
-    def mock_process_fit_results(sample_models, experiments):
+    def mock_process_fit_results(structures, experiments):
         process_called['called'] = True
-        process_called['args'] = (sample_models, experiments)
+        process_called['args'] = (structures, experiments)
 
-    # Create a mock project with sample_models and experiments
+    # Create a mock project with structures and experiments
     class MockProject:
-        sample_models = object()
+        structures = object()
         experiments = object()
         _varname = 'proj'
 
@@ -121,7 +121,7 @@ def test_show_fit_results_calls_process_fit_results(monkeypatch):
         experiments = experiments_cls()
 
     project = MockProject()
-    project.sample_models = object()
+    project.structures = object()
     project.experiments.names = []
 
     a = Analysis(project=project)

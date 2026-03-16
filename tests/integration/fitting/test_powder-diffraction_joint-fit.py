@@ -8,7 +8,7 @@ from numpy.testing import assert_almost_equal
 
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 TEMP_DIR = tempfile.gettempdir()
@@ -16,8 +16,8 @@ TEMP_DIR = tempfile.gettempdir()
 
 @pytest.mark.fast
 def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
-    # Set sample model
-    model = SampleModelFactory.create(name='pbso4')
+    # Set structure
+    model = StructureFactory.create(name='pbso4')
     model.space_group.name_h_m = 'P n m a'
     model.cell.length_a = 8.47
     model.cell.length_b = 5.39
@@ -117,7 +117,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
 
     # Create project
     project = Project()
-    project.sample_models.add(sample_model=model)
+    project.structures.add(structure=model)
     project.experiments.add(experiment=expt1)
     project.experiments.add(experiment=expt2)
 
@@ -144,8 +144,8 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
 
 @pytest.mark.fast
 def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
-    # Set sample model
-    model = SampleModelFactory.create(name='pbso4')
+    # Set structure
+    model = StructureFactory.create(name='pbso4')
     model.space_group.name_h_m = 'P n m a'
     model.cell.length_a = 8.47
     model.cell.length_b = 5.39
@@ -251,7 +251,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
 
     # Create project
     project = Project()
-    project.sample_models.add(sample_model=model)
+    project.structures.add(structure=model)
     project.experiments.add(experiment=expt1)
     project.experiments.add(experiment=expt2)
 

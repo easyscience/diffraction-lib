@@ -20,12 +20,12 @@ The tutorials are organized into the following categories.
 - [LBCO `quick` CIF](ed-1.ipynb) – A minimal example intended as a quick
   reference for users already familiar with the EasyDiffraction API or who want
   to see how Rietveld refinement of the La0.5Ba0.5CoO3 crystal structure can be
-  performed when both the sample model and experiment are loaded from CIF files.
+  performed when both the structure and experiment are loaded from CIF files.
   Data collected from constant wavelength neutron powder diffraction at HRPT at
   PSI.
 - [LBCO `quick` `code`](ed-2.ipynb) – A minimal example intended as a quick
   reference for users already familiar with the EasyDiffraction API or who want
-  to see an example refinement when both the sample model and experiment are
+  to see an example refinement when both the structure and experiment are
   defined directly in code. This tutorial covers a Rietveld refinement of the
   La0.5Ba0.5CoO3 crystal structure using constant wavelength neutron powder
   diffraction data from HRPT at PSI.

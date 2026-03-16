@@ -4,7 +4,7 @@
 
 These tests verify the complete workflow:
 1. Define project
-2. Add sample model manually defined
+2. Add structure manually defined
 3. Modify experiment CIF file
 4. Add experiment from modified CIF file
 5. Modify default experiment configuration
@@ -56,11 +56,11 @@ def prepared_cif_path(
 def project_with_data(
     prepared_cif_path: str,
 ) -> ed.Project:
-    """Create project with sample model, experiment data, and
+    """Create project with structure, experiment data, and
     configuration.
 
     1. Define project
-    2. Add sample model manually defined
+    2. Add structure manually defined
     3. Modify experiment CIF file
     4. Add experiment from modified CIF file
     5. Modify default experiment configuration
@@ -68,16 +68,16 @@ def project_with_data(
     # Step 1: Define Project
     project = ed.Project()
 
-    # Step 2: Define Sample Model manually
-    project.sample_models.add(name='si')
-    sample_model = project.sample_models['si']
+    # Step 2: Define Structure manually
+    project.structures.add(name='si')
+    structure = project.structures['si']
 
-    sample_model.space_group.name_h_m = 'F d -3 m'
-    sample_model.space_group.it_coordinate_system_code = '1'
+    structure.space_group.name_h_m = 'F d -3 m'
+    structure.space_group.it_coordinate_system_code = '1'
 
-    sample_model.cell.length_a = 5.43146
+    structure.cell.length_a = 5.43146
 
-    sample_model.atom_sites.add(
+    structure.atom_sites.add(
         label='Si',
         type_symbol='Si',
         fract_x=0.125,
@@ -139,12 +139,12 @@ def fitted_project(
     7. Do fitting
     """
     project = project_with_data
-    sample_model = project.sample_models['si']
+    structure = project.structures['si']
     experiment = project.experiments['reduced_tof']
 
     # Step 5: Select parameters to be fitted
-    # Set free parameters for sample model
-    sample_model.atom_sites['Si'].b_iso.free = True
+    # Set free parameters for structure
+    structure.atom_sites['Si'].b_iso.free = True
 
     # Set free parameters for experiment
     experiment.linked_phases['si'].scale.free = True

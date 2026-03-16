@@ -12,8 +12,8 @@ import numpy as np
 from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
-from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.datablocks.experiment.collection import Experiments
+from easydiffraction.datablocks.structure.collection import Structures
 
 if TYPE_CHECKING:
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
@@ -30,7 +30,7 @@ class Fitter:
 
     def fit(
         self,
-        sample_models: SampleModels,
+        structures: Structures,
         experiments: Experiments,
         weights: Optional[np.array] = None,
         analysis=None,
@@ -42,13 +42,13 @@ class Fitter:
         to display the fit results after fitting is complete.
 
         Args:
-            sample_models: Collection of sample models.
+            structures: Collection of structures.
             experiments: Collection of experiments.
             weights: Optional weights for joint fitting.
             analysis: Optional Analysis object to update its categories
                 during fitting.
         """
-        params = sample_models.free_parameters + experiments.free_parameters
+        params = structures.free_parameters + experiments.free_parameters
 
         if not params:
             print('⚠️ No parameters selected for fitting.')
@@ -61,7 +61,7 @@ class Fitter:
             return self._residual_function(
                 engine_params=engine_params,
                 parameters=params,
-                sample_models=sample_models,
+                structures=structures,
                 experiments=experiments,
                 weights=weights,
                 analysis=analysis,
@@ -72,7 +72,7 @@ class Fitter:
 
     def _process_fit_results(
         self,
-        sample_models: SampleModels,
+        structures: Structures,
         experiments: Experiments,
     ) -> None:
         """Collect reliability inputs and display fit results.
@@ -83,11 +83,11 @@ class Fitter:
         the console.
 
         Args:
-            sample_models: Collection of sample models.
+            structures: Collection of structures.
             experiments: Collection of experiments.
         """
         y_obs, y_calc, y_err = get_reliability_inputs(
-            sample_models,
+            structures,
             experiments,
         )
 
@@ -105,26 +105,26 @@ class Fitter:
 
     def _collect_free_parameters(
         self,
-        sample_models: SampleModels,
+        structures: Structures,
         experiments: Experiments,
     ) -> List[Parameter]:
-        """Collect free parameters from sample models and experiments.
+        """Collect free parameters from structures and experiments.
 
         Args:
-            sample_models: Collection of sample models.
+            structures: Collection of structures.
             experiments: Collection of experiments.
 
         Returns:
             List of free parameters.
         """
-        free_params: List[Parameter] = sample_models.free_parameters + experiments.free_parameters
+        free_params: List[Parameter] = structures.free_parameters + experiments.free_parameters
         return free_params
 
     def _residual_function(
         self,
         engine_params: Dict[str, Any],
         parameters: List[Parameter],
-        sample_models: SampleModels,
+        structures: Structures,
         experiments: Experiments,
         weights: Optional[np.array] = None,
         analysis=None,
@@ -136,7 +136,7 @@ class Fitter:
         Args:
             engine_params: Engine-specific parameter dict.
             parameters: List of parameters being optimized.
-            sample_models: Collection of sample models.
+            structures: Collection of structures.
             experiments: Collection of experiments.
             weights: Optional weights for joint fitting.
             analysis: Optional Analysis object to update its categories
@@ -149,10 +149,10 @@ class Fitter:
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
 
         # Update categories to reflect new parameter values
-        # Order matters: sample models first (symmetry, structure),
+        # Order matters: structures first (symmetry, structure),
         # then analysis (constraints), then experiments (calculations)
-        for sample_model in sample_models:
-            sample_model._update_categories()
+        for structure in structures:
+            structure._update_categories()
 
         if analysis is not None:
             analysis._update_categories(called_by_minimizer=True)

@@ -23,7 +23,7 @@ EasyDiffraction allows you to:
 Below, you will find instructions on how to define and manage experiments in
 EasyDiffraction. It is assumed that you have already created a `project` object,
 as described in the [Project](project.md) section as well as defined its
-`sample_models`, as described in the [Sample Model](model.md) section.
+`structures`, as described in the [Structure](model.md) section.
 
 ### Adding from CIF
 
@@ -169,9 +169,9 @@ understand the different aspects of the experiment:
    as broadening and asymmetry.
 3. **Background Category**: Defines the background type and allows you to add
    background points.
-4. **Linked Phases Category**: Links the sample model defined in the previous
-   step to the experiment, allowing you to specify the scale factor for the
-   linked phase.
+4. **Linked Phases Category**: Links the structure defined in the previous step
+   to the experiment, allowing you to specify the scale factor for the linked
+   phase.
 5. **Measured Data Category**: Contains the measured data. The expected format
    depends on the experiment type, but generally includes columns for 2θ angle
    or TOF and intensity.
@@ -223,7 +223,7 @@ project.experiments['hrpt'].background.add(x=165, y=170)
 ### 5. Linked Phases Category { #linked-phases-category }
 
 ```python
-# Link the sample model defined in the previous step to the experiment
+# Link the structure defined in the previous step to the experiment
 project.experiments['hrpt'].linked_phases.add(id='lbco', scale=10.0)
 ```
 

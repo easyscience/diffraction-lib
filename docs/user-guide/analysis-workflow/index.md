@@ -17,10 +17,10 @@ flowchart LR
 ```
 
 - [:material-archive: Project](project.md) – Establish a **project** as a
-  container for sample model and experiment parameters, measured and calculated
+  container for structure and experiment parameters, measured and calculated
   data, analysis settings and results.
-- [:material-puzzle: Sample Model](model.md) – Load an existing
-  **crystallographic model** in CIF format or define a new one from scratch.
+- [:material-puzzle: Structure](model.md) – Load an existing **crystallographic
+  model** in CIF format or define a new one from scratch.
 - [:material-microscope: Experiment](experiment.md) – Import **experimental
   diffraction data** and configure **instrumental** and other relevant
   parameters.

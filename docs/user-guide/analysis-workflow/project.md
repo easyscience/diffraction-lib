@@ -8,7 +8,7 @@ The **Project** serves as a container for all data and metadata associated with
 a particular data analysis task. It acts as the top-level entity in
 EasyDiffraction, ensuring structured organization and easy access to relevant
 information. Each project can contain multiple **experimental datasets**, with
-each dataset containing contribution from multiple **sample models**.
+each dataset containing contribution from multiple **structures**.
 
 EasyDiffraction allows you to:
 
@@ -73,7 +73,7 @@ The example below illustrates a typical **project structure** for a
 <pre>
 📁 <span class="red"><b>La0.5Ba0.5CoO3</b></span>     - Project directory.
 ├── 📄 <span class="orange"><b>project.cif</b></span>    - Main project description file.
-├── 📁 sample_models  - Folder with sample models (crystallographic structures).
+├── 📁 structures  - Folder with structures (crystallographic structures).
 │   ├── 📄 <span class="orange"><b>lbco.cif</b></span>   - File with La0.5Ba0.5CoO3 structure parameters.
 │   └── ...
 ├── 📁 experiments    - Folder with instrumental parameters and measured data.
@@ -96,13 +96,13 @@ showing the contents of all files in the project.
 
     If you save the project right after creating it, the project directory will
     only contain the `project.cif` file. The other folders and files will be
-    created as you add sample models, experiments, and set up the analysis. The
+    created as you add structures, experiments, and set up the analysis. The
     summary folder will be created after the analysis is completed.
 
 ### 1. <span class="orange">project.cif</span>
 
 This file provides an overview of the project, including file names of the
-**sample models** and **experiments** associated with the project.
+**structures** and **experiments** associated with the project.
 
 <!-- prettier-ignore-start -->
 
@@ -114,7 +114,7 @@ data_<span class="red"><b>La0.5Ba0.5CoO3</b></span>
 <span class="blue"><b>_project</b>.description</span> "neutrons, powder, constant wavelength, HRPT@PSI"
 
 loop_
-<span class="green"><b>_sample_model</b>.cif_file_name</span>
+<span class="green"><b>_structure</b>.cif_file_name</span>
 lbco.cif
 
 loop_
@@ -125,7 +125,7 @@ hrpt.cif
 
 <!-- prettier-ignore-end -->
 
-### 2. sample_models / <span class="orange">lbco.cif</span>
+### 2. structures / <span class="orange">lbco.cif</span>
 
 This file contains crystallographic information associated with the sample
 model, including **space group**, **unit cell parameters**, and **atomic
@@ -271,4 +271,4 @@ occ_Ba   "1 - occ_La"
 ---
 
 Now that the Project has been defined, you can proceed to the next step:
-[Sample Model](model.md).
+[Structure](model.md).

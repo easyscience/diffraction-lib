@@ -36,7 +36,7 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
         _varname = 'proj'
 
         def __init__(self):
-            self.sample_models = Coll([p1])
+            self.structures = Coll([p1])
             self.experiments = Coll([p2])
 
     # Capture the table payload by monkeypatching render_table to avoid
@@ -63,7 +63,7 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     flat_rows = [' '.join(map(str, row)) for row in data]
 
     # Python access paths
-    assert any("proj.sample_models['db1'].catA.alpha" in r for r in flat_rows)
+    assert any("proj.structures['db1'].catA.alpha" in r for r in flat_rows)
     assert any("proj.experiments['db2'].catB['row1'].beta" in r for r in flat_rows)
 
     # Now check CIF unique identifiers via the new API

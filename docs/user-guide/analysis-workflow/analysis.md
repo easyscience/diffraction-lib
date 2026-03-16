@@ -181,7 +181,7 @@ project.analysis.show_current_fit_mode()
 
 ### Perform Fit
 
-Refining the sample model and experiment parameters against measured data is
+Refining the structure and experiment parameters against measured data is
 usually divided into several steps, where each step involves adding or removing
 parameters to be refined, calculating the model data, and comparing it to the
 experimental data as shown in the diagram above.
@@ -193,8 +193,8 @@ during the refinement process.
 Here is an example of how to set parameters to be refined:
 
 ```python
-# Set sample model parameters to be refined.
-project.sample_models['lbco'].cell.length_a.free = True
+# Set structure parameters to be refined.
+project.structures['lbco'].cell.length_a.free = True
 
 # Set experiment parameters to be refined.
 project.experiments['hrpt'].linked_phases['lbco'].scale.free = True
@@ -265,27 +265,27 @@ to constrain. This can be done using the `add` method of the `aliases` object.
 Aliases are used to reference parameters in a more readable way, making it
 easier to manage constraints.
 
-An example of setting aliases for parameters in a sample model:
+An example of setting aliases for parameters in a structure:
 
 ```python
 # Set aliases for the atomic displacement parameters
 project.analysis.aliases.add(
     label='biso_La',
-    param_uid=project.sample_models['lbco'].atom_sites['La'].b_iso.uid,
+    param_uid=project.structures['lbco'].atom_sites['La'].b_iso.uid,
 )
 project.analysis.aliases.add(
     label='biso_Ba',
-    param_uid=project.sample_models['lbco'].atom_sites['Ba'].b_iso.uid,
+    param_uid=project.structures['lbco'].atom_sites['Ba'].b_iso.uid,
 )
 
 # Set aliases for the occupancies of the atom sites
 project.analysis.aliases.add(
     label='occ_La',
-    param_uid=project.sample_models['lbco'].atom_sites['La'].occupancy.uid,
+    param_uid=project.structures['lbco'].atom_sites['La'].occupancy.uid,
 )
 project.analysis.aliases.add(
     label='occ_Ba',
-    param_uid=project.sample_models['lbco'].atom_sites['Ba'].occupancy.uid,
+    param_uid=project.structures['lbco'].atom_sites['Ba'].occupancy.uid,
 )
 ```
 
@@ -339,8 +339,8 @@ User defined constraints
 To inspect an analysis configuration in CIF format, use:
 
 ```python
-# Show sample model as CIF
-project.sample_models['lbco'].show_as_cif()
+# Show structure as CIF
+project.structures['lbco'].show_as_cif()
 ```
 
 Example output:

@@ -17,8 +17,8 @@ from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.display.tables import TableRenderer
-from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
@@ -30,7 +30,7 @@ class Analysis:
 
     This class wires calculators and minimizers, exposes a compact
     interface for parameters, constraints and results, and coordinates
-    computations across the project's sample models and experiments.
+    computations across the project's structures and experiments.
 
     Typical usage:
 
@@ -108,13 +108,13 @@ class Analysis:
         return df
 
     def show_all_params(self) -> None:
-        """Print a table with all parameters for sample models and
+        """Print a table with all parameters for structures and
         experiments.
         """
-        sample_models_params = self.project.sample_models.parameters
+        structures_params = self.project.structures.parameters
         experiments_params = self.project.experiments.parameters
 
-        if not sample_models_params and not experiments_params:
+        if not structures_params and not experiments_params:
             log.warning('No parameters found.')
             return
 
@@ -129,8 +129,8 @@ class Analysis:
             'fittable',
         ]
 
-        console.paragraph('All parameters for all sample models (🧩 data blocks)')
-        df = self._get_params_as_dataframe(sample_models_params)
+        console.paragraph('All parameters for all structures (🧩 data blocks)')
+        df = self._get_params_as_dataframe(structures_params)
         filtered_df = df[filtered_headers]
         tabler.render(filtered_df)
 
@@ -143,10 +143,10 @@ class Analysis:
         """Print a table with parameters that can be included in
         fitting.
         """
-        sample_models_params = self.project.sample_models.fittable_parameters
+        structures_params = self.project.structures.fittable_parameters
         experiments_params = self.project.experiments.fittable_parameters
 
-        if not sample_models_params and not experiments_params:
+        if not structures_params and not experiments_params:
             log.warning('No fittable parameters found.')
             return
 
@@ -163,8 +163,8 @@ class Analysis:
             'free',
         ]
 
-        console.paragraph('Fittable parameters for all sample models (🧩 data blocks)')
-        df = self._get_params_as_dataframe(sample_models_params)
+        console.paragraph('Fittable parameters for all structures (🧩 data blocks)')
+        df = self._get_params_as_dataframe(structures_params)
         filtered_df = df[filtered_headers]
         tabler.render(filtered_df)
 
@@ -177,9 +177,9 @@ class Analysis:
         """Print a table with only currently-free (varying)
         parameters.
         """
-        sample_models_params = self.project.sample_models.free_parameters
+        structures_params = self.project.structures.free_parameters
         experiments_params = self.project.experiments.free_parameters
-        free_params = sample_models_params + experiments_params
+        free_params = structures_params + experiments_params
 
         if not free_params:
             log.warning('No free parameters found.')
@@ -200,8 +200,7 @@ class Analysis:
         ]
 
         console.paragraph(
-            'Free parameters for both sample models (🧩 data blocks) '
-            'and experiments (🔬 data blocks)'
+            'Free parameters for both structures (🧩 data blocks) and experiments (🔬 data blocks)'
         )
         df = self._get_params_as_dataframe(free_params)
         filtered_df = df[filtered_headers]
@@ -213,10 +212,10 @@ class Analysis:
         The output explains how to reference specific parameters in
         code.
         """
-        sample_models_params = self.project.sample_models.parameters
+        structures_params = self.project.structures.parameters
         experiments_params = self.project.experiments.parameters
         all_params = {
-            'sample_models': sample_models_params,
+            'structures': structures_params,
             'experiments': experiments_params,
         }
 
@@ -277,10 +276,10 @@ class Analysis:
         The output explains which unique identifiers are used when
         creating CIF-based constraints.
         """
-        sample_models_params = self.project.sample_models.parameters
+        structures_params = self.project.structures.parameters
         experiments_params = self.project.experiments.parameters
         all_params = {
-            'sample_models': sample_models_params,
+            'structures': structures_params,
             'experiments': experiments_params,
         }
 
@@ -519,9 +518,9 @@ class Analysis:
             project.analysis.fit()
             project.analysis.show_fit_results()  # Display results
         """
-        sample_models = self.project.sample_models
-        if not sample_models:
-            log.warning('No sample models found in the project. Cannot run fit.')
+        structures = self.project.structures
+        if not structures:
+            log.warning('No structures found in the project. Cannot run fit.')
             return
 
         experiments = self.project.experiments
@@ -535,7 +534,7 @@ class Analysis:
                 f"Using all experiments 🔬 {experiments.names} for '{self.fit_mode}' fitting"
             )
             self.fitter.fit(
-                sample_models,
+                structures,
                 experiments,
                 weights=self.joint_fit_experiments,
                 analysis=self,
@@ -557,7 +556,7 @@ class Analysis:
 
                 dummy_experiments._add(experiment)
                 self.fitter.fit(
-                    sample_models,
+                    structures,
                     dummy_experiments,
                     analysis=self,
                 )
@@ -586,10 +585,10 @@ class Analysis:
             log.warning('No fit results available. Run fit() first.')
             return
 
-        sample_models = self.project.sample_models
+        structures = self.project.structures
         experiments = self.project.experiments
 
-        self.fitter._process_fit_results(sample_models, experiments)
+        self.fitter._process_fit_results(structures, experiments)
 
     def _update_categories(self, called_by_minimizer=False) -> None:
         """Update all categories owned by Analysis.

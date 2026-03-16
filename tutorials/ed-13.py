@@ -364,16 +364,16 @@ project_1.experiments['sim_si'].background.add(id='6', x=100000, y=0.01)
 project_1.experiments['sim_si'].background.add(id='7', x=110000, y=0.01)
 
 # %% [markdown]
-# ### 🧩 Create a Sample Model – Si
+# ### 🧩 Create a Structure – Si
 #
-# After setting up the experiment, we need to create a sample model that
+# After setting up the experiment, we need to create a structure that
 # describes the crystal structure of the sample being analyzed.
 #
-# In this case, we will create a sample model for silicon (Si) with a
-# cubic crystal structure. The sample model contains information about
+# In this case, we will create a structure for silicon (Si) with a
+# cubic crystal structure. The structure contains information about
 # the space group, lattice parameters, atomic positions of the atoms in
 # the unit cell, atom types, occupancies and atomic displacement
-# parameters. The sample model is essential for the fitting process, as
+# parameters. The structure is essential for the fitting process, as
 # it is used to calculate the expected diffraction pattern.
 #
 # EasyDiffraction refines the crystal structure of the sample, but does
@@ -435,20 +435,20 @@ project_1.experiments['sim_si'].background.add(id='7', x=110000, y=0.01)
 
 # %% [markdown]
 # As with adding the experiment in the previous step, we will create a
-# default sample model and then modify its parameters to match the Si
+# default structure and then modify its parameters to match the Si
 # structure.
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
 # [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/model/)
-# for more details about sample models and their purpose in the data
+# for more details about structures and their purpose in the data
 # analysis workflow.
 
 # %% [markdown]
-# #### Add Sample Model
+# #### Add Structure
 
 # %%
-project_1.sample_models.add(name='si')
+project_1.structures.add(name='si')
 
 # %% [markdown]
 # #### Set Space Group
@@ -459,8 +459,8 @@ project_1.sample_models.add(name='si')
 # for more details about the space group.
 
 # %%
-project_1.sample_models['si'].space_group.name_h_m = 'F d -3 m'
-project_1.sample_models['si'].space_group.it_coordinate_system_code = '2'
+project_1.structures['si'].space_group.name_h_m = 'F d -3 m'
+project_1.structures['si'].space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
 # #### Set Lattice Parameters
@@ -471,7 +471,7 @@ project_1.sample_models['si'].space_group.it_coordinate_system_code = '2'
 # for more details about the unit cell parameters.
 
 # %%
-project_1.sample_models['si'].cell.length_a = 5.43
+project_1.structures['si'].cell.length_a = 5.43
 
 # %% [markdown]
 # #### Set Atom Sites
@@ -482,7 +482,7 @@ project_1.sample_models['si'].cell.length_a = 5.43
 # for more details about the atom sites category.
 
 # %%
-project_1.sample_models['si'].atom_sites.add(
+project_1.structures['si'].atom_sites.add(
     label='Si',
     type_symbol='Si',
     fract_x=0,
@@ -493,17 +493,17 @@ project_1.sample_models['si'].atom_sites.add(
 )
 
 # %% [markdown]
-# ### 🔗 Assign Sample Model to Experiment
+# ### 🔗 Assign Structure to Experiment
 #
-# Now we need to assign, or link, this sample model to the experiment
+# Now we need to assign, or link, this structure to the experiment
 # created above. This linked crystallographic phase will be used to
 # calculate the expected diffraction pattern based on the crystal
-# structure defined in the sample model.
+# structure defined in the structure.
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
 # [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#linked-phases-category)
-# for more details about linking a sample model to an experiment.
+# for more details about linking a structure to an experiment.
 
 # %%
 project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
@@ -511,11 +511,11 @@ project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
 # %% [markdown]
 # ### 🚀 Analyze and Fit the Data
 #
-# After setting up the experiment and sample model, we can now analyze
+# After setting up the experiment and structure, we can now analyze
 # the measured diffraction pattern and perform the fit. Building on the
 # analogies from the EasyScience library and the previous notebooks, we
 # can say that all the parameters we introduced earlier — those defining
-# the sample model (crystal structure parameters) and the experiment
+# the structure (crystal structure parameters) and the experiment
 # (instrument, background, and peak profile parameters) — together form
 # the complete set of parameters that can be refined during the fitting
 # process.
@@ -530,9 +530,9 @@ project_1.experiments['sim_si'].linked_phases.add(id='si', scale=1.0)
 # The fitting process involves comparing the measured diffraction
 # pattern with the calculated diffraction pattern based on the sample
 # model and instrument parameters. The goal is to adjust the parameters
-# of the sample model and the experiment to minimize the difference
+# of the structure and the experiment to minimize the difference
 # between the measured and calculated diffraction patterns. This is done
-# by refining the parameters of the sample model and the instrument
+# by refining the parameters of the structure and the instrument
 # settings to achieve a better fit.
 
 # %% [markdown] tags=["doc-link"]
@@ -593,7 +593,7 @@ project_1.analysis.show_free_params()
 #
 # Before performing the fit, we can visually compare the measured
 # diffraction pattern with the calculated diffraction pattern based on
-# the initial parameters of the sample model and the instrument. This
+# the initial parameters of the structure and the instrument. This
 # provides an indication of how well the initial parameters match the
 # measured data. The `plot_meas_vs_calc` method of the project allows
 # this comparison.
@@ -689,7 +689,7 @@ project_1.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing')
 #
 # Before moving on, we can save the project to disk for later use. This
 # will preserve the entire project structure, including experiments,
-# sample models, and fitting results. The project is saved into a
+# structures, and fitting results. The project is saved into a
 # directory specified by the `dir_path` attribute of the project object.
 
 # %%
@@ -870,11 +870,11 @@ project_2.experiments['sim_lbco'].background.add(id='6', x=100000, y=0.2)
 project_2.experiments['sim_lbco'].background.add(id='7', x=110000, y=0.2)
 
 # %% [markdown]
-# ### 🧩 Exercise 3: Define a Sample Model – LBCO
+# ### 🧩 Exercise 3: Define a Structure – LBCO
 #
 # The LBSO structure is not as simple as the Si model, as it contains
 # multiple atoms in the unit cell. It is not in COD, so we give you the
-# structural parameters in CIF format to create the sample model.
+# structural parameters in CIF format to create the structure.
 #
 # Note that those parameters are not necessarily the most accurate ones,
 # but they are a good starting point for the fit. The aim of the study
@@ -914,7 +914,7 @@ project_2.experiments['sim_lbco'].background.add(id='7', x=110000, y=0.2)
 # Note that the `occupancy` of the La and Ba atoms is 0.5
 # and those atoms are located in the same position (0, 0, 0) in the unit
 # cell. This means that an extra attribute `occupancy` needs to be set
-# for those atoms later in the sample model.
+# for those atoms later in the structure.
 #
 # We model the La/Ba site using the virtual crystal approximation. In
 # this approach, the scattering is taken as a weighted average of La and
@@ -936,9 +936,9 @@ project_2.experiments['sim_lbco'].background.add(id='7', x=110000, y=0.2)
 #    of the random case and the extra peaks of the ordered case.
 
 # %% [markdown]
-# #### Exercise 3.1: Create Sample Model
+# #### Exercise 3.1: Create Structure
 #
-# Add a sample model for LBCO to the project. The sample model
+# Add a structure for LBCO to the project. The structure
 # parameters will be set in the next exercises.
 
 # %% [markdown]
@@ -953,12 +953,12 @@ project_2.experiments['sim_lbco'].background.add(id='7', x=110000, y=0.2)
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.sample_models.add(name='lbco')
+project_2.structures.add(name='lbco')
 
 # %% [markdown]
 # #### Exercise 3.2: Set Space Group
 #
-# Set the space group for the LBCO sample model.
+# Set the space group for the LBCO structure.
 
 # %% [markdown]
 # **Hint:**
@@ -971,13 +971,13 @@ project_2.sample_models.add(name='lbco')
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.sample_models['lbco'].space_group.name_h_m = 'P m -3 m'
-project_2.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
+project_2.structures['lbco'].space_group.name_h_m = 'P m -3 m'
+project_2.structures['lbco'].space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
 # #### Exercise 3.3: Set Lattice Parameters
 #
-# Set the lattice parameters for the LBCO sample model.
+# Set the lattice parameters for the LBCO structure.
 
 # %% [markdown]
 # **Hint:**
@@ -989,25 +989,25 @@ project_2.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.sample_models['lbco'].cell.length_a = 3.88
+project_2.structures['lbco'].cell.length_a = 3.88
 
 # %% [markdown]
 # #### Exercise 3.4: Set Atom Sites
 #
-# Set the atom sites for the LBCO sample model.
+# Set the atom sites for the LBCO structure.
 
 # %% [markdown]
 # **Hint:**
 
 # %% [markdown] tags=["dmsc-school-hint"]
 # Use the atom sites from the CIF data. You can use the `add` method of
-# the `atom_sites` attribute of the sample model to add the atom sites.
+# the `atom_sites` attribute of the structure to add the atom sites.
 
 # %% [markdown]
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.sample_models['lbco'].atom_sites.add(
+project_2.structures['lbco'].atom_sites.add(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -1017,7 +1017,7 @@ project_2.sample_models['lbco'].atom_sites.add(
     b_iso=0.95,
     occupancy=0.5,
 )
-project_2.sample_models['lbco'].atom_sites.add(
+project_2.structures['lbco'].atom_sites.add(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -1027,7 +1027,7 @@ project_2.sample_models['lbco'].atom_sites.add(
     b_iso=0.95,
     occupancy=0.5,
 )
-project_2.sample_models['lbco'].atom_sites.add(
+project_2.structures['lbco'].atom_sites.add(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -1036,7 +1036,7 @@ project_2.sample_models['lbco'].atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.80,
 )
-project_2.sample_models['lbco'].atom_sites.add(
+project_2.structures['lbco'].atom_sites.add(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -1047,9 +1047,9 @@ project_2.sample_models['lbco'].atom_sites.add(
 )
 
 # %% [markdown]
-# ### 🔗 Exercise 4: Assign Sample Model to Experiment
+# ### 🔗 Exercise 4: Assign Structure to Experiment
 #
-# Now assign the LBCO sample model to the experiment created above.
+# Now assign the LBCO structure to the experiment created above.
 
 # %% [markdown]
 # **Hint:**
@@ -1176,7 +1176,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco')
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.sample_models['lbco'].cell.length_a.free = True
+project_2.structures['lbco'].cell.length_a.free = True
 
 project_2.analysis.fit()
 project_2.analysis.show_fit_results()
@@ -1352,10 +1352,10 @@ project_1.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing', x_min=1, x_max=1.
 project_2.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=1.7)
 
 # %% [markdown]
-# #### Exercise 5.10: Create a Second Sample Model – Si as Impurity
+# #### Exercise 5.10: Create a Second Structure – Si as Impurity
 #
-# Create a second sample model for the Si phase, which is the impurity
-# phase identified in the previous step. Link this sample model to the
+# Create a second structure for the Si phase, which is the impurity
+# phase identified in the previous step. Link this structure to the
 # LBCO experiment.
 
 # %% [markdown]
@@ -1363,7 +1363,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=
 
 # %% [markdown] tags=["dmsc-school-hint"]
 # You can use the same approach as in the previous part of the notebook,
-# but this time you need to create a sample model for Si and link it to
+# but this time you need to create a structure for Si and link it to
 # the LBCO experiment.
 
 # %% [markdown]
@@ -1371,15 +1371,15 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=
 
 # %% tags=["solution", "hide-input"]
 # Set Space Group
-project_2.sample_models.add(name='si')
-project_2.sample_models['si'].space_group.name_h_m = 'F d -3 m'
-project_2.sample_models['si'].space_group.it_coordinate_system_code = '2'
+project_2.structures.add(name='si')
+project_2.structures['si'].space_group.name_h_m = 'F d -3 m'
+project_2.structures['si'].space_group.it_coordinate_system_code = '2'
 
 # Set Lattice Parameters
-project_2.sample_models['si'].cell.length_a = 5.43
+project_2.structures['si'].cell.length_a = 5.43
 
 # Set Atom Sites
-project_2.sample_models['si'].atom_sites.add(
+project_2.structures['si'].atom_sites.add(
     label='Si',
     type_symbol='Si',
     fract_x=0,
@@ -1389,7 +1389,7 @@ project_2.sample_models['si'].atom_sites.add(
     b_iso=0.89,
 )
 
-# Assign Sample Model to Experiment
+# Assign Structure to Experiment
 project_2.experiments['sim_lbco'].linked_phases.add(id='si', scale=1.0)
 
 # %% [markdown]
@@ -1443,7 +1443,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
 #
 # To review the analysis results, you can generate and print a summary
 # report using the `show_report()` method, as demonstrated in the cell
-# below. The report includes parameters related to the sample model and
+# below. The report includes parameters related to the structure and
 # the experiment, such as the refined unit cell parameter `a` of LBCO.
 #
 # Information about the crystal or magnetic structure, along with

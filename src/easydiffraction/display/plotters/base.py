@@ -8,9 +8,9 @@ from enum import Enum
 
 import numpy as np
 
-from easydiffraction.experiments.experiment.enums import BeamModeEnum
-from easydiffraction.experiments.experiment.enums import SampleFormEnum
-from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
 DEFAULT_HEIGHT = 25
 DEFAULT_MIN = -np.inf

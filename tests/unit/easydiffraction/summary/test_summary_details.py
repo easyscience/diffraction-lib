@@ -4,7 +4,7 @@
 def test_summary_crystallographic_and_experimental_sections(capsys):
     from easydiffraction.summary.summary import Summary
 
-    # Build a minimal sample model stub that exposes required attributes
+    # Build a minimal structure stub that exposes required attributes
     class Val:
         def __init__(self, v):
             self.value = v
@@ -96,7 +96,7 @@ def test_summary_crystallographic_and_experimental_sections(capsys):
     class Project:
         def __init__(self):
             self.info = Info()
-            self.sample_models = {'phaseA': Model()}
+            self.structures = {'phaseA': Model()}
             self.experiments = {'exp1': Expt()}
 
             class A:

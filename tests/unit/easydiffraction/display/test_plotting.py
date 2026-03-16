@@ -53,9 +53,9 @@ def test_plotter_factory_supported_and_unsupported():
 
 
 def test_plotter_error_paths_and_filtering(capsys):
-    from easydiffraction.experiments.experiment.enums import BeamModeEnum
-    from easydiffraction.experiments.experiment.enums import SampleFormEnum
-    from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
     from easydiffraction.display.plotting import Plotter
 
     class Ptn:
@@ -113,9 +113,9 @@ def test_plotter_routes_to_ascii_plotter(monkeypatch):
     import numpy as np
 
     import easydiffraction.display.plotters.ascii as ascii_mod
-    from easydiffraction.experiments.experiment.enums import BeamModeEnum
-    from easydiffraction.experiments.experiment.enums import SampleFormEnum
-    from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
     from easydiffraction.display.plotting import Plotter
 
     called = {}

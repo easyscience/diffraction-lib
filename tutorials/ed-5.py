@@ -11,19 +11,19 @@
 # %%
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Sample Model
+# ## Define Structure
 #
-# This section shows how to add sample models and modify their
+# This section shows how to add structures and modify their
 # parameters.
 #
-# #### Create Sample Model
+# #### Create Structure
 
 # %%
-model = SampleModelFactory.create(name='cosio')
+model = StructureFactory.create(name='cosio')
 
 # %% [markdown]
 # #### Set Space Group
@@ -103,7 +103,7 @@ model.atom_sites.add(
 # ## Define Experiment
 #
 # This section shows how to add experiments, configure their parameters,
-# and link the sample models defined in the previous step.
+# and link the structures defined in the previous step.
 #
 # #### Download Measured Data
 
@@ -159,7 +159,7 @@ expt.linked_phases.add(id='cosio', scale=1.0)
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage the sample model, experiment, and
+# The project object is used to manage the structure, experiment, and
 # analysis.
 #
 # #### Create Project
@@ -176,10 +176,10 @@ project = Project()
 # project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# #### Add Sample Model
+# #### Add Structure
 
 # %%
-project.sample_models.add(sample_model=model)
+project.structures.add(structure=model)
 
 # %% [markdown]
 # #### Add Experiment
@@ -261,11 +261,11 @@ for point in expt.background:
 # %%
 project.analysis.aliases.add(
     label='biso_Co1',
-    param_uid=project.sample_models['cosio'].atom_sites['Co1'].b_iso.uid,
+    param_uid=project.structures['cosio'].atom_sites['Co1'].b_iso.uid,
 )
 project.analysis.aliases.add(
     label='biso_Co2',
-    param_uid=project.sample_models['cosio'].atom_sites['Co2'].b_iso.uid,
+    param_uid=project.structures['cosio'].atom_sites['Co2'].b_iso.uid,
 )
 
 # %% [markdown]

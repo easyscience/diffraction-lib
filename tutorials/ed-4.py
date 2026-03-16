@@ -2,7 +2,7 @@
 # # Structure Refinement: PbSO4, NPD + XRD
 #
 # This example demonstrates a more advanced use of the EasyDiffraction
-# library by explicitly creating and configuring sample models and
+# library by explicitly creating and configuring structures and
 # experiments before adding them to a project. It could be more suitable
 # for users who are interested in creating custom workflows. This
 # tutorial provides minimal explanation and is intended for users
@@ -17,19 +17,19 @@
 # %%
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Sample Model
+# ## Define Structure
 #
-# This section shows how to add sample models and modify their
+# This section shows how to add structures and modify their
 # parameters.
 #
-# #### Create Sample Model
+# #### Create Structure
 
 # %%
-model = SampleModelFactory.create(name='pbso4')
+model = StructureFactory.create(name='pbso4')
 
 # %% [markdown]
 # #### Set Space Group
@@ -100,7 +100,7 @@ model.atom_sites.add(
 # ## Define Experiments
 #
 # This section shows how to add experiments, configure their parameters,
-# and link the sample models defined in the previous step.
+# and link the structures defined in the previous step.
 #
 # ### Experiment 1: npd
 #
@@ -234,7 +234,7 @@ expt2.linked_phases.add(id='pbso4', scale=0.001)
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage sample models, experiments, and
+# The project object is used to manage structures, experiments, and
 # analysis.
 #
 # #### Create Project
@@ -243,10 +243,10 @@ expt2.linked_phases.add(id='pbso4', scale=0.001)
 project = Project()
 
 # %% [markdown]
-# #### Add Sample Model
+# #### Add Structure
 
 # %%
-project.sample_models.add(sample_model=model)
+project.structures.add(structure=model)
 
 # %% [markdown]
 # #### Add Experiments
@@ -281,7 +281,7 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 # %% [markdown]
 # #### Set Fitting Parameters
 #
-# Set sample model parameters to be optimized.
+# Set structure parameters to be optimized.
 
 # %%
 model.cell.length_a.free = True

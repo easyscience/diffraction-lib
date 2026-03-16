@@ -38,13 +38,74 @@
 │   ├── 📄 factory.py
 │   ├── 📄 guard.py
 │   ├── 📄 identity.py
-│   ├── 📄 parameters.py
-│   ├── 📄 singletons.py
-│   └── 📄 validation.py
+│   ├── 📄 singleton.py
+│   ├── 📄 validation.py
+│   └── 📄 variable.py
 ├── 📁 crystallography
 │   ├── 📄 __init__.py
 │   ├── 📄 crystallography.py
 │   └── 📄 space_groups.py
+├── 📁 datablocks
+│   ├── 📁 experiment
+│   │   ├── 📁 categories
+│   │   │   ├── 📁 background
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   ├── 📄 chebyshev.py
+│   │   │   │   ├── 📄 enums.py
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   └── 📄 line_segment.py
+│   │   │   ├── 📁 data
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 bragg_pd.py
+│   │   │   │   ├── 📄 bragg_sc.py
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   └── 📄 total_pd.py
+│   │   │   ├── 📁 instrument
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   ├── 📄 cwl.py
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   └── 📄 tof.py
+│   │   │   ├── 📁 peak
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   ├── 📄 cwl.py
+│   │   │   │   ├── 📄 cwl_mixins.py
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   ├── 📄 tof.py
+│   │   │   │   ├── 📄 tof_mixins.py
+│   │   │   │   ├── 📄 total.py
+│   │   │   │   └── 📄 total_mixins.py
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 excluded_regions.py
+│   │   │   ├── 📄 experiment_type.py
+│   │   │   ├── 📄 extinction.py
+│   │   │   ├── 📄 linked_crystal.py
+│   │   │   └── 📄 linked_phases.py
+│   │   ├── 📁 item
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   ├── 📄 bragg_pd.py
+│   │   │   ├── 📄 bragg_sc.py
+│   │   │   ├── 📄 enums.py
+│   │   │   ├── 📄 factory.py
+│   │   │   └── 📄 total_pd.py
+│   │   ├── 📄 __init__.py
+│   │   └── 📄 collection.py
+│   ├── 📁 structure
+│   │   ├── 📁 categories
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 atom_sites.py
+│   │   │   ├── 📄 cell.py
+│   │   │   └── 📄 space_group.py
+│   │   ├── 📁 item
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📄 __init__.py
+│   │   └── 📄 collection.py
+│   └── 📄 __init__.py
 ├── 📁 display
 │   ├── 📁 plotters
 │   │   ├── 📄 __init__.py
@@ -61,51 +122,6 @@
 │   ├── 📄 plotting.py
 │   ├── 📄 tables.py
 │   └── 📄 utils.py
-├── 📁 experiments
-│   ├── 📁 categories
-│   │   ├── 📁 background
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 base.py
-│   │   │   ├── 📄 chebyshev.py
-│   │   │   ├── 📄 enums.py
-│   │   │   ├── 📄 factory.py
-│   │   │   └── 📄 line_segment.py
-│   │   ├── 📁 data
-│   │   │   ├── 📄 bragg_pd.py
-│   │   │   ├── 📄 bragg_sc.py
-│   │   │   ├── 📄 factory.py
-│   │   │   └── 📄 total.py
-│   │   ├── 📁 instrument
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 base.py
-│   │   │   ├── 📄 cwl.py
-│   │   │   ├── 📄 factory.py
-│   │   │   └── 📄 tof.py
-│   │   ├── 📁 peak
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 base.py
-│   │   │   ├── 📄 cwl.py
-│   │   │   ├── 📄 cwl_mixins.py
-│   │   │   ├── 📄 factory.py
-│   │   │   ├── 📄 tof.py
-│   │   │   ├── 📄 tof_mixins.py
-│   │   │   ├── 📄 total.py
-│   │   │   └── 📄 total_mixins.py
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 excluded_regions.py
-│   │   ├── 📄 experiment_type.py
-│   │   └── 📄 linked_phases.py
-│   ├── 📁 experiment
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 base.py
-│   │   ├── 📄 bragg_pd.py
-│   │   ├── 📄 bragg_sc.py
-│   │   ├── 📄 enums.py
-│   │   ├── 📄 factory.py
-│   │   ├── 📄 instrument_mixin.py
-│   │   └── 📄 total_pd.py
-│   ├── 📄 __init__.py
-│   └── 📄 experiments.py
 ├── 📁 io
 │   ├── 📁 cif
 │   │   ├── 📄 __init__.py
@@ -117,22 +133,16 @@
 │   ├── 📄 __init__.py
 │   ├── 📄 project.py
 │   └── 📄 project_info.py
-├── 📁 sample_models
-│   ├── 📁 categories
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 atom_sites.py
-│   │   ├── 📄 cell.py
-│   │   └── 📄 space_group.py
-│   ├── 📁 sample_model
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 base.py
-│   │   └── 📄 factory.py
-│   ├── 📄 __init__.py
-│   └── 📄 sample_models.py
 ├── 📁 summary
 │   ├── 📄 __init__.py
 │   └── 📄 summary.py
 ├── 📁 utils
+│   ├── 📁 _vendored
+│   │   ├── 📁 jupyter_dark_detect
+│   │   │   ├── 📄 __init__.py
+│   │   │   └── 📄 detector.py
+│   │   ├── 📄 __init__.py
+│   │   └── 📄 theme_detect.py
 │   ├── 📄 __init__.py
 │   ├── 📄 environment.py
 │   ├── 📄 logging.py

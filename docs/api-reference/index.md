@@ -15,8 +15,8 @@ available in EasyDiffraction:
   decorators, and general helpers.
 - [display](display.md) – Tools for plotting data and rendering tables.
 - [project](project.md) – Defines the project and manages its state.
-- [sample_models](sample_models.md) – Defines sample models, such as
-  crystallographic structures, and manages their properties.
+- [structures](structures.md) – Defines structures, such as crystallographic
+  structures, and manages their properties.
 - [experiments](experiments.md) – Manages experimental setups and instrument
   parameters, as well as the associated diffraction data.
 - [analysis](analysis.md) – Provides tools for analyzing diffraction data,

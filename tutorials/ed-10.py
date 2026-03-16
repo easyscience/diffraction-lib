@@ -21,16 +21,16 @@ import easydiffraction as ed
 project = ed.Project()
 
 # %% [markdown]
-# ## Add Sample Model
+# ## Add Structure
 
 # %%
-project.sample_models.add(name='ni')
+project.structures.add(name='ni')
 
 # %%
-project.sample_models['ni'].space_group.name_h_m = 'F m -3 m'
-project.sample_models['ni'].space_group.it_coordinate_system_code = '1'
-project.sample_models['ni'].cell.length_a = 3.52387
-project.sample_models['ni'].atom_sites.add(
+project.structures['ni'].space_group.name_h_m = 'F m -3 m'
+project.structures['ni'].space_group.it_coordinate_system_code = '1'
+project.structures['ni'].cell.length_a = 3.52387
+project.structures['ni'].atom_sites.add(
     label='Ni',
     type_symbol='Ni',
     fract_x=0.0,
@@ -69,8 +69,8 @@ project.experiments['pdf'].peak.damp_particle_diameter = 0
 # ## Select Fitting Parameters
 
 # %%
-project.sample_models['ni'].cell.length_a.free = True
-project.sample_models['ni'].atom_sites['Ni'].b_iso.free = True
+project.structures['ni'].cell.length_a.free = True
+project.structures['ni'].atom_sites['Ni'].b_iso.free = True
 
 # %%
 project.experiments['pdf'].linked_phases['ni'].scale.free = True

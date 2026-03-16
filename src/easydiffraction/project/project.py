@@ -10,12 +10,12 @@ from varname import varname
 
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guard import GuardedBase
+from easydiffraction.datablocks.experiment.collection import Experiments
+from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.display.plotting import Plotter
 from easydiffraction.display.tables import TableRenderer
-from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.project.project_info import ProjectInfo
-from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.summary.summary import Summary
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
@@ -24,8 +24,7 @@ from easydiffraction.utils.logging import log
 class Project(GuardedBase):
     """Central API for managing a diffraction data analysis project.
 
-    Provides access to sample models, experiments, analysis, and
-    summary.
+    Provides access to structures, experiments, analysis, and summary.
     """
 
     # ------------------------------------------------------------------
@@ -40,7 +39,7 @@ class Project(GuardedBase):
         super().__init__()
 
         self._info: ProjectInfo = ProjectInfo(name, title, description)
-        self._sample_models = SampleModels()
+        self._structures = Structures()
         self._experiments = Experiments()
         self._tabler = TableRenderer.get()
         self._plotter = Plotter()
@@ -56,11 +55,11 @@ class Project(GuardedBase):
         """Human-readable representation."""
         class_name = self.__class__.__name__
         project_name = self.name
-        sample_models_count = len(self.sample_models)
+        structures_count = len(self.structures)
         experiments_count = len(self.experiments)
         return (
             f"{class_name} '{project_name}' "
-            f'({sample_models_count} sample models, '
+            f'({structures_count} structures, '
             f'{experiments_count} experiments)'
         )
 
@@ -85,14 +84,14 @@ class Project(GuardedBase):
         return self.name
 
     @property
-    def sample_models(self) -> SampleModels:
-        """Collection of sample models in the project."""
-        return self._sample_models
+    def structures(self) -> Structures:
+        """Collection of structures in the project."""
+        return self._structures
 
-    @sample_models.setter
+    @structures.setter
     @typechecked
-    def sample_models(self, sample_models: SampleModels) -> None:
-        self._sample_models = sample_models
+    def structures(self, structures: Structures) -> None:
+        self._structures = structures
 
     @property
     def experiments(self):
@@ -143,7 +142,7 @@ class Project(GuardedBase):
     def load(self, dir_path: str) -> None:
         """Load a project from a given directory.
 
-        Loads project info, sample models, experiments, etc.
+        Loads project info, structures, experiments, etc.
         """
         console.paragraph('Loading project 📦 from')
         console.print(dir_path)
@@ -169,17 +168,17 @@ class Project(GuardedBase):
             f.write(self._info.as_cif())
             console.print('├── 📄 project.cif')
 
-        # Save sample models
-        sm_dir = self._info.path / 'sample_models'
+        # Save structures
+        sm_dir = self._info.path / 'structures'
         sm_dir.mkdir(parents=True, exist_ok=True)
-        # Iterate over sample model objects (MutableMapping iter gives
+        # Iterate over structure objects (MutableMapping iter gives
         # keys)
-        for model in self.sample_models.values():
-            file_name: str = f'{model.name}.cif'
+        for structure in self.structures.values():
+            file_name: str = f'{structure.name}.cif'
             file_path = sm_dir / file_name
-            console.print('├── 📁 sample_models')
+            console.print('├── 📁 structures')
             with file_path.open('w') as f:
-                f.write(model.as_cif)
+                f.write(structure.as_cif)
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save experiments
@@ -223,8 +222,8 @@ class Project(GuardedBase):
     # ------------------------------------------
 
     def _update_categories(self, expt_name) -> None:
-        for sample_model in self.sample_models:
-            sample_model._update_categories()
+        for structure in self.structures:
+            structure._update_categories()
         self.analysis._update_categories()
         experiment = self.experiments[expt_name]
         experiment._update_categories()

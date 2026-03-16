@@ -14,9 +14,9 @@ TEMP_DIR = tempfile.gettempdir()
 def test_single_fit_neut_sc_cwl_tbti() -> None:
     project = ed.Project()
 
-    # Set sample model
+    # Set structure
     model_path = ed.download_data(id=20, destination=TEMP_DIR)
-    project.sample_models.add(cif_path=model_path)
+    project.structures.add(cif_path=model_path)
 
     # Set experiment
     data_path = ed.download_data(id=19, destination=TEMP_DIR)
@@ -36,7 +36,7 @@ def test_single_fit_neut_sc_cwl_tbti() -> None:
     experiment.extinction.radius = 27
 
     # Select fitting parameters (experiment only)
-    # Sample model parameters are selected in the loaded CIF file
+    # Structure parameters are selected in the loaded CIF file
     experiment.linked_crystal.scale.free = True
     experiment.extinction.radius.free = True
 
@@ -52,9 +52,9 @@ def test_single_fit_neut_sc_cwl_tbti() -> None:
 def test_single_fit_neut_sc_tof_taurine() -> None:
     project = ed.Project()
 
-    # Set sample model
+    # Set structure
     model_path = ed.download_data(id=21, destination=TEMP_DIR)
-    project.sample_models.add(cif_path=model_path)
+    project.structures.add(cif_path=model_path)
 
     # Set experiment
     data_path = ed.download_data(id=22, destination=TEMP_DIR)
@@ -73,7 +73,7 @@ def test_single_fit_neut_sc_tof_taurine() -> None:
     experiment.extinction.radius = 2.0
 
     # Select fitting parameters (experiment only)
-    # Sample model parameters are selected in the loaded CIF file
+    # Structure parameters are selected in the loaded CIF file
     experiment.linked_crystal.scale.free = True
     experiment.extinction.radius.free = True
 

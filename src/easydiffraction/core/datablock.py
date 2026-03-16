@@ -31,7 +31,7 @@ class DatablockItem(GuardedBase):
     ) -> None:
         # TODO: Make abstract method and implement in subclasses.
         # This should call apply_symmetry and apply_constraints in the
-        # case of sample models. In the case of experiments, it should
+        # case of structures. In the case of experiments, it should
         # run calculations to update the "data" categories.
         # Any parameter change should set _need_categories_update to
         # True.
@@ -84,7 +84,7 @@ class DatablockItem(GuardedBase):
 
 
 class DatablockCollection(CollectionBase):
-    """Handles top-level category collections (e.g. SampleModels,
+    """Handles top-level category collections (e.g. Structures,
     Experiments).
 
     Each item is a DatablockItem.

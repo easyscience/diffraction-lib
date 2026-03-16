@@ -7,15 +7,15 @@ from numpy.testing import assert_almost_equal
 
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 TEMP_DIR = tempfile.gettempdir()
 
 
 def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
-    # Set sample models
-    model_1 = SampleModelFactory.create(name='lbco')
+    # Set structures
+    model_1 = StructureFactory.create(name='lbco')
     model_1.space_group.name_h_m = 'P m -3 m'
     model_1.space_group.it_coordinate_system_code = '1'
     model_1.cell.length_a = 3.8909
@@ -58,7 +58,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
         b_iso=1.4041,
     )
 
-    model_2 = SampleModelFactory.create(name='si')
+    model_2 = StructureFactory.create(name='si')
     model_2.space_group.name_h_m = 'F d -3 m'
     model_2.space_group.it_coordinate_system_code = '2'
     model_2.cell.length_a = 5.43146
@@ -98,8 +98,8 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
 
     # Create project
     project = Project()
-    project.sample_models.add(sample_model=model_1)
-    project.sample_models.add(sample_model=model_2)
+    project.structures.add(structure=model_1)
+    project.structures.add(structure=model_2)
     project.experiments.add(experiment=expt)
 
     # Exclude regions from fitting

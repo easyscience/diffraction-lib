@@ -13,7 +13,7 @@
 #
 # Only a single import of `easydiffraction` is required, and all
 # operations are performed through high-level components of the
-# `project` object, such as `project.sample_models`,
+# `project` object, such as `project.structures`,
 # `project.experiments`, and `project.analysis`. The `project` object is
 # the main container for all information.
 
@@ -84,26 +84,26 @@ project.plotter.show_config()
 # project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# ## Step 2: Define Sample Model
+# ## Step 2: Define Structure
 #
-# This section shows how to add sample models and modify their
+# This section shows how to add structures and modify their
 # parameters.
 
 # %% [markdown]
-# #### Add Sample Model
+# #### Add Structure
 
 # %%
-project.sample_models.add(name='lbco')
+project.structures.add(name='lbco')
 
 # %% [markdown]
-# #### Show Defined Sample Models
+# #### Show Defined Structures
 #
 # Show the names of the models added. These names are used to access the
-# model using the syntax: `project.sample_models['model_name']`. All
+# model using the syntax: `project.structures['model_name']`. All
 # model parameters can be accessed via the `project` object.
 
 # %%
-project.sample_models.show_names()
+project.structures.show_names()
 
 # %% [markdown]
 # #### Set Space Group
@@ -111,8 +111,8 @@ project.sample_models.show_names()
 # Modify the default space group parameters.
 
 # %%
-project.sample_models['lbco'].space_group.name_h_m = 'P m -3 m'
-project.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
+project.structures['lbco'].space_group.name_h_m = 'P m -3 m'
+project.structures['lbco'].space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
 # #### Set Unit Cell
@@ -120,15 +120,15 @@ project.sample_models['lbco'].space_group.it_coordinate_system_code = '1'
 # Modify the default unit cell parameters.
 
 # %%
-project.sample_models['lbco'].cell.length_a = 3.88
+project.structures['lbco'].cell.length_a = 3.88
 
 # %% [markdown]
 # #### Set Atom Sites
 #
-# Add atom sites to the sample model.
+# Add atom sites to the structure.
 
 # %%
-project.sample_models['lbco'].atom_sites.add(
+project.structures['lbco'].atom_sites.add(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -138,7 +138,7 @@ project.sample_models['lbco'].atom_sites.add(
     b_iso=0.5,
     occupancy=0.5,
 )
-project.sample_models['lbco'].atom_sites.add(
+project.structures['lbco'].atom_sites.add(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -148,7 +148,7 @@ project.sample_models['lbco'].atom_sites.add(
     b_iso=0.5,
     occupancy=0.5,
 )
-project.sample_models['lbco'].atom_sites.add(
+project.structures['lbco'].atom_sites.add(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -157,7 +157,7 @@ project.sample_models['lbco'].atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.5,
 )
-project.sample_models['lbco'].atom_sites.add(
+project.structures['lbco'].atom_sites.add(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -168,21 +168,21 @@ project.sample_models['lbco'].atom_sites.add(
 )
 
 # %% [markdown]
-# #### Show Sample Model as CIF
+# #### Show Structure as CIF
 
 # %%
-project.sample_models['lbco'].show_as_cif()
+project.structures['lbco'].show_as_cif()
 
 # %% [markdown]
-# #### Show Sample Model Structure
+# #### Show Structure Structure
 
 # %%
-project.sample_models['lbco'].show_structure()
+project.structures['lbco'].show_structure()
 
 # %% [markdown]
 # #### Save Project State
 #
-# Save the project state after adding the sample model. This ensures
+# Save the project state after adding the structure. This ensures
 # that all changes are stored and can be accessed later. The project
 # state is saved in the directory specified during project creation.
 
@@ -193,7 +193,7 @@ project.save()
 # ## Step 3: Define Experiment
 #
 # This section shows how to add experiments, configure their parameters,
-# and link the sample models defined in the previous step.
+# and link the structures defined in the previous step.
 
 # %% [markdown]
 # #### Download Measured Data
@@ -306,7 +306,7 @@ project.experiments['hrpt'].background.show()
 # %% [markdown]
 # #### Set Linked Phases
 #
-# Link the sample model defined in the previous step to the experiment.
+# Link the structure defined in the previous step to the experiment.
 
 # %%
 project.experiments['hrpt'].linked_phases.add(id='lbco', scale=10.0)
@@ -432,10 +432,10 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 # %% [markdown]
 # ### Perform Fit 1/5
 #
-# Set sample model parameters to be refined.
+# Set structure parameters to be refined.
 
 # %%
-project.sample_models['lbco'].cell.length_a.free = True
+project.structures['lbco'].cell.length_a.free = True
 
 # %% [markdown]
 # Set experiment parameters to be refined.
@@ -522,10 +522,10 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Set more parameters to be refined.
 
 # %%
-project.sample_models['lbco'].atom_sites['La'].b_iso.free = True
-project.sample_models['lbco'].atom_sites['Ba'].b_iso.free = True
-project.sample_models['lbco'].atom_sites['Co'].b_iso.free = True
-project.sample_models['lbco'].atom_sites['O'].b_iso.free = True
+project.structures['lbco'].atom_sites['La'].b_iso.free = True
+project.structures['lbco'].atom_sites['Ba'].b_iso.free = True
+project.structures['lbco'].atom_sites['Co'].b_iso.free = True
+project.structures['lbco'].atom_sites['O'].b_iso.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
@@ -565,11 +565,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # %%
 project.analysis.aliases.add(
     label='biso_La',
-    param_uid=project.sample_models['lbco'].atom_sites['La'].b_iso.uid,
+    param_uid=project.structures['lbco'].atom_sites['La'].b_iso.uid,
 )
 project.analysis.aliases.add(
     label='biso_Ba',
-    param_uid=project.sample_models['lbco'].atom_sites['Ba'].b_iso.uid,
+    param_uid=project.structures['lbco'].atom_sites['Ba'].b_iso.uid,
 )
 
 # %% [markdown]
@@ -634,11 +634,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # %%
 project.analysis.aliases.add(
     label='occ_La',
-    param_uid=project.sample_models['lbco'].atom_sites['La'].occupancy.uid,
+    param_uid=project.structures['lbco'].atom_sites['La'].occupancy.uid,
 )
 project.analysis.aliases.add(
     label='occ_Ba',
-    param_uid=project.sample_models['lbco'].atom_sites['Ba'].occupancy.uid,
+    param_uid=project.structures['lbco'].atom_sites['Ba'].occupancy.uid,
 )
 
 # %% [markdown]
@@ -663,10 +663,10 @@ project.analysis.show_constraints()
 project.analysis.apply_constraints()
 
 # %% [markdown]
-# Set sample model parameters to be refined.
+# Set structure parameters to be refined.
 
 # %%
-project.sample_models['lbco'].atom_sites['La'].occupancy.free = True
+project.structures['lbco'].atom_sites['La'].occupancy.free = True
 
 # %% [markdown]
 # Show free parameters after selection.

@@ -62,7 +62,7 @@ nav:
       - Analysis Workflow:
           - Analysis Workflow: user-guide/analysis-workflow/index.md
           - Project: user-guide/analysis-workflow/project.md
-          - Sample Model: user-guide/analysis-workflow/model.md
+          - Structure: user-guide/analysis-workflow/model.md
           - Experiment: user-guide/analysis-workflow/experiment.md
           - Analysis: user-guide/analysis-workflow/analysis.md
           - Summary: user-guide/analysis-workflow/summary.md
@@ -97,6 +97,6 @@ nav:
       - experiments: api-reference/experiments.md
       - io: api-reference/io.md
       - project: api-reference/project.md
-      - sample_models: api-reference/sample_models.md
+      - structures: api-reference/structures.md
       - summary: api-reference/summary.md
       - utils: api-reference/utils.md

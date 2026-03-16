@@ -2,7 +2,7 @@
 # # Structure Refinement: LBCO, HRPT
 #
 # This minimalistic example is designed to show how Rietveld refinement
-# of a crystal structure can be performed when both the sample model and
+# of a crystal structure can be performed when both the structure and
 # experiment are defined directly in code. Only the experimentally
 # measured data is loaded from an external file.
 #
@@ -33,23 +33,23 @@ import easydiffraction as ed
 project = ed.Project()
 
 # %% [markdown]
-# ## Step 2: Define Sample Model
+# ## Step 2: Define Structure
 
 # %%
-project.sample_models.add(name='lbco')
+project.structures.add(name='lbco')
 
 # %%
-sample_model = project.sample_models['lbco']
+structure = project.structures['lbco']
 
 # %%
-sample_model.space_group.name_h_m = 'P m -3 m'
-sample_model.space_group.it_coordinate_system_code = '1'
+structure.space_group.name_h_m = 'P m -3 m'
+structure.space_group.it_coordinate_system_code = '1'
 
 # %%
-sample_model.cell.length_a = 3.88
+structure.cell.length_a = 3.88
 
 # %%
-sample_model.atom_sites.add(
+structure.atom_sites.add(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -59,7 +59,7 @@ sample_model.atom_sites.add(
     b_iso=0.5,
     occupancy=0.5,
 )
-sample_model.atom_sites.add(
+structure.atom_sites.add(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -69,7 +69,7 @@ sample_model.atom_sites.add(
     b_iso=0.5,
     occupancy=0.5,
 )
-sample_model.atom_sites.add(
+structure.atom_sites.add(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -78,7 +78,7 @@ sample_model.atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.5,
 )
-sample_model.atom_sites.add(
+structure.atom_sites.add(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -134,12 +134,12 @@ experiment.linked_phases.add(id='lbco', scale=10.0)
 # ## Step 4: Perform Analysis
 
 # %%
-sample_model.cell.length_a.free = True
+structure.cell.length_a.free = True
 
-sample_model.atom_sites['La'].b_iso.free = True
-sample_model.atom_sites['Ba'].b_iso.free = True
-sample_model.atom_sites['Co'].b_iso.free = True
-sample_model.atom_sites['O'].b_iso.free = True
+structure.atom_sites['La'].b_iso.free = True
+structure.atom_sites['Ba'].b_iso.free = True
+structure.atom_sites['Co'].b_iso.free = True
+structure.atom_sites['O'].b_iso.free = True
 
 # %%
 experiment.instrument.calib_twotheta_offset.free = True

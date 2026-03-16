@@ -73,7 +73,7 @@ By "model", we usually refer to a **crystallographic model** of the sample. This
 includes unit cell parameters, space group, atomic positions, thermal
 parameters, and more. However, the term "model" also encompasses experimental
 aspects such as instrumental resolution, background, peak shape, etc. Therefore,
-EasyDiffraction separates the model into two parts: the **sample model** and the
+EasyDiffraction separates the model into two parts: the **structure** and the
 **experiment**.
 
 The aim of data analysis is to refine the structural parameters of the sample by

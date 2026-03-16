@@ -46,9 +46,9 @@ def test_get_reliability_inputs_collects_arrays_with_default_su():
         def values(self):
             return [Expt()]
 
-    class SampleModels(dict):
+    class DummyStructures(dict):
         pass
 
-    y_obs, y_calc, y_err = M.get_reliability_inputs(SampleModels(), Expts())
+    y_obs, y_calc, y_err = M.get_reliability_inputs(DummyStructures(), Expts())
     assert y_obs.shape == (2,) and y_calc.shape == (2,) and y_err.shape == (2,)
     assert np.allclose(y_err, 1.0)
