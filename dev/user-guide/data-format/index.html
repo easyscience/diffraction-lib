@@ -891,7 +891,7 @@
   <span class="md-ellipsis">
     
   
-    Sample Model
+    Structure
   
 
     
@@ -2000,6 +2000,123 @@
   
   
   
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    datablocks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    datablocks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/datablocks/experiment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    experiment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/datablocks/structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../api-reference/display/" class="md-nav__link">
         
@@ -2029,7 +2146,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/experiments/" class="md-nav__link">
+      <a href="../../api-reference/experiment.md" class="md-nav__link">
         
   
   
@@ -2093,34 +2210,6 @@
     
   
     project
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api-reference/sample_models/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    sample_models
   
 
     
@@ -2562,8 +2651,8 @@ human-readable crystallographic data.</p>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="experiment-definition">Experiment Definition</h2>
-<p>The previous example described the <strong>sample model</strong> (crystallographic model),
-but how is the <strong>experiment</strong> itself represented?</p>
+<p>The previous example described the <strong>structure</strong> (crystallographic model), but
+how is the <strong>experiment</strong> itself represented?</p>
 <p>The experiment is also saved as a <abbr title="Crystallographic Information File.">CIF</abbr> file. For example, background intensity in
 a powder diffraction experiment might be represented as:</p>
 <!-- prettier-ignore-start -->
@@ -2591,7 +2680,7 @@ loop_
 following blocks:</p>
 <ul>
 <li><strong>project</strong>: contains the project information</li>
-<li><strong>sample model</strong>: defines the sample model</li>
+<li><strong>structure</strong>: defines the structure</li>
 <li><strong>experiment</strong>: contains the experiment setup and measured data</li>
 <li><strong>analysis</strong>: stores fitting and analysis parameters</li>
 <li><strong>summary</strong>: captures analysis results</li>

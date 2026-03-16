@@ -748,7 +748,7 @@
   <span class="md-ellipsis">
     
   
-    Sample Model
+    Structure
   
 
     
@@ -2195,6 +2195,123 @@
   
   
   
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    datablocks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    datablocks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datablocks/experiment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    experiment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datablocks/structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../display/" class="md-nav__link">
         
@@ -2224,7 +2341,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../experiments/" class="md-nav__link">
+      <a href="../experiment.md" class="md-nav__link">
         
   
   
@@ -2288,34 +2405,6 @@
     
   
     project
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../sample_models/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    sample_models
   
 
     
@@ -2810,7 +2899,7 @@
         <p>High-level orchestration of analysis tasks for a Project.</p>
 <p>This class wires calculators and minimizers, exposes a compact
 interface for parameters, constraints and results, and coordinates
-computations across the project's sample models and experiments.</p>
+computations across the project's structures and experiments.</p>
 <p>Typical usage:</p>
 <ul>
 <li>Display or filter parameters to fit.</li>
@@ -3434,13 +3523,12 @@ calculator: Active calculator used for computations.
 <span class="normal">627</span>
 <span class="normal">628</span>
 <span class="normal">629</span>
-<span class="normal">630</span>
-<span class="normal">631</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analysis</span><span class="p">:</span>
+<span class="normal">630</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analysis</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;High-level orchestration of analysis tasks for a Project.</span>
 
 <span class="sd">    This class wires calculators and minimizers, exposes a compact</span>
 <span class="sd">    interface for parameters, constraints and results, and coordinates</span>
-<span class="sd">    computations across the project&#39;s sample models and experiments.</span>
+<span class="sd">    computations across the project&#39;s structures and experiments.</span>
 
 <span class="sd">    Typical usage:</span>
 
@@ -3518,13 +3606,13 @@ calculator: Active calculator used for computations.
         <span class="k">return</span> <span class="n">df</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">show_all_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table with all parameters for sample models and</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table with all parameters for structures and</span>
 <span class="sd">        experiments.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sample_models_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span><span class="o">.</span><span class="n">parameters</span>
+        <span class="n">structures_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">parameters</span>
         <span class="n">experiments_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">parameters</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">sample_models_params</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">experiments_params</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">structures_params</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">experiments_params</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No parameters found.&#39;</span><span class="p">)</span>
             <span class="k">return</span>
 
@@ -3539,8 +3627,8 @@ calculator: Active calculator used for computations.
             <span class="s1">&#39;fittable&#39;</span><span class="p">,</span>
         <span class="p">]</span>
 
-        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;All parameters for all sample models (🧩 data blocks)&#39;</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_params_as_dataframe</span><span class="p">(</span><span class="n">sample_models_params</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;All parameters for all structures (🧩 data blocks)&#39;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_params_as_dataframe</span><span class="p">(</span><span class="n">structures_params</span><span class="p">)</span>
         <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">filtered_headers</span><span class="p">]</span>
         <span class="n">tabler</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">filtered_df</span><span class="p">)</span>
 
@@ -3553,10 +3641,10 @@ calculator: Active calculator used for computations.
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table with parameters that can be included in</span>
 <span class="sd">        fitting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sample_models_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span><span class="o">.</span><span class="n">fittable_parameters</span>
+        <span class="n">structures_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">fittable_parameters</span>
         <span class="n">experiments_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">fittable_parameters</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">sample_models_params</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">experiments_params</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">structures_params</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">experiments_params</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No fittable parameters found.&#39;</span><span class="p">)</span>
             <span class="k">return</span>
 
@@ -3573,8 +3661,8 @@ calculator: Active calculator used for computations.
             <span class="s1">&#39;free&#39;</span><span class="p">,</span>
         <span class="p">]</span>
 
-        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Fittable parameters for all sample models (🧩 data blocks)&#39;</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_params_as_dataframe</span><span class="p">(</span><span class="n">sample_models_params</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Fittable parameters for all structures (🧩 data blocks)&#39;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_params_as_dataframe</span><span class="p">(</span><span class="n">structures_params</span><span class="p">)</span>
         <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">filtered_headers</span><span class="p">]</span>
         <span class="n">tabler</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">filtered_df</span><span class="p">)</span>
 
@@ -3587,9 +3675,9 @@ calculator: Active calculator used for computations.
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table with only currently-free (varying)</span>
 <span class="sd">        parameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sample_models_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span><span class="o">.</span><span class="n">free_parameters</span>
+        <span class="n">structures_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">free_parameters</span>
         <span class="n">experiments_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">free_parameters</span>
-        <span class="n">free_params</span> <span class="o">=</span> <span class="n">sample_models_params</span> <span class="o">+</span> <span class="n">experiments_params</span>
+        <span class="n">free_params</span> <span class="o">=</span> <span class="n">structures_params</span> <span class="o">+</span> <span class="n">experiments_params</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">free_params</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No free parameters found.&#39;</span><span class="p">)</span>
@@ -3610,8 +3698,7 @@ calculator: Active calculator used for computations.
         <span class="p">]</span>
 
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span>
-            <span class="s1">&#39;Free parameters for both sample models (🧩 data blocks) &#39;</span>
-            <span class="s1">&#39;and experiments (🔬 data blocks)&#39;</span>
+            <span class="s1">&#39;Free parameters for both structures (🧩 data blocks) and experiments (🔬 data blocks)&#39;</span>
         <span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_params_as_dataframe</span><span class="p">(</span><span class="n">free_params</span><span class="p">)</span>
         <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">filtered_headers</span><span class="p">]</span>
@@ -3623,10 +3710,10 @@ calculator: Active calculator used for computations.
 <span class="sd">        The output explains how to reference specific parameters in</span>
 <span class="sd">        code.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sample_models_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span><span class="o">.</span><span class="n">parameters</span>
+        <span class="n">structures_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">parameters</span>
         <span class="n">experiments_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">parameters</span>
         <span class="n">all_params</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;sample_models&#39;</span><span class="p">:</span> <span class="n">sample_models_params</span><span class="p">,</span>
+            <span class="s1">&#39;structures&#39;</span><span class="p">:</span> <span class="n">structures_params</span><span class="p">,</span>
             <span class="s1">&#39;experiments&#39;</span><span class="p">:</span> <span class="n">experiments_params</span><span class="p">,</span>
         <span class="p">}</span>
 
@@ -3687,10 +3774,10 @@ calculator: Active calculator used for computations.
 <span class="sd">        The output explains which unique identifiers are used when</span>
 <span class="sd">        creating CIF-based constraints.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sample_models_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span><span class="o">.</span><span class="n">parameters</span>
+        <span class="n">structures_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">parameters</span>
         <span class="n">experiments_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">parameters</span>
         <span class="n">all_params</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;sample_models&#39;</span><span class="p">:</span> <span class="n">sample_models_params</span><span class="p">,</span>
+            <span class="s1">&#39;structures&#39;</span><span class="p">:</span> <span class="n">structures_params</span><span class="p">,</span>
             <span class="s1">&#39;experiments&#39;</span><span class="p">:</span> <span class="n">experiments_params</span><span class="p">,</span>
         <span class="p">}</span>
 
@@ -3929,9 +4016,9 @@ calculator: Active calculator used for computations.
 <span class="sd">            project.analysis.fit()</span>
 <span class="sd">            project.analysis.show_fit_results()  # Display results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sample_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">sample_models</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No sample models found in the project. Cannot run fit.&#39;</span><span class="p">)</span>
+        <span class="n">structures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">structures</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No structures found in the project. Cannot run fit.&#39;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span>
@@ -3945,7 +4032,7 @@ calculator: Active calculator used for computations.
                 <span class="sa">f</span><span class="s2">&quot;Using all experiments 🔬 </span><span class="si">{</span><span class="n">experiments</span><span class="o">.</span><span class="n">names</span><span class="si">}</span><span class="s2"> for &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fit_mode</span><span class="si">}</span><span class="s2">&#39; fitting&quot;</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-                <span class="n">sample_models</span><span class="p">,</span>
+                <span class="n">structures</span><span class="p">,</span>
                 <span class="n">experiments</span><span class="p">,</span>
                 <span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_fit_experiments</span><span class="p">,</span>
                 <span class="n">analysis</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
@@ -3967,7 +4054,7 @@ calculator: Active calculator used for computations.
 
                 <span class="n">dummy_experiments</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-                    <span class="n">sample_models</span><span class="p">,</span>
+                    <span class="n">structures</span><span class="p">,</span>
                     <span class="n">dummy_experiments</span><span class="p">,</span>
                     <span class="n">analysis</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -3996,10 +4083,10 @@ calculator: Active calculator used for computations.
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No fit results available. Run fit() first.&#39;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="n">sample_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span>
+        <span class="n">structures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span>
         <span class="n">experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">_process_fit_results</span><span class="p">(</span><span class="n">sample_models</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">_process_fit_results</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update all categories owned by Analysis.</span>
@@ -4153,7 +4240,8 @@ project.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">488</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">487</span>
+<span class="normal">488</span>
 <span class="normal">489</span>
 <span class="normal">490</span>
 <span class="normal">491</span>
@@ -4162,8 +4250,7 @@ project.</p>
 <span class="normal">494</span>
 <span class="normal">495</span>
 <span class="normal">496</span>
-<span class="normal">497</span>
-<span class="normal">498</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">497</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply the currently defined constraints to the active</span>
 <span class="sd">    project.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4223,7 +4310,8 @@ project.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">613</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">612</span>
+<span class="normal">613</span>
 <span class="normal">614</span>
 <span class="normal">615</span>
 <span class="normal">616</span>
@@ -4231,8 +4319,7 @@ project.</p>
 <span class="normal">618</span>
 <span class="normal">619</span>
 <span class="normal">620</span>
-<span class="normal">621</span>
-<span class="normal">622</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">621</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize the analysis section to a CIF string.</span>
 
 <span class="sd">    Returns:</span>
@@ -4340,7 +4427,8 @@ project.analysis.show_fit_results()  # Display results
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">500</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">499</span>
+<span class="normal">500</span>
 <span class="normal">501</span>
 <span class="normal">502</span>
 <span class="normal">503</span>
@@ -4407,8 +4495,7 @@ project.analysis.show_fit_results()  # Display results
 <span class="normal">564</span>
 <span class="normal">565</span>
 <span class="normal">566</span>
-<span class="normal">567</span>
-<span class="normal">568</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">567</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute fitting using the selected mode, calculator and</span>
 <span class="sd">    minimizer.</span>
 
@@ -4430,9 +4517,9 @@ project.analysis.show_fit_results()  # Display results
 <span class="sd">        project.analysis.fit()</span>
 <span class="sd">        project.analysis.show_fit_results()  # Display results</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">sample_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">sample_models</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No sample models found in the project. Cannot run fit.&#39;</span><span class="p">)</span>
+    <span class="n">structures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">structures</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No structures found in the project. Cannot run fit.&#39;</span><span class="p">)</span>
         <span class="k">return</span>
 
     <span class="n">experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span>
@@ -4446,7 +4533,7 @@ project.analysis.show_fit_results()  # Display results
             <span class="sa">f</span><span class="s2">&quot;Using all experiments 🔬 </span><span class="si">{</span><span class="n">experiments</span><span class="o">.</span><span class="n">names</span><span class="si">}</span><span class="s2"> for &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fit_mode</span><span class="si">}</span><span class="s2">&#39; fitting&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-            <span class="n">sample_models</span><span class="p">,</span>
+            <span class="n">structures</span><span class="p">,</span>
             <span class="n">experiments</span><span class="p">,</span>
             <span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_fit_experiments</span><span class="p">,</span>
             <span class="n">analysis</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
@@ -4468,7 +4555,7 @@ project.analysis.show_fit_results()  # Display results
 
             <span class="n">dummy_experiments</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-                <span class="n">sample_models</span><span class="p">,</span>
+                <span class="n">structures</span><span class="p">,</span>
                 <span class="n">dummy_experiments</span><span class="p">,</span>
                 <span class="n">analysis</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
             <span class="p">)</span>
@@ -4534,7 +4621,8 @@ code.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">210</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">209</span>
+<span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span>
@@ -4595,17 +4683,16 @@ code.</p>
 <span class="normal">268</span>
 <span class="normal">269</span>
 <span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">how_to_access_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">how_to_access_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show Python access paths for all parameters.</span>
 
 <span class="sd">    The output explains how to reference specific parameters in</span>
 <span class="sd">    code.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">sample_models_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span><span class="o">.</span><span class="n">parameters</span>
+    <span class="n">structures_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">parameters</span>
     <span class="n">experiments_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">parameters</span>
     <span class="n">all_params</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;sample_models&#39;</span><span class="p">:</span> <span class="n">sample_models_params</span><span class="p">,</span>
+        <span class="s1">&#39;structures&#39;</span><span class="p">:</span> <span class="n">structures_params</span><span class="p">,</span>
         <span class="s1">&#39;experiments&#39;</span><span class="p">:</span> <span class="n">experiments_params</span><span class="p">,</span>
     <span class="p">}</span>
 
@@ -4681,7 +4768,7 @@ code.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Print a table with all parameters for sample models and
+        <p>Print a table with all parameters for structures and
 experiments.</p>
 
 
@@ -4718,13 +4805,13 @@ experiments.</p>
 <span class="normal">138</span>
 <span class="normal">139</span>
 <span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_all_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table with all parameters for sample models and</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table with all parameters for structures and</span>
 <span class="sd">    experiments.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">sample_models_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span><span class="o">.</span><span class="n">parameters</span>
+    <span class="n">structures_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">parameters</span>
     <span class="n">experiments_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">parameters</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">sample_models_params</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">experiments_params</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">structures_params</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">experiments_params</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No parameters found.&#39;</span><span class="p">)</span>
         <span class="k">return</span>
 
@@ -4739,8 +4826,8 @@ experiments.</p>
         <span class="s1">&#39;fittable&#39;</span><span class="p">,</span>
     <span class="p">]</span>
 
-    <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;All parameters for all sample models (🧩 data blocks)&#39;</span><span class="p">)</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_params_as_dataframe</span><span class="p">(</span><span class="n">sample_models_params</span><span class="p">)</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;All parameters for all structures (🧩 data blocks)&#39;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_params_as_dataframe</span><span class="p">(</span><span class="n">structures_params</span><span class="p">)</span>
     <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">filtered_headers</span><span class="p">]</span>
     <span class="n">tabler</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">filtered_df</span><span class="p">)</span>
 
@@ -4776,14 +4863,14 @@ view.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">624</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">623</span>
+<span class="normal">624</span>
 <span class="normal">625</span>
 <span class="normal">626</span>
 <span class="normal">627</span>
 <span class="normal">628</span>
 <span class="normal">629</span>
-<span class="normal">630</span>
-<span class="normal">631</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">630</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the analysis section as CIF in a formatted console</span>
 <span class="sd">    view.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4819,7 +4906,8 @@ descriptions.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">424</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">423</span>
+<span class="normal">424</span>
 <span class="normal">425</span>
 <span class="normal">426</span>
 <span class="normal">427</span>
@@ -4847,8 +4935,7 @@ descriptions.</p>
 <span class="normal">449</span>
 <span class="normal">450</span>
 <span class="normal">451</span>
-<span class="normal">452</span>
-<span class="normal">453</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_available_fit_modes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">452</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_available_fit_modes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print all supported fitting strategies and their</span>
 <span class="sd">    descriptions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4910,12 +4997,12 @@ system.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">370</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">369</span>
+<span class="normal">370</span>
 <span class="normal">371</span>
 <span class="normal">372</span>
 <span class="normal">373</span>
-<span class="normal">374</span>
-<span class="normal">375</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">374</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">show_available_minimizers</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of available minimizer drivers on this</span>
 <span class="sd">    system.</span>
@@ -4948,7 +5035,8 @@ system.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">460</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">459</span>
+<span class="normal">460</span>
 <span class="normal">461</span>
 <span class="normal">462</span>
 <span class="normal">463</span>
@@ -4973,8 +5061,7 @@ system.</p>
 <span class="normal">482</span>
 <span class="normal">483</span>
 <span class="normal">484</span>
-<span class="normal">485</span>
-<span class="normal">486</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">485</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of all user-defined symbolic constraints.&quot;&quot;&quot;</span>
     <span class="n">constraints_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">)</span>
 
@@ -5029,12 +5116,12 @@ engine.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">331</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">330</span>
+<span class="normal">331</span>
 <span class="normal">332</span>
 <span class="normal">333</span>
 <span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_calculator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">335</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_calculator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the name of the currently selected calculator</span>
 <span class="sd">    engine.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -5067,10 +5154,10 @@ engine.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">455</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">454</span>
+<span class="normal">455</span>
 <span class="normal">456</span>
-<span class="normal">457</span>
-<span class="normal">458</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_fit_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">457</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_fit_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently active fitting strategy.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current fit mode&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fit_mode</span><span class="p">)</span>
@@ -5101,10 +5188,10 @@ engine.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">365</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">364</span>
+<span class="normal">365</span>
 <span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_minimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">367</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_minimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the name of the currently selected minimizer.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current minimizer&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_minimizer</span><span class="p">)</span>
@@ -5144,7 +5231,8 @@ project.analysis.show_fit_results()
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">570</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">569</span>
+<span class="normal">570</span>
 <span class="normal">571</span>
 <span class="normal">572</span>
 <span class="normal">573</span>
@@ -5165,8 +5253,7 @@ project.analysis.show_fit_results()
 <span class="normal">588</span>
 <span class="normal">589</span>
 <span class="normal">590</span>
-<span class="normal">591</span>
-<span class="normal">592</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_fit_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">591</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_fit_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Display a summary of the fit results.</span>
 
 <span class="sd">    Renders the fit quality metrics (reduced χ², R-factors) and a</span>
@@ -5185,10 +5272,10 @@ project.analysis.show_fit_results()
         <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No fit results available. Run fit() first.&#39;</span><span class="p">)</span>
         <span class="k">return</span>
 
-    <span class="n">sample_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span>
+    <span class="n">structures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span>
     <span class="n">experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">_process_fit_results</span><span class="p">(</span><span class="n">sample_models</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">_process_fit_results</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5253,10 +5340,10 @@ fitting.</p>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table with parameters that can be included in</span>
 <span class="sd">    fitting.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">sample_models_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span><span class="o">.</span><span class="n">fittable_parameters</span>
+    <span class="n">structures_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">fittable_parameters</span>
     <span class="n">experiments_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">fittable_parameters</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">sample_models_params</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">experiments_params</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">structures_params</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">experiments_params</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No fittable parameters found.&#39;</span><span class="p">)</span>
         <span class="k">return</span>
 
@@ -5273,8 +5360,8 @@ fitting.</p>
         <span class="s1">&#39;free&#39;</span><span class="p">,</span>
     <span class="p">]</span>
 
-    <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Fittable parameters for all sample models (🧩 data blocks)&#39;</span><span class="p">)</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_params_as_dataframe</span><span class="p">(</span><span class="n">sample_models_params</span><span class="p">)</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Fittable parameters for all structures (🧩 data blocks)&#39;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_params_as_dataframe</span><span class="p">(</span><span class="n">structures_params</span><span class="p">)</span>
     <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">filtered_headers</span><span class="p">]</span>
     <span class="n">tabler</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">filtered_df</span><span class="p">)</span>
 
@@ -5341,14 +5428,13 @@ parameters.</p>
 <span class="normal">204</span>
 <span class="normal">205</span>
 <span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_free_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">207</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_free_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table with only currently-free (varying)</span>
 <span class="sd">    parameters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">sample_models_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span><span class="o">.</span><span class="n">free_parameters</span>
+    <span class="n">structures_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">free_parameters</span>
     <span class="n">experiments_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">free_parameters</span>
-    <span class="n">free_params</span> <span class="o">=</span> <span class="n">sample_models_params</span> <span class="o">+</span> <span class="n">experiments_params</span>
+    <span class="n">free_params</span> <span class="o">=</span> <span class="n">structures_params</span> <span class="o">+</span> <span class="n">experiments_params</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">free_params</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No free parameters found.&#39;</span><span class="p">)</span>
@@ -5369,8 +5455,7 @@ parameters.</p>
     <span class="p">]</span>
 
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span>
-        <span class="s1">&#39;Free parameters for both sample models (🧩 data blocks) &#39;</span>
-        <span class="s1">&#39;and experiments (🔬 data blocks)&#39;</span>
+        <span class="s1">&#39;Free parameters for both structures (🧩 data blocks) and experiments (🔬 data blocks)&#39;</span>
     <span class="p">)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_params_as_dataframe</span><span class="p">(</span><span class="n">free_params</span><span class="p">)</span>
     <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">filtered_headers</span><span class="p">]</span>
@@ -5404,7 +5489,8 @@ creating <abbr title="Crystallographic Information File.">CIF</abbr>-based const
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">274</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">273</span>
+<span class="normal">274</span>
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
@@ -5458,17 +5544,16 @@ creating <abbr title="Crystallographic Information File.">CIF</abbr>-based const
 <span class="normal">325</span>
 <span class="normal">326</span>
 <span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_parameter_cif_uids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">328</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_parameter_cif_uids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show CIF unique IDs for all parameters.</span>
 
 <span class="sd">    The output explains which unique identifiers are used when</span>
 <span class="sd">    creating CIF-based constraints.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">sample_models_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span><span class="o">.</span><span class="n">parameters</span>
+    <span class="n">structures_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">parameters</span>
     <span class="n">experiments_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">parameters</span>
     <span class="n">all_params</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;sample_models&#39;</span><span class="p">:</span> <span class="n">sample_models_params</span><span class="p">,</span>
+        <span class="s1">&#39;structures&#39;</span><span class="p">:</span> <span class="n">structures_params</span><span class="p">,</span>
         <span class="s1">&#39;experiments&#39;</span><span class="p">:</span> <span class="n">experiments_params</span><span class="p">,</span>
     <span class="p">}</span>
 
@@ -5547,12 +5632,12 @@ system.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">338</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">337</span>
+<span class="normal">338</span>
 <span class="normal">339</span>
 <span class="normal">340</span>
 <span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">342</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_calculators</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of available calculator backends on this</span>
 <span class="sd">    system.</span>
@@ -5781,11 +5866,11 @@ system.</p>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">calculate_structure_factors</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModelBase</span><span class="p">,</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
         <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
         <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate structure factors for a single sample model and</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate structure factors for a single structure and</span>
 <span class="sd">        experiment.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
@@ -5793,15 +5878,15 @@ system.</p>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">calculate_pattern</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>  <span class="c1"># TODO: SampleModelBase?</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>  <span class="c1"># TODO: Structure?</span>
         <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
         <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the diffraction pattern for a single sample model</span>
-<span class="sd">        and experiment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the diffraction pattern for a single structure and</span>
+<span class="sd">        experiment.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sample_model: The sample model object.</span>
+<span class="sd">            structure: The structure object.</span>
 <span class="sd">            experiment: The experiment object.</span>
 <span class="sd">            called_by_minimizer: Whether the calculation is called by a</span>
 <span class="sd">                minimizer.</span>
@@ -5827,7 +5912,7 @@ system.</p>
 
 
 <h5 id="easydiffraction.analysis.calculators.base.CalculatorBase.calculate_pattern" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">calculate_pattern</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">calculate_pattern</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
@@ -5838,8 +5923,8 @@ system.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Calculate the diffraction pattern for a single sample model
-and experiment.</p>
+        <p>Calculate the diffraction pattern for a single structure and
+experiment.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -5855,14 +5940,14 @@ and experiment.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>sample_model</code>
+                <code>structure</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;SampleModels&lt;/code&gt; (&lt;code&gt;easydiffraction.sample_models.sample_models.SampleModels&lt;/code&gt;)" href="../sample_models/#easydiffraction.sample_models.sample_models.SampleModels">SampleModels</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Structures&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.structure.collection.Structures&lt;/code&gt;)" href="../datablocks/structure/#easydiffraction.datablocks.structure.collection.Structures">Structures</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The sample model object.</p>
+                <p>The structure object.</p>
               </div>
             </td>
             <td>
@@ -5874,7 +5959,7 @@ and experiment.</p>
                 <code>experiment</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.ExperimentBase&lt;/code&gt;)" href="../experiments/#easydiffraction.experiments.experiment.base.ExperimentBase">ExperimentBase</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.base.ExperimentBase&lt;/code&gt;)" href="../datablocks/experiment/#easydiffraction.datablocks.experiment.item.base.ExperimentBase">ExperimentBase</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5953,15 +6038,15 @@ minimizer.</p>
 <span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_pattern</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>  <span class="c1"># TODO: SampleModelBase?</span>
+    <span class="n">structure</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>  <span class="c1"># TODO: Structure?</span>
     <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
     <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the diffraction pattern for a single sample model</span>
-<span class="sd">    and experiment.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the diffraction pattern for a single structure and</span>
+<span class="sd">    experiment.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        sample_model: The sample model object.</span>
+<span class="sd">        structure: The structure object.</span>
 <span class="sd">        experiment: The experiment object.</span>
 <span class="sd">        called_by_minimizer: Whether the calculation is called by a</span>
 <span class="sd">            minimizer.</span>
@@ -5985,7 +6070,7 @@ minimizer.</p>
 
 
 <h5 id="easydiffraction.analysis.calculators.base.CalculatorBase.calculate_structure_factors" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">calculate_structure_factors</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">calculate_structure_factors</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
@@ -5996,7 +6081,7 @@ minimizer.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Calculate structure factors for a single sample model and
+        <p>Calculate structure factors for a single structure and
 experiment.</p>
 
 
@@ -6015,11 +6100,11 @@ experiment.</p>
 <span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_structure_factors</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModelBase</span><span class="p">,</span>
+    <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
     <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
     <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate structure factors for a single sample model and</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate structure factors for a single structure and</span>
 <span class="sd">    experiment.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span>
@@ -6318,13 +6403,13 @@ experiment.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">calculate_structure_factors</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_models</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>
+        <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
         <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call Crysfml to calculate structure factors.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sample_models: The sample models to calculate structure</span>
+<span class="sd">            structures: The structures to calculate structure</span>
 <span class="sd">                factors for.</span>
 <span class="sd">            experiments: The experiments associated with the sample</span>
 <span class="sd">                models.</span>
@@ -6333,16 +6418,16 @@ experiment.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">calculate_pattern</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
         <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
         <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates the diffraction pattern using Crysfml for the</span>
-<span class="sd">        given sample model and experiment.</span>
+<span class="sd">        given structure and experiment.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sample_model: The sample model to calculate the pattern for.</span>
-<span class="sd">            experiment: The experiment associated with the sample model.</span>
+<span class="sd">            structure: The structure to calculate the pattern for.</span>
+<span class="sd">            experiment: The experiment associated with the structure.</span>
 <span class="sd">            called_by_minimizer: Whether the calculation is called by a</span>
 <span class="sd">            minimizer.</span>
 
@@ -6353,7 +6438,7 @@ experiment.</p>
         <span class="c1"># Intentionally unused, required by public API/signature</span>
         <span class="k">del</span> <span class="n">called_by_minimizer</span>
 
-        <span class="n">crysfml_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crysfml_dict</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+        <span class="n">crysfml_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crysfml_dict</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">cfml_py_utilities</span><span class="o">.</span><span class="n">cw_powder_pattern_from_dict</span><span class="p">(</span><span class="n">crysfml_dict</span><span class="p">)</span>
             <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adjust_pattern_length</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
@@ -6384,53 +6469,53 @@ experiment.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_crysfml_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
         <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">ExperimentBase</span><span class="p">,</span> <span class="n">SampleModelBase</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts the sample model and experiment into a dictionary</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">ExperimentBase</span><span class="p">,</span> <span class="n">Structure</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts the structure and experiment into a dictionary</span>
 <span class="sd">        format for Crysfml.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sample_model: The sample model to convert.</span>
+<span class="sd">            structure: The structure to convert.</span>
 <span class="sd">            experiment: The experiment to convert.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A dictionary representation of the sample model and</span>
+<span class="sd">            A dictionary representation of the structure and</span>
 <span class="sd">                experiment.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sample_model_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_sample_model_to_dict</span><span class="p">(</span><span class="n">sample_model</span><span class="p">)</span>
+        <span class="n">structure_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_structure_to_dict</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
         <span class="n">experiment_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_experiment_to_dict</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s1">&#39;phases&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">sample_model_dict</span><span class="p">],</span>
+            <span class="s1">&#39;phases&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">structure_dict</span><span class="p">],</span>
             <span class="s1">&#39;experiments&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">experiment_dict</span><span class="p">],</span>
         <span class="p">}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_sample_model_to_dict</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_structure_to_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModelBase</span><span class="p">,</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a sample model into a dictionary format.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a structure into a dictionary format.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sample_model: The sample model to convert.</span>
+<span class="sd">            structure: The structure to convert.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A dictionary representation of the sample model.</span>
+<span class="sd">            A dictionary representation of the structure.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sample_model_dict</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">sample_model</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;_space_group_name_H-M_alt&#39;</span><span class="p">:</span> <span class="n">sample_model</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">name_h_m</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="s1">&#39;_cell_length_a&#39;</span><span class="p">:</span> <span class="n">sample_model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_a</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="s1">&#39;_cell_length_b&#39;</span><span class="p">:</span> <span class="n">sample_model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_b</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="s1">&#39;_cell_length_c&#39;</span><span class="p">:</span> <span class="n">sample_model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_c</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="s1">&#39;_cell_angle_alpha&#39;</span><span class="p">:</span> <span class="n">sample_model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angle_alpha</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="s1">&#39;_cell_angle_beta&#39;</span><span class="p">:</span> <span class="n">sample_model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angle_beta</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="s1">&#39;_cell_angle_gamma&#39;</span><span class="p">:</span> <span class="n">sample_model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angle_gamma</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">structure_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;_space_group_name_H-M_alt&#39;</span><span class="p">:</span> <span class="n">structure</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">name_h_m</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s1">&#39;_cell_length_a&#39;</span><span class="p">:</span> <span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_a</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s1">&#39;_cell_length_b&#39;</span><span class="p">:</span> <span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_b</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s1">&#39;_cell_length_c&#39;</span><span class="p">:</span> <span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_c</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s1">&#39;_cell_angle_alpha&#39;</span><span class="p">:</span> <span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angle_alpha</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s1">&#39;_cell_angle_beta&#39;</span><span class="p">:</span> <span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angle_beta</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s1">&#39;_cell_angle_gamma&#39;</span><span class="p">:</span> <span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angle_gamma</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                 <span class="s1">&#39;_atom_site&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="p">}</span>
         <span class="p">}</span>
 
-        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">sample_model</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">structure</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">:</span>
             <span class="n">atom_site</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s1">&#39;_label&#39;</span><span class="p">:</span> <span class="n">atom</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                 <span class="s1">&#39;_type_symbol&#39;</span><span class="p">:</span> <span class="n">atom</span><span class="o">.</span><span class="n">type_symbol</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -6441,9 +6526,9 @@ experiment.</p>
                 <span class="s1">&#39;_adp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;Biso&#39;</span><span class="p">,</span>  <span class="c1"># Assuming Biso for simplicity</span>
                 <span class="s1">&#39;_B_iso_or_equiv&#39;</span><span class="p">:</span> <span class="n">atom</span><span class="o">.</span><span class="n">b_iso</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="p">}</span>
-            <span class="n">sample_model_dict</span><span class="p">[</span><span class="n">sample_model</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;_atom_site&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom_site</span><span class="p">)</span>
+            <span class="n">structure_dict</span><span class="p">[</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;_atom_site&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom_site</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">sample_model_dict</span>
+        <span class="k">return</span> <span class="n">structure_dict</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_convert_experiment_to_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -6507,7 +6592,7 @@ experiment.</p>
 
 
 <h5 id="easydiffraction.analysis.calculators.crysfml.CrysfmlCalculator.calculate_pattern" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">calculate_pattern</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">calculate_pattern</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h5>
 
@@ -6515,7 +6600,7 @@ experiment.</p>
     <div class="doc doc-contents ">
 
         <p>Calculates the diffraction pattern using Crysfml for the
-given sample model and experiment.</p>
+given structure and experiment.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -6531,14 +6616,14 @@ given sample model and experiment.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>sample_model</code>
+                <code>structure</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;SampleModels&lt;/code&gt; (&lt;code&gt;easydiffraction.sample_models.sample_models.SampleModels&lt;/code&gt;)" href="../sample_models/#easydiffraction.sample_models.sample_models.SampleModels">SampleModels</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Structures&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.structure.collection.Structures&lt;/code&gt;)" href="../datablocks/structure/#easydiffraction.datablocks.structure.collection.Structures">Structures</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The sample model to calculate the pattern for.</p>
+                <p>The structure to calculate the pattern for.</p>
               </div>
             </td>
             <td>
@@ -6550,11 +6635,11 @@ given sample model and experiment.</p>
                 <code>experiment</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.ExperimentBase&lt;/code&gt;)" href="../experiments/#easydiffraction.experiments.experiment.base.ExperimentBase">ExperimentBase</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.base.ExperimentBase&lt;/code&gt;)" href="../datablocks/experiment/#easydiffraction.datablocks.experiment.item.base.ExperimentBase">ExperimentBase</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The experiment associated with the sample model.</p>
+                <p>The experiment associated with the structure.</p>
               </div>
             </td>
             <td>
@@ -6638,16 +6723,16 @@ list of floats.</p>
 <span class="normal">82</span>
 <span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_pattern</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>
+    <span class="n">structure</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
     <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
     <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the diffraction pattern using Crysfml for the</span>
-<span class="sd">    given sample model and experiment.</span>
+<span class="sd">    given structure and experiment.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        sample_model: The sample model to calculate the pattern for.</span>
-<span class="sd">        experiment: The experiment associated with the sample model.</span>
+<span class="sd">        structure: The structure to calculate the pattern for.</span>
+<span class="sd">        experiment: The experiment associated with the structure.</span>
 <span class="sd">        called_by_minimizer: Whether the calculation is called by a</span>
 <span class="sd">        minimizer.</span>
 
@@ -6658,7 +6743,7 @@ list of floats.</p>
     <span class="c1"># Intentionally unused, required by public API/signature</span>
     <span class="k">del</span> <span class="n">called_by_minimizer</span>
 
-    <span class="n">crysfml_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crysfml_dict</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+    <span class="n">crysfml_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crysfml_dict</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">cfml_py_utilities</span><span class="o">.</span><span class="n">cw_powder_pattern_from_dict</span><span class="p">(</span><span class="n">crysfml_dict</span><span class="p">)</span>
         <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adjust_pattern_length</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
@@ -6681,7 +6766,7 @@ list of floats.</p>
 
 
 <h5 id="easydiffraction.analysis.calculators.crysfml.CrysfmlCalculator.calculate_structure_factors" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">calculate_structure_factors</span><span class="p">(</span><span class="n">sample_models</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">calculate_structure_factors</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span></code>
 
 </h5>
 
@@ -6704,14 +6789,14 @@ list of floats.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>sample_models</code>
+                <code>structures</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;SampleModels&lt;/code&gt; (&lt;code&gt;easydiffraction.sample_models.sample_models.SampleModels&lt;/code&gt;)" href="../sample_models/#easydiffraction.sample_models.sample_models.SampleModels">SampleModels</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Structures&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.structure.collection.Structures&lt;/code&gt;)" href="../datablocks/structure/#easydiffraction.datablocks.structure.collection.Structures">Structures</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The sample models to calculate structure
+                <p>The structures to calculate structure
 factors for.</p>
               </div>
             </td>
@@ -6724,7 +6809,7 @@ factors for.</p>
                 <code>experiments</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Experiments&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiments.Experiments&lt;/code&gt;)" href="../experiments/#easydiffraction.experiments.experiments.Experiments">Experiments</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Experiments&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.collection.Experiments&lt;/code&gt;)" href="../datablocks/experiment/#easydiffraction.datablocks.experiment.collection.Experiments">Experiments</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -6757,13 +6842,13 @@ models.</p>
 <span class="normal">51</span>
 <span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_structure_factors</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">sample_models</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>
+    <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
     <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Call Crysfml to calculate structure factors.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        sample_models: The sample models to calculate structure</span>
+<span class="sd">        structures: The structures to calculate structure</span>
 <span class="sd">            factors for.</span>
 <span class="sd">        experiments: The experiments associated with the sample</span>
 <span class="sd">            models.</span>
@@ -7447,7 +7532,7 @@ patterns.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">calculate_structure_factors</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModelBase</span><span class="p">,</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
         <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
         <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
@@ -7455,23 +7540,23 @@ patterns.</p>
 <span class="sd">        implemented.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sample_model: The sample model to calculate structure</span>
+<span class="sd">            structure: The structure to calculate structure</span>
 <span class="sd">                factors for.</span>
 <span class="sd">            experiment: The experiment associated with the sample</span>
 <span class="sd">                models.</span>
 <span class="sd">            called_by_minimizer: Whether the calculation is called by a</span>
 <span class="sd">                minimizer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sample_model</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
 
         <span class="k">if</span> <span class="n">called_by_minimizer</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span> <span class="ow">and</span> <span class="n">combined_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">:</span>
-                <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_dict</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+                <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_dict</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+                <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
                 <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+            <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
             <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">[</span><span class="n">combined_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">)</span>
@@ -7505,12 +7590,12 @@ patterns.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">calculate_pattern</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModelBase</span><span class="p">,</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
         <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
         <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates the diffraction pattern using Cryspy for the given</span>
-<span class="sd">        sample model and experiment.</span>
+<span class="sd">        structure and experiment.</span>
 
 <span class="sd">        We only recreate the cryspy_obj if this method is</span>
 <span class="sd">         - NOT called by the minimizer, or</span>
@@ -7519,8 +7604,8 @@ patterns.</p>
 <span class="sd">        This allows significantly speeding up the calculation</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sample_model: The sample model to calculate the pattern for.</span>
-<span class="sd">            experiment: The experiment associated with the sample model.</span>
+<span class="sd">            structure: The structure to calculate the pattern for.</span>
+<span class="sd">            experiment: The experiment associated with the structure.</span>
 <span class="sd">            called_by_minimizer: Whether the calculation is called by a</span>
 <span class="sd">                minimizer.</span>
 
@@ -7528,16 +7613,16 @@ patterns.</p>
 <span class="sd">            The calculated diffraction pattern as a NumPy array or a</span>
 <span class="sd">                list of floats.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sample_model</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
 
         <span class="k">if</span> <span class="n">called_by_minimizer</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span> <span class="ow">and</span> <span class="n">combined_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">:</span>
-                <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_dict</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+                <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_dict</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+                <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
                 <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+            <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
             <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">[</span><span class="n">combined_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">)</span>
@@ -7581,53 +7666,53 @@ patterns.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_recreate_cryspy_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModelBase</span><span class="p">,</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
         <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recreates the Cryspy dictionary for the given sample model</span>
-<span class="sd">        and experiment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recreates the Cryspy dictionary for the given structure and</span>
+<span class="sd">        experiment.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sample_model: The sample model to update.</span>
+<span class="sd">            structure: The structure to update.</span>
 <span class="sd">            experiment: The experiment to update.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The updated Cryspy dictionary.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sample_model</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">[</span><span class="n">combined_name</span><span class="p">])</span>
 
-        <span class="n">cryspy_model_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;crystal_</span><span class="si">{</span><span class="n">sample_model</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">cryspy_model_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;crystal_</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="n">cryspy_model_dict</span> <span class="o">=</span> <span class="n">cryspy_dict</span><span class="p">[</span><span class="n">cryspy_model_id</span><span class="p">]</span>
 
         <span class="c1">################################</span>
-        <span class="c1"># Update sample model parameters</span>
+        <span class="c1"># Update structure parameters</span>
         <span class="c1">################################</span>
 
         <span class="c1"># Cell</span>
         <span class="n">cryspy_cell</span> <span class="o">=</span> <span class="n">cryspy_model_dict</span><span class="p">[</span><span class="s1">&#39;unit_cell_parameters&#39;</span><span class="p">]</span>
-        <span class="n">cryspy_cell</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_a</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">cryspy_cell</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_b</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">cryspy_cell</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_c</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">cryspy_cell</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">sample_model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angle_alpha</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">cryspy_cell</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">sample_model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angle_beta</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">cryspy_cell</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">sample_model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angle_gamma</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">cryspy_cell</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_a</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">cryspy_cell</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_b</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">cryspy_cell</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_c</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">cryspy_cell</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angle_alpha</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">cryspy_cell</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angle_beta</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">cryspy_cell</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angle_gamma</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
         <span class="c1"># Atomic coordinates</span>
         <span class="n">cryspy_xyz</span> <span class="o">=</span> <span class="n">cryspy_model_dict</span><span class="p">[</span><span class="s1">&#39;atom_fract_xyz&#39;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">atom_site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sample_model</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">atom_site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">):</span>
             <span class="n">cryspy_xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_site</span><span class="o">.</span><span class="n">fract_x</span><span class="o">.</span><span class="n">value</span>
             <span class="n">cryspy_xyz</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_site</span><span class="o">.</span><span class="n">fract_y</span><span class="o">.</span><span class="n">value</span>
             <span class="n">cryspy_xyz</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_site</span><span class="o">.</span><span class="n">fract_z</span><span class="o">.</span><span class="n">value</span>
 
         <span class="c1"># Atomic occupancies</span>
         <span class="n">cryspy_occ</span> <span class="o">=</span> <span class="n">cryspy_model_dict</span><span class="p">[</span><span class="s1">&#39;atom_occupancy&#39;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">atom_site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sample_model</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">atom_site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">):</span>
             <span class="n">cryspy_occ</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_site</span><span class="o">.</span><span class="n">occupancy</span><span class="o">.</span><span class="n">value</span>
 
         <span class="c1"># Atomic ADPs - Biso only for now</span>
         <span class="n">cryspy_biso</span> <span class="o">=</span> <span class="n">cryspy_model_dict</span><span class="p">[</span><span class="s1">&#39;atom_b_iso&#39;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">atom_site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sample_model</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">atom_site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">):</span>
             <span class="n">cryspy_biso</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_site</span><span class="o">.</span><span class="n">b_iso</span><span class="o">.</span><span class="n">value</span>
 
         <span class="c1">##############################</span>
@@ -7695,14 +7780,14 @@ patterns.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_recreate_cryspy_obj</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModelBase</span><span class="p">,</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
         <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recreates the Cryspy object for the given sample model and</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recreates the Cryspy object for the given structure and</span>
 <span class="sd">        experiment.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sample_model: The sample model to recreate.</span>
+<span class="sd">            structure: The structure to recreate.</span>
 <span class="sd">            experiment: The experiment to recreate.</span>
 
 <span class="sd">        Returns:</span>
@@ -7710,14 +7795,14 @@ patterns.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="n">str_to_globaln</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 
-        <span class="n">cryspy_sample_model_cif</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_sample_model_to_cryspy_cif</span><span class="p">(</span><span class="n">sample_model</span><span class="p">)</span>
-        <span class="n">cryspy_sample_model_obj</span> <span class="o">=</span> <span class="n">str_to_globaln</span><span class="p">(</span><span class="n">cryspy_sample_model_cif</span><span class="p">)</span>
-        <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">add_items</span><span class="p">(</span><span class="n">cryspy_sample_model_obj</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
+        <span class="n">cryspy_structure_cif</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_structure_to_cryspy_cif</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
+        <span class="n">cryspy_structure_obj</span> <span class="o">=</span> <span class="n">str_to_globaln</span><span class="p">(</span><span class="n">cryspy_structure_cif</span><span class="p">)</span>
+        <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">add_items</span><span class="p">(</span><span class="n">cryspy_structure_obj</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
 
         <span class="c1"># Add single experiment to cryspy_obj</span>
         <span class="n">cryspy_experiment_cif</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_experiment_to_cryspy_cif</span><span class="p">(</span>
             <span class="n">experiment</span><span class="p">,</span>
-            <span class="n">linked_sample_model</span><span class="o">=</span><span class="n">sample_model</span><span class="p">,</span>
+            <span class="n">linked_structure</span><span class="o">=</span><span class="n">structure</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">cryspy_experiment_obj</span> <span class="o">=</span> <span class="n">str_to_globaln</span><span class="p">(</span><span class="n">cryspy_experiment_cif</span><span class="p">)</span>
@@ -7725,30 +7810,30 @@ patterns.</p>
 
         <span class="k">return</span> <span class="n">cryspy_obj</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_sample_model_to_cryspy_cif</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_structure_to_cryspy_cif</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModelBase</span><span class="p">,</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a sample model to a Cryspy CIF string.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a structure to a Cryspy CIF string.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sample_model: The sample model to convert.</span>
+<span class="sd">            structure: The structure to convert.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The Cryspy CIF string representation of the sample model.</span>
+<span class="sd">            The Cryspy CIF string representation of the structure.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">sample_model</span><span class="o">.</span><span class="n">as_cif</span>
+        <span class="k">return</span> <span class="n">structure</span><span class="o">.</span><span class="n">as_cif</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_convert_experiment_to_cryspy_cif</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
-        <span class="n">linked_sample_model</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">linked_structure</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts an experiment to a Cryspy CIF string.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            experiment: The experiment to convert.</span>
-<span class="sd">            linked_sample_model: The sample model linked to the</span>
+<span class="sd">            linked_structure: The structure linked to the</span>
 <span class="sd">                experiment.</span>
 
 <span class="sd">        Returns:</span>
@@ -7884,14 +7969,14 @@ patterns.</p>
         <span class="c1"># Add phase data</span>
         <span class="k">if</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">SINGLE_CRYSTAL</span><span class="p">:</span>
             <span class="n">cif_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-            <span class="n">cif_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;_phase_label </span><span class="si">{</span><span class="n">linked_sample_model</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">cif_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;_phase_label </span><span class="si">{</span><span class="n">linked_structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">cif_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;_phase_scale 1.0&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">POWDER</span><span class="p">:</span>
             <span class="n">cif_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
             <span class="n">cif_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;loop_&#39;</span><span class="p">)</span>
             <span class="n">cif_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;_phase_label&#39;</span><span class="p">)</span>
             <span class="n">cif_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;_phase_scale&#39;</span><span class="p">)</span>
-            <span class="n">cif_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">linked_sample_model</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> 1.0&#39;</span><span class="p">)</span>
+            <span class="n">cif_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">linked_structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> 1.0&#39;</span><span class="p">)</span>
 
         <span class="c1"># Add background data</span>
         <span class="k">if</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">POWDER</span><span class="p">:</span>
@@ -7993,7 +8078,7 @@ patterns.</p>
 
 
 <h5 id="easydiffraction.analysis.calculators.cryspy.CryspyCalculator.calculate_pattern" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">calculate_pattern</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">calculate_pattern</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h5>
 
@@ -8001,7 +8086,7 @@ patterns.</p>
     <div class="doc doc-contents ">
 
         <p>Calculates the diffraction pattern using Cryspy for the given
-sample model and experiment.</p>
+structure and experiment.</p>
 <p>We only recreate the cryspy_obj if this method is
  - NOT called by the minimizer, or
  - the cryspy_dict is NOT yet created.
@@ -8022,14 +8107,14 @@ This allows significantly speeding up the calculation</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>sample_model</code>
+                <code>structure</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;SampleModelBase&lt;/code&gt; (&lt;code&gt;easydiffraction.sample_models.sample_model.base.SampleModelBase&lt;/code&gt;)" href="../sample_models/#easydiffraction.sample_models.sample_model.base.SampleModelBase">SampleModelBase</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Structure&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.structure.item.base.Structure&lt;/code&gt;)" href="../datablocks/structure/#easydiffraction.datablocks.structure.item.base.Structure">Structure</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The sample model to calculate the pattern for.</p>
+                <p>The structure to calculate the pattern for.</p>
               </div>
             </td>
             <td>
@@ -8041,11 +8126,11 @@ This allows significantly speeding up the calculation</p>
                 <code>experiment</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.ExperimentBase&lt;/code&gt;)" href="../experiments/#easydiffraction.experiments.experiment.base.ExperimentBase">ExperimentBase</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.base.ExperimentBase&lt;/code&gt;)" href="../datablocks/experiment/#easydiffraction.datablocks.experiment.item.base.ExperimentBase">ExperimentBase</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The experiment associated with the sample model.</p>
+                <p>The experiment associated with the structure.</p>
               </div>
             </td>
             <td>
@@ -8175,12 +8260,12 @@ list of floats.</p>
 <span class="normal">182</span>
 <span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_pattern</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModelBase</span><span class="p">,</span>
+    <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
     <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
     <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the diffraction pattern using Cryspy for the given</span>
-<span class="sd">    sample model and experiment.</span>
+<span class="sd">    structure and experiment.</span>
 
 <span class="sd">    We only recreate the cryspy_obj if this method is</span>
 <span class="sd">     - NOT called by the minimizer, or</span>
@@ -8189,8 +8274,8 @@ list of floats.</p>
 <span class="sd">    This allows significantly speeding up the calculation</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        sample_model: The sample model to calculate the pattern for.</span>
-<span class="sd">        experiment: The experiment associated with the sample model.</span>
+<span class="sd">        structure: The structure to calculate the pattern for.</span>
+<span class="sd">        experiment: The experiment associated with the structure.</span>
 <span class="sd">        called_by_minimizer: Whether the calculation is called by a</span>
 <span class="sd">            minimizer.</span>
 
@@ -8198,16 +8283,16 @@ list of floats.</p>
 <span class="sd">        The calculated diffraction pattern as a NumPy array or a</span>
 <span class="sd">            list of floats.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sample_model</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="k">if</span> <span class="n">called_by_minimizer</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span> <span class="ow">and</span> <span class="n">combined_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">:</span>
-            <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_dict</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+            <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_dict</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+            <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
             <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+        <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
         <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">[</span><span class="n">combined_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">)</span>
@@ -8263,7 +8348,7 @@ list of floats.</p>
 
 
 <h5 id="easydiffraction.analysis.calculators.cryspy.CryspyCalculator.calculate_structure_factors" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">calculate_structure_factors</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">calculate_structure_factors</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h5>
 
@@ -8287,14 +8372,14 @@ implemented.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>sample_model</code>
+                <code>structure</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;SampleModelBase&lt;/code&gt; (&lt;code&gt;easydiffraction.sample_models.sample_model.base.SampleModelBase&lt;/code&gt;)" href="../sample_models/#easydiffraction.sample_models.sample_model.base.SampleModelBase">SampleModelBase</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Structure&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.structure.item.base.Structure&lt;/code&gt;)" href="../datablocks/structure/#easydiffraction.datablocks.structure.item.base.Structure">Structure</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The sample model to calculate structure
+                <p>The structure to calculate structure
 factors for.</p>
               </div>
             </td>
@@ -8307,7 +8392,7 @@ factors for.</p>
                 <code>experiment</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiment.base.ExperimentBase&lt;/code&gt;)" href="../experiments/#easydiffraction.experiments.experiment.base.ExperimentBase">ExperimentBase</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.base.ExperimentBase&lt;/code&gt;)" href="../datablocks/experiment/#easydiffraction.datablocks.experiment.item.base.ExperimentBase">ExperimentBase</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -8400,7 +8485,7 @@ minimizer.</p>
 <span class="normal">106</span>
 <span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_structure_factors</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModelBase</span><span class="p">,</span>
+    <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
     <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
     <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
@@ -8408,23 +8493,23 @@ minimizer.</p>
 <span class="sd">    implemented.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        sample_model: The sample model to calculate structure</span>
+<span class="sd">        structure: The structure to calculate structure</span>
 <span class="sd">            factors for.</span>
 <span class="sd">        experiment: The experiment associated with the sample</span>
 <span class="sd">            models.</span>
 <span class="sd">        called_by_minimizer: Whether the calculation is called by a</span>
 <span class="sd">            minimizer.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sample_model</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="k">if</span> <span class="n">called_by_minimizer</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span> <span class="ow">and</span> <span class="n">combined_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">:</span>
-            <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_dict</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+            <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_dict</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+            <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
             <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">sample_model</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+        <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
         <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">[</span><span class="n">combined_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">)</span>
@@ -9191,16 +9276,16 @@ silences stdio on import to avoid noisy output in notebooks and logs.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;pdffit&#39;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_structure_factors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_models</span><span class="p">,</span> <span class="n">experiments</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_structure_factors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structures</span><span class="p">,</span> <span class="n">experiments</span><span class="p">):</span>
         <span class="c1"># PDF doesn&#39;t compute HKL but we keep interface consistent</span>
         <span class="c1"># Intentionally unused, required by public API/signature</span>
-        <span class="k">del</span> <span class="n">sample_models</span><span class="p">,</span> <span class="n">experiments</span>
+        <span class="k">del</span> <span class="n">structures</span><span class="p">,</span> <span class="n">experiments</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[pdffit] Calculating HKLs (not applicable)...&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">calculate_pattern</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_model</span><span class="p">:</span> <span class="n">SampleModelBase</span><span class="p">,</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
         <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
         <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
@@ -9211,12 +9296,12 @@ silences stdio on import to avoid noisy output in notebooks and logs.</p>
         <span class="n">calculator</span> <span class="o">=</span> <span class="n">PdfFit</span><span class="p">()</span>
 
         <span class="c1"># ---------------------------</span>
-        <span class="c1"># Set sample model parameters</span>
+        <span class="c1"># Set structure parameters</span>
         <span class="c1"># ---------------------------</span>
 
         <span class="c1"># TODO: move CIF v2 -&gt; CIF v1 conversion to a separate module</span>
-        <span class="c1"># Convert the sample model to CIF supported by PDFfit</span>
-        <span class="n">cif_string_v2</span> <span class="o">=</span> <span class="n">sample_model</span><span class="o">.</span><span class="n">as_cif</span>
+        <span class="c1"># Convert the structure to CIF supported by PDFfit</span>
+        <span class="n">cif_string_v2</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">as_cif</span>
         <span class="c1"># convert to version 1 of CIF format</span>
         <span class="c1"># this means: replace all dots with underscores for</span>
         <span class="c1"># cases where the dot is surrounded by letters on both sides.</span>
@@ -9224,18 +9309,18 @@ silences stdio on import to avoid noisy output in notebooks and logs.</p>
         <span class="n">cif_string_v1</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">cif_string_v2</span><span class="p">)</span>
 
         <span class="c1"># Create the PDFit structure</span>
-        <span class="n">structure</span> <span class="o">=</span> <span class="n">pdffit_cif_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">cif_string_v1</span><span class="p">)</span>
+        <span class="n">pdffit_structure</span> <span class="o">=</span> <span class="n">pdffit_cif_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">cif_string_v1</span><span class="p">)</span>
 
         <span class="c1"># Set all model parameters:</span>
         <span class="c1"># space group, cell parameters, and atom sites (including ADPs)</span>
-        <span class="n">calculator</span><span class="o">.</span><span class="n">add_structure</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
+        <span class="n">calculator</span><span class="o">.</span><span class="n">add_structure</span><span class="p">(</span><span class="n">pdffit_structure</span><span class="p">)</span>
 
         <span class="c1"># -------------------------</span>
         <span class="c1"># Set experiment parameters</span>
         <span class="c1"># -------------------------</span>
 
         <span class="c1"># Set some peak-related parameters</span>
-        <span class="n">calculator</span><span class="o">.</span><span class="n">setvar</span><span class="p">(</span><span class="s1">&#39;pscale&#39;</span><span class="p">,</span> <span class="n">experiment</span><span class="o">.</span><span class="n">linked_phases</span><span class="p">[</span><span class="n">sample_model</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">calculator</span><span class="o">.</span><span class="n">setvar</span><span class="p">(</span><span class="s1">&#39;pscale&#39;</span><span class="p">,</span> <span class="n">experiment</span><span class="o">.</span><span class="n">linked_phases</span><span class="p">[</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="n">calculator</span><span class="o">.</span><span class="n">setvar</span><span class="p">(</span><span class="s1">&#39;delta1&#39;</span><span class="p">,</span> <span class="n">experiment</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">sharp_delta_1</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="n">calculator</span><span class="o">.</span><span class="n">setvar</span><span class="p">(</span><span class="s1">&#39;delta2&#39;</span><span class="p">,</span> <span class="n">experiment</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">sharp_delta_2</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="n">calculator</span><span class="o">.</span><span class="n">setvar</span><span class="p">(</span><span class="s1">&#39;spdiameter&#39;</span><span class="p">,</span> <span class="n">experiment</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">damp_particle_diameter</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
@@ -11230,7 +11315,7 @@ data.</p>
 
 
 <h4 id="easydiffraction.analysis.fit_helpers.metrics.get_reliability_inputs" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">get_reliability_inputs</span><span class="p">(</span><span class="n">sample_models</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">get_reliability_inputs</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span></code>
 
 </h4>
 
@@ -11254,14 +11339,14 @@ calculations.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>sample_models</code>
+                <code>structures</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;SampleModels&lt;/code&gt; (&lt;code&gt;easydiffraction.sample_models.sample_models.SampleModels&lt;/code&gt;)" href="../sample_models/#easydiffraction.sample_models.sample_models.SampleModels">SampleModels</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Structures&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.structure.collection.Structures&lt;/code&gt;)" href="../datablocks/structure/#easydiffraction.datablocks.structure.collection.Structures">Structures</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Collection of sample models.</p>
+                <p>Collection of structures.</p>
               </div>
             </td>
             <td>
@@ -11273,7 +11358,7 @@ calculations.</p>
                 <code>experiments</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Experiments&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiments.Experiments&lt;/code&gt;)" href="../experiments/#easydiffraction.experiments.experiments.Experiments">Experiments</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Experiments&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.collection.Experiments&lt;/code&gt;)" href="../datablocks/experiment/#easydiffraction.datablocks.experiment.collection.Experiments">Experiments</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -11355,14 +11440,14 @@ error values)</p>
 <span class="normal">161</span>
 <span class="normal">162</span>
 <span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_reliability_inputs</span><span class="p">(</span>
-    <span class="n">sample_models</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>
+    <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
     <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collect observed and calculated data points for reliability</span>
 <span class="sd">    calculations.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        sample_models: Collection of sample models.</span>
+<span class="sd">        structures: Collection of structures.</span>
 <span class="sd">        experiments: Collection of experiments.</span>
 
 <span class="sd">    Returns:</span>
@@ -11373,8 +11458,8 @@ error values)</p>
     <span class="n">y_calc_all</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">y_err_all</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">sample_model</span> <span class="ow">in</span> <span class="n">sample_models</span><span class="p">:</span>
-            <span class="n">sample_model</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">structure</span> <span class="ow">in</span> <span class="n">structures</span><span class="p">:</span>
+            <span class="n">structure</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">()</span>
         <span class="n">experiment</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">()</span>
 
         <span class="n">y_calc</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">intensity_calc</span>
@@ -13887,7 +13972,7 @@ a table in notebooks or a text UI in terminals.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_models</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>
+        <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
         <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
         <span class="n">weights</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">analysis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -13899,13 +13984,13 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="sd">        to display the fit results after fitting is complete.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sample_models: Collection of sample models.</span>
+<span class="sd">            structures: Collection of structures.</span>
 <span class="sd">            experiments: Collection of experiments.</span>
 <span class="sd">            weights: Optional weights for joint fitting.</span>
 <span class="sd">            analysis: Optional Analysis object to update its categories</span>
 <span class="sd">                during fitting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">sample_models</span><span class="o">.</span><span class="n">free_parameters</span> <span class="o">+</span> <span class="n">experiments</span><span class="o">.</span><span class="n">free_parameters</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">free_parameters</span> <span class="o">+</span> <span class="n">experiments</span><span class="o">.</span><span class="n">free_parameters</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">params</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;⚠️ No parameters selected for fitting.&#39;</span><span class="p">)</span>
@@ -13918,7 +14003,7 @@ a table in notebooks or a text UI in terminals.</p>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_residual_function</span><span class="p">(</span>
                 <span class="n">engine_params</span><span class="o">=</span><span class="n">engine_params</span><span class="p">,</span>
                 <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
-                <span class="n">sample_models</span><span class="o">=</span><span class="n">sample_models</span><span class="p">,</span>
+                <span class="n">structures</span><span class="o">=</span><span class="n">structures</span><span class="p">,</span>
                 <span class="n">experiments</span><span class="o">=</span><span class="n">experiments</span><span class="p">,</span>
                 <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span>
                 <span class="n">analysis</span><span class="o">=</span><span class="n">analysis</span><span class="p">,</span>
@@ -13929,7 +14014,7 @@ a table in notebooks or a text UI in terminals.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_process_fit_results</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_models</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>
+        <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
         <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Collect reliability inputs and display fit results.</span>
@@ -13940,11 +14025,11 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="sd">        the console.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sample_models: Collection of sample models.</span>
+<span class="sd">            structures: Collection of structures.</span>
 <span class="sd">            experiments: Collection of experiments.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">y_obs</span><span class="p">,</span> <span class="n">y_calc</span><span class="p">,</span> <span class="n">y_err</span> <span class="o">=</span> <span class="n">get_reliability_inputs</span><span class="p">(</span>
-            <span class="n">sample_models</span><span class="p">,</span>
+            <span class="n">structures</span><span class="p">,</span>
             <span class="n">experiments</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -13962,26 +14047,26 @@ a table in notebooks or a text UI in terminals.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_collect_free_parameters</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sample_models</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>
+        <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
         <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collect free parameters from sample models and experiments.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collect free parameters from structures and experiments.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sample_models: Collection of sample models.</span>
+<span class="sd">            structures: Collection of structures.</span>
 <span class="sd">            experiments: Collection of experiments.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List of free parameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">free_params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_models</span><span class="o">.</span><span class="n">free_parameters</span> <span class="o">+</span> <span class="n">experiments</span><span class="o">.</span><span class="n">free_parameters</span>
+        <span class="n">free_params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">free_parameters</span> <span class="o">+</span> <span class="n">experiments</span><span class="o">.</span><span class="n">free_parameters</span>
         <span class="k">return</span> <span class="n">free_params</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_residual_function</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">engine_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">],</span>
-        <span class="n">sample_models</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>
+        <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
         <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
         <span class="n">weights</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">analysis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -13993,7 +14078,7 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="sd">        Args:</span>
 <span class="sd">            engine_params: Engine-specific parameter dict.</span>
 <span class="sd">            parameters: List of parameters being optimized.</span>
-<span class="sd">            sample_models: Collection of sample models.</span>
+<span class="sd">            structures: Collection of structures.</span>
 <span class="sd">            experiments: Collection of experiments.</span>
 <span class="sd">            weights: Optional weights for joint fitting.</span>
 <span class="sd">            analysis: Optional Analysis object to update its categories</span>
@@ -14006,10 +14091,10 @@ a table in notebooks or a text UI in terminals.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">minimizer</span><span class="o">.</span><span class="n">_sync_result_to_parameters</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">engine_params</span><span class="p">)</span>
 
         <span class="c1"># Update categories to reflect new parameter values</span>
-        <span class="c1"># Order matters: sample models first (symmetry, structure),</span>
+        <span class="c1"># Order matters: structures first (symmetry, structure),</span>
         <span class="c1"># then analysis (constraints), then experiments (calculations)</span>
-        <span class="k">for</span> <span class="n">sample_model</span> <span class="ow">in</span> <span class="n">sample_models</span><span class="p">:</span>
-            <span class="n">sample_model</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">structure</span> <span class="ow">in</span> <span class="n">structures</span><span class="p">:</span>
+            <span class="n">structure</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">analysis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">analysis</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">(</span><span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -14069,7 +14154,7 @@ a table in notebooks or a text UI in terminals.</p>
 
 
 <h4 id="easydiffraction.analysis.fitting.Fitter.fit" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">fit</span><span class="p">(</span><span class="n">sample_models</span><span class="p">,</span> <span class="n">experiments</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">analysis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">fit</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="n">experiments</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">analysis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h4>
 
@@ -14095,14 +14180,14 @@ to display the fit results after fitting is complete.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>sample_models</code>
+                <code>structures</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;SampleModels&lt;/code&gt; (&lt;code&gt;easydiffraction.sample_models.sample_models.SampleModels&lt;/code&gt;)" href="../sample_models/#easydiffraction.sample_models.sample_models.SampleModels">SampleModels</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Structures&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.structure.collection.Structures&lt;/code&gt;)" href="../datablocks/structure/#easydiffraction.datablocks.structure.collection.Structures">Structures</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Collection of sample models.</p>
+                <p>Collection of structures.</p>
               </div>
             </td>
             <td>
@@ -14114,7 +14199,7 @@ to display the fit results after fitting is complete.</p>
                 <code>experiments</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Experiments&lt;/code&gt; (&lt;code&gt;easydiffraction.experiments.experiments.Experiments&lt;/code&gt;)" href="../experiments/#easydiffraction.experiments.experiments.Experiments">Experiments</a></code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Experiments&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.collection.Experiments&lt;/code&gt;)" href="../datablocks/experiment/#easydiffraction.datablocks.experiment.collection.Experiments">Experiments</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -14205,7 +14290,7 @@ during fitting.</p>
 <span class="normal">70</span>
 <span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">sample_models</span><span class="p">:</span> <span class="n">SampleModels</span><span class="p">,</span>
+    <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
     <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
     <span class="n">weights</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">analysis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -14217,13 +14302,13 @@ during fitting.</p>
 <span class="sd">    to display the fit results after fitting is complete.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        sample_models: Collection of sample models.</span>
+<span class="sd">        structures: Collection of structures.</span>
 <span class="sd">        experiments: Collection of experiments.</span>
 <span class="sd">        weights: Optional weights for joint fitting.</span>
 <span class="sd">        analysis: Optional Analysis object to update its categories</span>
 <span class="sd">            during fitting.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">sample_models</span><span class="o">.</span><span class="n">free_parameters</span> <span class="o">+</span> <span class="n">experiments</span><span class="o">.</span><span class="n">free_parameters</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">free_parameters</span> <span class="o">+</span> <span class="n">experiments</span><span class="o">.</span><span class="n">free_parameters</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">params</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;⚠️ No parameters selected for fitting.&#39;</span><span class="p">)</span>
@@ -14236,7 +14321,7 @@ during fitting.</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_residual_function</span><span class="p">(</span>
             <span class="n">engine_params</span><span class="o">=</span><span class="n">engine_params</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
-            <span class="n">sample_models</span><span class="o">=</span><span class="n">sample_models</span><span class="p">,</span>
+            <span class="n">structures</span><span class="o">=</span><span class="n">structures</span><span class="p">,</span>
             <span class="n">experiments</span><span class="o">=</span><span class="n">experiments</span><span class="p">,</span>
             <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span>
             <span class="n">analysis</span><span class="o">=</span><span class="n">analysis</span><span class="p">,</span>
@@ -14696,7 +14781,7 @@ during fitting.</p>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">engine_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
-        <span class="n">sample_models</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">structures</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">experiments</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">calculator</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -14704,7 +14789,7 @@ during fitting.</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_residuals</span><span class="p">(</span>
             <span class="n">engine_params</span><span class="p">,</span>
             <span class="n">parameters</span><span class="p">,</span>
-            <span class="n">sample_models</span><span class="p">,</span>
+            <span class="n">structures</span><span class="p">,</span>
             <span class="n">experiments</span><span class="p">,</span>
             <span class="n">calculator</span><span class="p">,</span>
         <span class="p">)</span>
@@ -14712,7 +14797,7 @@ during fitting.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_objective_function</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
-        <span class="n">sample_models</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">structures</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">experiments</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">calculator</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
@@ -14720,7 +14805,7 @@ during fitting.</p>
         <span class="k">return</span> <span class="k">lambda</span> <span class="n">engine_params</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objective_function</span><span class="p">(</span>
             <span class="n">engine_params</span><span class="p">,</span>
             <span class="n">parameters</span><span class="p">,</span>
-            <span class="n">sample_models</span><span class="p">,</span>
+            <span class="n">structures</span><span class="p">,</span>
             <span class="n">experiments</span><span class="p">,</span>
             <span class="n">calculator</span><span class="p">,</span>
         <span class="p">)</span>

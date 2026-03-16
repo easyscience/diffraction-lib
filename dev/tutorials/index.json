@@ -3,14 +3,14 @@
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-1/ed-1.ipynb",
     "original_name": "quick_from-cif_pd-neut-cwl_LBCO-HRPT",
     "title": "Quick Start: LBCO from CIF",
-    "description": "Minimalistic Rietveld refinement of La0.5Ba0.5CoO3 using sample model and experiment defined via CIF files",
+    "description": "Minimalistic Rietveld refinement of La0.5Ba0.5CoO3 using structure and experiment defined via CIF files",
     "level": "quick"
   },
   "2": {
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-2/ed-2.ipynb",
     "original_name": "quick_from-code_pd-neut-cwl_LBCO-HRPT",
     "title": "Quick Start: LBCO from Code",
-    "description": "Minimalistic Rietveld refinement of La0.5Ba0.5CoO3 with sample model and experiment defined directly in code",
+    "description": "Minimalistic Rietveld refinement of La0.5Ba0.5CoO3 with structure and experiment defined directly in code",
     "level": "quick"
   },
   "3": {

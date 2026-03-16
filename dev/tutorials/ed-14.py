@@ -18,29 +18,29 @@ import easydiffraction as ed
 project = ed.Project()
 
 # %% [markdown]
-# ## Step 2: Define Sample Model
+# ## Step 2: Define Structure
 
 # %%
 # Download CIF file from repository
-model_path = ed.download_data(id=20, destination='data')
+structure_path = ed.download_data(id=20, destination='data')
 
 # %%
-project.sample_models.add(cif_path=model_path)
+project.structures.add(cif_path=structure_path)
 
 # %%
-project.sample_models.show_names()
+project.structures.show_names()
 
 # %%
-sample_model = project.sample_models['tbti']
+structure = project.structures['tbti']
 
 # %%
-sample_model.atom_sites['Tb'].b_iso.value = 0.0
-sample_model.atom_sites['Ti'].b_iso.value = 0.0
-sample_model.atom_sites['O1'].b_iso.value = 0.0
-sample_model.atom_sites['O2'].b_iso.value = 0.0
+structure.atom_sites['Tb'].b_iso.value = 0.0
+structure.atom_sites['Ti'].b_iso.value = 0.0
+structure.atom_sites['O1'].b_iso.value = 0.0
+structure.atom_sites['O2'].b_iso.value = 0.0
 
 # %%
-sample_model.show_as_cif()
+structure.show_as_cif()
 
 # %% [markdown]
 # ## Step 3: Define Experiment

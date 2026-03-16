@@ -654,15 +654,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sample-model-parameters" class="md-nav__link">
+  <a href="#structure-parameters" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Sample model parameters
+        Structure parameters
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Sample model parameters">
+    <nav class="md-nav" aria-label="Structure parameters">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -886,7 +886,7 @@
   <span class="md-ellipsis">
     
   
-    Sample Model
+    Structure
   
 
     
@@ -1995,6 +1995,123 @@
   
   
   
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    datablocks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    datablocks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/datablocks/experiment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    experiment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/datablocks/structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../api-reference/display/" class="md-nav__link">
         
@@ -2024,7 +2141,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/experiments/" class="md-nav__link">
+      <a href="../../api-reference/experiment.md" class="md-nav__link">
         
   
   
@@ -2088,34 +2205,6 @@
     
   
     project
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api-reference/sample_models/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    sample_models
   
 
     
@@ -2230,15 +2319,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sample-model-parameters" class="md-nav__link">
+  <a href="#structure-parameters" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Sample model parameters
+        Structure parameters
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Sample model parameters">
+    <nav class="md-nav" aria-label="Structure parameters">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2333,7 +2422,7 @@
 <h1 id="parameters">Parameters</h1>
 <p>The data analysis process, introduced in the <a href="../concept/">Concept</a> section,
 assumes that you mainly work with different parameters. The parameters are used
-to describe the sample model and the experiment and are required to set up the
+to describe the structure and the experiment and are required to set up the
 analysis.</p>
 <p>Each parameter in EasyDiffraction has a specific name used for code reference,
 and it belongs to a specific category.</p>
@@ -2366,30 +2455,29 @@ the fitting process. The <code>free</code> attribute is set to <code>False</code
 means the parameter is fixed. To optimize a parameter, set <code>free</code> to <code>True</code>.</p>
 <p>Although parameters are central, EasyDiffraction hides their creation and
 attribute handling from the user. The user only accesses the required parameters
-through the top-level objects, such as <code>project</code>, <code>sample_models</code>,
-<code>experiments</code>, etc. The parameters are created and initialized automatically
-when a new project is created or an existing one is loaded.</p>
+through the top-level objects, such as <code>project</code>, <code>structures</code>, <code>experiments</code>,
+etc. The parameters are created and initialized automatically when a new project
+is created or an existing one is loaded.</p>
 <p>In the following sections, you can see a list of the parameters used in
 EasyDiffraction. Use the tabs to switch between how to access a parameter in
 code and its <abbr title="Crystallographic Information File.">CIF</abbr> name for serialization.</p>
 <div class="admonition warning">
 <p class="admonition-title">Important</p>
 <p>Remember that parameters are accessed in code through their parent objects,
-such as <code>project</code>, <code>sample_models</code>, or <code>experiments</code>. For example, if you
-have a sample model with the ID <code>nacl</code>, you can access the space group name
+such as <code>project</code>, <code>structures</code>, or <code>experiments</code>. For example, if you
+have a structure with the ID <code>nacl</code>, you can access the space group name
 using the following syntax:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">sample_models</span><span class="p">[</span><span class="s1">&#39;nacl&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">name_h_m</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;nacl&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">name_h_m</span>
 </code></pre></div>
 </div>
-<p>In the example above, <code>space_group</code> is a sample model category, and <code>name_h_m</code>
-is the parameter. For simplicity, only the last part (<code>category.parameter</code>) of
-the full access name will be shown in the tables below.</p>
+<p>In the example above, <code>space_group</code> is a structure category, and <code>name_h_m</code> is
+the parameter. For simplicity, only the last part (<code>category.parameter</code>) of the
+full access name will be shown in the tables below.</p>
 <p>In addition, the <abbr title="Crystallographic Information File.">CIF</abbr> names are also provided for each parameter, which are used
 to serialize the parameters in the <abbr title="Crystallographic Information File.">CIF</abbr> format.</p>
 <p>Tags defining the corresponding experiment type are also given before the table.</p>
-<h2 id="sample-model-parameters">Sample model parameters</h2>
-<p>Below is a list of parameters used to describe the sample model in
-EasyDiffraction.</p>
+<h2 id="structure-parameters">Structure parameters</h2>
+<p>Below is a list of parameters used to describe the structure in EasyDiffraction.</p>
 <h3 id="crystall-structure-parameters">Crystall structure parameters</h3>
 <p><a class="label-experiment" href="../glossary/#experiment-type-labels">pd-neut-cwl</a> <a class="label-experiment" href="../glossary/#experiment-type-labels">pd-neut-tof</a>
 <a class="label-experiment" href="../glossary/#experiment-type-labels">pd-xray</a> <a class="label-experiment" href="../glossary/#experiment-type-labels">sc-neut-cwl</a></p>

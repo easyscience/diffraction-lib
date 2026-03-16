@@ -11,38 +11,38 @@
 # %%
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Sample Models
+# ## Define Structures
 #
-# This section shows how to add sample models and modify their
+# This section shows how to add structures and modify their
 # parameters.
 #
-# ### Create Sample Model 1: LBCO
+# ### Create Structure 1: LBCO
 
 # %%
-model_1 = SampleModelFactory.create(name='lbco')
+structure_1 = StructureFactory.create(name='lbco')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model_1.space_group.name_h_m = 'P m -3 m'
-model_1.space_group.it_coordinate_system_code = '1'
+structure_1.space_group.name_h_m = 'P m -3 m'
+structure_1.space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-model_1.cell.length_a = 3.8909
+structure_1.cell.length_a = 3.8909
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model_1.atom_sites.add(
+structure_1.atom_sites.add(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -52,7 +52,7 @@ model_1.atom_sites.add(
     b_iso=0.2,
     occupancy=0.5,
 )
-model_1.atom_sites.add(
+structure_1.atom_sites.add(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -62,7 +62,7 @@ model_1.atom_sites.add(
     b_iso=0.2,
     occupancy=0.5,
 )
-model_1.atom_sites.add(
+structure_1.atom_sites.add(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -71,7 +71,7 @@ model_1.atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.2567,
 )
-model_1.atom_sites.add(
+structure_1.atom_sites.add(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -82,29 +82,29 @@ model_1.atom_sites.add(
 )
 
 # %% [markdown]
-# ### Create Sample Model 2: Si
+# ### Create Structure 2: Si
 
 # %%
-model_2 = SampleModelFactory.create(name='si')
+structure_2 = StructureFactory.create(name='si')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model_2.space_group.name_h_m = 'F d -3 m'
-model_2.space_group.it_coordinate_system_code = '2'
+structure_2.space_group.name_h_m = 'F d -3 m'
+structure_2.space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-model_2.cell.length_a = 5.43146
+structure_2.cell.length_a = 5.43146
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model_2.atom_sites.add(
+structure_2.atom_sites.add(
     label='Si',
     type_symbol='Si',
     fract_x=0.0,
@@ -118,7 +118,7 @@ model_2.atom_sites.add(
 # ## Define Experiment
 #
 # This section shows how to add experiments, configure their parameters,
-# and link the sample models defined in the previous step.
+# and link the structures defined in the previous step.
 #
 # #### Download Data
 
@@ -197,7 +197,7 @@ experiment.linked_phases.add(id='si', scale=0.2)
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage sample models, experiments, and
+# The project object is used to manage structures, experiments, and
 # analysis.
 #
 # #### Create Project
@@ -206,17 +206,17 @@ experiment.linked_phases.add(id='si', scale=0.2)
 project = Project()
 
 # %% [markdown]
-# #### Add Sample Models
+# #### Add Structures
 
 # %%
-project.sample_models.add(sample_model=model_1)
-project.sample_models.add(sample_model=model_2)
+project.structures.add(structure=structure_1)
+project.structures.add(structure=structure_2)
 
 # %% [markdown]
-# #### Show Sample Models
+# #### Show Structures
 
 # %%
-project.sample_models.show_names()
+project.structures.show_names()
 
 # %% [markdown]
 # #### Add Experiments
@@ -277,14 +277,14 @@ project.analysis.current_minimizer = 'lmfit (leastsq)'
 # %% [markdown]
 # #### Set Fitting Parameters
 #
-# Set sample model parameters to be optimized.
+# Set structure parameters to be optimized.
 
 # %%
-model_1.cell.length_a.free = True
-model_1.atom_sites['Co'].b_iso.free = True
-model_1.atom_sites['O'].b_iso.free = True
+structure_1.cell.length_a.free = True
+structure_1.atom_sites['Co'].b_iso.free = True
+structure_1.atom_sites['O'].b_iso.free = True
 
-model_2.cell.length_a.free = True
+structure_2.cell.length_a.free = True
 
 # %% [markdown]
 # Set experiment parameters to be optimized.
