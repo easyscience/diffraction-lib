@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.parameters import Parameter
-from easydiffraction.core.parameters import StringDescriptor
+from easydiffraction.core.variable import Parameter
+from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator

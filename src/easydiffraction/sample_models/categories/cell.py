@@ -3,7 +3,7 @@
 """Unit cell parameters category for sample models."""
 
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.parameters import Parameter
+from easydiffraction.core.variable import Parameter
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.crystallography import crystallography as ecr

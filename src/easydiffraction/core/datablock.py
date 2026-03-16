@@ -9,7 +9,7 @@ from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.collection import CollectionBase
 from easydiffraction.core.guard import GuardedBase
-from easydiffraction.core.parameters import Parameter
+from easydiffraction.core.variable import Parameter
 
 
 class DatablockItem(GuardedBase):

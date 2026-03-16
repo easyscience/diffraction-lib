@@ -14,9 +14,9 @@ import numpy as np
 from numpy.polynomial.chebyshev import chebval
 
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.parameters import NumericDescriptor
-from easydiffraction.core.parameters import Parameter
-from easydiffraction.core.parameters import StringDescriptor
+from easydiffraction.core.variable import NumericDescriptor
+from easydiffraction.core.variable import Parameter
+from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator

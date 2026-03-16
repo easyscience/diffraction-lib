@@ -8,7 +8,7 @@ an experiment configuration and handles CIF serialization via
 """
 
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.parameters import StringDescriptor
+from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.experiments.experiment.enums import BeamModeEnum

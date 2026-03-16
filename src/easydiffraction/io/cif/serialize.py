@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     from easydiffraction.core.category import CategoryCollection
     from easydiffraction.core.category import CategoryItem
-    from easydiffraction.core.parameters import GenericDescriptorBase
+    from easydiffraction.core.variable import GenericDescriptorBase
 
 
 def format_value(value) -> str:

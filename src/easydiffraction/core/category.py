@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from easydiffraction.core.collection import CollectionBase
 from easydiffraction.core.guard import GuardedBase
-from easydiffraction.core.parameters import GenericDescriptorBase
+from easydiffraction.core.variable import GenericDescriptorBase
 from easydiffraction.core.validation import checktype
 from easydiffraction.io.cif.serialize import category_collection_from_cif
 from easydiffraction.io.cif.serialize import category_collection_to_cif

@@ -6,14 +6,14 @@ import pytest
 
 
 def test_module_import():
-    import easydiffraction.core.parameters as MUT
+    import easydiffraction.core.variable as MUT
 
-    assert MUT.__name__ == 'easydiffraction.core.parameters'
+    assert MUT.__name__ == 'easydiffraction.core.variable'
 
 
 def test_string_descriptor_type_override_raises_type_error():
     # Creating a StringDescriptor with a NUMERIC spec should raise via Diagnostics
-    from easydiffraction.core.parameters import StringDescriptor
+    from easydiffraction.core.variable import StringDescriptor
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.validation import DataTypes
     from easydiffraction.io.cif.handler import CifHandler
@@ -28,7 +28,7 @@ def test_string_descriptor_type_override_raises_type_error():
 
 
 def test_numeric_descriptor_str_includes_units():
-    from easydiffraction.core.parameters import NumericDescriptor
+    from easydiffraction.core.variable import NumericDescriptor
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.io.cif.handler import CifHandler
 
@@ -43,7 +43,7 @@ def test_numeric_descriptor_str_includes_units():
 
 
 def test_parameter_string_repr_and_as_cif_and_flags():
-    from easydiffraction.core.parameters import Parameter
+    from easydiffraction.core.variable import Parameter
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.io.cif.handler import CifHandler
 
@@ -69,7 +69,7 @@ def test_parameter_string_repr_and_as_cif_and_flags():
 
 
 def test_parameter_uncertainty_must_be_non_negative():
-    from easydiffraction.core.parameters import Parameter
+    from easydiffraction.core.variable import Parameter
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.io.cif.handler import CifHandler
 
@@ -83,7 +83,7 @@ def test_parameter_uncertainty_must_be_non_negative():
 
 
 def test_parameter_fit_bounds_assign_and_read():
-    from easydiffraction.core.parameters import Parameter
+    from easydiffraction.core.variable import Parameter
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.io.cif.handler import CifHandler
 

@@ -7,7 +7,7 @@ import numpy as np
 def test_background_base_minimal_impl_and_collection_cif():
     from easydiffraction.core.category import CategoryItem
     from easydiffraction.core.collection import CollectionBase
-    from easydiffraction.core.parameters import Parameter
+    from easydiffraction.core.variable import Parameter
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.validation import DataTypes
     from easydiffraction.experiments.categories.background.base import BackgroundBase

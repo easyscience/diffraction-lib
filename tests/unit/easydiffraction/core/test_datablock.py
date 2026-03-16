@@ -5,7 +5,7 @@ def test_datablock_collection_add_and_filters_with_real_parameters():
     from easydiffraction.core.category import CategoryItem
     from easydiffraction.core.datablock import DatablockCollection
     from easydiffraction.core.datablock import DatablockItem
-    from easydiffraction.core.parameters import Parameter
+    from easydiffraction.core.variable import Parameter
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.io.cif.handler import CifHandler
 
