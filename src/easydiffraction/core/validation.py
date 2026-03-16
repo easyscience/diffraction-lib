@@ -20,9 +20,9 @@ from typeguard import typechecked
 from easydiffraction.core.diagnostic import Diagnostics
 from easydiffraction.utils.logging import log
 
-# ==============================================================
+# ======================================================================
 # Shared constants
-# ==============================================================
+# ======================================================================
 
 
 # TODO: MkDocs doesn't unpack types
@@ -30,6 +30,9 @@ class DataTypeHints:
     Numeric = int | float | np.integer | np.floating
     String = str
     Bool = bool
+
+
+# ======================================================================
 
 
 class DataTypes(Enum):
@@ -47,9 +50,9 @@ class DataTypes(Enum):
         return self.value
 
 
-# ==============================================================
+# ======================================================================
 # Runtime type checking decorator
-# ==============================================================
+# ======================================================================
 
 # Runtime type checking decorator for validating those methods
 # annotated with type hints, which are writable for the user, and
@@ -85,9 +88,9 @@ def checktype(func=None, *, context=None):
     return decorator(func)
 
 
-# ==============================================================
+# ======================================================================
 # Validation stages (enum/constant)
-# ==============================================================
+# ======================================================================
 
 
 class ValidationStage(Enum):
@@ -102,9 +105,9 @@ class ValidationStage(Enum):
         return self.name.lower()
 
 
-# ==============================================================
+# ======================================================================
 # Advanced runtime custom validators for Parameter types/content
-# ==============================================================
+# ======================================================================
 
 
 class ValidatorBase(ABC):
@@ -125,6 +128,9 @@ class ValidatorBase(ABC):
     ):
         """Return current if set, else default."""
         return current if current is not None else default
+
+
+# ======================================================================
 
 
 class TypeValidator(ValidatorBase):
@@ -178,6 +184,9 @@ class TypeValidator(ValidatorBase):
         return value
 
 
+# ======================================================================
+
+
 class RangeValidator(ValidatorBase):
     """Ensure a numeric value lies within [ge, le]."""
 
@@ -214,6 +223,9 @@ class RangeValidator(ValidatorBase):
             stage=ValidationStage.RANGE,
         )
         return value
+
+
+# ======================================================================
 
 
 class MembershipValidator(ValidatorBase):
@@ -255,6 +267,9 @@ class MembershipValidator(ValidatorBase):
         return value
 
 
+# ======================================================================
+
+
 class RegexValidator(ValidatorBase):
     """Ensure that a string matches a given regular expression."""
 
@@ -287,9 +302,9 @@ class RegexValidator(ValidatorBase):
         return value
 
 
-# ==============================================================
+# ======================================================================
 # Attribute specification holding metadata and validators
-# ==============================================================
+# ======================================================================
 
 
 class AttributeSpec:

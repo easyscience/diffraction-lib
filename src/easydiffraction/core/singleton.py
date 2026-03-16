@@ -12,6 +12,8 @@ from asteval import Interpreter
 
 T = TypeVar('T', bound='SingletonBase')
 
+# ======================================================================
+
 
 class SingletonBase:
     """Base class to implement Singleton pattern.
@@ -28,6 +30,9 @@ class SingletonBase:
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance
+
+
+# ======================================================================
 
 
 class UidMapHandler(SingletonBase):
@@ -69,6 +74,9 @@ class UidMapHandler(SingletonBase):
         self._uid_map[new_uid] = self._uid_map.pop(old_uid)
 
     # TODO: Implement removing from the UID map
+
+
+# ======================================================================
 
 
 # TODO: Implement changing atrr '.constrained' back to False

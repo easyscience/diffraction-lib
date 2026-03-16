@@ -9,9 +9,9 @@ They are composed into concrete peak classes elsewhere via multiple
 inheritance.
 """
 
-from easydiffraction.core.variable import Parameter
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.variable import Parameter
 from easydiffraction.io.cif.handler import CifHandler
 
 

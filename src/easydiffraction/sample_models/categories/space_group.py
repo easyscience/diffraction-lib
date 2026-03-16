@@ -9,9 +9,9 @@ from cryspy.A_functions_base.function_2_space_group import (
 from cryspy.A_functions_base.function_2_space_group import get_it_number_by_name_hm_short
 
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
+from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
 
 

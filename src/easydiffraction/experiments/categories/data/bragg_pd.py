@@ -7,12 +7,12 @@ import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.variable import NumericDescriptor
-from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
+from easydiffraction.core.variable import NumericDescriptor
+from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d

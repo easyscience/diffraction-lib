@@ -7,11 +7,11 @@ import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.variable import NumericDescriptor
-from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
+from easydiffraction.core.variable import NumericDescriptor
+from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import sin_theta_over_lambda_to_d_spacing

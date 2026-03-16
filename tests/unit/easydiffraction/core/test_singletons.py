@@ -5,7 +5,7 @@ import pytest
 
 
 def test_uid_map_handler_rejects_non_descriptor():
-    from easydiffraction.core.singletons import UidMapHandler
+    from easydiffraction.core.singleton import UidMapHandler
 
     h = UidMapHandler.get()
     with pytest.raises(TypeError):

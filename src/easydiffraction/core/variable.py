@@ -12,7 +12,7 @@ import numpy as np
 
 from easydiffraction.core.diagnostic import Diagnostics
 from easydiffraction.core.guard import GuardedBase
-from easydiffraction.core.singletons import UidMapHandler
+from easydiffraction.core.singleton import UidMapHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
@@ -22,6 +22,8 @@ from easydiffraction.io.cif.serialize import param_to_cif
 
 if TYPE_CHECKING:
     from easydiffraction.io.cif.handler import CifHandler
+
+# ======================================================================
 
 
 class GenericDescriptorBase(GuardedBase):
@@ -186,6 +188,9 @@ class GenericDescriptorBase(GuardedBase):
         param_from_cif(self, block, idx)
 
 
+# ======================================================================
+
+
 class GenericStringDescriptor(GenericDescriptorBase):
     _value_type = DataTypes.STRING
 
@@ -194,6 +199,9 @@ class GenericStringDescriptor(GenericDescriptorBase):
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
+
+
+# ======================================================================
 
 
 class GenericNumericDescriptor(GenericDescriptorBase):
@@ -219,6 +227,9 @@ class GenericNumericDescriptor(GenericDescriptorBase):
     def units(self) -> str:
         """Units associated with the numeric value, if any."""
         return self._units
+
+
+# ======================================================================
 
 
 class GenericParameter(GenericNumericDescriptor):
@@ -354,6 +365,9 @@ class GenericParameter(GenericNumericDescriptor):
         )
 
 
+# ======================================================================
+
+
 class StringDescriptor(GenericStringDescriptor):
     def __init__(
         self,
@@ -372,6 +386,9 @@ class StringDescriptor(GenericStringDescriptor):
         self._cif_handler.attach(self)
 
 
+# ======================================================================
+
+
 class NumericDescriptor(GenericNumericDescriptor):
     def __init__(
         self,
@@ -388,6 +405,9 @@ class NumericDescriptor(GenericNumericDescriptor):
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
         self._cif_handler.attach(self)
+
+
+# ======================================================================
 
 
 class Parameter(GenericParameter):

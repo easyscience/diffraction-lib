@@ -8,9 +8,9 @@ an experiment configuration and handles CIF serialization via
 """
 
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
+from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.experiments.experiment.enums import BeamModeEnum
 from easydiffraction.experiments.experiment.enums import RadiationProbeEnum
 from easydiffraction.experiments.experiment.enums import SampleFormEnum

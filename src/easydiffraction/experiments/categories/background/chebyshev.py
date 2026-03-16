@@ -14,12 +14,12 @@ import numpy as np
 from numpy.polynomial.chebyshev import chebval
 
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.variable import NumericDescriptor
-from easydiffraction.core.variable import Parameter
-from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
+from easydiffraction.core.variable import NumericDescriptor
+from easydiffraction.core.variable import Parameter
+from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.experiments.categories.background.base import BackgroundBase
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.logging import console

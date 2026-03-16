@@ -13,10 +13,10 @@ from easydiffraction.analysis.categories.constraints import Constraints
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.core.singletons import ConstraintsHandler
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.utils.logging import console

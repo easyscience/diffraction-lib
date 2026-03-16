@@ -80,6 +80,9 @@ class DatablockItem(GuardedBase):
         return datablock_item_to_cif(self)
 
 
+# ======================================================================
+
+
 class DatablockCollection(CollectionBase):
     """Handles top-level category collections (e.g. SampleModels,
     Experiments).
