@@ -69,7 +69,7 @@ def project_with_data(
     project = ed.Project()
 
     # Step 2: Define Structure manually
-    project.structures.add(name='si')
+    project.structures.add_from_scratch(name='si')
     structure = project.structures['si']
 
     structure.space_group.name_h_m = 'F d -3 m'
@@ -77,7 +77,7 @@ def project_with_data(
 
     structure.cell.length_a = 5.43146
 
-    structure.atom_sites.add(
+    structure.atom_sites.add_from_scratch(
         label='Si',
         type_symbol='Si',
         fract_x=0.125,
@@ -88,12 +88,12 @@ def project_with_data(
     )
 
     # Step 3: Add experiment from modified CIF file
-    project.experiments.add(cif_path=prepared_cif_path)
+    project.experiments.add_from_cif_path(prepared_cif_path)
     experiment = project.experiments['reduced_tof']
 
     # Step 4: Configure experiment
     # Link phase
-    experiment.linked_phases.add(id='si', scale=0.8)
+    experiment.linked_phases.add_from_scratch(id='si', scale=0.8)
 
     # Instrument setup
     experiment.instrument.setup_twotheta_bank = 90.0
@@ -109,8 +109,8 @@ def project_with_data(
     experiment.peak.asym_alpha_1 = 0.26
 
     # Excluded regions
-    experiment.excluded_regions.add(id='1', start=0, end=10000)
-    experiment.excluded_regions.add(id='2', start=70000, end=200000)
+    experiment.excluded_regions.add_from_scratch(id='1', start=0, end=10000)
+    experiment.excluded_regions.add_from_scratch(id='2', start=70000, end=200000)
 
     # Background points
     background_points = [
@@ -124,7 +124,7 @@ def project_with_data(
         ('9', 70000, 0.6),
     ]
     for id_, x, y in background_points:
-        experiment.background.add(id=id_, x=x, y=y)
+        experiment.background.add_from_scratch(id=id_, x=x, y=y)
 
     return project
 

@@ -15,11 +15,11 @@ TEMP_DIR = tempfile.gettempdir()
 
 def test_single_fit_neutron_pd_tof_si() -> None:
     # Set structure
-    model = StructureFactory.create(name='si')
+    model = StructureFactory.from_scratch(name='si')
     model.space_group.name_h_m = 'F d -3 m'
     model.space_group.it_coordinate_system_code = '2'
     model.cell.length_a = 5.4315
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='Si',
         type_symbol='Si',
         fract_x=0.125,
@@ -31,7 +31,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
     # Set experiment
     data_path = download_data(id=7, destination=TEMP_DIR)
-    expt = ExperimentFactory.create(
+    expt = ExperimentFactory.from_data_path(
         name='sepd',
         data_path=data_path,
         beam_mode='time-of-flight',
@@ -48,14 +48,14 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     expt.peak.broad_mix_beta_1 = 0.00946
     expt.peak.asym_alpha_0 = 0.0
     expt.peak.asym_alpha_1 = 0.5971
-    expt.linked_phases.add(id='si', scale=14.92)
+    expt.linked_phases.add_from_scratch(id='si', scale=14.92)
     for x in range(0, 35000, 5000):
-        expt.background.add(id=str(x), x=x, y=200)
+        expt.background.add_from_scratch(id=str(x), x=x, y=200)
 
     # Create project
     project = Project()
-    project.structures.add(structure=model)
-    project.experiments.add(experiment=expt)
+    project.structures.add(model)
+    project.experiments.add(expt)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
@@ -82,11 +82,11 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
 def test_single_fit_neutron_pd_tof_ncaf() -> None:
     # Set structure
-    model = StructureFactory.create(name='ncaf')
+    model = StructureFactory.from_scratch(name='ncaf')
     model.space_group.name_h_m = 'I 21 3'
     model.space_group.it_coordinate_system_code = '1'
     model.cell.length_a = 10.250256
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='Ca',
         type_symbol='Ca',
         fract_x=0.4661,
@@ -95,7 +95,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         wyckoff_letter='b',
         b_iso=0.9,
     )
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='Al',
         type_symbol='Al',
         fract_x=0.25171,
@@ -104,7 +104,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         wyckoff_letter='a',
         b_iso=0.66,
     )
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='Na',
         type_symbol='Na',
         fract_x=0.08481,
@@ -113,7 +113,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         wyckoff_letter='a',
         b_iso=1.9,
     )
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='F1',
         type_symbol='F',
         fract_x=0.1375,
@@ -122,7 +122,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         wyckoff_letter='c',
         b_iso=0.9,
     )
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='F2',
         type_symbol='F',
         fract_x=0.3626,
@@ -131,7 +131,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         wyckoff_letter='c',
         b_iso=1.28,
     )
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='F3',
         type_symbol='F',
         fract_x=0.4612,
@@ -143,13 +143,13 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
 
     # Set experiment
     data_path = download_data(id=9, destination=TEMP_DIR)
-    expt = ExperimentFactory.create(
+    expt = ExperimentFactory.from_data_path(
         name='wish',
         data_path=data_path,
         beam_mode='time-of-flight',
     )
-    expt.excluded_regions.add(id='1', start=0, end=9000)
-    expt.excluded_regions.add(id='2', start=100010, end=200000)
+    expt.excluded_regions.add_from_scratch(id='1', start=0, end=9000)
+    expt.excluded_regions.add_from_scratch(id='2', start=100010, end=200000)
     expt.instrument.setup_twotheta_bank = 152.827
     expt.instrument.calib_d_to_tof_offset = -13.7123
     expt.instrument.calib_d_to_tof_linear = 20773.1
@@ -162,7 +162,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     expt.peak.broad_mix_beta_1 = 0.0099
     expt.peak.asym_alpha_0 = -0.009
     expt.peak.asym_alpha_1 = 0.1085
-    expt.linked_phases.add(id='ncaf', scale=1.0928)
+    expt.linked_phases.add_from_scratch(id='ncaf', scale=1.0928)
     for x, y in [
         (9162, 465),
         (11136, 593),
@@ -193,12 +193,12 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         (91958, 268),
         (102712, 262),
     ]:
-        expt.background.add(id=str(x), x=x, y=y)
+        expt.background.add_from_scratch(id=str(x), x=x, y=y)
 
     # Create project
     project = Project()
-    project.structures.add(structure=model)
-    project.experiments.add(experiment=expt)
+    project.structures.add(model)
+    project.experiments.add(expt)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'

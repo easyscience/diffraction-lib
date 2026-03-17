@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Base classes for experiment datablock items."""
 
 from __future__ import annotations
 
@@ -29,9 +30,8 @@ if TYPE_CHECKING:
 
 
 class ExperimentBase(DatablockItem):
-    """Base class for all experiments with only core attributes.
-
-    Wraps experiment type and instrument.
+    """Base class for all experiment datablock items with only core
+    attributes.
     """
 
     def __init__(
@@ -43,11 +43,6 @@ class ExperimentBase(DatablockItem):
         super().__init__()
         self._name = name
         self._type = type
-        # TODO: Should return default calculator based on experiment
-        #  type
-        from easydiffraction.analysis.calculators.factory import CalculatorFactory
-
-        self._calculator = CalculatorFactory.create_calculator('cryspy')
         self._identity.datablock_entry_name = lambda: self.name
 
     @property
@@ -70,11 +65,6 @@ class ExperimentBase(DatablockItem):
         mode).
         """
         return self._type
-
-    @property
-    def calculator(self):
-        """Calculator engine used for pattern calculations."""
-        return self._calculator
 
     @property
     def as_cif(self) -> str:

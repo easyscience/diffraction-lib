@@ -7,11 +7,38 @@ project = ed.Project()
 
 # %%
 model_path = ed.download_data(id=1, destination='data')
-project.sample_models.add(cif_path=model_path)
+project.structures.add_from_cif_path(cif_path=model_path)
+
+#project.structures.add_from_scratch(name='qwe')
+#project.structures['qwe'] = 6
+#print(project.structures['qwe'].name.value)
+#struct = project.structures['qwe']
+#struct.cell = "cell"
+#print(struct.cell)
+
+#exit()
+
+
 
 # %%
 expt_path = ed.download_data(id=2, destination='data')
-project.experiments.add(cif_path=expt_path)
+project.experiments.add_from_cif_path(cif_path=expt_path)
+#project.experiments.add_from_cif_path(cif_path=77)
+
+#expt = ed.ExperimentFactory.from_scratch(name='expt', scattering_type='total2')
+#print(expt)
+exit()
+
+print('\nStructure:')
+print(project.structures['lbco'])
+
+print('\nExperiment:')
+print(project.experiments['hrpt'])
+
+
+exit()
+
+
 
 # %%
 #sample = project.sample_models.get(id=1)

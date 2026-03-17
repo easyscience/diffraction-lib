@@ -29,7 +29,7 @@ from easydiffraction import download_data
 # #### Create Structure
 
 # %%
-structure = StructureFactory.create(name='pbso4')
+structure = StructureFactory.from_scratch(name='pbso4')
 
 # %% [markdown]
 # #### Set Space Group
@@ -49,7 +49,7 @@ structure.cell.length_c = 6.95
 # #### Set Atom Sites
 
 # %%
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Pb',
     type_symbol='Pb',
     fract_x=0.1876,
@@ -58,7 +58,7 @@ structure.atom_sites.add(
     wyckoff_letter='c',
     b_iso=1.37,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='S',
     type_symbol='S',
     fract_x=0.0654,
@@ -67,7 +67,7 @@ structure.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.3777,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='O1',
     type_symbol='O',
     fract_x=0.9082,
@@ -76,7 +76,7 @@ structure.atom_sites.add(
     wyckoff_letter='c',
     b_iso=1.9764,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='O2',
     type_symbol='O',
     fract_x=0.1935,
@@ -85,7 +85,7 @@ structure.atom_sites.add(
     wyckoff_letter='c',
     b_iso=1.4456,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='O3',
     type_symbol='O',
     fract_x=0.0811,
@@ -113,7 +113,7 @@ data_path1 = download_data(id=13, destination='data')
 # #### Create Experiment
 
 # %%
-expt1 = ExperimentFactory.create(
+expt1 = ExperimentFactory.from_data_path(
     name='npd',
     data_path=data_path1,
     radiation_probe='neutron',
@@ -159,13 +159,13 @@ for id, x, y in [
     ('7', 120.0, 244.4525),
     ('8', 153.0, 226.0595),
 ]:
-    expt1.background.add(id=id, x=x, y=y)
+    expt1.background.add_from_scratch(id=id, x=x, y=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt1.linked_phases.add(id='pbso4', scale=1.5)
+expt1.linked_phases.add_from_scratch(id='pbso4', scale=1.5)
 
 # %% [markdown]
 # ### Experiment 2: xrd
@@ -179,7 +179,7 @@ data_path2 = download_data(id=16, destination='data')
 # #### Create Experiment
 
 # %%
-expt2 = ExperimentFactory.create(
+expt2 = ExperimentFactory.from_data_path(
     name='xrd',
     data_path=data_path2,
     radiation_probe='xray',
@@ -223,13 +223,13 @@ for id, x, y in [
     ('5', 4, 54.552),
     ('6', 5, -20.661),
 ]:
-    expt2.background.add(id=id, order=x, coef=y)
+    expt2.background.add_from_scratch(id=id, order=x, coef=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt2.linked_phases.add(id='pbso4', scale=0.001)
+expt2.linked_phases.add_from_scratch(id='pbso4', scale=0.001)
 
 # %% [markdown]
 # ## Define Project
@@ -246,14 +246,14 @@ project = Project()
 # #### Add Structure
 
 # %%
-project.structures.add(structure=structure)
+project.structures.add(structure)
 
 # %% [markdown]
 # #### Add Experiments
 
 # %%
-project.experiments.add(experiment=expt1)
-project.experiments.add(experiment=expt2)
+project.experiments.add(expt1)
+project.experiments.add(expt2)
 
 # %% [markdown]
 # ## Perform Analysis

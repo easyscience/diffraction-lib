@@ -16,11 +16,11 @@ def test_single_fit_neut_sc_cwl_tbti() -> None:
 
     # Set structure
     model_path = ed.download_data(id=20, destination=TEMP_DIR)
-    project.structures.add(cif_path=model_path)
+    project.structures.add_from_cif_path(model_path)
 
     # Set experiment
     data_path = ed.download_data(id=19, destination=TEMP_DIR)
-    project.experiments.add(
+    project.experiments.add_from_data_path(
         name='heidi',
         data_path=data_path,
         sample_form='single crystal',
@@ -54,11 +54,11 @@ def test_single_fit_neut_sc_tof_taurine() -> None:
 
     # Set structure
     model_path = ed.download_data(id=21, destination=TEMP_DIR)
-    project.structures.add(cif_path=model_path)
+    project.structures.add_from_cif_path(model_path)
 
     # Set experiment
     data_path = ed.download_data(id=22, destination=TEMP_DIR)
-    project.experiments.add(
+    project.experiments.add_from_data_path(
         name='senju',
         data_path=data_path,
         sample_form='single crystal',

@@ -11,7 +11,7 @@ def test_alias_creation_and_collection():
     a.param_uid='p1'
     assert a.label.value == 'x'
     coll = Aliases()
-    coll.add(label='x', param_uid='p1')
+    coll.add_from_scratch(label='x', param_uid='p1')
     # Collections index by entry name; check via names or direct indexing
     assert 'x' in coll.names
     assert coll['x'].param_uid.value == 'p1'

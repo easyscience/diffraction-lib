@@ -64,7 +64,7 @@ reference it later.
 ```python
 # Add a structure with default parameters
 # The structure name is used to reference it later.
-project.structures.add(name='nacl')
+project.structures.add_from_scratch(name='nacl')
 ```
 
 The `add` method creates a new structure with default parameters. You can then

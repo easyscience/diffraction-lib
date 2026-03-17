@@ -40,7 +40,7 @@ project = ed.Project()
 structure_path = ed.download_data(id=1, destination='data')
 
 # %%
-project.structures.add(cif_path=structure_path)
+project.structures.add_from_cif_path(structure_path)
 
 # %% [markdown]
 # ## Step 3: Define Experiment
@@ -50,7 +50,7 @@ project.structures.add(cif_path=structure_path)
 expt_path = ed.download_data(id=2, destination='data')
 
 # %%
-project.experiments.add(cif_path=expt_path)
+project.experiments.add_from_cif_path(expt_path)
 
 # %% [markdown]
 # ## Step 4: Perform Analysis

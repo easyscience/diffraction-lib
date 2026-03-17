@@ -17,12 +17,12 @@ TEMP_DIR = tempfile.gettempdir()
 @pytest.mark.fast
 def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     # Set structure
-    model = StructureFactory.create(name='pbso4')
+    model = StructureFactory.from_scratch(name='pbso4')
     model.space_group.name_h_m = 'P n m a'
     model.cell.length_a = 8.47
     model.cell.length_b = 5.39
     model.cell.length_c = 6.95
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='Pb',
         type_symbol='Pb',
         fract_x=0.1876,
@@ -31,7 +31,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=1.37,
     )
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='S',
         type_symbol='S',
         fract_x=0.0654,
@@ -40,7 +40,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=0.3777,
     )
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='O1',
         type_symbol='O',
         fract_x=0.9082,
@@ -49,7 +49,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=1.9764,
     )
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='O2',
         type_symbol='O',
         fract_x=0.1935,
@@ -58,7 +58,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=1.4456,
     )
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='O3',
         type_symbol='O',
         fract_x=0.0811,
@@ -70,7 +70,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
 
     # Set experiments
     data_path = download_data(id=14, destination=TEMP_DIR)
-    expt1 = ExperimentFactory.create(name='npd1', data_path=data_path)
+    expt1 = ExperimentFactory.from_data_path(name='npd1', data_path=data_path)
     expt1.instrument.setup_wavelength = 1.91
     expt1.instrument.calib_twotheta_offset = -0.1406
     expt1.peak.broad_gauss_u = 0.139
@@ -78,7 +78,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt1.peak.broad_gauss_w = 0.386
     expt1.peak.broad_lorentz_x = 0
     expt1.peak.broad_lorentz_y = 0.0878
-    expt1.linked_phases.add(id='pbso4', scale=1.46)
+    expt1.linked_phases.add_from_scratch(id='pbso4', scale=1.46)
     expt1.background_type = 'line-segment'
     for id, x, y in [
         ('1', 11.0, 206.1624),
@@ -90,10 +90,10 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         ('7', 120.0, 244.4525),
         ('8', 153.0, 226.0595),
     ]:
-        expt1.background.add(id=id, x=x, y=y)
+        expt1.background.add_from_scratch(id=id, x=x, y=y)
 
     data_path = download_data(id=15, destination=TEMP_DIR)
-    expt2 = ExperimentFactory.create(name='npd2', data_path=data_path)
+    expt2 = ExperimentFactory.from_data_path(name='npd2', data_path=data_path)
     expt2.instrument.setup_wavelength = 1.91
     expt2.instrument.calib_twotheta_offset = -0.1406
     expt2.peak.broad_gauss_u = 0.139
@@ -101,7 +101,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt2.peak.broad_gauss_w = 0.386
     expt2.peak.broad_lorentz_x = 0
     expt2.peak.broad_lorentz_y = 0.0878
-    expt2.linked_phases.add(id='pbso4', scale=1.46)
+    expt2.linked_phases.add_from_scratch(id='pbso4', scale=1.46)
     expt2.background_type = 'line-segment'
     for id, x, y in [
         ('1', 11.0, 206.1624),
@@ -113,13 +113,13 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         ('7', 120.0, 244.4525),
         ('8', 153.0, 226.0595),
     ]:
-        expt2.background.add(id=id, x=x, y=y)
+        expt2.background.add_from_scratch(id=id, x=x, y=y)
 
     # Create project
     project = Project()
-    project.structures.add(structure=model)
-    project.experiments.add(experiment=expt1)
-    project.experiments.add(experiment=expt2)
+    project.structures.add(model)
+    project.experiments.add(expt1)
+    project.experiments.add(expt2)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
@@ -145,12 +145,12 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
 @pytest.mark.fast
 def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Set structure
-    model = StructureFactory.create(name='pbso4')
+    model = StructureFactory.from_scratch(name='pbso4')
     model.space_group.name_h_m = 'P n m a'
     model.cell.length_a = 8.47
     model.cell.length_b = 5.39
     model.cell.length_c = 6.95
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='Pb',
         type_symbol='Pb',
         fract_x=0.1876,
@@ -159,7 +159,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=1.37,
     )
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='S',
         type_symbol='S',
         fract_x=0.0654,
@@ -168,7 +168,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=0.3777,
     )
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='O1',
         type_symbol='O',
         fract_x=0.9082,
@@ -177,7 +177,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=1.9764,
     )
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='O2',
         type_symbol='O',
         fract_x=0.1935,
@@ -186,7 +186,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         wyckoff_letter='c',
         b_iso=1.4456,
     )
-    model.atom_sites.add(
+    model.atom_sites.add_from_scratch(
         label='O3',
         type_symbol='O',
         fract_x=0.0811,
@@ -198,7 +198,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
 
     # Set experiments
     data_path = download_data(id=13, destination=TEMP_DIR)
-    expt1 = ExperimentFactory.create(
+    expt1 = ExperimentFactory.from_data_path(
         name='npd',
         data_path=data_path,
         radiation_probe='neutron',
@@ -210,7 +210,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt1.peak.broad_gauss_w = 0.386
     expt1.peak.broad_lorentz_x = 0
     expt1.peak.broad_lorentz_y = 0.088
-    expt1.linked_phases.add(id='pbso4', scale=1.5)
+    expt1.linked_phases.add_from_scratch(id='pbso4', scale=1.5)
     for id, x, y in [
         ('1', 11.0, 206.1624),
         ('2', 15.0, 194.75),
@@ -221,10 +221,10 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         ('7', 120.0, 244.4525),
         ('8', 153.0, 226.0595),
     ]:
-        expt1.background.add(id=id, x=x, y=y)
+        expt1.background.add_from_scratch(id=id, x=x, y=y)
 
     data_path = download_data(id=16, destination=TEMP_DIR)
-    expt2 = ExperimentFactory.create(
+    expt2 = ExperimentFactory.from_data_path(
         name='xrd',
         data_path=data_path,
         radiation_probe='xray',
@@ -236,7 +236,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt2.peak.broad_gauss_w = 0.021272
     expt2.peak.broad_lorentz_x = 0
     expt2.peak.broad_lorentz_y = 0.057691
-    expt2.linked_phases.add(id='pbso4', scale=0.001)
+    expt2.linked_phases.add_from_scratch(id='pbso4', scale=0.001)
     for id, x, y in [
         ('1', 11.0, 141.8516),
         ('2', 13.0, 102.8838),
@@ -247,13 +247,13 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         ('7', 90.0, 113.7473),
         ('8', 110.0, 132.4643),
     ]:
-        expt2.background.add(id=id, x=x, y=y)
+        expt2.background.add_from_scratch(id=id, x=x, y=y)
 
     # Create project
     project = Project()
-    project.structures.add(structure=model)
-    project.experiments.add(experiment=expt1)
-    project.experiments.add(experiment=expt2)
+    project.structures.add(model)
+    project.experiments.add(expt1)
+    project.experiments.add(expt2)
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'

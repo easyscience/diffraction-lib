@@ -16,9 +16,17 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class SpaceGroup(CategoryItem):
-    """Space group with Hermann–Mauguin symbol and IT code."""
+    """Space group with Hermann–Mauguin symbol and IT coordinate system
+    code.
+
+    Holds the space-group symbol (``name_h_m``) and the International
+    Tables coordinate-system qualifier (``it_coordinate_system_code``).
+    Changing the symbol automatically resets the coordinate-system code
+    to the first allowed value for the new group.
+    """
 
     def __init__(self) -> None:
+        """Initialise the space group with default values."""
         super().__init__()
 
         self._name_h_m = StringDescriptor(
@@ -65,18 +73,30 @@ class SpaceGroup(CategoryItem):
     #  Private helper methods
     # ------------------------------------------------------------------
 
-    def _reset_it_coordinate_system_code(self):
-        """Reset the IT coordinate system code."""
+    def _reset_it_coordinate_system_code(self) -> None:
+        """Reset the IT coordinate system code to the default for the
+        current group.
+        """
         self._it_coordinate_system_code.value = self._it_coordinate_system_code_default_value
 
     @property
-    def _name_h_m_allowed_values(self):
-        """Allowed values for Hermann-Mauguin symbol."""
+    def _name_h_m_allowed_values(self) -> list[str]:
+        """Return the list of recognised Hermann–Mauguin short symbols.
+
+        Returns:
+            list[str]: All short H-M symbols known to *cryspy*.
+        """
         return ACCESIBLE_NAME_HM_SHORT
 
     @property
-    def _it_coordinate_system_code_allowed_values(self):
-        """Allowed values for IT coordinate system code."""
+    def _it_coordinate_system_code_allowed_values(self) -> list[str]:
+        """Return allowed IT coordinate system codes for the current
+        group.
+
+        Returns:
+            list[str]: Coordinate-system codes, or ``['']`` when none
+                are defined.
+        """
         name = self.name_h_m.value
         it_number = get_it_number_by_name_hm_short(name)
         codes = get_it_coordinate_system_codes_by_it_number(it_number)
@@ -84,8 +104,12 @@ class SpaceGroup(CategoryItem):
         return codes if codes else ['']
 
     @property
-    def _it_coordinate_system_code_default_value(self):
-        """Default value for IT coordinate system code."""
+    def _it_coordinate_system_code_default_value(self) -> str:
+        """Return the default IT coordinate system code.
+
+        Returns:
+            str: First element of the allowed codes list.
+        """
         return self._it_coordinate_system_code_allowed_values[0]
 
     # ------------------------------------------------------------------
@@ -93,18 +117,47 @@ class SpaceGroup(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def name_h_m(self):
+    def name_h_m(self) -> StringDescriptor:
+        """Hermann–Mauguin symbol of the space group.
+
+        Returns:
+            StringDescriptor: Descriptor holding the H-M symbol.
+        """
         return self._name_h_m
 
     @name_h_m.setter
-    def name_h_m(self, value):
+    def name_h_m(
+        self,
+        value: str,
+    ) -> None:
+        """Set the Hermann–Mauguin symbol and reset the coordinate-
+        system code.
+
+        Args:
+            value (str): New H-M symbol (must be a recognised short
+                symbol).
+        """
         self._name_h_m.value = value
         self._reset_it_coordinate_system_code()
 
     @property
-    def it_coordinate_system_code(self):
+    def it_coordinate_system_code(self) -> StringDescriptor:
+        """International Tables coordinate-system code.
+
+        Returns:
+            StringDescriptor: Descriptor holding the IT code.
+        """
         return self._it_coordinate_system_code
 
     @it_coordinate_system_code.setter
-    def it_coordinate_system_code(self, value):
+    def it_coordinate_system_code(
+        self,
+        value: str,
+    ) -> None:
+        """Set the IT coordinate-system code.
+
+        Args:
+            value (str): New coordinate-system code (must be allowed for
+                the current space group).
+        """
         self._it_coordinate_system_code.value = value

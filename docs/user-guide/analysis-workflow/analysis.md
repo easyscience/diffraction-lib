@@ -269,21 +269,21 @@ An example of setting aliases for parameters in a structure:
 
 ```python
 # Set aliases for the atomic displacement parameters
-project.analysis.aliases.add(
+project.analysis.aliases.add_from_scratch(
     label='biso_La',
     param_uid=project.structures['lbco'].atom_sites['La'].b_iso.uid,
 )
-project.analysis.aliases.add(
+project.analysis.aliases.add_from_scratch(
     label='biso_Ba',
     param_uid=project.structures['lbco'].atom_sites['Ba'].b_iso.uid,
 )
 
 # Set aliases for the occupancies of the atom sites
-project.analysis.aliases.add(
+project.analysis.aliases.add_from_scratch(
     label='occ_La',
     param_uid=project.structures['lbco'].atom_sites['La'].occupancy.uid,
 )
-project.analysis.aliases.add(
+project.analysis.aliases.add_from_scratch(
     label='occ_Ba',
     param_uid=project.structures['lbco'].atom_sites['Ba'].occupancy.uid,
 )
@@ -300,12 +300,12 @@ other aliases.
 An example of setting constraints for the aliases defined above:
 
 ```python
-project.analysis.constraints.add(
+project.analysis.constraints.add_from_scratch(
     lhs_alias='biso_Ba',
     rhs_expr='biso_La',
 )
 
-project.analysis.constraints.add(
+project.analysis.constraints.add_from_scratch(
     lhs_alias='occ_Ba',
     rhs_expr='1 - occ_La',
 )

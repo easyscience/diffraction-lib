@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Collection of structure data blocks."""
 
 from typeguard import typechecked
 
@@ -7,72 +8,83 @@ from easydiffraction.core.datablock import DatablockCollection
 from easydiffraction.datablocks.structure.item.base import Structure
 from easydiffraction.datablocks.structure.item.factory import StructureFactory
 from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 
 
 class Structures(DatablockCollection):
-    """Collection manager for multiple Structure instances."""
+    """Ordered collection of :class:`Structure` instances.
+
+    Provides convenience ``add_from_*`` methods that mirror the
+    :class:`StructureFactory` classmethods plus a bare :meth:`add` for
+    inserting pre-built structures.
+    """
 
     def __init__(self) -> None:
+        """Initialise an empty structures collection."""
         super().__init__(item_type=Structure)
 
-    # --------------------
-    # Add / Remove methods
-    # --------------------
+    # ------------------------------------------------------------------
+    # Public methods
+    # ------------------------------------------------------------------
 
-    # TODO: Move to DatablockCollection?
-    # TODO: Disallow args and only allow kwargs?
-    def add(self, **kwargs):
-        structure = kwargs.pop('structure', None)
+    # TODO: Make abstract in DatablockCollection?
+    @typechecked
+    def add_from_scratch(
+        self,
+        *,
+        name: str,
+    ) -> None:
+        """Create a minimal structure and add it to the collection.
 
-        if structure is None:
-            structure = StructureFactory.create(**kwargs)
-
-        self._add(structure)
-
-    # @typechecked
-    # def add_from_cif_path(self, cif_path: str) -> None:
-    #    """Create and add a model from a CIF file path.#
-    #
-    #    Args:
-    #        cif_path: Path to a CIF file.
-    #    """
-    #    structure = StructureFactory.create(cif_path=cif_path)
-    #    self.add(structure)
-
-    # @typechecked
-    # def add_from_cif_str(self, cif_str: str) -> None:
-    #    """Create and add a model from CIF content (string).
-    #
-    #    Args:
-    #        cif_str: CIF file content.
-    #    """
-    #    structure = StructureFactory.create(cif_str=cif_str)
-    #    self.add(structure)
-
-    # @typechecked
-    # def add_minimal(self, name: str) -> None:
-    #    """Create and add a minimal model (defaults, no atoms).
-    #
-    #    Args:
-    #        name: Identifier to assign to the new model.
-    #    """
-    #    structure = StructureFactory.create(name=name)
-    #    self.add(structure)
+        Args:
+            name (str): Identifier for the new structure.
+        """
+        structure = StructureFactory.from_scratch(name=name)
+        self.add(structure)
 
     # TODO: Move to DatablockCollection?
     @typechecked
-    def remove(self, name: str) -> None:
-        """Remove a structure by its ID.
+    def add_from_cif_str(
+        self,
+        cif_str: str,
+    ) -> None:
+        """Create a structure from CIF content and add it.
 
         Args:
-            name: ID of the structure to remove.
+            cif_str (str): CIF file content as a string.
+        """
+        structure = StructureFactory.from_cif_str(cif_str)
+        self.add(structure)
+
+    # TODO: Move to DatablockCollection?
+    @typechecked
+    def add_from_cif_path(
+        self,
+        cif_path: str,
+    ) -> None:
+        """Create a structure from a CIF file and add it.
+
+        Args:
+            cif_path (str): Filesystem path to a CIF file.
+        """
+        structure = StructureFactory.from_cif_path(cif_path)
+        self.add(structure)
+
+    # TODO: Move to DatablockCollection?
+    @typechecked
+    def remove(
+        self,
+        name: str,
+    ) -> None:
+        """Remove a structure by its name.
+
+        Args:
+            name (str): Name of the structure to remove.
         """
         if name in self:
             del self[name]
-
-    # ------------
-    # Show methods
-    # ------------
+        else:
+            log.warning(f'Structure {name} not found in collection.')
 
     # TODO: Move to DatablockCollection?
     def show_names(self) -> None:

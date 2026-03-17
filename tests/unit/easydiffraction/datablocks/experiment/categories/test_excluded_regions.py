@@ -38,7 +38,7 @@ def test_excluded_regions_add_updates_datastore_and_cif():
     # stitch in a parent with data
     object.__setattr__(coll, '_parent', SimpleNamespace(data=ds))
 
-    coll.add(start=1.0, end=2.0)
+    coll.add_from_scratch(start=1.0, end=2.0)
     # Call _update() to apply exclusions
     coll._update()
 

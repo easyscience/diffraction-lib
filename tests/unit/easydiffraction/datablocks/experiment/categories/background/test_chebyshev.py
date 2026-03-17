@@ -25,7 +25,7 @@ def test_chebyshev_background_calculate_and_cif():
     assert np.allclose(mock_data._bkg, 0.0)
 
     # Add two terms and verify CIF contains expected tags
-    cb.add(order=0, coef=1.0)
-    cb.add(order=1, coef=0.5)
+    cb.add_from_scratch(order=0, coef=1.0)
+    cb.add_from_scratch(order=1, coef=0.5)
     cif = cb.as_cif
     assert '_pd_background.Chebyshev_order' in cif and '_pd_background.Chebyshev_coef' in cif

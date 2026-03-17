@@ -23,7 +23,7 @@ from easydiffraction import download_data
 # ### Create Structure 1: LBCO
 
 # %%
-structure_1 = StructureFactory.create(name='lbco')
+structure_1 = StructureFactory.from_scratch(name='lbco')
 
 # %% [markdown]
 # #### Set Space Group
@@ -42,7 +42,7 @@ structure_1.cell.length_a = 3.8909
 # #### Set Atom Sites
 
 # %%
-structure_1.atom_sites.add(
+structure_1.atom_sites.add_from_scratch(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -52,7 +52,7 @@ structure_1.atom_sites.add(
     b_iso=0.2,
     occupancy=0.5,
 )
-structure_1.atom_sites.add(
+structure_1.atom_sites.add_from_scratch(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -62,7 +62,7 @@ structure_1.atom_sites.add(
     b_iso=0.2,
     occupancy=0.5,
 )
-structure_1.atom_sites.add(
+structure_1.atom_sites.add_from_scratch(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -71,7 +71,7 @@ structure_1.atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.2567,
 )
-structure_1.atom_sites.add(
+structure_1.atom_sites.add_from_scratch(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -85,7 +85,7 @@ structure_1.atom_sites.add(
 # ### Create Structure 2: Si
 
 # %%
-structure_2 = StructureFactory.create(name='si')
+structure_2 = StructureFactory.from_scratch(name='si')
 
 # %% [markdown]
 # #### Set Space Group
@@ -104,7 +104,7 @@ structure_2.cell.length_a = 5.43146
 # #### Set Atom Sites
 
 # %%
-structure_2.atom_sites.add(
+structure_2.atom_sites.add_from_scratch(
     label='Si',
     type_symbol='Si',
     fract_x=0.0,
@@ -129,7 +129,7 @@ data_path = download_data(id=8, destination='data')
 # #### Create Experiment
 
 # %%
-experiment = ExperimentFactory.create(
+experiment = ExperimentFactory.from_data_path(
     name='mcstas',
     data_path=data_path,
     sample_form='powder',
@@ -173,26 +173,26 @@ experiment.background_type = 'line-segment'
 # Add background points.
 
 # %%
-experiment.background.add(id='1', x=45000, y=0.2)
-experiment.background.add(id='2', x=50000, y=0.2)
-experiment.background.add(id='3', x=55000, y=0.2)
-experiment.background.add(id='4', x=65000, y=0.2)
-experiment.background.add(id='5', x=70000, y=0.2)
-experiment.background.add(id='6', x=75000, y=0.2)
-experiment.background.add(id='7', x=80000, y=0.2)
-experiment.background.add(id='8', x=85000, y=0.2)
-experiment.background.add(id='9', x=90000, y=0.2)
-experiment.background.add(id='10', x=95000, y=0.2)
-experiment.background.add(id='11', x=100000, y=0.2)
-experiment.background.add(id='12', x=105000, y=0.2)
-experiment.background.add(id='13', x=110000, y=0.2)
+experiment.background.add_from_scratch(id='1', x=45000, y=0.2)
+experiment.background.add_from_scratch(id='2', x=50000, y=0.2)
+experiment.background.add_from_scratch(id='3', x=55000, y=0.2)
+experiment.background.add_from_scratch(id='4', x=65000, y=0.2)
+experiment.background.add_from_scratch(id='5', x=70000, y=0.2)
+experiment.background.add_from_scratch(id='6', x=75000, y=0.2)
+experiment.background.add_from_scratch(id='7', x=80000, y=0.2)
+experiment.background.add_from_scratch(id='8', x=85000, y=0.2)
+experiment.background.add_from_scratch(id='9', x=90000, y=0.2)
+experiment.background.add_from_scratch(id='10', x=95000, y=0.2)
+experiment.background.add_from_scratch(id='11', x=100000, y=0.2)
+experiment.background.add_from_scratch(id='12', x=105000, y=0.2)
+experiment.background.add_from_scratch(id='13', x=110000, y=0.2)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-experiment.linked_phases.add(id='lbco', scale=4.0)
-experiment.linked_phases.add(id='si', scale=0.2)
+experiment.linked_phases.add_from_scratch(id='lbco', scale=4.0)
+experiment.linked_phases.add_from_scratch(id='si', scale=0.2)
 
 # %% [markdown]
 # ## Define Project
@@ -209,8 +209,8 @@ project = Project()
 # #### Add Structures
 
 # %%
-project.structures.add(structure=structure_1)
-project.structures.add(structure=structure_2)
+project.structures.add(structure_1)
+project.structures.add(structure_2)
 
 # %% [markdown]
 # #### Show Structures
@@ -222,7 +222,7 @@ project.structures.show_names()
 # #### Add Experiments
 
 # %%
-project.experiments.add(experiment=experiment)
+project.experiments.add(experiment)
 
 # %% [markdown]
 # #### Set Excluded Regions
@@ -236,8 +236,8 @@ project.plot_meas(expt_name='mcstas')
 # Add excluded regions.
 
 # %%
-experiment.excluded_regions.add(id='1', start=0, end=40000)
-experiment.excluded_regions.add(id='2', start=108000, end=200000)
+experiment.excluded_regions.add_from_scratch(id='1', start=0, end=40000)
+experiment.excluded_regions.add_from_scratch(id='2', start=108000, end=200000)
 
 # %% [markdown]
 # Show excluded regions.

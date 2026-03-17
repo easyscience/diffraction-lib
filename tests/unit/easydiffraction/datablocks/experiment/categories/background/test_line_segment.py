@@ -25,8 +25,8 @@ def test_line_segment_background_calculate_and_cif():
     assert np.allclose(mock_data._bkg, [0.0, 0.0, 0.0])
 
     # Add two points -> linear interpolation
-    bkg.add(id='1', x=0.0, y=0.0)
-    bkg.add(id='2', x=2.0, y=4.0)
+    bkg.add_from_scratch(id='1', x=0.0, y=0.0)
+    bkg.add_from_scratch(id='2', x=2.0, y=4.0)
     bkg._update()
     assert np.allclose(mock_data._bkg, [0.0, 2.0, 4.0])
 

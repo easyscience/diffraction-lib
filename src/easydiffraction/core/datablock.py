@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-from typeguard import typechecked
-
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.collection import CollectionBase
@@ -21,9 +19,17 @@ class DatablockItem(GuardedBase):
 
     def __str__(self) -> str:
         """Human-readable representation of this component."""
-        name = self._log_name
-        items = getattr(self, '_items', None)
-        return f'<{name} ({items})>'
+        name = self.unique_name
+        cls = type(self).__name__
+        categories = '\n'.join(f'  - {c}' for c in self.categories)
+        return f"{cls} datablock '{name}':\n{categories}"
+
+    def __repr__(self) -> str:
+        """Developer-oriented representation of this component."""
+        name = self.unique_name
+        cls = type(self).__name__
+        num_categories = len(self.categories)
+        return f'<{cls} datablock "{name}" ({num_categories} categories)>'
 
     def _update_categories(
         self,
@@ -88,7 +94,20 @@ class DatablockCollection(CollectionBase):
     Experiments).
 
     Each item is a DatablockItem.
+
+    Subclasses provide explicit ``add_from_*`` convenience methods
+    that delegate to the corresponding factory classmethods, then
+    call :meth:`add` with the resulting item.
     """
+
+    def add(self, item) -> None:
+        """Add a pre-built item to the collection.
+
+        Args:
+            item: A ``DatablockItem`` instance (e.g. a ``Structure``
+                or ``ExperimentBase`` subclass).
+        """
+        self[item._identity.datablock_entry_name] = item
 
     def __str__(self) -> str:
         """Human-readable representation of this component."""
@@ -124,8 +143,3 @@ class DatablockCollection(CollectionBase):
         from easydiffraction.io.cif.serialize import datablock_collection_to_cif
 
         return datablock_collection_to_cif(self)
-
-    @typechecked
-    def _add(self, item) -> None:
-        """Add an item to the collection."""
-        self[item._identity.datablock_entry_name] = item

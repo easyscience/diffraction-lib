@@ -33,14 +33,14 @@ project.plotter.x_max = 40
 # ## Add Structure
 
 # %%
-project.structures.add(name='si')
+project.structures.add_from_scratch(name='si')
 
 # %%
 structure = project.structures['si']
 structure.space_group.name_h_m.value = 'F d -3 m'
 structure.space_group.it_coordinate_system_code = '1'
 structure.cell.length_a = 5.43146
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Si',
     type_symbol='Si',
     fract_x=0,
@@ -57,7 +57,7 @@ structure.atom_sites.add(
 data_path = ed.download_data(id=5, destination='data')
 
 # %%
-project.experiments.add(
+project.experiments.add_from_data_path(
     name='nomad',
     data_path=data_path,
     sample_form='powder',
@@ -68,7 +68,7 @@ project.experiments.add(
 
 # %%
 experiment = project.experiments['nomad']
-experiment.linked_phases.add(id='si', scale=1.0)
+experiment.linked_phases.add_from_scratch(id='si', scale=1.0)
 experiment.peak.damp_q = 0.02
 experiment.peak.broad_q = 0.03
 experiment.peak.cutoff_q = 35.0

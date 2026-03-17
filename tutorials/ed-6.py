@@ -23,7 +23,7 @@ from easydiffraction import download_data
 # #### Create Structure
 
 # %%
-structure = StructureFactory.create(name='hs')
+structure = StructureFactory.from_scratch(name='hs')
 
 # %% [markdown]
 # #### Set Space Group
@@ -44,7 +44,7 @@ structure.cell.length_c = 14.1
 # #### Set Atom Sites
 
 # %%
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Zn',
     type_symbol='Zn',
     fract_x=0,
@@ -53,7 +53,7 @@ structure.atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.5,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Cu',
     type_symbol='Cu',
     fract_x=0.5,
@@ -62,7 +62,7 @@ structure.atom_sites.add(
     wyckoff_letter='e',
     b_iso=0.5,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='O',
     type_symbol='O',
     fract_x=0.21,
@@ -71,7 +71,7 @@ structure.atom_sites.add(
     wyckoff_letter='h',
     b_iso=0.5,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Cl',
     type_symbol='Cl',
     fract_x=0,
@@ -80,7 +80,7 @@ structure.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='H',
     type_symbol='2H',
     fract_x=0.13,
@@ -105,7 +105,7 @@ data_path = download_data(id=11, destination='data')
 # #### Create Experiment
 
 # %%
-expt = ExperimentFactory.create(name='hrpt', data_path=data_path)
+expt = ExperimentFactory.from_data_path(name='hrpt', data_path=data_path)
 
 # %% [markdown]
 # #### Set Instrument
@@ -128,21 +128,21 @@ expt.peak.broad_lorentz_y = 0
 # #### Set Background
 
 # %%
-expt.background.add(id='1', x=4.4196, y=500)
-expt.background.add(id='2', x=6.6207, y=500)
-expt.background.add(id='3', x=10.4918, y=500)
-expt.background.add(id='4', x=15.4634, y=500)
-expt.background.add(id='5', x=45.6041, y=500)
-expt.background.add(id='6', x=74.6844, y=500)
-expt.background.add(id='7', x=103.4187, y=500)
-expt.background.add(id='8', x=121.6311, y=500)
-expt.background.add(id='9', x=159.4116, y=500)
+expt.background.add_from_scratch(id='1', x=4.4196, y=500)
+expt.background.add_from_scratch(id='2', x=6.6207, y=500)
+expt.background.add_from_scratch(id='3', x=10.4918, y=500)
+expt.background.add_from_scratch(id='4', x=15.4634, y=500)
+expt.background.add_from_scratch(id='5', x=45.6041, y=500)
+expt.background.add_from_scratch(id='6', x=74.6844, y=500)
+expt.background.add_from_scratch(id='7', x=103.4187, y=500)
+expt.background.add_from_scratch(id='8', x=121.6311, y=500)
+expt.background.add_from_scratch(id='9', x=159.4116, y=500)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add(id='hs', scale=0.5)
+expt.linked_phases.add_from_scratch(id='hs', scale=0.5)
 
 # %% [markdown]
 # ## Define Project
@@ -167,13 +167,13 @@ project = Project()
 # #### Add Structure
 
 # %%
-project.structures.add(structure=structure)
+project.structures.add(structure)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(experiment=expt)
+project.experiments.add(expt)
 
 # %% [markdown]
 # ## Perform Analysis

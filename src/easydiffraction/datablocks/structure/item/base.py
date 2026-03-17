@@ -1,5 +1,8 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Structure datablock item."""
+
+from typeguard import typechecked
 
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.crystallography import crystallography as ecr
@@ -11,18 +14,12 @@ from easydiffraction.utils.utils import render_cif
 
 
 class Structure(DatablockItem):
-    """Container for structural information (crystal structure).
-
-    Holds space group, unit cell and atom-site categories. The
-    factory is responsible for creating rich instances from CIF;
-    this base accepts just the ``name`` and exposes helpers for
-    applying symmetry.
-    """
+    """Structure datablock item."""
 
     def __init__(
         self,
         *,
-        name,
+        name: str,
     ) -> None:
         super().__init__()
         self._name = name
@@ -31,68 +28,11 @@ class Structure(DatablockItem):
         self._atom_sites: AtomSites = AtomSites()
         self._identity.datablock_entry_name = lambda: self.name
 
-    def __str__(self) -> str:
-        """Human-readable representation of this component."""
-        name = self._log_name
-        items = ', '.join(
-            f'{k}={v}'
-            for k, v in {
-                'cell': self.cell,
-                'space_group': self.space_group,
-                'atom_sites': self.atom_sites,
-            }.items()
-        )
-        return f'<{name} ({items})>'
+    # ------------------------------------------------------------------
+    # Private helper methods
+    # ------------------------------------------------------------------
 
-    @property
-    def name(self) -> str:
-        """Model name.
-
-        Returns:
-            The user-facing identifier for this model.
-        """
-        return self._name
-
-    @name.setter
-    def name(self, new: str) -> None:
-        """Update model name."""
-        self._name = new
-
-    @property
-    def cell(self) -> Cell:
-        """Unit-cell category object."""
-        return self._cell
-
-    @cell.setter
-    def cell(self, new: Cell) -> None:
-        """Replace the unit-cell category object."""
-        self._cell = new
-
-    @property
-    def space_group(self) -> SpaceGroup:
-        """Space-group category object."""
-        return self._space_group
-
-    @space_group.setter
-    def space_group(self, new: SpaceGroup) -> None:
-        """Replace the space-group category object."""
-        self._space_group = new
-
-    @property
-    def atom_sites(self) -> AtomSites:
-        """Atom-sites collection for this model."""
-        return self._atom_sites
-
-    @atom_sites.setter
-    def atom_sites(self, new: AtomSites) -> None:
-        """Replace the atom-sites collection."""
-        self._atom_sites = new
-
-    # --------------------
-    # Symmetry constraints
-    # --------------------
-
-    def _apply_cell_symmetry_constraints(self):
+    def _apply_cell_symmetry_constraints(self) -> None:
         """Apply symmetry rules to unit-cell parameters in place."""
         dummy_cell = {
             'lattice_a': self.cell.length_a.value,
@@ -111,7 +51,7 @@ class Structure(DatablockItem):
         self.cell.angle_beta.value = dummy_cell['angle_beta']
         self.cell.angle_gamma.value = dummy_cell['angle_gamma']
 
-    def _apply_atomic_coordinates_symmetry_constraints(self):
+    def _apply_atomic_coordinates_symmetry_constraints(self) -> None:
         """Apply symmetry rules to fractional coordinates of atom
         sites.
         """
@@ -126,11 +66,6 @@ class Structure(DatablockItem):
             wl = atom.wyckoff_letter.value
             if not wl:
                 # TODO: Decide how to handle this case
-                #  For now, we just skip applying constraints if wyckoff
-                #  letter is not set. Alternatively, could raise an
-                #  error or warning
-                #  print(f"Warning: Wyckoff letter is not ...")
-                #  raise ValueError("Wyckoff letter is not ...")
                 continue
             ecr.apply_atom_site_symmetry_constraints(
                 atom_site=dummy_atom,
@@ -142,42 +77,113 @@ class Structure(DatablockItem):
             atom.fract_y.value = dummy_atom['fract_y']
             atom.fract_z.value = dummy_atom['fract_z']
 
-    def _apply_atomic_displacement_symmetry_constraints(self):
-        """Placeholder for ADP symmetry constraints (not
-        implemented).
+    def _apply_atomic_displacement_symmetry_constraints(self) -> None:
+        """Apply symmetry constraints to atomic displacement parameters.
+
+        Not yet implemented.
         """
         pass
 
-    def _apply_symmetry_constraints(self):
-        """Apply all available symmetry constraints to this model."""
+    def _apply_symmetry_constraints(self) -> None:
+        """Apply all available symmetry constraints to this
+        structure.
+        """
         self._apply_cell_symmetry_constraints()
         self._apply_atomic_coordinates_symmetry_constraints()
         self._apply_atomic_displacement_symmetry_constraints()
 
-    # ------------
-    # Show methods
-    # ------------
+    # ------------------------------------------------------------------
+    # Public properties
+    # ------------------------------------------------------------------
 
-    def show_structure(self):
-        """Show an ASCII projection of the structure on a 2D plane."""
-        console.paragraph(f"Structure 🧩 '{self.name}' structure view")
+    @property
+    def name(self) -> str:
+        """Name identifier for this structure.
+
+        Returns:
+            str: The structure's name.
+        """
+        return self._name
+
+    @name.setter
+    @typechecked
+    def name(self, new: str) -> None:
+        """Set the name identifier for this structure.
+
+        Args:
+            new (str): New name string.
+        """
+        self._name = new
+
+    @property
+    def cell(self) -> Cell:
+        """Unit-cell category for this structure.
+
+        Returns:
+            Cell: The unit-cell instance.
+        """
+        return self._cell
+
+    @cell.setter
+    @typechecked
+    def cell(self, new: Cell) -> None:
+        """Replace the unit-cell category for this structure.
+
+        Args:
+            new (Cell): New unit-cell instance.
+        """
+        self._cell = new
+
+    @property
+    def space_group(self) -> SpaceGroup:
+        """Space-group category for this structure.
+
+        Returns:
+            SpaceGroup: The space-group instance.
+        """
+        return self._space_group
+
+    @space_group.setter
+    @typechecked
+    def space_group(self, new: SpaceGroup) -> None:
+        """Replace the space-group category for this structure.
+
+        Args:
+            new (SpaceGroup): New space-group instance.
+        """
+        self._space_group = new
+
+    @property
+    def atom_sites(self) -> AtomSites:
+        """Atom-sites collection for this structure.
+
+        Returns:
+            AtomSites: The atom-sites collection instance.
+        """
+        return self._atom_sites
+
+    @atom_sites.setter
+    @typechecked
+    def atom_sites(self, new: AtomSites) -> None:
+        """Replace the atom-sites collection for this structure.
+
+        Args:
+            new (AtomSites): New atom-sites collection.
+        """
+        self._atom_sites = new
+
+    # ------------------------------------------------------------------
+    # Public methods
+    # ------------------------------------------------------------------
+
+    def show(self) -> None:
+        """Display an ASCII projection of the structure on a 2D
+        plane.
+        """
+        console.paragraph(f"Structure 🧩 '{self.name}'")
         console.print('Not implemented yet.')
 
-    def show_params(self):
-        """Display structural parameters (space group, cell, atom
-        sites).
-        """
-        console.print(f'\nStructure ID: {self.name}')
-        console.print(f'Space group: {self.space_group.name_h_m}')
-        console.print(f'Cell parameters: {self.cell.as_dict}')
-        console.print('Atom sites:')
-        self.atom_sites.show()
-
     def show_as_cif(self) -> None:
-        """Render the CIF text for this structure in a terminal-friendly
-        view.
-        """
-        cif_text: str = self.as_cif
-        paragraph_title: str = f"Structure 🧩 '{self.name}' as cif"
-        console.paragraph(paragraph_title)
-        render_cif(cif_text)
+        """Render the CIF text for this structure in the terminal."""
+        console.paragraph(f"Structure 🧩 '{self.name}' as cif")
+        render_cif(self.as_cif)

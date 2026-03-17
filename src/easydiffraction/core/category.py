@@ -103,19 +103,27 @@ class CategoryCollection(CollectionBase):
         """Populate this collection from a CIF block."""
         category_collection_from_cif(self, block)
 
-    @checktype
-    def _add(self, item) -> None:
-        """Add an item to the collection."""
+    def add(self, item) -> None:
+        """Insert a pre-built item into the collection.
+
+        Args:
+            item: A ``CategoryItem`` instance to add.
+        """
         self[item._identity.category_entry_name] = item
 
     @checktype
-    def add(self, **kwargs) -> None:
-        """Create and add a new child instance from the provided
-        arguments.
+    def add_from_scratch(self, **kwargs) -> None:
+        """Create a new item with the given attributes and add it.
+
+        A default instance of the collection's item type is created,
+        then each keyword argument is applied via ``setattr``.
+
+        Args:
+            **kwargs: Attribute names and values for the new item.
         """
         child_obj = self._item_type()
 
         for attr, val in kwargs.items():
             setattr(child_obj, attr, val)
 
-        self._add(child_obj)
+        self.add(child_obj)
