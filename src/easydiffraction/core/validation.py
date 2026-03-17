@@ -6,7 +6,6 @@ Provides DataTypes, type/content validators, and AttributeSpec used by
 descriptors and parameters. Only documentation was added here.
 """
 
-import functools
 import re
 from abc import ABC
 from abc import abstractmethod
@@ -14,11 +13,8 @@ from enum import Enum
 from enum import auto
 
 import numpy as np
-from typeguard import TypeCheckError
-from typeguard import typechecked
 
 from easydiffraction.core.diagnostic import Diagnostics
-from easydiffraction.utils.logging import log
 
 # ======================================================================
 # Shared constants
@@ -48,44 +44,6 @@ class DataTypes(Enum):
     def expected_type(self):
         """Convenience alias for tuple of allowed Python types."""
         return self.value
-
-
-# ======================================================================
-# Runtime type checking decorator
-# ======================================================================
-
-# Runtime type checking decorator for validating those methods
-# annotated with type hints, which are writable for the user, and
-# which are not covered by custom validators for Parameter attribute
-# types and content, implemented below.
-
-
-def checktype(func=None, *, context=None):
-    """Runtime type check decorator using typeguard.
-
-    When a TypeCheckError occurs, the error is logged and None is
-    returned. If context is provided, it is added to the message.
-    """
-
-    def decorator(f):
-        checked_func = typechecked(f)
-
-        @functools.wraps(f)
-        def wrapper(*args, **kwargs):
-            try:
-                return checked_func(*args, **kwargs)
-            except TypeCheckError as err:
-                msg = str(err)
-                if context:
-                    msg = f'{context}: {msg}'
-                log.error(message=msg, exc_type=TypeError)
-                return None
-
-        return wrapper
-
-    if func is None:
-        return decorator
-    return decorator(func)
 
 
 # ======================================================================

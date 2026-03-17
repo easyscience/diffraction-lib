@@ -5,6 +5,12 @@ import numpy as np
 # %%
 project = ed.Project()
 
+#
+
+project.experiments.add_from_data_path(name='aaa', data_path=23)
+
+exit()
+
 # %%
 model_path = ed.download_data(id=1, destination='data')
 project.structures.add_from_cif_path(cif_path=model_path)
