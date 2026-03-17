@@ -25,7 +25,7 @@ project = ed.Project()
 structure_path = ed.download_data(id=20, destination='data')
 
 # %%
-project.structures.add(cif_path=structure_path)
+project.structures.add_from_cif_path(structure_path)
 
 # %%
 project.structures.show_names()
@@ -49,7 +49,7 @@ structure.show_as_cif()
 data_path = ed.download_data(id=19, destination='data')
 
 # %%
-project.experiments.add(
+project.experiments.add_from_data_path(
     name='heidi',
     data_path=data_path,
     sample_form='single crystal',

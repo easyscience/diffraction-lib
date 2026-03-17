@@ -36,7 +36,7 @@ project = ed.Project()
 # ## Step 2: Define Structure
 
 # %%
-project.structures.add(name='lbco')
+project.structures.add_from_scratch(name='lbco')
 
 # %%
 structure = project.structures['lbco']
@@ -49,7 +49,7 @@ structure.space_group.it_coordinate_system_code = '1'
 structure.cell.length_a = 3.88
 
 # %%
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -59,7 +59,7 @@ structure.atom_sites.add(
     b_iso=0.5,
     occupancy=0.5,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -69,7 +69,7 @@ structure.atom_sites.add(
     b_iso=0.5,
     occupancy=0.5,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -78,7 +78,7 @@ structure.atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.5,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -95,7 +95,7 @@ structure.atom_sites.add(
 data_path = ed.download_data(id=3, destination='data')
 
 # %%
-project.experiments.add(
+project.experiments.add_from_data_path(
     name='hrpt',
     data_path=data_path,
     sample_form='powder',
@@ -117,18 +117,18 @@ experiment.peak.broad_gauss_w = 0.1
 experiment.peak.broad_lorentz_y = 0.1
 
 # %%
-experiment.background.add(id='1', x=10, y=170)
-experiment.background.add(id='2', x=30, y=170)
-experiment.background.add(id='3', x=50, y=170)
-experiment.background.add(id='4', x=110, y=170)
-experiment.background.add(id='5', x=165, y=170)
+experiment.background.add_from_scratch(id='1', x=10, y=170)
+experiment.background.add_from_scratch(id='2', x=30, y=170)
+experiment.background.add_from_scratch(id='3', x=50, y=170)
+experiment.background.add_from_scratch(id='4', x=110, y=170)
+experiment.background.add_from_scratch(id='5', x=165, y=170)
 
 # %%
-experiment.excluded_regions.add(id='1', start=0, end=5)
-experiment.excluded_regions.add(id='2', start=165, end=180)
+experiment.excluded_regions.add_from_scratch(id='1', start=0, end=5)
+experiment.excluded_regions.add_from_scratch(id='2', start=165, end=180)
 
 # %%
-experiment.linked_phases.add(id='lbco', scale=10.0)
+experiment.linked_phases.add_from_scratch(id='lbco', scale=10.0)
 
 # %% [markdown]
 # ## Step 4: Perform Analysis

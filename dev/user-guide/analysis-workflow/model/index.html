@@ -2481,7 +2481,7 @@ this case, you will need to specify the name of the model, which will be used to
 reference it later.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Add a structure with default parameters</span>
 <span class="c1"># The structure name is used to reference it later.</span>
-<span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;nacl&#39;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">add_from_scratch</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;nacl&#39;</span><span class="p">)</span>
 </code></pre></div>
 <p>The <code>add</code> method creates a new structure with default parameters. You can then
 modify its parameters to match your specific crystallographic structure. All

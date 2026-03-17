@@ -11689,7 +11689,8 @@ and requested profile type.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/peak/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 12</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 11</span>
+<span class="normal"> 12</span>
 <span class="normal"> 13</span>
 <span class="normal"> 14</span>
 <span class="normal"> 15</span>
@@ -11810,8 +11811,7 @@ and requested profile type.</p>
 <span class="normal">130</span>
 <span class="normal">131</span>
 <span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PeakFactory</span><span class="p">:</span>
+<span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PeakFactory</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory for creating peak profile objects.</span>
 
 <span class="sd">    Lazily imports implementations to avoid circular dependencies and</span>
@@ -12077,7 +12077,8 @@ a sensible default is chosen based on the other args.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/peak/factory.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 81</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 80</span>
+<span class="normal"> 81</span>
 <span class="normal"> 82</span>
 <span class="normal"> 83</span>
 <span class="normal"> 84</span>
@@ -12129,8 +12130,7 @@ a sensible default is chosen based on the other args.</p>
 <span class="normal">130</span>
 <span class="normal">131</span>
 <span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span>
     <span class="n">scattering_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ScatteringTypeEnum</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -13517,6 +13517,8 @@ multiple inheritance.</p>
 
     <div class="doc doc-contents ">
 
+        <p>Collection of experiment data blocks.</p>
+
 
 
 
@@ -13576,9 +13578,7 @@ helper methods for simple presentation of collection contents.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/collection.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 12</span>
-<span class="normal"> 13</span>
-<span class="normal"> 14</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 14</span>
 <span class="normal"> 15</span>
 <span class="normal"> 16</span>
 <span class="normal"> 17</span>
@@ -13698,7 +13698,15 @@ helper methods for simple presentation of collection contents.</p>
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Experiments</span><span class="p">(</span><span class="n">DatablockCollection</span><span class="p">):</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Experiments</span><span class="p">(</span><span class="n">DatablockCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collection of Experiment data blocks.</span>
 
 <span class="sd">    Provides convenience constructors for common creation patterns and</span>
@@ -13708,119 +13716,125 @@ helper methods for simple presentation of collection contents.</p>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">item_type</span><span class="o">=</span><span class="n">ExperimentBase</span><span class="p">)</span>
 
-    <span class="c1"># --------------------</span>
-    <span class="c1"># Add / Remove methods</span>
-    <span class="c1"># --------------------</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Public methods</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
 
-    <span class="c1"># TODO: Move to DatablockCollection?</span>
-    <span class="c1"># TODO: Disallow args and only allow kwargs?</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">experiment</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="c1"># TODO: Make abstract in DatablockCollection?</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_from_scratch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">sample_form</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">beam_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">radiation_probe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an experiment without associating a data file.</span>
 
-        <span class="k">if</span> <span class="n">experiment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
-
-    <span class="c1"># @typechecked</span>
-    <span class="c1"># def add_from_cif_path(self, cif_path: str):</span>
-    <span class="c1">#    &quot;&quot;&quot;Add an experiment from a CIF file path.</span>
-    <span class="c1">#</span>
-    <span class="c1">#    Args:</span>
-    <span class="c1">#        cif_path: Path to a CIF document.</span>
-    <span class="c1">#    &quot;&quot;&quot;</span>
-    <span class="c1">#    experiment = ExperimentFactory.create(cif_path=cif_path)</span>
-    <span class="c1">#    self.add(experiment)</span>
-
-    <span class="c1"># @typechecked</span>
-    <span class="c1"># def add_from_cif_str(self, cif_str: str):</span>
-    <span class="c1">#    &quot;&quot;&quot;Add an experiment from a CIF string.</span>
-    <span class="c1">#</span>
-    <span class="c1">#    Args:</span>
-    <span class="c1">#        cif_str: Full CIF document as a string.</span>
-    <span class="c1">#    &quot;&quot;&quot;</span>
-    <span class="c1">#    experiment = ExperimentFactory.create(cif_str=cif_str)</span>
-    <span class="c1">#    self.add(experiment)</span>
-
-    <span class="c1"># @typechecked</span>
-    <span class="c1"># def add_from_data_path(</span>
-    <span class="c1">#    self,</span>
-    <span class="c1">#    name: str,</span>
-    <span class="c1">#    data_path: str,</span>
-    <span class="c1">#    sample_form: str = SampleFormEnum.default().value,</span>
-    <span class="c1">#    beam_mode: str = BeamModeEnum.default().value,</span>
-    <span class="c1">#    radiation_probe: str = RadiationProbeEnum.default().value,</span>
-    <span class="c1">#    scattering_type: str = ScatteringTypeEnum.default().value,</span>
-    <span class="c1"># ):</span>
-    <span class="c1">#    &quot;&quot;&quot;Add an experiment from a data file path.</span>
-    <span class="c1">#</span>
-    <span class="c1">#    Args:</span>
-    <span class="c1">#        name: Experiment identifier.</span>
-    <span class="c1">#        data_path: Path to the measured data file.</span>
-    <span class="c1">#        sample_form: Sample form (powder or single crystal).</span>
-    <span class="c1">#        beam_mode: Beam mode (constant wavelength or TOF).</span>
-    <span class="c1">#        radiation_probe: Radiation probe (neutron or xray).</span>
-    <span class="c1">#        scattering_type: Scattering type (bragg or total).</span>
-    <span class="c1">#    &quot;&quot;&quot;</span>
-    <span class="c1">#    experiment = ExperimentFactory.create(</span>
-    <span class="c1">#        name=name,</span>
-    <span class="c1">#        data_path=data_path,</span>
-    <span class="c1">#        sample_form=sample_form,</span>
-    <span class="c1">#        beam_mode=beam_mode,</span>
-    <span class="c1">#        radiation_probe=radiation_probe,</span>
-    <span class="c1">#        scattering_type=scattering_type,</span>
-    <span class="c1">#    )</span>
-    <span class="c1">#    self.add(experiment)</span>
-
-    <span class="c1"># @typechecked</span>
-    <span class="c1"># def add_without_data(</span>
-    <span class="c1">#    self,</span>
-    <span class="c1">#    name: str,</span>
-    <span class="c1">#    sample_form: str = SampleFormEnum.default().value,</span>
-    <span class="c1">#    beam_mode: str = BeamModeEnum.default().value,</span>
-    <span class="c1">#    radiation_probe: str = RadiationProbeEnum.default().value,</span>
-    <span class="c1">#    scattering_type: str = ScatteringTypeEnum.default().value,</span>
-    <span class="c1"># ):</span>
-    <span class="c1">#    &quot;&quot;&quot;Add an experiment without associating a data file.</span>
-    <span class="c1">#</span>
-    <span class="c1">#    Args:</span>
-    <span class="c1">#        name: Experiment identifier.</span>
-    <span class="c1">#        sample_form: Sample form (powder or single crystal).</span>
-    <span class="c1">#        beam_mode: Beam mode (constant wavelength or TOF).</span>
-    <span class="c1">#        radiation_probe: Radiation probe (neutron or xray).</span>
-    <span class="c1">#        scattering_type: Scattering type (bragg or total).</span>
-    <span class="c1">#    &quot;&quot;&quot;</span>
-    <span class="c1">#    experiment = ExperimentFactory.create(</span>
-    <span class="c1">#        name=name,</span>
-    <span class="c1">#        sample_form=sample_form,</span>
-    <span class="c1">#        beam_mode=beam_mode,</span>
-    <span class="c1">#        radiation_probe=radiation_probe,</span>
-    <span class="c1">#        scattering_type=scattering_type,</span>
-    <span class="c1">#    )</span>
-    <span class="c1">#    self.add(experiment)</span>
+<span class="sd">        Args:</span>
+<span class="sd">            name: Experiment identifier.</span>
+<span class="sd">            sample_form: Sample form (e.g. ``&#39;powder&#39;``).</span>
+<span class="sd">            beam_mode: Beam mode (e.g. ``&#39;constant wavelength&#39;``).</span>
+<span class="sd">            radiation_probe: Radiation probe (e.g. ``&#39;neutron&#39;``).</span>
+<span class="sd">            scattering_type: Scattering type (e.g. ``&#39;bragg&#39;``).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentFactory</span><span class="o">.</span><span class="n">from_scratch</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">sample_form</span><span class="o">=</span><span class="n">sample_form</span><span class="p">,</span>
+            <span class="n">beam_mode</span><span class="o">=</span><span class="n">beam_mode</span><span class="p">,</span>
+            <span class="n">radiation_probe</span><span class="o">=</span><span class="n">radiation_probe</span><span class="p">,</span>
+            <span class="n">scattering_type</span><span class="o">=</span><span class="n">scattering_type</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
 
     <span class="c1"># TODO: Move to DatablockCollection?</span>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove an experiment by name if it exists.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_from_cif_str</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cif_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an experiment from a CIF string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cif_str: Full CIF document as a string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentFactory</span><span class="o">.</span><span class="n">from_cif_str</span><span class="p">(</span><span class="n">cif_str</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+
+    <span class="c1"># TODO: Move to DatablockCollection?</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_from_cif_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cif_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an experiment from a CIF file path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cif_path(str): Path to a CIF document.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentFactory</span><span class="o">.</span><span class="n">from_cif_path</span><span class="p">(</span><span class="n">cif_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_from_data_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">sample_form</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">beam_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">radiation_probe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an experiment from a data file path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Experiment identifier.</span>
+<span class="sd">            data_path: Path to the measured data file.</span>
+<span class="sd">            sample_form: Sample form (e.g. ``&#39;powder&#39;``).</span>
+<span class="sd">            beam_mode: Beam mode (e.g. ``&#39;constant wavelength&#39;``).</span>
+<span class="sd">            radiation_probe: Radiation probe (e.g. ``&#39;neutron&#39;``).</span>
+<span class="sd">            scattering_type: Scattering type (e.g. ``&#39;bragg&#39;``).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentFactory</span><span class="o">.</span><span class="n">from_data_path</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">data_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span>
+            <span class="n">sample_form</span><span class="o">=</span><span class="n">sample_form</span><span class="p">,</span>
+            <span class="n">beam_mode</span><span class="o">=</span><span class="n">beam_mode</span><span class="p">,</span>
+            <span class="n">radiation_probe</span><span class="o">=</span><span class="n">radiation_probe</span><span class="p">,</span>
+            <span class="n">scattering_type</span><span class="o">=</span><span class="n">scattering_type</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+
+    <span class="c1"># TODO: Move to DatablockCollection?</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove an experiment by its name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): Name of the structure to remove.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-
-    <span class="c1"># ------------</span>
-    <span class="c1"># Show methods</span>
-    <span class="c1"># ------------</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; not found in collection.&quot;</span><span class="p">)</span>
 
     <span class="c1"># TODO: Move to DatablockCollection?</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">show_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the list of experiment names.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List all experiment names in the collection.&quot;&quot;&quot;</span>
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Defined experiments&#39;</span> <span class="o">+</span> <span class="s1">&#39; 🔬&#39;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
 
     <span class="c1"># TODO: Move to DatablockCollection?</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">show_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print parameters for each experiment in the collection.&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">exp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">exp</span><span class="o">.</span><span class="n">show_params</span><span class="p">()</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Show parameters of all experiments in the collection.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">experiment</span><span class="o">.</span><span class="n">show_params</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -13828,6 +13842,540 @@ helper methods for simple presentation of collection contents.</p>
 
 <div class="doc doc-children">
 
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.datablocks.experiment.collection.Experiments.add_from_cif_path" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">add_from_cif_path</span><span class="p">(</span><span class="n">cif_path</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Add an experiment from a <abbr title="Crystallographic Information File.">CIF</abbr> file path.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>cif_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to a <abbr title="Crystallographic Information File.">CIF</abbr> document.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/experiment/collection.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_from_cif_path</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">cif_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add an experiment from a CIF file path.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cif_path(str): Path to a CIF document.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentFactory</span><span class="o">.</span><span class="n">from_cif_path</span><span class="p">(</span><span class="n">cif_path</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.datablocks.experiment.collection.Experiments.add_from_cif_str" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">add_from_cif_str</span><span class="p">(</span><span class="n">cif_str</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Add an experiment from a <abbr title="Crystallographic Information File.">CIF</abbr> string.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>cif_str</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Full <abbr title="Crystallographic Information File.">CIF</abbr> document as a string.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/experiment/collection.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_from_cif_str</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">cif_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add an experiment from a CIF string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cif_str: Full CIF document as a string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentFactory</span><span class="o">.</span><span class="n">from_cif_str</span><span class="p">(</span><span class="n">cif_str</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.datablocks.experiment.collection.Experiments.add_from_data_path" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">add_from_data_path</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">sample_form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beam_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radiation_probe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scattering_type</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Add an experiment from a data file path.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Experiment identifier.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>data_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to the measured data file.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sample_form</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Sample form (e.g. <code>'powder'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>beam_mode</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Beam mode (e.g. <code>'constant wavelength'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>radiation_probe</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Radiation probe (e.g. <code>'neutron'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scattering_type</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Scattering type (e.g. <code>'bragg'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/experiment/collection.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_from_data_path</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">sample_form</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">beam_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">radiation_probe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add an experiment from a data file path.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: Experiment identifier.</span>
+<span class="sd">        data_path: Path to the measured data file.</span>
+<span class="sd">        sample_form: Sample form (e.g. ``&#39;powder&#39;``).</span>
+<span class="sd">        beam_mode: Beam mode (e.g. ``&#39;constant wavelength&#39;``).</span>
+<span class="sd">        radiation_probe: Radiation probe (e.g. ``&#39;neutron&#39;``).</span>
+<span class="sd">        scattering_type: Scattering type (e.g. ``&#39;bragg&#39;``).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentFactory</span><span class="o">.</span><span class="n">from_data_path</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">data_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span>
+        <span class="n">sample_form</span><span class="o">=</span><span class="n">sample_form</span><span class="p">,</span>
+        <span class="n">beam_mode</span><span class="o">=</span><span class="n">beam_mode</span><span class="p">,</span>
+        <span class="n">radiation_probe</span><span class="o">=</span><span class="n">radiation_probe</span><span class="p">,</span>
+        <span class="n">scattering_type</span><span class="o">=</span><span class="n">scattering_type</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.datablocks.experiment.collection.Experiments.add_from_scratch" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">add_from_scratch</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">sample_form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beam_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radiation_probe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scattering_type</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Add an experiment without associating a data file.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Experiment identifier.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sample_form</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Sample form (e.g. <code>'powder'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>beam_mode</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Beam mode (e.g. <code>'constant wavelength'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>radiation_probe</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Radiation probe (e.g. <code>'neutron'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scattering_type</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Scattering type (e.g. <code>'bragg'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/experiment/collection.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_from_scratch</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">sample_form</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">beam_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">radiation_probe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add an experiment without associating a data file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: Experiment identifier.</span>
+<span class="sd">        sample_form: Sample form (e.g. ``&#39;powder&#39;``).</span>
+<span class="sd">        beam_mode: Beam mode (e.g. ``&#39;constant wavelength&#39;``).</span>
+<span class="sd">        radiation_probe: Radiation probe (e.g. ``&#39;neutron&#39;``).</span>
+<span class="sd">        scattering_type: Scattering type (e.g. ``&#39;bragg&#39;``).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentFactory</span><span class="o">.</span><span class="n">from_scratch</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">sample_form</span><span class="o">=</span><span class="n">sample_form</span><span class="p">,</span>
+        <span class="n">beam_mode</span><span class="o">=</span><span class="n">beam_mode</span><span class="p">,</span>
+        <span class="n">radiation_probe</span><span class="o">=</span><span class="n">radiation_probe</span><span class="p">,</span>
+        <span class="n">scattering_type</span><span class="o">=</span><span class="n">scattering_type</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 
@@ -13845,20 +14393,69 @@ helper methods for simple presentation of collection contents.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Remove an experiment by name if it exists.</p>
+        <p>Remove an experiment by its name.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the structure to remove.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove an experiment by name if it exists.&quot;&quot;&quot;</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove an experiment by its name.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): Name of the structure to remove.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
         <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; not found in collection.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -13881,16 +14478,16 @@ helper methods for simple presentation of collection contents.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Print the list of experiment names.</p>
+        <p>List all experiment names in the collection.</p>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the list of experiment names.&quot;&quot;&quot;</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List all experiment names in the collection.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Defined experiments&#39;</span> <span class="o">+</span> <span class="s1">&#39; 🔬&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -13915,18 +14512,18 @@ helper methods for simple presentation of collection contents.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Print parameters for each experiment in the collection.</p>
+        <p>Show parameters of all experiments in the collection.</p>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print parameters for each experiment in the collection.&quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">exp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-        <span class="n">exp</span><span class="o">.</span><span class="n">show_params</span><span class="p">()</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Show parameters of all experiments in the collection.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">experiment</span><span class="o">.</span><span class="n">show_params</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -14562,8 +15159,8 @@ class with specific attributes.</p>
 
 
 
-        <p>Base class for all experiments with only core attributes.</p>
-<p>Wraps experiment type and instrument.</p>
+        <p>Base class for all experiment datablock items with only core
+attributes.</p>
 
 
 
@@ -14574,8 +15171,7 @@ class with specific attributes.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
-<span class="normal">32</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span>
@@ -14631,20 +15227,9 @@ class with specific attributes.</p>
 <span class="normal">85</span>
 <span class="normal">86</span>
 <span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentBase</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all experiments with only core attributes.</span>
-
-<span class="sd">    Wraps experiment type and instrument.</span>
+<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentBase</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all experiment datablock items with only core</span>
+<span class="sd">    attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -14656,11 +15241,6 @@ class with specific attributes.</p>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="nb">type</span>
-        <span class="c1"># TODO: Should return default calculator based on experiment</span>
-        <span class="c1">#  type</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.analysis.calculators.factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">CalculatorFactory</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_calculator</span> <span class="o">=</span> <span class="n">CalculatorFactory</span><span class="o">.</span><span class="n">create_calculator</span><span class="p">(</span><span class="s1">&#39;cryspy&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">datablock_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="nd">@property</span>
@@ -14683,11 +15263,6 @@ class with specific attributes.</p>
 <span class="sd">        mode).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">calculator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculator engine used for pattern calculations.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculator</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -14753,33 +15328,6 @@ class with specific attributes.</p>
 
 
 
-<h4 id="easydiffraction.datablocks.experiment.item.ExperimentBase.calculator" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">calculator</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Calculator engine used for pattern calculations.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
 <h4 id="easydiffraction.datablocks.experiment.item.ExperimentBase.name" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">name</span></code>
 
@@ -14820,12 +15368,12 @@ class with specific attributes.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pretty-print the experiment as CIF text.&quot;&quot;&quot;</span>
     <span class="n">experiment_cif</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_cif</span>
     <span class="n">paragraph_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; as cif&quot;</span>
@@ -14907,7 +15455,17 @@ mode).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
@@ -15060,17 +15618,7 @@ mode).</p>
 <span class="normal">303</span>
 <span class="normal">304</span>
 <span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
+<span class="normal">306</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all powder experiments.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -15373,10 +15921,10 @@ mode).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_peak_profile_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_peak_profile_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently selected peak profile type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current peak profile type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peak_profile_type</span><span class="p">)</span>
@@ -15407,24 +15955,24 @@ mode).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">294</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
 <span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span>
 <span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span>
-<span class="normal">303</span>
-<span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_peak_profile_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">301</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_peak_profile_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print available peak profile types for this experiment.&quot;&quot;&quot;</span>
     <span class="n">columns_headers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Peak profile type&#39;</span><span class="p">,</span> <span class="s1">&#39;Description&#39;</span><span class="p">]</span>
     <span class="n">columns_alignment</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">]</span>
@@ -15769,6 +16317,8 @@ with specific attributes.</p>
 
     <div class="doc doc-contents ">
 
+        <p>Base classes for experiment datablock items.</p>
+
 
 
 
@@ -15815,8 +16365,8 @@ with specific attributes.</p>
 
 
 
-        <p>Base class for all experiments with only core attributes.</p>
-<p>Wraps experiment type and instrument.</p>
+        <p>Base class for all experiment datablock items with only core
+attributes.</p>
 
 
 
@@ -15827,8 +16377,7 @@ with specific attributes.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
-<span class="normal">32</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span>
@@ -15884,20 +16433,9 @@ with specific attributes.</p>
 <span class="normal">85</span>
 <span class="normal">86</span>
 <span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentBase</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all experiments with only core attributes.</span>
-
-<span class="sd">    Wraps experiment type and instrument.</span>
+<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentBase</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all experiment datablock items with only core</span>
+<span class="sd">    attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -15909,11 +16447,6 @@ with specific attributes.</p>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="nb">type</span>
-        <span class="c1"># TODO: Should return default calculator based on experiment</span>
-        <span class="c1">#  type</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.analysis.calculators.factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">CalculatorFactory</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_calculator</span> <span class="o">=</span> <span class="n">CalculatorFactory</span><span class="o">.</span><span class="n">create_calculator</span><span class="p">(</span><span class="s1">&#39;cryspy&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">datablock_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="nd">@property</span>
@@ -15936,11 +16469,6 @@ with specific attributes.</p>
 <span class="sd">        mode).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">calculator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculator engine used for pattern calculations.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculator</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -16006,33 +16534,6 @@ with specific attributes.</p>
 
 
 
-<h5 id="easydiffraction.datablocks.experiment.item.base.ExperimentBase.calculator" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">calculator</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-</h5>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Calculator engine used for pattern calculations.</p>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
 <h5 id="easydiffraction.datablocks.experiment.item.base.ExperimentBase.name" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">name</span></code>
 
@@ -16073,12 +16574,12 @@ with specific attributes.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pretty-print the experiment as CIF text.&quot;&quot;&quot;</span>
     <span class="n">experiment_cif</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_cif</span>
     <span class="n">paragraph_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; as cif&quot;</span>
@@ -16180,7 +16681,17 @@ mode).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
@@ -16333,17 +16844,7 @@ mode).</p>
 <span class="normal">303</span>
 <span class="normal">304</span>
 <span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
+<span class="normal">306</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all powder experiments.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -16646,10 +17147,10 @@ mode).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_peak_profile_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_peak_profile_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently selected peak profile type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current peak profile type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peak_profile_type</span><span class="p">)</span>
@@ -16680,24 +17181,24 @@ mode).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">294</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
 <span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span>
 <span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span>
-<span class="normal">303</span>
-<span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_peak_profile_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">301</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_peak_profile_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print available peak profile types for this experiment.&quot;&quot;&quot;</span>
     <span class="n">columns_headers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Peak profile type&#39;</span><span class="p">,</span> <span class="s1">&#39;Description&#39;</span><span class="p">]</span>
     <span class="n">columns_alignment</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">]</span>
@@ -16771,7 +17272,17 @@ mode).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">101</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span>
@@ -16810,17 +17321,7 @@ mode).</p>
 <span class="normal">137</span>
 <span class="normal">138</span>
 <span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ScExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
+<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ScExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all single crystal experiments.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -18269,6 +18770,11 @@ with specific attributes.</p>
 
     <div class="doc doc-contents ">
 
+        <p>Factory for creating experiment instances from various inputs.</p>
+<p>Provides individual class methods for each creation pathway:
+<code>from_cif_path</code>, <code>from_cif_str</code>, <code>from_data_path</code>, and
+<code>from_scratch</code>.</p>
+
 
 
 
@@ -18314,8 +18820,6 @@ with specific attributes.</p>
 
 
     <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;FactoryBase&lt;/code&gt; (&lt;code&gt;easydiffraction.core.factory.FactoryBase&lt;/code&gt;)" href="../../core/#easydiffraction.core.factory.FactoryBase">FactoryBase</a></code></p>
 
 
 
@@ -18330,14 +18834,7 @@ with specific attributes.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 29</span>
-<span class="normal"> 30</span>
-<span class="normal"> 31</span>
-<span class="normal"> 32</span>
-<span class="normal"> 33</span>
-<span class="normal"> 34</span>
-<span class="normal"> 35</span>
-<span class="normal"> 36</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 36</span>
 <span class="normal"> 37</span>
 <span class="normal"> 38</span>
 <span class="normal"> 39</span>
@@ -18514,40 +19011,29 @@ with specific attributes.</p>
 <span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
-<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentFactory</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates Experiment instances with only relevant attributes.&quot;&quot;&quot;</span>
-
-    <span class="n">_ALLOWED_ARG_SPECS</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;cif_path&#39;</span><span class="p">],</span>
-            <span class="s1">&#39;optional&#39;</span><span class="p">:</span> <span class="p">[],</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;cif_str&#39;</span><span class="p">],</span>
-            <span class="s1">&#39;optional&#39;</span><span class="p">:</span> <span class="p">[],</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s1">&#39;name&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;data_path&#39;</span><span class="p">,</span>
-            <span class="p">],</span>
-            <span class="s1">&#39;optional&#39;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s1">&#39;sample_form&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;beam_mode&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;radiation_probe&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;scattering_type&#39;</span><span class="p">,</span>
-            <span class="p">],</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
-            <span class="s1">&#39;optional&#39;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s1">&#39;sample_form&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;beam_mode&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;radiation_probe&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;scattering_type&#39;</span><span class="p">,</span>
-            <span class="p">],</span>
-        <span class="p">},</span>
-    <span class="p">]</span>
 
     <span class="n">_SUPPORTED</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">ScatteringTypeEnum</span><span class="o">.</span><span class="n">BRAGG</span><span class="p">:</span> <span class="p">{</span>
@@ -18568,137 +19054,183 @@ with specific attributes.</p>
         <span class="p">},</span>
     <span class="p">}</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s1">&#39;Experiment objects must be created using class methods such as &#39;</span>
+            <span class="s1">&#39;`ExperimentFactory.from_cif_str(...)`, etc.&#39;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Private helper methods</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_make_experiment_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper to construct an ExperimentType from keyword arguments,</span>
-<span class="sd">        using defaults as needed.</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_experiment_type</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">sample_form</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">beam_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">radiation_probe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExperimentType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct an ExperimentType, using defaults for omitted</span>
+<span class="sd">        values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO: Defaults are already in the experiment type...</span>
-        <span class="c1"># TODO: Merging with experiment_type_from_block from</span>
-        <span class="c1">#  io.cif.parse</span>
+        <span class="c1"># Note: validation of input values is done via Descriptor setter</span>
+        <span class="c1"># methods</span>
+
         <span class="n">et</span> <span class="o">=</span> <span class="n">ExperimentType</span><span class="p">()</span>
-        <span class="n">et</span><span class="o">.</span><span class="n">sample_form</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sample_form&#39;</span><span class="p">,</span> <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">et</span><span class="o">.</span><span class="n">beam_mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;beam_mode&#39;</span><span class="p">,</span> <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">et</span><span class="o">.</span><span class="n">radiation_probe</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;radiation_probe&#39;</span><span class="p">,</span> <span class="n">RadiationProbeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">et</span><span class="o">.</span><span class="n">scattering_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;scattering_type&#39;</span><span class="p">,</span> <span class="n">ScatteringTypeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sample_form</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">et</span><span class="o">.</span><span class="n">sample_form</span> <span class="o">=</span> <span class="n">sample_form</span>
+        <span class="k">if</span> <span class="n">beam_mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">et</span><span class="o">.</span><span class="n">beam_mode</span> <span class="o">=</span> <span class="n">beam_mode</span>
+        <span class="k">if</span> <span class="n">radiation_probe</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">et</span><span class="o">.</span><span class="n">radiation_probe</span> <span class="o">=</span> <span class="n">radiation_probe</span>
+        <span class="k">if</span> <span class="n">scattering_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">et</span><span class="o">.</span><span class="n">scattering_type</span> <span class="o">=</span> <span class="n">scattering_type</span>
+
         <span class="k">return</span> <span class="n">et</span>
 
-    <span class="c1"># TODO: Move to a common CIF utility module? io.cif.parse?</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_create_from_gemmi_block</span><span class="p">(</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">expt_type</span><span class="p">:</span> <span class="n">ExperimentType</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Look up the experiment class from the type enums.&quot;&quot;&quot;</span>
+        <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_SUPPORTED</span><span class="p">[</span><span class="n">scattering_type</span><span class="p">][</span><span class="n">sample_form</span><span class="p">][</span><span class="n">beam_mode</span><span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="c1"># TODO: @typechecked fails to find gemmi?</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_gemmi_block</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">block</span><span class="p">:</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Block</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExperimentBase</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a model instance from a single CIF block.&quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">name_from_block</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
 
-        <span class="c1"># TODO: move to io.cif.parse?</span>
         <span class="n">expt_type</span> <span class="o">=</span> <span class="n">ExperimentType</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
             <span class="n">param</span><span class="o">.</span><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
 
-        <span class="c1"># Create experiment instance of appropriate class</span>
-        <span class="c1"># TODO: make helper method to create experiment from type</span>
-        <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">expt_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_SUPPORTED</span><span class="p">[</span><span class="n">scattering_type</span><span class="p">][</span><span class="n">sample_form</span><span class="p">][</span><span class="n">beam_mode</span><span class="p">]</span>
+        <span class="n">expt_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resolve_class</span><span class="p">(</span><span class="n">expt_type</span><span class="p">)</span>
         <span class="n">expt_obj</span> <span class="o">=</span> <span class="n">expt_class</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">expt_type</span><span class="p">)</span>
 
-        <span class="c1"># Read all categories from CIF block</span>
-        <span class="c1"># TODO: move to io.cif.parse?</span>
         <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">expt_obj</span><span class="o">.</span><span class="n">categories</span><span class="p">:</span>
             <span class="n">category</span><span class="o">.</span><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">expt_obj</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_create_from_cif_path</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">cif_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExperimentBase</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an experiment from a CIF file path.&quot;&quot;&quot;</span>
-        <span class="n">doc</span> <span class="o">=</span> <span class="n">document_from_path</span><span class="p">(</span><span class="n">cif_path</span><span class="p">)</span>
-        <span class="n">block</span> <span class="o">=</span> <span class="n">pick_sole_block</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_from_gemmi_block</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Public methods</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_create_from_cif_str</span><span class="p">(</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_scratch</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">sample_form</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">beam_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">radiation_probe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExperimentBase</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an experiment without measured data.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Experiment identifier.</span>
+<span class="sd">            sample_form: Sample form (e.g. ``&#39;powder&#39;``).</span>
+<span class="sd">            beam_mode: Beam mode (e.g. ``&#39;constant wavelength&#39;``).</span>
+<span class="sd">            radiation_probe: Radiation probe (e.g. ``&#39;neutron&#39;``).</span>
+<span class="sd">            scattering_type: Scattering type (e.g. ``&#39;bragg&#39;``).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An experiment instance with only metadata.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expt_type</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_experiment_type</span><span class="p">(</span>
+            <span class="n">sample_form</span><span class="o">=</span><span class="n">sample_form</span><span class="p">,</span>
+            <span class="n">beam_mode</span><span class="o">=</span><span class="n">beam_mode</span><span class="p">,</span>
+            <span class="n">radiation_probe</span><span class="o">=</span><span class="n">radiation_probe</span><span class="p">,</span>
+            <span class="n">scattering_type</span><span class="o">=</span><span class="n">scattering_type</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">expt_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resolve_class</span><span class="p">(</span><span class="n">expt_type</span><span class="p">)</span>
+        <span class="n">expt_obj</span> <span class="o">=</span> <span class="n">expt_class</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">expt_type</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">expt_obj</span>
+
+    <span class="c1"># TODO: add minimal default configuration for missing parameters</span>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_cif_str</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">cif_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExperimentBase</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an experiment from a CIF string.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an experiment from a CIF string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cif_str: Full CIF document as a string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A populated experiment instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">doc</span> <span class="o">=</span> <span class="n">document_from_string</span><span class="p">(</span><span class="n">cif_str</span><span class="p">)</span>
         <span class="n">block</span> <span class="o">=</span> <span class="n">pick_sole_block</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_from_gemmi_block</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_gemmi_block</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+
+    <span class="c1"># TODO: Read content and call self.from_cif_str</span>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_cif_path</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">cif_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExperimentBase</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an experiment from a CIF file path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cif_path: Path to a CIF file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A populated experiment instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">document_from_path</span><span class="p">(</span><span class="n">cif_path</span><span class="p">)</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">pick_sole_block</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_gemmi_block</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_create_from_data_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_data_path</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">sample_form</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">beam_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">radiation_probe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExperimentBase</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an experiment from a raw data ASCII file.</span>
 
-<span class="sd">        Loads the experiment and attaches measured data from the</span>
-<span class="sd">        specified file.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            name: Experiment identifier.</span>
+<span class="sd">            data_path: Path to the measured data file.</span>
+<span class="sd">            sample_form: Sample form (e.g. ``&#39;powder&#39;``).</span>
+<span class="sd">            beam_mode: Beam mode (e.g. ``&#39;constant wavelength&#39;``).</span>
+<span class="sd">            radiation_probe: Radiation probe (e.g. ``&#39;neutron&#39;``).</span>
+<span class="sd">            scattering_type: Scattering type (e.g. ``&#39;bragg&#39;``).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An experiment instance with measured data attached.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">expt_type</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_experiment_type</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">expt_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_SUPPORTED</span><span class="p">[</span><span class="n">scattering_type</span><span class="p">][</span><span class="n">sample_form</span><span class="p">][</span><span class="n">beam_mode</span><span class="p">]</span>
-        <span class="n">expt_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-        <span class="n">expt_obj</span> <span class="o">=</span> <span class="n">expt_class</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">expt_type</span><span class="p">)</span>
-        <span class="n">data_path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;data_path&#39;</span><span class="p">]</span>
+        <span class="n">expt_obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_scratch</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">sample_form</span><span class="o">=</span><span class="n">sample_form</span><span class="p">,</span>
+            <span class="n">beam_mode</span><span class="o">=</span><span class="n">beam_mode</span><span class="p">,</span>
+            <span class="n">radiation_probe</span><span class="o">=</span><span class="n">radiation_probe</span><span class="p">,</span>
+            <span class="n">scattering_type</span><span class="o">=</span><span class="n">scattering_type</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">expt_obj</span><span class="o">.</span><span class="n">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">expt_obj</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_create_without_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an experiment without measured data.</span>
-
-<span class="sd">        Returns an experiment instance with only metadata and</span>
-<span class="sd">        configuration.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">expt_type</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_experiment_type</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">expt_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_SUPPORTED</span><span class="p">[</span><span class="n">scattering_type</span><span class="p">][</span><span class="n">sample_form</span><span class="p">][</span><span class="n">beam_mode</span><span class="p">]</span>
-        <span class="n">expt_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-        <span class="n">expt_obj</span> <span class="o">=</span> <span class="n">expt_class</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">expt_type</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">expt_obj</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an `ExperimentBase` using a validated argument</span>
-<span class="sd">        combination.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO: move to FactoryBase</span>
-        <span class="c1"># Check for valid argument combinations</span>
-        <span class="n">user_args</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">_validate_args</span><span class="p">(</span>
-            <span class="n">present</span><span class="o">=</span><span class="n">user_args</span><span class="p">,</span>
-            <span class="n">allowed_specs</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_ALLOWED_ARG_SPECS</span><span class="p">,</span>
-            <span class="n">factory_name</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>  <span class="c1"># TODO: move to FactoryBase</span>
-        <span class="p">)</span>
-
-        <span class="c1"># Validate enum arguments if provided</span>
-        <span class="k">if</span> <span class="s1">&#39;sample_form&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">SampleFormEnum</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;sample_form&#39;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="s1">&#39;beam_mode&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">BeamModeEnum</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;beam_mode&#39;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="s1">&#39;radiation_probe&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">RadiationProbeEnum</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;radiation_probe&#39;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="s1">&#39;scattering_type&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">ScatteringTypeEnum</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;scattering_type&#39;</span><span class="p">])</span>
-
-        <span class="c1"># Dispatch to the appropriate creation method</span>
-        <span class="k">if</span> <span class="s1">&#39;cif_path&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_from_cif_path</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cif_path&#39;</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="s1">&#39;cif_str&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_from_cif_str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cif_str&#39;</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="s1">&#39;data_path&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_from_data_path</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_without_data</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -18715,8 +19247,8 @@ with specific attributes.</p>
 <div class="doc doc-object doc-function">
 
 
-<h5 id="easydiffraction.datablocks.experiment.item.factory.ExperimentFactory.create" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<h5 id="easydiffraction.datablocks.experiment.item.factory.ExperimentFactory.from_cif_path" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_cif_path</span><span class="p">(</span><span class="n">cif_path</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
@@ -18727,15 +19259,66 @@ with specific attributes.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Create an <code>ExperimentBase</code> using a validated argument
-combination.</p>
+        <p>Create an experiment from a <abbr title="Crystallographic Information File.">CIF</abbr> file path.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>cif_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to a <abbr title="Crystallographic Information File.">CIF</abbr> file.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.base.ExperimentBase&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.item.base.ExperimentBase">ExperimentBase</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A populated experiment instance.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/factory.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
@@ -18751,9 +19334,307 @@ combination.</p>
 <span class="normal">196</span>
 <span class="normal">197</span>
 <span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_cif_path</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">,</span>
+    <span class="n">cif_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExperimentBase</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an experiment from a CIF file path.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cif_path: Path to a CIF file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A populated experiment instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">document_from_path</span><span class="p">(</span><span class="n">cif_path</span><span class="p">)</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="n">pick_sole_block</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_gemmi_block</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h5 id="easydiffraction.datablocks.experiment.item.factory.ExperimentFactory.from_cif_str" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_cif_str</span><span class="p">(</span><span class="n">cif_str</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create an experiment from a <abbr title="Crystallographic Information File.">CIF</abbr> string.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>cif_str</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Full <abbr title="Crystallographic Information File.">CIF</abbr> document as a string.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.base.ExperimentBase&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.item.base.ExperimentBase">ExperimentBase</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A populated experiment instance.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/factory.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_cif_str</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">,</span>
+    <span class="n">cif_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExperimentBase</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an experiment from a CIF string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cif_str: Full CIF document as a string.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A populated experiment instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">document_from_string</span><span class="p">(</span><span class="n">cif_str</span><span class="p">)</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="n">pick_sole_block</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_gemmi_block</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h5 id="easydiffraction.datablocks.experiment.item.factory.ExperimentFactory.from_data_path" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_data_path</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">sample_form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beam_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radiation_probe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scattering_type</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create an experiment from a raw data ASCII file.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Experiment identifier.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>data_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to the measured data file.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sample_form</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Sample form (e.g. <code>'powder'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>beam_mode</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Beam mode (e.g. <code>'constant wavelength'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>radiation_probe</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Radiation probe (e.g. <code>'neutron'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scattering_type</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Scattering type (e.g. <code>'bragg'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.base.ExperimentBase&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.item.base.ExperimentBase">ExperimentBase</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An experiment instance with measured data attached.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/factory.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
@@ -18765,39 +19646,273 @@ combination.</p>
 <span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
-<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an `ExperimentBase` using a validated argument</span>
-<span class="sd">    combination.</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_data_path</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">sample_form</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">beam_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">radiation_probe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExperimentBase</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an experiment from a raw data ASCII file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: Experiment identifier.</span>
+<span class="sd">        data_path: Path to the measured data file.</span>
+<span class="sd">        sample_form: Sample form (e.g. ``&#39;powder&#39;``).</span>
+<span class="sd">        beam_mode: Beam mode (e.g. ``&#39;constant wavelength&#39;``).</span>
+<span class="sd">        radiation_probe: Radiation probe (e.g. ``&#39;neutron&#39;``).</span>
+<span class="sd">        scattering_type: Scattering type (e.g. ``&#39;bragg&#39;``).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An experiment instance with measured data attached.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: move to FactoryBase</span>
-    <span class="c1"># Check for valid argument combinations</span>
-    <span class="n">user_args</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
-    <span class="bp">cls</span><span class="o">.</span><span class="n">_validate_args</span><span class="p">(</span>
-        <span class="n">present</span><span class="o">=</span><span class="n">user_args</span><span class="p">,</span>
-        <span class="n">allowed_specs</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_ALLOWED_ARG_SPECS</span><span class="p">,</span>
-        <span class="n">factory_name</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>  <span class="c1"># TODO: move to FactoryBase</span>
+    <span class="n">expt_obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_scratch</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">sample_form</span><span class="o">=</span><span class="n">sample_form</span><span class="p">,</span>
+        <span class="n">beam_mode</span><span class="o">=</span><span class="n">beam_mode</span><span class="p">,</span>
+        <span class="n">radiation_probe</span><span class="o">=</span><span class="n">radiation_probe</span><span class="p">,</span>
+        <span class="n">scattering_type</span><span class="o">=</span><span class="n">scattering_type</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">expt_obj</span><span class="o">.</span><span class="n">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">expt_obj</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
 
-    <span class="c1"># Validate enum arguments if provided</span>
-    <span class="k">if</span> <span class="s1">&#39;sample_form&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="n">SampleFormEnum</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;sample_form&#39;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="s1">&#39;beam_mode&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="n">BeamModeEnum</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;beam_mode&#39;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="s1">&#39;radiation_probe&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="n">RadiationProbeEnum</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;radiation_probe&#39;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="s1">&#39;scattering_type&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="n">ScatteringTypeEnum</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;scattering_type&#39;</span><span class="p">])</span>
+</div>
 
-    <span class="c1"># Dispatch to the appropriate creation method</span>
-    <span class="k">if</span> <span class="s1">&#39;cif_path&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_from_cif_path</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cif_path&#39;</span><span class="p">])</span>
-    <span class="k">elif</span> <span class="s1">&#39;cif_str&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_from_cif_str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cif_str&#39;</span><span class="p">])</span>
-    <span class="k">elif</span> <span class="s1">&#39;data_path&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_from_data_path</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_without_data</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h5 id="easydiffraction.datablocks.experiment.item.factory.ExperimentFactory.from_scratch" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_scratch</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">sample_form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beam_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radiation_probe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scattering_type</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create an experiment without measured data.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Experiment identifier.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sample_form</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Sample form (e.g. <code>'powder'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>beam_mode</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Beam mode (e.g. <code>'constant wavelength'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>radiation_probe</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Radiation probe (e.g. <code>'neutron'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scattering_type</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Scattering type (e.g. <code>'bragg'</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.base.ExperimentBase&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.item.base.ExperimentBase">ExperimentBase</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An experiment instance with only metadata.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/factory.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_scratch</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">sample_form</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">beam_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">radiation_probe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExperimentBase</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an experiment without measured data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: Experiment identifier.</span>
+<span class="sd">        sample_form: Sample form (e.g. ``&#39;powder&#39;``).</span>
+<span class="sd">        beam_mode: Beam mode (e.g. ``&#39;constant wavelength&#39;``).</span>
+<span class="sd">        radiation_probe: Radiation probe (e.g. ``&#39;neutron&#39;``).</span>
+<span class="sd">        scattering_type: Scattering type (e.g. ``&#39;bragg&#39;``).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An experiment instance with only metadata.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">expt_type</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_experiment_type</span><span class="p">(</span>
+        <span class="n">sample_form</span><span class="o">=</span><span class="n">sample_form</span><span class="p">,</span>
+        <span class="n">beam_mode</span><span class="o">=</span><span class="n">beam_mode</span><span class="p">,</span>
+        <span class="n">radiation_probe</span><span class="o">=</span><span class="n">radiation_probe</span><span class="p">,</span>
+        <span class="n">scattering_type</span><span class="o">=</span><span class="n">scattering_type</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">expt_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resolve_class</span><span class="p">(</span><span class="n">expt_type</span><span class="p">)</span>
+    <span class="n">expt_obj</span> <span class="o">=</span> <span class="n">expt_class</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">expt_type</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">expt_obj</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -18812,14 +19927,6 @@ combination.</p>
     </div>
 
 </div>
-
-
-
-
-
-
-
-
 
 
 

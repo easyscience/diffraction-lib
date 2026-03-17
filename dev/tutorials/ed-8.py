@@ -26,7 +26,7 @@ from easydiffraction import download_data
 # #### Create Structure
 
 # %%
-structure = StructureFactory.create(name='ncaf')
+structure = StructureFactory.from_scratch(name='ncaf')
 
 # %% [markdown]
 # #### Set Space Group
@@ -45,7 +45,7 @@ structure.cell.length_a = 10.250256
 # #### Set Atom Sites
 
 # %%
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Ca',
     type_symbol='Ca',
     fract_x=0.4663,
@@ -54,7 +54,7 @@ structure.atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.92,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Al',
     type_symbol='Al',
     fract_x=0.2521,
@@ -63,7 +63,7 @@ structure.atom_sites.add(
     wyckoff_letter='a',
     b_iso=0.73,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Na',
     type_symbol='Na',
     fract_x=0.0851,
@@ -72,7 +72,7 @@ structure.atom_sites.add(
     wyckoff_letter='a',
     b_iso=2.08,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='F1',
     type_symbol='F',
     fract_x=0.1377,
@@ -81,7 +81,7 @@ structure.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.90,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='F2',
     type_symbol='F',
     fract_x=0.3625,
@@ -90,7 +90,7 @@ structure.atom_sites.add(
     wyckoff_letter='c',
     b_iso=1.37,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='F3',
     type_symbol='F',
     fract_x=0.4612,
@@ -118,14 +118,14 @@ data_path47 = download_data(id=10, destination='data')
 # #### Create Experiment
 
 # %%
-expt56 = ExperimentFactory.create(
+expt56 = ExperimentFactory.from_data_path(
     name='wish_5_6',
     data_path=data_path56,
     beam_mode='time-of-flight',
 )
 
 # %%
-expt47 = ExperimentFactory.create(
+expt47 = ExperimentFactory.from_data_path(
     name='wish_4_7',
     data_path=data_path47,
     beam_mode='time-of-flight',
@@ -205,7 +205,7 @@ for idx, (x, y) in enumerate(
     ],
     start=1,
 ):
-    expt56.background.add(id=str(idx), x=x, y=y)
+    expt56.background.add_from_scratch(id=str(idx), x=x, y=y)
 
 # %%
 expt47.background_type = 'line-segment'
@@ -241,27 +241,27 @@ for idx, (x, y) in enumerate(
     ],
     start=1,
 ):
-    expt47.background.add(id=str(idx), x=x, y=y)
+    expt47.background.add_from_scratch(id=str(idx), x=x, y=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt56.linked_phases.add(id='ncaf', scale=1.0)
+expt56.linked_phases.add_from_scratch(id='ncaf', scale=1.0)
 
 # %%
-expt47.linked_phases.add(id='ncaf', scale=2.0)
+expt47.linked_phases.add_from_scratch(id='ncaf', scale=2.0)
 
 # %% [markdown]
 # #### Set Excluded Regions
 
 # %%
-expt56.excluded_regions.add(id='1', start=0, end=10010)
-expt56.excluded_regions.add(id='2', start=100010, end=200000)
+expt56.excluded_regions.add_from_scratch(id='1', start=0, end=10010)
+expt56.excluded_regions.add_from_scratch(id='2', start=100010, end=200000)
 
 # %%
-expt47.excluded_regions.add(id='1', start=0, end=10006)
-expt47.excluded_regions.add(id='2', start=100004, end=200000)
+expt47.excluded_regions.add_from_scratch(id='1', start=0, end=10006)
+expt47.excluded_regions.add_from_scratch(id='2', start=100004, end=200000)
 
 # %% [markdown]
 # ## Define Project
@@ -286,14 +286,14 @@ project = Project()
 # #### Add Structure
 
 # %%
-project.structures.add(structure=structure)
+project.structures.add(structure)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(experiment=expt56)
-project.experiments.add(experiment=expt47)
+project.experiments.add(expt56)
+project.experiments.add(expt47)
 
 # %% [markdown]
 # ## Perform Analysis

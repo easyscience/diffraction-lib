@@ -3914,7 +3914,7 @@ calculator: Active calculator used for computations.
             <span class="c1"># Pre-populate all experiments with weight 0.5</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">joint_fit_experiments</span> <span class="o">=</span> <span class="n">JointFitExperiments</span><span class="p">()</span>
             <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">joint_fit_experiments</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">joint_fit_experiments</span><span class="o">.</span><span class="n">add_from_scratch</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current fit mode changed to&#39;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fit_mode</span><span class="p">)</span>
 
@@ -4052,7 +4052,7 @@ calculator: Active calculator used for computations.
                 <span class="c1"># parameters can be resolved correctly during fitting.</span>
                 <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">dummy_experiments</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
 
-                <span class="n">dummy_experiments</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+                <span class="n">dummy_experiments</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
                     <span class="n">structures</span><span class="p">,</span>
                     <span class="n">dummy_experiments</span><span class="p">,</span>
@@ -4553,7 +4553,7 @@ project.analysis.show_fit_results()  # Display results
             <span class="c1"># parameters can be resolved correctly during fitting.</span>
             <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">dummy_experiments</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
 
-            <span class="n">dummy_experiments</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+            <span class="n">dummy_experiments</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
                 <span class="n">structures</span><span class="p">,</span>
                 <span class="n">dummy_experiments</span><span class="p">,</span>

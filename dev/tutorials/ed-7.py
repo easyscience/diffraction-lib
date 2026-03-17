@@ -23,7 +23,7 @@ from easydiffraction import download_data
 # #### Create Structure
 
 # %%
-structure = StructureFactory.create(name='si')
+structure = StructureFactory.from_scratch(name='si')
 
 # %% [markdown]
 # #### Set Space Group
@@ -42,7 +42,7 @@ structure.cell.length_a = 5.431
 # #### Set Atom Sites
 
 # %%
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Si',
     type_symbol='Si',
     fract_x=0.125,
@@ -66,7 +66,9 @@ data_path = download_data(id=7, destination='data')
 # #### Create Experiment
 
 # %%
-expt = ExperimentFactory.create(name='sepd', data_path=data_path, beam_mode='time-of-flight')
+expt = ExperimentFactory.from_data_path(
+    name='sepd', data_path=data_path, beam_mode='time-of-flight'
+)
 
 # %% [markdown]
 # #### Set Instrument
@@ -101,13 +103,13 @@ expt.peak.asym_alpha_1 = 0.5971
 # %%
 expt.background_type = 'line-segment'
 for x in range(0, 35000, 5000):
-    expt.background.add(id=str(x), x=x, y=200)
+    expt.background.add_from_scratch(id=str(x), x=x, y=200)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add(id='si', scale=10.0)
+expt.linked_phases.add_from_scratch(id='si', scale=10.0)
 
 # %% [markdown]
 # ## Define Project
@@ -124,13 +126,13 @@ project = Project()
 # #### Add Structure
 
 # %%
-project.structures.add(structure=structure)
+project.structures.add(structure)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(experiment=expt)
+project.experiments.add(expt)
 
 # %% [markdown]
 # ## Perform Analysis

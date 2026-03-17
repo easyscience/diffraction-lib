@@ -23,7 +23,7 @@ from easydiffraction import download_data
 # #### Create Structure
 
 # %%
-structure = StructureFactory.create(name='cosio')
+structure = StructureFactory.from_scratch(name='cosio')
 
 # %% [markdown]
 # #### Set Space Group
@@ -44,7 +44,7 @@ structure.cell.length_c = 4.8
 # #### Set Atom Sites
 
 # %%
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Co1',
     type_symbol='Co',
     fract_x=0,
@@ -53,7 +53,7 @@ structure.atom_sites.add(
     wyckoff_letter='a',
     b_iso=0.5,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Co2',
     type_symbol='Co',
     fract_x=0.279,
@@ -62,7 +62,7 @@ structure.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='Si',
     type_symbol='Si',
     fract_x=0.094,
@@ -71,7 +71,7 @@ structure.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='O1',
     type_symbol='O',
     fract_x=0.091,
@@ -80,7 +80,7 @@ structure.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='O2',
     type_symbol='O',
     fract_x=0.448,
@@ -89,7 +89,7 @@ structure.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-structure.atom_sites.add(
+structure.atom_sites.add_from_scratch(
     label='O3',
     type_symbol='O',
     fract_x=0.164,
@@ -114,7 +114,7 @@ data_path = download_data(id=12, destination='data')
 # #### Create Experiment
 
 # %%
-expt = ExperimentFactory.create(name='d20', data_path=data_path)
+expt = ExperimentFactory.from_data_path(name='d20', data_path=data_path)
 
 # %% [markdown]
 # #### Set Instrument
@@ -135,26 +135,26 @@ expt.peak.broad_gauss_w = 0.4
 # #### Set Background
 
 # %%
-expt.background.add(id='1', x=8, y=500)
-expt.background.add(id='2', x=9, y=500)
-expt.background.add(id='3', x=10, y=500)
-expt.background.add(id='4', x=11, y=500)
-expt.background.add(id='5', x=12, y=500)
-expt.background.add(id='6', x=15, y=500)
-expt.background.add(id='7', x=25, y=500)
-expt.background.add(id='8', x=30, y=500)
-expt.background.add(id='9', x=50, y=500)
-expt.background.add(id='10', x=70, y=500)
-expt.background.add(id='11', x=90, y=500)
-expt.background.add(id='12', x=110, y=500)
-expt.background.add(id='13', x=130, y=500)
-expt.background.add(id='14', x=150, y=500)
+expt.background.add_from_scratch(id='1', x=8, y=500)
+expt.background.add_from_scratch(id='2', x=9, y=500)
+expt.background.add_from_scratch(id='3', x=10, y=500)
+expt.background.add_from_scratch(id='4', x=11, y=500)
+expt.background.add_from_scratch(id='5', x=12, y=500)
+expt.background.add_from_scratch(id='6', x=15, y=500)
+expt.background.add_from_scratch(id='7', x=25, y=500)
+expt.background.add_from_scratch(id='8', x=30, y=500)
+expt.background.add_from_scratch(id='9', x=50, y=500)
+expt.background.add_from_scratch(id='10', x=70, y=500)
+expt.background.add_from_scratch(id='11', x=90, y=500)
+expt.background.add_from_scratch(id='12', x=110, y=500)
+expt.background.add_from_scratch(id='13', x=130, y=500)
+expt.background.add_from_scratch(id='14', x=150, y=500)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add(id='cosio', scale=1.0)
+expt.linked_phases.add_from_scratch(id='cosio', scale=1.0)
 
 # %% [markdown]
 # ## Define Project
@@ -179,13 +179,13 @@ project = Project()
 # #### Add Structure
 
 # %%
-project.structures.add(structure=structure)
+project.structures.add(structure)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(experiment=expt)
+project.experiments.add(expt)
 
 # %% [markdown]
 # ## Perform Analysis
@@ -259,11 +259,11 @@ for point in expt.background:
 # Set aliases for parameters.
 
 # %%
-project.analysis.aliases.add(
+project.analysis.aliases.add_from_scratch(
     label='biso_Co1',
     param_uid=project.structures['cosio'].atom_sites['Co1'].b_iso.uid,
 )
-project.analysis.aliases.add(
+project.analysis.aliases.add_from_scratch(
     label='biso_Co2',
     param_uid=project.structures['cosio'].atom_sites['Co2'].b_iso.uid,
 )
@@ -272,7 +272,7 @@ project.analysis.aliases.add(
 # Set constraints.
 
 # %%
-project.analysis.constraints.add(
+project.analysis.constraints.add_from_scratch(
     lhs_alias='biso_Co2',
     rhs_expr='biso_Co1',
 )
