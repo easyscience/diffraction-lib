@@ -74,6 +74,12 @@ class BeamModeEnum(str, Enum):
             return 'Time-of-flight (TOF) diffraction.'
 
 
+# TODO: Can, instead of hardcoding here, this info be auto-extracted
+#  from the actual peak profile classes defined in peak/cwl.py, tof.py,
+#  total.py? So that their Enum variable, string representation and
+#  description are defined in the respective classes?
+# TODO: Can supported values be defined based on the structure of peak/?
+# TODO: Can the same be reused for other enums in this file?
 class PeakProfileTypeEnum(str, Enum):
     """Available peak profile types per scattering and beam mode."""
 
