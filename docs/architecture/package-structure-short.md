@@ -35,7 +35,6 @@
 │   ├── 📄 collection.py
 │   ├── 📄 datablock.py
 │   ├── 📄 diagnostic.py
-│   ├── 📄 factory.py
 │   ├── 📄 guard.py
 │   ├── 📄 identity.py
 │   ├── 📄 singleton.py

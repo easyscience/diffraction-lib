@@ -61,8 +61,6 @@
 │   │   └── 🏷️ class DatablockCollection
 │   ├── 📄 diagnostic.py
 │   │   └── 🏷️ class Diagnostics
-│   ├── 📄 factory.py
-│   │   └── 🏷️ class FactoryBase
 │   ├── 📄 guard.py
 │   │   └── 🏷️ class GuardedBase
 │   ├── 📄 identity.py
