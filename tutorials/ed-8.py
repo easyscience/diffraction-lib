@@ -45,7 +45,7 @@ structure.cell.length_a = 10.250256
 # #### Set Atom Sites
 
 # %%
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='Ca',
     type_symbol='Ca',
     fract_x=0.4663,
@@ -54,7 +54,7 @@ structure.atom_sites.add_from_scratch(
     wyckoff_letter='b',
     b_iso=0.92,
 )
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='Al',
     type_symbol='Al',
     fract_x=0.2521,
@@ -63,7 +63,7 @@ structure.atom_sites.add_from_scratch(
     wyckoff_letter='a',
     b_iso=0.73,
 )
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='Na',
     type_symbol='Na',
     fract_x=0.0851,
@@ -72,7 +72,7 @@ structure.atom_sites.add_from_scratch(
     wyckoff_letter='a',
     b_iso=2.08,
 )
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='F1',
     type_symbol='F',
     fract_x=0.1377,
@@ -81,7 +81,7 @@ structure.atom_sites.add_from_scratch(
     wyckoff_letter='c',
     b_iso=0.90,
 )
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='F2',
     type_symbol='F',
     fract_x=0.3625,
@@ -90,7 +90,7 @@ structure.atom_sites.add_from_scratch(
     wyckoff_letter='c',
     b_iso=1.37,
 )
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='F3',
     type_symbol='F',
     fract_x=0.4612,
@@ -205,7 +205,7 @@ for idx, (x, y) in enumerate(
     ],
     start=1,
 ):
-    expt56.background.add_from_scratch(id=str(idx), x=x, y=y)
+    expt56.background.create(id=str(idx), x=x, y=y)
 
 # %%
 expt47.background_type = 'line-segment'
@@ -241,27 +241,27 @@ for idx, (x, y) in enumerate(
     ],
     start=1,
 ):
-    expt47.background.add_from_scratch(id=str(idx), x=x, y=y)
+    expt47.background.create(id=str(idx), x=x, y=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt56.linked_phases.add_from_scratch(id='ncaf', scale=1.0)
+expt56.linked_phases.create(id='ncaf', scale=1.0)
 
 # %%
-expt47.linked_phases.add_from_scratch(id='ncaf', scale=2.0)
+expt47.linked_phases.create(id='ncaf', scale=2.0)
 
 # %% [markdown]
 # #### Set Excluded Regions
 
 # %%
-expt56.excluded_regions.add_from_scratch(id='1', start=0, end=10010)
-expt56.excluded_regions.add_from_scratch(id='2', start=100010, end=200000)
+expt56.excluded_regions.create(id='1', start=0, end=10010)
+expt56.excluded_regions.create(id='2', start=100010, end=200000)
 
 # %%
-expt47.excluded_regions.add_from_scratch(id='1', start=0, end=10006)
-expt47.excluded_regions.add_from_scratch(id='2', start=100004, end=200000)
+expt47.excluded_regions.create(id='1', start=0, end=10006)
+expt47.excluded_regions.create(id='2', start=100004, end=200000)
 
 # %% [markdown]
 # ## Define Project

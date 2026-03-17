@@ -21,17 +21,18 @@ models in EasyDiffraction. It is assumed that you have already created a
 
 This is the most straightforward way to define a structure in EasyDiffraction.
 If you have a crystallographic information file (CIF) for your structure, you
-can add it to your project using the `add_phase_from_file` method of the
-`project` instance. In this case, the name of the model will be taken from CIF.
+can add it to your project using the `add_from_cif_path` method of the
+`project.structures` collection. In this case, the name of the model will be
+taken from CIF.
 
 ```python
 # Load a phase from a CIF file
-project.add_phase_from_file('data/lbco.cif')
+project.structures.add_from_cif_path('data/lbco.cif')
 ```
 
 Accessing the model after loading it will be done through the `structures`
-object of the `project` instance. The name of the model will be the same as the
-data block id in the CIF file. For example, if the CIF file contains a data
+collection of the `project` instance. The name of the model will be the same as
+the data block id in the CIF file. For example, if the CIF file contains a data
 block with the id `lbco`,
 
 <!-- prettier-ignore-start -->
@@ -57,14 +58,14 @@ project.structures['lbco']
 ## Defining a Model Manually
 
 If you do not have a CIF file or prefer to define the model manually, you can
-use the `add` method of the `structures` object of the `project` instance. In
+use the `create` method of the `structures` object of the `project` instance. In
 this case, you will need to specify the name of the model, which will be used to
 reference it later.
 
 ```python
 # Add a structure with default parameters
 # The structure name is used to reference it later.
-project.structures.add_from_scratch(name='nacl')
+project.structures.create(name='nacl')
 ```
 
 The `add` method creates a new structure with default parameters. You can then
@@ -95,7 +96,7 @@ project.structures['nacl'].cell.length_a = 5.691694
 
 ```python
 # Add atomic sites
-project.structures['nacl'].atom_sites.append(
+project.structures['nacl'].atom_sites.create(
     label='Na',
     type_symbol='Na',
     fract_x=0,
@@ -104,7 +105,7 @@ project.structures['nacl'].atom_sites.append(
     occupancy=1,
     b_iso_or_equiv=0.5,
 )
-project.structures['nacl'].atom_sites.append(
+project.structures['nacl'].atom_sites.create(
     label='Cl',
     type_symbol='Cl',
     fract_x=0,

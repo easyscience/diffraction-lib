@@ -104,7 +104,7 @@ class CategoryCollection(CollectionBase):
         category_collection_from_cif(self, block)
 
     def add(self, item) -> None:
-        """Insert a pre-built item into the collection.
+        """Insert or replace a pre-built item into the collection.
 
         Args:
             item: A ``CategoryItem`` instance to add.
@@ -112,7 +112,7 @@ class CategoryCollection(CollectionBase):
         self[item._identity.category_entry_name] = item
 
     @checktype
-    def add_from_scratch(self, **kwargs) -> None:
+    def create(self, **kwargs) -> None:
         """Create a new item with the given attributes and add it.
 
         A default instance of the collection's item type is created,

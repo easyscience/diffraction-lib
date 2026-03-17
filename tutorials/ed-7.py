@@ -42,7 +42,7 @@ structure.cell.length_a = 5.431
 # #### Set Atom Sites
 
 # %%
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='Si',
     type_symbol='Si',
     fract_x=0.125,
@@ -103,13 +103,13 @@ expt.peak.asym_alpha_1 = 0.5971
 # %%
 expt.background_type = 'line-segment'
 for x in range(0, 35000, 5000):
-    expt.background.add_from_scratch(id=str(x), x=x, y=200)
+    expt.background.create(id=str(x), x=x, y=200)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add_from_scratch(id='si', scale=10.0)
+expt.linked_phases.create(id='si', scale=10.0)
 
 # %% [markdown]
 # ## Define Project

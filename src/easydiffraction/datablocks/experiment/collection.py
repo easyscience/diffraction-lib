@@ -27,7 +27,7 @@ class Experiments(DatablockCollection):
 
     # TODO: Make abstract in DatablockCollection?
     @typechecked
-    def add_from_scratch(
+    def create(
         self,
         *,
         name: str,

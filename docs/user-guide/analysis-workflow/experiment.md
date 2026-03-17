@@ -126,12 +126,12 @@ project.experiments.add_from_data_path(
 ```
 
 If you do not have measured data for fitting and only want to view the simulated
-pattern, you can define an experiment without measured data using the
-`add_without_data` method:
+pattern, you can define an experiment without measured data using the `create`
+method:
 
 ```python
 # Add an experiment without measured data
-project.experiments.add_without_data(
+project.experiments.create(
     name='hrpt',
     sample_form='powder',
     beam_mode='constant wavelength',
@@ -144,16 +144,17 @@ directly using the `add` method:
 
 ```python
 # Add an experiment by passing the experiment object directly
-from easydiffraction import Experiment
+from easydiffraction import ExperimentFactory
 
-experiment = Experiment(
+experiment = ExperimentFactory.create(
     name='hrpt',
+    data_path='data/hrpt_lbco.xye',
     sample_form='powder',
     beam_mode='constant wavelength',
     radiation_probe='neutron',
     scattering_type='bragg',
 )
-project.experiments.add_from_scratch(experiment)
+project.experiments.add(experiment)
 ```
 
 ## Modifying Parameters
@@ -188,8 +189,8 @@ project.experiments['hrpt'].instrument.calib_twotheta_offset = 0.6
 
 ```python
 # Add excluded regions to the experiment
-project.experiments['hrpt'].excluded_regions.add_from_scratch(start=0, end=10)
-project.experiments['hrpt'].excluded_regions.add_from_scratch(start=160, end=180)
+project.experiments['hrpt'].excluded_regions.create(start=0, end=10)
+project.experiments['hrpt'].excluded_regions.create(start=160, end=180)
 ```
 
 ### 3. Peak Category { #peak-category }
@@ -213,18 +214,18 @@ project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
 project.experiments['hrpt'].background_type = 'line-segment'
 
 # Add background points
-project.experiments['hrpt'].background.add_from_scratch(x=10, y=170)
-project.experiments['hrpt'].background.add_from_scratch(x=30, y=170)
-project.experiments['hrpt'].background.add_from_scratch(x=50, y=170)
-project.experiments['hrpt'].background.add_from_scratch(x=110, y=170)
-project.experiments['hrpt'].background.add_from_scratch(x=165, y=170)
+project.experiments['hrpt'].background.create(x=10, y=170)
+project.experiments['hrpt'].background.create(x=30, y=170)
+project.experiments['hrpt'].background.create(x=50, y=170)
+project.experiments['hrpt'].background.create(x=110, y=170)
+project.experiments['hrpt'].background.create(x=165, y=170)
 ```
 
 ### 5. Linked Phases Category { #linked-phases-category }
 
 ```python
 # Link the structure defined in the previous step to the experiment
-project.experiments['hrpt'].linked_phases.add_from_scratch(id='lbco', scale=10.0)
+project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
 ```
 
 ### 6. Measured Data Category { #measured-data-category }

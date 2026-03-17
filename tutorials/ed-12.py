@@ -37,13 +37,13 @@ project.plotter.x_max = 30.0
 # ## Add Structure
 
 # %%
-project.structures.add_from_scratch(name='nacl')
+project.structures.create(name='nacl')
 
 # %%
 project.structures['nacl'].space_group.name_h_m = 'F m -3 m'
 project.structures['nacl'].space_group.it_coordinate_system_code = '1'
 project.structures['nacl'].cell.length_a = 5.62
-project.structures['nacl'].atom_sites.add_from_scratch(
+project.structures['nacl'].atom_sites.create(
     label='Na',
     type_symbol='Na',
     fract_x=0,
@@ -52,7 +52,7 @@ project.structures['nacl'].atom_sites.add_from_scratch(
     wyckoff_letter='a',
     b_iso=1.0,
 )
-project.structures['nacl'].atom_sites.add_from_scratch(
+project.structures['nacl'].atom_sites.create(
     label='Cl',
     type_symbol='Cl',
     fract_x=0.5,
@@ -96,7 +96,7 @@ project.experiments['xray_pdf'].peak.sharp_delta_2 = 5
 project.experiments['xray_pdf'].peak.damp_particle_diameter = 0
 
 # %%
-project.experiments['xray_pdf'].linked_phases.add_from_scratch(id='nacl', scale=0.5)
+project.experiments['xray_pdf'].linked_phases.create(id='nacl', scale=0.5)
 
 # %% [markdown]
 # ## Select Fitting Parameters

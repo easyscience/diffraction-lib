@@ -57,8 +57,8 @@ def test_background_base_minimal_impl_and_collection_cif():
     coll = BackgroundCollection()
     a = ConstantBackground()
     a.level = 1.0
-    coll.add_from_scratch(level=1.0)
-    coll.add_from_scratch(level=2.0)
+    coll.create(level=1.0)
+    coll.create(level=2.0)
 
     # calculate sums two backgrounds externally (out of scope), here just verify item.calculate
     x = np.array([0.0, 1.0, 2.0])

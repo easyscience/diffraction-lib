@@ -416,7 +416,7 @@ class Analysis:
             # Pre-populate all experiments with weight 0.5
             self.joint_fit_experiments = JointFitExperiments()
             for id in self.project.experiments.names:
-                self.joint_fit_experiments.add_from_scratch(id=id, weight=0.5)
+                self.joint_fit_experiments.create(id=id, weight=0.5)
         console.paragraph('Current fit mode changed to')
         console.print(self._fit_mode)
 

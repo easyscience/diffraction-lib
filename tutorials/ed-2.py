@@ -36,7 +36,7 @@ project = ed.Project()
 # ## Step 2: Define Structure
 
 # %%
-project.structures.add_from_scratch(name='lbco')
+project.structures.create(name='lbco')
 
 # %%
 structure = project.structures['lbco']
@@ -49,7 +49,7 @@ structure.space_group.it_coordinate_system_code = '1'
 structure.cell.length_a = 3.88
 
 # %%
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -59,7 +59,7 @@ structure.atom_sites.add_from_scratch(
     b_iso=0.5,
     occupancy=0.5,
 )
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -69,7 +69,7 @@ structure.atom_sites.add_from_scratch(
     b_iso=0.5,
     occupancy=0.5,
 )
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -78,7 +78,7 @@ structure.atom_sites.add_from_scratch(
     wyckoff_letter='b',
     b_iso=0.5,
 )
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -117,18 +117,18 @@ experiment.peak.broad_gauss_w = 0.1
 experiment.peak.broad_lorentz_y = 0.1
 
 # %%
-experiment.background.add_from_scratch(id='1', x=10, y=170)
-experiment.background.add_from_scratch(id='2', x=30, y=170)
-experiment.background.add_from_scratch(id='3', x=50, y=170)
-experiment.background.add_from_scratch(id='4', x=110, y=170)
-experiment.background.add_from_scratch(id='5', x=165, y=170)
+experiment.background.create(id='1', x=10, y=170)
+experiment.background.create(id='2', x=30, y=170)
+experiment.background.create(id='3', x=50, y=170)
+experiment.background.create(id='4', x=110, y=170)
+experiment.background.create(id='5', x=165, y=170)
 
 # %%
-experiment.excluded_regions.add_from_scratch(id='1', start=0, end=5)
-experiment.excluded_regions.add_from_scratch(id='2', start=165, end=180)
+experiment.excluded_regions.create(id='1', start=0, end=5)
+experiment.excluded_regions.create(id='2', start=165, end=180)
 
 # %%
-experiment.linked_phases.add_from_scratch(id='lbco', scale=10.0)
+experiment.linked_phases.create(id='lbco', scale=10.0)
 
 # %% [markdown]
 # ## Step 4: Perform Analysis
