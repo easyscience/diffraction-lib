@@ -1,6 +1,6 @@
 # Design Document: `TypeInfo`, `Compatibility`, `CalculatorSupport`, and `FactoryBase`
 
-**Date:** 2026-03-17  
+**Date:** 2026-03-19  
 **Status:** Proposed  
 **Scope:** `easydiffraction` core infrastructure and all category/factory modules
 
@@ -92,7 +92,7 @@ untouched.
 
 ### 3.1 Overview
 
-Three frozen dataclasses and one base factory class, all in one file:
+Three frozen dataclasses and one base factory class:
 
 | Object | Purpose | Lives on |
 |---|---|---|
@@ -109,10 +109,10 @@ A new enum is also introduced:
 
 ### 3.2 File Location
 
-All new types live in a single file:
+Metadata types live in a single file:
 
 ```
-src/easydiffraction/core/metadata.py
+src/easydiffraction/core/metadata.py     — TypeInfo, Compatibility, CalculatorSupport
 ```
 
 `CalculatorEnum` lives alongside the other experimental-axis enums:
@@ -293,20 +293,25 @@ class FactoryBase:
     lookup, listing, and display. Concrete factories inherit from this
     and only need to define:
 
-        _registry:     list — populated by @register decorator
-        _default_tag:  str  — tag used when caller passes None
+        _registry:      list — populated by @register decorator
+        _default_tag:   str  — fallback tag when caller passes None
+                               and no conditions are given
+        _default_rules: dict — context-dependent defaults (optional)
 
-    Optionally override _filter_registered() for context-dependent
-    filtering (e.g. by experimental axes or calculator).
+    Optionally override _supported_map() for special filtering (e.g.
+    CalculatorFactory filters by engine_imported).
     """
 
     _registry: List[Type] = []
     _default_tag: str = ''
+    _default_rules: Dict[frozenset, str] = {}
 
     def __init_subclass__(cls, **kwargs):
-        """Each subclass gets its own independent registry list."""
+        """Each subclass gets its own independent registry and rules."""
         super().__init_subclass__(**kwargs)
         cls._registry = []
+        if '_default_rules' not in cls.__dict__:
+            cls._default_rules = {}
 
     @classmethod
     def register(cls, klass):
@@ -341,6 +346,41 @@ class FactoryBase:
         return list(cls._supported_map().keys())
 
     @classmethod
+    def default_tag(cls, **conditions) -> str:
+        """Resolve the default tag for the given experimental context.
+
+        Looks up ``_default_rules`` using frozenset of condition items
+        as key. Falls back to ``_default_tag`` if no rule matches.
+
+        Args:
+            **conditions: Experimental-axis values, e.g.
+                scattering_type=ScatteringTypeEnum.BRAGG,
+                beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH.
+
+        Returns:
+            The default tag string.
+
+        Resolution strategy: the rule whose key is the largest subset
+        of the given conditions wins. This allows both broad rules
+        (e.g. just scattering_type) and specific rules (e.g.
+        scattering_type + beam_mode) to coexist. If no rule matches,
+        ``_default_tag`` is returned.
+        """
+        if not cls._default_rules or not conditions:
+            return cls._default_tag
+
+        condition_set = frozenset(conditions.items())
+        best_match_tag = cls._default_tag
+        best_match_size = 0
+
+        for rule_key, rule_tag in cls._default_rules.items():
+            if rule_key <= condition_set and len(rule_key) > best_match_size:
+                best_match_tag = rule_tag
+                best_match_size = len(rule_key)
+
+        return best_match_tag
+
+    @classmethod
     def create(cls, tag: Optional[str] = None, **kwargs) -> Any:
         """Instantiate a registered class by tag.
 
@@ -363,6 +403,25 @@ class FactoryBase:
                 f"Supported: {list(supported.keys())}"
             )
         return supported[tag](**kwargs)
+
+    @classmethod
+    def create_default_for(cls, **conditions) -> Any:
+        """Instantiate the default class for the given experimental
+        context.
+
+        Combines ``default_tag()`` with ``create()``. Use this when
+        creating objects where the choice depends on experimental
+        configuration.
+
+        Args:
+            **conditions: Experimental-axis values, e.g.
+                scattering_type=ScatteringTypeEnum.BRAGG.
+
+        Returns:
+            A new instance of the resolved default class.
+        """
+        tag = cls.default_tag(**conditions)
+        return cls.create(tag)
 
     @classmethod
     def supported_for(
@@ -417,7 +476,7 @@ class FactoryBase:
             [klass.type_info.tag, klass.type_info.description]
             for klass in matching
         ]
-        console.paragraph(f'Supported types')
+        console.paragraph('Supported types')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
@@ -429,35 +488,173 @@ class FactoryBase:
 `_supported_map()`, `list_supported_*()`, `show_supported_*()`,
 `create()`, and validation boilerplate.
 
-**What concrete factories become:**
+---
+
+## 5. Context-Dependent Defaults
+
+### 5.1 The Problem
+
+A single `_default_tag` per factory is insufficient. The correct
+default depends on the experimental context:
+
+| Factory | Context | Correct default |
+|---|---|---|
+| `PeakFactory` | Bragg + CWL | `'pseudo-voigt'` |
+| `PeakFactory` | Bragg + TOF | `'tof-pseudo-voigt-ikeda-carpenter'` |
+| `PeakFactory` | Total (any) | `'gaussian-damped-sinc'` |
+| `CalculatorFactory` | Bragg (any) | `'cryspy'` |
+| `CalculatorFactory` | Total (any) | `'pdffit'` |
+| `InstrumentFactory` | CWL + Powder | `'cwl-pd'` |
+| `InstrumentFactory` | TOF + SC | `'tof-sc'` |
+| `DataFactory` | Powder + Bragg + CWL | `'bragg-pd-cwl'` |
+| `DataFactory` | Powder + Total + any | `'total-pd'` |
+| `BackgroundFactory` | (any) | `'line-segment'` |
+| `MinimizerFactory` | (any) | `'lmfit'` |
+
+### 5.2 The Solution: `_default_rules` + `default_tag(**conditions)`
+
+Each factory defines a `_default_rules` dict mapping frozensets of
+`(axis, value)` pairs to default tags. The `default_tag()` method on
+`FactoryBase` resolves the best match using subset matching: the rule
+whose key is the *largest subset* of the given conditions wins.
+
+- **Broad rules** (e.g. `{('scattering_type', TOTAL)}`) match any
+  experiment with `scattering_type=TOTAL`, regardless of beam mode.
+- **Specific rules** (e.g. `{('scattering_type', BRAGG),
+  ('beam_mode', TOF)}`) take priority over broader ones when both
+  match because they have more keys.
+- **`_default_tag`** is the fallback when no rule matches (e.g. when
+  `default_tag()` is called with no conditions).
+
+### 5.3 Two Creation Methods
+
+`FactoryBase` provides two creation paths:
+
+- **`create(tag)`** — explicit tag, used when the user or code knows
+  exactly what it wants. Falls back to `_default_tag` if `tag` is
+  `None`.
+- **`create_default_for(**conditions)`** — context-dependent, used
+  when creating objects during experiment construction. Resolves the
+  correct default via `default_tag()` then creates it.
+
+### 5.4 Examples
 
 ```python
-class BackgroundFactory(FactoryBase):
-    _default_tag = 'line-segment'
+# Explicit creation — user knows the tag
+peak = PeakFactory.create('thompson-cox-hastings')
 
-class PeakFactory(FactoryBase):
-    _default_tag = 'pseudo-voigt'
+# Context-dependent default — during experiment construction
+peak = PeakFactory.create_default_for(
+    scattering_type=ScatteringTypeEnum.BRAGG,
+    beam_mode=BeamModeEnum.TIME_OF_FLIGHT,
+)
+# → resolves to 'tof-pseudo-voigt-ikeda-carpenter' → creates TofPseudoVoigtIkedaCarpenter
 
-class InstrumentFactory(FactoryBase):
-    _default_tag = 'cwl-powder'
+# Calculator with context-dependent default
+calc = CalculatorFactory.create_default_for(
+    scattering_type=ScatteringTypeEnum.TOTAL,
+)
+# → resolves to 'pdffit' → creates PdffitCalculator
 
-class DataFactory(FactoryBase):
-    _default_tag = 'pd-cwl'
-
-class CalculatorFactory(FactoryBase):
-    _default_tag = 'cryspy'
-
-class MinimizerFactory(FactoryBase):
-    _default_tag = 'lmfit'
+# Simple default — no context
+bg = BackgroundFactory.create()
+# → uses _default_tag = 'line-segment' → creates LineSegmentBackground
 ```
-
-Each is ~2 lines. All behavior is inherited.
 
 ---
 
-## 5. Where Metadata Goes: CategoryItem vs. CategoryCollection
+## 6. Tag Naming Convention
 
-### 5.1 The Rule
+### 6.1 Principles
+
+Tags are the user-facing identifiers for selecting types. They must be:
+
+- **Consistent** — use the same abbreviations everywhere.
+- **Hyphen-separated** — all lowercase, words joined by hyphens.
+- **Semantically ordered** — from general to specific.
+- **Unique within a factory** — but may overlap across factories.
+
+### 6.2 Standard Abbreviations
+
+| Concept | Abbreviation | Never use |
+|---|---|---|
+| Powder | `pd` | `powder` |
+| Single crystal | `sc` | `single-crystal` |
+| Constant wavelength | `cwl` | `cw`, `constant-wavelength` |
+| Time-of-flight | `tof` | `time-of-flight` |
+| Bragg (scattering) | `bragg` | |
+| Total (scattering) | `total` | |
+
+### 6.3 Complete Tag Registry
+
+#### Background tags
+
+| Tag | Class |
+|---|---|
+| `line-segment` | `LineSegmentBackground` |
+| `chebyshev` | `ChebyshevPolynomialBackground` |
+
+#### Peak tags
+
+| Tag | Class |
+|---|---|
+| `pseudo-voigt` | `CwlPseudoVoigt` |
+| `split-pseudo-voigt` | `CwlSplitPseudoVoigt` |
+| `thompson-cox-hastings` | `CwlThompsonCoxHastings` |
+| `tof-pseudo-voigt` | `TofPseudoVoigt` |
+| `tof-pseudo-voigt-ikeda-carpenter` | `TofPseudoVoigtIkedaCarpenter` |
+| `tof-pseudo-voigt-back-to-back` | `TofPseudoVoigtBackToBack` |
+| `gaussian-damped-sinc` | `TotalGaussianDampedSinc` |
+
+#### Instrument tags
+
+| Tag | Class |
+|---|---|
+| `cwl-pd` | `CwlPdInstrument` |
+| `cwl-sc` | `CwlScInstrument` |
+| `tof-pd` | `TofPdInstrument` |
+| `tof-sc` | `TofScInstrument` |
+
+#### Data tags
+
+| Tag | Class |
+|---|---|
+| `bragg-pd-cwl` | `PdCwlData` |
+| `bragg-pd-tof` | `PdTofData` |
+| `bragg-sc` | `ReflnData` |
+| `total-pd` | `TotalData` |
+
+#### Experiment tags
+
+| Tag | Class |
+|---|---|
+| `bragg-pd` | `BraggPdExperiment` |
+| `total-pd` | `TotalPdExperiment` |
+| `bragg-sc-cwl` | `CwlScExperiment` |
+| `bragg-sc-tof` | `TofScExperiment` |
+
+#### Calculator tags
+
+| Tag | Class |
+|---|---|
+| `cryspy` | `CryspyCalculator` |
+| `crysfml` | `CrysfmlCalculator` |
+| `pdffit` | `PdffitCalculator` |
+
+#### Minimizer tags
+
+| Tag | Class |
+|---|---|
+| `lmfit` | `LmfitMinimizer` |
+| `lmfit-leastsq` | `LmfitMinimizer` (method=`leastsq`) |
+| `lmfit-least-squares` | `LmfitMinimizer` (method=`least_squares`) |
+| `dfols` | `DfolsMinimizer` |
+
+---
+
+## 7. Where Metadata Goes: CategoryItem vs. CategoryCollection
+
+### 7.1 The Rule
 
 > **If a concrete class is created by a factory, it gets `type_info`,
 > `compatibility`, and `calculator_support`.**
@@ -466,7 +663,7 @@ Each is ~2 lines. All behavior is inherited.
 > `CategoryCollection`, it does NOT get these attributes — the
 > collection does.**
 
-### 5.2 Rationale
+### 7.2 Rationale
 
 A `LineSegment` item (a single background control point) is never
 selected, created, or queried by a factory. It is always instantiated
@@ -485,7 +682,7 @@ subclasses are `CategoryItem` subclasses used as singletons — they
 exist directly on a parent (Structure or Experiment), and some of them
 *are* factory-created (instruments, peaks). These get the metadata.
 
-### 5.3 Classification of All Current Classes
+### 7.3 Classification of All Current Classes
 
 #### Singleton CategoryItems — factory-created (get all three)
 
@@ -563,9 +760,9 @@ selection, no experimental-condition filtering. They get nothing.
 
 ---
 
-## 6. Complete Examples
+## 8. Complete Examples
 
-### 6.1 Background
+### 8.1 Background
 
 #### Before (3 files, ~95 lines for the factory + enum alone)
 
@@ -587,6 +784,8 @@ from easydiffraction.core.factory import FactoryBase
 
 class BackgroundFactory(FactoryBase):
     _default_tag = 'line-segment'
+    # No _default_rules needed — background choice doesn't depend on
+    # experimental context.
 ```
 
 **`background/line_segment.py`**:
@@ -623,7 +822,7 @@ class LineSegmentBackground(BackgroundBase):
 @BackgroundFactory.register
 class ChebyshevPolynomialBackground(BackgroundBase):
     type_info = TypeInfo(
-        tag='chebyshev polynomial',
+        tag='chebyshev',
         description='Chebyshev polynomial background',
     )
     compatibility = Compatibility(
@@ -641,15 +840,31 @@ class ChebyshevPolynomialBackground(BackgroundBase):
 **Note:** `LineSegment` and `PolynomialTerm` (the child `CategoryItem`
 classes) are unchanged — they get no metadata.
 
-### 6.2 Peak Profiles
+### 8.2 Peak Profiles
 
 **`peak/factory.py`**:
 
 ```python
 from easydiffraction.core.factory import FactoryBase
+from easydiffraction.datablocks.experiment.item.enums import (
+    BeamModeEnum, ScatteringTypeEnum,
+)
 
 class PeakFactory(FactoryBase):
     _default_tag = 'pseudo-voigt'
+    _default_rules = {
+        frozenset({
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+            ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
+        }): 'pseudo-voigt',
+        frozenset({
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+            ('beam_mode', BeamModeEnum.TIME_OF_FLIGHT),
+        }): 'tof-pseudo-voigt-ikeda-carpenter',
+        frozenset({
+            ('scattering_type', ScatteringTypeEnum.TOTAL),
+        }): 'gaussian-damped-sinc',
+    }
 ```
 
 **`peak/cwl.py`**:
@@ -675,7 +890,7 @@ class CwlPseudoVoigt(PeakBase, CwlBroadeningMixin):
 @PeakFactory.register
 class CwlSplitPseudoVoigt(PeakBase, CwlBroadeningMixin, EmpiricalAsymmetryMixin):
     type_info = TypeInfo(
-        tag='split pseudo-voigt',
+        tag='split-pseudo-voigt',
         description='Split pseudo-Voigt with empirical asymmetry correction',
     )
     compatibility = Compatibility(
@@ -712,7 +927,7 @@ class CwlThompsonCoxHastings(PeakBase, CwlBroadeningMixin, FcjAsymmetryMixin):
 ```python
 @PeakFactory.register
 class TofPseudoVoigt(PeakBase, TofBroadeningMixin):
-    type_info = TypeInfo(tag='tof pseudo-voigt', description='TOF pseudo-Voigt profile')
+    type_info = TypeInfo(tag='tof-pseudo-voigt', description='TOF pseudo-Voigt profile')
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
@@ -727,7 +942,7 @@ class TofPseudoVoigt(PeakBase, TofBroadeningMixin):
 @PeakFactory.register
 class TofPseudoVoigtIkedaCarpenter(PeakBase, TofBroadeningMixin, IkedaCarpenterAsymmetryMixin):
     type_info = TypeInfo(
-        tag='pseudo-voigt * ikeda-carpenter',
+        tag='tof-pseudo-voigt-ikeda-carpenter',
         description='Pseudo-Voigt with Ikeda–Carpenter asymmetry correction',
     )
     compatibility = Compatibility(
@@ -744,7 +959,7 @@ class TofPseudoVoigtIkedaCarpenter(PeakBase, TofBroadeningMixin, IkedaCarpenterA
 @PeakFactory.register
 class TofPseudoVoigtBackToBack(PeakBase, TofBroadeningMixin, IkedaCarpenterAsymmetryMixin):
     type_info = TypeInfo(
-        tag='pseudo-voigt * back-to-back',
+        tag='tof-pseudo-voigt-back-to-back',
         description='TOF back-to-back pseudo-Voigt with asymmetry',
     )
     compatibility = Compatibility(
@@ -780,15 +995,36 @@ class TotalGaussianDampedSinc(PeakBase, TotalBroadeningMixin):
         super().__init__()
 ```
 
-### 6.3 Instruments
+### 8.3 Instruments
 
 **`instrument/factory.py`**:
 
 ```python
 from easydiffraction.core.factory import FactoryBase
+from easydiffraction.datablocks.experiment.item.enums import (
+    BeamModeEnum, SampleFormEnum,
+)
 
 class InstrumentFactory(FactoryBase):
-    _default_tag = 'cwl-powder'
+    _default_tag = 'cwl-pd'
+    _default_rules = {
+        frozenset({
+            ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
+            ('sample_form', SampleFormEnum.POWDER),
+        }): 'cwl-pd',
+        frozenset({
+            ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
+            ('sample_form', SampleFormEnum.SINGLE_CRYSTAL),
+        }): 'cwl-sc',
+        frozenset({
+            ('beam_mode', BeamModeEnum.TIME_OF_FLIGHT),
+            ('sample_form', SampleFormEnum.POWDER),
+        }): 'tof-pd',
+        frozenset({
+            ('beam_mode', BeamModeEnum.TIME_OF_FLIGHT),
+            ('sample_form', SampleFormEnum.SINGLE_CRYSTAL),
+        }): 'tof-sc',
+    }
 ```
 
 **`instrument/cwl.py`**:
@@ -796,7 +1032,7 @@ class InstrumentFactory(FactoryBase):
 ```python
 @InstrumentFactory.register
 class CwlPdInstrument(CwlInstrumentBase):
-    type_info = TypeInfo(tag='cwl-powder', description='CW powder diffractometer')
+    type_info = TypeInfo(tag='cwl-pd', description='CW powder diffractometer')
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG, ScatteringTypeEnum.TOTAL}),
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
@@ -812,7 +1048,7 @@ class CwlPdInstrument(CwlInstrumentBase):
 
 @InstrumentFactory.register
 class CwlScInstrument(CwlInstrumentBase):
-    type_info = TypeInfo(tag='cwl-single-crystal', description='CW single-crystal diffractometer')
+    type_info = TypeInfo(tag='cwl-sc', description='CW single-crystal diffractometer')
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
@@ -826,18 +1062,73 @@ class CwlScInstrument(CwlInstrumentBase):
         super().__init__()
 ```
 
-**`instrument/tof.py`**: Same pattern for `TofPdInstrument`,
-`TofScInstrument`.
+**`instrument/tof.py`**:
 
-### 6.4 Data Collections
+```python
+@InstrumentFactory.register
+class TofPdInstrument(InstrumentBase):
+    type_info = TypeInfo(tag='tof-pd', description='TOF powder diffractometer')
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+    )
+
+    def __init__(self) -> None:
+        super().__init__()
+    # ...existing parameter definitions unchanged...
+
+@InstrumentFactory.register
+class TofScInstrument(InstrumentBase):
+    type_info = TypeInfo(tag='tof-sc', description='TOF single-crystal diffractometer')
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
+    )
+
+    def __init__(self) -> None:
+        super().__init__()
+```
+
+### 8.4 Data Collections
 
 **`data/factory.py`**:
 
 ```python
 from easydiffraction.core.factory import FactoryBase
+from easydiffraction.datablocks.experiment.item.enums import (
+    BeamModeEnum, SampleFormEnum, ScatteringTypeEnum,
+)
 
 class DataFactory(FactoryBase):
-    _default_tag = 'pd-cwl'
+    _default_tag = 'bragg-pd-cwl'
+    _default_rules = {
+        frozenset({
+            ('sample_form', SampleFormEnum.POWDER),
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+            ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
+        }): 'bragg-pd-cwl',
+        frozenset({
+            ('sample_form', SampleFormEnum.POWDER),
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+            ('beam_mode', BeamModeEnum.TIME_OF_FLIGHT),
+        }): 'bragg-pd-tof',
+        frozenset({
+            ('sample_form', SampleFormEnum.POWDER),
+            ('scattering_type', ScatteringTypeEnum.TOTAL),
+        }): 'total-pd',
+        frozenset({
+            ('sample_form', SampleFormEnum.SINGLE_CRYSTAL),
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+        }): 'bragg-sc',
+    }
 ```
 
 **`data/bragg_pd.py`** (collection classes only — data point items
@@ -846,7 +1137,7 @@ are unchanged):
 ```python
 @DataFactory.register
 class PdCwlData(PdDataBase):
-    type_info = TypeInfo(tag='pd-cwl', description='Powder CW diffraction data')
+    type_info = TypeInfo(tag='bragg-pd-cwl', description='Bragg powder CWL data')
     compatibility = Compatibility(
         sample_form=frozenset({SampleFormEnum.POWDER}),
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -862,7 +1153,7 @@ class PdCwlData(PdDataBase):
 
 @DataFactory.register
 class PdTofData(PdDataBase):
-    type_info = TypeInfo(tag='pd-tof', description='Powder TOF diffraction data')
+    type_info = TypeInfo(tag='bragg-pd-tof', description='Bragg powder TOF data')
     compatibility = Compatibility(
         sample_form=frozenset({SampleFormEnum.POWDER}),
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -877,7 +1168,47 @@ class PdTofData(PdDataBase):
     # ...rest unchanged...
 ```
 
-### 6.5 Calculators
+**`data/bragg_sc.py`**:
+
+```python
+@DataFactory.register
+class ReflnData(CategoryCollection):
+    type_info = TypeInfo(tag='bragg-sc', description='Bragg single-crystal reflection data')
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
+    )
+
+    def __init__(self):
+        super().__init__(item_type=Refln)
+    # ...rest unchanged...
+```
+
+**`data/total_pd.py`**:
+
+```python
+@DataFactory.register
+class TotalData(TotalDataBase):
+    type_info = TypeInfo(tag='total-pd', description='Total scattering (PDF) data')
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+        scattering_type=frozenset({ScatteringTypeEnum.TOTAL}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.PDFFIT}),
+    )
+
+    def __init__(self):
+        super().__init__(item_type=TotalDataPoint)
+    # ...rest unchanged...
+```
+
+### 8.5 Calculators
 
 Calculators get `type_info` only. They don't need `compatibility`
 (they don't have experimental restrictions on *themselves*) or
@@ -888,9 +1219,27 @@ expressed on the categories they support — inverted.
 
 ```python
 from easydiffraction.core.factory import FactoryBase
+from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
 class CalculatorFactory(FactoryBase):
     _default_tag = 'cryspy'
+    _default_rules = {
+        frozenset({
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+        }): 'cryspy',
+        frozenset({
+            ('scattering_type', ScatteringTypeEnum.TOTAL),
+        }): 'pdffit',
+    }
+
+    @classmethod
+    def _supported_map(cls):
+        """Only include calculators whose engines are importable."""
+        return {
+            klass.type_info.tag: klass
+            for klass in cls._registry
+            if klass().engine_imported
+        }
 ```
 
 **`calculators/cryspy.py`**:
@@ -932,38 +1281,46 @@ class PdffitCalculator(CalculatorBase):
     # ...rest unchanged...
 ```
 
-**Note on `engine_imported`:** `CalculatorFactory` may override
-`_supported_map()` to filter out calculators where
-`engine_imported is False`:
+**Note on `engine_imported`:** `CalculatorFactory` is the only factory
+that overrides `_supported_map()` to filter out calculators where
+`engine_imported is False`. All other factories inherit the default
+implementation from `FactoryBase`.
 
-```python
-class CalculatorFactory(FactoryBase):
-    _default_tag = 'cryspy'
-
-    @classmethod
-    def _supported_map(cls):
-        """Only include calculators whose engines are importable."""
-        return {
-            klass.type_info.tag: klass
-            for klass in cls._registry
-            if klass().engine_imported
-        }
-```
-
-This is the only factory that needs to override `_supported_map()`.
-All others inherit the default implementation from `FactoryBase`.
-
-### 6.6 Experiment Types
+### 8.6 Experiment Types
 
 **`experiment/item/factory.py`**:
 
 ```python
 from easydiffraction.core.factory import FactoryBase
+from easydiffraction.datablocks.experiment.item.enums import (
+    BeamModeEnum, SampleFormEnum, ScatteringTypeEnum,
+)
 
 class ExperimentFactory(FactoryBase):
-    _default_tag = 'bragg-pd-cwl'
-    # ...classmethods from_cif_path, from_cif_str, from_scratch remain
-    # but internally use FactoryBase.create() or supported_for()...
+    _default_tag = 'bragg-pd'
+    _default_rules = {
+        frozenset({
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+            ('sample_form', SampleFormEnum.POWDER),
+        }): 'bragg-pd',
+        frozenset({
+            ('scattering_type', ScatteringTypeEnum.TOTAL),
+            ('sample_form', SampleFormEnum.POWDER),
+        }): 'total-pd',
+        frozenset({
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+            ('sample_form', SampleFormEnum.SINGLE_CRYSTAL),
+            ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
+        }): 'bragg-sc-cwl',
+        frozenset({
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+            ('sample_form', SampleFormEnum.SINGLE_CRYSTAL),
+            ('beam_mode', BeamModeEnum.TIME_OF_FLIGHT),
+        }): 'bragg-sc-tof',
+    }
+
+    # ...classmethods from_cif_path, from_cif_str, from_scratch,
+    # from_data_path remain but internally use FactoryBase machinery...
 ```
 
 **`experiment/item/bragg_pd.py`**:
@@ -983,11 +1340,57 @@ class BraggPdExperiment(PdExperimentBase):
     # No calculator_support — validated through categories
 ```
 
-### 6.7 Minimizers
+**`experiment/item/total_pd.py`**:
+
+```python
+@ExperimentFactory.register
+class TotalPdExperiment(PdExperimentBase):
+    type_info = TypeInfo(
+        tag='total-pd',
+        description='Total scattering (PDF) powder experiment',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.TOTAL}),
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+```
+
+**`experiment/item/bragg_sc.py`**:
+
+```python
+@ExperimentFactory.register
+class CwlScExperiment(ScExperimentBase):
+    type_info = TypeInfo(
+        tag='bragg-sc-cwl',
+        description='Bragg CWL single-crystal experiment',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
+    )
+
+@ExperimentFactory.register
+class TofScExperiment(ScExperimentBase):
+    type_info = TypeInfo(
+        tag='bragg-sc-tof',
+        description='Bragg TOF single-crystal experiment',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+        beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+```
+
+### 8.7 Minimizers
 
 ```python
 class MinimizerFactory(FactoryBase):
     _default_tag = 'lmfit'
+    # No _default_rules — minimizer choice doesn't depend on
+    # experimental context.
 ```
 
 ```python
@@ -997,27 +1400,91 @@ class LmfitMinimizer(MinimizerBase):
         tag='lmfit',
         description='LMFIT with Levenberg-Marquardt least squares',
     )
+
+@MinimizerFactory.register
+class DfolsMinimizer(MinimizerBase):
+    type_info = TypeInfo(
+        tag='dfols',
+        description='DFO-LS derivative-free least-squares optimization',
+    )
 ```
+
+**Note on minimizer methods:** The current `MinimizerFactory` supports
+multiple entries for `LmfitMinimizer` with different methods (e.g.
+`'lmfit (leastsq)'`, `'lmfit (least_squares)'`). In the new design,
+these become separate registrations with distinct tags:
+
+```python
+@MinimizerFactory.register
+class LmfitLeastsqMinimizer(LmfitMinimizer):
+    type_info = TypeInfo(
+        tag='lmfit-leastsq',
+        description='LMFIT with Levenberg-Marquardt least squares',
+    )
+    _method = 'leastsq'
+
+@MinimizerFactory.register
+class LmfitLeastSquaresMinimizer(LmfitMinimizer):
+    type_info = TypeInfo(
+        tag='lmfit-least-squares',
+        description="LMFIT with SciPy's trust region reflective algorithm",
+    )
+    _method = 'least_squares'
+```
+
+Alternatively, if subclassing feels heavy, `MinimizerFactory` can
+override `create()` to handle method dispatch. This is an
+implementation detail to resolve during migration step 9.
 
 ---
 
-## 7. How Factories Are Used (Consumer Side)
+## 9. How Factories Are Used (Consumer Side)
 
-### 7.1 Creating an Object by Tag
+### 9.1 Creating an Object by Tag
 
 ```python
-bg = BackgroundFactory.create('chebyshev polynomial')
+bg = BackgroundFactory.create('chebyshev')
 peak = PeakFactory.create('pseudo-voigt')
 calc = CalculatorFactory.create('cryspy')
 ```
 
-### 7.2 Creating with Default
+### 9.2 Creating with Default (No Context)
 
 ```python
 bg = BackgroundFactory.create()  # uses _default_tag = 'line-segment'
 ```
 
-### 7.3 Context-Filtered Discovery
+### 9.3 Creating with Context-Dependent Default
+
+```python
+# During experiment construction — the correct peak profile is chosen
+# based on the experiment's scattering type and beam mode:
+peak = PeakFactory.create_default_for(
+    scattering_type=ScatteringTypeEnum.BRAGG,
+    beam_mode=BeamModeEnum.TIME_OF_FLIGHT,
+)
+# → resolves to 'tof-pseudo-voigt-ikeda-carpenter'
+# → creates TofPseudoVoigtIkedaCarpenter
+
+# The correct calculator is chosen based on scattering type:
+calc = CalculatorFactory.create_default_for(
+    scattering_type=ScatteringTypeEnum.TOTAL,
+)
+# → resolves to 'pdffit' → creates PdffitCalculator
+```
+
+### 9.4 Querying the Default Tag
+
+```python
+# What would the default peak be for this context?
+tag = PeakFactory.default_tag(
+    scattering_type=ScatteringTypeEnum.TOTAL,
+    beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH,
+)
+# → 'gaussian-damped-sinc'
+```
+
+### 9.5 Context-Filtered Discovery
 
 ```python
 # "What peak profiles work for Bragg CW experiments with cryspy?"
@@ -1029,7 +1496,7 @@ profiles = PeakFactory.supported_for(
 # → [CwlPseudoVoigt, CwlSplitPseudoVoigt, CwlThompsonCoxHastings]
 ```
 
-### 7.4 Display
+### 9.6 Display
 
 ```python
 PeakFactory.show_supported(
@@ -1037,13 +1504,13 @@ PeakFactory.show_supported(
     beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH,
 )
 # Prints:
-#   Type                      Description
-#   pseudo-voigt              Pseudo-Voigt profile
-#   split pseudo-voigt        Split pseudo-Voigt with empirical asymmetry ...
-#   thompson-cox-hastings     Thompson–Cox–Hastings with FCJ asymmetry ...
+#   Type                             Description
+#   pseudo-voigt                     Pseudo-Voigt profile
+#   split-pseudo-voigt               Split pseudo-Voigt with empirical asymmetry ...
+#   thompson-cox-hastings            Thompson–Cox–Hastings with FCJ asymmetry ...
 ```
 
-### 7.5 Experiment's `show_supported_peak_profile_types()`
+### 9.7 Experiment's Convenience Methods
 
 The existing per-experiment convenience methods become thin wrappers:
 
@@ -1059,9 +1526,54 @@ def show_supported_background_types(self):
     BackgroundFactory.show_supported()
 ```
 
+### 9.8 How Experiments Use `create_default_for`
+
+Inside `PdExperimentBase.__init__`, the current code:
+
+```python
+# Before
+self._peak_profile_type = PeakProfileTypeEnum.default(
+    self.type.scattering_type.value,
+    self.type.beam_mode.value,
+)
+self._peak = PeakFactory.create(
+    scattering_type=self.type.scattering_type.value,
+    beam_mode=self.type.beam_mode.value,
+    profile_type=self._peak_profile_type,
+)
+```
+
+Becomes:
+
+```python
+# After
+self._peak = PeakFactory.create_default_for(
+    scattering_type=self.type.scattering_type.value,
+    beam_mode=self.type.beam_mode.value,
+)
+```
+
+Similarly, `BraggPdExperiment.__init__`:
+
+```python
+# Before
+self._instrument = InstrumentFactory.create(
+    scattering_type=self.type.scattering_type.value,
+    beam_mode=self.type.beam_mode.value,
+    sample_form=self.type.sample_form.value,
+)
+
+# After
+self._instrument = InstrumentFactory.create_default_for(
+    scattering_type=self.type.scattering_type.value,
+    beam_mode=self.type.beam_mode.value,
+    sample_form=self.type.sample_form.value,
+)
+```
+
 ---
 
-## 8. What Gets Deleted
+## 10. What Gets Deleted
 
 | File / code | Reason |
 |---|---|
@@ -1080,21 +1592,21 @@ def show_supported_background_types(self):
 | All per-factory validation boilerplate | Inherited from `FactoryBase.create()` |
 | `_description` class attributes on backgrounds | Replaced by `type_info.description` |
 | Enum `description()` methods on deleted enums | Replaced by `type_info.description` |
-| Enum `default()` methods on deleted enums | Replaced by `_default_tag` on factory |
+| Enum `default()` methods on deleted enums | Replaced by `_default_rules` + `default_tag()` on factory |
 
 ---
 
-## 9. What Gets Added
+## 11. What Gets Added
 
 | File | Contents |
 |---|---|
 | `core/metadata.py` | `TypeInfo`, `Compatibility`, `CalculatorSupport` dataclasses |
-| `core/factory.py` | `FactoryBase` class |
+| `core/factory.py` | `FactoryBase` class with `register`, `create`, `create_default_for`, `default_tag`, `supported_for`, `show_supported` |
 | `CalculatorEnum` in `experiment/item/enums.py` | New enum for calculator identifiers |
 
 ---
 
-## 10. What Remains Unchanged
+## 12. What Remains Unchanged
 
 - `Identity` class in `core/identity.py` — separate concern (CIF
   hierarchy).
@@ -1113,7 +1625,7 @@ def show_supported_background_types(self):
 
 ---
 
-## 11. Migration Order
+## 13. Migration Order
 
 Implementation should proceed in this order:
 
@@ -1121,32 +1633,47 @@ Implementation should proceed in this order:
    `CalculatorSupport`.
 2. **Create `core/factory.py`** with `FactoryBase`.
 3. **Add `CalculatorEnum`** to `experiment/item/enums.py`.
-4. **Migrate `BackgroundFactory`** — simplest case (flat, 2 classes).
-   Delete `background/enums.py`. Update `line_segment.py` and
-   `chebyshev.py`. Update all references to `BackgroundTypeEnum`.
-5. **Migrate `PeakFactory`** — 7 classes. Remove `PeakProfileTypeEnum`
-   from `experiment/item/enums.py`. Update `cwl.py`, `tof.py`,
-   `total.py`.
-6. **Migrate `InstrumentFactory`** — 4 classes. Update `cwl.py`,
-   `tof.py`.
-7. **Migrate `DataFactory`** — 4 collection classes. Update
-   `bragg_pd.py`, `bragg_sc.py`, `total_pd.py`.
-8. **Migrate `CalculatorFactory`** — 3 classes. Update `cryspy.py`,
-   `crysfml.py`, `pdffit.py`.
-9. **Migrate `MinimizerFactory`** — 2 classes. Update `lmfit.py`,
-   `dfols.py`.
-10. **Migrate `ExperimentFactory`** — 4 experiment classes. Note:
-    `ExperimentFactory` has additional classmethods (`from_cif_path`,
-    etc.) that stay but internally use `FactoryBase` machinery.
+4. **Migrate `BackgroundFactory`** — simplest case (flat, 2 classes,
+   no `_default_rules`). Delete `background/enums.py`. Update
+   `line_segment.py` and `chebyshev.py`. Update all references to
+   `BackgroundTypeEnum`.
+5. **Migrate `PeakFactory`** — 7 classes, has `_default_rules`.
+   Remove `PeakProfileTypeEnum` from `experiment/item/enums.py`.
+   Update `cwl.py`, `tof.py`, `total.py`.
+6. **Migrate `InstrumentFactory`** — 4 classes, has `_default_rules`.
+   Update `cwl.py`, `tof.py`.
+7. **Migrate `DataFactory`** — 4 collection classes, has
+   `_default_rules`. Update `bragg_pd.py`, `bragg_sc.py`,
+   `total_pd.py`.
+8. **Migrate `CalculatorFactory`** — 3 classes, has `_default_rules`,
+   overrides `_supported_map()`. Update `cryspy.py`, `crysfml.py`,
+   `pdffit.py`.
+9. **Migrate `MinimizerFactory`** — 2+ classes. Resolve the
+   multi-method `LmfitMinimizer` pattern (subclass or factory
+   override). Update `lmfit.py`, `dfols.py`.
+10. **Migrate `ExperimentFactory`** — 4 experiment classes, has
+    `_default_rules`. Note: `ExperimentFactory` has additional
+    classmethods (`from_cif_path`, `from_cif_str`, `from_scratch`,
+    `from_data_path`) that stay but internally use `FactoryBase`
+    machinery. The `_resolve_class()` method is replaced by
+    `create_default_for()` or `supported_for()`.
 11. **Update consumer code** — `show_supported_*()` methods on
     experiment classes become thin wrappers around
-    `Factory.show_supported(...)`.
+    `Factory.show_supported(...)`. Replace
+    `PeakProfileTypeEnum.default(st, bm)` calls with
+    `PeakFactory.default_tag(scattering_type=st, beam_mode=bm)`.
+    Replace `BackgroundTypeEnum.default()` with
+    `BackgroundFactory.create()`. Replace `InstrumentFactory.create(
+    scattering_type=..., beam_mode=..., sample_form=...)` with
+    `InstrumentFactory.create_default_for(...)`.
 12. **Update tests** — adjust imports, remove enum-based tests, add
-    metadata-based tests.
+    metadata-based tests. Test `default_tag()` with various condition
+    combinations. Test `create_default_for()`. Test `supported_for()`
+    filtering.
 
 ---
 
-## 12. Design Principles Summary
+## 14. Design Principles Summary
 
 1. **Single source of truth.** Each concrete class declares its own
    tag, description, compatibility, and calculator support. No
@@ -1157,14 +1684,23 @@ Implementation should proceed in this order:
    objects.
 3. **Uniform axes.** `Compatibility` has four parallel frozenset fields
    matching `ExperimentType`'s four axes. No special cases.
-4. **Metadata on the right level.** Factory-created classes get
+4. **Context-dependent defaults.** `_default_rules` on each factory
+   maps experimental conditions to default tags. `default_tag()` and
+   `create_default_for()` resolve the right default for any context.
+   Falls back to `_default_tag` when no context is given.
+5. **Consistent naming.** Tags use standard abbreviations (`pd`, `sc`,
+   `cwl`, `tof`, `bragg`, `total`), are hyphen-separated, lowercase,
+   and ordered from general to specific.
+6. **Metadata on the right level.** Factory-created classes get
    metadata. Child-only `CategoryItem` classes don't. Collections that
    are the unit of selection get it; their row items don't.
-5. **DRY factories.** `FactoryBase` provides registration, lookup,
-   listing, and display. Concrete factories are 2–3 lines.
-6. **Open for extension, closed for modification.** Adding a new
+7. **DRY factories.** `FactoryBase` provides registration, lookup,
+   creation, context-dependent defaults, listing, and display.
+   Concrete factories are typically 2–15 lines.
+8. **Open for extension, closed for modification.** Adding a new
    variant = one new class with `@Factory.register` + three metadata
-   attributes. No other files need editing.
-7. **Type safety.** `CalculatorEnum` replaces bare strings.
+   attributes + optionally a new `_default_rules` entry. No other
+   files need editing.
+9. **Type safety.** `CalculatorEnum` replaces bare strings.
    Experimental-axis enums are reused from the existing codebase.
 
