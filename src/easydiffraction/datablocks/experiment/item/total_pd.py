@@ -7,7 +7,12 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from easydiffraction.core.metadata import Compatibility
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.item.base import PdExperimentBase
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.utils.logging import console
 
 if TYPE_CHECKING:
@@ -16,6 +21,16 @@ if TYPE_CHECKING:
 
 class TotalPdExperiment(PdExperimentBase):
     """PDF experiment class with specific attributes."""
+
+    type_info = TypeInfo(
+        tag='total-pd',
+        description='Total scattering (PDF) powder experiment',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.TOTAL}),
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
+    )
 
     def __init__(
         self,

@@ -8,12 +8,20 @@ import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import CalculatorSupport
+from easydiffraction.core.metadata import Compatibility
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
 
 
@@ -264,12 +272,23 @@ class TotalDataBase(CategoryCollection):
         return np.zeros_like(self.intensity_calc)
 
 
+@DataFactory.register
 class TotalData(TotalDataBase):
     """Total scattering (PDF) data collection in r-space.
 
     Note: Works for both CWL and TOF measurements as PDF data
     is always transformed to r-space.
     """
+
+    type_info = TypeInfo(tag='total-pd', description='Total scattering (PDF) data')
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+        scattering_type=frozenset({ScatteringTypeEnum.TOTAL}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.PDFFIT}),
+    )
 
     def __init__(self):
         super().__init__(item_type=TotalDataPoint)
