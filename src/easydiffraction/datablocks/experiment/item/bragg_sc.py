@@ -7,7 +7,12 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from easydiffraction.core.metadata import Compatibility
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.item.base import ScExperimentBase
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
@@ -19,6 +24,16 @@ class CwlScExperiment(ScExperimentBase):
     """Standard (Bragg) constant wavelength single srystal experiment
     class with specific attributes.
     """
+
+    type_info = TypeInfo(
+        tag='bragg-sc-cwl',
+        description='Bragg CWL single-crystal experiment',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
+    )
 
     def __init__(
         self,
@@ -72,6 +87,16 @@ class TofScExperiment(ScExperimentBase):
     """Standard (Bragg) time-of-flight single srystal experiment class
     with specific attributes.
     """
+
+    type_info = TypeInfo(
+        tag='bragg-sc-tof',
+        description='Bragg TOF single-crystal experiment',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+        beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
+    )
 
     def __init__(
         self,

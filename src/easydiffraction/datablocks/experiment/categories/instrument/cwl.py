@@ -1,10 +1,18 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from easydiffraction.core.metadata import CalculatorSupport
+from easydiffraction.core.metadata import Compatibility
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
 from easydiffraction.datablocks.experiment.categories.instrument.base import InstrumentBase
+from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
 
 
@@ -38,12 +46,38 @@ class CwlInstrumentBase(InstrumentBase):
         self._setup_wavelength.value = value
 
 
+@InstrumentFactory.register
 class CwlScInstrument(CwlInstrumentBase):
+    type_info = TypeInfo(tag='cwl-sc', description='CW single-crystal diffractometer')
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
+    )
+
     def __init__(self) -> None:
         super().__init__()
 
 
+@InstrumentFactory.register
 class CwlPdInstrument(CwlInstrumentBase):
+    type_info = TypeInfo(tag='cwl-pd', description='CW powder diffractometer')
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG, ScatteringTypeEnum.TOTAL}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({
+            CalculatorEnum.CRYSPY,
+            CalculatorEnum.CRYSFML,
+            CalculatorEnum.PDFFIT,
+        }),
+    )
+
     def __init__(self) -> None:
         super().__init__()
 

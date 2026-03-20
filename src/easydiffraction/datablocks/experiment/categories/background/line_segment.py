@@ -13,6 +13,9 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import CalculatorSupport
+from easydiffraction.core.metadata import Compatibility
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
@@ -20,6 +23,9 @@ from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.categories.background.base import BackgroundBase
+from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
@@ -111,8 +117,18 @@ class LineSegment(CategoryItem):
         self._y.value = value
 
 
+@BackgroundFactory.register
 class LineSegmentBackground(BackgroundBase):
-    _description: str = 'Linear interpolation between points'
+    type_info = TypeInfo(
+        tag='line-segment',
+        description='Linear interpolation between points',
+    )
+    compatibility = Compatibility(
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+    )
 
     def __init__(self):
         super().__init__(item_type=LineSegment)

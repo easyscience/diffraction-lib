@@ -14,6 +14,9 @@ import numpy as np
 from numpy.polynomial.chebyshev import chebval
 
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import CalculatorSupport
+from easydiffraction.core.metadata import Compatibility
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
@@ -21,6 +24,9 @@ from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.categories.background.base import BackgroundBase
+from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
@@ -102,8 +108,18 @@ class PolynomialTerm(CategoryItem):
         self._coef.value = value
 
 
+@BackgroundFactory.register
 class ChebyshevPolynomialBackground(BackgroundBase):
-    _description: str = 'Chebyshev polynomial background'
+    type_info = TypeInfo(
+        tag='chebyshev',
+        description='Chebyshev polynomial background',
+    )
+    compatibility = Compatibility(
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+    )
 
     def __init__(self):
         super().__init__(item_type=PolynomialTerm)

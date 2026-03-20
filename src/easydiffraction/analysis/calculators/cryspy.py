@@ -12,6 +12,8 @@ from typing import Union
 import numpy as np
 
 from easydiffraction.analysis.calculators.base import CalculatorBase
+from easydiffraction.analysis.calculators.factory import CalculatorFactory
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -31,6 +33,7 @@ except ImportError:
     cryspy = None
 
 
+@CalculatorFactory.register
 class CryspyCalculator(CalculatorBase):
     """Cryspy-based diffraction calculator.
 
@@ -38,6 +41,10 @@ class CryspyCalculator(CalculatorBase):
     patterns.
     """
 
+    type_info = TypeInfo(
+        tag='cryspy',
+        description='CrysPy library for crystallographic calculations',
+    )
     engine_imported: bool = cryspy is not None
 
     @property

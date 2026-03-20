@@ -14,6 +14,8 @@ from typing import Optional
 import numpy as np
 
 from easydiffraction.analysis.calculators.base import CalculatorBase
+from easydiffraction.analysis.calculators.factory import CalculatorFactory
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 from easydiffraction.datablocks.structure.item.base import Structure
 
@@ -38,9 +40,14 @@ except ImportError:
     PdfFit = None
 
 
+@CalculatorFactory.register
 class PdffitCalculator(CalculatorBase):
     """Wrapper for Pdffit library."""
 
+    type_info = TypeInfo(
+        tag='pdffit',
+        description='PDFfit2 for pair distribution function calculations',
+    )
     engine_imported: bool = PdfFit is not None
 
     @property

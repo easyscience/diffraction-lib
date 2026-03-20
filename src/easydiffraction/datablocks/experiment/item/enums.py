@@ -74,6 +74,14 @@ class BeamModeEnum(str, Enum):
             return 'Time-of-flight (TOF) diffraction.'
 
 
+class CalculatorEnum(str, Enum):
+    """Known calculation engine identifiers."""
+
+    CRYSPY = 'cryspy'
+    CRYSFML = 'crysfml'
+    PDFFIT = 'pdffit'
+
+
 # TODO: Can, instead of hardcoding here, this info be auto-extracted
 #  from the actual peak profile classes defined in peak/cwl.py, tof.py,
 #  total.py? So that their Enum variable, string representation and

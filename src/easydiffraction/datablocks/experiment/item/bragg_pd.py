@@ -7,13 +7,16 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from easydiffraction.datablocks.experiment.categories.background.enums import BackgroundTypeEnum
+from easydiffraction.core.metadata import Compatibility
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
 from easydiffraction.datablocks.experiment.item.base import PdExperimentBase
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
-from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
@@ -24,6 +27,16 @@ class BraggPdExperiment(PdExperimentBase):
     specific attributes.
     """
 
+    type_info = TypeInfo(
+        tag='bragg-pd',
+        description='Bragg powder diffraction experiment',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+
     def __init__(
         self,
         *,
@@ -32,13 +45,13 @@ class BraggPdExperiment(PdExperimentBase):
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self._instrument = InstrumentFactory.create(
+        self._instrument = InstrumentFactory.create_default_for(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
             sample_form=self.type.sample_form.value,
         )
-        self._background_type: BackgroundTypeEnum = BackgroundTypeEnum.default()
-        self._background = BackgroundFactory.create(background_type=self.background_type)
+        self._background_type: str = BackgroundFactory._default_tag
+        self._background = BackgroundFactory.create(self._background_type)
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """Load (x, y, sy) data from an ASCII file into the data
@@ -101,10 +114,9 @@ class BraggPdExperiment(PdExperimentBase):
         supported.
         """
         if new_type not in BackgroundFactory._supported_map():
-            supported_types = list(BackgroundFactory._supported_map().keys())
             log.warning(
                 f"Unknown background type '{new_type}'. "
-                f'Supported background types: {[bt.value for bt in supported_types]}. '
+                f'Supported background types: {BackgroundFactory.supported_tags()}. '
                 f"For more information, use 'show_supported_background_types()'"
             )
             return
@@ -123,18 +135,7 @@ class BraggPdExperiment(PdExperimentBase):
 
     def show_supported_background_types(self):
         """Print a table of supported background types."""
-        columns_headers = ['Background type', 'Description']
-        columns_alignment = ['left', 'left']
-        columns_data = []
-        for bt in BackgroundFactory._supported_map():
-            columns_data.append([bt.value, bt.description()])
-
-        console.paragraph('Supported background types')
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=columns_data,
-        )
+        BackgroundFactory.show_supported()
 
     def show_current_background_type(self):
         """Print the currently used background type."""

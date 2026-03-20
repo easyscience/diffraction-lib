@@ -8,13 +8,21 @@ from typing import List
 import lmfit
 
 from easydiffraction.analysis.minimizers.base import MinimizerBase
+from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+from easydiffraction.core.metadata import TypeInfo
 
 DEFAULT_METHOD = 'leastsq'
 DEFAULT_MAX_ITERATIONS = 1000
 
 
+@MinimizerFactory.register
 class LmfitMinimizer(MinimizerBase):
     """Minimizer using the lmfit package."""
+
+    type_info = TypeInfo(
+        tag='lmfit',
+        description='LMFIT with Levenberg-Marquardt least squares',
+    )
 
     def __init__(
         self,

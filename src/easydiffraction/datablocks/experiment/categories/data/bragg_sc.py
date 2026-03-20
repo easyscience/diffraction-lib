@@ -7,11 +7,19 @@ import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import CalculatorSupport
+from easydiffraction.core.metadata import Compatibility
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import sin_theta_over_lambda_to_d_spacing
@@ -170,8 +178,19 @@ class Refln(CategoryItem):
         return self._wavelength
 
 
+@DataFactory.register
 class ReflnData(CategoryCollection):
     """Collection of reflections for single crystal diffraction data."""
+
+    type_info = TypeInfo(tag='bragg-sc', description='Bragg single-crystal reflection data')
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
+    )
 
     _update_priority = 100
 

@@ -7,12 +7,20 @@ import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import CalculatorSupport
+from easydiffraction.core.metadata import Compatibility
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d
@@ -402,10 +410,20 @@ class PdDataBase(CategoryCollection):
         )
 
 
+@DataFactory.register
 class PdCwlData(PdDataBase):
     # TODO: ???
     # _description: str = 'Powder diffraction data points for
     # constant-wavelength experiments.'
+    type_info = TypeInfo(tag='bragg-pd', description='Bragg powder diffraction data')
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
+    )
 
     def __init__(self):
         super().__init__(item_type=PdCwlDataPoint)
@@ -470,10 +488,17 @@ class PdCwlData(PdDataBase):
         )
 
 
+@DataFactory.register
 class PdTofData(PdDataBase):
-    # TODO: ???
-    # _description: str = 'Powder diffraction data points for
-    # time-of-flight experiments.'
+    type_info = TypeInfo(tag='bragg-pd-tof', description='Bragg powder TOF data')
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+    )
 
     def __init__(self):
         super().__init__(item_type=PdTofDataPoint)

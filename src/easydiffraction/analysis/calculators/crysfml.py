@@ -9,6 +9,8 @@ from typing import Union
 import numpy as np
 
 from easydiffraction.analysis.calculators.base import CalculatorBase
+from easydiffraction.analysis.calculators.factory import CalculatorFactory
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 from easydiffraction.datablocks.structure.collection import Structures
@@ -27,9 +29,14 @@ except ImportError:
     cfml_py_utilities = None
 
 
+@CalculatorFactory.register
 class CrysfmlCalculator(CalculatorBase):
     """Wrapper for Crysfml library."""
 
+    type_info = TypeInfo(
+        tag='crysfml',
+        description='CrysFML library for crystallographic calculations',
+    )
     engine_imported: bool = cfml_py_utilities is not None
 
     @property
