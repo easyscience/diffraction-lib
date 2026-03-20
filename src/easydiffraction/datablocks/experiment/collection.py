@@ -31,10 +31,10 @@ class Experiments(DatablockCollection):
         self,
         *,
         name: str,
-        sample_form: str = None,
-        beam_mode: str = None,
-        radiation_probe: str = None,
-        scattering_type: str = None,
+        sample_form: str | None = None,
+        beam_mode: str | None = None,
+        radiation_probe: str | None = None,
+        scattering_type: str | None = None,
     ) -> None:
         """Add an experiment without associating a data file.
 
@@ -88,10 +88,10 @@ class Experiments(DatablockCollection):
         *,
         name: str,
         data_path: str,
-        sample_form: str = None,
-        beam_mode: str = None,
-        radiation_probe: str = None,
-        scattering_type: str = None,
+        sample_form: str | None = None,
+        beam_mode: str | None = None,
+        radiation_probe: str | None = None,
+        scattering_type: str | None = None,
     ) -> None:
         """Add an experiment from a data file path.
 
