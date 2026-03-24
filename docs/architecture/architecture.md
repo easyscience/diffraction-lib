@@ -770,3 +770,394 @@ Ensuring every parameter survives a `save()` → `load()` cycle is critical for
 reproducibility. A systematic integration test that creates a project,
 populates all categories, saves, reloads, and compares all parameter values
 would strengthen confidence in the serialisation layer.
+
+---
+
+## 11. Current and Potential Issues
+
+This section catalogues concrete architectural issues observed in the current
+codebase, organised by severity. Each entry explains the symptom, root cause,
+and recommended fix.
+
+### 11.1 Dirty-Flag Guard Is Disabled
+
+**Where:** `core/datablock.py`, lines 49–51.
+
+```python
+# if not self._need_categories_update:
+#    return
+```
+
+**Symptom:** every call to `_update_categories()` processes all categories
+regardless of whether any parameter actually changed. The dirty flag
+`_need_categories_update` is set by `GenericDescriptorBase.value.setter` and
+reset at the end of `_update_categories()`, but nothing reads it.
+
+**Impact:** during fitting, `_update_categories()` is called on every
+objective-function evaluation. Without the guard, all categories (background,
+instrument, data, etc.) are recomputed every time, even when only one
+parameter changed.
+
+**Recommended fix:** uncomment the guard. If specific categories must always
+run (e.g. the calculator), they should opt out via a `_always_update` flag
+rather than disabling the entire mechanism.
+
+### 11.2 `Analysis` Is Not a `DatablockItem`
+
+**Where:** `analysis/analysis.py`.
+
+**Symptom:** `Analysis` owns categories (`Aliases`, `Constraints`,
+`JointFitExperiments`) but does not extend `DatablockItem`. It has its own
+ad-hoc `_update_categories()` that iterates over a hard-coded list:
+
+```python
+for category in [self.aliases, self.constraints]:
+    if hasattr(category, '_update'):
+        category._update(called_by_minimizer=called_by_minimizer)
+```
+
+**Impact:** Analysis categories do not participate in the standard
+`DatablockItem.categories` discovery (which scans `vars(self)`), so they are
+invisible to generic parameter enumeration, CIF serialisation, and display
+methods.
+
+**Recommended fix:** make `Analysis` extend `DatablockItem`, or extract an
+`_update_categories()` protocol that `DatablockItem` and `Analysis` both
+implement, so both use the same category-discovery and update-ordering logic.
+
+### 11.3 `Analysis._calculator` Is a Class-Level Attribute
+
+**Where:** `analysis/analysis.py`, line 49.
+
+```python
+class Analysis:
+    _calculator = CalculatorFactory.create('cryspy')
+```
+
+**Symptom:** the calculator is instantiated once at **class definition time**
+and shared across all `Analysis` instances.
+
+**Impact:**
+
+1. Import-time side effect: creating a `CryspyCalculator` object runs at
+   module import, before the user has a chance to configure anything.
+2. All projects share the same default calculator object until overridden. If
+   one project mutates it before creating a second project, the second project
+   sees the mutated state.
+3. The class-level default is immediately overwritten in `__init__` (line 61:
+   `self.calculator = Analysis._calculator`), making the sharing behaviour
+   confusing rather than intentional.
+
+**Recommended fix:** remove the class-level `_calculator`. Create the default
+calculator in `__init__` so each project instance gets its own:
+
+```python
+def __init__(self, project) -> None:
+    ...
+    self.calculator = CalculatorFactory.create('cryspy')
+    self._calculator_key = 'cryspy'
+```
+
+### 11.4 `ExperimentFactory._SUPPORTED` Duplicates the Registry
+
+**Where:** `datablocks/experiment/item/factory.py`, lines 62–79.
+
+**Symptom:** the hand-written `_SUPPORTED` nested dict maps
+`(ScatteringType, SampleForm, BeamMode)` → class. The `_default_rules` dict
+on the same class already provides the same mapping, and each registered class
+carries `type_info` and `compatibility` metadata.
+
+**Impact:** adding a new experiment type requires updating **three** places:
+the class with its metadata, `_default_rules`, and `_SUPPORTED`. They can
+fall out of sync silently.
+
+**Recommended fix:** derive `_resolve_class` from `_default_rules` +
+`_supported_map()`, or implement it as a `FactoryBase` method. Remove
+`_SUPPORTED` entirely.
+
+### 11.5 Symmetry Constraint Application Triggers Cascading Updates
+
+**Where:** `datablocks/structure/item/base.py`, `_apply_cell_symmetry_constraints`.
+
+**Symptom:** lines like `self.cell.length_a.value = dummy_cell['lattice_a']`
+go through the public `value` setter, which:
+
+1. Validates the value.
+2. Sets `parent_datablock._need_categories_update = True`.
+
+Each of the six cell parameters triggers this independently during a single
+`_apply_symmetry_constraints` call. The same applies to atomic coordinate
+constraints.
+
+**Impact:** the dirty flag is set repeatedly during what is logically a single
+batch operation. If the dirty-flag guard (11.1) were enabled, there would be
+no correctness issue — but a bulk-assignment bypass (e.g. an internal
+`_set_value_no_notify` method) would be cleaner and express intent.
+
+**Recommended fix:** introduce a private method on `GenericDescriptorBase` that
+sets the value without triggering the dirty flag, for use by internal batch
+operations like symmetry constraints. Alternatively, suppress notification via a
+context manager or flag on the owning datablock.
+
+### 11.6 `CollectionBase._key_for` Mixes Two Identity Levels
+
+**Where:** `core/collection.py`, line 77.
+
+```python
+def _key_for(self, item):
+    return item._identity.category_entry_name or item._identity.datablock_entry_name
+```
+
+**Symptom:** the same collection class is used for both `CategoryCollection`
+(items keyed by `category_entry_name`) and `DatablockCollection` (items keyed
+by `datablock_entry_name`). The fallback chain conflates the two scopes.
+
+**Impact:** if a `CategoryItem` lacks a `category_entry_name` but happens to
+have a `datablock_entry_name` (inherited from its parent), it will be indexed
+under the wrong key. This is fragile and relies on every `CategoryItem`
+having a properly set `category_entry_name`.
+
+**Recommended fix:** override `_key_for` in `CategoryCollection` and
+`DatablockCollection` separately, each returning exactly the key it expects.
+
+### 11.7 `CategoryCollection.create` Uses `**kwargs` with `setattr`
+
+**Where:** `core/category.py`, lines 113–127.
+
+```python
+def create(self, **kwargs) -> None:
+    child_obj = self._item_type()
+    for attr, val in kwargs.items():
+        setattr(child_obj, attr, val)
+    self.add(child_obj)
+```
+
+**Symptom:** `create` accepts arbitrary keyword arguments and applies them
+blindly via `setattr`. A typo in a keyword argument (e.g. `fract_xx=0.5`) is
+silently caught by `GuardedBase.__setattr__` which logs a warning but does not
+raise, so the value is quietly dropped.
+
+**Impact:** the user sees no exception on typos; the item is created with
+incorrect default values. This contradicts the project's "prefer explicit
+keyword arguments" principle.
+
+**Recommended fix:** concrete collection subclasses (e.g. `AtomSites`) should
+override `create` with explicit parameters, so IDE autocomplete and typo
+detection work. The base `create(**kwargs)` can remain as an internal
+implementation detail.
+
+### 11.8 `Project._update_categories` Has Ad-Hoc Orchestration
+
+**Where:** `project/project.py`, lines 224–229.
+
+```python
+def _update_categories(self, expt_name) -> None:
+    for structure in self.structures:
+        structure._update_categories()
+    self.analysis._update_categories()
+    experiment = self.experiments[expt_name]
+    experiment._update_categories()
+```
+
+**Symptom:** update orchestration is hard-coded in `Project`, with the update
+order (structures → analysis → experiment) encoded implicitly. The
+`_update_priority` system exists on categories but is not used across
+datablocks.
+
+**Impact:** if a new top-level component is added (e.g. a second analysis
+object, or a pre-processing stage), the orchestration must be manually
+updated. The `expt_name` parameter means only one experiment is updated per
+call, which is inconsistent with the "fit all experiments" workflow in joint
+mode.
+
+**Recommended fix:** consider a project-level `_update_priority` on
+datablocks/components, or at minimum document the required update order. For
+joint fitting, all experiments should be updateable in a single call.
+
+### 11.9 Single-Fit Mode Creates Dummy `Experiments` Wrapper
+
+**Where:** `analysis/analysis.py`, lines 548–565.
+
+```python
+for expt_name in experiments.names:
+    experiment = experiments[expt_name]
+    dummy_experiments = Experiments()
+    object.__setattr__(dummy_experiments, '_parent', self.project)
+    dummy_experiments.add(experiment)
+    self.fitter.fit(structures, dummy_experiments, analysis=self)
+```
+
+**Symptom:** to fit one experiment at a time, a throw-away `Experiments`
+collection is created, the parent is manually forced via
+`object.__setattr__`, and the single experiment is added. This bypasses the
+normal parent-linkage mechanism.
+
+**Impact:** the forced `_parent` assignment circumvents `GuardedBase` parent
+tracking. If the `Experiments` collection does anything in `add()` that
+depends on its parent (e.g. identity resolution), it will work here only by
+coincidence. The pattern is fragile and hard to follow.
+
+**Recommended fix:** make `Fitter.fit` accept a list of experiment objects (or
+a single experiment), not necessarily an `Experiments` collection. Or add a
+`fit_single(experiment)` method that avoids the wrapper entirely.
+
+### 11.10 Missing `load()` Implementation
+
+**Where:** `project/project.py`, line 142.
+
+```python
+def load(self, dir_path: str) -> None:
+    ...
+    console.print('Loading project is not implemented yet.')
+    self._saved = True
+```
+
+**Symptom:** `save()` serialises all components to CIF files but `load()` is a
+stub. The project claims to be "saved" after a load attempt that does nothing.
+
+**Impact:** users cannot round-trip a project (save → close → reopen).
+The `self._saved = True` line is misleading.
+
+**Recommended fix:** implement `load()` that reads CIF files from the project
+directory and reconstructs structures, experiments, and analysis. Until then,
+remove the `self._saved = True` line and raise `NotImplementedError`.
+
+### 11.11 `Structure` Does Not Override `_update_categories`
+
+**Where:** `datablocks/structure/item/base.py`.
+
+**Symptom:** `Structure` inherits the generic `DatablockItem._update_categories`
+which iterates over all categories and calls `_update()` on each. But the
+structure-specific logic (symmetry constraints) lives in
+`_apply_symmetry_constraints()`, which is only called from the fitting
+residual function via `structure._update_categories()` in `fitting.py` — **except that it isn't**: the base `_update_categories` only calls
+`category._update()`, which is a no-op for `Cell`, `SpaceGroup`, and
+`AtomSites`.
+
+**Impact:** symmetry constraints are never automatically applied through the
+standard `_update_categories` path. They are applied only when explicitly
+called. If a user changes a space group name and then exports CIF, the cell
+parameters will not reflect the new symmetry constraints.
+
+**Recommended fix:** override `_update_categories` in `Structure` to call
+`_apply_symmetry_constraints()` before (or instead of) the base category
+iteration. The TODO comment in `datablock.py` already mentions this:
+
+> "This should call apply_symmetry and apply_constraints in the case of
+> structures."
+
+### 11.12 Background Type Switching Loses Data
+
+**Where:** `datablocks/experiment/item/bragg_pd.py`, `background_type.setter`.
+
+```python
+self.background = BackgroundFactory.create(new_type)
+self._background_type = new_type
+```
+
+**Symptom:** when the user switches background type (e.g. from `'line-segment'`
+to `'chebyshev'`), the entire background category is replaced with a fresh,
+empty instance. Any background points or coefficients the user has defined are
+silently discarded.
+
+**Impact:** there is no warning, no confirmation, and no way to recover
+the old background data. The same issue applies to `peak_profile_type`
+switching.
+
+**Recommended fix:** log a warning when the replacement discards user-defined
+data. Optionally, keep a history or prompt for confirmation in interactive
+contexts.
+
+### 11.13 Parameter `unique_name` Is Duplicated
+
+**Where:** `core/variable.py`.
+
+**Symptom:** `GenericDescriptorBase.unique_name` (line 109) and
+`GenericParameter.unique_name` (line 302) contain identical implementations:
+
+```python
+parts = [
+    self._identity.datablock_entry_name,
+    self._identity.category_code,
+    self._identity.category_entry_name,
+    self.name,
+]
+return '.'.join(filter(None, parts))
+```
+
+**Impact:** any change to the name resolution logic must be applied in two
+places. Since `GenericParameter` inherits from `GenericDescriptorBase`, the
+override is unnecessary.
+
+**Recommended fix:** remove the `unique_name` property from
+`GenericParameter`. The inherited version is identical.
+
+### 11.14 Minimiser Variant Loss
+
+**Where:** `analysis/minimizers/`.
+
+**Symptom:** the pre-refactoring `MinimizerFactory` supported multiple
+minimiser variants:
+- `'lmfit'` (the engine)
+- `'lmfit (leastsq)'` (specific algorithm)
+- `'lmfit (least_squares)'` (another algorithm)
+
+After the `FactoryBase` migration, only `'lmfit'` and `'dfols'` remain as
+registered tags. The ability to select specific algorithm variants within an
+engine was lost.
+
+**Impact:** users who relied on selecting a specific lmfit algorithm (e.g.
+`project.analysis.current_minimizer = 'lmfit (least_squares)'`) get a
+`ValueError`.
+
+**Recommended fix:** restore variant support, either as separate registered
+classes (thin subclasses with different tags) or as a two-level selection
+(engine + algorithm). The choice depends on whether variants need different
+`TypeInfo`/`Compatibility` metadata.
+
+### 11.15 `Project.parameters` Returns Empty List
+
+**Where:** `project/project.py`, lines 127–131.
+
+```python
+@property
+def parameters(self):
+    """Return parameters from all components (TBD)."""
+    return []
+```
+
+**Symptom:** `Project.parameters` is a required abstract property from
+`GuardedBase` but always returns `[]`. Parameters are only accessible through
+`project.structures.parameters` and `project.experiments.parameters`.
+
+**Impact:** any code that generically calls `.parameters` on a `Project`
+(e.g. a future generic export) gets nothing.
+
+**Recommended fix:** aggregate parameters from all owned components:
+
+```python
+@property
+def parameters(self):
+    return self.structures.parameters + self.experiments.parameters
+```
+
+### 11.16 Summary of Issue Severity
+
+| #     | Issue                                      | Severity | Type             |
+| ----- | ------------------------------------------ | -------- | ---------------- |
+| 11.1  | Dirty-flag guard disabled                  | Medium   | Performance      |
+| 11.2  | `Analysis` not a `DatablockItem`           | Medium   | Consistency      |
+| 11.3  | Class-level `_calculator`                  | Medium   | Correctness      |
+| 11.4  | `_SUPPORTED` duplicates registry           | Low      | Maintainability  |
+| 11.5  | Symmetry constraints trigger notifications | Low      | Performance      |
+| 11.6  | `_key_for` mixes identity levels           | Low      | Correctness      |
+| 11.7  | `create(**kwargs)` with `setattr`          | Medium   | API safety       |
+| 11.8  | Ad-hoc update orchestration                | Low      | Maintainability  |
+| 11.9  | Dummy `Experiments` wrapper                | Medium   | Fragility        |
+| 11.10 | Missing `load()` implementation            | High     | Completeness     |
+| 11.11 | `Structure` misses symmetry in updates     | High     | Correctness      |
+| 11.12 | Type switching loses data silently         | Medium   | Data safety      |
+| 11.13 | Duplicated `unique_name` property          | Low      | Maintainability  |
+| 11.14 | Minimiser variant loss                     | Medium   | Feature loss     |
+| 11.15 | `Project.parameters` returns `[]`          | Low      | Completeness     |
+
