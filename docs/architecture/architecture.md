@@ -18,12 +18,12 @@ parameters — while providing a high-level, user-friendly API through a single
 
 Every experiment is fully described by four orthogonal axes:
 
-| Axis             | Options                             | Enum                  |
-| ---------------- | ----------------------------------- | --------------------- |
-| Sample form      | powder, single crystal              | `SampleFormEnum`      |
-| Scattering type  | Bragg, total (PDF)                  | `ScatteringTypeEnum`  |
-| Beam mode        | constant wavelength, time-of-flight | `BeamModeEnum`        |
-| Radiation probe  | neutron, X-ray                      | `RadiationProbeEnum`  |
+| Axis            | Options                             | Enum                 |
+| --------------- | ----------------------------------- | -------------------- |
+| Sample form     | powder, single crystal              | `SampleFormEnum`     |
+| Scattering type | Bragg, total (PDF)                  | `ScatteringTypeEnum` |
+| Beam mode       | constant wavelength, time-of-flight | `BeamModeEnum`       |
+| Radiation probe | neutron, X-ray                      | `RadiationProbeEnum` |
 
 > **Planned extensions:** 1D / 2D data dimensionality, polarised / unpolarised
 > neutron beam.
@@ -32,11 +32,11 @@ Every experiment is fully described by four orthogonal axes:
 
 External libraries perform the heavy computation:
 
-| Engine     | Scope                |
-| ---------- | -------------------- |
-| `cryspy`   | Bragg diffraction    |
-| `crysfml`  | Bragg diffraction    |
-| `pdffit2`  | Total scattering     |
+| Engine    | Scope             |
+| --------- | ----------------- |
+| `cryspy`  | Bragg diffraction |
+| `crysfml` | Bragg diffraction |
+| `pdffit2` | Total scattering  |
 
 ---
 
@@ -65,15 +65,14 @@ attributes** are accessible publicly:
   class hierarchy. Shows diagnostics with closest-match suggestions on typos.
 - **`__setattr__`** distinguishes:
   - **Private** (`_`-prefixed) — always allowed, no diagnostics.
-  - **Read-only public** (property without setter) — blocked with a clear
-    error.
+  - **Read-only public** (property without setter) — blocked with a clear error.
   - **Writable public** (property with setter) — goes through the property
     setter, which is where validation happens.
   - **Unknown** — blocked with diagnostics showing allowed writable attrs.
 - **Parent linkage** — when a `GuardedBase` child is assigned to another, the
   child's `_parent` is set automatically, forming an implicit ownership tree.
-- **Identity** — every instance gets an `_identity: Identity` object for
-  lazy CIF-style name resolution (`datablock_entry_name`, `category_code`,
+- **Identity** — every instance gets an `_identity: Identity` object for lazy
+  CIF-style name resolution (`datablock_entry_name`, `category_code`,
   `category_entry_name`) by walking the `_parent` chain.
 
 **Key design rule:** if a parameter has a public setter, it is writable for the
@@ -83,7 +82,7 @@ private method (underscore prefix) is used.
 ### 2.3 CategoryItem and CategoryCollection
 
 | Aspect          | `CategoryItem`                     | `CategoryCollection`                      |
-| --------------- |------------------------------------|-------------------------------------------|
+| --------------- | ---------------------------------- | ----------------------------------------- |
 | CIF analogy     | Single category row                | Loop (table) of rows                      |
 | Examples        | Cell, SpaceGroup, Instrument, Peak | AtomSites, Background, Data, LinkedPhases |
 | Parameters      | All `GenericDescriptorBase` attrs  | Aggregated from all child items           |
@@ -99,7 +98,7 @@ order within a datablock (e.g. background before data).
 ### 2.4 DatablockItem and DatablockCollection
 
 | Aspect             | `DatablockItem`                             | `DatablockCollection`          |
-|--------------------|---------------------------------------------|--------------------------------|
+| ------------------ | ------------------------------------------- | ------------------------------ |
 | CIF analogy        | A single `data_` block                      | Collection of data blocks      |
 | Examples           | Structure, BraggPdExperiment                | Structures, Experiments        |
 | Category discovery | Scans `vars(self)` for categories           | N/A                            |
@@ -109,9 +108,9 @@ order within a datablock (e.g. background before data).
 | Free params        | N/A                                         | Fittable + `free == True`      |
 | Dirty flag         | `_need_categories_update`                   | N/A                            |
 
-When any `Parameter.value` is set, it propagates `_need_categories_update =
-True` up to the owning `DatablockItem`. Serialisation (`as_cif`) and plotting
-trigger `_update_categories()` if the flag is set.
+When any `Parameter.value` is set, it propagates
+`_need_categories_update = True` up to the owning `DatablockItem`. Serialisation
+(`as_cif`) and plotting trigger `_update_categories()` if the flag is set.
 
 ### 2.5 Variable System — Parameters and Descriptors
 
@@ -125,31 +124,31 @@ GuardedBase
 
 CIF-bound concrete classes add a `CifHandler` for serialisation:
 
-| Class              | Base                        | Use case                     |
-| ------------------ | --------------------------- | ---------------------------- |
-| `StringDescriptor` | `GenericStringDescriptor`   | Read-only or writable text   |
-| `NumericDescriptor`| `GenericNumericDescriptor`  | Read-only or writable number |
-| `Parameter`        | `GenericParameter`          | Fittable numeric value       |
+| Class               | Base                       | Use case                     |
+| ------------------- | -------------------------- | ---------------------------- |
+| `StringDescriptor`  | `GenericStringDescriptor`  | Read-only or writable text   |
+| `NumericDescriptor` | `GenericNumericDescriptor` | Read-only or writable number |
+| `Parameter`         | `GenericParameter`         | Fittable numeric value       |
 
 **Initialisation rule:** all Parameters/Descriptors are initialised with their
-default values from `value_spec` (an `AttributeSpec`) **without any
-validation** — we trust internal definitions. Changes go through public
-property setters, which run both type and value validation.
+default values from `value_spec` (an `AttributeSpec`) **without any validation**
+— we trust internal definitions. Changes go through public property setters,
+which run both type and value validation.
 
-**Mixin safety:** Parameter/Descriptor classes must not have init arguments
-so they can be used as mixins safely (e.g. `PdTofDataPointMixin`).
+**Mixin safety:** Parameter/Descriptor classes must not have init arguments so
+they can be used as mixins safely (e.g. `PdTofDataPointMixin`).
 
 ### 2.6 Validation
 
 `AttributeSpec` bundles `default`, `data_type`, `validator`, `allow_none`.
 Validators include:
 
-| Validator             | Purpose                                  |
-| --------------------- | ---------------------------------------- |
-| `TypeValidator`       | Checks Python type against `DataTypes`   |
-| `RangeValidator`      | `ge`, `le`, `gt`, `lt` bounds checking   |
-| `MembershipValidator` | Value must be in an allowed set          |
-| `RegexValidator`      | Value must match a pattern               |
+| Validator             | Purpose                                |
+| --------------------- | -------------------------------------- |
+| `TypeValidator`       | Checks Python type against `DataTypes` |
+| `RangeValidator`      | `ge`, `le`, `gt`, `lt` bounds checking |
+| `MembershipValidator` | Value must be in an allowed set        |
+| `RegexValidator`      | Value must match a pattern             |
 
 ---
 
@@ -182,25 +181,25 @@ Each concrete experiment class carries:
 
 ### 3.3 Category Ownership
 
-Every experiment owns its categories as private attributes with public
-read-only or read-write properties:
+Every experiment owns its categories as private attributes with public read-only
+or read-write properties:
 
 ```python
 # Read-only — user cannot replace the object, only modify its contents
-experiment.linked_phases          # CategoryCollection
-experiment.excluded_regions       # CategoryCollection
-experiment.instrument             # CategoryItem
-experiment.peak                   # CategoryItem
-experiment.data                   # CategoryCollection
+experiment.linked_phases  # CategoryCollection
+experiment.excluded_regions  # CategoryCollection
+experiment.instrument  # CategoryItem
+experiment.peak  # CategoryItem
+experiment.data  # CategoryCollection
 
 # Type-switchable — recreates the underlying object
-experiment.background_type = 'chebyshev'   # triggers BackgroundFactory.create(...)
+experiment.background_type = 'chebyshev'  # triggers BackgroundFactory.create(...)
 experiment.peak_profile_type = 'thompson-cox-hastings'  # triggers PeakFactory.create(...)
 ```
 
 **Type switching pattern:** `expt.background_type = 'chebyshev'` rather than
-`expt.background.type = 'chebyshev'`. This keeps the API at the experiment
-level and makes it clear that the entire category object is being replaced.
+`expt.background.type = 'chebyshev'`. This keeps the API at the experiment level
+and makes it clear that the entire category object is being replaced.
 
 ---
 
@@ -219,8 +218,8 @@ A `Structure` contains three categories:
 - `SpaceGroup` — symmetry information (`CategoryItem`)
 - `AtomSites` — atomic positions collection (`CategoryCollection`)
 
-Symmetry constraints (cell metric, atomic coordinates, ADPs) are applied via
-the `crystallography` module during `_update_categories()`.
+Symmetry constraints (cell metric, atomic coordinates, ADPs) are applied via the
+`crystallography` module during `_update_categories()`.
 
 ---
 
@@ -231,7 +230,7 @@ the `crystallography` module during `_update_categories()`.
 All factories inherit from `FactoryBase`, which provides:
 
 | Feature            | Method / Attribute           | Description                                       |
-| ------------------ |------------------------------|---------------------------------------------------|
+| ------------------ | ---------------------------- | ------------------------------------------------- |
 | Registration       | `@Factory.register`          | Class decorator, appends to `_registry`           |
 | Supported map      | `_supported_map()`           | `{tag: class}` from all registered classes        |
 | Creation           | `create(tag)`                | Instantiate by tag string                         |
@@ -241,8 +240,8 @@ All factories inherit from `FactoryBase`, which provides:
 | Display            | `show_supported(**filters)`  | Pretty-print table of type + description          |
 | Tag listing        | `supported_tags()`           | List of all registered tags                       |
 
-Each `__init_subclass__` gives every factory its own independent `_registry`
-and `_default_rules`.
+Each `__init_subclass__` gives every factory its own independent `_registry` and
+`_default_rules`.
 
 ### 5.2 Default Rules
 
@@ -290,11 +289,11 @@ class CwlPseudoVoigt(PeakBase, CwlBroadeningMixin):
     )
 ```
 
-| Metadata             | Purpose                                                 |
-| -------------------- |---------------------------------------------------------|
-| `TypeInfo`           | Stable tag for lookup/serialisation + human description |
-| `Compatibility`      | Which enum axis values this class works with            |
-| `CalculatorSupport`  | Which calculation engines support this class            |
+| Metadata            | Purpose                                                 |
+| ------------------- | ------------------------------------------------------- |
+| `TypeInfo`          | Stable tag for lookup/serialisation + human description |
+| `Compatibility`     | Which enum axis values this class works with            |
+| `CalculatorSupport` | Which calculation engines support this class            |
 
 ### 5.4 Registration Trigger
 
@@ -309,15 +308,15 @@ from .line_segment import LineSegmentBackground
 
 ### 5.5 All Factories
 
-| Factory               | Domain                | Tags resolve to                                          |
-| --------------------- | --------------------- |----------------------------------------------------------|
-| `ExperimentFactory`   | Experiment datablocks | `BraggPdExperiment`, `TotalPdExperiment`, …              |
-| `BackgroundFactory`   | Background categories | `LineSegmentBackground`, `ChebyshevPolynomialBackground` |
-| `PeakFactory`         | Peak profiles         | `CwlPseudoVoigt`, `TofPseudoVoigtIkedaCarpenter`, …      |
-| `InstrumentFactory`   | Instruments           | `CwlPdInstrument`, `TofPdInstrument`, …                  |
-| `DataFactory`         | Data collections      | `BraggPdData`, `BraggPdTofData`, …                       |
-| `CalculatorFactory`   | Calculation engines   | `CryspyCalculator`, `PdfFitCalculator`, …                |
-| `MinimizerFactory`    | Minimisers            | `LmfitMinimizer`, `DfolsMinimizer`, …                    |
+| Factory             | Domain                | Tags resolve to                                          |
+| ------------------- | --------------------- | -------------------------------------------------------- |
+| `ExperimentFactory` | Experiment datablocks | `BraggPdExperiment`, `TotalPdExperiment`, …              |
+| `BackgroundFactory` | Background categories | `LineSegmentBackground`, `ChebyshevPolynomialBackground` |
+| `PeakFactory`       | Peak profiles         | `CwlPseudoVoigt`, `TofPseudoVoigtIkedaCarpenter`, …      |
+| `InstrumentFactory` | Instruments           | `CwlPdInstrument`, `TofPdInstrument`, …                  |
+| `DataFactory`       | Data collections      | `BraggPdData`, `BraggPdTofData`, …                       |
+| `CalculatorFactory` | Calculation engines   | `CryspyCalculator`, `PdfFitCalculator`, …                |
+| `MinimizerFactory`  | Minimisers            | `LmfitMinimizer`, `DfolsMinimizer`, …                    |
 
 ---
 
@@ -330,16 +329,16 @@ attached to the `Analysis` object (one per project). The `CalculatorFactory`
 filters its registry by `engine_imported` (whether the third-party library is
 available in the environment).
 
-> **Design note:** for joint fitting of heterogeneous experiments (e.g.
-> Bragg + PDF), the calculator should be attached per-experiment rather than
-> globally. For sequential refinement of many datasets of the same type, a
-> single shared calculator is sufficient. The current design uses a global
-> calculator; per-experiment attachment is planned.
+> **Design note:** for joint fitting of heterogeneous experiments (e.g. Bragg +
+> PDF), the calculator should be attached per-experiment rather than globally.
+> For sequential refinement of many datasets of the same type, a single shared
+> calculator is sufficient. The current design uses a global calculator;
+> per-experiment attachment is planned.
 
 ### 6.2 Minimiser
 
-The minimiser drives the optimisation loop. `MinimizerFactory` creates
-instances by tag (e.g. `'lmfit'`, `'lmfit (leastsq)'`, `'dfols'`).
+The minimiser drives the optimisation loop. `MinimizerFactory` creates instances
+by tag (e.g. `'lmfit'`, `'lmfit (leastsq)'`, `'dfols'`).
 
 ### 6.3 Fitter
 
@@ -378,14 +377,14 @@ project = ed.Project(name='my_project')
 
 It owns and coordinates all components:
 
-| Property               | Type                  | Description                              |
-| ---------------------- | --------------------- | ---------------------------------------- |
-| `project.info`         | `ProjectInfo`         | Metadata: name, title, description, path |
-| `project.structures`   | `Structures`          | Collection of structure datablocks       |
-| `project.experiments`  | `Experiments`         | Collection of experiment datablocks      |
-| `project.analysis`     | `Analysis`            | Calculator, minimiser, fitting           |
-| `project.summary`      | `Summary`             | Report generation                        |
-| `project.plotter`      | `Plotter`             | Visualisation                            |
+| Property              | Type          | Description                              |
+| --------------------- | ------------- | ---------------------------------------- |
+| `project.info`        | `ProjectInfo` | Metadata: name, title, description, path |
+| `project.structures`  | `Structures`  | Collection of structure datablocks       |
+| `project.experiments` | `Experiments` | Collection of experiment datablocks      |
+| `project.analysis`    | `Analysis`    | Calculator, minimiser, fitting           |
+| `project.summary`     | `Summary`     | Report generation                        |
+| `project.plotter`     | `Plotter`     | Visualisation                            |
 
 ### 7.1 Data Flow
 
@@ -446,9 +445,14 @@ project.structures['lbco'].cell.length_a = 3.88
 
 # Add atom sites
 project.structures['lbco'].atom_sites.create(
-    label='La', type_symbol='La',
-    fract_x=0, fract_y=0, fract_z=0,
-    wyckoff_letter='a', b_iso=0.5, occupancy=0.5,
+    label='La',
+    type_symbol='La',
+    fract_x=0,
+    fract_y=0,
+    fract_z=0,
+    wyckoff_letter='a',
+    b_iso=0.5,
+    occupancy=0.5,
 )
 
 # Show as CIF
@@ -527,7 +531,8 @@ project.save()
 
 ```python
 expt = ed.ExperimentFactory.from_data_path(
-    name='dream', data_path=data_path,
+    name='dream',
+    data_path=data_path,
     beam_mode='time-of-flight',
 )
 expt.instrument.calib_d_to_tof_offset = -9.29
@@ -540,7 +545,8 @@ expt.peak.broad_gauss_sigma_0 = 4.2
 
 ```python
 project.experiments.add_from_data_path(
-    name='xray_pdf', data_path=data_path,
+    name='xray_pdf',
+    data_path=data_path,
     sample_form='powder',
     scattering_type='total',
     radiation_probe='xray',
@@ -555,8 +561,8 @@ project.analysis.current_calculator = 'pdffit'
 
 ### 9.1 Naming and CIF Conventions
 
-- Follow CIF naming conventions where possible. Deviate for better API
-  design when necessary, but keep the spirit of CIF names.
+- Follow CIF naming conventions where possible. Deviate for better API design
+  when necessary, but keep the spirit of CIF names.
 - Reuse the concept of datablocks and categories from CIF.
 - `DatablockItem` = one CIF `data_` block, `DatablockCollection` = set of
   blocks.
@@ -564,8 +570,8 @@ project.analysis.current_calculator = 'pdffit'
 
 ### 9.2 Immutability of Experiment Type
 
-The experiment type (the four enum axes) can only be set at creation time.
-It cannot be changed afterwards. This avoids the complexity of maintaining
+The experiment type (the four enum axes) can only be set at creation time. It
+cannot be changed afterwards. This avoids the complexity of maintaining
 different state transformations when switching between fundamentally different
 experiment configurations.
 
@@ -589,16 +595,15 @@ simplifies maintenance.
 
 ### 9.4 Show/Display Pattern
 
-All categories (both items and collections) provide a public `show()`
-method:
+All categories (both items and collections) provide a public `show()` method:
 
 - `CategoryItem.show()` — displays as a single row.
 - `CategoryCollection.show()` — displays as a table.
 
 For factory-backed categories, experiments expose:
 
-- `show_supported_<category>_types()` — table of available types for the
-  current experiment configuration.
+- `show_supported_<category>_types()` — table of available types for the current
+  experiment configuration.
 - `show_current_<category>_type()` — the currently selected type.
 
 ### 9.5 Discoverable Supported Options
@@ -612,16 +617,16 @@ project.analysis.show_supported_calculators()
 project.analysis.show_available_minimizers()
 ```
 
-Available calculators are filtered by `engine_imported` (whether the library
-is installed) and can further be filtered by the experiment's categories via
+Available calculators are filtered by `engine_imported` (whether the library is
+installed) and can further be filtered by the experiment's categories via
 `CalculatorSupport` metadata.
 
 ### 9.6 Enum Values as Tags
 
 Enum values (`str, Enum`) serve as the single source of truth for user-facing
 tag strings. Class `type_info.tag` values must match the corresponding enum
-values so that enums can be used directly in `_default_rules` and in
-user-facing API calls.
+values so that enums can be used directly in `_default_rules` and in user-facing
+API calls.
 
 ---
 
@@ -632,9 +637,9 @@ user-facing API calls.
 **Current:** calculator is global (one per `Analysis`/project).
 
 **Problem:** joint fitting of heterogeneous experiments (e.g. Bragg + PDF)
-requires different calculation engines per experiment — CrysPy for Bragg,
-PDFfit for PDF — while the minimiser optimises a shared set of structural
-parameters across both. The current global calculator cannot support this.
+requires different calculation engines per experiment — CrysPy for Bragg, PDFfit
+for PDF — while the minimiser optimises a shared set of structural parameters
+across both. The current global calculator cannot support this.
 
 **Recommended solution — two-level attachment:**
 
@@ -650,8 +655,8 @@ parameters across both. The current global calculator cannot support this.
    overhead.
 
 3. **Minimiser stays global.** The minimiser lives on `Analysis` and optimises
-   shared structure parameters across all experiments, calling each
-   experiment's calculator independently during objective evaluation.
+   shared structure parameters across all experiments, calling each experiment's
+   calculator independently during objective evaluation.
 
 **API sketch:**
 
@@ -663,7 +668,7 @@ project.analysis.fit_mode = 'joint'
 project.analysis.fit()
 
 # Collection-level default (sequential refinement)
-project.experiments.calculator = 'cryspy'   # all experiments use this
+project.experiments.calculator = 'cryspy'  # all experiments use this
 project.analysis.fit_mode = 'sequential'
 project.analysis.fit()
 ```
@@ -706,8 +711,9 @@ The cost is minimal — a trivial factory with one registered class and a
 ```python
 class ExtinctionFactory(FactoryBase):
     _default_rules = {
-        frozenset(): 'shelx',   # universal fallback, single option today
+        frozenset(): 'shelx',  # universal fallback, single option today
     }
+
 
 @ExtinctionFactory.register
 class ShelxExtinction(CategoryItem):
@@ -730,13 +736,12 @@ These should follow the same `str, Enum` pattern and integrate into:
 
 - `Compatibility` — add corresponding `FrozenSet` fields.
 - `_default_rules` — conditions can include the new axes.
-- `ExperimentType` — add new `StringDescriptor`s with
-  `MembershipValidator`s.
+- `ExperimentType` — add new `StringDescriptor`s with `MembershipValidator`s.
 
 **Migration path:** existing `Compatibility` objects that don't specify the new
 fields use `frozenset()` (empty = "any"), so all existing classes remain
-compatible without changes. Only classes that are specific to a new axis need
-to declare it.
+compatible without changes. Only classes that are specific to a new axis need to
+declare it.
 
 ### 10.4 Additional Improvements
 
@@ -760,16 +765,16 @@ The current dirty-flag approach (`_need_categories_update` on `DatablockItem`)
 triggers a full update of all categories when any parameter changes. This is
 simple and correct.
 
-If performance becomes a concern with many categories, a more granular
-approach could track which specific categories are dirty. However, this adds
-complexity and should only be implemented when profiling proves it is needed.
+If performance becomes a concern with many categories, a more granular approach
+could track which specific categories are dirty. However, this adds complexity
+and should only be implemented when profiling proves it is needed.
 
 #### 10.4.3 CIF Round-Trip Completeness
 
 Ensuring every parameter survives a `save()` → `load()` cycle is critical for
-reproducibility. A systematic integration test that creates a project,
-populates all categories, saves, reloads, and compares all parameter values
-would strengthen confidence in the serialisation layer.
+reproducibility. A systematic integration test that creates a project, populates
+all categories, saves, reloads, and compares all parameter values would
+strengthen confidence in the serialisation layer.
 
 ---
 
@@ -795,12 +800,12 @@ reset at the end of `_update_categories()`, but nothing reads it.
 
 **Impact:** during fitting, `_update_categories()` is called on every
 objective-function evaluation. Without the guard, all categories (background,
-instrument, data, etc.) are recomputed every time, even when only one
-parameter changed.
+instrument, data, etc.) are recomputed every time, even when only one parameter
+changed.
 
-**Recommended fix:** uncomment the guard. If specific categories must always
-run (e.g. the calculator), they should opt out via a `_always_update` flag
-rather than disabling the entire mechanism.
+**Recommended fix:** uncomment the guard. If specific categories must always run
+(e.g. the calculator), they should opt out via a `_always_update` flag rather
+than disabling the entire mechanism.
 
 ### 11.2 `Analysis` Is Not a `DatablockItem`
 
@@ -839,8 +844,8 @@ and shared across all `Analysis` instances.
 
 **Impact:**
 
-1. Import-time side effect: creating a `CryspyCalculator` object runs at
-   module import, before the user has a chance to configure anything.
+1. Import-time side effect: creating a `CryspyCalculator` object runs at module
+   import, before the user has a chance to configure anything.
 2. All projects share the same default calculator object until overridden. If
    one project mutates it before creating a second project, the second project
    sees the mutated state.
@@ -863,13 +868,13 @@ def __init__(self, project) -> None:
 **Where:** `datablocks/experiment/item/factory.py`, lines 62–79.
 
 **Symptom:** the hand-written `_SUPPORTED` nested dict maps
-`(ScatteringType, SampleForm, BeamMode)` → class. The `_default_rules` dict
-on the same class already provides the same mapping, and each registered class
+`(ScatteringType, SampleForm, BeamMode)` → class. The `_default_rules` dict on
+the same class already provides the same mapping, and each registered class
 carries `type_info` and `compatibility` metadata.
 
-**Impact:** adding a new experiment type requires updating **three** places:
-the class with its metadata, `_default_rules`, and `_SUPPORTED`. They can
-fall out of sync silently.
+**Impact:** adding a new experiment type requires updating **three** places: the
+class with its metadata, `_default_rules`, and `_SUPPORTED`. They can fall out
+of sync silently.
 
 **Recommended fix:** derive `_resolve_class` from `_default_rules` +
 `_supported_map()`, or implement it as a `FactoryBase` method. Remove
@@ -877,10 +882,11 @@ fall out of sync silently.
 
 ### 11.5 Symmetry Constraint Application Triggers Cascading Updates
 
-**Where:** `datablocks/structure/item/base.py`, `_apply_cell_symmetry_constraints`.
+**Where:** `datablocks/structure/item/base.py`,
+`_apply_cell_symmetry_constraints`.
 
-**Symptom:** lines like `self.cell.length_a.value = dummy_cell['lattice_a']`
-go through the public `value` setter, which:
+**Symptom:** lines like `self.cell.length_a.value = dummy_cell['lattice_a']` go
+through the public `value` setter, which:
 
 1. Validates the value.
 2. Sets `parent_datablock._need_categories_update = True`.
@@ -890,8 +896,8 @@ Each of the six cell parameters triggers this independently during a single
 constraints.
 
 **Impact:** the dirty flag is set repeatedly during what is logically a single
-batch operation. If the dirty-flag guard (11.1) were enabled, there would be
-no correctness issue — but a bulk-assignment bypass (e.g. an internal
+batch operation. If the dirty-flag guard (11.1) were enabled, there would be no
+correctness issue — but a bulk-assignment bypass (e.g. an internal
 `_set_value_no_notify` method) would be cleaner and express intent.
 
 **Recommended fix:** introduce a private method on `GenericDescriptorBase` that
@@ -909,13 +915,13 @@ def _key_for(self, item):
 ```
 
 **Symptom:** the same collection class is used for both `CategoryCollection`
-(items keyed by `category_entry_name`) and `DatablockCollection` (items keyed
-by `datablock_entry_name`). The fallback chain conflates the two scopes.
+(items keyed by `category_entry_name`) and `DatablockCollection` (items keyed by
+`datablock_entry_name`). The fallback chain conflates the two scopes.
 
 **Impact:** if a `CategoryItem` lacks a `category_entry_name` but happens to
 have a `datablock_entry_name` (inherited from its parent), it will be indexed
-under the wrong key. This is fragile and relies on every `CategoryItem`
-having a properly set `category_entry_name`.
+under the wrong key. This is fragile and relies on every `CategoryItem` having a
+properly set `category_entry_name`.
 
 **Recommended fix:** override `_key_for` in `CategoryCollection` and
 `DatablockCollection` separately, each returning exactly the key it expects.
@@ -965,10 +971,9 @@ order (structures → analysis → experiment) encoded implicitly. The
 datablocks.
 
 **Impact:** if a new top-level component is added (e.g. a second analysis
-object, or a pre-processing stage), the orchestration must be manually
-updated. The `expt_name` parameter means only one experiment is updated per
-call, which is inconsistent with the "fit all experiments" workflow in joint
-mode.
+object, or a pre-processing stage), the orchestration must be manually updated.
+The `expt_name` parameter means only one experiment is updated per call, which
+is inconsistent with the "fit all experiments" workflow in joint mode.
 
 **Recommended fix:** consider a project-level `_update_priority` on
 datablocks/components, or at minimum document the required update order. For
@@ -988,17 +993,17 @@ for expt_name in experiments.names:
 ```
 
 **Symptom:** to fit one experiment at a time, a throw-away `Experiments`
-collection is created, the parent is manually forced via
-`object.__setattr__`, and the single experiment is added. This bypasses the
-normal parent-linkage mechanism.
+collection is created, the parent is manually forced via `object.__setattr__`,
+and the single experiment is added. This bypasses the normal parent-linkage
+mechanism.
 
 **Impact:** the forced `_parent` assignment circumvents `GuardedBase` parent
-tracking. If the `Experiments` collection does anything in `add()` that
-depends on its parent (e.g. identity resolution), it will work here only by
-coincidence. The pattern is fragile and hard to follow.
+tracking. If the `Experiments` collection does anything in `add()` that depends
+on its parent (e.g. identity resolution), it will work here only by coincidence.
+The pattern is fragile and hard to follow.
 
-**Recommended fix:** make `Fitter.fit` accept a list of experiment objects (or
-a single experiment), not necessarily an `Experiments` collection. Or add a
+**Recommended fix:** make `Fitter.fit` accept a list of experiment objects (or a
+single experiment), not necessarily an `Experiments` collection. Or add a
 `fit_single(experiment)` method that avoids the wrapper entirely.
 
 ### 11.10 Missing `load()` Implementation
@@ -1015,8 +1020,8 @@ def load(self, dir_path: str) -> None:
 **Symptom:** `save()` serialises all components to CIF files but `load()` is a
 stub. The project claims to be "saved" after a load attempt that does nothing.
 
-**Impact:** users cannot round-trip a project (save → close → reopen).
-The `self._saved = True` line is misleading.
+**Impact:** users cannot round-trip a project (save → close → reopen). The
+`self._saved = True` line is misleading.
 
 **Recommended fix:** implement `load()` that reads CIF files from the project
 directory and reconstructs structures, experiments, and analysis. Until then,
@@ -1029,10 +1034,10 @@ remove the `self._saved = True` line and raise `NotImplementedError`.
 **Symptom:** `Structure` inherits the generic `DatablockItem._update_categories`
 which iterates over all categories and calls `_update()` on each. But the
 structure-specific logic (symmetry constraints) lives in
-`_apply_symmetry_constraints()`, which is only called from the fitting
-residual function via `structure._update_categories()` in `fitting.py` — **except that it isn't**: the base `_update_categories` only calls
-`category._update()`, which is a no-op for `Cell`, `SpaceGroup`, and
-`AtomSites`.
+`_apply_symmetry_constraints()`, which is only called from the fitting residual
+function via `structure._update_categories()` in `fitting.py` — **except that it
+isn't**: the base `_update_categories` only calls `category._update()`, which is
+a no-op for `Cell`, `SpaceGroup`, and `AtomSites`.
 
 **Impact:** symmetry constraints are never automatically applied through the
 standard `_update_categories` path. They are applied only when explicitly
@@ -1060,9 +1065,8 @@ to `'chebyshev'`), the entire background category is replaced with a fresh,
 empty instance. Any background points or coefficients the user has defined are
 silently discarded.
 
-**Impact:** there is no warning, no confirmation, and no way to recover
-the old background data. The same issue applies to `peak_profile_type`
-switching.
+**Impact:** there is no warning, no confirmation, and no way to recover the old
+background data. The same issue applies to `peak_profile_type` switching.
 
 **Recommended fix:** log a warning when the replacement discards user-defined
 data. Optionally, keep a history or prompt for confirmation in interactive
@@ -1089,15 +1093,16 @@ return '.'.join(filter(None, parts))
 places. Since `GenericParameter` inherits from `GenericDescriptorBase`, the
 override is unnecessary.
 
-**Recommended fix:** remove the `unique_name` property from
-`GenericParameter`. The inherited version is identical.
+**Recommended fix:** remove the `unique_name` property from `GenericParameter`.
+The inherited version is identical.
 
 ### 11.14 Minimiser Variant Loss
 
 **Where:** `analysis/minimizers/`.
 
-**Symptom:** the pre-refactoring `MinimizerFactory` supported multiple
-minimiser variants:
+**Symptom:** the pre-refactoring `MinimizerFactory` supported multiple minimiser
+variants:
+
 - `'lmfit'` (the engine)
 - `'lmfit (leastsq)'` (specific algorithm)
 - `'lmfit (least_squares)'` (another algorithm)
@@ -1130,8 +1135,8 @@ def parameters(self):
 `GuardedBase` but always returns `[]`. Parameters are only accessible through
 `project.structures.parameters` and `project.experiments.parameters`.
 
-**Impact:** any code that generically calls `.parameters` on a `Project`
-(e.g. a future generic export) gets nothing.
+**Impact:** any code that generically calls `.parameters` on a `Project` (e.g. a
+future generic export) gets nothing.
 
 **Recommended fix:** aggregate parameters from all owned components:
 
@@ -1162,76 +1167,73 @@ would overwrite the first entry in `_supported_map()` (which is keyed by
 
 **Impact:** any domain where a single engine supports multiple algorithm
 variants — minimisers today, but potentially calculators (e.g. `'cryspy'` vs
-`'cryspy (fullprof-like)'`) or peak profiles (e.g. different numerical
-backends for the same analytical shape) in the future — cannot be expressed
-without creating a thin subclass per variant. Those subclasses carry no real
-logic and exist only to give each variant a distinct `type_info.tag`.
+`'cryspy (fullprof-like)'`) or peak profiles (e.g. different numerical backends
+for the same analytical shape) in the future — cannot be expressed without
+creating a thin subclass per variant. Those subclasses carry no real logic and
+exist only to give each variant a distinct `type_info.tag`.
 
 **Design tension:** the thin-subclass approach is explicit and works within the
 current `FactoryBase` contract, but it proliferates nearly-empty classes. The
 old dict-of-dicts approach was flexible but lived entirely outside the metadata
 system (`TypeInfo`, `Compatibility`, `CalculatorSupport`), so variants were
-invisible to `supported_for()`, `show_supported()`, and compatibility
-filtering.
+invisible to `supported_for()`, `show_supported()`, and compatibility filtering.
 
 **Possible solutions (trade-offs):**
 
 | Approach                                                 | Pros                                                                   | Cons                                                                                                                                          |
-|----------------------------------------------------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| -------------------------------------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | **A. Thin subclasses** (one per variant)                 | Works today; each variant gets full metadata; no `FactoryBase` changes | Class proliferation; boilerplate                                                                                                              |
 | **B. Extend registry to store `(class, kwargs)` tuples** | No extra classes; factory handles variants natively                    | `_supported_map` must change from `{tag: class}` to `{tag: (class, kwargs)}`; `TypeInfo` moves from class attribute to registration-time data |
 | **C. Two-level selection** (`engine` + `algorithm`)      | Clean separation; engine maps to class, algorithm is a constructor arg | More complex API (`current_minimizer = ('lmfit', 'least_squares')`); needs new `FactoryBase` protocol                                         |
 
-**Recommended next step:** decide which approach best fits the project's
-"prefer explicit, no magic" philosophy before restoring minimiser variants.
-Approach **A** is the simplest incremental change; approach **B** is the most
-general but requires `FactoryBase` changes; approach **C** is the cleanest
-long-term but the largest change.
+**Recommended next step:** decide which approach best fits the project's "prefer
+explicit, no magic" philosophy before restoring minimiser variants. Approach
+**A** is the simplest incremental change; approach **B** is the most general but
+requires `FactoryBase` changes; approach **C** is the cleanest long-term but the
+largest change.
 
 ### 11.17 Summary of Issue Severity
 
-| #     | Issue                                      | Severity | Type             |
-| ----- | ------------------------------------------ | -------- | ---------------- |
-| 11.1  | Dirty-flag guard disabled                  | Medium   | Performance      |
-| 11.2  | `Analysis` not a `DatablockItem`           | Medium   | Consistency      |
-| 11.3  | Class-level `_calculator`                  | Medium   | Correctness      |
-| 11.4  | `_SUPPORTED` duplicates registry           | Low      | Maintainability  |
-| 11.5  | Symmetry constraints trigger notifications | Low      | Performance      |
-| 11.6  | `_key_for` mixes identity levels           | Low      | Correctness      |
-| 11.7  | `create(**kwargs)` with `setattr`          | Medium   | API safety       |
-| 11.8  | Ad-hoc update orchestration                | Low      | Maintainability  |
-| 11.9  | Dummy `Experiments` wrapper                | Medium   | Fragility        |
-| 11.10 | Missing `load()` implementation            | High     | Completeness     |
-| 11.11 | `Structure` misses symmetry in updates     | High     | Correctness      |
-| 11.12 | Type switching loses data silently         | Medium   | Data safety      |
-| 11.13 | Duplicated `unique_name` property          | Low      | Maintainability  |
-| 11.14 | Minimiser variant loss                     | Medium   | Feature loss     |
-| 11.15 | `Project.parameters` returns `[]`          | Low      | Completeness     |
+| #     | Issue                                      | Severity | Type              |
+| ----- | ------------------------------------------ | -------- | ----------------- |
+| 11.1  | Dirty-flag guard disabled                  | Medium   | Performance       |
+| 11.2  | `Analysis` not a `DatablockItem`           | Medium   | Consistency       |
+| 11.3  | Class-level `_calculator`                  | Medium   | Correctness       |
+| 11.4  | `_SUPPORTED` duplicates registry           | Low      | Maintainability   |
+| 11.5  | Symmetry constraints trigger notifications | Low      | Performance       |
+| 11.6  | `_key_for` mixes identity levels           | Low      | Correctness       |
+| 11.7  | `create(**kwargs)` with `setattr`          | Medium   | API safety        |
+| 11.8  | Ad-hoc update orchestration                | Low      | Maintainability   |
+| 11.9  | Dummy `Experiments` wrapper                | Medium   | Fragility         |
+| 11.10 | Missing `load()` implementation            | High     | Completeness      |
+| 11.11 | `Structure` misses symmetry in updates     | High     | Correctness       |
+| 11.12 | Type switching loses data silently         | Medium   | Data safety       |
+| 11.13 | Duplicated `unique_name` property          | Low      | Maintainability   |
+| 11.14 | Minimiser variant loss                     | Medium   | Feature loss      |
+| 11.15 | `Project.parameters` returns `[]`          | Low      | Completeness      |
 | 11.16 | `FactoryBase` lacks variant registrations  | Medium   | Design limitation |
 
 ## 12. Current and Potential Issues 2
 
 ### 12.1 `ExperimentType` Is Mutable Despite the Architecture Contract
 
-**Where:** `datablocks/experiment/categories/experiment_type.py`, lines
-86-116.
+**Where:** `datablocks/experiment/categories/experiment_type.py`, lines 86-116.
 
-**Symptom:** the architecture document states that the four experiment axes
-are immutable after creation, but `ExperimentType` exposes public setters for
-all of them. Users can do `expt.type.beam_mode = 'time-of-flight'` after the
-experiment has already created its instrument, data, peak, and background
-categories.
+**Symptom:** the architecture document states that the four experiment axes are
+immutable after creation, but `ExperimentType` exposes public setters for all of
+them. Users can do `expt.type.beam_mode = 'time-of-flight'` after the experiment
+has already created its instrument, data, peak, and background categories.
 
-**Impact:** this can create hybrid objects whose declared type no longer
-matches their instantiated categories. For example, a `BraggPdExperiment` can
-keep CWL-specific `data`/`instrument`/`peak` objects while reporting a TOF
-beam mode. Factory defaults, compatibility checks, plotting, serialisation,
-and calculator selection then operate on inconsistent state.
+**Impact:** this can create hybrid objects whose declared type no longer matches
+their instantiated categories. For example, a `BraggPdExperiment` can keep
+CWL-specific `data`/`instrument`/`peak` objects while reporting a TOF beam mode.
+Factory defaults, compatibility checks, plotting, serialisation, and calculator
+selection then operate on inconsistent state.
 
 **Recommended fix:** make `ExperimentType` effectively frozen after factory
-construction. Populate it only inside factory/private builder code, expose it
-as read-only to users, and require recreation of the experiment object for any
-true type change.
+construction. Populate it only inside factory/private builder code, expose it as
+read-only to users, and require recreation of the experiment object for any true
+type change.
 
 ### 12.2 `peak` and `background` Are Publicly Replaceable
 
@@ -1239,17 +1241,17 @@ true type change.
 `datablocks/experiment/item/bragg_pd.py`, lines 131-137.
 
 **Symptom:** the documented API says users should switch implementations via
-`peak_profile_type` and `background_type`, but both `peak` and `background`
-have public setters that accept any object.
+`peak_profile_type` and `background_type`, but both `peak` and `background` have
+public setters that accept any object.
 
 **Impact:** this bypasses factory validation, supported-type filtering,
-compatibility metadata, and the intended experiment-level switching contract.
-It can also desynchronise `_peak_profile_type` / `_background_type` from the
-actual object stored on the experiment.
+compatibility metadata, and the intended experiment-level switching contract. It
+can also desynchronise `_peak_profile_type` / `_background_type` from the actual
+object stored on the experiment.
 
-**Recommended fix:** make `peak` and `background` read-only public
-properties. Keep replacement behind private helpers such as `_set_peak(...)`
-and `_set_background(...)`, used only by the type-switch setters and loaders.
+**Recommended fix:** make `peak` and `background` read-only public properties.
+Keep replacement behind private helpers such as `_set_peak(...)` and
+`_set_background(...)`, used only by the type-switch setters and loaders.
 
 ### 12.3 `CollectionBase` Mutation Does Not Follow Its Own Key Model
 
@@ -1257,38 +1259,38 @@ and `_set_background(...)`, used only by the type-switch setters and loaders.
 `datablocks/experiment/collection.py`, lines 118-130, and
 `datablocks/structure/collection.py`, lines 75-87.
 
-**Symptom:** `__getitem__` and `_rebuild_index()` rely on `_key_for(item)`,
-but `__setitem__` and `__delitem__` compare only `category_entry_name`.
+**Symptom:** `__getitem__` and `_rebuild_index()` rely on `_key_for(item)`, but
+`__setitem__` and `__delitem__` compare only `category_entry_name`.
 `CollectionBase` also does not implement key-based `__contains__`, so
 `if name in self` iterates over item objects rather than keys.
 
 **Impact:** this is separate from 11.6: even if `_key_for` is fixed, mutation
 semantics are still inconsistent. `DatablockCollection.add()` may append
-duplicate datablocks instead of replacing them, and `Structures.remove(name)`
-/ `Experiments.remove(name)` may report "not found" for existing items.
+duplicate datablocks instead of replacing them, and `Structures.remove(name)` /
+`Experiments.remove(name)` may report "not found" for existing items.
 
 **Recommended fix:** centralise get/set/delete/contains on one key-resolution
-path. Implement `__contains__` by key, and have subtype-specific key
-strategies in `CategoryCollection` and `DatablockCollection`.
+path. Implement `__contains__` by key, and have subtype-specific key strategies
+in `CategoryCollection` and `DatablockCollection`.
 
 ### 12.4 Constraint Application Bypasses Validation and Dirty Tracking
 
 **Where:** `core/singleton.py`, lines 138-176, compared with the normal
 descriptor setter in `core/variable.py`, lines 146-164.
 
-**Symptom:** `ConstraintsHandler.apply()` writes `param._value = rhs_value`
-and `param._constrained = True` directly, bypassing the normal
-`Parameter.value` setter.
+**Symptom:** `ConstraintsHandler.apply()` writes `param._value = rhs_value` and
+`param._constrained = True` directly, bypassing the normal `Parameter.value`
+setter.
 
 **Impact:** constrained values skip type/range validation, do not mark the
 owning datablock dirty, and depend on incidental later updates to propagate
 through the model. This weakens one of the core architectural guarantees: all
 parameter changes should flow through the same validation/update pipeline.
 
-**Recommended fix:** add an internal parameter API specifically for
-constraint updates that still validates, marks the owning datablock dirty, and
-records constraint provenance. Constraint removal should symmetrically clear
-the constrained state through the same API.
+**Recommended fix:** add an internal parameter API specifically for constraint
+updates that still validates, marks the owning datablock dirty, and records
+constraint provenance. Constraint removal should symmetrically clear the
+constrained state through the same API.
 
 ### 12.5 Joint-Fit Weights Can Drift Out of Sync with Experiments
 
@@ -1299,21 +1301,21 @@ the constrained state through the same API.
 afterwards, the weight collection is not refreshed.
 
 **Impact:** joint fitting can fail with missing keys or silently run with a
-stale weighting model that no longer matches the actual experiment set. This
-is especially fragile in notebook-style workflows where users iteratively
-modify a project.
+stale weighting model that no longer matches the actual experiment set. This is
+especially fragile in notebook-style workflows where users iteratively modify a
+project.
 
-**Recommended fix:** rebuild or validate `joint_fit_experiments` on every
-joint fit, or keep it synchronised whenever the experiment collection mutates.
-At minimum, `fit()` should check that the weight keys exactly match
+**Recommended fix:** rebuild or validate `joint_fit_experiments` on every joint
+fit, or keep it synchronised whenever the experiment collection mutates. At
+minimum, `fit()` should check that the weight keys exactly match
 `project.experiments.names`.
 
 ### 12.6 Summary of Issue Severity
 
-| #    | Issue                                            | Severity | Type       |
-| ---- | ------------------------------------------------ | -------- | ---------- |
+| #    | Issue                                            | Severity | Type        |
+| ---- | ------------------------------------------------ | -------- | ----------- |
 | 12.1 | `ExperimentType` is mutable                      | High     | Correctness |
-| 12.2 | `peak` / `background` bypass switch API          | Medium   | API safety |
+| 12.2 | `peak` / `background` bypass switch API          | Medium   | API safety  |
 | 12.3 | Collection mutation semantics are inconsistent   | High     | Correctness |
 | 12.4 | Constraints bypass validation and dirty tracking | High     | Correctness |
-| 12.5 | Joint-fit weights drift from experiment state    | Medium   | Fragility  |
+| 12.5 | Joint-fit weights drift from experiment state    | Medium   | Fragility   |

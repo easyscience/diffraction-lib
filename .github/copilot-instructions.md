@@ -34,8 +34,8 @@
   cases.
 - Prefer composition over deep inheritance.
 - One class per file when the class is substantial; group small related classes.
-- Avoid `**kwargs`; use explicit keyword arguments for clarity, autocomplete, and
-  typo detection.
+- Avoid `**kwargs`; use explicit keyword arguments for clarity, autocomplete,
+  and typo detection.
 
 ## Architecture
 
