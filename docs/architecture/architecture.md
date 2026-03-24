@@ -47,7 +47,7 @@ utilities — no domain logic.
 
 ### 2.1 Object Hierarchy
 
-```
+```shell
 GuardedBase                            # Controlled attribute access, parent linkage, identity
 ├── CategoryItem                       # Single CIF category row  (e.g. Cell, Peak, Instrument)
 ├── CollectionBase                     # Ordered name→item container
@@ -115,7 +115,7 @@ trigger `_update_categories()` if the flag is set.
 
 ### 2.5 Variable System — Parameters and Descriptors
 
-```
+```shell
 GuardedBase
 └── GenericDescriptorBase               # name, value (validated via AttributeSpec), description
     ├── GenericStringDescriptor         # _value_type = DataTypes.STRING
@@ -164,7 +164,7 @@ with four `StringDescriptor`s validated by `MembershipValidator`s.
 
 ### 3.2 Experiment Hierarchy
 
-```
+```shell
 DatablockItem
 └── ExperimentBase                   # name, type: ExperimentType, as_cif
     ├── PdExperimentBase             # + linked_phases, excluded_regions, peak, data
@@ -176,6 +176,7 @@ DatablockItem
 ```
 
 Each concrete experiment class carries:
+
 - `type_info: TypeInfo` — tag and description for factory lookup
 - `compatibility: Compatibility` — which enum axis values it supports
 
@@ -207,12 +208,13 @@ level and makes it clear that the entire category object is being replaced.
 
 ### 4.1 Structure Hierarchy
 
-```
+```shell
 DatablockItem
 └── Structure                       # name, cell, space_group, atom_sites
 ```
 
 A `Structure` contains three categories:
+
 - `Cell` — unit cell parameters (`CategoryItem`)
 - `SpaceGroup` — symmetry information (`CategoryItem`)
 - `AtomSites` — atomic positions collection (`CategoryCollection`)
@@ -405,7 +407,7 @@ Plot / CIF export / fit objective evaluation
 
 Projects are saved as a directory of CIF files:
 
-```
+```shell
 project_dir/
 ├── project.cif          # ProjectInfo
 ├── analysis.cif         # Analysis settings
@@ -587,11 +589,14 @@ simplifies maintenance.
 
 ### 9.4 Show/Display Pattern
 
-All categories (both items and collections) provide a public `show()` method:
+All categories (both items and collections) provide a public `show()`
+method:
+
 - `CategoryItem.show()` — displays as a single row.
 - `CategoryCollection.show()` — displays as a table.
 
 For factory-backed categories, experiments expose:
+
 - `show_supported_<category>_types()` — table of available types for the
   current experiment configuration.
 - `show_current_<category>_type()` — the currently selected type.
@@ -664,6 +669,7 @@ project.analysis.fit()
 ```
 
 **Benefits:**
+
 - Joint fitting of Bragg + PDF becomes natural.
 - Sequential refinement stays lightweight (one calculator instance shared).
 - Backward-compatible: if no per-experiment calculator is set, the auto-
@@ -721,6 +727,7 @@ The four current axes will be extended with at least two more:
 | Beam polarisation   | unpolarised, polarised | `PolarisationEnum`       |
 
 These should follow the same `str, Enum` pattern and integrate into:
+
 - `Compatibility` — add corresponding `FrozenSet` fields.
 - `_default_rules` — conditions can include the new axes.
 - `ExperimentType` — add new `StringDescriptor`s with
@@ -763,5 +770,3 @@ Ensuring every parameter survives a `save()` → `load()` cycle is critical for
 reproducibility. A systematic integration test that creates a project,
 populates all categories, saves, reloads, and compares all parameter values
 would strengthen confidence in the serialisation layer.
-
-
