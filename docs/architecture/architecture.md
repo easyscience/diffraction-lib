@@ -626,32 +626,142 @@ user-facing API calls.
 
 **Current:** calculator is global (one per `Analysis`/project).
 
-**Needed for joint fitting:** if the user wants to jointly refine Bragg + PDF
-experiments, each experiment needs its own calculator (CrysPy for Bragg,
-PDFfit for PDF), while the minimiser optimises a shared set of structural
-parameters across both.
+**Problem:** joint fitting of heterogeneous experiments (e.g. Bragg + PDF)
+requires different calculation engines per experiment — CrysPy for Bragg,
+PDFfit for PDF — while the minimiser optimises a shared set of structural
+parameters across both. The current global calculator cannot support this.
 
-**Needed for sequential refinement:** when processing many datasets of the same
-type, a single shared calculator avoids creating many instances.
+**Recommended solution — two-level attachment:**
 
-**Possible solution:** attach the calculator to each experiment, but allow a
-shared calculator to be set on the collection for sequential mode.
+1. **Per-experiment calculator.** Each experiment stores its own calculator
+   reference (`expt._calculator`). When a calculator is not explicitly set, it
+   is auto-resolved from the experiment's `ExperimentType` using
+   `CalculatorFactory.create_default_for(scattering_type=..., ...)`.
+
+2. **Collection-level default.** `Experiments` (the collection) holds an
+   optional default calculator. When set, all experiments without an explicit
+   override inherit it. This covers the sequential-refinement case (many
+   same-type datasets, one shared calculator instance) without per-experiment
+   overhead.
+
+3. **Minimiser stays global.** The minimiser lives on `Analysis` and optimises
+   shared structure parameters across all experiments, calling each
+   experiment's calculator independently during objective evaluation.
+
+**API sketch:**
+
+```python
+# Per-experiment (heterogeneous joint fit)
+project.experiments['bragg'].calculator = 'cryspy'
+project.experiments['pdf'].calculator = 'pdffit'
+project.analysis.fit_mode = 'joint'
+project.analysis.fit()
+
+# Collection-level default (sequential refinement)
+project.experiments.calculator = 'cryspy'   # all experiments use this
+project.analysis.fit_mode = 'sequential'
+project.analysis.fit()
+```
+
+**Benefits:**
+- Joint fitting of Bragg + PDF becomes natural.
+- Sequential refinement stays lightweight (one calculator instance shared).
+- Backward-compatible: if no per-experiment calculator is set, the auto-
+  resolved default mirrors today's behaviour.
 
 ### 10.2 Universal Factories for All Categories
 
 **Current:** some categories (e.g. `Extinction`, `LinkedCrystal`) have only one
 implementation and no factory.
 
-**Consideration:** making every category use a factory — even single-option
-ones — provides a uniform pattern and makes the system ready for future
-extensions (e.g. multiple extinction models) without structural changes.
+**Recommendation: yes, add factories for all categories.**
+
+The cost is minimal — a trivial factory with one registered class and a
+`frozenset(): tag` universal fallback rule. The benefits are significant:
+
+1. **Uniform pattern.** Contributors learn one pattern and apply it everywhere.
+   No need to distinguish "factory-backed categories" from "plain categories".
+
+2. **Future-proof.** Adding a second extinction model (e.g. Becker–Coppens vs
+   Shelx-style) requires no structural changes — just register a new class and
+   add a `_default_rules` entry.
+
+3. **Self-describing metadata.** Every category gets `type_info`,
+   `compatibility`, `calculator_support` for free. This feeds into
+   `show_supported()`, documentation generation, and automatic calculator
+   compatibility checks.
+
+4. **Consistent user API.** All switchable categories follow the same
+   `show_supported_*_types()` / `show_current_*_type()` / `*_type = '...'`
+   pattern, even if there is currently only one option.
+
+**Example for Extinction:**
+
+```python
+class ExtinctionFactory(FactoryBase):
+    _default_rules = {
+        frozenset(): 'shelx',   # universal fallback, single option today
+    }
+
+@ExtinctionFactory.register
+class ShelxExtinction(CategoryItem):
+    type_info = TypeInfo(tag='shelx', description='Shelx-style extinction correction')
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+    )
+```
 
 ### 10.3 Future Enum Extensions
 
 The four current axes will be extended with at least two more:
-- **Data dimensionality:** 1D vs 2D
-- **Beam polarisation:** unpolarised vs polarised
 
-These should follow the same `str, Enum` pattern and integrate into
-`Compatibility`, `_default_rules`, and `ExperimentType`.
+| New axis            | Options                | Enum (proposed)          |
+| ------------------- | ---------------------- | ------------------------ |
+| Data dimensionality | 1D, 2D                 | `DataDimensionalityEnum` |
+| Beam polarisation   | unpolarised, polarised | `PolarisationEnum`       |
+
+These should follow the same `str, Enum` pattern and integrate into:
+- `Compatibility` — add corresponding `FrozenSet` fields.
+- `_default_rules` — conditions can include the new axes.
+- `ExperimentType` — add new `StringDescriptor`s with
+  `MembershipValidator`s.
+
+**Migration path:** existing `Compatibility` objects that don't specify the new
+fields use `frozenset()` (empty = "any"), so all existing classes remain
+compatible without changes. Only classes that are specific to a new axis need
+to declare it.
+
+### 10.4 Additional Improvements
+
+#### 10.4.1 Category `_update` Contract
+
+Currently `_update()` is an optional override with a no-op default. A clearer
+contract would help contributors:
+
+- **Active categories** (those that compute something, e.g. `Background`,
+  `Data`) should have an explicit `_update()` implementation.
+- **Passive categories** (those that only store parameters, e.g. `Cell`,
+  `SpaceGroup`) keep the no-op default.
+
+The distinction is already implicit in the code; making it explicit in
+documentation and possibly via a naming convention (or a simple flag) would
+reduce confusion for new contributors.
+
+#### 10.4.2 Parameter Change Tracking Granularity
+
+The current dirty-flag approach (`_need_categories_update` on `DatablockItem`)
+triggers a full update of all categories when any parameter changes. This is
+simple and correct.
+
+If performance becomes a concern with many categories, a more granular
+approach could track which specific categories are dirty. However, this adds
+complexity and should only be implemented when profiling proves it is needed.
+
+#### 10.4.3 CIF Round-Trip Completeness
+
+Ensuring every parameter survives a `save()` → `load()` cycle is critical for
+reproducibility. A systematic integration test that creates a project,
+populates all categories, saves, reloads, and compares all parameter values
+would strengthen confidence in the serialisation layer.
+
 
