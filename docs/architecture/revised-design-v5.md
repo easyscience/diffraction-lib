@@ -2,33 +2,33 @@
 
 **Date:** 2026-03-19  
 **Status:** Proposed  
-**Scope:** `easydiffraction` core infrastructure and all category/factory modules
+**Scope:** `easydiffraction` core infrastructure and all category/factory
+modules
 
 ---
 
 ## 1. Motivation
 
-The current codebase has several overlapping mechanisms for describing
-what a concrete class *is*, what experimental conditions it works under,
-and which factories can create it. This leads to:
+The current codebase has several overlapping mechanisms for describing what a
+concrete class _is_, what experimental conditions it works under, and which
+factories can create it. This leads to:
 
 - **Duplication.** Descriptions live on both enums (e.g.
   `BackgroundTypeEnum.description()`) and classes (e.g.
-  `LineSegmentBackground._description`). Supported-combination
-  knowledge lives in hand-built factory dicts *and* implicitly in
-  classes.
-- **Scattered knowledge.** Adding a new variant (e.g. a new peak
-  profile) requires editing three or more files: the class, the enum,
-  and the factory's `_supported` dict.
-- **Inconsistent factory patterns.** Each factory has its own shape:
-  some use nested dicts with 1–3 levels, some use flat dicts with
-  `'description'`/`'class'` sub-dicts, some have `_supported_map()`
-  methods, others have `_supported` class attributes. Validation and
-  `show_supported_*()` methods are reimplemented in every factory.
+  `LineSegmentBackground._description`). Supported-combination knowledge lives
+  in hand-built factory dicts _and_ implicitly in classes.
+- **Scattered knowledge.** Adding a new variant (e.g. a new peak profile)
+  requires editing three or more files: the class, the enum, and the factory's
+  `_supported` dict.
+- **Inconsistent factory patterns.** Each factory has its own shape: some use
+  nested dicts with 1–3 levels, some use flat dicts with
+  `'description'`/`'class'` sub-dicts, some have `_supported_map()` methods,
+  others have `_supported` class attributes. Validation and `show_supported_*()`
+  methods are reimplemented in every factory.
 
-This design introduces three small, focused metadata objects and one
-shared factory base class that together eliminate duplication, unify
-factories, and make the system self-describing.
+This design introduces three small, focused metadata objects and one shared
+factory base class that together eliminate duplication, unify factories, and
+make the system self-describing.
 
 ---
 
@@ -43,48 +43,47 @@ GuardedBase
     └── CategoryCollection — multi-item collection (e.g. AtomSites, BackgroundBase, DataBase)
 ```
 
-- **Singleton categories** are `CategoryItem` subclasses used directly
-  on an experiment or structure. There is exactly one instance per
-  parent. Examples: `Cell`, `SpaceGroup`, `ExperimentType`, `Extinction`,
-  `LinkedCrystal`, `PeakBase` subclasses, `InstrumentBase` subclasses.
-- **Collection categories** are `CategoryCollection` subclasses that
-  hold many `CategoryItem` children. Examples: `AtomSites` (holds
-  `AtomSite` items), `LineSegmentBackground` (holds `LineSegment`
-  items), `PdCwlData` (holds `PdCwlDataPoint` items).
+- **Singleton categories** are `CategoryItem` subclasses used directly on an
+  experiment or structure. There is exactly one instance per parent. Examples:
+  `Cell`, `SpaceGroup`, `ExperimentType`, `Extinction`, `LinkedCrystal`,
+  `PeakBase` subclasses, `InstrumentBase` subclasses.
+- **Collection categories** are `CategoryCollection` subclasses that hold many
+  `CategoryItem` children. Examples: `AtomSites` (holds `AtomSite` items),
+  `LineSegmentBackground` (holds `LineSegment` items), `PdCwlData` (holds
+  `PdCwlDataPoint` items).
 
 ### 2.2 Current Factories
 
-| Factory | Location | `_supported` shape |
-|---|---|---|
-| `PeakFactory` | `experiment/categories/peak/factory.py` | `{ScatteringType: {BeamMode: {ProfileType: Class}}}` (3-level nested) |
-| `InstrumentFactory` | `experiment/categories/instrument/factory.py` | `{ScatteringType: {BeamMode: {SampleForm: Class}}}` (3-level nested) |
-| `DataFactory` | `experiment/categories/data/factory.py` | `{SampleForm: {ScatteringType: {BeamMode: Class}}}` (3-level nested) |
-| `BackgroundFactory` | `experiment/categories/background/factory.py` | `{BackgroundTypeEnum: Class}` (1-level flat) |
-| `ExperimentFactory` | `experiment/item/factory.py` | `{ScatteringType: {SampleForm: {BeamMode: Class}}}` (3-level nested) |
-| `CalculatorFactory` | `analysis/calculators/factory.py` | `{name: {description, class}}` (flat dict) |
-| `MinimizerFactory` | `analysis/minimizers/factory.py` | `{name: {engine, method, description, class}}` (flat dict) |
-| `RendererFactoryBase` | `display/base.py` | `{engine_name: {description, class}}` (flat dict, abstract) |
+| Factory               | Location                                      | `_supported` shape                                                    |
+| --------------------- | --------------------------------------------- | --------------------------------------------------------------------- |
+| `PeakFactory`         | `experiment/categories/peak/factory.py`       | `{ScatteringType: {BeamMode: {ProfileType: Class}}}` (3-level nested) |
+| `InstrumentFactory`   | `experiment/categories/instrument/factory.py` | `{ScatteringType: {BeamMode: {SampleForm: Class}}}` (3-level nested)  |
+| `DataFactory`         | `experiment/categories/data/factory.py`       | `{SampleForm: {ScatteringType: {BeamMode: Class}}}` (3-level nested)  |
+| `BackgroundFactory`   | `experiment/categories/background/factory.py` | `{BackgroundTypeEnum: Class}` (1-level flat)                          |
+| `ExperimentFactory`   | `experiment/item/factory.py`                  | `{ScatteringType: {SampleForm: {BeamMode: Class}}}` (3-level nested)  |
+| `CalculatorFactory`   | `analysis/calculators/factory.py`             | `{name: {description, class}}` (flat dict)                            |
+| `MinimizerFactory`    | `analysis/minimizers/factory.py`              | `{name: {engine, method, description, class}}` (flat dict)            |
+| `RendererFactoryBase` | `display/base.py`                             | `{engine_name: {description, class}}` (flat dict, abstract)           |
 
-Each factory independently implements: lookup, validation, error
-messages, `show_supported_*()` / `list_supported_*()`, and default
-selection — typically 60–130 lines of mostly-similar code.
+Each factory independently implements: lookup, validation, error messages,
+`show_supported_*()` / `list_supported_*()`, and default selection — typically
+60–130 lines of mostly-similar code.
 
 ### 2.3 Current Enums
 
 - **Experimental-axis enums** (kept as-is): `SampleFormEnum`,
   `ScatteringTypeEnum`, `BeamModeEnum`, `RadiationProbeEnum` — defined in
   `experiment/item/enums.py`. Each has `.default()` and `.description()`.
-- **Category-specific enums** (to be removed): `BackgroundTypeEnum`
-  (in `background/enums.py`) and `PeakProfileTypeEnum` (in
-  `experiment/item/enums.py`). These duplicate information that belongs
-  on the concrete classes.
+- **Category-specific enums** (to be removed): `BackgroundTypeEnum` (in
+  `background/enums.py`) and `PeakProfileTypeEnum` (in
+  `experiment/item/enums.py`). These duplicate information that belongs on the
+  concrete classes.
 
 ### 2.4 `Identity` (Unchanged)
 
 `Identity` (in `core/identity.py`) resolves CIF hierarchy:
 `datablock_entry_name`, `category_code`, `category_entry_name`. It is a
-*separate concern* from the metadata introduced here and remains
-untouched.
+_separate concern_ from the metadata introduced here and remains untouched.
 
 ---
 
@@ -94,17 +93,17 @@ untouched.
 
 Three frozen dataclasses and one base factory class:
 
-| Object | Purpose | Lives on |
-|---|---|---|
-| `TypeInfo` | "What am I?" — stable tag + human description | Every factory-created class |
-| `Compatibility` | "Under what experimental conditions?" — four axes | Every factory-created class with experimental scope |
-| `CalculatorSupport` | "Which calculators can handle me?" | Every factory-created class that a calculator touches |
-| `FactoryBase` | Shared registration, lookup, listing, display | Every factory (as base class) |
+| Object              | Purpose                                           | Lives on                                              |
+| ------------------- | ------------------------------------------------- | ----------------------------------------------------- |
+| `TypeInfo`          | "What am I?" — stable tag + human description     | Every factory-created class                           |
+| `Compatibility`     | "Under what experimental conditions?" — four axes | Every factory-created class with experimental scope   |
+| `CalculatorSupport` | "Which calculators can handle me?"                | Every factory-created class that a calculator touches |
+| `FactoryBase`       | Shared registration, lookup, listing, display     | Every factory (as base class)                         |
 
 A new enum is also introduced:
 
-| Enum | Purpose |
-|---|---|
+| Enum             | Purpose                                                      |
+| ---------------- | ------------------------------------------------------------ |
 | `CalculatorEnum` | Closed set of calculator identifiers, replacing bare strings |
 
 ### 3.2 File Location
@@ -138,6 +137,7 @@ src/easydiffraction/core/factory.py
 
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class TypeInfo:
     """Stable identity and human-readable description for a
@@ -151,11 +151,13 @@ class TypeInfo:
         description: One-line human-readable explanation. Used in
             show_supported() tables and documentation.
     """
+
     tag: str
     description: str = ''
 ```
 
 **Replaces:**
+
 - `BackgroundTypeEnum` values and `.description()` method
 - `PeakProfileTypeEnum` values and `.description()` method
 - `CalculatorFactory._potential_calculators` description strings
@@ -173,6 +175,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import FrozenSet
 
+
 @dataclass(frozen=True)
 class Compatibility:
     """Experimental conditions under which a class can be used.
@@ -187,9 +190,10 @@ class Compatibility:
         beam_mode:       BeamModeEnum         (constant wavelength, time-of-flight)
         radiation_probe: RadiationProbeEnum   (neutron, xray)
     """
-    sample_form:     FrozenSet = frozenset()
+
+    sample_form: FrozenSet = frozenset()
     scattering_type: FrozenSet = frozenset()
-    beam_mode:       FrozenSet = frozenset()
+    beam_mode: FrozenSet = frozenset()
     radiation_probe: FrozenSet = frozenset()
 
     def supports(self, **kwargs) -> bool:
@@ -215,15 +219,17 @@ class Compatibility:
 ```
 
 **Replaces:**
+
 - All nested `_supported` dicts in `PeakFactory`, `InstrumentFactory`,
-  `DataFactory`, `ExperimentFactory`. The factory no longer manually
-  encodes which enum combinations are valid — it queries each
-  registered class's `compatibility.supports(...)`.
+  `DataFactory`, `ExperimentFactory`. The factory no longer manually encodes
+  which enum combinations are valid — it queries each registered class's
+  `compatibility.supports(...)`.
 
 ### 4.3 `CalculatorSupport`
 
 ```python
 # core/metadata.py
+
 
 @dataclass(frozen=True)
 class CalculatorSupport:
@@ -233,6 +239,7 @@ class CalculatorSupport:
         calculators: Frozenset of CalculatorEnum values. Empty means
             "any calculator" (no restriction).
     """
+
     calculators: FrozenSet = frozenset()
 
     def supports(self, calculator) -> bool:
@@ -250,29 +257,29 @@ class CalculatorSupport:
         return calculator in self.calculators
 ```
 
-**Why separate from `Compatibility`:** Calculators are not an
-experimental axis — they are an implementation concern. Mixing them
-into `Compatibility` creates special cases (`if axis == 'calculators'`)
-and inconsistent naming (singular axes vs. plural). Keeping them
-separate means `Compatibility` is perfectly uniform (four parallel
-frozenset fields) and `CalculatorSupport` is a clean single-purpose
-object.
+**Why separate from `Compatibility`:** Calculators are not an experimental axis
+— they are an implementation concern. Mixing them into `Compatibility` creates
+special cases (`if axis == 'calculators'`) and inconsistent naming (singular
+axes vs. plural). Keeping them separate means `Compatibility` is perfectly
+uniform (four parallel frozenset fields) and `CalculatorSupport` is a clean
+single-purpose object.
 
 ### 4.4 `CalculatorEnum`
 
 ```python
 # datablocks/experiment/item/enums.py (alongside existing enums)
 
+
 class CalculatorEnum(str, Enum):
     """Known calculation engine identifiers."""
+
     CRYSPY = 'cryspy'
     CRYSFML = 'crysfml'
     PDFFIT = 'pdffit'
 ```
 
-**Replaces:** Bare `'cryspy'` / `'crysfml'` / `'pdffit'` strings
-scattered throughout the code. Provides type safety, IDE completion,
-and typo protection.
+**Replaces:** Bare `'cryspy'` / `'crysfml'` / `'pdffit'` strings scattered
+throughout the code. Provides type safety, IDE completion, and typo protection.
 
 ### 4.5 `FactoryBase`
 
@@ -398,10 +405,7 @@ class FactoryBase:
             tag = cls._default_tag
         supported = cls._supported_map()
         if tag not in supported:
-            raise ValueError(
-                f"Unsupported type: '{tag}'. "
-                f"Supported: {list(supported.keys())}"
-            )
+            raise ValueError(f"Unsupported type: '{tag}'. Supported: {list(supported.keys())}")
         return supported[tag](**kwargs)
 
     @classmethod
@@ -472,10 +476,7 @@ class FactoryBase:
         matching = cls.supported_for(calculator=calculator, **conditions)
         columns_headers = ['Type', 'Description']
         columns_alignment = ['left', 'left']
-        columns_data = [
-            [klass.type_info.tag, klass.type_info.description]
-            for klass in matching
-        ]
+        columns_data = [[klass.type_info.tag, klass.type_info.description] for klass in matching]
         console.paragraph('Supported types')
         render_table(
             columns_headers=columns_headers,
@@ -484,9 +485,9 @@ class FactoryBase:
         )
 ```
 
-**What this replaces:** All per-factory implementations of
-`_supported_map()`, `list_supported_*()`, `show_supported_*()`,
-`create()`, and validation boilerplate.
+**What this replaces:** All per-factory implementations of `_supported_map()`,
+`list_supported_*()`, `show_supported_*()`, `create()`, and validation
+boilerplate.
 
 ---
 
@@ -494,35 +495,34 @@ class FactoryBase:
 
 ### 5.1 The Problem
 
-A single `_default_tag` per factory is insufficient. The correct
-default depends on the experimental context:
+A single `_default_tag` per factory is insufficient. The correct default depends
+on the experimental context:
 
-| Factory | Context | Correct default |
-|---|---|---|
-| `PeakFactory` | Bragg + CWL | `'pseudo-voigt'` |
-| `PeakFactory` | Bragg + TOF | `'tof-pseudo-voigt-ikeda-carpenter'` |
-| `PeakFactory` | Total (any) | `'gaussian-damped-sinc'` |
-| `CalculatorFactory` | Bragg (any) | `'cryspy'` |
-| `CalculatorFactory` | Total (any) | `'pdffit'` |
-| `InstrumentFactory` | CWL + Powder | `'cwl-pd'` |
-| `InstrumentFactory` | TOF + SC | `'tof-sc'` |
-| `DataFactory` | Powder + Bragg + CWL | `'bragg-pd-cwl'` |
-| `DataFactory` | Powder + Total + any | `'total-pd'` |
-| `BackgroundFactory` | (any) | `'line-segment'` |
-| `MinimizerFactory` | (any) | `'lmfit'` |
+| Factory             | Context              | Correct default                      |
+| ------------------- | -------------------- | ------------------------------------ |
+| `PeakFactory`       | Bragg + CWL          | `'pseudo-voigt'`                     |
+| `PeakFactory`       | Bragg + TOF          | `'tof-pseudo-voigt-ikeda-carpenter'` |
+| `PeakFactory`       | Total (any)          | `'gaussian-damped-sinc'`             |
+| `CalculatorFactory` | Bragg (any)          | `'cryspy'`                           |
+| `CalculatorFactory` | Total (any)          | `'pdffit'`                           |
+| `InstrumentFactory` | CWL + Powder         | `'cwl-pd'`                           |
+| `InstrumentFactory` | TOF + SC             | `'tof-sc'`                           |
+| `DataFactory`       | Powder + Bragg + CWL | `'bragg-pd-cwl'`                     |
+| `DataFactory`       | Powder + Total + any | `'total-pd'`                         |
+| `BackgroundFactory` | (any)                | `'line-segment'`                     |
+| `MinimizerFactory`  | (any)                | `'lmfit'`                            |
 
 ### 5.2 The Solution: `_default_rules` + `default_tag(**conditions)`
 
 Each factory defines a `_default_rules` dict mapping frozensets of
 `(axis, value)` pairs to default tags. The `default_tag()` method on
-`FactoryBase` resolves the best match using subset matching: the rule
-whose key is the *largest subset* of the given conditions wins.
+`FactoryBase` resolves the best match using subset matching: the rule whose key
+is the _largest subset_ of the given conditions wins.
 
-- **Broad rules** (e.g. `{('scattering_type', TOTAL)}`) match any
-  experiment with `scattering_type=TOTAL`, regardless of beam mode.
-- **Specific rules** (e.g. `{('scattering_type', BRAGG),
-  ('beam_mode', TOF)}`) take priority over broader ones when both
-  match because they have more keys.
+- **Broad rules** (e.g. `{('scattering_type', TOTAL)}`) match any experiment
+  with `scattering_type=TOTAL`, regardless of beam mode.
+- **Specific rules** (e.g. `{('scattering_type', BRAGG), ('beam_mode', TOF)}`)
+  take priority over broader ones when both match because they have more keys.
 - **`_default_tag`** is the fallback when no rule matches (e.g. when
   `default_tag()` is called with no conditions).
 
@@ -530,12 +530,10 @@ whose key is the *largest subset* of the given conditions wins.
 
 `FactoryBase` provides two creation paths:
 
-- **`create(tag)`** — explicit tag, used when the user or code knows
-  exactly what it wants. Falls back to `_default_tag` if `tag` is
-  `None`.
-- **`create_default_for(**conditions)`** — context-dependent, used
-  when creating objects during experiment construction. Resolves the
-  correct default via `default_tag()` then creates it.
+- **`create(tag)`** — explicit tag, used when the user or code knows exactly
+  what it wants. Falls back to `_default_tag` if `tag` is `None`.
+- **`create_default_for(**conditions)`** — context-dependent, used when creating objects during experiment construction. Resolves the correct default via `default_tag()`
+  then creates it.
 
 ### 5.4 Examples
 
@@ -576,40 +574,40 @@ Tags are the user-facing identifiers for selecting types. They must be:
 
 ### 6.2 Standard Abbreviations
 
-| Concept | Abbreviation | Never use |
-|---|---|---|
-| Powder | `pd` | `powder` |
-| Single crystal | `sc` | `single-crystal` |
-| Constant wavelength | `cwl` | `cw`, `constant-wavelength` |
-| Time-of-flight | `tof` | `time-of-flight` |
-| Bragg (scattering) | `bragg` | |
-| Total (scattering) | `total` | |
+| Concept             | Abbreviation | Never use                   |
+| ------------------- | ------------ | --------------------------- |
+| Powder              | `pd`         | `powder`                    |
+| Single crystal      | `sc`         | `single-crystal`            |
+| Constant wavelength | `cwl`        | `cw`, `constant-wavelength` |
+| Time-of-flight      | `tof`        | `time-of-flight`            |
+| Bragg (scattering)  | `bragg`      |                             |
+| Total (scattering)  | `total`      |                             |
 
 ### 6.3 Complete Tag Registry
 
 #### Background tags
 
-| Tag | Class |
-|---|---|
-| `line-segment` | `LineSegmentBackground` |
-| `chebyshev` | `ChebyshevPolynomialBackground` |
+| Tag            | Class                           |
+| -------------- | ------------------------------- |
+| `line-segment` | `LineSegmentBackground`         |
+| `chebyshev`    | `ChebyshevPolynomialBackground` |
 
 #### Peak tags
 
-| Tag | Class |
-|---|---|
-| `pseudo-voigt` | `CwlPseudoVoigt` |
-| `split-pseudo-voigt` | `CwlSplitPseudoVoigt` |
-| `thompson-cox-hastings` | `CwlThompsonCoxHastings` |
-| `tof-pseudo-voigt` | `TofPseudoVoigt` |
+| Tag                                | Class                          |
+| ---------------------------------- | ------------------------------ |
+| `pseudo-voigt`                     | `CwlPseudoVoigt`               |
+| `split-pseudo-voigt`               | `CwlSplitPseudoVoigt`          |
+| `thompson-cox-hastings`            | `CwlThompsonCoxHastings`       |
+| `tof-pseudo-voigt`                 | `TofPseudoVoigt`               |
 | `tof-pseudo-voigt-ikeda-carpenter` | `TofPseudoVoigtIkedaCarpenter` |
-| `tof-pseudo-voigt-back-to-back` | `TofPseudoVoigtBackToBack` |
-| `gaussian-damped-sinc` | `TotalGaussianDampedSinc` |
+| `tof-pseudo-voigt-back-to-back`    | `TofPseudoVoigtBackToBack`     |
+| `gaussian-damped-sinc`             | `TotalGaussianDampedSinc`      |
 
 #### Instrument tags
 
-| Tag | Class |
-|---|---|
+| Tag      | Class             |
+| -------- | ----------------- |
 | `cwl-pd` | `CwlPdInstrument` |
 | `cwl-sc` | `CwlScInstrument` |
 | `tof-pd` | `TofPdInstrument` |
@@ -617,38 +615,38 @@ Tags are the user-facing identifiers for selecting types. They must be:
 
 #### Data tags
 
-| Tag | Class |
-|---|---|
+| Tag            | Class       |
+| -------------- | ----------- |
 | `bragg-pd-cwl` | `PdCwlData` |
 | `bragg-pd-tof` | `PdTofData` |
-| `bragg-sc` | `ReflnData` |
-| `total-pd` | `TotalData` |
+| `bragg-sc`     | `ReflnData` |
+| `total-pd`     | `TotalData` |
 
 #### Experiment tags
 
-| Tag | Class |
-|---|---|
-| `bragg-pd` | `BraggPdExperiment` |
-| `total-pd` | `TotalPdExperiment` |
-| `bragg-sc-cwl` | `CwlScExperiment` |
-| `bragg-sc-tof` | `TofScExperiment` |
+| Tag            | Class               |
+| -------------- | ------------------- |
+| `bragg-pd`     | `BraggPdExperiment` |
+| `total-pd`     | `TotalPdExperiment` |
+| `bragg-sc-cwl` | `CwlScExperiment`   |
+| `bragg-sc-tof` | `TofScExperiment`   |
 
 #### Calculator tags
 
-| Tag | Class |
-|---|---|
-| `cryspy` | `CryspyCalculator` |
+| Tag       | Class               |
+| --------- | ------------------- |
+| `cryspy`  | `CryspyCalculator`  |
 | `crysfml` | `CrysfmlCalculator` |
-| `pdffit` | `PdffitCalculator` |
+| `pdffit`  | `PdffitCalculator`  |
 
 #### Minimizer tags
 
-| Tag | Class |
-|---|---|
-| `lmfit` | `LmfitMinimizer` |
-| `lmfit-leastsq` | `LmfitMinimizer` (method=`leastsq`) |
+| Tag                   | Class                                     |
+| --------------------- | ----------------------------------------- |
+| `lmfit`               | `LmfitMinimizer`                          |
+| `lmfit-leastsq`       | `LmfitMinimizer` (method=`leastsq`)       |
 | `lmfit-least-squares` | `LmfitMinimizer` (method=`least_squares`) |
-| `dfols` | `DfolsMinimizer` |
+| `dfols`               | `DfolsMinimizer`                          |
 
 ---
 
@@ -660,103 +658,100 @@ Tags are the user-facing identifiers for selecting types. They must be:
 > `compatibility`, and `calculator_support`.**
 >
 > **If a `CategoryItem` only exists as a child row inside a
-> `CategoryCollection`, it does NOT get these attributes — the
-> collection does.**
+> `CategoryCollection`, it does NOT get these attributes — the collection
+> does.**
 
 ### 7.2 Rationale
 
-A `LineSegment` item (a single background control point) is never
-selected, created, or queried by a factory. It is always instantiated
-internally by its parent `LineSegmentBackground` collection. The
-meaningful unit of selection is the *collection*, not the item. The
-user picks "line-segment background" (the collection type), not
-individual line-segment points.
+A `LineSegment` item (a single background control point) is never selected,
+created, or queried by a factory. It is always instantiated internally by its
+parent `LineSegmentBackground` collection. The meaningful unit of selection is
+the _collection_, not the item. The user picks "line-segment background" (the
+collection type), not individual line-segment points.
 
-Similarly, `AtomSite` is a child of `AtomSites`, `PdCwlDataPoint` is
-a child of `PdCwlData`, and `PolynomialTerm` is a child of
-`ChebyshevPolynomialBackground`. None of these items are
-factory-created or user-selected.
+Similarly, `AtomSite` is a child of `AtomSites`, `PdCwlDataPoint` is a child of
+`PdCwlData`, and `PolynomialTerm` is a child of `ChebyshevPolynomialBackground`.
+None of these items are factory-created or user-selected.
 
-Conversely, `Cell`, `SpaceGroup`, `Extinction`, and `InstrumentBase`
-subclasses are `CategoryItem` subclasses used as singletons — they
-exist directly on a parent (Structure or Experiment), and some of them
-*are* factory-created (instruments, peaks). These get the metadata.
+Conversely, `Cell`, `SpaceGroup`, `Extinction`, and `InstrumentBase` subclasses
+are `CategoryItem` subclasses used as singletons — they exist directly on a
+parent (Structure or Experiment), and some of them _are_ factory-created
+(instruments, peaks). These get the metadata.
 
 ### 7.3 Classification of All Current Classes
 
 #### Singleton CategoryItems — factory-created (get all three)
 
-| Class | Factory | Metadata needed |
-|---|---|---|
-| `CwlPdInstrument` | `InstrumentFactory` | `type_info` + `compatibility` + `calculator_support` |
-| `CwlScInstrument` | `InstrumentFactory` | (same) |
-| `TofPdInstrument` | `InstrumentFactory` | (same) |
-| `TofScInstrument` | `InstrumentFactory` | (same) |
-| `CwlPseudoVoigt` | `PeakFactory` | (same) |
-| `CwlSplitPseudoVoigt` | `PeakFactory` | (same) |
-| `CwlThompsonCoxHastings` | `PeakFactory` | (same) |
-| `TofPseudoVoigt` | `PeakFactory` | (same) |
-| `TofPseudoVoigtIkedaCarpenter` | `PeakFactory` | (same) |
-| `TofPseudoVoigtBackToBack` | `PeakFactory` | (same) |
-| `TotalGaussianDampedSinc` | `PeakFactory` | (same) |
+| Class                          | Factory             | Metadata needed                                      |
+| ------------------------------ | ------------------- | ---------------------------------------------------- |
+| `CwlPdInstrument`              | `InstrumentFactory` | `type_info` + `compatibility` + `calculator_support` |
+| `CwlScInstrument`              | `InstrumentFactory` | (same)                                               |
+| `TofPdInstrument`              | `InstrumentFactory` | (same)                                               |
+| `TofScInstrument`              | `InstrumentFactory` | (same)                                               |
+| `CwlPseudoVoigt`               | `PeakFactory`       | (same)                                               |
+| `CwlSplitPseudoVoigt`          | `PeakFactory`       | (same)                                               |
+| `CwlThompsonCoxHastings`       | `PeakFactory`       | (same)                                               |
+| `TofPseudoVoigt`               | `PeakFactory`       | (same)                                               |
+| `TofPseudoVoigtIkedaCarpenter` | `PeakFactory`       | (same)                                               |
+| `TofPseudoVoigtBackToBack`     | `PeakFactory`       | (same)                                               |
+| `TotalGaussianDampedSinc`      | `PeakFactory`       | (same)                                               |
 
 #### Singleton CategoryItems — NOT factory-created (get `type_info` only, optionally `compatibility` and `calculator_support` if useful)
 
-| Class | Notes |
-|---|---|
-| `Cell` | Always present on every Structure. No factory selection. Could get `type_info` for self-description, but `compatibility` and `calculator_support` are not needed because there is no selection to filter. |
-| `SpaceGroup` | Same as Cell. |
-| `ExperimentType` | Same. Intrinsically universal. |
-| `Extinction` | Only used in single-crystal experiments. Could benefit from `compatibility` to declare this formally. |
-| `LinkedCrystal` | Only single-crystal. Same reasoning. |
+| Class            | Notes                                                                                                                                                                                                     |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Cell`           | Always present on every Structure. No factory selection. Could get `type_info` for self-description, but `compatibility` and `calculator_support` are not needed because there is no selection to filter. |
+| `SpaceGroup`     | Same as Cell.                                                                                                                                                                                             |
+| `ExperimentType` | Same. Intrinsically universal.                                                                                                                                                                            |
+| `Extinction`     | Only used in single-crystal experiments. Could benefit from `compatibility` to declare this formally.                                                                                                     |
+| `LinkedCrystal`  | Only single-crystal. Same reasoning.                                                                                                                                                                      |
 
-For these non-factory-created singletons, adding `compatibility` is
-*optional but useful* for documentation and validation (e.g., to flag
-if `Extinction` is mistakenly attached to a powder experiment). This
-is a future enhancement and not required for the initial
-implementation.
+For these non-factory-created singletons, adding `compatibility` is _optional
+but useful_ for documentation and validation (e.g., to flag if `Extinction` is
+mistakenly attached to a powder experiment). This is a future enhancement and
+not required for the initial implementation.
 
 #### CategoryCollections — factory-created (get all three)
 
-| Class | Factory | Metadata needed |
-|---|---|---|
-| `LineSegmentBackground` | `BackgroundFactory` | `type_info` + `compatibility` + `calculator_support` |
-| `ChebyshevPolynomialBackground` | `BackgroundFactory` | (same) |
-| `PdCwlData` | `DataFactory` | (same) |
-| `PdTofData` | `DataFactory` | (same) |
-| `TotalData` | `DataFactory` | (same) |
-| `ReflnData` | `DataFactory` | (same) |
+| Class                           | Factory             | Metadata needed                                      |
+| ------------------------------- | ------------------- | ---------------------------------------------------- |
+| `LineSegmentBackground`         | `BackgroundFactory` | `type_info` + `compatibility` + `calculator_support` |
+| `ChebyshevPolynomialBackground` | `BackgroundFactory` | (same)                                               |
+| `PdCwlData`                     | `DataFactory`       | (same)                                               |
+| `PdTofData`                     | `DataFactory`       | (same)                                               |
+| `TotalData`                     | `DataFactory`       | (same)                                               |
+| `ReflnData`                     | `DataFactory`       | (same)                                               |
 
 #### CategoryItems that are ONLY children of collections (NO metadata)
 
-| Class | Parent collection |
-|---|---|
-| `LineSegment` | `LineSegmentBackground` |
+| Class            | Parent collection               |
+| ---------------- | ------------------------------- |
+| `LineSegment`    | `LineSegmentBackground`         |
 | `PolynomialTerm` | `ChebyshevPolynomialBackground` |
-| `AtomSite` | `AtomSites` |
-| `PdCwlDataPoint` | `PdCwlData` |
-| `PdTofDataPoint` | `PdTofData` |
-| `TotalDataPoint` | `TotalData` |
-| `Refln` | `ReflnData` |
-| `LinkedPhase` | `LinkedPhases` |
-| `ExcludedRegion` | `ExcludedRegions` |
+| `AtomSite`       | `AtomSites`                     |
+| `PdCwlDataPoint` | `PdCwlData`                     |
+| `PdTofDataPoint` | `PdTofData`                     |
+| `TotalDataPoint` | `TotalData`                     |
+| `Refln`          | `ReflnData`                     |
+| `LinkedPhase`    | `LinkedPhases`                  |
+| `ExcludedRegion` | `ExcludedRegions`               |
 
-These are internal row-level items. They have no factory, no user
-selection, no experimental-condition filtering. They get nothing.
+These are internal row-level items. They have no factory, no user selection, no
+experimental-condition filtering. They get nothing.
 
 #### Non-category classes — factory-created (get `type_info` only)
 
-| Class | Factory | Notes |
-|---|---|---|
-| `CryspyCalculator` | `CalculatorFactory` | `type_info` only. No `compatibility` or `calculator_support` — calculators don't have experimental restrictions in this sense (their limitations are expressed on the *categories they support*, not on themselves). |
-| `CrysfmlCalculator` | `CalculatorFactory` | (same) |
-| `PdffitCalculator` | `CalculatorFactory` | (same) |
-| `LmfitMinimizer` | `MinimizerFactory` | `type_info` only. |
-| `DfolsMinimizer` | `MinimizerFactory` | (same) |
-| `BraggPdExperiment` | `ExperimentFactory` | `type_info` + `compatibility`. No `calculator_support` — the experiment's compatibility is checked against its *categories'* calculator support, not its own. |
-| `TotalPdExperiment` | `ExperimentFactory` | (same) |
-| `CwlScExperiment` | `ExperimentFactory` | (same) |
-| `TofScExperiment` | `ExperimentFactory` | (same) |
+| Class               | Factory             | Notes                                                                                                                                                                                                                |
+| ------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CryspyCalculator`  | `CalculatorFactory` | `type_info` only. No `compatibility` or `calculator_support` — calculators don't have experimental restrictions in this sense (their limitations are expressed on the _categories they support_, not on themselves). |
+| `CrysfmlCalculator` | `CalculatorFactory` | (same)                                                                                                                                                                                                               |
+| `PdffitCalculator`  | `CalculatorFactory` | (same)                                                                                                                                                                                                               |
+| `LmfitMinimizer`    | `MinimizerFactory`  | `type_info` only.                                                                                                                                                                                                    |
+| `DfolsMinimizer`    | `MinimizerFactory`  | (same)                                                                                                                                                                                                               |
+| `BraggPdExperiment` | `ExperimentFactory` | `type_info` + `compatibility`. No `calculator_support` — the experiment's compatibility is checked against its _categories'_ calculator support, not its own.                                                        |
+| `TotalPdExperiment` | `ExperimentFactory` | (same)                                                                                                                                                                                                               |
+| `CwlScExperiment`   | `ExperimentFactory` | (same)                                                                                                                                                                                                               |
+| `TofScExperiment`   | `ExperimentFactory` | (same)                                                                                                                                                                                                               |
 
 ---
 
@@ -782,6 +777,7 @@ background/chebyshev.py       — ChebyshevPolynomialBackground._description = '
 ```python
 from easydiffraction.core.factory import FactoryBase
 
+
 class BackgroundFactory(FactoryBase):
     _default_tag = 'line-segment'
     # No _default_rules needed — background choice doesn't depend on
@@ -795,8 +791,10 @@ from easydiffraction.core.metadata import Compatibility, CalculatorSupport, Type
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.background.base import BackgroundBase
 from easydiffraction.datablocks.experiment.item.enums import (
-    BeamModeEnum, CalculatorEnum,
+    BeamModeEnum,
+    CalculatorEnum,
 )
+
 
 @BackgroundFactory.register
 class LineSegmentBackground(BackgroundBase):
@@ -813,6 +811,7 @@ class LineSegmentBackground(BackgroundBase):
 
     def __init__(self):
         super().__init__(item_type=LineSegment)
+
     # ...rest unchanged...
 ```
 
@@ -834,11 +833,12 @@ class ChebyshevPolynomialBackground(BackgroundBase):
 
     def __init__(self):
         super().__init__(item_type=PolynomialTerm)
+
     # ...rest unchanged...
 ```
 
-**Note:** `LineSegment` and `PolynomialTerm` (the child `CategoryItem`
-classes) are unchanged — they get no metadata.
+**Note:** `LineSegment` and `PolynomialTerm` (the child `CategoryItem` classes)
+are unchanged — they get no metadata.
 
 ### 8.2 Peak Profiles
 
@@ -847,8 +847,10 @@ classes) are unchanged — they get no metadata.
 ```python
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.datablocks.experiment.item.enums import (
-    BeamModeEnum, ScatteringTypeEnum,
+    BeamModeEnum,
+    ScatteringTypeEnum,
 )
+
 
 class PeakFactory(FactoryBase):
     _default_tag = 'pseudo-voigt'
@@ -873,6 +875,7 @@ class PeakFactory(FactoryBase):
 from easydiffraction.core.metadata import Compatibility, CalculatorSupport, TypeInfo
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
 
+
 @PeakFactory.register
 class CwlPseudoVoigt(PeakBase, CwlBroadeningMixin):
     type_info = TypeInfo(tag='pseudo-voigt', description='Pseudo-Voigt profile')
@@ -886,6 +889,7 @@ class CwlPseudoVoigt(PeakBase, CwlBroadeningMixin):
 
     def __init__(self) -> None:
         super().__init__()
+
 
 @PeakFactory.register
 class CwlSplitPseudoVoigt(PeakBase, CwlBroadeningMixin, EmpiricalAsymmetryMixin):
@@ -903,6 +907,7 @@ class CwlSplitPseudoVoigt(PeakBase, CwlBroadeningMixin, EmpiricalAsymmetryMixin)
 
     def __init__(self) -> None:
         super().__init__()
+
 
 @PeakFactory.register
 class CwlThompsonCoxHastings(PeakBase, CwlBroadeningMixin, FcjAsymmetryMixin):
@@ -939,6 +944,7 @@ class TofPseudoVoigt(PeakBase, TofBroadeningMixin):
     def __init__(self) -> None:
         super().__init__()
 
+
 @PeakFactory.register
 class TofPseudoVoigtIkedaCarpenter(PeakBase, TofBroadeningMixin, IkedaCarpenterAsymmetryMixin):
     type_info = TypeInfo(
@@ -955,6 +961,7 @@ class TofPseudoVoigtIkedaCarpenter(PeakBase, TofBroadeningMixin, IkedaCarpenterA
 
     def __init__(self) -> None:
         super().__init__()
+
 
 @PeakFactory.register
 class TofPseudoVoigtBackToBack(PeakBase, TofBroadeningMixin, IkedaCarpenterAsymmetryMixin):
@@ -1002,8 +1009,10 @@ class TotalGaussianDampedSinc(PeakBase, TotalBroadeningMixin):
 ```python
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.datablocks.experiment.item.enums import (
-    BeamModeEnum, SampleFormEnum,
+    BeamModeEnum,
+    SampleFormEnum,
 )
+
 
 class InstrumentFactory(FactoryBase):
     _default_tag = 'cwl-pd'
@@ -1039,12 +1048,18 @@ class CwlPdInstrument(CwlInstrumentBase):
         sample_form=frozenset({SampleFormEnum.POWDER}),
     )
     calculator_support = CalculatorSupport(
-        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML, CalculatorEnum.PDFFIT}),
+        calculators=frozenset({
+            CalculatorEnum.CRYSPY,
+            CalculatorEnum.CRYSFML,
+            CalculatorEnum.PDFFIT,
+        }),
     )
 
     def __init__(self) -> None:
         super().__init__()
+
     # ...existing parameter definitions unchanged...
+
 
 @InstrumentFactory.register
 class CwlScInstrument(CwlInstrumentBase):
@@ -1079,7 +1094,9 @@ class TofPdInstrument(InstrumentBase):
 
     def __init__(self) -> None:
         super().__init__()
+
     # ...existing parameter definitions unchanged...
+
 
 @InstrumentFactory.register
 class TofScInstrument(InstrumentBase):
@@ -1104,8 +1121,11 @@ class TofScInstrument(InstrumentBase):
 ```python
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.datablocks.experiment.item.enums import (
-    BeamModeEnum, SampleFormEnum, ScatteringTypeEnum,
+    BeamModeEnum,
+    SampleFormEnum,
+    ScatteringTypeEnum,
 )
+
 
 class DataFactory(FactoryBase):
     _default_tag = 'bragg-pd-cwl'
@@ -1131,8 +1151,8 @@ class DataFactory(FactoryBase):
     }
 ```
 
-**`data/bragg_pd.py`** (collection classes only — data point items
-are unchanged):
+**`data/bragg_pd.py`** (collection classes only — data point items are
+unchanged):
 
 ```python
 @DataFactory.register
@@ -1149,7 +1169,9 @@ class PdCwlData(PdDataBase):
 
     def __init__(self):
         super().__init__(item_type=PdCwlDataPoint)
+
     # ...rest unchanged...
+
 
 @DataFactory.register
 class PdTofData(PdDataBase):
@@ -1165,6 +1187,7 @@ class PdTofData(PdDataBase):
 
     def __init__(self):
         super().__init__(item_type=PdTofDataPoint)
+
     # ...rest unchanged...
 ```
 
@@ -1185,6 +1208,7 @@ class ReflnData(CategoryCollection):
 
     def __init__(self):
         super().__init__(item_type=Refln)
+
     # ...rest unchanged...
 ```
 
@@ -1205,21 +1229,23 @@ class TotalData(TotalDataBase):
 
     def __init__(self):
         super().__init__(item_type=TotalDataPoint)
+
     # ...rest unchanged...
 ```
 
 ### 8.5 Calculators
 
-Calculators get `type_info` only. They don't need `compatibility`
-(they don't have experimental restrictions on *themselves*) or
-`calculator_support` (they *are* calculators). Their limitations are
-expressed on the categories they support — inverted.
+Calculators get `type_info` only. They don't need `compatibility` (they don't
+have experimental restrictions on _themselves_) or `calculator_support` (they
+_are_ calculators). Their limitations are expressed on the categories they
+support — inverted.
 
 **`calculators/factory.py`**:
 
 ```python
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+
 
 class CalculatorFactory(FactoryBase):
     _default_tag = 'cryspy'
@@ -1235,11 +1261,7 @@ class CalculatorFactory(FactoryBase):
     @classmethod
     def _supported_map(cls):
         """Only include calculators whose engines are importable."""
-        return {
-            klass.type_info.tag: klass
-            for klass in cls._registry
-            if klass().engine_imported
-        }
+        return {klass.type_info.tag: klass for klass in cls._registry if klass().engine_imported}
 ```
 
 **`calculators/cryspy.py`**:
@@ -1281,8 +1303,8 @@ class PdffitCalculator(CalculatorBase):
     # ...rest unchanged...
 ```
 
-**Note on `engine_imported`:** `CalculatorFactory` is the only factory
-that overrides `_supported_map()` to filter out calculators where
+**Note on `engine_imported`:** `CalculatorFactory` is the only factory that
+overrides `_supported_map()` to filter out calculators where
 `engine_imported is False`. All other factories inherit the default
 implementation from `FactoryBase`.
 
@@ -1293,8 +1315,11 @@ implementation from `FactoryBase`.
 ```python
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.datablocks.experiment.item.enums import (
-    BeamModeEnum, SampleFormEnum, ScatteringTypeEnum,
+    BeamModeEnum,
+    SampleFormEnum,
+    ScatteringTypeEnum,
 )
+
 
 class ExperimentFactory(FactoryBase):
     _default_tag = 'bragg-pd'
@@ -1371,6 +1396,7 @@ class CwlScExperiment(ScExperimentBase):
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
     )
 
+
 @ExperimentFactory.register
 class TofScExperiment(ScExperimentBase):
     type_info = TypeInfo(
@@ -1401,6 +1427,7 @@ class LmfitMinimizer(MinimizerBase):
         description='LMFIT with Levenberg-Marquardt least squares',
     )
 
+
 @MinimizerFactory.register
 class DfolsMinimizer(MinimizerBase):
     type_info = TypeInfo(
@@ -1409,10 +1436,10 @@ class DfolsMinimizer(MinimizerBase):
     )
 ```
 
-**Note on minimizer methods:** The current `MinimizerFactory` supports
-multiple entries for `LmfitMinimizer` with different methods (e.g.
-`'lmfit (leastsq)'`, `'lmfit (least_squares)'`). In the new design,
-these become separate registrations with distinct tags:
+**Note on minimizer methods:** The current `MinimizerFactory` supports multiple
+entries for `LmfitMinimizer` with different methods (e.g. `'lmfit (leastsq)'`,
+`'lmfit (least_squares)'`). In the new design, these become separate
+registrations with distinct tags:
 
 ```python
 @MinimizerFactory.register
@@ -1423,6 +1450,7 @@ class LmfitLeastsqMinimizer(LmfitMinimizer):
     )
     _method = 'leastsq'
 
+
 @MinimizerFactory.register
 class LmfitLeastSquaresMinimizer(LmfitMinimizer):
     type_info = TypeInfo(
@@ -1432,9 +1460,9 @@ class LmfitLeastSquaresMinimizer(LmfitMinimizer):
     _method = 'least_squares'
 ```
 
-Alternatively, if subclassing feels heavy, `MinimizerFactory` can
-override `create()` to handle method dispatch. This is an
-implementation detail to resolve during migration step 9.
+Alternatively, if subclassing feels heavy, `MinimizerFactory` can override
+`create()` to handle method dispatch. This is an implementation detail to
+resolve during migration step 9.
 
 ---
 
@@ -1522,6 +1550,7 @@ def show_supported_peak_profile_types(self):
         beam_mode=self.type.beam_mode.value,
     )
 
+
 def show_supported_background_types(self):
     BackgroundFactory.show_supported()
 ```
@@ -1575,53 +1604,52 @@ self._instrument = InstrumentFactory.create_default_for(
 
 ## 10. What Gets Deleted
 
-| File / code | Reason |
-|---|---|
-| `background/enums.py` (`BackgroundTypeEnum`) | Replaced by `type_info.tag` on each class |
-| `PeakProfileTypeEnum` in `experiment/item/enums.py` | Replaced by `type_info.tag` on each class |
-| `BackgroundFactory._supported_map()` body | Inherited from `FactoryBase` |
-| `PeakFactory._supported` / `_supported_map()` body | Inherited from `FactoryBase` |
-| `InstrumentFactory._supported_map()` body | Inherited from `FactoryBase` |
-| `DataFactory._supported` dict | Inherited from `FactoryBase` |
-| `CalculatorFactory._potential_calculators` dict | Replaced by `@register` + `type_info` |
-| `CalculatorFactory.list_supported_calculators()` | Inherited as `supported_tags()` |
-| `CalculatorFactory.show_supported_calculators()` | Inherited as `show_supported()` |
-| `MinimizerFactory._available_minimizers` dict | Replaced by `@register` + `type_info` |
-| `MinimizerFactory.list_available_minimizers()` | Inherited as `supported_tags()` |
-| `MinimizerFactory.show_available_minimizers()` | Inherited as `show_supported()` |
-| All per-factory validation boilerplate | Inherited from `FactoryBase.create()` |
-| `_description` class attributes on backgrounds | Replaced by `type_info.description` |
-| Enum `description()` methods on deleted enums | Replaced by `type_info.description` |
-| Enum `default()` methods on deleted enums | Replaced by `_default_rules` + `default_tag()` on factory |
+| File / code                                         | Reason                                                    |
+| --------------------------------------------------- | --------------------------------------------------------- |
+| `background/enums.py` (`BackgroundTypeEnum`)        | Replaced by `type_info.tag` on each class                 |
+| `PeakProfileTypeEnum` in `experiment/item/enums.py` | Replaced by `type_info.tag` on each class                 |
+| `BackgroundFactory._supported_map()` body           | Inherited from `FactoryBase`                              |
+| `PeakFactory._supported` / `_supported_map()` body  | Inherited from `FactoryBase`                              |
+| `InstrumentFactory._supported_map()` body           | Inherited from `FactoryBase`                              |
+| `DataFactory._supported` dict                       | Inherited from `FactoryBase`                              |
+| `CalculatorFactory._potential_calculators` dict     | Replaced by `@register` + `type_info`                     |
+| `CalculatorFactory.list_supported_calculators()`    | Inherited as `supported_tags()`                           |
+| `CalculatorFactory.show_supported_calculators()`    | Inherited as `show_supported()`                           |
+| `MinimizerFactory._available_minimizers` dict       | Replaced by `@register` + `type_info`                     |
+| `MinimizerFactory.list_available_minimizers()`      | Inherited as `supported_tags()`                           |
+| `MinimizerFactory.show_available_minimizers()`      | Inherited as `show_supported()`                           |
+| All per-factory validation boilerplate              | Inherited from `FactoryBase.create()`                     |
+| `_description` class attributes on backgrounds      | Replaced by `type_info.description`                       |
+| Enum `description()` methods on deleted enums       | Replaced by `type_info.description`                       |
+| Enum `default()` methods on deleted enums           | Replaced by `_default_rules` + `default_tag()` on factory |
 
 ---
 
 ## 11. What Gets Added
 
-| File | Contents |
-|---|---|
-| `core/metadata.py` | `TypeInfo`, `Compatibility`, `CalculatorSupport` dataclasses |
-| `core/factory.py` | `FactoryBase` class with `register`, `create`, `create_default_for`, `default_tag`, `supported_for`, `show_supported` |
-| `CalculatorEnum` in `experiment/item/enums.py` | New enum for calculator identifiers |
+| File                                           | Contents                                                                                                              |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `core/metadata.py`                             | `TypeInfo`, `Compatibility`, `CalculatorSupport` dataclasses                                                          |
+| `core/factory.py`                              | `FactoryBase` class with `register`, `create`, `create_default_for`, `default_tag`, `supported_for`, `show_supported` |
+| `CalculatorEnum` in `experiment/item/enums.py` | New enum for calculator identifiers                                                                                   |
 
 ---
 
 ## 12. What Remains Unchanged
 
-- `Identity` class in `core/identity.py` — separate concern (CIF
-  hierarchy).
-- `CategoryItem` and `CategoryCollection` base classes — no
-  structural changes. The three metadata attributes are added on
-  concrete subclasses, not on the base classes.
-- `ExperimentType` category — still holds runtime enum values for
-  the current experiment's configuration.
-- `SampleFormEnum`, `ScatteringTypeEnum`, `BeamModeEnum`,
-  `RadiationProbeEnum` — kept as-is (they represent the experiment
-  axes). Their `.default()` and `.description()` methods remain.
-- Child `CategoryItem` classes (`LineSegment`, `PolynomialTerm`,
-  `AtomSite`, data point items, etc.) — no changes.
-- All computation logic, CIF serialization, `_update()` methods,
-  parameter definitions — no changes.
+- `Identity` class in `core/identity.py` — separate concern (CIF hierarchy).
+- `CategoryItem` and `CategoryCollection` base classes — no structural changes.
+  The three metadata attributes are added on concrete subclasses, not on the
+  base classes.
+- `ExperimentType` category — still holds runtime enum values for the current
+  experiment's configuration.
+- `SampleFormEnum`, `ScatteringTypeEnum`, `BeamModeEnum`, `RadiationProbeEnum` —
+  kept as-is (they represent the experiment axes). Their `.default()` and
+  `.description()` methods remain.
+- Child `CategoryItem` classes (`LineSegment`, `PolynomialTerm`, `AtomSite`,
+  data point items, etc.) — no changes.
+- All computation logic, CIF serialization, `_update()` methods, parameter
+  definitions — no changes.
 
 ---
 
@@ -1633,74 +1661,64 @@ Implementation should proceed in this order:
    `CalculatorSupport`.
 2. **Create `core/factory.py`** with `FactoryBase`.
 3. **Add `CalculatorEnum`** to `experiment/item/enums.py`.
-4. **Migrate `BackgroundFactory`** — simplest case (flat, 2 classes,
-   no `_default_rules`). Delete `background/enums.py`. Update
-   `line_segment.py` and `chebyshev.py`. Update all references to
-   `BackgroundTypeEnum`.
-5. **Migrate `PeakFactory`** — 7 classes, has `_default_rules`.
-   Remove `PeakProfileTypeEnum` from `experiment/item/enums.py`.
-   Update `cwl.py`, `tof.py`, `total.py`.
-6. **Migrate `InstrumentFactory`** — 4 classes, has `_default_rules`.
-   Update `cwl.py`, `tof.py`.
-7. **Migrate `DataFactory`** — 4 collection classes, has
-   `_default_rules`. Update `bragg_pd.py`, `bragg_sc.py`,
-   `total_pd.py`.
-8. **Migrate `CalculatorFactory`** — 3 classes, has `_default_rules`,
-   overrides `_supported_map()`. Update `cryspy.py`, `crysfml.py`,
-   `pdffit.py`.
-9. **Migrate `MinimizerFactory`** — 2+ classes. Resolve the
-   multi-method `LmfitMinimizer` pattern (subclass or factory
-   override). Update `lmfit.py`, `dfols.py`.
+4. **Migrate `BackgroundFactory`** — simplest case (flat, 2 classes, no
+   `_default_rules`). Delete `background/enums.py`. Update `line_segment.py` and
+   `chebyshev.py`. Update all references to `BackgroundTypeEnum`.
+5. **Migrate `PeakFactory`** — 7 classes, has `_default_rules`. Remove
+   `PeakProfileTypeEnum` from `experiment/item/enums.py`. Update `cwl.py`,
+   `tof.py`, `total.py`.
+6. **Migrate `InstrumentFactory`** — 4 classes, has `_default_rules`. Update
+   `cwl.py`, `tof.py`.
+7. **Migrate `DataFactory`** — 4 collection classes, has `_default_rules`.
+   Update `bragg_pd.py`, `bragg_sc.py`, `total_pd.py`.
+8. **Migrate `CalculatorFactory`** — 3 classes, has `_default_rules`, overrides
+   `_supported_map()`. Update `cryspy.py`, `crysfml.py`, `pdffit.py`.
+9. **Migrate `MinimizerFactory`** — 2+ classes. Resolve the multi-method
+   `LmfitMinimizer` pattern (subclass or factory override). Update `lmfit.py`,
+   `dfols.py`.
 10. **Migrate `ExperimentFactory`** — 4 experiment classes, has
-    `_default_rules`. Note: `ExperimentFactory` has additional
-    classmethods (`from_cif_path`, `from_cif_str`, `from_scratch`,
-    `from_data_path`) that stay but internally use `FactoryBase`
-    machinery. The `_resolve_class()` method is replaced by
-    `create_default_for()` or `supported_for()`.
-11. **Update consumer code** — `show_supported_*()` methods on
-    experiment classes become thin wrappers around
-    `Factory.show_supported(...)`. Replace
+    `_default_rules`. Note: `ExperimentFactory` has additional classmethods
+    (`from_cif_path`, `from_cif_str`, `from_scratch`, `from_data_path`) that
+    stay but internally use `FactoryBase` machinery. The `_resolve_class()`
+    method is replaced by `create_default_for()` or `supported_for()`.
+11. **Update consumer code** — `show_supported_*()` methods on experiment
+    classes become thin wrappers around `Factory.show_supported(...)`. Replace
     `PeakProfileTypeEnum.default(st, bm)` calls with
-    `PeakFactory.default_tag(scattering_type=st, beam_mode=bm)`.
-    Replace `BackgroundTypeEnum.default()` with
-    `BackgroundFactory.create()`. Replace `InstrumentFactory.create(
-    scattering_type=..., beam_mode=..., sample_form=...)` with
-    `InstrumentFactory.create_default_for(...)`.
+    `PeakFactory.default_tag(scattering_type=st, beam_mode=bm)`. Replace
+    `BackgroundTypeEnum.default()` with `BackgroundFactory.create()`. Replace
+    `InstrumentFactory.create( scattering_type=..., beam_mode=..., sample_form=...)`
+    with `InstrumentFactory.create_default_for(...)`.
 12. **Update tests** — adjust imports, remove enum-based tests, add
     metadata-based tests. Test `default_tag()` with various condition
-    combinations. Test `create_default_for()`. Test `supported_for()`
-    filtering.
+    combinations. Test `create_default_for()`. Test `supported_for()` filtering.
 
 ---
 
 ## 14. Design Principles Summary
 
-1. **Single source of truth.** Each concrete class declares its own
-   tag, description, compatibility, and calculator support. No
-   duplication in enums or factory dicts.
+1. **Single source of truth.** Each concrete class declares its own tag,
+   description, compatibility, and calculator support. No duplication in enums
+   or factory dicts.
 2. **Separation of concerns.** `TypeInfo` (identity), `Compatibility`
    (experimental conditions), `CalculatorSupport` (engine support), and
-   `Identity` (CIF hierarchy) are four distinct, non-overlapping
-   objects.
-3. **Uniform axes.** `Compatibility` has four parallel frozenset fields
-   matching `ExperimentType`'s four axes. No special cases.
-4. **Context-dependent defaults.** `_default_rules` on each factory
-   maps experimental conditions to default tags. `default_tag()` and
-   `create_default_for()` resolve the right default for any context.
-   Falls back to `_default_tag` when no context is given.
-5. **Consistent naming.** Tags use standard abbreviations (`pd`, `sc`,
-   `cwl`, `tof`, `bragg`, `total`), are hyphen-separated, lowercase,
-   and ordered from general to specific.
-6. **Metadata on the right level.** Factory-created classes get
-   metadata. Child-only `CategoryItem` classes don't. Collections that
-   are the unit of selection get it; their row items don't.
-7. **DRY factories.** `FactoryBase` provides registration, lookup,
-   creation, context-dependent defaults, listing, and display.
-   Concrete factories are typically 2–15 lines.
-8. **Open for extension, closed for modification.** Adding a new
-   variant = one new class with `@Factory.register` + three metadata
-   attributes + optionally a new `_default_rules` entry. No other
-   files need editing.
-9. **Type safety.** `CalculatorEnum` replaces bare strings.
-   Experimental-axis enums are reused from the existing codebase.
-
+   `Identity` (CIF hierarchy) are four distinct, non-overlapping objects.
+3. **Uniform axes.** `Compatibility` has four parallel frozenset fields matching
+   `ExperimentType`'s four axes. No special cases.
+4. **Context-dependent defaults.** `_default_rules` on each factory maps
+   experimental conditions to default tags. `default_tag()` and
+   `create_default_for()` resolve the right default for any context. Falls back
+   to `_default_tag` when no context is given.
+5. **Consistent naming.** Tags use standard abbreviations (`pd`, `sc`, `cwl`,
+   `tof`, `bragg`, `total`), are hyphen-separated, lowercase, and ordered from
+   general to specific.
+6. **Metadata on the right level.** Factory-created classes get metadata.
+   Child-only `CategoryItem` classes don't. Collections that are the unit of
+   selection get it; their row items don't.
+7. **DRY factories.** `FactoryBase` provides registration, lookup, creation,
+   context-dependent defaults, listing, and display. Concrete factories are
+   typically 2–15 lines.
+8. **Open for extension, closed for modification.** Adding a new variant = one
+   new class with `@Factory.register` + three metadata attributes + optionally a
+   new `_default_rules` entry. No other files need editing.
+9. **Type safety.** `CalculatorEnum` replaces bare strings. Experimental-axis
+   enums are reused from the existing codebase.
