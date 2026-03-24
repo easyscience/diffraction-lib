@@ -56,6 +56,13 @@ GuardedBase                            # Controlled attribute access, parent lin
 └── DatablockItem                      # CIF data block  (e.g. Structure, Experiment)
 ```
 
+`CollectionBase` provides a unified dict-like API over an ordered item list with
+name-based indexing. All key operations — `__getitem__`, `__setitem__`,
+`__delitem__`, `__contains__`, `remove()` — resolve keys through a single
+`_key_for(item)` method that returns `category_entry_name` for category items or
+`datablock_entry_name` for datablock items. Subclasses `CategoryCollection` and
+`DatablockCollection` inherit this consistently.
+
 ### 2.2 GuardedBase — Controlled Attribute Access
 
 `GuardedBase` is the root ABC. It enforces that only **declared `@property`
@@ -1258,27 +1265,7 @@ object stored on the experiment.
 Keep replacement behind private helpers such as `_set_peak(...)` and
 `_set_background(...)`, used only by the type-switch setters and loaders.
 
-### 12.3 `CollectionBase` Mutation Does Not Follow Its Own Key Model
-
-**Where:** `core/collection.py`, lines 41-63; consumer removers in
-`datablocks/experiment/collection.py`, lines 118-130, and
-`datablocks/structure/collection.py`, lines 75-87.
-
-**Symptom:** `__getitem__` and `_rebuild_index()` rely on `_key_for(item)`, but
-`__setitem__` and `__delitem__` compare only `category_entry_name`.
-`CollectionBase` also does not implement key-based `__contains__`, so
-`if name in self` iterates over item objects rather than keys.
-
-**Impact:** this is separate from 11.6: even if `_key_for` is fixed, mutation
-semantics are still inconsistent. `DatablockCollection.add()` may append
-duplicate datablocks instead of replacing them, and `Structures.remove(name)` /
-`Experiments.remove(name)` may report "not found" for existing items.
-
-**Recommended fix:** centralise get/set/delete/contains on one key-resolution
-path. Implement `__contains__` by key, and have subtype-specific key strategies
-in `CategoryCollection` and `DatablockCollection`.
-
-### 12.4 Constraint Application Bypasses Validation and Dirty Tracking
+### 12.3 Constraint Application Bypasses Validation and Dirty Tracking
 
 **Where:** `core/singleton.py`, lines 138-176, compared with the normal
 descriptor setter in `core/variable.py`, lines 146-164.
@@ -1297,7 +1284,7 @@ updates that still validates, marks the owning datablock dirty, and records
 constraint provenance. Constraint removal should symmetrically clear the
 constrained state through the same API.
 
-### 12.5 Joint-Fit Weights Can Drift Out of Sync with Experiments
+### 12.4 Joint-Fit Weights Can Drift Out of Sync with Experiments
 
 **Where:** `analysis/analysis.py`, lines 401-423 and 534-543.
 
@@ -1315,12 +1302,11 @@ fit, or keep it synchronised whenever the experiment collection mutates. At
 minimum, `fit()` should check that the weight keys exactly match
 `project.experiments.names`.
 
-### 12.6 Summary of Issue Severity
+### 12.5 Summary of Issue Severity
 
 | #    | Issue                                            | Severity | Type        |
 | ---- | ------------------------------------------------ | -------- | ----------- |
 | 12.1 | `ExperimentType` is mutable                      | High     | Correctness |
 | 12.2 | `peak` / `background` bypass switch API          | Medium   | API safety  |
-| 12.3 | Collection mutation semantics are inconsistent   | High     | Correctness |
-| 12.4 | Constraints bypass validation and dirty tracking | High     | Correctness |
-| 12.5 | Joint-fit weights drift from experiment state    | Medium   | Fragility   |
+| 12.3 | Constraints bypass validation and dirty tracking | High     | Correctness |
+| 12.4 | Joint-fit weights drift from experiment state    | Medium   | Fragility   |

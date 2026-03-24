@@ -8,7 +8,6 @@ from easydiffraction.core.datablock import DatablockCollection
 from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
 from easydiffraction.utils.logging import console
-from easydiffraction.utils.logging import log
 
 
 class Experiments(DatablockCollection):
@@ -113,21 +112,6 @@ class Experiments(DatablockCollection):
         )
         self.add(experiment)
 
-    # TODO: Move to DatablockCollection?
-    @typechecked
-    def remove(
-        self,
-        name: str,
-    ) -> None:
-        """Remove an experiment by its name.
-
-        Args:
-            name (str): Name of the structure to remove.
-        """
-        if name in self:
-            del self[name]
-        else:
-            log.warning(f"Experiment '{name}' not found in collection.")
 
     # TODO: Move to DatablockCollection?
     def show_names(self) -> None:

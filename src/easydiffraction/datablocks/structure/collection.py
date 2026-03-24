@@ -8,7 +8,6 @@ from easydiffraction.core.datablock import DatablockCollection
 from easydiffraction.datablocks.structure.item.base import Structure
 from easydiffraction.datablocks.structure.item.factory import StructureFactory
 from easydiffraction.utils.logging import console
-from easydiffraction.utils.logging import log
 
 
 class Structures(DatablockCollection):
@@ -70,21 +69,6 @@ class Structures(DatablockCollection):
         structure = StructureFactory.from_cif_path(cif_path)
         self.add(structure)
 
-    # TODO: Move to DatablockCollection?
-    @typechecked
-    def remove(
-        self,
-        name: str,
-    ) -> None:
-        """Remove a structure by its name.
-
-        Args:
-            name (str): Name of the structure to remove.
-        """
-        if name in self:
-            del self[name]
-        else:
-            log.warning(f'Structure {name} not found in collection.')
 
     # TODO: Move to DatablockCollection?
     def show_names(self) -> None:
