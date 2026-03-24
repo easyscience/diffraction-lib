@@ -84,7 +84,59 @@ attributes** are accessible publicly:
 
 **Key design rule:** if a parameter has a public setter, it is writable for the
 user. If only a getter — it is read-only. If internal code needs to set it, a
-private method (underscore prefix) is used.
+private method (underscore prefix) is used. See § 2.2.1 below for the full
+pattern.
+
+#### 2.2.1 Public Property Convention — Editable vs Read-Only
+
+Every public parameter or descriptor exposed on a `GuardedBase` subclass follows
+one of two patterns:
+
+| Kind          | Getter | Setter | Internal mutation               |
+| ------------- | ------ | ------ | ------------------------------- |
+| **Editable**  | yes    | yes    | Via the public setter           |
+| **Read-only** | yes    | no     | Via a private `_set_<name>` method |
+
+**Editable property** — the user can both read and write the value. The setter
+runs through `GuardedBase.__setattr__` and into the property setter, where
+validation happens:
+
+```python
+@property
+def name(self) -> str:
+    """Human-readable name of the experiment."""
+    return self._name
+
+@name.setter
+def name(self, new: str) -> None:
+    self._name = new
+```
+
+**Read-only property** — the user can read but cannot assign. Any attempt to
+set the attribute is blocked by `GuardedBase.__setattr__` with a clear error
+message. If *internal* code (factory builders, CIF loaders, etc.) needs to set
+the value, it calls a private `_set_<name>` method instead of exposing a public
+setter:
+
+```python
+@property
+def sample_form(self) -> StringDescriptor:
+    """Sample form descriptor (read-only for the user)."""
+    return self._sample_form
+
+def _set_sample_form(self, value: str) -> None:
+    """Internal setter used by factory/CIF code during construction."""
+    self._sample_form.value = value
+```
+
+**Why this matters:**
+
+- `GuardedBase.__setattr__` uses the presence of a setter to decide writability.
+  Adding a setter "just for internal use" would open the attribute to users.
+- Private `_set_<name>` methods keep the public API surface minimal and
+  intention-clear, while remaining greppable and type-safe.
+- The pattern avoids string-based dispatch — every mutator has an explicit
+  named method.
 
 ### 2.3 CategoryItem and CategoryCollection
 

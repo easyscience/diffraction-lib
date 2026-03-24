@@ -40,6 +40,10 @@
   route to attributes or methods. Instead, write explicit named methods
   (e.g. `_set_sample_form`, `_set_beam_mode`). This keeps the code
   greppable, autocomplete-friendly, and type-safe.
+- Public parameters and descriptors are either **editable** (property with both
+  getter and setter) or **read-only** (property with getter only). If internal
+  code needs to mutate a read-only property, add a private `_set_<name>` method
+  instead of exposing a public setter.
 
 ## Architecture
 
