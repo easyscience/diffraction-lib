@@ -937,28 +937,7 @@ sets the value without triggering the dirty flag, for use by internal batch
 operations like symmetry constraints. Alternatively, suppress notification via a
 context manager or flag on the owning datablock.
 
-### 11.4 `CollectionBase._key_for` Mixes Two Identity Levels
-
-**Where:** `core/collection.py`, line 77.
-
-```python
-def _key_for(self, item):
-    return item._identity.category_entry_name or item._identity.datablock_entry_name
-```
-
-**Symptom:** the same collection class is used for both `CategoryCollection`
-(items keyed by `category_entry_name`) and `DatablockCollection` (items keyed by
-`datablock_entry_name`). The fallback chain conflates the two scopes.
-
-**Impact:** if a `CategoryItem` lacks a `category_entry_name` but happens to
-have a `datablock_entry_name` (inherited from its parent), it will be indexed
-under the wrong key. This is fragile and relies on every `CategoryItem` having a
-properly set `category_entry_name`.
-
-**Recommended fix:** override `_key_for` in `CategoryCollection` and
-`DatablockCollection` separately, each returning exactly the key it expects.
-
-### 11.5 `CategoryCollection.create` Uses `**kwargs` with `setattr`
+### 11.4 `CategoryCollection.create` Uses `**kwargs` with `setattr`
 
 **Where:** `core/category.py`, lines 113–127.
 
@@ -984,7 +963,7 @@ override `create` with explicit parameters, so IDE autocomplete and typo
 detection work. The base `create(**kwargs)` can remain as an internal
 implementation detail.
 
-### 11.6 `Project._update_categories` Has Ad-Hoc Orchestration
+### 11.5 `Project._update_categories` Has Ad-Hoc Orchestration
 
 **Where:** `project/project.py`, lines 224–229.
 
@@ -1011,7 +990,7 @@ is inconsistent with the "fit all experiments" workflow in joint mode.
 datablocks/components, or at minimum document the required update order. For
 joint fitting, all experiments should be updateable in a single call.
 
-### 11.7 Single-Fit Mode Creates Dummy `Experiments` Wrapper
+### 11.6 Single-Fit Mode Creates Dummy `Experiments` Wrapper
 
 **Where:** `analysis/analysis.py`, lines 548–565.
 
@@ -1038,7 +1017,7 @@ The pattern is fragile and hard to follow.
 single experiment), not necessarily an `Experiments` collection. Or add a
 `fit_single(experiment)` method that avoids the wrapper entirely.
 
-### 11.8 Missing `load()` Implementation
+### 11.7 Missing `load()` Implementation
 
 **Where:** `project/project.py`.
 
@@ -1050,7 +1029,7 @@ stub that raises `NotImplementedError`.
 **Recommended fix:** implement `load()` that reads CIF files from the project
 directory and reconstructs structures, experiments, and analysis.
 
-### 11.9 Background Type Switching Loses Data
+### 11.8 Background Type Switching Loses Data
 
 **Where:** `datablocks/experiment/item/bragg_pd.py`, `background_type.setter`.
 
@@ -1071,7 +1050,7 @@ background data. The same issue applies to `peak_profile_type` switching.
 data. Optionally, keep a history or prompt for confirmation in interactive
 contexts.
 
-### 11.10 Minimiser Variant Loss
+### 11.9 Minimiser Variant Loss
 
 **Where:** `analysis/minimizers/`.
 
@@ -1092,7 +1071,7 @@ classes (thin subclasses with different tags) or as a two-level selection
 (engine + algorithm). The choice depends on whether variants need different
 `TypeInfo`/`Compatibility` metadata.
 
-### 11.11 `FactoryBase` Cannot Express Constructor-Variant Registrations
+### 11.10 `FactoryBase` Cannot Express Constructor-Variant Registrations
 
 **Where:** `core/factory.py` — `FactoryBase.register` / `create`.
 
@@ -1138,21 +1117,20 @@ explicit, no magic" philosophy before restoring minimiser variants. Approach
 requires `FactoryBase` changes; approach **C** is the cleanest long-term but the
 largest change.
 
-### 11.12 Summary of Issue Severity
+### 11.11 Summary of Issue Severity
 
 | #     | Issue                                      | Severity | Type              |
 | ----- | ------------------------------------------ | -------- | ----------------- |
 | 11.1  | Dirty-flag guard disabled                  | Medium   | Performance       |
 | 11.2  | `Analysis` not a `DatablockItem`           | Medium   | Consistency       |
 | 11.3  | Symmetry constraints trigger notifications | Low      | Performance       |
-| 11.4  | `_key_for` mixes identity levels           | Low      | Correctness       |
-| 11.5  | `create(**kwargs)` with `setattr`          | Medium   | API safety        |
-| 11.6  | Ad-hoc update orchestration                | Low      | Maintainability   |
-| 11.7  | Dummy `Experiments` wrapper                | Medium   | Fragility         |
-| 11.8  | Missing `load()` implementation            | High     | Completeness      |
-| 11.9  | Type switching loses data silently         | Medium   | Data safety       |
-| 11.10 | Minimiser variant loss                     | Medium   | Feature loss      |
-| 11.11 | `FactoryBase` lacks variant registrations  | Medium   | Design limitation |
+| 11.4  | `create(**kwargs)` with `setattr`          | Medium   | API safety        |
+| 11.5  | Ad-hoc update orchestration                | Low      | Maintainability   |
+| 11.6  | Dummy `Experiments` wrapper                | Medium   | Fragility         |
+| 11.7  | Missing `load()` implementation            | High     | Completeness      |
+| 11.8  | Type switching loses data silently         | Medium   | Data safety       |
+| 11.9  | Minimiser variant loss                     | Medium   | Feature loss      |
+| 11.10 | `FactoryBase` lacks variant registrations  | Medium   | Design limitation |
 
 ## 12. Current and Potential Issues 2
 

@@ -100,6 +100,10 @@ class DatablockCollection(CollectionBase):
     call :meth:`add` with the resulting item.
     """
 
+    def _key_for(self, item):
+        """Return the datablock-level identity key for *item*."""
+        return item._identity.datablock_entry_name
+
     def add(self, item) -> None:
         """Add a pre-built item to the collection.
 

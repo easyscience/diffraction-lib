@@ -86,8 +86,10 @@ class CollectionBase(GuardedBase):
         del self[name]
 
     def _key_for(self, item):
-        """Return the identity key for ``item`` (category or
-        datablock).
+        """Return the identity key for *item*.
+
+        Subclasses must override to return the appropriate key
+        (``category_entry_name`` or ``datablock_entry_name``).
         """
         return item._identity.category_entry_name or item._identity.datablock_entry_name
 

@@ -70,6 +70,10 @@ class CategoryCollection(CollectionBase):
     # TODO: Common for all categories
     _update_priority = 10  # Default. Lower values run first.
 
+    def _key_for(self, item):
+        """Return the category-level identity key for *item*."""
+        return item._identity.category_entry_name
+
     def __str__(self) -> str:
         """Human-readable representation of this component."""
         name = self._log_name
