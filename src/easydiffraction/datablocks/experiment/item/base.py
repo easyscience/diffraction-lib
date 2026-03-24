@@ -220,18 +220,10 @@ class PdExperimentBase(ExperimentBase):
         return self._data
 
     @property
-    def peak(self) -> str:
+    def peak(self):
         """Peak category object with profile parameters and mixins."""
         return self._peak
 
-    @peak.setter
-    def peak(self, value):
-        """Replace the peak model used for this powder experiment.
-
-        Args:
-            value: New peak object created by the `PeakFactory`.
-        """
-        self._peak = value
 
     @property
     def peak_profile_type(self):

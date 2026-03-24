@@ -123,7 +123,7 @@ class BraggPdExperiment(PdExperimentBase):
             )
             return
 
-        self.background = BackgroundFactory.create(new_type)
+        self._background = BackgroundFactory.create(new_type)
         self._background_type = new_type
         console.paragraph(f"Background type for experiment '{self.name}' changed to")
         console.print(new_type)
@@ -132,9 +132,6 @@ class BraggPdExperiment(PdExperimentBase):
     def background(self):
         return self._background
 
-    @background.setter
-    def background(self, value):
-        self._background = value
 
     def show_supported_background_types(self):
         """Print a table of supported background types."""

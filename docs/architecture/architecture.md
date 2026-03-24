@@ -1230,25 +1230,7 @@ largest change.
 
 ## 12. Current and Potential Issues 2
 
-### 12.1 `peak` and `background` Are Publicly Replaceable
-
-**Where:** `datablocks/experiment/item/base.py`, lines 222-234;
-`datablocks/experiment/item/bragg_pd.py`, lines 131-137.
-
-**Symptom:** the documented API says users should switch implementations via
-`peak_profile_type` and `background_type`, but both `peak` and `background` have
-public setters that accept any object.
-
-**Impact:** this bypasses factory validation, supported-type filtering,
-compatibility metadata, and the intended experiment-level switching contract. It
-can also desynchronise `_peak_profile_type` / `_background_type` from the actual
-object stored on the experiment.
-
-**Recommended fix:** make `peak` and `background` read-only public properties.
-Keep replacement behind private helpers such as `_set_peak(...)` and
-`_set_background(...)`, used only by the type-switch setters and loaders.
-
-### 12.2 Constraint Application Bypasses Validation and Dirty Tracking
+### 12.1 Constraint Application Bypasses Validation and Dirty Tracking
 
 **Where:** `core/singleton.py`, lines 138-176, compared with the normal
 descriptor setter in `core/variable.py`, lines 146-164.
@@ -1267,7 +1249,7 @@ updates that still validates, marks the owning datablock dirty, and records
 constraint provenance. Constraint removal should symmetrically clear the
 constrained state through the same API.
 
-### 12.3 Joint-Fit Weights Can Drift Out of Sync with Experiments
+### 12.2 Joint-Fit Weights Can Drift Out of Sync with Experiments
 
 **Where:** `analysis/analysis.py`, lines 401-423 and 534-543.
 
@@ -1285,10 +1267,9 @@ fit, or keep it synchronised whenever the experiment collection mutates. At
 minimum, `fit()` should check that the weight keys exactly match
 `project.experiments.names`.
 
-### 12.4 Summary of Issue Severity
+### 12.3 Summary of Issue Severity
 
-| #    | Issue                                            | Severity | Type       |
-| ---- | ------------------------------------------------ | -------- | ---------- |
-| 12.1 | `peak` / `background` bypass switch API          | Medium   | API safety |
-| 12.2 | Constraints bypass validation and dirty tracking | High     | Correctness |
-| 12.3 | Joint-fit weights drift from experiment state    | Medium   | Fragility  |
+| #    | Issue                                            | Severity | Type        |
+| ---- | ------------------------------------------------ | -------- | ----------- |
+| 12.1 | Constraints bypass validation and dirty tracking | High     | Correctness |
+| 12.2 | Joint-fit weights drift from experiment state    | Medium   | Fragility   |
