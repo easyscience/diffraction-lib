@@ -115,10 +115,16 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         description='Chebyshev polynomial background',
     )
     compatibility = Compatibility(
-        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
+        beam_mode=frozenset({
+            BeamModeEnum.CONSTANT_WAVELENGTH,
+            BeamModeEnum.TIME_OF_FLIGHT,
+        }),
     )
     calculator_support = CalculatorSupport(
-        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+        calculators=frozenset({
+            CalculatorEnum.CRYSPY,
+            CalculatorEnum.CRYSFML,
+        }),
     )
 
     def __init__(self):
