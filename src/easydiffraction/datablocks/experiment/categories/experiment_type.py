@@ -80,37 +80,38 @@ class ExperimentType(CategoryItem):
         self._identity.category_code = 'expt_type'
 
     # ------------------------------------------------------------------
-    #  Public properties
+    #  Private setters (used by factories and loaders only)
+    # ------------------------------------------------------------------
+
+    def _set_sample_form(self, value: str) -> None:
+        self._sample_form.value = value
+
+    def _set_beam_mode(self, value: str) -> None:
+        self._beam_mode.value = value
+
+    def _set_radiation_probe(self, value: str) -> None:
+        self._radiation_probe.value = value
+
+    def _set_scattering_type(self, value: str) -> None:
+        self._scattering_type.value = value
+
+    # ------------------------------------------------------------------
+    #  Public read-only properties
     # ------------------------------------------------------------------
 
     @property
     def sample_form(self):
         return self._sample_form
 
-    @sample_form.setter
-    def sample_form(self, value):
-        self._sample_form.value = value
-
     @property
     def beam_mode(self):
         return self._beam_mode
-
-    @beam_mode.setter
-    def beam_mode(self, value):
-        self._beam_mode.value = value
 
     @property
     def radiation_probe(self):
         return self._radiation_probe
 
-    @radiation_probe.setter
-    def radiation_probe(self, value):
-        self._radiation_probe.value = value
-
     @property
     def scattering_type(self):
         return self._scattering_type
 
-    @scattering_type.setter
-    def scattering_type(self, value):
-        self._scattering_type.value = value

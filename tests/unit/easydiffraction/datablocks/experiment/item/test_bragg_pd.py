@@ -15,10 +15,10 @@ from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
 def _mk_type_powder_cwl_bragg():
     et = ExperimentType()
-    et.sample_form = SampleFormEnum.POWDER.value
-    et.beam_mode = BeamModeEnum.CONSTANT_WAVELENGTH.value
-    et.radiation_probe = RadiationProbeEnum.NEUTRON.value
-    et.scattering_type = ScatteringTypeEnum.BRAGG.value
+    et._set_sample_form(SampleFormEnum.POWDER.value)
+    et._set_beam_mode(BeamModeEnum.CONSTANT_WAVELENGTH.value)
+    et._set_radiation_probe(RadiationProbeEnum.NEUTRON.value)
+    et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
     return et
 
 

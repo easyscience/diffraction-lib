@@ -22,10 +22,10 @@ def test_pd_experiment_peak_profile_type_switch(capsys):
             pass
 
     et = ExperimentType()
-    et.sample_form = SampleFormEnum.POWDER.value
-    et.beam_mode = BeamModeEnum.CONSTANT_WAVELENGTH.value
-    et.radiation_probe = RadiationProbeEnum.NEUTRON.value
-    et.scattering_type = ScatteringTypeEnum.BRAGG.value
+    et._set_sample_form(SampleFormEnum.POWDER.value)
+    et._set_beam_mode(BeamModeEnum.CONSTANT_WAVELENGTH.value)
+    et._set_radiation_probe(RadiationProbeEnum.NEUTRON.value)
+    et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
 
     ex = ConcretePd(name='ex1', type=et)
     # valid switch using tag string

@@ -166,7 +166,10 @@ Validators include:
 An experiment's type is defined by the four enum axes and is **immutable after
 creation**. This avoids the complexity of transforming all internal state when
 the experiment type changes. The type is stored in an `ExperimentType` category
-with four `StringDescriptor`s validated by `MembershipValidator`s.
+with four `StringDescriptor`s validated by `MembershipValidator`s. Public
+properties are read-only; factory and CIF-loading code use private setters
+(`_set_sample_form`, `_set_beam_mode`, `_set_radiation_probe`,
+`_set_scattering_type`) during construction only.
 
 ### 3.2 Experiment Hierarchy
 
@@ -1227,27 +1230,7 @@ largest change.
 
 ## 12. Current and Potential Issues 2
 
-### 12.1 `ExperimentType` Is Mutable Despite the Architecture Contract
-
-**Where:** `datablocks/experiment/categories/experiment_type.py`, lines 86-116.
-
-**Symptom:** the architecture document states that the four experiment axes are
-immutable after creation, but `ExperimentType` exposes public setters for all of
-them. Users can do `expt.type.beam_mode = 'time-of-flight'` after the experiment
-has already created its instrument, data, peak, and background categories.
-
-**Impact:** this can create hybrid objects whose declared type no longer matches
-their instantiated categories. For example, a `BraggPdExperiment` can keep
-CWL-specific `data`/`instrument`/`peak` objects while reporting a TOF beam mode.
-Factory defaults, compatibility checks, plotting, serialisation, and calculator
-selection then operate on inconsistent state.
-
-**Recommended fix:** make `ExperimentType` effectively frozen after factory
-construction. Populate it only inside factory/private builder code, expose it as
-read-only to users, and require recreation of the experiment object for any true
-type change.
-
-### 12.2 `peak` and `background` Are Publicly Replaceable
+### 12.1 `peak` and `background` Are Publicly Replaceable
 
 **Where:** `datablocks/experiment/item/base.py`, lines 222-234;
 `datablocks/experiment/item/bragg_pd.py`, lines 131-137.
@@ -1265,7 +1248,7 @@ object stored on the experiment.
 Keep replacement behind private helpers such as `_set_peak(...)` and
 `_set_background(...)`, used only by the type-switch setters and loaders.
 
-### 12.3 Constraint Application Bypasses Validation and Dirty Tracking
+### 12.2 Constraint Application Bypasses Validation and Dirty Tracking
 
 **Where:** `core/singleton.py`, lines 138-176, compared with the normal
 descriptor setter in `core/variable.py`, lines 146-164.
@@ -1284,7 +1267,7 @@ updates that still validates, marks the owning datablock dirty, and records
 constraint provenance. Constraint removal should symmetrically clear the
 constrained state through the same API.
 
-### 12.4 Joint-Fit Weights Can Drift Out of Sync with Experiments
+### 12.3 Joint-Fit Weights Can Drift Out of Sync with Experiments
 
 **Where:** `analysis/analysis.py`, lines 401-423 and 534-543.
 
@@ -1302,11 +1285,10 @@ fit, or keep it synchronised whenever the experiment collection mutates. At
 minimum, `fit()` should check that the weight keys exactly match
 `project.experiments.names`.
 
-### 12.5 Summary of Issue Severity
+### 12.4 Summary of Issue Severity
 
-| #    | Issue                                            | Severity | Type        |
-| ---- | ------------------------------------------------ | -------- | ----------- |
-| 12.1 | `ExperimentType` is mutable                      | High     | Correctness |
-| 12.2 | `peak` / `background` bypass switch API          | Medium   | API safety  |
-| 12.3 | Constraints bypass validation and dirty tracking | High     | Correctness |
-| 12.4 | Joint-fit weights drift from experiment state    | Medium   | Fragility   |
+| #    | Issue                                            | Severity | Type       |
+| ---- | ------------------------------------------------ | -------- | ---------- |
+| 12.1 | `peak` / `background` bypass switch API          | Medium   | API safety |
+| 12.2 | Constraints bypass validation and dirty tracking | High     | Correctness |
+| 12.3 | Joint-fit weights drift from experiment state    | Medium   | Fragility  |

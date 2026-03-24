@@ -107,13 +107,13 @@ class ExperimentFactory(FactoryBase):
         et = ExperimentType()
 
         if sample_form is not None:
-            et.sample_form = sample_form
+            et._set_sample_form(sample_form)
         if beam_mode is not None:
-            et.beam_mode = beam_mode
+            et._set_beam_mode(beam_mode)
         if radiation_probe is not None:
-            et.radiation_probe = radiation_probe
+            et._set_radiation_probe(radiation_probe)
         if scattering_type is not None:
-            et.scattering_type = scattering_type
+            et._set_scattering_type(scattering_type)
 
         return et
 

@@ -36,6 +36,10 @@
 - One class per file when the class is substantial; group small related classes.
 - Avoid `**kwargs`; use explicit keyword arguments for clarity, autocomplete,
   and typo detection.
+- Do not use string-based dispatch (e.g. `getattr(self, f'_{name}')`) to
+  route to attributes or methods. Instead, write explicit named methods
+  (e.g. `_set_sample_form`, `_set_beam_mode`). This keeps the code
+  greppable, autocomplete-friendly, and type-safe.
 
 ## Architecture
 

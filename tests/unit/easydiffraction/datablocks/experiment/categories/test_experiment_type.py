@@ -20,10 +20,10 @@ def test_experiment_type_properties_and_validation(monkeypatch):
     log.configure(reaction=log.Reaction.WARN)
 
     et = ExperimentType()
-    et.sample_form = SampleFormEnum.POWDER.value
-    et.beam_mode = BeamModeEnum.CONSTANT_WAVELENGTH.value
-    et.radiation_probe = RadiationProbeEnum.NEUTRON.value
-    et.scattering_type = ScatteringTypeEnum.BRAGG.value
+    et._set_sample_form(SampleFormEnum.POWDER.value)
+    et._set_beam_mode(BeamModeEnum.CONSTANT_WAVELENGTH.value)
+    et._set_radiation_probe(RadiationProbeEnum.NEUTRON.value)
+    et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
 
     # getters nominal
     assert et.sample_form.value == SampleFormEnum.POWDER.value
@@ -31,6 +31,6 @@ def test_experiment_type_properties_and_validation(monkeypatch):
     assert et.radiation_probe.value == RadiationProbeEnum.NEUTRON.value
     assert et.scattering_type.value == ScatteringTypeEnum.BRAGG.value
 
-    # try invalid value should fall back to previous (membership validator)
-    et.sample_form = 'invalid'
+    # public setters are blocked (read-only properties via GuardedBase)
+    et.sample_form = 'single crystal'
     assert et.sample_form.value == SampleFormEnum.POWDER.value

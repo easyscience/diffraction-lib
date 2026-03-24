@@ -14,10 +14,10 @@ from easydiffraction.utils.logging import Logger
 
 def _mk_type_sc_bragg():
     et = ExperimentType()
-    et.sample_form = SampleFormEnum.SINGLE_CRYSTAL.value
-    et.beam_mode = BeamModeEnum.CONSTANT_WAVELENGTH.value
-    et.radiation_probe = RadiationProbeEnum.NEUTRON.value
-    et.scattering_type = ScatteringTypeEnum.BRAGG.value
+    et._set_sample_form(SampleFormEnum.SINGLE_CRYSTAL.value)
+    et._set_beam_mode(BeamModeEnum.CONSTANT_WAVELENGTH.value)
+    et._set_radiation_probe(RadiationProbeEnum.NEUTRON.value)
+    et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
     return et
 
 
