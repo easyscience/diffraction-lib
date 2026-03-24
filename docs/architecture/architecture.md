@@ -381,13 +381,185 @@ from .line_segment import LineSegmentBackground
 | `CalculatorFactory` | Calculation engines   | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator` |
 | `MinimizerFactory`  | Minimisers            | `LmfitMinimizer`, `DfolsMinimizer`, …                       |
 
-> **Note:** `ExperimentFactory` and `StructureFactory` are _builder_ factories
+ > **Note:** `ExperimentFactory` and `StructureFactory` are _builder_ factories
 > with `from_cif_path`, `from_cif_str`, `from_data_path`, and `from_scratch`
 > classmethods. `ExperimentFactory` inherits `FactoryBase` and uses `@register`
 > on all four concrete experiment classes; `_resolve_class` looks up the
 > registered class via `default_tag()` + `_supported_map()`. `StructureFactory`
 > is a plain class without `FactoryBase` inheritance (only one structure type
 > exists today).
+
+### 5.6 Tag Naming Convention
+
+Tags are the user-facing identifiers for selecting types. They must be:
+
+- **Consistent** — use the same abbreviations everywhere.
+- **Hyphen-separated** — all lowercase, words joined by hyphens.
+- **Semantically ordered** — from general to specific.
+- **Unique within a factory** — but may overlap across factories.
+
+#### Standard Abbreviations
+
+| Concept             | Abbreviation | Never use                   |
+| ------------------- | ------------ | --------------------------- |
+| Powder              | `pd`         | `powder`                    |
+| Single crystal      | `sc`         | `single-crystal`            |
+| Constant wavelength | `cwl`        | `cw`, `constant-wavelength` |
+| Time-of-flight      | `tof`        | `time-of-flight`            |
+| Bragg (scattering)  | `bragg`      |                             |
+| Total (scattering)  | `total`      |                             |
+
+#### Complete Tag Registry
+
+**Background tags**
+
+| Tag            | Class                           |
+| -------------- | ------------------------------- |
+| `line-segment` | `LineSegmentBackground`         |
+| `chebyshev`    | `ChebyshevPolynomialBackground` |
+
+**Peak tags**
+
+| Tag                                | Class                          |
+| ---------------------------------- | ------------------------------ |
+| `pseudo-voigt`                     | `CwlPseudoVoigt`               |
+| `split-pseudo-voigt`               | `CwlSplitPseudoVoigt`          |
+| `thompson-cox-hastings`            | `CwlThompsonCoxHastings`       |
+| `tof-pseudo-voigt`                 | `TofPseudoVoigt`               |
+| `tof-pseudo-voigt-ikeda-carpenter` | `TofPseudoVoigtIkedaCarpenter` |
+| `tof-pseudo-voigt-back-to-back`    | `TofPseudoVoigtBackToBack`     |
+| `gaussian-damped-sinc`             | `TotalGaussianDampedSinc`      |
+
+**Instrument tags**
+
+| Tag      | Class             |
+| -------- | ----------------- |
+| `cwl-pd` | `CwlPdInstrument` |
+| `cwl-sc` | `CwlScInstrument` |
+| `tof-pd` | `TofPdInstrument` |
+| `tof-sc` | `TofScInstrument` |
+
+**Data tags**
+
+| Tag            | Class       |
+| -------------- | ----------- |
+| `bragg-pd-cwl` | `PdCwlData` |
+| `bragg-pd-tof` | `PdTofData` |
+| `bragg-sc`     | `ReflnData` |
+| `total-pd`     | `TotalData` |
+
+**Experiment tags**
+
+| Tag            | Class               |
+| -------------- | ------------------- |
+| `bragg-pd`     | `BraggPdExperiment` |
+| `total-pd`     | `TotalPdExperiment` |
+| `bragg-sc-cwl` | `CwlScExperiment`   |
+| `bragg-sc-tof` | `TofScExperiment`   |
+
+**Calculator tags**
+
+| Tag       | Class               |
+| --------- | ------------------- |
+| `cryspy`  | `CryspyCalculator`  |
+| `crysfml` | `CrysfmlCalculator` |
+| `pdffit`  | `PdffitCalculator`  |
+
+**Minimizer tags**
+
+| Tag                     | Class                                     |
+| ----------------------- | ----------------------------------------- |
+| `lmfit`                 | `LmfitMinimizer`                          |
+| `lmfit (leastsq)`       | `LmfitMinimizer` (method=`leastsq`)       |
+| `lmfit (least_squares)` | `LmfitMinimizer` (method=`least_squares`) |
+| `dfols`                 | `DfolsMinimizer`                          |
+
+> **Note:** minimizer variant tags (`lmfit (leastsq)`, `lmfit (least_squares)`)
+> are planned but not yet re-implemented after the `FactoryBase` migration. See
+> §11.8 and §11.9 for details.
+
+### 5.7 Metadata Classification — Which Classes Get What
+
+#### The Rule
+
+> **If a concrete class is created by a factory, it gets `type_info`,
+> `compatibility`, and `calculator_support`.**
+>
+> **If a `CategoryItem` only exists as a child row inside a
+> `CategoryCollection`, it does NOT get these attributes — the collection does.**
+
+#### Rationale
+
+A `LineSegment` item (a single background control point) is never selected,
+created, or queried by a factory. It is always instantiated internally by its
+parent `LineSegmentBackground` collection. The meaningful unit of selection is
+the _collection_, not the item. The user picks "line-segment background" (the
+collection type), not individual line-segment points.
+
+#### Singleton CategoryItems — factory-created (get all three)
+
+| Class                          | Factory             |
+| ------------------------------ | ------------------- |
+| `CwlPdInstrument`              | `InstrumentFactory` |
+| `CwlScInstrument`              | `InstrumentFactory` |
+| `TofPdInstrument`              | `InstrumentFactory` |
+| `TofScInstrument`              | `InstrumentFactory` |
+| `CwlPseudoVoigt`               | `PeakFactory`       |
+| `CwlSplitPseudoVoigt`          | `PeakFactory`       |
+| `CwlThompsonCoxHastings`       | `PeakFactory`       |
+| `TofPseudoVoigt`               | `PeakFactory`       |
+| `TofPseudoVoigtIkedaCarpenter` | `PeakFactory`       |
+| `TofPseudoVoigtBackToBack`     | `PeakFactory`       |
+| `TotalGaussianDampedSinc`      | `PeakFactory`       |
+
+#### Singleton CategoryItems — NOT factory-created (get `type_info` only, optionally `compatibility`)
+
+| Class            | Notes                                                  |
+| ---------------- | ------------------------------------------------------ |
+| `Cell`           | Always present on every Structure. No factory selection |
+| `SpaceGroup`     | Same as Cell                                           |
+| `ExperimentType` | Intrinsically universal                                |
+| `Extinction`     | Only used in single-crystal experiments                |
+| `LinkedCrystal`  | Only single-crystal                                    |
+
+#### CategoryCollections — factory-created (get all three)
+
+| Class                           | Factory             |
+| ------------------------------- | ------------------- |
+| `LineSegmentBackground`         | `BackgroundFactory` |
+| `ChebyshevPolynomialBackground` | `BackgroundFactory` |
+| `PdCwlData`                     | `DataFactory`       |
+| `PdTofData`                     | `DataFactory`       |
+| `TotalData`                     | `DataFactory`       |
+| `ReflnData`                     | `DataFactory`       |
+
+#### CategoryItems that are ONLY children of collections (NO metadata)
+
+| Class            | Parent collection               |
+| ---------------- | ------------------------------- |
+| `LineSegment`    | `LineSegmentBackground`         |
+| `PolynomialTerm` | `ChebyshevPolynomialBackground` |
+| `AtomSite`       | `AtomSites`                     |
+| `PdCwlDataPoint` | `PdCwlData`                     |
+| `PdTofDataPoint` | `PdTofData`                     |
+| `TotalDataPoint` | `TotalData`                     |
+| `Refln`          | `ReflnData`                     |
+| `LinkedPhase`    | `LinkedPhases`                  |
+| `ExcludedRegion` | `ExcludedRegions`               |
+
+#### Non-category classes — factory-created (get `type_info` only)
+
+| Class               | Factory             | Notes                                                       |
+| ------------------- | ------------------- | ----------------------------------------------------------- |
+| `CryspyCalculator`  | `CalculatorFactory` | No `compatibility` — limitations expressed on categories    |
+| `CrysfmlCalculator` | `CalculatorFactory` | (same)                                                      |
+| `PdffitCalculator`  | `CalculatorFactory` | (same)                                                      |
+| `LmfitMinimizer`    | `MinimizerFactory`  | `type_info` only                                            |
+| `DfolsMinimizer`    | `MinimizerFactory`  | (same)                                                      |
+| `BraggPdExperiment` | `ExperimentFactory` | `type_info` + `compatibility` (no `calculator_support`)     |
+| `TotalPdExperiment` | `ExperimentFactory` | (same)                                                      |
+| `CwlScExperiment`   | `ExperimentFactory` | (same)                                                      |
+| `TofScExperiment`   | `ExperimentFactory` | (same)                                                      |
 
 ---
 
