@@ -132,7 +132,6 @@ class BraggPdExperiment(PdExperimentBase):
     def background(self):
         return self._background
 
-
     def show_supported_background_types(self):
         """Print a table of supported background types."""
         BackgroundFactory.show_supported()

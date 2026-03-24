@@ -3,4 +3,3 @@
 
 from easydiffraction.utils.utils import _is_dev_version
 from easydiffraction.utils.utils import stripped_package_version
-

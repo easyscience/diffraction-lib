@@ -7,4 +7,3 @@ from easydiffraction.datablocks.experiment.item.bragg_pd import BraggPdExperimen
 from easydiffraction.datablocks.experiment.item.bragg_sc import CwlScExperiment
 from easydiffraction.datablocks.experiment.item.bragg_sc import TofScExperiment
 from easydiffraction.datablocks.experiment.item.total_pd import TotalPdExperiment
-

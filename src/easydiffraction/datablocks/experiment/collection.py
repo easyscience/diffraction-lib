@@ -112,7 +112,6 @@ class Experiments(DatablockCollection):
         )
         self.add(experiment)
 
-
     # TODO: Move to DatablockCollection?
     def show_names(self) -> None:
         """List all experiment names in the collection."""

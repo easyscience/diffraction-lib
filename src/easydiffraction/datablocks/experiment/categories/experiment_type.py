@@ -114,4 +114,3 @@ class ExperimentType(CategoryItem):
     @property
     def scattering_type(self):
         return self._scattering_type
-

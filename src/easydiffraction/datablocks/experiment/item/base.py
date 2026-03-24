@@ -224,7 +224,6 @@ class PdExperimentBase(ExperimentBase):
         """Peak category object with profile parameters and mixins."""
         return self._peak
 
-
     @property
     def peak_profile_type(self):
         """Currently selected peak profile type enum."""

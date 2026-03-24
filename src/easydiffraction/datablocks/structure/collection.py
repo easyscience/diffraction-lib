@@ -69,7 +69,6 @@ class Structures(DatablockCollection):
         structure = StructureFactory.from_cif_path(cif_path)
         self.add(structure)
 
-
     # TODO: Move to DatablockCollection?
     def show_names(self) -> None:
         """List all structure names in the collection."""
