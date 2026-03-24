@@ -1161,3 +1161,111 @@ def parameters(self):
 | 11.14 | Minimiser variant loss                     | Medium   | Feature loss     |
 | 11.15 | `Project.parameters` returns `[]`          | Low      | Completeness     |
 
+## 12. Current and Potential Issues 2
+
+### 12.1 `ExperimentType` Is Mutable Despite the Architecture Contract
+
+**Where:** `datablocks/experiment/categories/experiment_type.py`, lines
+86-116.
+
+**Symptom:** the architecture document states that the four experiment axes
+are immutable after creation, but `ExperimentType` exposes public setters for
+all of them. Users can do `expt.type.beam_mode = 'time-of-flight'` after the
+experiment has already created its instrument, data, peak, and background
+categories.
+
+**Impact:** this can create hybrid objects whose declared type no longer
+matches their instantiated categories. For example, a `BraggPdExperiment` can
+keep CWL-specific `data`/`instrument`/`peak` objects while reporting a TOF
+beam mode. Factory defaults, compatibility checks, plotting, serialisation,
+and calculator selection then operate on inconsistent state.
+
+**Recommended fix:** make `ExperimentType` effectively frozen after factory
+construction. Populate it only inside factory/private builder code, expose it
+as read-only to users, and require recreation of the experiment object for any
+true type change.
+
+### 12.2 `peak` and `background` Are Publicly Replaceable
+
+**Where:** `datablocks/experiment/item/base.py`, lines 222-234;
+`datablocks/experiment/item/bragg_pd.py`, lines 131-137.
+
+**Symptom:** the documented API says users should switch implementations via
+`peak_profile_type` and `background_type`, but both `peak` and `background`
+have public setters that accept any object.
+
+**Impact:** this bypasses factory validation, supported-type filtering,
+compatibility metadata, and the intended experiment-level switching contract.
+It can also desynchronise `_peak_profile_type` / `_background_type` from the
+actual object stored on the experiment.
+
+**Recommended fix:** make `peak` and `background` read-only public
+properties. Keep replacement behind private helpers such as `_set_peak(...)`
+and `_set_background(...)`, used only by the type-switch setters and loaders.
+
+### 12.3 `CollectionBase` Mutation Does Not Follow Its Own Key Model
+
+**Where:** `core/collection.py`, lines 41-63; consumer removers in
+`datablocks/experiment/collection.py`, lines 118-130, and
+`datablocks/structure/collection.py`, lines 75-87.
+
+**Symptom:** `__getitem__` and `_rebuild_index()` rely on `_key_for(item)`,
+but `__setitem__` and `__delitem__` compare only `category_entry_name`.
+`CollectionBase` also does not implement key-based `__contains__`, so
+`if name in self` iterates over item objects rather than keys.
+
+**Impact:** this is separate from 11.6: even if `_key_for` is fixed, mutation
+semantics are still inconsistent. `DatablockCollection.add()` may append
+duplicate datablocks instead of replacing them, and `Structures.remove(name)`
+/ `Experiments.remove(name)` may report "not found" for existing items.
+
+**Recommended fix:** centralise get/set/delete/contains on one key-resolution
+path. Implement `__contains__` by key, and have subtype-specific key
+strategies in `CategoryCollection` and `DatablockCollection`.
+
+### 12.4 Constraint Application Bypasses Validation and Dirty Tracking
+
+**Where:** `core/singleton.py`, lines 138-176, compared with the normal
+descriptor setter in `core/variable.py`, lines 146-164.
+
+**Symptom:** `ConstraintsHandler.apply()` writes `param._value = rhs_value`
+and `param._constrained = True` directly, bypassing the normal
+`Parameter.value` setter.
+
+**Impact:** constrained values skip type/range validation, do not mark the
+owning datablock dirty, and depend on incidental later updates to propagate
+through the model. This weakens one of the core architectural guarantees: all
+parameter changes should flow through the same validation/update pipeline.
+
+**Recommended fix:** add an internal parameter API specifically for
+constraint updates that still validates, marks the owning datablock dirty, and
+records constraint provenance. Constraint removal should symmetrically clear
+the constrained state through the same API.
+
+### 12.5 Joint-Fit Weights Can Drift Out of Sync with Experiments
+
+**Where:** `analysis/analysis.py`, lines 401-423 and 534-543.
+
+**Symptom:** `joint_fit_experiments` is created only once, the first time
+`fit_mode` becomes `'joint'`. If experiments are added, removed, or renamed
+afterwards, the weight collection is not refreshed.
+
+**Impact:** joint fitting can fail with missing keys or silently run with a
+stale weighting model that no longer matches the actual experiment set. This
+is especially fragile in notebook-style workflows where users iteratively
+modify a project.
+
+**Recommended fix:** rebuild or validate `joint_fit_experiments` on every
+joint fit, or keep it synchronised whenever the experiment collection mutates.
+At minimum, `fit()` should check that the weight keys exactly match
+`project.experiments.names`.
+
+### 12.6 Summary of Issue Severity
+
+| #    | Issue                                            | Severity | Type       |
+| ---- | ------------------------------------------------ | -------- | ---------- |
+| 12.1 | `ExperimentType` is mutable                      | High     | Correctness |
+| 12.2 | `peak` / `background` bypass switch API          | Medium   | API safety |
+| 12.3 | Collection mutation semantics are inconsistent   | High     | Correctness |
+| 12.4 | Constraints bypass validation and dirty tracking | High     | Correctness |
+| 12.5 | Joint-fit weights drift from experiment state    | Medium   | Fragility  |
