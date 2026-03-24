@@ -46,8 +46,6 @@ class Analysis:
         fitter: Active fitter/minimizer driver.
     """
 
-    _calculator = CalculatorFactory.create('cryspy')
-
     def __init__(self, project) -> None:
         """Create a new Analysis instance bound to a project.
 
@@ -58,8 +56,8 @@ class Analysis:
         self.aliases = Aliases()
         self.constraints = Constraints()
         self.constraints_handler = ConstraintsHandler.get()
-        self.calculator = Analysis._calculator  # Default calculator shared by project
-        self._calculator_key: str = 'cryspy'  # Added to track the current calculator
+        self.calculator = CalculatorFactory.create('cryspy')
+        self._calculator_key: str = 'cryspy'
         self._fit_mode: str = 'single'
         self.fitter = Fitter('lmfit')
 

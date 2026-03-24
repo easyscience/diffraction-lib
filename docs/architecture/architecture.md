@@ -383,10 +383,11 @@ from .line_segment import LineSegmentBackground
 
 > **Note:** `ExperimentFactory` and `StructureFactory` are _builder_ factories
 > with `from_cif_path`, `from_cif_str`, `from_data_path`, and `from_scratch`
-> classmethods. `ExperimentFactory` inherits `FactoryBase` but currently uses a
-> legacy `_SUPPORTED` dict for class resolution instead of `@register` /
-> `create(tag)`. `StructureFactory` is a plain class without `FactoryBase`
-> inheritance (only one structure type exists today).
+> classmethods. `ExperimentFactory` inherits `FactoryBase` and uses `@register`
+> on all four concrete experiment classes; `_resolve_class` looks up the
+> registered class via `default_tag()` + `_supported_map()`. `StructureFactory`
+> is a plain class without `FactoryBase` inheritance (only one structure type
+> exists today).
 
 ---
 
@@ -911,57 +912,7 @@ methods.
 `_update_categories()` protocol that `DatablockItem` and `Analysis` both
 implement, so both use the same category-discovery and update-ordering logic.
 
-### 11.3 `Analysis._calculator` Is a Class-Level Attribute
-
-**Where:** `analysis/analysis.py`, line 49.
-
-```python
-class Analysis:
-    _calculator = CalculatorFactory.create('cryspy')
-```
-
-**Symptom:** the calculator is instantiated once at **class definition time**
-and shared across all `Analysis` instances.
-
-**Impact:**
-
-1. Import-time side effect: creating a `CryspyCalculator` object runs at module
-   import, before the user has a chance to configure anything.
-2. All projects share the same default calculator object until overridden. If
-   one project mutates it before creating a second project, the second project
-   sees the mutated state.
-3. The class-level default is immediately overwritten in `__init__` (line 61:
-   `self.calculator = Analysis._calculator`), making the sharing behaviour
-   confusing rather than intentional.
-
-**Recommended fix:** remove the class-level `_calculator`. Create the default
-calculator in `__init__` so each project instance gets its own:
-
-```python
-def __init__(self, project) -> None:
-    ...
-    self.calculator = CalculatorFactory.create('cryspy')
-    self._calculator_key = 'cryspy'
-```
-
-### 11.4 `ExperimentFactory._SUPPORTED` Duplicates the Registry
-
-**Where:** `datablocks/experiment/item/factory.py`, lines 62–79.
-
-**Symptom:** the hand-written `_SUPPORTED` nested dict maps
-`(ScatteringType, SampleForm, BeamMode)` → class. The `_default_rules` dict on
-the same class already provides the same mapping, and each registered class
-carries `type_info` and `compatibility` metadata.
-
-**Impact:** adding a new experiment type requires updating **three** places: the
-class with its metadata, `_default_rules`, and `_SUPPORTED`. They can fall out
-of sync silently.
-
-**Recommended fix:** derive `_resolve_class` from `_default_rules` +
-`_supported_map()`, or implement it as a `FactoryBase` method. Remove
-`_SUPPORTED` entirely.
-
-### 11.5 Symmetry Constraint Application Triggers Cascading Updates
+### 11.3 Symmetry Constraint Application Triggers Cascading Updates
 
 **Where:** `datablocks/structure/item/base.py`,
 `_apply_cell_symmetry_constraints`.
@@ -986,7 +937,7 @@ sets the value without triggering the dirty flag, for use by internal batch
 operations like symmetry constraints. Alternatively, suppress notification via a
 context manager or flag on the owning datablock.
 
-### 11.6 `CollectionBase._key_for` Mixes Two Identity Levels
+### 11.4 `CollectionBase._key_for` Mixes Two Identity Levels
 
 **Where:** `core/collection.py`, line 77.
 
@@ -1007,7 +958,7 @@ properly set `category_entry_name`.
 **Recommended fix:** override `_key_for` in `CategoryCollection` and
 `DatablockCollection` separately, each returning exactly the key it expects.
 
-### 11.7 `CategoryCollection.create` Uses `**kwargs` with `setattr`
+### 11.5 `CategoryCollection.create` Uses `**kwargs` with `setattr`
 
 **Where:** `core/category.py`, lines 113–127.
 
@@ -1033,7 +984,7 @@ override `create` with explicit parameters, so IDE autocomplete and typo
 detection work. The base `create(**kwargs)` can remain as an internal
 implementation detail.
 
-### 11.8 `Project._update_categories` Has Ad-Hoc Orchestration
+### 11.6 `Project._update_categories` Has Ad-Hoc Orchestration
 
 **Where:** `project/project.py`, lines 224–229.
 
@@ -1060,7 +1011,7 @@ is inconsistent with the "fit all experiments" workflow in joint mode.
 datablocks/components, or at minimum document the required update order. For
 joint fitting, all experiments should be updateable in a single call.
 
-### 11.9 Single-Fit Mode Creates Dummy `Experiments` Wrapper
+### 11.7 Single-Fit Mode Creates Dummy `Experiments` Wrapper
 
 **Where:** `analysis/analysis.py`, lines 548–565.
 
@@ -1087,52 +1038,43 @@ The pattern is fragile and hard to follow.
 single experiment), not necessarily an `Experiments` collection. Or add a
 `fit_single(experiment)` method that avoids the wrapper entirely.
 
-### 11.10 Missing `load()` Implementation
+### 11.8 Missing `load()` Implementation
 
-**Where:** `project/project.py`, line 142.
-
-```python
-def load(self, dir_path: str) -> None:
-    ...
-    console.print('Loading project is not implemented yet.')
-    self._saved = True
-```
+**Where:** `project/project.py`.
 
 **Symptom:** `save()` serialises all components to CIF files but `load()` is a
-stub. The project claims to be "saved" after a load attempt that does nothing.
+stub that raises `NotImplementedError`.
 
-**Impact:** users cannot round-trip a project (save → close → reopen). The
-`self._saved = True` line is misleading.
+**Impact:** users cannot round-trip a project (save → close → reopen).
 
 **Recommended fix:** implement `load()` that reads CIF files from the project
-directory and reconstructs structures, experiments, and analysis. Until then,
-remove the `self._saved = True` line and raise `NotImplementedError`.
+directory and reconstructs structures, experiments, and analysis.
 
-### 11.11 `Structure` Does Not Override `_update_categories`
+### 11.9 `Structure` Duplicates Category-Level Symmetry Logic
 
 **Where:** `datablocks/structure/item/base.py`.
 
-**Symptom:** `Structure` inherits the generic `DatablockItem._update_categories`
-which iterates over all categories and calls `_update()` on each. But the
-structure-specific logic (symmetry constraints) lives in
-`_apply_symmetry_constraints()`, which is only called from the fitting residual
-function via `structure._update_categories()` in `fitting.py` — **except that it
-isn't**: the base `_update_categories` only calls `category._update()`, which is
-a no-op for `Cell`, `SpaceGroup`, and `AtomSites`.
+**Symptom:** `Structure` has its own `_apply_cell_symmetry_constraints()`,
+`_apply_atomic_coordinates_symmetry_constraints()`,
+`_apply_atomic_displacement_symmetry_constraints()`, and an orchestrator
+`_apply_symmetry_constraints()` that calls all three. However, the same logic
+already lives inside the categories themselves: `Cell._update()` calls
+`Cell._apply_cell_symmetry_constraints()`, and `AtomSites._update()` calls
+`AtomSites._apply_atomic_coordinates_symmetry_constraints()`. Both paths are
+invoked via the standard `DatablockItem._update_categories()`.
 
-**Impact:** symmetry constraints are never automatically applied through the
-standard `_update_categories` path. They are applied only when explicitly
-called. If a user changes a space group name and then exports CIF, the cell
-parameters will not reflect the new symmetry constraints.
+**Impact:** two copies of the symmetry-constraint logic coexist at different
+levels. The Structure-level methods are never called from anywhere (the
+`_update_categories` path goes through the category `_update()` methods
+instead). A future change to one copy may not be reflected in the other.
 
-**Recommended fix:** override `_update_categories` in `Structure` to call
-`_apply_symmetry_constraints()` before (or instead of) the base category
-iteration. The TODO comment in `datablock.py` already mentions this:
+**Recommended fix:** decide which level owns symmetry — the Structure as
+orchestrator, or each category individually — and remove the duplicate. If the
+Structure should orchestrate, override `_update_categories` to call
+`_apply_symmetry_constraints()` and make category `_update()` methods no-ops for
+symmetry. If categories should own it, remove the Structure-level duplicates.
 
-> "This should call apply_symmetry and apply_constraints in the case of
-> structures."
-
-### 11.12 Background Type Switching Loses Data
+### 11.10 Background Type Switching Loses Data
 
 **Where:** `datablocks/experiment/item/bragg_pd.py`, `background_type.setter`.
 
@@ -1153,31 +1095,7 @@ background data. The same issue applies to `peak_profile_type` switching.
 data. Optionally, keep a history or prompt for confirmation in interactive
 contexts.
 
-### 11.13 Parameter `unique_name` Is Duplicated
-
-**Where:** `core/variable.py`.
-
-**Symptom:** `GenericDescriptorBase.unique_name` (line 109) and
-`GenericParameter.unique_name` (line 302) contain identical implementations:
-
-```python
-parts = [
-    self._identity.datablock_entry_name,
-    self._identity.category_code,
-    self._identity.category_entry_name,
-    self.name,
-]
-return '.'.join(filter(None, parts))
-```
-
-**Impact:** any change to the name resolution logic must be applied in two
-places. Since `GenericParameter` inherits from `GenericDescriptorBase`, the
-override is unnecessary.
-
-**Recommended fix:** remove the `unique_name` property from `GenericParameter`.
-The inherited version is identical.
-
-### 11.14 Minimiser Variant Loss
+### 11.11 Minimiser Variant Loss
 
 **Where:** `analysis/minimizers/`.
 
@@ -1189,10 +1107,7 @@ variants:
 - `'lmfit (least_squares)'` (another algorithm)
 
 After the `FactoryBase` migration, only `'lmfit'` and `'dfols'` remain as
-registered tags. The ability to select specific algorithm variants within an
-engine was lost.
-
-**Impact:** users who relied on selecting a specific lmfit algorithm (e.g.
+registered tags. The ability to select specific lmfit algorithm (e.g.
 `project.analysis.current_minimizer = 'lmfit (least_squares)'`) get a
 `ValueError`.
 
@@ -1201,33 +1116,7 @@ classes (thin subclasses with different tags) or as a two-level selection
 (engine + algorithm). The choice depends on whether variants need different
 `TypeInfo`/`Compatibility` metadata.
 
-### 11.15 `Project.parameters` Returns Empty List
-
-**Where:** `project/project.py`, lines 127–131.
-
-```python
-@property
-def parameters(self):
-    """Return parameters from all components (TBD)."""
-    return []
-```
-
-**Symptom:** `Project.parameters` is a required abstract property from
-`GuardedBase` but always returns `[]`. Parameters are only accessible through
-`project.structures.parameters` and `project.experiments.parameters`.
-
-**Impact:** any code that generically calls `.parameters` on a `Project` (e.g. a
-future generic export) gets nothing.
-
-**Recommended fix:** aggregate parameters from all owned components:
-
-```python
-@property
-def parameters(self):
-    return self.structures.parameters + self.experiments.parameters
-```
-
-### 11.16 `FactoryBase` Cannot Express Constructor-Variant Registrations
+### 11.12 `FactoryBase` Cannot Express Constructor-Variant Registrations
 
 **Where:** `core/factory.py` — `FactoryBase.register` / `create`.
 
@@ -1273,26 +1162,22 @@ explicit, no magic" philosophy before restoring minimiser variants. Approach
 requires `FactoryBase` changes; approach **C** is the cleanest long-term but the
 largest change.
 
-### 11.17 Summary of Issue Severity
+### 11.13 Summary of Issue Severity
 
 | #     | Issue                                      | Severity | Type              |
 | ----- | ------------------------------------------ | -------- | ----------------- |
 | 11.1  | Dirty-flag guard disabled                  | Medium   | Performance       |
 | 11.2  | `Analysis` not a `DatablockItem`           | Medium   | Consistency       |
-| 11.3  | Class-level `_calculator`                  | Medium   | Correctness       |
-| 11.4  | `_SUPPORTED` duplicates registry           | Low      | Maintainability   |
-| 11.5  | Symmetry constraints trigger notifications | Low      | Performance       |
-| 11.6  | `_key_for` mixes identity levels           | Low      | Correctness       |
-| 11.7  | `create(**kwargs)` with `setattr`          | Medium   | API safety        |
-| 11.8  | Ad-hoc update orchestration                | Low      | Maintainability   |
-| 11.9  | Dummy `Experiments` wrapper                | Medium   | Fragility         |
-| 11.10 | Missing `load()` implementation            | High     | Completeness      |
-| 11.11 | `Structure` misses symmetry in updates     | High     | Correctness       |
-| 11.12 | Type switching loses data silently         | Medium   | Data safety       |
-| 11.13 | Duplicated `unique_name` property          | Low      | Maintainability   |
-| 11.14 | Minimiser variant loss                     | Medium   | Feature loss      |
-| 11.15 | `Project.parameters` returns `[]`          | Low      | Completeness      |
-| 11.16 | `FactoryBase` lacks variant registrations  | Medium   | Design limitation |
+| 11.3  | Symmetry constraints trigger notifications | Low      | Performance       |
+| 11.4  | `_key_for` mixes identity levels           | Low      | Correctness       |
+| 11.5  | `create(**kwargs)` with `setattr`          | Medium   | API safety        |
+| 11.6  | Ad-hoc update orchestration                | Low      | Maintainability   |
+| 11.7  | Dummy `Experiments` wrapper                | Medium   | Fragility         |
+| 11.8  | Missing `load()` implementation            | High     | Completeness      |
+| 11.9  | Duplicated symmetry logic on `Structure`   | Medium   | Maintainability   |
+| 11.10 | Type switching loses data silently         | Medium   | Data safety       |
+| 11.11 | Minimiser variant loss                     | Medium   | Feature loss      |
+| 11.12 | `FactoryBase` lacks variant registrations  | Medium   | Design limitation |
 
 ## 12. Current and Potential Issues 2
 

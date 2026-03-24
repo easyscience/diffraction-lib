@@ -2,15 +2,14 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 def test_project_load_prints_and_sets_path(tmp_path, capsys):
+    import pytest
+
     from easydiffraction.project.project import Project
 
     p = Project()
     dir_path = tmp_path / 'pdir'
-    p.load(str(dir_path))
-    out = capsys.readouterr().out
-    assert 'Loading project' in out and str(dir_path) in out
-    # Path should be set on ProjectInfo
-    assert p.info.path == dir_path
+    with pytest.raises(NotImplementedError, match='not implemented yet'):
+        p.load(str(dir_path))
 
 
 def test_summary_show_project_info_wraps_description(capsys):

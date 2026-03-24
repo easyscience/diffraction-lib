@@ -82,8 +82,9 @@
 - Don't add new features or refactor existing code unless explicitly asked.
 - Do not remove TODOs or comments unless the change fully resolves them.
 - When renaming, grep the entire project (code, tests, tutorials, docs).
-- Every change should be atomic and self-contained; it should correspond to a
-  commit message that describes the change clearly.
+- Every change should be atomic and self-contained, small enough to be described
+  by a single commit message. Make one change, suggest the commit message, then
+  stop and wait for confirmation before starting the next change.
 - When in doubt, ask for clarification before making changes.
 
 ## Workflow

@@ -13,6 +13,7 @@ from easydiffraction.datablocks.experiment.item.base import ScExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
 
 
+@ExperimentFactory.register
 class CwlScExperiment(ScExperimentBase):
     """Standard (Bragg) constant wavelength single srystal experiment
     class with specific attributes.
@@ -83,6 +85,7 @@ class CwlScExperiment(ScExperimentBase):
         console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(indices_h)}")
 
 
+@ExperimentFactory.register
 class TofScExperiment(ScExperimentBase):
     """Standard (Bragg) time-of-flight single srystal experiment class
     with specific attributes.

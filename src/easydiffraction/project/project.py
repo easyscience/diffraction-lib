@@ -125,9 +125,8 @@ class Project(GuardedBase):
 
     @property
     def parameters(self):
-        """Return parameters from all components (TBD)."""
-        # To be implemented: return all parameters in the project
-        return []
+        """Return parameters from all structures and experiments."""
+        return self.structures.parameters + self.experiments.parameters
 
     @property
     def as_cif(self):
@@ -144,12 +143,8 @@ class Project(GuardedBase):
 
         Loads project info, structures, experiments, etc.
         """
-        console.paragraph('Loading project 📦 from')
-        console.print(dir_path)
-        self._info.path = dir_path
         # TODO: load project components from files inside dir_path
-        console.print('Loading project is not implemented yet.')
-        self._saved = True
+        raise NotImplementedError('Project.load() is not implemented yet.')
 
     def save(self) -> None:
         """Save the project into the existing project directory."""

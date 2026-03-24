@@ -294,22 +294,6 @@ class GenericParameter(GenericNumericDescriptor):
         return self.uid
 
     @property
-    def name(self) -> str:
-        """Local name of the parameter (without category/datablock)."""
-        return self._name
-
-    @property
-    def unique_name(self):
-        """Fully qualified parameter name including its context path."""
-        parts = [
-            self._identity.datablock_entry_name,
-            self._identity.category_code,
-            self._identity.category_entry_name,
-            self.name,
-        ]
-        return '.'.join(filter(None, parts))
-
-    @property
     def constrained(self):
         """Whether this parameter is part of a constraint expression."""
         return self._constrained

@@ -15,10 +15,6 @@ from typeguard import typechecked
 
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
-from easydiffraction.datablocks.experiment.item import BraggPdExperiment
-from easydiffraction.datablocks.experiment.item import CwlScExperiment
-from easydiffraction.datablocks.experiment.item import TofScExperiment
-from easydiffraction.datablocks.experiment.item import TotalPdExperiment
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -56,26 +52,6 @@ class ExperimentFactory(FactoryBase):
             ('sample_form', SampleFormEnum.SINGLE_CRYSTAL),
             ('beam_mode', BeamModeEnum.TIME_OF_FLIGHT),
         }): 'bragg-sc-tof',
-    }
-
-    # Legacy nested dict kept for _resolve_class (used by from_cif_*)
-    _SUPPORTED = {
-        ScatteringTypeEnum.BRAGG: {
-            SampleFormEnum.POWDER: {
-                BeamModeEnum.CONSTANT_WAVELENGTH: BraggPdExperiment,
-                BeamModeEnum.TIME_OF_FLIGHT: BraggPdExperiment,
-            },
-            SampleFormEnum.SINGLE_CRYSTAL: {
-                BeamModeEnum.CONSTANT_WAVELENGTH: CwlScExperiment,
-                BeamModeEnum.TIME_OF_FLIGHT: TofScExperiment,
-            },
-        },
-        ScatteringTypeEnum.TOTAL: {
-            SampleFormEnum.POWDER: {
-                BeamModeEnum.CONSTANT_WAVELENGTH: TotalPdExperiment,
-                BeamModeEnum.TIME_OF_FLIGHT: TotalPdExperiment,
-            },
-        },
     }
 
     # TODO: Add to core/factory.py?
@@ -121,10 +97,12 @@ class ExperimentFactory(FactoryBase):
     @typechecked
     def _resolve_class(cls, expt_type: ExperimentType):
         """Look up the experiment class from the type enums."""
-        scattering_type = expt_type.scattering_type.value
-        sample_form = expt_type.sample_form.value
-        beam_mode = expt_type.beam_mode.value
-        return cls._SUPPORTED[scattering_type][sample_form][beam_mode]
+        tag = cls.default_tag(
+            scattering_type=expt_type.scattering_type.value,
+            sample_form=expt_type.sample_form.value,
+            beam_mode=expt_type.beam_mode.value,
+        )
+        return cls._supported_map()[tag]
 
     @classmethod
     # TODO: @typechecked fails to find gemmi?

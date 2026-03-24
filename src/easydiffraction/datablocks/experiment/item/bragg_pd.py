@@ -15,6 +15,7 @@ from easydiffraction.datablocks.experiment.item.base import PdExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
 
 
+@ExperimentFactory.register
 class BraggPdExperiment(PdExperimentBase):
     """Standard (Bragg) Powder Diffraction experiment class with
     specific attributes.
