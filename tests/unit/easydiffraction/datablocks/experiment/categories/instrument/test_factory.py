@@ -8,30 +8,28 @@ def test_instrument_factory_default_and_errors():
     try:
         from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
         from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
-        from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+        from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
     except ImportError as e:  # pragma: no cover - environment-specific circular import
         pytest.skip(f'InstrumentFactory import triggers circular import in this context: {e}')
         return
 
-    inst = InstrumentFactory.create()  # defaults
-    assert inst.__class__.__name__ in {'CwlPdInstrument', 'CwlScInstrument', 'TofPdInstrument', 'TofScInstrument'}
+    # By tag
+    inst = InstrumentFactory.create('cwl-pd')
+    assert inst.__class__.__name__ == 'CwlPdInstrument'
 
-    # Valid combinations
-    inst2 = InstrumentFactory.create(ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH)
+    # By tag
+    inst2 = InstrumentFactory.create('cwl-pd')
     assert inst2.__class__.__name__ == 'CwlPdInstrument'
-    inst3 = InstrumentFactory.create(ScatteringTypeEnum.BRAGG, BeamModeEnum.TIME_OF_FLIGHT)
+    inst3 = InstrumentFactory.create('tof-pd')
     assert inst3.__class__.__name__ == 'TofPdInstrument'
 
-    # Invalid scattering type
-    class FakeST:
-        pass
+    # Context-dependent default
+    tag = InstrumentFactory.default_tag(
+        beam_mode=BeamModeEnum.TIME_OF_FLIGHT,
+        sample_form=SampleFormEnum.POWDER,
+    )
+    assert tag == 'tof-pd'
 
+    # Invalid tag
     with pytest.raises(ValueError):
-        InstrumentFactory.create(FakeST, BeamModeEnum.CONSTANT_WAVELENGTH)  # type: ignore[arg-type]
-
-    # Invalid beam mode
-    class FakeBM:
-        pass
-
-    with pytest.raises(ValueError):
-        InstrumentFactory.create(ScatteringTypeEnum.BRAGG, FakeBM)  # type: ignore[arg-type]
+        InstrumentFactory.create('nonexistent')

@@ -5,20 +5,16 @@ import pytest
 
 
 def test_background_factory_default_and_errors():
-    from easydiffraction.datablocks.experiment.categories.background.enums import BackgroundTypeEnum
     from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 
-    # Default should produce a LineSegmentBackground
-    obj = BackgroundFactory.create()
+    # Default via default_tag()
+    obj = BackgroundFactory.create(BackgroundFactory.default_tag())
     assert obj.__class__.__name__.endswith('LineSegmentBackground')
 
-    # Explicit type
-    obj2 = BackgroundFactory.create(BackgroundTypeEnum.CHEBYSHEV)
+    # Explicit type by tag
+    obj2 = BackgroundFactory.create('chebyshev')
     assert obj2.__class__.__name__.endswith('ChebyshevPolynomialBackground')
 
-    # Unsupported enum (fake) should raise ValueError
-    class FakeEnum:
-        value = 'x'
-
+    # Unsupported tag should raise ValueError
     with pytest.raises(ValueError):
-        BackgroundFactory.create(FakeEnum)  # type: ignore[arg-type]
+        BackgroundFactory.create('nonexistent')

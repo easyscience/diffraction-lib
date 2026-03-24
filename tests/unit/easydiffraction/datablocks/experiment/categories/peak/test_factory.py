@@ -7,52 +7,48 @@ import pytest
 def test_peak_factory_default_and_combinations_and_errors():
     from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
     from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
-    from easydiffraction.datablocks.experiment.item.enums import PeakProfileTypeEnum
     from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
-    # Defaults -> valid object for default enums
-    p = PeakFactory.create()
+    # Explicit valid combos by tag
+    p = PeakFactory.create('pseudo-voigt')
     assert p._identity.category_code == 'peak'
 
-    # Explicit valid combos
-    p1 = PeakFactory.create(
-        ScatteringTypeEnum.BRAGG,
-        BeamModeEnum.CONSTANT_WAVELENGTH,
-        PeakProfileTypeEnum.PSEUDO_VOIGT,
-    )
+    # Explicit valid combos by tag
+    p1 = PeakFactory.create('pseudo-voigt')
     assert p1.__class__.__name__ == 'CwlPseudoVoigt'
-    p2 = PeakFactory.create(
-        ScatteringTypeEnum.BRAGG,
-        BeamModeEnum.TIME_OF_FLIGHT,
-        PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER,
-    )
+
+    p2 = PeakFactory.create('pseudo-voigt * ikeda-carpenter')
     assert p2.__class__.__name__ == 'TofPseudoVoigtIkedaCarpenter'
-    p3 = PeakFactory.create(
-        ScatteringTypeEnum.TOTAL,
-        BeamModeEnum.CONSTANT_WAVELENGTH,
-        PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC,
-    )
+
+    p3 = PeakFactory.create('gaussian-damped-sinc')
     assert p3.__class__.__name__ == 'TotalGaussianDampedSinc'
 
-    # Invalid scattering type
-    class FakeST:
-        pass
+    # Context-dependent defaults
+    tag_bragg_cwl = PeakFactory.default_tag(
+        scattering_type=ScatteringTypeEnum.BRAGG,
+        beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH,
+    )
+    assert tag_bragg_cwl == 'pseudo-voigt'
 
+    tag_bragg_tof = PeakFactory.default_tag(
+        scattering_type=ScatteringTypeEnum.BRAGG,
+        beam_mode=BeamModeEnum.TIME_OF_FLIGHT,
+    )
+    assert tag_bragg_tof == 'pseudo-voigt * ikeda-carpenter'
+
+    tag_total = PeakFactory.default_tag(
+        scattering_type=ScatteringTypeEnum.TOTAL,
+    )
+    assert tag_total == 'gaussian-damped-sinc'
+
+    # supported_for filtering
+    cwl_profiles = PeakFactory.supported_for(
+        scattering_type=ScatteringTypeEnum.BRAGG,
+        beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH,
+    )
+    assert len(cwl_profiles) == 3
+    assert all(k.type_info.tag for k in cwl_profiles)
+
+    # Invalid tag
     with pytest.raises(ValueError):
-        PeakFactory.create(
-            FakeST, BeamModeEnum.CONSTANT_WAVELENGTH, PeakProfileTypeEnum.PSEUDO_VOIGT
-        )  # type: ignore[arg-type]
-
-    # Invalid beam mode
-    class FakeBM:
-        pass
-
-    with pytest.raises(ValueError):
-        PeakFactory.create(ScatteringTypeEnum.BRAGG, FakeBM, PeakProfileTypeEnum.PSEUDO_VOIGT)  # type: ignore[arg-type]
-
-    # Invalid profile type
-    class FakePPT:
-        pass
-
-    with pytest.raises(ValueError):
-        PeakFactory.create(ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH, FakePPT)  # type: ignore[arg-type]
+        PeakFactory.create('nonexistent-profile')

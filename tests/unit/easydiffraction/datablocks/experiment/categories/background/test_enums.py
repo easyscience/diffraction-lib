@@ -1,11 +1,17 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-def test_background_enum_default_and_descriptions():
-    import easydiffraction.datablocks.experiment.categories.background.enums as MUT
 
-    assert MUT.BackgroundTypeEnum.default() == MUT.BackgroundTypeEnum.LINE_SEGMENT
-    assert (
-        MUT.BackgroundTypeEnum.LINE_SEGMENT.description() == 'Linear interpolation between points'
+def test_background_type_info():
+    from easydiffraction.datablocks.experiment.categories.background.line_segment import (
+        LineSegmentBackground,
     )
-    assert MUT.BackgroundTypeEnum.CHEBYSHEV.description() == 'Chebyshev polynomial background'
+    from easydiffraction.datablocks.experiment.categories.background.chebyshev import (
+        ChebyshevPolynomialBackground,
+    )
+
+    assert LineSegmentBackground.type_info.tag == 'line-segment'
+    assert LineSegmentBackground.type_info.description == 'Linear interpolation between points'
+
+    assert ChebyshevPolynomialBackground.type_info.tag == 'chebyshev'
+    assert ChebyshevPolynomialBackground.type_info.description == 'Chebyshev polynomial background'

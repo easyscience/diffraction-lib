@@ -36,32 +36,32 @@ def test_show_current_calculator_and_minimizer_prints(capsys):
     assert 'Current calculator' in out
     assert 'cryspy' in out
     assert 'Current minimizer' in out
-    assert 'lmfit (leastsq)' in out
+    assert 'lmfit' in out
 
 
 def test_current_calculator_setter_success_and_unknown(monkeypatch, capsys):
-    from easydiffraction.analysis import calculators as calc_pkg
+    from easydiffraction.analysis.calculators.factory import CalculatorFactory
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names([]))
 
-    # Success path
+    # Success path: make 'pdffit' appear in supported_tags and create return an object
     monkeypatch.setattr(
-        calc_pkg.factory.CalculatorFactory,
-        'create_calculator',
-        lambda name: object(),
+        CalculatorFactory,
+        'supported_tags',
+        classmethod(lambda cls: ['cryspy', 'pdffit']),
+    )
+    monkeypatch.setattr(
+        CalculatorFactory,
+        'create',
+        classmethod(lambda cls, tag, **kw: object()),
     )
     a.current_calculator = 'pdffit'
     out = capsys.readouterr().out
     assert 'Current calculator changed to' in out
     assert a.current_calculator == 'pdffit'
 
-    # Unknown path (create_calculator returns None): no change
-    monkeypatch.setattr(
-        calc_pkg.factory.CalculatorFactory,
-        'create_calculator',
-        lambda name: None,
-    )
+    # Unknown path: 'unknown' not in supported_tags, setter logs warning and doesn't change
     a.current_calculator = 'unknown'
     assert a.current_calculator == 'pdffit'
 

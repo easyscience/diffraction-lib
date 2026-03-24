@@ -13,7 +13,6 @@ def test_pd_experiment_peak_profile_type_switch(capsys):
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
     from easydiffraction.datablocks.experiment.item.base import PdExperimentBase
     from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
-    from easydiffraction.datablocks.experiment.item.enums import PeakProfileTypeEnum
     from easydiffraction.datablocks.experiment.item.enums import RadiationProbeEnum
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
     from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -29,9 +28,9 @@ def test_pd_experiment_peak_profile_type_switch(capsys):
     et.scattering_type = ScatteringTypeEnum.BRAGG.value
 
     ex = ConcretePd(name='ex1', type=et)
-    # valid switch using enum
-    ex.peak_profile_type = PeakProfileTypeEnum.PSEUDO_VOIGT
-    assert ex.peak_profile_type == PeakProfileTypeEnum.PSEUDO_VOIGT
+    # valid switch using tag string
+    ex.peak_profile_type = 'pseudo-voigt'
+    assert ex.peak_profile_type == 'pseudo-voigt'
     # invalid string should warn and keep previous
     ex.peak_profile_type = 'non-existent'
     captured = capsys.readouterr().out
