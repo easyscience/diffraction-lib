@@ -46,9 +46,16 @@ class DatablockItem(GuardedBase):
         # Should this be also called when parameters are accessed? E.g.
         # if one change background coefficients, then access the
         # background points in the data category?
-        # return
+        #
+        # Dirty-flag guard (disabled).  Minimisers write param._value
+        # directly to avoid physical-range validators that would block
+        # trial values and to skip validation overhead.  Because the
+        # value setter is bypassed, _need_categories_update is never
+        # set during fitting.  Re-enable the guard once a dedicated
+        # _set_value_from_minimizer method exists that skips validation
+        # but still sets the dirty flag.
         # if not self._need_categories_update:
-        #    return
+        #     return
 
         for category in self.categories:
             category._update(called_by_minimizer=called_by_minimizer)

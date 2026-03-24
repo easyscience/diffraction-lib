@@ -96,7 +96,13 @@ class LmfitMinimizer(MinimizerBase):
         for param in parameters:
             param_result = param_values.get(param._minimizer_uid)
             if param_result is not None:
-                param._value = param_result.value  # Bypass ranges check
+                # Write _value directly, bypassing the value setter.
+                # The setter runs physical-range validators (e.g.
+                # intensity >= 0) that would reject trial values the
+                # minimiser needs to explore, causing it to get stuck.
+                # Validation is also a measurable overhead when called
+                # thousands of times per fit.
+                param._value = param_result.value
                 param.uncertainty = getattr(param_result, 'stderr', None)
 
     def _check_success(self, raw_result: Any) -> bool:

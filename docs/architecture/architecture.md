@@ -868,26 +868,29 @@ and recommended fix.
 
 ### 11.1 Dirty-Flag Guard Is Disabled
 
-**Where:** `core/datablock.py`, lines 49–51.
-
-```python
-# if not self._need_categories_update:
-#    return
-```
+**Where:** `core/datablock.py` and `analysis/minimizers/lmfit.py`, `dfols.py`.
 
 **Symptom:** every call to `_update_categories()` processes all categories
-regardless of whether any parameter actually changed. The dirty flag
-`_need_categories_update` is set by `GenericDescriptorBase.value.setter` and
-reset at the end of `_update_categories()`, but nothing reads it.
+regardless of whether any parameter actually changed. A guard exists but is
+commented out.
 
-**Impact:** during fitting, `_update_categories()` is called on every
-objective-function evaluation. Without the guard, all categories (background,
-instrument, data, etc.) are recomputed every time, even when only one parameter
-changed.
+**Root cause:** minimisers write `param._value` directly, bypassing the `value`
+setter. This is intentional for two reasons:
 
-**Recommended fix:** uncomment the guard. If specific categories must always run
-(e.g. the calculator), they should opt out via a `_always_update` flag rather
-than disabling the entire mechanism.
+1. **Validators block trial values.** Physical-range validators (e.g.
+   background intensity ≥ 0) are attached when parameters are created. During
+   fitting the minimiser must explore values outside these ranges; if the setter
+   rejects them the minimiser gets stuck.
+2. **Validation overhead.** The `value` setter runs type and range validation on
+   every call. During fitting the objective function is evaluated thousands of
+   times; the cumulative cost is measurable.
+
+Because the setter is bypassed, `_need_categories_update` is never set during
+fitting, so the dirty-flag guard would cause updates to be silently skipped.
+
+**Recommended fix:** add a `_set_value_from_minimizer` method on
+`GenericDescriptorBase` that writes `_value` directly (no validation) but still
+sets the dirty flag on the parent datablock. Then uncomment the guard.
 
 ### 11.2 `Analysis` Is Not a `DatablockItem`
 

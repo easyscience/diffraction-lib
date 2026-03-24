@@ -15,10 +15,18 @@ def test_dfols_prepare_run_and_sync(monkeypatch):
 
     class P:
         def __init__(self, v, lo=-np.inf, hi=np.inf):
-            self.value = v
+            self._value = v
             self.fit_min = lo
             self.fit_max = hi
             self.uncertainty = None
+
+        @property
+        def value(self):
+            return self._value
+
+        @value.setter
+        def value(self, v):
+            self._value = v
 
     class FakeRes:
         EXIT_SUCCESS = 0
