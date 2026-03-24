@@ -107,7 +107,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
-    project.analysis.current_minimizer = 'lmfit (leastsq)'
+    project.analysis.current_minimizer = 'lmfit'
 
     # Select fitting parameters
     model_1.cell.length_a.free = True

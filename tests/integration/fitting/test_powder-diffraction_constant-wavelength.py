@@ -87,7 +87,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
-    project.analysis.current_minimizer = 'lmfit (leastsq)'
+    project.analysis.current_minimizer = 'lmfit'
 
     # ------------ 1st fitting ------------
 
@@ -236,7 +236,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
-    project.analysis.current_minimizer = 'lmfit (leastsq)'
+    project.analysis.current_minimizer = 'lmfit'
 
     # ------------ 1st fitting ------------
 
@@ -406,7 +406,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
 
     # Prepare for fitting
     project.analysis.current_calculator = 'cryspy'
-    project.analysis.current_minimizer = 'lmfit (leastsq)'
+    project.analysis.current_minimizer = 'lmfit'
 
     # ------------ 1st fitting ------------
 

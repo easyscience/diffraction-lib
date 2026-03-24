@@ -429,7 +429,7 @@ project.analysis.show_current_minimizer()
 # Select desired fitting engine.
 
 # %%
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]
 # ### Perform Fit 1/5

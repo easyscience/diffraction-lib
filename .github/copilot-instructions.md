@@ -90,6 +90,7 @@
 ## Workflow
 
 - Run `pixi run unit-tests` only when I ask.
+- After changes, run integration tests with `pixi run integration-tests`.
 - Suggest a concise commit message (as a code block) after each change (less
   than 72 characters, imperative mood, without prefixing with the type of
   change). E.g.:

@@ -276,7 +276,7 @@ project.analysis.fit_mode = 'joint'
 # #### Set Minimizer
 
 # %%
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]
 # #### Set Fitting Parameters

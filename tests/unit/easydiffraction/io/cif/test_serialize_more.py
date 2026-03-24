@@ -128,7 +128,7 @@ def test_analysis_to_cif_renders_all_sections():
 
     class A:
         current_calculator = 'cryspy engine'
-        current_minimizer = 'lmfit (leastsq)'
+        current_minimizer = 'lmfit'
         fit_mode = 'single'
         aliases = Obj('ALIASES')
         constraints = Obj('CONSTRAINTS')
@@ -137,6 +137,6 @@ def test_analysis_to_cif_renders_all_sections():
     lines = out.splitlines()
     assert lines[0].startswith('_analysis.calculator_engine')
     assert '"cryspy engine"' in lines[0]
-    assert lines[1].startswith('_analysis.fitting_engine') and '"lmfit (leastsq)"' in lines[1]
+    assert lines[1].startswith('_analysis.fitting_engine') and 'lmfit' in lines[1]
     assert lines[2].startswith('_analysis.fit_mode') and 'single' in lines[2]
     assert 'ALIASES' in out and 'CONSTRAINTS' in out

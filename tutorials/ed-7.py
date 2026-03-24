@@ -149,7 +149,7 @@ project.analysis.current_calculator = 'cryspy'
 # #### Set Minimizer
 
 # %%
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
