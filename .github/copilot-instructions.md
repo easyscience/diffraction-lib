@@ -57,6 +57,8 @@
 
 ## Changes
 
+- The project is in beta; do not keep legacy code or add deprecation warnings.
+  Instead, update tests and tutorials to follow the current API.
 - Minimal diffs: don't rewrite working code just to reformat it.
 - Fix only what's asked; flag adjacent issues as comments, don't fix them
   silently.
