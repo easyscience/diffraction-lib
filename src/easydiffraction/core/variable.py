@@ -298,6 +298,16 @@ class GenericParameter(GenericNumericDescriptor):
         """Whether this parameter is part of a constraint expression."""
         return self._constrained
 
+    def _set_value_constrained(self, v) -> None:
+        """Set the value from a constraint expression.
+
+        Validates against the spec, marks the parent datablock dirty,
+        and flags the parameter as constrained. Used exclusively by
+        ``ConstraintsHandler.apply()``.
+        """
+        self.value = v
+        self._constrained = True
+
     @property
     def free(self):
         """Whether this parameter is currently varied during fitting."""

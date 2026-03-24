@@ -172,8 +172,7 @@ class ConstraintsHandler(SingletonBase):
                 param = uid_map[dependent_uid]
 
                 # Update its value and mark it as constrained
-                param._value = rhs_value  # To bypass ranges check
-                param._constrained = True  # To bypass read-only check
+                param._set_value_constrained(rhs_value)
 
             except Exception as error:
                 print(f"Failed to apply constraint '{lhs_alias} = {rhs_expr}': {error}")

@@ -1156,26 +1156,7 @@ largest change.
 
 ## 12. Current and Potential Issues 2
 
-### 12.1 Constraint Application Bypasses Validation and Dirty Tracking
-
-**Where:** `core/singleton.py`, lines 138-176, compared with the normal
-descriptor setter in `core/variable.py`, lines 146-164.
-
-**Symptom:** `ConstraintsHandler.apply()` writes `param._value = rhs_value` and
-`param._constrained = True` directly, bypassing the normal `Parameter.value`
-setter.
-
-**Impact:** constrained values skip type/range validation, do not mark the
-owning datablock dirty, and depend on incidental later updates to propagate
-through the model. This weakens one of the core architectural guarantees: all
-parameter changes should flow through the same validation/update pipeline.
-
-**Recommended fix:** add an internal parameter API specifically for constraint
-updates that still validates, marks the owning datablock dirty, and records
-constraint provenance. Constraint removal should symmetrically clear the
-constrained state through the same API.
-
-### 12.2 Joint-Fit Weights Can Drift Out of Sync with Experiments
+### 12.1 Joint-Fit Weights Can Drift Out of Sync with Experiments
 
 **Where:** `analysis/analysis.py`, lines 401-423 and 534-543.
 
@@ -1193,9 +1174,8 @@ fit, or keep it synchronised whenever the experiment collection mutates. At
 minimum, `fit()` should check that the weight keys exactly match
 `project.experiments.names`.
 
-### 12.3 Summary of Issue Severity
+### 12.2 Summary of Issue Severity
 
-| #    | Issue                                            | Severity | Type        |
-| ---- | ------------------------------------------------ | -------- | ----------- |
-| 12.1 | Constraints bypass validation and dirty tracking | High     | Correctness |
-| 12.2 | Joint-fit weights drift from experiment state    | Medium   | Fragility   |
+| #    | Issue                                         | Severity | Type      |
+| ---- | --------------------------------------------- | -------- | --------- |
+| 12.1 | Joint-fit weights drift from experiment state | Medium   | Fragility |
