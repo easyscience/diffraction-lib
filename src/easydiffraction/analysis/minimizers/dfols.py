@@ -67,10 +67,9 @@ class DfolsMinimizer(MinimizerBase):
         result_values = raw_result.x if hasattr(raw_result, 'x') else raw_result
 
         for i, param in enumerate(parameters):
-            # Write _value directly, bypassing the value setter.
-            # See lmfit.py for rationale (validators block trial values,
-            # and validation is a performance overhead during fitting).
-            param._value = result_values[i]
+            # Bypass validation but set the dirty flag so
+            # _update_categories() knows work is needed.
+            param._set_value_from_minimizer(result_values[i])
             # DFO-LS doesn't provide uncertainties; set to None or
             # calculate later if needed
             param.uncertainty = None

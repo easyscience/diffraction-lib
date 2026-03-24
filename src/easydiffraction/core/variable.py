@@ -163,6 +163,25 @@ class GenericDescriptorBase(GuardedBase):
         if parent_datablock is not None:
             parent_datablock._need_categories_update = True
 
+    def _set_value_from_minimizer(self, v) -> None:
+        """Set the value from a minimizer, bypassing validation.
+
+        Writes ``_value`` directly — no type or range checks — but
+        still marks the owning :class:`DatablockItem` dirty so that
+        ``_update_categories()`` knows work is needed.
+
+        This exists because:
+
+        1. Physical-range validators (e.g. intensity ≥ 0) would reject
+           trial values the minimizer needs to explore.
+        2. Validation overhead is measurable over thousands of
+           objective-function evaluations.
+        """
+        self._value = v
+        parent_datablock = self._datablock_item()
+        if parent_datablock is not None:
+            parent_datablock._need_categories_update = True
+
     @property
     def description(self):
         """Optional human-readable description."""

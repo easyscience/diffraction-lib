@@ -15,7 +15,7 @@ class DatablockItem(GuardedBase):
 
     def __init__(self):
         super().__init__()
-        self._need_categories_update = False
+        self._need_categories_update = True
 
     def __str__(self) -> str:
         """Human-readable representation of this component."""
@@ -47,15 +47,14 @@ class DatablockItem(GuardedBase):
         # if one change background coefficients, then access the
         # background points in the data category?
         #
-        # Dirty-flag guard (disabled).  Minimisers write param._value
-        # directly to avoid physical-range validators that would block
-        # trial values and to skip validation overhead.  Because the
-        # value setter is bypassed, _need_categories_update is never
-        # set during fitting.  Re-enable the guard once a dedicated
-        # _set_value_from_minimizer method exists that skips validation
-        # but still sets the dirty flag.
-        # if not self._need_categories_update:
-        #     return
+        # Dirty-flag guard: skip if no parameter has changed since the
+        # last update.  Minimisers use _set_value_from_minimizer()
+        # which bypasses validation but still sets this flag.
+        # During fitting the guard is bypassed because experiment
+        # calculations depend on structure parameters owned by a
+        # different DatablockItem whose flag changes are invisible here.
+        if not called_by_minimizer and not self._need_categories_update:
+            return
 
         for category in self.categories:
             category._update(called_by_minimizer=called_by_minimizer)

@@ -1039,31 +1039,16 @@ This section catalogues concrete architectural issues observed in the current
 codebase, organised by severity. Each entry explains the symptom, root cause,
 and recommended fix.
 
-### 11.1 Dirty-Flag Guard Is Disabled
+### 11.1 ~~Dirty-Flag Guard Is Disabled~~ — Resolved
 
-**Where:** `core/datablock.py` and `analysis/minimizers/lmfit.py`, `dfols.py`.
-
-**Symptom:** every call to `_update_categories()` processes all categories
-regardless of whether any parameter actually changed. A guard exists but is
-commented out.
-
-**Root cause:** minimisers write `param._value` directly, bypassing the `value`
-setter. This is intentional for two reasons:
-
-1. **Validators block trial values.** Physical-range validators (e.g. background
-   intensity ≥ 0) are attached when parameters are created. During fitting the
-   minimiser must explore values outside these ranges; if the setter rejects
-   them the minimiser gets stuck.
-2. **Validation overhead.** The `value` setter runs type and range validation on
-   every call. During fitting the objective function is evaluated thousands of
-   times; the cumulative cost is measurable.
-
-Because the setter is bypassed, `_need_categories_update` is never set during
-fitting, so the dirty-flag guard would cause updates to be silently skipped.
-
-**Recommended fix:** add a `_set_value_from_minimizer` method on
-`GenericDescriptorBase` that writes `_value` directly (no validation) but still
-sets the dirty flag on the parent datablock. Then uncomment the guard.
+**Resolution:** added `_set_value_from_minimizer()` on `GenericDescriptorBase`
+that writes `_value` directly (no validation) but sets the dirty flag on the
+parent `DatablockItem`. Both `LmfitMinimizer` and `DfolsMinimizer` now use it
+instead of writing `param._value` directly. The guard in
+`DatablockItem._update_categories()` is enabled and skips redundant updates on
+the user-facing path (CIF export, plotting). During fitting the guard is
+bypassed (`called_by_minimizer=True`) because experiment calculations depend on
+structure parameters owned by a different `DatablockItem`.
 
 ### 11.2 `Analysis` Is Not a `DatablockItem`
 
@@ -1276,7 +1261,7 @@ largest change.
 
 | #    | Issue                                      | Severity | Type              |
 | ---- | ------------------------------------------ | -------- | ----------------- |
-| 11.1 | Dirty-flag guard disabled                  | Medium   | Performance       |
+| 11.1 | ~~Dirty-flag guard disabled~~              | Resolved |                   |
 | 11.2 | `Analysis` not a `DatablockItem`           | Medium   | Consistency       |
 | 11.3 | Symmetry constraints trigger notifications | Low      | Performance       |
 | 11.4 | `create(**kwargs)` with `setattr`          | Medium   | API safety        |
