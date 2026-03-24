@@ -127,7 +127,7 @@ class BraggPdExperiment(PdExperimentBase):
 
         if len(self._background) > 0:
             log.warning(
-                f"Switching background type discards {len(self._background)} "
+                f'Switching background type discards {len(self._background)} '
                 f'existing background point(s).',
             )
 

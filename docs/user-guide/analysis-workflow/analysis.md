@@ -134,7 +134,7 @@ Supported minimizers
 
 | Minimizer             | Description                                                              |
 | --------------------- | ------------------------------------------------------------------------ |
-| lmfit                 | LMFIT library using the default Levenberg-Marquardt least squares method  |
+| lmfit                 | LMFIT library using the default Levenberg-Marquardt least squares method |
 | lmfit (leastsq)       | LMFIT library with Levenberg-Marquardt least squares method              |
 | lmfit (least_squares) | LMFIT library with SciPy's trust region reflective algorithm             |
 | dfols                 | DFO-LS library for derivative-free least-squares optimization            |

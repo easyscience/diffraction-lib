@@ -27,7 +27,6 @@ class Structure(DatablockItem):
         self._atom_sites: AtomSites = AtomSites()
         self._identity.datablock_entry_name = lambda: self.name
 
-
     # ------------------------------------------------------------------
     # Public properties
     # ------------------------------------------------------------------

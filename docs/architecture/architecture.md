@@ -381,7 +381,7 @@ from .line_segment import LineSegmentBackground
 | `CalculatorFactory` | Calculation engines   | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator` |
 | `MinimizerFactory`  | Minimisers            | `LmfitMinimizer`, `DfolsMinimizer`, …                       |
 
- > **Note:** `ExperimentFactory` and `StructureFactory` are _builder_ factories
+> **Note:** `ExperimentFactory` and `StructureFactory` are _builder_ factories
 > with `from_cif_path`, `from_cif_str`, `from_data_path`, and `from_scratch`
 > classmethods. `ExperimentFactory` inherits `FactoryBase` and uses `@register`
 > on all four concrete experiment classes; `_resolve_class` looks up the
@@ -486,7 +486,8 @@ Tags are the user-facing identifiers for selecting types. They must be:
 > `compatibility`, and `calculator_support`.**
 >
 > **If a `CategoryItem` only exists as a child row inside a
-> `CategoryCollection`, it does NOT get these attributes — the collection does.**
+> `CategoryCollection`, it does NOT get these attributes — the collection
+> does.**
 
 #### Rationale
 
@@ -514,13 +515,13 @@ collection type), not individual line-segment points.
 
 #### Singleton CategoryItems — NOT factory-created (get `type_info` only, optionally `compatibility`)
 
-| Class            | Notes                                                  |
-| ---------------- | ------------------------------------------------------ |
+| Class            | Notes                                                   |
+| ---------------- | ------------------------------------------------------- |
 | `Cell`           | Always present on every Structure. No factory selection |
-| `SpaceGroup`     | Same as Cell                                           |
-| `ExperimentType` | Intrinsically universal                                |
-| `Extinction`     | Only used in single-crystal experiments                |
-| `LinkedCrystal`  | Only single-crystal                                    |
+| `SpaceGroup`     | Same as Cell                                            |
+| `ExperimentType` | Intrinsically universal                                 |
+| `Extinction`     | Only used in single-crystal experiments                 |
+| `LinkedCrystal`  | Only single-crystal                                     |
 
 #### CategoryCollections — factory-created (get all three)
 
@@ -549,17 +550,17 @@ collection type), not individual line-segment points.
 
 #### Non-category classes — factory-created (get `type_info` only)
 
-| Class               | Factory             | Notes                                                       |
-| ------------------- | ------------------- | ----------------------------------------------------------- |
-| `CryspyCalculator`  | `CalculatorFactory` | No `compatibility` — limitations expressed on categories    |
-| `CrysfmlCalculator` | `CalculatorFactory` | (same)                                                      |
-| `PdffitCalculator`  | `CalculatorFactory` | (same)                                                      |
-| `LmfitMinimizer`    | `MinimizerFactory`  | `type_info` only                                            |
-| `DfolsMinimizer`    | `MinimizerFactory`  | (same)                                                      |
-| `BraggPdExperiment` | `ExperimentFactory` | `type_info` + `compatibility` (no `calculator_support`)     |
-| `TotalPdExperiment` | `ExperimentFactory` | (same)                                                      |
-| `CwlScExperiment`   | `ExperimentFactory` | (same)                                                      |
-| `TofScExperiment`   | `ExperimentFactory` | (same)                                                      |
+| Class               | Factory             | Notes                                                    |
+| ------------------- | ------------------- | -------------------------------------------------------- |
+| `CryspyCalculator`  | `CalculatorFactory` | No `compatibility` — limitations expressed on categories |
+| `CrysfmlCalculator` | `CalculatorFactory` | (same)                                                   |
+| `PdffitCalculator`  | `CalculatorFactory` | (same)                                                   |
+| `LmfitMinimizer`    | `MinimizerFactory`  | `type_info` only                                         |
+| `DfolsMinimizer`    | `MinimizerFactory`  | (same)                                                   |
+| `BraggPdExperiment` | `ExperimentFactory` | `type_info` + `compatibility` (no `calculator_support`)  |
+| `TotalPdExperiment` | `ExperimentFactory` | (same)                                                   |
+| `CwlScExperiment`   | `ExperimentFactory` | (same)                                                   |
+| `TofScExperiment`   | `ExperimentFactory` | (same)                                                   |
 
 ---
 
@@ -1049,10 +1050,10 @@ commented out.
 **Root cause:** minimisers write `param._value` directly, bypassing the `value`
 setter. This is intentional for two reasons:
 
-1. **Validators block trial values.** Physical-range validators (e.g.
-   background intensity ≥ 0) are attached when parameters are created. During
-   fitting the minimiser must explore values outside these ranges; if the setter
-   rejects them the minimiser gets stuck.
+1. **Validators block trial values.** Physical-range validators (e.g. background
+   intensity ≥ 0) are attached when parameters are created. During fitting the
+   minimiser must explore values outside these ranges; if the setter rejects
+   them the minimiser gets stuck.
 2. **Validation overhead.** The `value` setter runs type and range validation on
    every call. During fitting the objective function is evaluated thousands of
    times; the cumulative cost is measurable.
@@ -1273,17 +1274,17 @@ largest change.
 
 ### 11.10 Summary of Issue Severity
 
-| #    | Issue                                     | Severity | Type              |
-| ---- | ----------------------------------------- | -------- | ----------------- |
-| 11.1 | Dirty-flag guard disabled                 | Medium   | Performance       |
-| 11.2 | `Analysis` not a `DatablockItem`          | Medium   | Consistency       |
-| 11.3 | Symmetry constraints trigger notifications| Low      | Performance       |
-| 11.4 | `create(**kwargs)` with `setattr`         | Medium   | API safety        |
-| 11.5 | Ad-hoc update orchestration               | Low      | Maintainability   |
-| 11.6 | Dummy `Experiments` wrapper               | Medium   | Fragility         |
-| 11.7 | Missing `load()` implementation           | High     | Completeness      |
-| 11.8 | Minimiser variant loss                    | Medium   | Feature loss      |
-| 11.9 | `FactoryBase` lacks variant registrations | Medium   | Design limitation |
+| #    | Issue                                      | Severity | Type              |
+| ---- | ------------------------------------------ | -------- | ----------------- |
+| 11.1 | Dirty-flag guard disabled                  | Medium   | Performance       |
+| 11.2 | `Analysis` not a `DatablockItem`           | Medium   | Consistency       |
+| 11.3 | Symmetry constraints trigger notifications | Low      | Performance       |
+| 11.4 | `create(**kwargs)` with `setattr`          | Medium   | API safety        |
+| 11.5 | Ad-hoc update orchestration                | Low      | Maintainability   |
+| 11.6 | Dummy `Experiments` wrapper                | Medium   | Fragility         |
+| 11.7 | Missing `load()` implementation            | High     | Completeness      |
+| 11.8 | Minimiser variant loss                     | Medium   | Feature loss      |
+| 11.9 | `FactoryBase` lacks variant registrations  | Medium   | Design limitation |
 
 ## 12. Current and Potential Issues 2
 
