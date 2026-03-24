@@ -107,7 +107,10 @@ class Structure(DatablockItem):
 
     @name.setter
     @typechecked
-    def name(self, new: str) -> None:
+    def name(
+        self,
+        new: str,
+    ) -> None:
         """Set the name identifier for this structure.
 
         Args:
@@ -126,7 +129,10 @@ class Structure(DatablockItem):
 
     @cell.setter
     @typechecked
-    def cell(self, new: Cell) -> None:
+    def cell(
+        self,
+        new: Cell,
+    ) -> None:
         """Replace the unit-cell category for this structure.
 
         Args:
@@ -145,7 +151,10 @@ class Structure(DatablockItem):
 
     @space_group.setter
     @typechecked
-    def space_group(self, new: SpaceGroup) -> None:
+    def space_group(
+        self,
+        new: SpaceGroup,
+    ) -> None:
         """Replace the space-group category for this structure.
 
         Args:
@@ -164,7 +173,10 @@ class Structure(DatablockItem):
 
     @atom_sites.setter
     @typechecked
-    def atom_sites(self, new: AtomSites) -> None:
+    def atom_sites(
+        self,
+        new: AtomSites,
+    ) -> None:
         """Replace the atom-sites collection for this structure.
 
         Args:
