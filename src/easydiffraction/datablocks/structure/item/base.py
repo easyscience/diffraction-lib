@@ -5,7 +5,6 @@
 from typeguard import typechecked
 
 from easydiffraction.core.datablock import DatablockItem
-from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.datablocks.structure.categories.atom_sites import AtomSites
 from easydiffraction.datablocks.structure.categories.cell import Cell
 from easydiffraction.datablocks.structure.categories.space_group import SpaceGroup
@@ -28,69 +27,6 @@ class Structure(DatablockItem):
         self._atom_sites: AtomSites = AtomSites()
         self._identity.datablock_entry_name = lambda: self.name
 
-    # ------------------------------------------------------------------
-    # Private helper methods
-    # ------------------------------------------------------------------
-
-    def _apply_cell_symmetry_constraints(self) -> None:
-        """Apply symmetry rules to unit-cell parameters in place."""
-        dummy_cell = {
-            'lattice_a': self.cell.length_a.value,
-            'lattice_b': self.cell.length_b.value,
-            'lattice_c': self.cell.length_c.value,
-            'angle_alpha': self.cell.angle_alpha.value,
-            'angle_beta': self.cell.angle_beta.value,
-            'angle_gamma': self.cell.angle_gamma.value,
-        }
-        space_group_name = self.space_group.name_h_m.value
-        ecr.apply_cell_symmetry_constraints(cell=dummy_cell, name_hm=space_group_name)
-        self.cell.length_a.value = dummy_cell['lattice_a']
-        self.cell.length_b.value = dummy_cell['lattice_b']
-        self.cell.length_c.value = dummy_cell['lattice_c']
-        self.cell.angle_alpha.value = dummy_cell['angle_alpha']
-        self.cell.angle_beta.value = dummy_cell['angle_beta']
-        self.cell.angle_gamma.value = dummy_cell['angle_gamma']
-
-    def _apply_atomic_coordinates_symmetry_constraints(self) -> None:
-        """Apply symmetry rules to fractional coordinates of atom
-        sites.
-        """
-        space_group_name = self.space_group.name_h_m.value
-        space_group_coord_code = self.space_group.it_coordinate_system_code.value
-        for atom in self.atom_sites:
-            dummy_atom = {
-                'fract_x': atom.fract_x.value,
-                'fract_y': atom.fract_y.value,
-                'fract_z': atom.fract_z.value,
-            }
-            wl = atom.wyckoff_letter.value
-            if not wl:
-                # TODO: Decide how to handle this case
-                continue
-            ecr.apply_atom_site_symmetry_constraints(
-                atom_site=dummy_atom,
-                name_hm=space_group_name,
-                coord_code=space_group_coord_code,
-                wyckoff_letter=wl,
-            )
-            atom.fract_x.value = dummy_atom['fract_x']
-            atom.fract_y.value = dummy_atom['fract_y']
-            atom.fract_z.value = dummy_atom['fract_z']
-
-    def _apply_atomic_displacement_symmetry_constraints(self) -> None:
-        """Apply symmetry constraints to atomic displacement parameters.
-
-        Not yet implemented.
-        """
-        pass
-
-    def _apply_symmetry_constraints(self) -> None:
-        """Apply all available symmetry constraints to this
-        structure.
-        """
-        self._apply_cell_symmetry_constraints()
-        self._apply_atomic_coordinates_symmetry_constraints()
-        self._apply_atomic_displacement_symmetry_constraints()
 
     # ------------------------------------------------------------------
     # Public properties

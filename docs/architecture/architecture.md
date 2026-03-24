@@ -1050,31 +1050,7 @@ stub that raises `NotImplementedError`.
 **Recommended fix:** implement `load()` that reads CIF files from the project
 directory and reconstructs structures, experiments, and analysis.
 
-### 11.9 `Structure` Duplicates Category-Level Symmetry Logic
-
-**Where:** `datablocks/structure/item/base.py`.
-
-**Symptom:** `Structure` has its own `_apply_cell_symmetry_constraints()`,
-`_apply_atomic_coordinates_symmetry_constraints()`,
-`_apply_atomic_displacement_symmetry_constraints()`, and an orchestrator
-`_apply_symmetry_constraints()` that calls all three. However, the same logic
-already lives inside the categories themselves: `Cell._update()` calls
-`Cell._apply_cell_symmetry_constraints()`, and `AtomSites._update()` calls
-`AtomSites._apply_atomic_coordinates_symmetry_constraints()`. Both paths are
-invoked via the standard `DatablockItem._update_categories()`.
-
-**Impact:** two copies of the symmetry-constraint logic coexist at different
-levels. The Structure-level methods are never called from anywhere (the
-`_update_categories` path goes through the category `_update()` methods
-instead). A future change to one copy may not be reflected in the other.
-
-**Recommended fix:** decide which level owns symmetry — the Structure as
-orchestrator, or each category individually — and remove the duplicate. If the
-Structure should orchestrate, override `_update_categories` to call
-`_apply_symmetry_constraints()` and make category `_update()` methods no-ops for
-symmetry. If categories should own it, remove the Structure-level duplicates.
-
-### 11.10 Background Type Switching Loses Data
+### 11.9 Background Type Switching Loses Data
 
 **Where:** `datablocks/experiment/item/bragg_pd.py`, `background_type.setter`.
 
@@ -1095,7 +1071,7 @@ background data. The same issue applies to `peak_profile_type` switching.
 data. Optionally, keep a history or prompt for confirmation in interactive
 contexts.
 
-### 11.11 Minimiser Variant Loss
+### 11.10 Minimiser Variant Loss
 
 **Where:** `analysis/minimizers/`.
 
@@ -1116,7 +1092,7 @@ classes (thin subclasses with different tags) or as a two-level selection
 (engine + algorithm). The choice depends on whether variants need different
 `TypeInfo`/`Compatibility` metadata.
 
-### 11.12 `FactoryBase` Cannot Express Constructor-Variant Registrations
+### 11.11 `FactoryBase` Cannot Express Constructor-Variant Registrations
 
 **Where:** `core/factory.py` — `FactoryBase.register` / `create`.
 
@@ -1162,7 +1138,7 @@ explicit, no magic" philosophy before restoring minimiser variants. Approach
 requires `FactoryBase` changes; approach **C** is the cleanest long-term but the
 largest change.
 
-### 11.13 Summary of Issue Severity
+### 11.12 Summary of Issue Severity
 
 | #     | Issue                                      | Severity | Type              |
 | ----- | ------------------------------------------ | -------- | ----------------- |
@@ -1174,10 +1150,9 @@ largest change.
 | 11.6  | Ad-hoc update orchestration                | Low      | Maintainability   |
 | 11.7  | Dummy `Experiments` wrapper                | Medium   | Fragility         |
 | 11.8  | Missing `load()` implementation            | High     | Completeness      |
-| 11.9  | Duplicated symmetry logic on `Structure`   | Medium   | Maintainability   |
-| 11.10 | Type switching loses data silently         | Medium   | Data safety       |
-| 11.11 | Minimiser variant loss                     | Medium   | Feature loss      |
-| 11.12 | `FactoryBase` lacks variant registrations  | Medium   | Design limitation |
+| 11.9  | Type switching loses data silently         | Medium   | Data safety       |
+| 11.10 | Minimiser variant loss                     | Medium   | Feature loss      |
+| 11.11 | `FactoryBase` lacks variant registrations  | Medium   | Design limitation |
 
 ## 12. Current and Potential Issues 2
 
