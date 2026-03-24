@@ -61,10 +61,16 @@
 │   │   └── 🏷️ class DatablockCollection
 │   ├── 📄 diagnostic.py
 │   │   └── 🏷️ class Diagnostics
+│   ├── 📄 factory.py
+│   │   └── 🏷️ class FactoryBase
 │   ├── 📄 guard.py
 │   │   └── 🏷️ class GuardedBase
 │   ├── 📄 identity.py
 │   │   └── 🏷️ class Identity
+│   ├── 📄 metadata.py
+│   │   ├── 🏷️ class TypeInfo
+│   │   ├── 🏷️ class Compatibility
+│   │   └── 🏷️ class CalculatorSupport
 │   ├── 📄 singleton.py
 │   │   ├── 🏷️ class SingletonBase
 │   │   ├── 🏷️ class UidMapHandler
@@ -195,6 +201,7 @@
 │   │   │   │   ├── 🏷️ class ScatteringTypeEnum
 │   │   │   │   ├── 🏷️ class RadiationProbeEnum
 │   │   │   │   ├── 🏷️ class BeamModeEnum
+│   │   │   │   ├── 🏷️ class CalculatorEnum
 │   │   │   │   └── 🏷️ class PeakProfileTypeEnum
 │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 🏷️ class ExperimentFactory
