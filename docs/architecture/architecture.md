@@ -92,9 +92,9 @@ pattern.
 Every public parameter or descriptor exposed on a `GuardedBase` subclass follows
 one of two patterns:
 
-| Kind          | Getter | Setter | Internal mutation               |
-| ------------- | ------ | ------ | ------------------------------- |
-| **Editable**  | yes    | yes    | Via the public setter           |
+| Kind          | Getter | Setter | Internal mutation                  |
+| ------------- | ------ | ------ | ---------------------------------- |
+| **Editable**  | yes    | yes    | Via the public setter              |
 | **Read-only** | yes    | no     | Via a private `_set_<name>` method |
 
 **Editable property** — the user can both read and write the value. The setter
@@ -107,14 +107,15 @@ def name(self) -> str:
     """Human-readable name of the experiment."""
     return self._name
 
+
 @name.setter
 def name(self, new: str) -> None:
     self._name = new
 ```
 
-**Read-only property** — the user can read but cannot assign. Any attempt to
-set the attribute is blocked by `GuardedBase.__setattr__` with a clear error
-message. If *internal* code (factory builders, CIF loaders, etc.) needs to set
+**Read-only property** — the user can read but cannot assign. Any attempt to set
+the attribute is blocked by `GuardedBase.__setattr__` with a clear error
+message. If _internal_ code (factory builders, CIF loaders, etc.) needs to set
 the value, it calls a private `_set_<name>` method instead of exposing a public
 setter:
 
@@ -123,6 +124,7 @@ setter:
 def sample_form(self) -> StringDescriptor:
     """Sample form descriptor (read-only for the user)."""
     return self._sample_form
+
 
 def _set_sample_form(self, value: str) -> None:
     """Internal setter used by factory/CIF code during construction."""
@@ -135,8 +137,8 @@ def _set_sample_form(self, value: str) -> None:
   Adding a setter "just for internal use" would open the attribute to users.
 - Private `_set_<name>` methods keep the public API surface minimal and
   intention-clear, while remaining greppable and type-safe.
-- The pattern avoids string-based dispatch — every mutator has an explicit
-  named method.
+- The pattern avoids string-based dispatch — every mutator has an explicit named
+  method.
 
 ### 2.3 CategoryItem and CategoryCollection
 
@@ -370,21 +372,21 @@ from .line_segment import LineSegmentBackground
 
 ### 5.5 All Factories
 
-| Factory             | Domain                | Tags resolve to                                          |
-| ------------------- | --------------------- | -------------------------------------------------------- |
-| `BackgroundFactory` | Background categories | `LineSegmentBackground`, `ChebyshevPolynomialBackground` |
-| `PeakFactory`       | Peak profiles         | `CwlPseudoVoigt`, `TofPseudoVoigtIkedaCarpenter`, …      |
-| `InstrumentFactory` | Instruments           | `CwlPdInstrument`, `TofPdInstrument`, …                  |
-| `DataFactory`       | Data collections      | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`      |
+| Factory             | Domain                | Tags resolve to                                             |
+| ------------------- | --------------------- | ----------------------------------------------------------- |
+| `BackgroundFactory` | Background categories | `LineSegmentBackground`, `ChebyshevPolynomialBackground`    |
+| `PeakFactory`       | Peak profiles         | `CwlPseudoVoigt`, `TofPseudoVoigtIkedaCarpenter`, …         |
+| `InstrumentFactory` | Instruments           | `CwlPdInstrument`, `TofPdInstrument`, …                     |
+| `DataFactory`       | Data collections      | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`          |
 | `CalculatorFactory` | Calculation engines   | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator` |
-| `MinimizerFactory`  | Minimisers            | `LmfitMinimizer`, `DfolsMinimizer`, …                    |
+| `MinimizerFactory`  | Minimisers            | `LmfitMinimizer`, `DfolsMinimizer`, …                       |
 
-> **Note:** `ExperimentFactory` and `StructureFactory` are *builder*
-> factories with `from_cif_path`, `from_cif_str`, `from_data_path`, and
-> `from_scratch` classmethods. `ExperimentFactory` inherits `FactoryBase`
-> but currently uses a legacy `_SUPPORTED` dict for class resolution instead
-> of `@register` / `create(tag)`. `StructureFactory` is a plain class
-> without `FactoryBase` inheritance (only one structure type exists today).
+> **Note:** `ExperimentFactory` and `StructureFactory` are _builder_ factories
+> with `from_cif_path`, `from_cif_str`, `from_data_path`, and `from_scratch`
+> classmethods. `ExperimentFactory` inherits `FactoryBase` but currently uses a
+> legacy `_SUPPORTED` dict for class resolution instead of `@register` /
+> `create(tag)`. `StructureFactory` is a plain class without `FactoryBase`
+> inheritance (only one structure type exists today).
 
 ---
 
@@ -662,16 +664,28 @@ expt.background.type = 'chebyshev'
 This makes it clear that the entire category object is being replaced and
 simplifies maintenance.
 
-### 9.4 Show/Display Pattern
+### 9.4 Switchable-Category Convention
 
-Concrete category subclasses provide a public `show()` method (not on the base
-`CategoryItem`/`CategoryCollection` classes).
+Categories whose concrete implementation can be swapped at runtime (background,
+peak profile, etc.) are called **switchable categories**. They follow a fixed
+naming convention on the experiment:
 
-For factory-backed categories, experiments expose:
+| Facet           | Naming pattern                               | Example                                          |
+| --------------- | -------------------------------------------- | ------------------------------------------------ |
+| Current object  | `<category>` property (read-only)            | `expt.background`, `expt.peak`                   |
+| Active type tag | `<category>_type` property (getter + setter) | `expt.background_type`, `expt.peak_profile_type` |
+| Show supported  | `show_supported_<category>_types()`          | `expt.show_supported_background_types()`         |
+| Show current    | `show_current_<category>_type()`             | `expt.show_current_peak_profile_type()`          |
 
-- `show_supported_<category>_types()` — table of available types for the current
-  experiment configuration.
-- `show_current_<category>_type()` — the currently selected type.
+**Design decisions:**
+
+- The **experiment owns** the `_type` setter because switching replaces the
+  entire category object (`self._background = BackgroundFactory.create(...)`).
+- The **experiment owns** the `show_*` methods because they are one-liners that
+  delegate to `Factory.show_supported(...)` and can pass experiment-specific
+  context (e.g. `scattering_type`, `beam_mode` for peak filtering).
+- Concrete category subclasses provide a public `show()` method for displaying
+  the current content (not on the base `CategoryItem`/`CategoryCollection`).
 
 ### 9.5 Discoverable Supported Options
 

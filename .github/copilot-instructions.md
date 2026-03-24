@@ -36,10 +36,10 @@
 - One class per file when the class is substantial; group small related classes.
 - Avoid `**kwargs`; use explicit keyword arguments for clarity, autocomplete,
   and typo detection.
-- Do not use string-based dispatch (e.g. `getattr(self, f'_{name}')`) to
-  route to attributes or methods. Instead, write explicit named methods
-  (e.g. `_set_sample_form`, `_set_beam_mode`). This keeps the code
-  greppable, autocomplete-friendly, and type-safe.
+- Do not use string-based dispatch (e.g. `getattr(self, f'_{name}')`) to route
+  to attributes or methods. Instead, write explicit named methods (e.g.
+  `_set_sample_form`, `_set_beam_mode`). This keeps the code greppable,
+  autocomplete-friendly, and type-safe.
 - Public parameters and descriptors are either **editable** (property with both
   getter and setter) or **read-only** (property with getter only). If internal
   code needs to mutate a read-only property, add a private `_set_<name>` method
@@ -59,6 +59,12 @@
   each package's `__init__.py` must explicitly import every concrete class (e.g.
   `from .chebyshev import ChebyshevPolynomialBackground`). When adding a new
   concrete class, always add its import to the corresponding `__init__.py`.
+- Switchable categories (those whose implementation can be swapped at runtime
+  via a factory) follow a fixed naming convention on the experiment:
+  `<category>` (read-only property), `<category>_type` (getter + setter),
+  `show_supported_<category>_types()`, `show_current_<category>_type()`. The
+  experiment owns the type setter and the show methods; the show methods
+  delegate to `Factory.show_supported(...)` passing experiment context.
 - Keep `core/` free of domain logic — only base classes and utilities.
 - Don't introduce a new abstraction until there is a concrete second use case.
 - Don't add dependencies without asking.
@@ -83,4 +89,9 @@
 ## Workflow
 
 - Run `pixi run unit-tests` only when I ask.
-- Suggest a concise commit message after each change.
+- Suggest a concise commit message (as a code block) after each change (less
+  than 72 characters, imperative mood, without prefixing with the type of
+  change). E.g.:
+  - Add ChebyshevPolynomialBackground class
+  - Implement background_type setter on Experiment
+  - Standardize switchable-category naming convention
