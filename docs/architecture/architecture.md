@@ -1141,7 +1141,54 @@ def parameters(self):
     return self.structures.parameters + self.experiments.parameters
 ```
 
-### 11.16 Summary of Issue Severity
+### 11.16 `FactoryBase` Cannot Express Constructor-Variant Registrations
+
+**Where:** `core/factory.py` — `FactoryBase.register` / `create`.
+
+**Symptom:** the old `MinimizerFactory` supported multiple tags mapping to the
+**same class** with **different constructor arguments**:
+
+```python
+'lmfit':                 { 'class': LmfitMinimizer, 'method': 'leastsq' },
+'lmfit (leastsq)':       { 'class': LmfitMinimizer, 'method': 'leastsq' },
+'lmfit (least_squares)': { 'class': LmfitMinimizer, 'method': 'least_squares' },
+```
+
+The current `FactoryBase` registry stores only `[class, …]` and `create(tag)`
+calls `klass()` with no per-tag kwargs. One class ↔ one tag is the only
+supported relationship. Registering the same class twice under different tags
+would overwrite the first entry in `_supported_map()` (which is keyed by
+`klass.type_info.tag`).
+
+**Impact:** any domain where a single engine supports multiple algorithm
+variants — minimisers today, but potentially calculators (e.g. `'cryspy'` vs
+`'cryspy (fullprof-like)'`) or peak profiles (e.g. different numerical
+backends for the same analytical shape) in the future — cannot be expressed
+without creating a thin subclass per variant. Those subclasses carry no real
+logic and exist only to give each variant a distinct `type_info.tag`.
+
+**Design tension:** the thin-subclass approach is explicit and works within the
+current `FactoryBase` contract, but it proliferates nearly-empty classes. The
+old dict-of-dicts approach was flexible but lived entirely outside the metadata
+system (`TypeInfo`, `Compatibility`, `CalculatorSupport`), so variants were
+invisible to `supported_for()`, `show_supported()`, and compatibility
+filtering.
+
+**Possible solutions (trade-offs):**
+
+| Approach                                                 | Pros                                                                   | Cons                                                                                                                                          |
+|----------------------------------------------------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| **A. Thin subclasses** (one per variant)                 | Works today; each variant gets full metadata; no `FactoryBase` changes | Class proliferation; boilerplate                                                                                                              |
+| **B. Extend registry to store `(class, kwargs)` tuples** | No extra classes; factory handles variants natively                    | `_supported_map` must change from `{tag: class}` to `{tag: (class, kwargs)}`; `TypeInfo` moves from class attribute to registration-time data |
+| **C. Two-level selection** (`engine` + `algorithm`)      | Clean separation; engine maps to class, algorithm is a constructor arg | More complex API (`current_minimizer = ('lmfit', 'least_squares')`); needs new `FactoryBase` protocol                                         |
+
+**Recommended next step:** decide which approach best fits the project's
+"prefer explicit, no magic" philosophy before restoring minimiser variants.
+Approach **A** is the simplest incremental change; approach **B** is the most
+general but requires `FactoryBase` changes; approach **C** is the cleanest
+long-term but the largest change.
+
+### 11.17 Summary of Issue Severity
 
 | #     | Issue                                      | Severity | Type             |
 | ----- | ------------------------------------------ | -------- | ---------------- |
@@ -1160,6 +1207,7 @@ def parameters(self):
 | 11.13 | Duplicated `unique_name` property          | Low      | Maintainability  |
 | 11.14 | Minimiser variant loss                     | Medium   | Feature loss     |
 | 11.15 | `Project.parameters` returns `[]`          | Low      | Completeness     |
+| 11.16 | `FactoryBase` lacks variant registrations  | Medium   | Design limitation |
 
 ## 12. Current and Potential Issues 2
 
