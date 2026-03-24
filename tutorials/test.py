@@ -1,8 +1,10 @@
 # %%
-# %%
-# %%
-import easydiffraction as ed
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
+# %%
+
+# %%
+
+import easydiffraction as ed
 
 # %%
 project = ed.Project(name='lbco_hrpt')
@@ -35,13 +37,13 @@ expt.show_supported_background_types()
 expt.background.show_supported()
 
 # %%
-expt.background_type = 'chebyshev'
+expt.background_type = "chebyshev"
 
 # %%
 expt.show_current_background_type()
 
 # %%
-expt.background_type = 'chebyshev'
+expt.background_type = "chebyshev"
 
 # %%
 expt.show_current_background_type()
@@ -50,7 +52,7 @@ expt.show_current_background_type()
 print(expt.background)
 
 # %%
-expt.background_type = 'line-segment'
+expt.background_type = "line-segment"
 
 # %%
 print(expt.background)
@@ -83,7 +85,7 @@ expt.show_as_cif()
 expt.background['a'].x = 2
 
 # %%
-expt.background_type = 'chebyshev'
+expt.background_type = "chebyshev"
 
 # %%
 expt.background['a'].x = 2
@@ -95,7 +97,7 @@ expt.background['a'].x = 2
 # %%
 
 # %%
-bkg = BackgroundFactory.create('chebyshew')
+bkg = BackgroundFactory.create("chebyshew")
 
 # %%
 
