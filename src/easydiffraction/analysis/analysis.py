@@ -355,10 +355,7 @@ class Analysis:
         """
         supported = CalculatorFactory.supported_tags()
         if calculator_name not in supported:
-            log.warning(
-                f"Unknown calculator '{calculator_name}'. "
-                f'Supported: {supported}'
-            )
+            log.warning(f"Unknown calculator '{calculator_name}'. Supported: {supported}")
             return
         self.calculator = CalculatorFactory.create(calculator_name)
         self._calculator_key = calculator_name

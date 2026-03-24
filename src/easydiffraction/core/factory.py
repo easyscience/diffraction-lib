@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Base factory with registration, lookup, and context-dependent defaults.
+"""Base factory with registration, lookup, and context-dependent
+defaults.
 
 Concrete factories inherit from ``FactoryBase`` and only need to
 define ``_default_rules``.

@@ -130,4 +130,3 @@ class LmfitMinimizer(MinimizerBase):
         # Intentionally unused, required by callback signature
         del params, resid, args, kwargs
         self._iteration = iter
-
