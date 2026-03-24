@@ -209,7 +209,6 @@ def analysis_to_cif(analysis) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
     cur_min = format_value(analysis.current_minimizer)
     lines: list[str] = []
-    lines.append(f'_analysis.calculator_engine  {format_value(analysis.current_calculator)}')
     lines.append(f'_analysis.fitting_engine  {cur_min}')
     lines.append(f'_analysis.fit_mode  {format_value(analysis.fit_mode)}')
     lines.append('')

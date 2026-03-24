@@ -7,7 +7,6 @@ from typing import Union
 
 import pandas as pd
 
-from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.analysis.categories.aliases import Aliases
 from easydiffraction.analysis.categories.constraints import Constraints
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
@@ -56,8 +55,6 @@ class Analysis:
         self.aliases = Aliases()
         self.constraints = Constraints()
         self.constraints_handler = ConstraintsHandler.get()
-        self.calculator = CalculatorFactory.create('cryspy')
-        self._calculator_key: str = 'cryspy'
         self._fit_mode: str = 'single'
         self.fitter = Fitter('lmfit')
 
@@ -324,41 +321,6 @@ class Analysis:
             columns_alignment=columns_alignment,
             columns_data=columns_data,
         )
-
-    def show_current_calculator(self) -> None:
-        """Print the name of the currently selected calculator
-        engine.
-        """
-        console.paragraph('Current calculator')
-        console.print(self.current_calculator)
-
-    @staticmethod
-    def show_supported_calculators() -> None:
-        """Print a table of available calculator backends on this
-        system.
-        """
-        CalculatorFactory.show_supported()
-
-    @property
-    def current_calculator(self) -> str:
-        """The key/name of the active calculator backend."""
-        return self._calculator_key
-
-    @current_calculator.setter
-    def current_calculator(self, calculator_name: str) -> None:
-        """Switch to a different calculator backend.
-
-        Args:
-            calculator_name: Calculator key to use (e.g. 'cryspy').
-        """
-        supported = CalculatorFactory.supported_tags()
-        if calculator_name not in supported:
-            log.warning(f"Unknown calculator '{calculator_name}'. Supported: {supported}")
-            return
-        self.calculator = CalculatorFactory.create(calculator_name)
-        self._calculator_key = calculator_name
-        console.paragraph('Current calculator changed to')
-        console.print(self.current_calculator)
 
     def show_current_minimizer(self) -> None:
         """Print the name of the currently selected minimizer."""

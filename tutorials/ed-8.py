@@ -301,12 +301,6 @@ project.experiments.add(expt47)
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# #### Set Calculator
-
-# %%
-project.analysis.current_calculator = 'cryspy'
-
-# %% [markdown]
 # #### Set Minimizer
 
 # %%

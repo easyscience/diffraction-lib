@@ -122,7 +122,6 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     project.experiments.add(expt2)
 
     # Prepare for fitting
-    project.analysis.current_calculator = 'cryspy'
     project.analysis.current_minimizer = 'lmfit'
     project.analysis.fit_mode = 'joint'
 
@@ -256,7 +255,6 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.experiments.add(expt2)
 
     # Prepare for fitting
-    project.analysis.current_calculator = 'cryspy'
     project.analysis.current_minimizer = 'lmfit'
 
     # Select fitting parameters

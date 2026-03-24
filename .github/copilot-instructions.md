@@ -95,7 +95,8 @@
   `docs/architecture/issues_closed.md`. When the resolution affects the
   architecture, update the relevant sections of
   `docs/architecture/architecture.md`.
-- After changes, run linting and formatting fixes with `pixi run fix`.
+- After changes, run linting and formatting fixes with `pixi run fix`. Do not
+  check what was auto-fixed, just accept the fixes and move on.
 - After changes, run unit tests with `pixi run unit-tests`.
 - After changes, run integration tests with `pixi run integration-tests`.
 - Suggest a concise commit message (as a code block) after each change (less

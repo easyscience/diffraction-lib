@@ -568,16 +568,19 @@ collection type), not individual line-segment points.
 
 ### 6.1 Calculator
 
-The calculator performs the actual diffraction computation. It is currently
-attached to the `Analysis` object (one per project). The `CalculatorFactory`
-filters its registry by `engine_imported` (whether the third-party library is
-available in the environment).
+The calculator performs the actual diffraction computation. It is attached
+per-experiment on the `ExperimentBase` object. Each experiment auto-resolves its
+calculator on first access based on the data category's `calculator_support`
+metadata and `CalculatorFactory._default_rules`. The `CalculatorFactory` filters
+its registry by `engine_imported` (whether the third-party library is available
+in the environment).
 
-> **Design note:** for joint fitting of heterogeneous experiments (e.g. Bragg +
-> PDF), the calculator should be attached per-experiment rather than globally.
-> For sequential refinement of many datasets of the same type, a single shared
-> calculator is sufficient. The current design uses a global calculator;
-> per-experiment attachment is planned.
+The experiment exposes the standard switchable-category API:
+
+- `calculator` — read-only property (lazy, auto-resolved on first access)
+- `calculator_type` — getter + setter
+- `show_supported_calculator_types()` — filtered by data category support
+- `show_current_calculator_type()`
 
 ### 6.2 Minimiser
 
@@ -598,7 +601,6 @@ by tag (e.g. `'lmfit'`, `'dfols'`).
 
 `Analysis` is bound to a `Project` and provides the high-level API:
 
-- Calculator selection: `current_calculator`, `show_supported_calculators()`
 - Minimiser selection: `current_minimizer`, `show_available_minimizers()`
 - Fit modes: `'single'` (per-experiment) or `'joint'` (simultaneous with
   weights)
@@ -743,9 +745,9 @@ project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
 ### 8.4 Analysis and Fitting
 
 ```python
-# Select calculator and minimiser
-project.analysis.show_supported_calculators()
-project.analysis.current_calculator = 'cryspy'
+# Calculator is auto-resolved per experiment; override if needed
+project.experiments['hrpt'].show_supported_calculator_types()
+project.experiments['hrpt'].calculator_type = 'cryspy'
 project.analysis.current_minimizer = 'lmfit'
 
 # Plot before fitting
@@ -797,7 +799,7 @@ project.experiments.add_from_data_path(
     scattering_type='total',
 )
 project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'
-project.analysis.current_calculator = 'pdffit'
+# Calculator is auto-resolved to 'pdffit' for total scattering experiments
 ```
 
 ---
@@ -868,13 +870,12 @@ The user can always discover what is supported for the current experiment:
 ```python
 expt.show_supported_peak_profile_types()
 expt.show_supported_background_types()
-project.analysis.show_supported_calculators()
+expt.show_supported_calculator_types()
 project.analysis.show_available_minimizers()
 ```
 
 Available calculators are filtered by `engine_imported` (whether the library is
-installed) and can further be filtered by the experiment's categories via
-`CalculatorSupport` metadata.
+installed) and by the experiment's data category `calculator_support` metadata.
 
 ### 9.6 Enum Values as Tags
 

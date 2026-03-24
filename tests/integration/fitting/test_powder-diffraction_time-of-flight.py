@@ -58,7 +58,6 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.current_calculator = 'cryspy'
     project.analysis.current_minimizer = 'lmfit'
 
     # Select fitting parameters
@@ -201,7 +200,6 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.current_calculator = 'cryspy'
     project.analysis.current_minimizer = 'lmfit'
 
     # Select fitting parameters

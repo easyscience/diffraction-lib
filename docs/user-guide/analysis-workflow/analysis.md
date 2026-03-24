@@ -53,25 +53,26 @@ calculating the pair distribution function (PDF) from crystallographic models.
 
 ### Set Calculator
 
-To show the supported calculation engines:
+The calculator is automatically selected based on the experiment type (e.g.,
+`cryspy` for Bragg diffraction, `pdffit` for total scattering). To show the
+supported calculation engines for a specific experiment:
 
 ```python
-project.analysis.show_supported_calculators()
+project.experiments['hrpt'].show_supported_calculator_types()
 ```
 
 The example of the output is:
 
-Supported calculators
+Supported calculator types
 
-| Calculator | Description                                                 |
-| ---------- | ----------------------------------------------------------- |
-| cryspy     | CrysPy library for crystallographic calculations            |
-| pdffit     | PDFfit2 library for pair distribution function calculations |
+| Calculator | Description                                      |
+| ---------- | ------------------------------------------------ |
+| cryspy     | CrysPy library for crystallographic calculations |
 
-To select the desired calculation engine, e.g., 'cryspy':
+To explicitly select a calculation engine for an experiment:
 
 ```python
-project.analysis.current_calculator = 'cryspy'
+project.experiments['hrpt'].calculator_type = 'cryspy'
 ```
 
 ## Minimization / Optimization

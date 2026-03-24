@@ -81,7 +81,6 @@ project.experiments['pdf'].peak.sharp_delta_2.free = True
 # ## Run Fitting
 
 # %%
-project.analysis.current_calculator = 'pdffit'
 project.analysis.fit()
 project.analysis.show_fit_results()
 

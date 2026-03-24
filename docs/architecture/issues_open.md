@@ -79,48 +79,6 @@ fit. At minimum, `fit()` should assert that the weight keys exactly match
 
 ---
 
-## 4. 🟡 Move Calculator from Global to Per-Experiment
-
-**Type:** Design improvement
-
-The calculator is currently global (one per `Analysis`/project). Joint fitting
-of heterogeneous experiments (e.g. Bragg + PDF) requires different calculation
-engines per experiment — CrysPy for Bragg, PDFfit for PDF — while the minimiser
-optimises a shared set of structural parameters across both.
-
-**Recommended solution — two-level attachment:**
-
-1. **Per-experiment calculator.** Each experiment stores its own calculator
-   reference. When not explicitly set, it is auto-resolved from the experiment's
-   `ExperimentType` using `CalculatorFactory.create_default_for(...)`.
-
-2. **Collection-level default.** `Experiments` (the collection) holds an
-   optional default calculator. When set, all experiments without an explicit
-   override inherit it. This covers sequential refinement (many same-type
-   datasets, one shared calculator).
-
-3. **Minimiser stays global.** The minimiser lives on `Analysis` and calls each
-   experiment's calculator independently during objective evaluation.
-
-**API sketch:**
-
-```python
-# Per-experiment (heterogeneous joint fit)
-project.experiments['bragg'].calculator = 'cryspy'
-project.experiments['pdf'].calculator = 'pdffit'
-project.analysis.fit_mode = 'joint'
-project.analysis.fit()
-
-# Collection-level default (sequential refinement)
-project.experiments.calculator = 'cryspy'
-project.analysis.fit_mode = 'sequential'
-project.analysis.fit()
-```
-
-**Depends on:** benefits from issue 3 (joint-fit weights) being fixed first.
-
----
-
 ## 5. 🟡 Make `Analysis` a `DatablockItem`
 
 **Type:** Consistency
@@ -323,7 +281,6 @@ implement when profiling proves it is needed.
 | 1   | Implement `Project.load()`             | 🔴 High  | Completeness    |
 | 2   | Restore minimiser variants             | 🟡 Med   | Feature loss    |
 | 3   | Rebuild joint-fit weights              | 🟡 Med   | Fragility       |
-| 4   | Per-experiment calculator              | 🟡 Med   | Design          |
 | 5   | `Analysis` as `DatablockItem`          | 🟡 Med   | Consistency     |
 | 6   | Universal factories for all categories | 🟡 Med   | Consistency     |
 | 7   | Eliminate dummy `Experiments`          | 🟡 Med   | Fragility       |

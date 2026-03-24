@@ -169,7 +169,7 @@ class FactoryBase:
             radiation_probe: Optional ``RadiationProbeEnum`` value.
         """
         result = []
-        for klass in cls._registry:
+        for klass in cls._supported_map().values():
             compat = getattr(klass, 'compatibility', None)
             if compat and not compat.supports(
                 sample_form=sample_form,

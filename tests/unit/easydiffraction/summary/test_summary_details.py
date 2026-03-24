@@ -100,7 +100,6 @@ def test_summary_crystallographic_and_experimental_sections(capsys):
             self.experiments = {'exp1': Expt()}
 
             class A:
-                current_calculator = 'cryspy'
                 current_minimizer = 'lmfit'
 
                 class R:

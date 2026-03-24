@@ -180,7 +180,8 @@ class Summary:
         console.section('Fitting')
 
         console.paragraph('Calculation engine')
-        console.print(self.project.analysis.current_calculator)
+        for expt in self.project.experiments.values():
+            console.print(f'  {expt.name}: {expt.calculator_type}')
 
         console.paragraph('Minimization engine')
         console.print(self.project.analysis.current_minimizer)

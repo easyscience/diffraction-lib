@@ -220,12 +220,6 @@ project.experiments['hrpt'].show_as_cif()
 # This section outlines the analysis process, including how to configure
 # calculation and fitting engines.
 #
-# #### Set Calculator
-
-# %%
-project.analysis.current_calculator = 'cryspy'
-
-# %% [markdown]
 # #### Set Minimizer
 
 # %%

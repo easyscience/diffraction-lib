@@ -27,7 +27,6 @@ def test_summary_show_report_prints_sections(capsys):
             self.experiments = {}  # empty mapping to exercise loops safely
 
             class A:
-                current_calculator = 'cryspy'
                 current_minimizer = 'lmfit'
 
                 class R:

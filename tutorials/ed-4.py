@@ -261,12 +261,6 @@ project.experiments.add(expt2)
 # This section outlines the analysis process, including how to configure
 # calculation and fitting engines.
 #
-# #### Set Calculator
-
-# %%
-project.analysis.current_calculator = 'cryspy'
-
-# %% [markdown]
 # #### Set Fit Mode
 
 # %%

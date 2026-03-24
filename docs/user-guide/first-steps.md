@@ -91,22 +91,22 @@ calculation, minimization, and plotting. These methods can be called on the
 
 ### Supported calculators
 
-For example, you can use the `show_supported_calculators()` method to see which
-calculation engines are available for use in your project:
+The calculator is automatically selected based on the experiment type. You can
+use the `show_supported_calculator_types()` method on an experiment to see which
+calculation engines are compatible:
 
 ```python
-project.show_supported_calculators()
+project.experiments['hrpt'].show_supported_calculator_types()
 ```
 
 This will display a list of supported calculators along with their descriptions,
 allowing you to choose the one that best fits your needs.
 
-An example of the output for the `show_supported_calculators()` method is:
+An example of the output for a Bragg diffraction experiment:
 
-| Calculator | Description                                                 |
-| ---------- | ----------------------------------------------------------- |
-| cryspy     | CrysPy library for crystallographic calculations            |
-| pdffit     | PDFfit2 library for pair distribution function calculations |
+| Calculator | Description                                      |
+| ---------- | ------------------------------------------------ |
+| cryspy     | CrysPy library for crystallographic calculations |
 
 ### Supported minimizers
 

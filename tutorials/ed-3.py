@@ -333,22 +333,22 @@ project.save()
 #
 # #### Set Calculator
 #
-# Show supported calculation engines.
+# Show supported calculation engines for this experiment.
 
 # %%
-project.analysis.show_supported_calculators()
+project.experiments['hrpt'].show_supported_calculator_types()
 
 # %% [markdown]
-# Show current calculation engine.
+# Show current calculation engine for this experiment.
 
 # %%
-project.analysis.show_current_calculator()
+project.experiments['hrpt'].show_current_calculator_type()
 
 # %% [markdown]
 # Select the desired calculation engine.
 
 # %%
-project.analysis.current_calculator = 'cryspy'
+project.experiments['hrpt'].calculator_type = 'cryspy'
 
 # %% [markdown]
 # #### Show Calculated Data

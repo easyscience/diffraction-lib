@@ -106,7 +106,7 @@ bkg = BackgroundFactory.create('chebyshew')
 # %%
 
 # %%
-project.analysis.show_supported_calculators()
+project.experiments['hrpt'].show_supported_calculator_types()
 
 
 # %% [markdown]
@@ -228,19 +228,19 @@ project.save()
 # Show supported calculation engines.
 
 # %%
-project.analysis.show_supported_calculators()
+project.experiments['hrpt'].show_supported_calculator_types()
 
 # %% [markdown]
 # Show current calculation engine.
 
 # %%
-project.analysis.show_current_calculator()
+project.experiments['hrpt'].show_current_calculator_type()
 
 # %% [markdown]
 # Select the desired calculation engine.
 
 # %%
-project.analysis.current_calculator = 'cryspy'
+project.experiments['hrpt'].calculator_type = 'cryspy'
 
 # %% [markdown]
 # #### Show Calculated Data
@@ -321,7 +321,7 @@ project.analysis.show_current_minimizer()
 # Select desired fitting engine.
 
 # %%
-project.analysis.current_minimizer = 'lmfit'
+project.analysis.current_minimizer = 'lmfit (leastsq)'
 
 # %% [markdown]
 # ### Perform Fit 1/5

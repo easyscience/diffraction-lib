@@ -267,8 +267,7 @@ class ReflnData(CategoryCollection):
         experiments = experiment._parent
         project = experiments._parent
         structures = project.structures
-        # calculator = experiment.calculator  # TODO: move from analysis
-        calculator = project.analysis.calculator
+        calculator = experiment.calculator
 
         linked_crystal = experiment.linked_crystal
         linked_crystal_id = experiment.linked_crystal.id.value

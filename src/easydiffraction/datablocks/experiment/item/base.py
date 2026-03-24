@@ -41,6 +41,8 @@ class ExperimentBase(DatablockItem):
         super().__init__()
         self._name = name
         self._type = type
+        self._calculator = None
+        self._calculator_type: str | None = None
         self._identity.datablock_entry_name = lambda: self.name
 
     @property
@@ -84,6 +86,113 @@ class ExperimentBase(DatablockItem):
             data_path: Path to the ASCII file to load.
         """
         raise NotImplementedError()
+
+    # ------------------------------------------------------------------
+    #  Calculator (switchable-category pattern)
+    # ------------------------------------------------------------------
+
+    @property
+    def calculator(self):
+        """The active calculator instance for this experiment.
+
+        Auto-resolved on first access from the experiment's data
+        category ``calculator_support`` and
+        ``CalculatorFactory._default_rules``.
+        """
+        if self._calculator is None:
+            self._resolve_calculator()
+        return self._calculator
+
+    @property
+    def calculator_type(self) -> str:
+        """Tag of the active calculator backend (e.g. ``'cryspy'``)."""
+        if self._calculator_type is None:
+            self._resolve_calculator()
+        return self._calculator_type
+
+    @calculator_type.setter
+    def calculator_type(self, tag: str) -> None:
+        """Switch to a different calculator backend.
+
+        Args:
+            tag: Calculator tag (e.g. ``'cryspy'``, ``'crysfml'``,
+                ``'pdffit'``).
+        """
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+
+        supported = self._supported_calculator_tags()
+        if tag not in supported:
+            log.warning(
+                f"Unsupported calculator '{tag}' for experiment "
+                f"'{self.name}'. Supported: {supported}. "
+                f"For more information, use 'show_supported_calculator_types()'",
+            )
+            return
+        self._calculator = CalculatorFactory.create(tag)
+        self._calculator_type = tag
+        console.paragraph(f"Calculator for experiment '{self.name}' changed to")
+        console.print(tag)
+
+    def show_supported_calculator_types(self) -> None:
+        """Print a table of calculator backends supported by this
+        experiment.
+        """
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+
+        supported_tags = self._supported_calculator_tags()
+        all_classes = CalculatorFactory._supported_map()
+        columns_headers = ['Type', 'Description']
+        columns_alignment = ['left', 'left']
+        columns_data = [
+            [cls.type_info.tag, cls.type_info.description]
+            for tag, cls in all_classes.items()
+            if tag in supported_tags
+        ]
+        from easydiffraction.utils.utils import render_table
+
+        console.paragraph('Supported calculator types')
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )
+
+    def show_current_calculator_type(self) -> None:
+        """Print the name of the currently active calculator."""
+        console.paragraph('Current calculator type')
+        console.print(self.calculator_type)
+
+    def _resolve_calculator(self) -> None:
+        """Auto-resolve the default calculator from the data category's
+        ``calculator_support`` and
+        ``CalculatorFactory._default_rules``.
+        """
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+
+        tag = CalculatorFactory.default_tag(
+            scattering_type=self.type.scattering_type.value,
+        )
+        supported = self._supported_calculator_tags()
+        if supported and tag not in supported:
+            tag = supported[0]
+        self._calculator = CalculatorFactory.create(tag)
+        self._calculator_type = tag
+
+    def _supported_calculator_tags(self) -> list[str]:
+        """Return calculator tags supported by this experiment.
+
+        Intersects the data category's ``calculator_support`` with
+        calculators whose engines are importable.
+        """
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+
+        available = CalculatorFactory.supported_tags()
+        data = getattr(self, '_data', None)
+        if data is not None:
+            data_support = getattr(data, 'calculator_support', None)
+            if data_support and data_support.calculators:
+                return [t for t in available if t in data_support.calculators]
+        return available
 
 
 class ScExperimentBase(ExperimentBase):

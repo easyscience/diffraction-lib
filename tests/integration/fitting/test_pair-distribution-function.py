@@ -68,7 +68,6 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     experiment.peak.sharp_delta_2.free = True
 
     # Perform fit
-    project.analysis.current_calculator = 'pdffit'
     project.analysis.fit()
 
     # Compare fit quality
@@ -123,7 +122,6 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     experiment.peak.sharp_delta_2.free = True
 
     # Perform fit
-    project.analysis.current_calculator = 'pdffit'
     project.analysis.fit()
 
     # Compare fit quality
@@ -179,7 +177,6 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     experiment.peak.sharp_delta_2.free = True
 
     # Perform fit
-    project.analysis.current_calculator = 'pdffit'
     project.analysis.fit()
 
     # Compare fit quality
