@@ -89,6 +89,12 @@
 
 ## Workflow
 
+- All open issues, design questions, and planned improvements are tracked in
+  `docs/architecture/issues_open.md`, ordered by priority. When an issue is
+  fully implemented, move it from that file to
+  `docs/architecture/issues_closed.md`. When the resolution affects the
+  architecture, update the relevant sections of
+  `docs/architecture/architecture.md`.
 - After changes, run linting and formatting fixes with `pixi run fix`.
 - After changes, run unit tests with `pixi run unit-tests`.
 - After changes, run integration tests with `pixi run integration-tests`.
