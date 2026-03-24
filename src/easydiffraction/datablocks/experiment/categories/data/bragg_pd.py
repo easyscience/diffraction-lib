@@ -415,7 +415,7 @@ class PdCwlData(PdDataBase):
     # TODO: ???
     # _description: str = 'Powder diffraction data points for
     # constant-wavelength experiments.'
-    type_info = TypeInfo(tag='bragg-pd', description='Bragg powder diffraction data')
+    type_info = TypeInfo(tag='bragg-pd', description='Bragg powder CWL data')
     compatibility = Compatibility(
         sample_form=frozenset({SampleFormEnum.POWDER}),
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),

@@ -50,7 +50,7 @@ class BraggPdExperiment(PdExperimentBase):
             beam_mode=self.type.beam_mode.value,
             sample_form=self.type.sample_form.value,
         )
-        self._background_type: str = BackgroundFactory._default_tag
+        self._background_type: str = BackgroundFactory.default_tag()
         self._background = BackgroundFactory.create(self._background_type)
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
@@ -108,18 +108,21 @@ class BraggPdExperiment(PdExperimentBase):
 
     @background_type.setter
     def background_type(self, new_type):
-        """Set and apply a new background type.
+        """Set a new background type and recreate background object."""
+        if self._background_type == new_type:
+            console.paragraph(f"Background type for experiment '{self.name}' already set to")
+            console.print(new_type)
+            return
 
-        Falls back to printing supported types if the new value is not
-        supported.
-        """
-        if new_type not in BackgroundFactory._supported_map():
+        supported_tags = BackgroundFactory.supported_tags()
+        if new_type not in supported_tags:
             log.warning(
-                f"Unknown background type '{new_type}'. "
-                f'Supported background types: {BackgroundFactory.supported_tags()}. '
-                f"For more information, use 'show_supported_background_types()'"
+                f"Unsupported background type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_background_types()'",
             )
             return
+
         self.background = BackgroundFactory.create(new_type)
         self._background_type = new_type
         console.paragraph(f"Background type for experiment '{self.name}' changed to")

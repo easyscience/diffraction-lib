@@ -45,7 +45,7 @@ class TofPseudoVoigtIkedaCarpenter(
     """TOF pseudo-Voigt with Ikeda–Carpenter asymmetry."""
 
     type_info = TypeInfo(
-        tag='tof-pseudo-voigt-ikeda-carpenter',
+        tag='pseudo-voigt * ikeda-carpenter',
         description='Pseudo-Voigt with Ikeda-Carpenter asymmetry correction',
     )
     compatibility = Compatibility(
@@ -69,7 +69,7 @@ class TofPseudoVoigtBackToBack(
     """TOF back-to-back pseudo-Voigt with asymmetry."""
 
     type_info = TypeInfo(
-        tag='tof-pseudo-voigt-back-to-back',
+        tag='pseudo-voigt * back-to-back',
         description='TOF back-to-back pseudo-Voigt with asymmetry',
     )
     compatibility = Compatibility(

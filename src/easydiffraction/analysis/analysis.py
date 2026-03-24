@@ -46,7 +46,7 @@ class Analysis:
         fitter: Active fitter/minimizer driver.
     """
 
-    _calculator = CalculatorFactory.create_calculator('cryspy')
+    _calculator = CalculatorFactory.create('cryspy')
 
     def __init__(self, project) -> None:
         """Create a new Analysis instance bound to a project.
@@ -61,7 +61,7 @@ class Analysis:
         self.calculator = Analysis._calculator  # Default calculator shared by project
         self._calculator_key: str = 'cryspy'  # Added to track the current calculator
         self._fit_mode: str = 'single'
-        self.fitter = Fitter('lmfit (leastsq)')
+        self.fitter = Fitter('lmfit')
 
     def _get_params_as_dataframe(
         self,
@@ -339,7 +339,7 @@ class Analysis:
         """Print a table of available calculator backends on this
         system.
         """
-        CalculatorFactory.show_supported_calculators()
+        CalculatorFactory.show_supported()
 
     @property
     def current_calculator(self) -> str:
@@ -353,10 +353,14 @@ class Analysis:
         Args:
             calculator_name: Calculator key to use (e.g. 'cryspy').
         """
-        calculator = CalculatorFactory.create_calculator(calculator_name)
-        if calculator is None:
+        supported = CalculatorFactory.supported_tags()
+        if calculator_name not in supported:
+            log.warning(
+                f"Unknown calculator '{calculator_name}'. "
+                f'Supported: {supported}'
+            )
             return
-        self.calculator = calculator
+        self.calculator = CalculatorFactory.create(calculator_name)
         self._calculator_key = calculator_name
         console.paragraph('Current calculator changed to')
         console.print(self.current_calculator)
@@ -371,7 +375,7 @@ class Analysis:
         """Print a table of available minimizer drivers on this
         system.
         """
-        MinimizerFactory.show_available_minimizers()
+        MinimizerFactory.show_supported()
 
     @property
     def current_minimizer(self) -> Optional[str]:
@@ -383,8 +387,7 @@ class Analysis:
         """Switch to a different minimizer implementation.
 
         Args:
-            selection: Minimizer selection string, e.g.
-                'lmfit (leastsq)'.
+            selection: Minimizer selection string, e.g. 'lmfit'.
         """
         self.fitter = Fitter(selection)
         console.paragraph('Current minimizer changed to')

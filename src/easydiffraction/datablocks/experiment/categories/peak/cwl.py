@@ -46,7 +46,7 @@ class CwlSplitPseudoVoigt(
     """Split pseudo-Voigt (empirical asymmetry) for CWL mode."""
 
     type_info = TypeInfo(
-        tag='split-pseudo-voigt',
+        tag='split pseudo-voigt',
         description='Split pseudo-Voigt with empirical asymmetry correction',
     )
     compatibility = Compatibility(

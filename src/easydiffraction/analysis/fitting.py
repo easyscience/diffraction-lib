@@ -22,10 +22,10 @@ if TYPE_CHECKING:
 class Fitter:
     """Handles the fitting workflow using a pluggable minimizer."""
 
-    def __init__(self, selection: str = 'lmfit (leastsq)') -> None:
+    def __init__(self, selection: str = 'lmfit') -> None:
         self.selection: str = selection
-        self.engine: str = selection.split(' ')[0]  # Extracts 'lmfit' or 'dfols'
-        self.minimizer = MinimizerFactory.create_minimizer(selection)
+        self.engine: str = selection
+        self.minimizer = MinimizerFactory.create(selection)
         self.results: Optional[FitResults] = None
 
     def fit(

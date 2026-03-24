@@ -17,12 +17,10 @@ from easydiffraction.datablocks.experiment.categories.instrument.factory import 
 from easydiffraction.datablocks.experiment.categories.linked_crystal import LinkedCrystal
 from easydiffraction.datablocks.experiment.categories.linked_phases import LinkedPhases
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
-from easydiffraction.datablocks.experiment.categories.peak.factory import PeakProfileTypeEnum
 from easydiffraction.io.cif.serialize import experiment_to_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
-from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
@@ -101,12 +99,12 @@ class ScExperimentBase(ExperimentBase):
 
         self._linked_crystal: LinkedCrystal = LinkedCrystal()
         self._extinction: Extinction = Extinction()
-        self._instrument = InstrumentFactory.create(
+        self._instrument = InstrumentFactory.create_default_for(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
             sample_form=self.type.sample_form.value,
         )
-        self._data = DataFactory.create(
+        self._data = DataFactory.create_default_for(
             sample_form=self.type.sample_form.value,
             beam_mode=self.type.beam_mode.value,
             scattering_type=self.type.scattering_type.value,
@@ -153,20 +151,16 @@ class PdExperimentBase(ExperimentBase):
 
         self._linked_phases: LinkedPhases = LinkedPhases()
         self._excluded_regions: ExcludedRegions = ExcludedRegions()
-        self._peak_profile_type: PeakProfileTypeEnum = PeakProfileTypeEnum.default(
-            self.type.scattering_type.value,
-            self.type.beam_mode.value,
+        self._peak_profile_type: str = PeakFactory.default_tag(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
         )
-        self._data = DataFactory.create(
+        self._data = DataFactory.create_default_for(
             sample_form=self.type.sample_form.value,
             beam_mode=self.type.beam_mode.value,
             scattering_type=self.type.scattering_type.value,
         )
-        self._peak = PeakFactory.create(
-            scattering_type=self.type.scattering_type.value,
-            beam_mode=self.type.beam_mode.value,
-            profile_type=self._peak_profile_type,
-        )
+        self._peak = PeakFactory.create(self._peak_profile_type)
 
     def _get_valid_linked_phases(
         self,
@@ -245,59 +239,36 @@ class PdExperimentBase(ExperimentBase):
         return self._peak_profile_type
 
     @peak_profile_type.setter
-    def peak_profile_type(self, new_type: str | PeakProfileTypeEnum):
+    def peak_profile_type(self, new_type: str):
         """Change the active peak profile type, if supported.
 
         Args:
-            new_type: New profile type as enum or its string value.
+            new_type: New profile type as tag string.
         """
-        if isinstance(new_type, str):
-            try:
-                new_type = PeakProfileTypeEnum(new_type)
-            except ValueError:
-                log.warning(f"Unknown peak profile type '{new_type}'")
-                return
-
-        supported_types = list(
-            PeakFactory._supported[self.type.scattering_type.value][
-                self.type.beam_mode.value
-            ].keys()
+        supported = PeakFactory.supported_for(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
         )
+        supported_tags = [k.type_info.tag for k in supported]
 
-        if new_type not in supported_types:
+        if new_type not in supported_tags:
             log.warning(
-                f"Unsupported peak profile '{new_type.value}', "
-                f'Supported peak profiles: {supported_types}',
-                "For more information, use 'show_supported_peak_profile_types()'",
+                f"Unsupported peak profile '{new_type}'. "
+                f'Supported peak profiles: {supported_tags}. '
+                f"For more information, use 'show_supported_peak_profile_types()'",
             )
             return
 
-        self._peak = PeakFactory.create(
-            scattering_type=self.type.scattering_type.value,
-            beam_mode=self.type.beam_mode.value,
-            profile_type=new_type,
-        )
+        self._peak = PeakFactory.create(new_type)
         self._peak_profile_type = new_type
         console.paragraph(f"Peak profile type for experiment '{self.name}' changed to")
-        console.print(new_type.value)
+        console.print(new_type)
 
     def show_supported_peak_profile_types(self):
         """Print available peak profile types for this experiment."""
-        columns_headers = ['Peak profile type', 'Description']
-        columns_alignment = ['left', 'left']
-        columns_data = []
-
-        scattering_type = self.type.scattering_type.value
-        beam_mode = self.type.beam_mode.value
-
-        for profile_type in PeakFactory._supported[scattering_type][beam_mode]:
-            columns_data.append([profile_type.value, profile_type.description()])
-
-        console.paragraph('Supported peak profile types')
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=columns_data,
+        PeakFactory.show_supported(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
         )
 
     def show_current_peak_profile_type(self):

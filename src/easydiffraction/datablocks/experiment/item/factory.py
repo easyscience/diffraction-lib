@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING
 
 from typeguard import typechecked
 
+from easydiffraction.core.factory import FactoryBase
 from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
 from easydiffraction.datablocks.experiment.item import BraggPdExperiment
 from easydiffraction.datablocks.experiment.item import CwlScExperiment
@@ -33,9 +34,31 @@ if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 
 
-class ExperimentFactory:
+class ExperimentFactory(FactoryBase):
     """Creates Experiment instances with only relevant attributes."""
 
+    _default_rules = {
+        frozenset({
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+            ('sample_form', SampleFormEnum.POWDER),
+        }): 'bragg-pd',
+        frozenset({
+            ('scattering_type', ScatteringTypeEnum.TOTAL),
+            ('sample_form', SampleFormEnum.POWDER),
+        }): 'total-pd',
+        frozenset({
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+            ('sample_form', SampleFormEnum.SINGLE_CRYSTAL),
+            ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
+        }): 'bragg-sc-cwl',
+        frozenset({
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+            ('sample_form', SampleFormEnum.SINGLE_CRYSTAL),
+            ('beam_mode', BeamModeEnum.TIME_OF_FLIGHT),
+        }): 'bragg-sc-tof',
+    }
+
+    # Legacy nested dict kept for _resolve_class (used by from_cif_*)
     _SUPPORTED = {
         ScatteringTypeEnum.BRAGG: {
             SampleFormEnum.POWDER: {
@@ -55,6 +78,7 @@ class ExperimentFactory:
         },
     }
 
+    # TODO: Add to core/factory.py?
     def __init__(self):
         log.error(
             'Experiment objects must be created using class methods such as '
