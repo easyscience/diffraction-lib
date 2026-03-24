@@ -60,6 +60,9 @@
 - The project is in beta; do not keep legacy code or add deprecation warnings.
   Instead, update tests and tutorials to follow the current API.
 - Minimal diffs: don't rewrite working code just to reformat it.
+- Never remove or replace existing functionality as part of a new change without
+  explicit confirmation. If a refactor would drop features, options, or
+  configurations, highlight every removal and wait for approval.
 - Fix only what's asked; flag adjacent issues as comments, don't fix them
   silently.
 - Don't add new features or refactor existing code unless explicitly asked.
