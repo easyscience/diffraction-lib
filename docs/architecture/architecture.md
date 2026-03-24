@@ -89,7 +89,7 @@ private method (underscore prefix) is used.
 | Serialisation   | `as_cif` / `from_cif`              | `as_cif` / `from_cif`                     |
 | Update hook     | `_update(called_by_minimizer=)`    | `_update(called_by_minimizer=)`           |
 | Update priority | `_update_priority` (default 10)    | `_update_priority` (default 10)           |
-| Display         | `show()` — single row              | `show()` — table                          |
+| Display         | `show()` on concrete subclasses    | `show()` on concrete subclasses           |
 | Building items  | N/A                                | `add(item)`, `create(**kwargs)`           |
 
 **Update priority:** lower values run first. This ensures correct execution
@@ -168,7 +168,7 @@ DatablockItem
 └── ExperimentBase                   # name, type: ExperimentType, as_cif
     ├── PdExperimentBase             # + linked_phases, excluded_regions, peak, data
     │   ├── BraggPdExperiment        # + instrument, background (both via factories)
-    │   └── TotalPdExperiment        # + instrument, scale_factor
+    │   └── TotalPdExperiment        # (no extra categories yet)
     └── ScExperimentBase             # + linked_crystal, extinction, instrument, data
         ├── CwlScExperiment
         └── TofScExperiment
@@ -310,13 +310,19 @@ from .line_segment import LineSegmentBackground
 
 | Factory             | Domain                | Tags resolve to                                          |
 | ------------------- | --------------------- | -------------------------------------------------------- |
-| `ExperimentFactory` | Experiment datablocks | `BraggPdExperiment`, `TotalPdExperiment`, …              |
 | `BackgroundFactory` | Background categories | `LineSegmentBackground`, `ChebyshevPolynomialBackground` |
 | `PeakFactory`       | Peak profiles         | `CwlPseudoVoigt`, `TofPseudoVoigtIkedaCarpenter`, …      |
 | `InstrumentFactory` | Instruments           | `CwlPdInstrument`, `TofPdInstrument`, …                  |
-| `DataFactory`       | Data collections      | `BraggPdData`, `BraggPdTofData`, …                       |
-| `CalculatorFactory` | Calculation engines   | `CryspyCalculator`, `PdfFitCalculator`, …                |
+| `DataFactory`       | Data collections      | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`      |
+| `CalculatorFactory` | Calculation engines   | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator` |
 | `MinimizerFactory`  | Minimisers            | `LmfitMinimizer`, `DfolsMinimizer`, …                    |
+
+> **Note:** `ExperimentFactory` and `StructureFactory` are *builder*
+> factories with `from_cif_path`, `from_cif_str`, `from_data_path`, and
+> `from_scratch` classmethods. `ExperimentFactory` inherits `FactoryBase`
+> but currently uses a legacy `_SUPPORTED` dict for class resolution instead
+> of `@register` / `create(tag)`. `StructureFactory` is a plain class
+> without `FactoryBase` inheritance (only one structure type exists today).
 
 ---
 
@@ -338,7 +344,7 @@ available in the environment).
 ### 6.2 Minimiser
 
 The minimiser drives the optimisation loop. `MinimizerFactory` creates instances
-by tag (e.g. `'lmfit'`, `'lmfit (leastsq)'`, `'dfols'`).
+by tag (e.g. `'lmfit'`, `'dfols'`).
 
 ### 6.3 Fitter
 
@@ -502,7 +508,7 @@ project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
 # Select calculator and minimiser
 project.analysis.show_supported_calculators()
 project.analysis.current_calculator = 'cryspy'
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+project.analysis.current_minimizer = 'lmfit'
 
 # Plot before fitting
 project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
@@ -530,15 +536,15 @@ project.save()
 ### 8.5 TOF Experiment (tutorial ed-7)
 
 ```python
-expt = ed.ExperimentFactory.from_data_path(
-    name='dream',
+expt = ExperimentFactory.from_data_path(
+    name='sepd',
     data_path=data_path,
     beam_mode='time-of-flight',
 )
-expt.instrument.calib_d_to_tof_offset = -9.29
+expt.instrument.calib_d_to_tof_offset = 0.0
 expt.instrument.calib_d_to_tof_linear = 7476.91
 expt.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
-expt.peak.broad_gauss_sigma_0 = 4.2
+expt.peak.broad_gauss_sigma_0 = 3.0
 ```
 
 ### 8.6 Total Scattering / PDF (tutorial ed-12)
@@ -548,8 +554,9 @@ project.experiments.add_from_data_path(
     name='xray_pdf',
     data_path=data_path,
     sample_form='powder',
-    scattering_type='total',
+    beam_mode='constant wavelength',
     radiation_probe='xray',
+    scattering_type='total',
 )
 project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'
 project.analysis.current_calculator = 'pdffit'
@@ -595,10 +602,8 @@ simplifies maintenance.
 
 ### 9.4 Show/Display Pattern
 
-All categories (both items and collections) provide a public `show()` method:
-
-- `CategoryItem.show()` — displays as a single row.
-- `CategoryCollection.show()` — displays as a table.
+Concrete category subclasses provide a public `show()` method (not on the base
+`CategoryItem`/`CategoryCollection` classes).
 
 For factory-backed categories, experiments expose:
 
