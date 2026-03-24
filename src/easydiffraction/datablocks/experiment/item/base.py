@@ -250,6 +250,11 @@ class PdExperimentBase(ExperimentBase):
             )
             return
 
+        if self._peak is not None:
+            log.warning(
+                'Switching peak profile type discards existing peak parameters.',
+            )
+
         self._peak = PeakFactory.create(new_type)
         self._peak_profile_type = new_type
         console.paragraph(f"Peak profile type for experiment '{self.name}' changed to")

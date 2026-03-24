@@ -1029,28 +1029,7 @@ stub that raises `NotImplementedError`.
 **Recommended fix:** implement `load()` that reads CIF files from the project
 directory and reconstructs structures, experiments, and analysis.
 
-### 11.8 Background Type Switching Loses Data
-
-**Where:** `datablocks/experiment/item/bragg_pd.py`, `background_type.setter`.
-
-```python
-self.background = BackgroundFactory.create(new_type)
-self._background_type = new_type
-```
-
-**Symptom:** when the user switches background type (e.g. from `'line-segment'`
-to `'chebyshev'`), the entire background category is replaced with a fresh,
-empty instance. Any background points or coefficients the user has defined are
-silently discarded.
-
-**Impact:** there is no warning, no confirmation, and no way to recover the old
-background data. The same issue applies to `peak_profile_type` switching.
-
-**Recommended fix:** log a warning when the replacement discards user-defined
-data. Optionally, keep a history or prompt for confirmation in interactive
-contexts.
-
-### 11.9 Minimiser Variant Loss
+### 11.8 Minimiser Variant Loss
 
 **Where:** `analysis/minimizers/`.
 
@@ -1071,7 +1050,7 @@ classes (thin subclasses with different tags) or as a two-level selection
 (engine + algorithm). The choice depends on whether variants need different
 `TypeInfo`/`Compatibility` metadata.
 
-### 11.10 `FactoryBase` Cannot Express Constructor-Variant Registrations
+### 11.9 `FactoryBase` Cannot Express Constructor-Variant Registrations
 
 **Where:** `core/factory.py` — `FactoryBase.register` / `create`.
 
@@ -1117,20 +1096,19 @@ explicit, no magic" philosophy before restoring minimiser variants. Approach
 requires `FactoryBase` changes; approach **C** is the cleanest long-term but the
 largest change.
 
-### 11.11 Summary of Issue Severity
+### 11.10 Summary of Issue Severity
 
-| #     | Issue                                      | Severity | Type              |
-| ----- | ------------------------------------------ | -------- | ----------------- |
-| 11.1  | Dirty-flag guard disabled                  | Medium   | Performance       |
-| 11.2  | `Analysis` not a `DatablockItem`           | Medium   | Consistency       |
-| 11.3  | Symmetry constraints trigger notifications | Low      | Performance       |
-| 11.4  | `create(**kwargs)` with `setattr`          | Medium   | API safety        |
-| 11.5  | Ad-hoc update orchestration                | Low      | Maintainability   |
-| 11.6  | Dummy `Experiments` wrapper                | Medium   | Fragility         |
-| 11.7  | Missing `load()` implementation            | High     | Completeness      |
-| 11.8  | Type switching loses data silently         | Medium   | Data safety       |
-| 11.9  | Minimiser variant loss                     | Medium   | Feature loss      |
-| 11.10 | `FactoryBase` lacks variant registrations  | Medium   | Design limitation |
+| #    | Issue                                     | Severity | Type              |
+| ---- | ----------------------------------------- | -------- | ----------------- |
+| 11.1 | Dirty-flag guard disabled                 | Medium   | Performance       |
+| 11.2 | `Analysis` not a `DatablockItem`          | Medium   | Consistency       |
+| 11.3 | Symmetry constraints trigger notifications| Low      | Performance       |
+| 11.4 | `create(**kwargs)` with `setattr`         | Medium   | API safety        |
+| 11.5 | Ad-hoc update orchestration               | Low      | Maintainability   |
+| 11.6 | Dummy `Experiments` wrapper               | Medium   | Fragility         |
+| 11.7 | Missing `load()` implementation           | High     | Completeness      |
+| 11.8 | Minimiser variant loss                    | Medium   | Feature loss      |
+| 11.9 | `FactoryBase` lacks variant registrations | Medium   | Design limitation |
 
 ## 12. Current and Potential Issues 2
 

@@ -125,6 +125,12 @@ class BraggPdExperiment(PdExperimentBase):
             )
             return
 
+        if len(self._background) > 0:
+            log.warning(
+                f"Switching background type discards {len(self._background)} "
+                f'existing background point(s).',
+            )
+
         self._background = BackgroundFactory.create(new_type)
         self._background_type = new_type
         console.paragraph(f"Background type for experiment '{self.name}' changed to")
