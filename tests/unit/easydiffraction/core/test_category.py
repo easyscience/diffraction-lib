@@ -73,3 +73,29 @@ def test_category_collection_str_and_cif_calls():
     assert 'collection' in s and '2 items' in s
     # as_cif delegates to serializer; should be a string (possibly empty)
     assert isinstance(c.as_cif, str)
+
+
+def test_category_item_help(capsys):
+    it = SimpleItem()
+    it.a = 'name1'
+    it.help()
+    out = capsys.readouterr().out
+    assert 'Help for' in out
+    assert 'Parameters' in out
+    assert 'string' in out  # Type column
+    assert '✓' in out  # a and b are writable
+    assert 'Methods' in out
+
+
+def test_category_collection_help(capsys):
+    c = SimpleCollection()
+    c.create(a='n1')
+    c.create(a='n2')
+    c.help()
+    out = capsys.readouterr().out
+    assert 'Help for' in out
+    assert 'Items (2)' in out
+    assert 'n1' in out
+    assert 'n2' in out
+
+

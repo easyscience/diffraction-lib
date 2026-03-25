@@ -91,6 +91,28 @@ class DatablockItem(GuardedBase):
         self._update_categories()
         return datablock_item_to_cif(self)
 
+    def help(self) -> None:
+        """Print a summary of public attributes and categories."""
+        super().help()
+
+        from easydiffraction.utils.logging import console
+        from easydiffraction.utils.utils import render_table
+
+        cats = self.categories
+        if cats:
+            console.paragraph('Categories')
+            rows = []
+            for c in cats:
+                code = c._identity.category_code or type(c).__name__
+                type_name = type(c).__name__
+                num_params = len(c.parameters)
+                rows.append([code, type_name, str(num_params)])
+            render_table(
+                columns_headers=['Category', 'Type', '# Parameters'],
+                columns_alignment=['left', 'left', 'right'],
+                columns_data=rows,
+            )
+
 
 # ======================================================================
 

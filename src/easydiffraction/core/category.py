@@ -6,6 +6,7 @@ from __future__ import annotations
 from easydiffraction.core.collection import CollectionBase
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.core.variable import GenericDescriptorBase
+from easydiffraction.core.variable import GenericStringDescriptor
 from easydiffraction.io.cif.serialize import category_collection_from_cif
 from easydiffraction.io.cif.serialize import category_collection_to_cif
 from easydiffraction.io.cif.serialize import category_item_from_cif
@@ -56,6 +57,103 @@ class CategoryItem(GuardedBase):
     def from_cif(self, block, idx=0):
         """Populate this item from a CIF block."""
         category_item_from_cif(self, block, idx)
+
+    def help(self) -> None:
+        """Print parameters, other properties, and methods."""
+        from easydiffraction.utils.logging import console
+        from easydiffraction.utils.utils import render_table
+
+        cls = type(self)
+        console.paragraph(f"Help for '{cls.__name__}'")
+
+        # Deduplicate properties
+        seen: dict = {}
+        for key, prop in cls._iter_properties():
+            if key not in seen:
+                seen[key] = prop
+
+        # Split into descriptor-backed and other
+        param_rows = []
+        other_rows = []
+        p_idx = 0
+        o_idx = 0
+        for key in sorted(seen):
+            prop = seen[key]
+            try:
+                val = getattr(self, key)
+            except Exception:
+                val = None
+            if isinstance(val, GenericDescriptorBase):
+                p_idx += 1
+                type_str = 'string' if isinstance(val, GenericStringDescriptor) else 'numeric'
+                writable = '✓' if prop.fset else '✗'
+                param_rows.append([
+                    str(p_idx),
+                    key,
+                    type_str,
+                    str(val.value),
+                    writable,
+                    val.description or '',
+                ])
+            else:
+                o_idx += 1
+                writable = '✓' if prop.fset else '✗'
+                doc = self._first_sentence(prop.fget.__doc__ if prop.fget else None)
+                other_rows.append([str(o_idx), key, writable, doc])
+
+        if param_rows:
+            console.paragraph('Parameters')
+            render_table(
+                columns_headers=[
+                    '#',
+                    'Name',
+                    'Type',
+                    'Value',
+                    'Writable',
+                    'Description',
+                ],
+                columns_alignment=[
+                    'right',
+                    'left',
+                    'left',
+                    'right',
+                    'center',
+                    'left',
+                ],
+                columns_data=param_rows,
+            )
+
+        if other_rows:
+            console.paragraph('Other properties')
+            render_table(
+                columns_headers=[
+                    '#',
+                    'Name',
+                    'Writable',
+                    'Description',
+                ],
+                columns_alignment=[
+                    'right',
+                    'left',
+                    'center',
+                    'left',
+                ],
+                columns_data=other_rows,
+            )
+
+        methods = dict(cls._iter_methods())
+        method_rows = []
+        for i, key in enumerate(sorted(methods), 1):
+            doc = self._first_sentence(getattr(methods[key], '__doc__', None))
+            method_rows.append([str(i), f'{key}()', doc])
+
+        if method_rows:
+            console.paragraph('Methods')
+            render_table(
+                columns_headers=['#', 'Method', 'Description'],
+                columns_alignment=['right', 'left', 'left'],
+                columns_data=method_rows,
+            )
 
 
 # ======================================================================

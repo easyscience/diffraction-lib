@@ -117,3 +117,25 @@ class CollectionBase(GuardedBase):
     def names(self):
         """List of all item keys in the collection."""
         return list(self.keys())
+
+    def help(self) -> None:
+        """Print a summary of public attributes and contained items."""
+        super().help()
+
+        from easydiffraction.utils.logging import console
+        from easydiffraction.utils.utils import render_table
+
+        if self._items:
+            console.paragraph(f'Items ({len(self._items)})')
+            rows = []
+            for i, item in enumerate(self._items, 1):
+                key = self._key_for(item)
+                rows.append([str(i), str(key), f"['{key}']"])
+            render_table(
+                columns_headers=['#', 'Name', 'Access'],
+                columns_alignment=['right', 'left', 'left'],
+                columns_data=rows,
+            )
+        else:
+            console.paragraph('Items')
+            console.print('(empty)')

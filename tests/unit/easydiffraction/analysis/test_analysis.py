@@ -98,6 +98,21 @@ def test_fit_mode_type_setter_invalid(capsys):
     assert a.fit_mode_type == 'default'
 
 
+def test_analysis_help(capsys):
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    a.help()
+    out = capsys.readouterr().out
+    assert "Help for 'Analysis'" in out
+    assert 'fit_mode' in out
+    assert 'current_minimizer' in out
+    assert 'Properties' in out
+    assert 'Methods' in out
+    assert 'fit()' in out
+    assert 'show_fit_results()' in out
+
+
 def test_show_fit_results_warns_when_no_results(capsys):
     """Test that show_fit_results logs a warning when fit() has not been run."""
     from easydiffraction.analysis.analysis import Analysis
