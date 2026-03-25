@@ -127,6 +127,7 @@
   check what was auto-fixed, just accept the fixes and move on.
 - After changes, run unit tests with `pixi run unit-tests`.
 - After changes, run integration tests with `pixi run integration-tests`.
+- After changes, run tutorial tests with `pixi run script-tests`.
 - Suggest a concise commit message (as a code block) after each change (less
   than 72 characters, imperative mood, without prefixing with the type of
   change). E.g.:
