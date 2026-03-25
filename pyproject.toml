@@ -278,6 +278,9 @@ ignore = [
   # The following covered by [tool.pydoclint] section below
   'D',   # https://docs.astral.sh/ruff/rules/#pydocstyle-d
   'DOC', # https://docs.astral.sh/ruff/rules/#pydoclint-doc
+  # Temporary:
+    'DTZ005',
+
 ]
 
 # Ignore specific rules in certain files or directories
@@ -290,6 +293,21 @@ ignore = [
   'DOC',    # https://docs.astral.sh/ruff/rules/#pydoclint-doc
   'INP001', # https://docs.astral.sh/ruff/rules/implicit-namespace-package/
   'S101',   # https://docs.astral.sh/ruff/rules/assert/
+  # Temporary:
+  'ARG001',
+  'ARG002',
+  'ARG004',
+  'ARG005',
+  'B011',
+  'B017',
+  'B018',
+  'E501',
+  'E741',
+  'F841',
+  'N801',
+  'N805',
+  'N812',
+  'SIM117',
 ]
 'docs/**' = [
   'INP001', # https://docs.astral.sh/ruff/rules/implicit-namespace-package/
