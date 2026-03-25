@@ -11,7 +11,7 @@ repo_url: https://github.com/easyscience/diffraction-lib/
 edit_uri: edit/develop/docs/
 
 # Copyright
-copyright: © 2025 EasyDiffraction
+copyright: © 2026 EasyDiffraction
 
 # Extra icons in the bottom right corner
 extra:
@@ -85,12 +85,12 @@ nav:
           - Ni pd-neut-cwl: tutorials/ed-10.ipynb
           - Si pd-neut-tof: tutorials/ed-11.ipynb
           - NaCl pd-xray: tutorials/ed-12.ipynb
-      - Multi-Structure/Experiment:
+      - Multiple Data Blocks:
           - PbSO4 NPD+XRD: tutorials/ed-4.ipynb
           - LBCO+Si McStas: tutorials/ed-9.ipynb
           - Si Bragg+PDF: tutorials/ed-16.ipynb
       - Workshops & Schools:
-          - 2025 DMSC: tutorials/ed-13.ipynb
+          - DMSC Summer School: tutorials/ed-13.ipynb
   - API Reference:
       - API Reference: api-reference/index.md
       - analysis: api-reference/analysis.md
