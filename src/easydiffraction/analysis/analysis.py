@@ -9,7 +9,8 @@ import pandas as pd
 
 from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
-from easydiffraction.analysis.categories.fit_mode import FitMode
+from easydiffraction.analysis.categories.fit_mode import FitModeEnum
+from easydiffraction.analysis.categories.fit_mode import FitModeFactory
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
@@ -58,7 +59,8 @@ class Analysis:
         self._constraints_type: str = ConstraintsFactory.default_tag()
         self.constraints = ConstraintsFactory.create(self._constraints_type)
         self.constraints_handler = ConstraintsHandler.get()
-        self._fit_mode = FitMode()
+        self._fit_mode_type: str = FitModeFactory.default_tag()
+        self._fit_mode = FitModeFactory.create(self._fit_mode_type)
         self._joint_fit_experiments = JointFitExperiments()
         self.fitter = Fitter('lmfit')
 
@@ -431,13 +433,47 @@ class Analysis:
         console.print(self.current_minimizer)
 
     # ------------------------------------------------------------------
-    #  Fit mode (category)
+    #  Fit mode (switchable-category pattern)
     # ------------------------------------------------------------------
 
     @property
     def fit_mode(self):
         """Fit-mode category item holding the active strategy."""
         return self._fit_mode
+
+    @property
+    def fit_mode_type(self) -> str:
+        """Tag of the active fit-mode category type."""
+        return self._fit_mode_type
+
+    @fit_mode_type.setter
+    def fit_mode_type(self, new_type: str) -> None:
+        """Switch to a different fit-mode category type.
+
+        Args:
+            new_type: Fit-mode tag (e.g. ``'default'``).
+        """
+        supported_tags = FitModeFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported fit-mode type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_fit_mode_types()'",
+            )
+            return
+        self._fit_mode = FitModeFactory.create(new_type)
+        self._fit_mode_type = new_type
+        console.paragraph('Fit-mode type changed to')
+        console.print(new_type)
+
+    def show_supported_fit_mode_types(self) -> None:
+        """Print a table of supported fit-mode category types."""
+        FitModeFactory.show_supported()
+
+    def show_current_fit_mode_type(self) -> None:
+        """Print the currently used fit-mode category type."""
+        console.paragraph('Current fit-mode type')
+        console.print(self._fit_mode_type)
 
     # ------------------------------------------------------------------
     #  Joint-fit experiments (category)
@@ -521,24 +557,26 @@ class Analysis:
             return
 
         # Run the fitting process
-        mode = self._fit_mode.mode.value
-        if mode == 'joint':
+        mode = FitModeEnum(self._fit_mode.mode.value)
+        if mode is FitModeEnum.JOINT:
             # Auto-populate joint_fit_experiments if empty
             if not len(self._joint_fit_experiments):
                 for id in experiments.names:
                     self._joint_fit_experiments.create(id=id, weight=0.5)
-            console.paragraph(f"Using all experiments 🔬 {experiments.names} for '{mode}' fitting")
+            console.paragraph(
+                f"Using all experiments 🔬 {experiments.names} for '{mode.value}' fitting"
+            )
             self.fitter.fit(
                 structures,
                 experiments,
                 weights=self._joint_fit_experiments,
                 analysis=self,
             )
-        elif mode == 'single':
+        elif mode is FitModeEnum.SINGLE:
             # TODO: Find a better way without creating dummy
             #  experiments?
             for expt_name in experiments.names:
-                console.paragraph(f"Using experiment 🔬 '{expt_name}' for '{mode}' fitting")
+                console.paragraph(f"Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting")
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name
 
@@ -554,7 +592,7 @@ class Analysis:
                     analysis=self,
                 )
         else:
-            raise NotImplementedError(f'Fit mode {mode} not implemented yet.')
+            raise NotImplementedError(f'Fit mode {mode.value} not implemented yet.')
 
         # After fitting, get the results
         self.fit_results = self.fitter.results

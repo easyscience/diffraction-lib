@@ -397,19 +397,19 @@ project.analysis.show_free_params()
 # Show supported fit modes.
 
 # %%
-project.analysis.show_available_fit_modes()
+project.analysis.show_supported_fit_mode_types()
 
 # %% [markdown]
 # Show current fit mode.
 
 # %%
-project.analysis.show_current_fit_mode()
+project.analysis.show_current_fit_mode_type()
 
 # %% [markdown]
 # Select desired fit mode.
 
 # %%
-project.analysis.fit_mode = 'single'
+project.analysis.fit_mode.mode = 'single'
 
 # %% [markdown]
 # #### Set Minimizer

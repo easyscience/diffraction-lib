@@ -435,23 +435,9 @@ project.analysis.how_to_access_parameters()
 
 # %% [markdown]
 # #### Set Fit Mode
-#
-# Show supported fit modes.
 
 # %%
-project.analysis.show_available_fit_modes()
-
-# %% [markdown]
-# Show current fit mode.
-
-# %%
-project.analysis.show_current_fit_mode()
-
-# %% [markdown]
-# Select desired fit mode.
-
-# %%
-project.analysis.fit_mode = 'single'
+project.analysis.fit_mode.mode = 'single'
 
 # %% [markdown]
 # #### Set Minimizer

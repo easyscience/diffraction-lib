@@ -392,6 +392,7 @@ from .line_segment import LineSegmentBackground
 | `AtomSitesFactory`           | Atom sites             | `AtomSites`                                                 |
 | `AliasesFactory`             | Parameter aliases      | `Aliases`                                                   |
 | `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                               |
+| `FitModeFactory`             | Fit-mode category      | `FitMode`                                                   |
 | `JointFitExperimentsFactory` | Joint-fit weights      | `JointFitExperiments`                                       |
 | `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator` |
 | `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `DfolsMinimizer`, …                       |
@@ -633,12 +634,16 @@ by tag (e.g. `'lmfit'`, `'dfols'`).
 `Analysis` is bound to a `Project` and provides the high-level API:
 
 - Minimiser selection: `current_minimizer`, `show_available_minimizers()`
-- Fit modes: `'single'` (per-experiment) or `'joint'` (simultaneous with
-  weights)
+- Fit mode: `fit_mode` (`CategoryItem` with a `mode` descriptor validated by
+  `FitModeEnum`); `'single'` fits each experiment independently, `'joint'` fits
+  all simultaneously with weights from `joint_fit_experiments`.
+- Joint-fit weights: `joint_fit_experiments` (`CategoryCollection` of
+  per-experiment weight entries); sibling of `fit_mode`, not a child.
 - Parameter tables: `show_all_params()`, `show_fittable_params()`,
   `show_free_params()`, `how_to_access_parameters()`
 - Fitting: `fit()`, `show_fit_results()`
-- Aliases and constraints
+- Aliases and constraints (switchable categories with `aliases_type`,
+  `constraints_type`, `joint_fit_experiments_type`)
 
 ---
 
@@ -874,10 +879,10 @@ simplifies maintenance.
 ### 9.4 Switchable-Category Convention
 
 Categories whose concrete implementation can be swapped at runtime (background,
-peak profile, etc.) are called **switchable categories**. Every factory-created
-category follows the switchable-category naming convention, even if only one
-implementation currently exists. This ensures a uniform API and makes adding a
-second implementation trivial.
+peak profile, etc.) are called **switchable categories**. **Every category must
+be factory-based** — even if only one implementation exists today. This ensures
+a uniform API, consistent discoverability, and makes adding a second
+implementation trivial.
 
 | Facet           | Naming pattern                               | Example                                          |
 | --------------- | -------------------------------------------- | ------------------------------------------------ |
@@ -892,7 +897,8 @@ The convention applies universally:
   `extinction_type`, `linked_crystal_type`, `excluded_regions_type`,
   `linked_phases_type`, `instrument_type`, `data_type`.
 - **Structure:** `cell_type`, `space_group_type`, `atom_sites_type`.
-- **Analysis:** `aliases_type`, `constraints_type`.
+- **Analysis:** `aliases_type`, `constraints_type`, `fit_mode_type`,
+  `joint_fit_experiments_type`.
 
 **Design decisions:**
 
@@ -923,18 +929,49 @@ struct.show_supported_space_group_types()
 struct.show_supported_atom_sites_types()
 project.analysis.show_supported_aliases_types()
 project.analysis.show_supported_constraints_types()
+project.analysis.show_supported_fit_mode_types()
+project.analysis.show_supported_joint_fit_experiments_types()
 project.analysis.show_available_minimizers()
 ```
 
 Available calculators are filtered by `engine_imported` (whether the library is
 installed) and by the experiment's data category `calculator_support` metadata.
 
-### 9.6 Enum Values as Tags
+### 9.6 Enums for Finite Value Sets
 
-Enum values (`str, Enum`) serve as the single source of truth for user-facing
-tag strings. Class `type_info.tag` values must match the corresponding enum
-values so that enums can be used directly in `_default_rules` and in user-facing
-API calls.
+Every attribute, descriptor, or configuration option that accepts a **finite,
+closed set of values** must be represented by a `(str, Enum)` class. This
+applies to:
+
+- Factory tags (§5.6) — e.g. `PeakProfileTypeEnum`, `CalculatorEnum`.
+- Experiment-axis values — e.g. `SampleFormEnum`, `BeamModeEnum`.
+- Category descriptors with enumerated choices — e.g. fit mode
+  (`FitModeEnum.SINGLE`, `FitModeEnum.JOINT`).
+
+The enum serves as the **single source of truth** for valid values, their
+user-facing string representations, and their descriptions. Benefits:
+
+- **Autocomplete and typo safety** — IDEs list valid members; misspellings are
+  caught at assignment time.
+- **Greppable** — searching for `FitModeEnum.JOINT` finds every code path that
+  handles joint fitting.
+- **Type-safe dispatch** — `if mode == FitModeEnum.JOINT:` is checked by type
+  checkers; `if mode == 'joint':` is not.
+- **Consistent validation** — use `MembershipValidator` with the enum members
+  instead of `RegexValidator` with hand-written patterns.
+
+**Rule:** internal code must compare against enum members, never raw strings.
+User-facing setters accept either the enum member or its string value (because
+`str(EnumMember) == EnumMember.value` for `(str, Enum)`), but internal dispatch
+always uses the enum:
+
+```python
+# ✅ Correct — compare with enum
+if self._fit_mode.mode.value == FitModeEnum.JOINT:
+
+# ❌ Wrong — compare with raw string
+if self._fit_mode.mode.value == 'joint':
+```
 
 ---
 
