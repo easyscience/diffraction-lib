@@ -209,7 +209,7 @@ expt2.peak.broad_lorentz_y = 0.057691
 # Select background type.
 
 # %%
-expt2.background_type = 'chebyshev polynomial'
+expt2.background_type = 'chebyshev'
 
 # %% [markdown]
 # Add background points.
