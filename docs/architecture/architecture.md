@@ -8,11 +8,11 @@
 
 ## 1. Overview
 
-EasyDiffraction is a Python library for crystallographic diffraction analysis
-(Rietveld refinement, pair-distribution-function fitting, etc.). It models the
-domain using **CIF-inspired abstractions** — datablocks, categories, and
-parameters — while providing a high-level, user-friendly API through a single
-`Project` façade.
+EasyDiffraction is a Python library for crystallographic diffraction
+analysis (Rietveld refinement, pair-distribution-function fitting,
+etc.). It models the domain using **CIF-inspired abstractions** —
+datablocks, categories, and parameters — while providing a high-level,
+user-friendly API through a single `Project` façade.
 
 ### 1.1 Supported Experiment Dimensions
 
@@ -25,8 +25,8 @@ Every experiment is fully described by four orthogonal axes:
 | Beam mode       | constant wavelength, time-of-flight | `BeamModeEnum`       |
 | Radiation probe | neutron, X-ray                      | `RadiationProbeEnum` |
 
-> **Planned extensions:** 1D / 2D data dimensionality, polarised / unpolarised
-> neutron beam.
+> **Planned extensions:** 1D / 2D data dimensionality, polarised /
+> unpolarised neutron beam.
 
 ### 1.2 Calculation Engines
 
@@ -56,50 +56,56 @@ GuardedBase                            # Controlled attribute access, parent lin
 └── DatablockItem                      # CIF data block  (e.g. Structure, Experiment)
 ```
 
-`CollectionBase` provides a unified dict-like API over an ordered item list with
-name-based indexing. All key operations — `__getitem__`, `__setitem__`,
-`__delitem__`, `__contains__`, `remove()` — resolve keys through a single
-`_key_for(item)` method that returns `category_entry_name` for category items or
-`datablock_entry_name` for datablock items. Subclasses `CategoryCollection` and
+`CollectionBase` provides a unified dict-like API over an ordered item
+list with name-based indexing. All key operations — `__getitem__`,
+`__setitem__`, `__delitem__`, `__contains__`, `remove()` — resolve keys
+through a single `_key_for(item)` method that returns
+`category_entry_name` for category items or `datablock_entry_name` for
+datablock items. Subclasses `CategoryCollection` and
 `DatablockCollection` inherit this consistently.
 
 ### 2.2 GuardedBase — Controlled Attribute Access
 
-`GuardedBase` is the root ABC. It enforces that only **declared `@property`
-attributes** are accessible publicly:
+`GuardedBase` is the root ABC. It enforces that only **declared
+`@property` attributes** are accessible publicly:
 
-- **`__getattr__`** rejects any attribute not declared as a `@property` on the
-  class hierarchy. Shows diagnostics with closest-match suggestions on typos.
+- **`__getattr__`** rejects any attribute not declared as a `@property`
+  on the class hierarchy. Shows diagnostics with closest-match
+  suggestions on typos.
 - **`__setattr__`** distinguishes:
   - **Private** (`_`-prefixed) — always allowed, no diagnostics.
-  - **Read-only public** (property without setter) — blocked with a clear error.
-  - **Writable public** (property with setter) — goes through the property
-    setter, which is where validation happens.
-  - **Unknown** — blocked with diagnostics showing allowed writable attrs.
-- **Parent linkage** — when a `GuardedBase` child is assigned to another, the
-  child's `_parent` is set automatically, forming an implicit ownership tree.
-- **Identity** — every instance gets an `_identity: Identity` object for lazy
-  CIF-style name resolution (`datablock_entry_name`, `category_code`,
-  `category_entry_name`) by walking the `_parent` chain.
+  - **Read-only public** (property without setter) — blocked with a
+    clear error.
+  - **Writable public** (property with setter) — goes through the
+    property setter, which is where validation happens.
+  - **Unknown** — blocked with diagnostics showing allowed writable
+    attrs.
+- **Parent linkage** — when a `GuardedBase` child is assigned to
+  another, the child's `_parent` is set automatically, forming an
+  implicit ownership tree.
+- **Identity** — every instance gets an `_identity: Identity` object for
+  lazy CIF-style name resolution (`datablock_entry_name`,
+  `category_code`, `category_entry_name`) by walking the `_parent`
+  chain.
 
-**Key design rule:** if a parameter has a public setter, it is writable for the
-user. If only a getter — it is read-only. If internal code needs to set it, a
-private method (underscore prefix) is used. See § 2.2.1 below for the full
-pattern.
+**Key design rule:** if a parameter has a public setter, it is writable
+for the user. If only a getter — it is read-only. If internal code needs
+to set it, a private method (underscore prefix) is used. See § 2.2.1
+below for the full pattern.
 
 #### 2.2.1 Public Property Convention — Editable vs Read-Only
 
-Every public parameter or descriptor exposed on a `GuardedBase` subclass follows
-one of two patterns:
+Every public parameter or descriptor exposed on a `GuardedBase` subclass
+follows one of two patterns:
 
 | Kind          | Getter | Setter | Internal mutation                  |
 | ------------- | ------ | ------ | ---------------------------------- |
 | **Editable**  | yes    | yes    | Via the public setter              |
 | **Read-only** | yes    | no     | Via a private `_set_<name>` method |
 
-**Editable property** — the user can both read and write the value. The setter
-runs through `GuardedBase.__setattr__` and into the property setter, where
-validation happens:
+**Editable property** — the user can both read and write the value. The
+setter runs through `GuardedBase.__setattr__` and into the property
+setter, where validation happens:
 
 ```python
 @property
@@ -113,11 +119,11 @@ def name(self, new: str) -> None:
     self._name = new
 ```
 
-**Read-only property** — the user can read but cannot assign. Any attempt to set
-the attribute is blocked by `GuardedBase.__setattr__` with a clear error
-message. If _internal_ code (factory builders, CIF loaders, etc.) needs to set
-the value, it calls a private `_set_<name>` method instead of exposing a public
-setter:
+**Read-only property** — the user can read but cannot assign. Any
+attempt to set the attribute is blocked by `GuardedBase.__setattr__`
+with a clear error message. If _internal_ code (factory builders, CIF
+loaders, etc.) needs to set the value, it calls a private `_set_<name>`
+method instead of exposing a public setter:
 
 ```python
 @property
@@ -133,12 +139,13 @@ def _set_sample_form(self, value: str) -> None:
 
 **Why this matters:**
 
-- `GuardedBase.__setattr__` uses the presence of a setter to decide writability.
-  Adding a setter "just for internal use" would open the attribute to users.
+- `GuardedBase.__setattr__` uses the presence of a setter to decide
+  writability. Adding a setter "just for internal use" would open the
+  attribute to users.
 - Private `_set_<name>` methods keep the public API surface minimal and
   intention-clear, while remaining greppable and type-safe.
-- The pattern avoids string-based dispatch — every mutator has an explicit named
-  method.
+- The pattern avoids string-based dispatch — every mutator has an
+  explicit named method.
 
 ### 2.3 CategoryItem and CategoryCollection
 
@@ -153,8 +160,8 @@ def _set_sample_form(self, value: str) -> None:
 | Display         | `show()` on concrete subclasses    | `show()` on concrete subclasses           |
 | Building items  | N/A                                | `add(item)`, `create(**kwargs)`           |
 
-**Update priority:** lower values run first. This ensures correct execution
-order within a datablock (e.g. background before data).
+**Update priority:** lower values run first. This ensures correct
+execution order within a datablock (e.g. background before data).
 
 ### 2.4 DatablockItem and DatablockCollection
 
@@ -170,8 +177,9 @@ order within a datablock (e.g. background before data).
 | Dirty flag         | `_need_categories_update`                   | N/A                            |
 
 When any `Parameter.value` is set, it propagates
-`_need_categories_update = True` up to the owning `DatablockItem`. Serialisation
-(`as_cif`) and plotting trigger `_update_categories()` if the flag is set.
+`_need_categories_update = True` up to the owning `DatablockItem`.
+Serialisation (`as_cif`) and plotting trigger `_update_categories()` if
+the flag is set.
 
 ### 2.5 Variable System — Parameters and Descriptors
 
@@ -191,18 +199,19 @@ CIF-bound concrete classes add a `CifHandler` for serialisation:
 | `NumericDescriptor` | `GenericNumericDescriptor` | Read-only or writable number |
 | `Parameter`         | `GenericParameter`         | Fittable numeric value       |
 
-**Initialisation rule:** all Parameters/Descriptors are initialised with their
-default values from `value_spec` (an `AttributeSpec`) **without any validation**
-— we trust internal definitions. Changes go through public property setters,
-which run both type and value validation.
+**Initialisation rule:** all Parameters/Descriptors are initialised with
+their default values from `value_spec` (an `AttributeSpec`) **without
+any validation** — we trust internal definitions. Changes go through
+public property setters, which run both type and value validation.
 
-**Mixin safety:** Parameter/Descriptor classes must not have init arguments so
-they can be used as mixins safely (e.g. `PdTofDataPointMixin`).
+**Mixin safety:** Parameter/Descriptor classes must not have init
+arguments so they can be used as mixins safely (e.g.
+`PdTofDataPointMixin`).
 
 ### 2.6 Validation
 
-`AttributeSpec` bundles `default`, `data_type`, `validator`, `allow_none`.
-Validators include:
+`AttributeSpec` bundles `default`, `data_type`, `validator`,
+`allow_none`. Validators include:
 
 | Validator             | Purpose                                |
 | --------------------- | -------------------------------------- |
@@ -217,13 +226,14 @@ Validators include:
 
 ### 3.1 Experiment Type
 
-An experiment's type is defined by the four enum axes and is **immutable after
-creation**. This avoids the complexity of transforming all internal state when
-the experiment type changes. The type is stored in an `ExperimentType` category
-with four `StringDescriptor`s validated by `MembershipValidator`s. Public
-properties are read-only; factory and CIF-loading code use private setters
-(`_set_sample_form`, `_set_beam_mode`, `_set_radiation_probe`,
-`_set_scattering_type`) during construction only.
+An experiment's type is defined by the four enum axes and is **immutable
+after creation**. This avoids the complexity of transforming all
+internal state when the experiment type changes. The type is stored in
+an `ExperimentType` category with four `StringDescriptor`s validated by
+`MembershipValidator`s. Public properties are read-only; factory and
+CIF-loading code use private setters (`_set_sample_form`,
+`_set_beam_mode`, `_set_radiation_probe`, `_set_scattering_type`) during
+construction only.
 
 ### 3.2 Experiment Hierarchy
 
@@ -245,8 +255,8 @@ Each concrete experiment class carries:
 
 ### 3.3 Category Ownership
 
-Every experiment owns its categories as private attributes with public read-only
-or read-write properties:
+Every experiment owns its categories as private attributes with public
+read-only or read-write properties:
 
 ```python
 # Read-only — user cannot replace the object, only modify its contents
@@ -265,9 +275,10 @@ experiment.excluded_regions_type = 'default'  # triggers ExcludedRegionsFactory.
 experiment.linked_phases_type = 'default'  # triggers LinkedPhasesFactory.create(...)
 ```
 
-**Type switching pattern:** `expt.background_type = 'chebyshev'` rather than
-`expt.background.type = 'chebyshev'`. This keeps the API at the experiment level
-and makes it clear that the entire category object is being replaced.
+**Type switching pattern:** `expt.background_type = 'chebyshev'` rather
+than `expt.background.type = 'chebyshev'`. This keeps the API at the
+experiment level and makes it clear that the entire category object is
+being replaced.
 
 ---
 
@@ -286,8 +297,8 @@ A `Structure` contains three categories:
 - `SpaceGroup` — symmetry information (`CategoryItem`)
 - `AtomSites` — atomic positions collection (`CategoryCollection`)
 
-Symmetry constraints (cell metric, atomic coordinates, ADPs) are applied via the
-`crystallography` module during `_update_categories()`.
+Symmetry constraints (cell metric, atomic coordinates, ADPs) are applied
+via the `crystallography` module during `_update_categories()`.
 
 ---
 
@@ -308,13 +319,13 @@ All factories inherit from `FactoryBase`, which provides:
 | Display            | `show_supported(**filters)`  | Pretty-print table of type + description          |
 | Tag listing        | `supported_tags()`           | List of all registered tags                       |
 
-Each `__init_subclass__` gives every factory its own independent `_registry` and
-`_default_rules`.
+Each `__init_subclass__` gives every factory its own independent
+`_registry` and `_default_rules`.
 
 ### 5.2 Default Rules
 
-`_default_rules` maps frozensets of `(axis_name, enum_value)` tuples to tag
-strings (preferably enum values for type safety):
+`_default_rules` maps frozensets of `(axis_name, enum_value)` tuples to
+tag strings (preferably enum values for type safety):
 
 ```python
 class PeakFactory(FactoryBase):
@@ -333,13 +344,14 @@ class PeakFactory(FactoryBase):
     }
 ```
 
-Resolution uses **largest-subset matching**: the rule whose frozenset is the
-biggest subset of the given conditions wins. `frozenset()` acts as a universal
-fallback.
+Resolution uses **largest-subset matching**: the rule whose frozenset is
+the biggest subset of the given conditions wins. `frozenset()` acts as a
+universal fallback.
 
 ### 5.3 Metadata on Registered Classes
 
-Every `@Factory.register`-ed class carries three frozen dataclass attributes:
+Every `@Factory.register`-ed class carries three frozen dataclass
+attributes:
 
 ```python
 @PeakFactory.register
@@ -365,8 +377,9 @@ class CwlPseudoVoigt(PeakBase, CwlBroadeningMixin):
 
 ### 5.4 Registration Trigger
 
-Concrete classes use `@Factory.register` decorators. To trigger registration,
-each package's `__init__.py` must **explicitly import** every concrete class:
+Concrete classes use `@Factory.register` decorators. To trigger
+registration, each package's `__init__.py` must **explicitly import**
+every concrete class:
 
 ```python
 # datablocks/experiment/categories/background/__init__.py
@@ -397,12 +410,13 @@ from .line_segment import LineSegmentBackground
 | `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator` |
 | `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `DfolsMinimizer`, …                       |
 
-> **Note:** `ExperimentFactory` and `StructureFactory` are _builder_ factories
-> with `from_cif_path`, `from_cif_str`, `from_data_path`, and `from_scratch`
-> classmethods. `ExperimentFactory` inherits `FactoryBase` and uses `@register`
-> on all four concrete experiment classes; `_resolve_class` looks up the
-> registered class via `default_tag()` + `_supported_map()`. `StructureFactory`
-> is a plain class without `FactoryBase` inheritance (only one structure type
+> **Note:** `ExperimentFactory` and `StructureFactory` are _builder_
+> factories with `from_cif_path`, `from_cif_str`, `from_data_path`, and
+> `from_scratch` classmethods. `ExperimentFactory` inherits
+> `FactoryBase` and uses `@register` on all four concrete experiment
+> classes; `_resolve_class` looks up the registered class via
+> `default_tag()` + `_supported_map()`. `StructureFactory` is a plain
+> class without `FactoryBase` inheritance (only one structure type
 > exists today).
 
 ### 5.6 Tag Naming Convention
@@ -502,9 +516,9 @@ Tags are the user-facing identifiers for selecting types. They must be:
 | `lmfit (least_squares)` | `LmfitMinimizer` (method=`least_squares`) |
 | `dfols`                 | `DfolsMinimizer`                          |
 
-> **Note:** minimizer variant tags (`lmfit (leastsq)`, `lmfit (least_squares)`)
-> are planned but not yet re-implemented after the `FactoryBase` migration. See
-> `issues_open.md` for details.
+> **Note:** minimizer variant tags (`lmfit (leastsq)`,
+> `lmfit (least_squares)`) are planned but not yet re-implemented after
+> the `FactoryBase` migration. See `issues_open.md` for details.
 
 ### 5.7 Metadata Classification — Which Classes Get What
 
@@ -514,16 +528,17 @@ Tags are the user-facing identifiers for selecting types. They must be:
 > `compatibility`, and `calculator_support`.**
 >
 > **If a `CategoryItem` only exists as a child row inside a
-> `CategoryCollection`, it does NOT get these attributes — the collection
-> does.**
+> `CategoryCollection`, it does NOT get these attributes — the
+> collection does.**
 
 #### Rationale
 
-A `LineSegment` item (a single background control point) is never selected,
-created, or queried by a factory. It is always instantiated internally by its
-parent `LineSegmentBackground` collection. The meaningful unit of selection is
-the _collection_, not the item. The user picks "line-segment background" (the
-collection type), not individual line-segment points.
+A `LineSegment` item (a single background control point) is never
+selected, created, or queried by a factory. It is always instantiated
+internally by its parent `LineSegmentBackground` collection. The
+meaningful unit of selection is the _collection_, not the item. The user
+picks "line-segment background" (the collection type), not individual
+line-segment points.
 
 #### Singleton CategoryItems — factory-created (get all three)
 
@@ -601,28 +616,32 @@ collection type), not individual line-segment points.
 
 ### 6.1 Calculator
 
-The calculator performs the actual diffraction computation. It is attached
-per-experiment on the `ExperimentBase` object. Each experiment auto-resolves its
-calculator on first access based on the data category's `calculator_support`
-metadata and `CalculatorFactory._default_rules`. The `CalculatorFactory` filters
-its registry by `engine_imported` (whether the third-party library is available
-in the environment).
+The calculator performs the actual diffraction computation. It is
+attached per-experiment on the `ExperimentBase` object. Each experiment
+auto-resolves its calculator on first access based on the data
+category's `calculator_support` metadata and
+`CalculatorFactory._default_rules`. The `CalculatorFactory` filters its
+registry by `engine_imported` (whether the third-party library is
+available in the environment).
 
 The experiment exposes the standard switchable-category API:
 
-- `calculator` — read-only property (lazy, auto-resolved on first access)
+- `calculator` — read-only property (lazy, auto-resolved on first
+  access)
 - `calculator_type` — getter + setter
-- `show_supported_calculator_types()` — filtered by data category support
+- `show_supported_calculator_types()` — filtered by data category
+  support
 - `show_current_calculator_type()`
 
 ### 6.2 Minimiser
 
-The minimiser drives the optimisation loop. `MinimizerFactory` creates instances
-by tag (e.g. `'lmfit'`, `'dfols'`).
+The minimiser drives the optimisation loop. `MinimizerFactory` creates
+instances by tag (e.g. `'lmfit'`, `'dfols'`).
 
 ### 6.3 Fitter
 
-`Fitter` wraps a minimiser instance and orchestrates the fitting workflow:
+`Fitter` wraps a minimiser instance and orchestrates the fitting
+workflow:
 
 1. Collect `free_parameters` from structures + experiments.
 2. Record start values.
@@ -634,10 +653,12 @@ by tag (e.g. `'lmfit'`, `'dfols'`).
 
 `Analysis` is bound to a `Project` and provides the high-level API:
 
-- Minimiser selection: `current_minimizer`, `show_available_minimizers()`
-- Fit mode: `fit_mode` (`CategoryItem` with a `mode` descriptor validated by
-  `FitModeEnum`); `'single'` fits each experiment independently, `'joint'` fits
-  all simultaneously with weights from `joint_fit_experiments`.
+- Minimiser selection: `current_minimizer`,
+  `show_available_minimizers()`
+- Fit mode: `fit_mode` (`CategoryItem` with a `mode` descriptor
+  validated by `FitModeEnum`); `'single'` fits each experiment
+  independently, `'joint'` fits all simultaneously with weights from
+  `joint_fit_experiments`.
 - Joint-fit weights: `joint_fit_experiments` (`CategoryCollection` of
   per-experiment weight entries); sibling of `fit_mode`, not a child.
 - Parameter tables: `show_all_params()`, `show_fittable_params()`,
@@ -845,26 +866,26 @@ project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'
 
 ### 9.1 Naming and CIF Conventions
 
-- Follow CIF naming conventions where possible. Deviate for better API design
-  when necessary, but keep the spirit of CIF names.
+- Follow CIF naming conventions where possible. Deviate for better API
+  design when necessary, but keep the spirit of CIF names.
 - Reuse the concept of datablocks and categories from CIF.
-- `DatablockItem` = one CIF `data_` block, `DatablockCollection` = set of
-  blocks.
+- `DatablockItem` = one CIF `data_` block, `DatablockCollection` = set
+  of blocks.
 - `CategoryItem` = one CIF category, `CategoryCollection` = CIF loop.
 
 ### 9.2 Immutability of Experiment Type
 
-The experiment type (the four enum axes) can only be set at creation time. It
-cannot be changed afterwards. This avoids the complexity of maintaining
-different state transformations when switching between fundamentally different
-experiment configurations.
+The experiment type (the four enum axes) can only be set at creation
+time. It cannot be changed afterwards. This avoids the complexity of
+maintaining different state transformations when switching between
+fundamentally different experiment configurations.
 
 ### 9.3 Category Type Switching
 
-In contrast to experiment type, categories that have multiple implementations
-(peak profiles, backgrounds, instruments) can be switched at runtime by the
-user. The API pattern uses a type property on the **experiment**, not on the
-category itself:
+In contrast to experiment type, categories that have multiple
+implementations (peak profiles, backgrounds, instruments) can be
+switched at runtime by the user. The API pattern uses a type property on
+the **experiment**, not on the category itself:
 
 ```python
 # ✅ Correct — type property on the experiment
@@ -874,16 +895,16 @@ expt.background_type = 'chebyshev'
 expt.background.type = 'chebyshev'
 ```
 
-This makes it clear that the entire category object is being replaced and
-simplifies maintenance.
+This makes it clear that the entire category object is being replaced
+and simplifies maintenance.
 
 ### 9.4 Switchable-Category Convention
 
-Categories whose concrete implementation can be swapped at runtime (background,
-peak profile, etc.) are called **switchable categories**. **Every category must
-be factory-based** — even if only one implementation exists today. This ensures
-a uniform API, consistent discoverability, and makes adding a second
-implementation trivial.
+Categories whose concrete implementation can be swapped at runtime
+(background, peak profile, etc.) are called **switchable categories**.
+**Every category must be factory-based** — even if only one
+implementation exists today. This ensures a uniform API, consistent
+discoverability, and makes adding a second implementation trivial.
 
 | Facet           | Naming pattern                               | Example                                          |
 | --------------- | -------------------------------------------- | ------------------------------------------------ |
@@ -894,26 +915,31 @@ implementation trivial.
 
 The convention applies universally:
 
-- **Experiment:** `calculator_type`, `background_type`, `peak_profile_type`,
-  `extinction_type`, `linked_crystal_type`, `excluded_regions_type`,
-  `linked_phases_type`, `instrument_type`, `data_type`.
+- **Experiment:** `calculator_type`, `background_type`,
+  `peak_profile_type`, `extinction_type`, `linked_crystal_type`,
+  `excluded_regions_type`, `linked_phases_type`, `instrument_type`,
+  `data_type`.
 - **Structure:** `cell_type`, `space_group_type`, `atom_sites_type`.
 - **Analysis:** `aliases_type`, `constraints_type`, `fit_mode_type`,
   `joint_fit_experiments_type`.
 
 **Design decisions:**
 
-- The **experiment owns** the `_type` setter because switching replaces the
-  entire category object (`self._background = BackgroundFactory.create(...)`).
-- The **experiment owns** the `show_*` methods because they are one-liners that
-  delegate to `Factory.show_supported(...)` and can pass experiment-specific
-  context (e.g. `scattering_type`, `beam_mode` for peak filtering).
-- Concrete category subclasses provide a public `show()` method for displaying
-  the current content (not on the base `CategoryItem`/`CategoryCollection`).
+- The **experiment owns** the `_type` setter because switching replaces
+  the entire category object
+  (`self._background = BackgroundFactory.create(...)`).
+- The **experiment owns** the `show_*` methods because they are
+  one-liners that delegate to `Factory.show_supported(...)` and can pass
+  experiment-specific context (e.g. `scattering_type`, `beam_mode` for
+  peak filtering).
+- Concrete category subclasses provide a public `show()` method for
+  displaying the current content (not on the base
+  `CategoryItem`/`CategoryCollection`).
 
 ### 9.5 Discoverable Supported Options
 
-The user can always discover what is supported for the current experiment:
+The user can always discover what is supported for the current
+experiment:
 
 ```python
 expt.show_supported_peak_profile_types()
@@ -935,36 +961,38 @@ project.analysis.show_supported_joint_fit_experiments_types()
 project.analysis.show_available_minimizers()
 ```
 
-Available calculators are filtered by `engine_imported` (whether the library is
-installed) and by the experiment's data category `calculator_support` metadata.
+Available calculators are filtered by `engine_imported` (whether the
+library is installed) and by the experiment's data category
+`calculator_support` metadata.
 
 ### 9.6 Enums for Finite Value Sets
 
-Every attribute, descriptor, or configuration option that accepts a **finite,
-closed set of values** must be represented by a `(str, Enum)` class. This
-applies to:
+Every attribute, descriptor, or configuration option that accepts a
+**finite, closed set of values** must be represented by a `(str, Enum)`
+class. This applies to:
 
 - Factory tags (§5.6) — e.g. `PeakProfileTypeEnum`, `CalculatorEnum`.
 - Experiment-axis values — e.g. `SampleFormEnum`, `BeamModeEnum`.
 - Category descriptors with enumerated choices — e.g. fit mode
   (`FitModeEnum.SINGLE`, `FitModeEnum.JOINT`).
 
-The enum serves as the **single source of truth** for valid values, their
-user-facing string representations, and their descriptions. Benefits:
+The enum serves as the **single source of truth** for valid values,
+their user-facing string representations, and their descriptions.
+Benefits:
 
-- **Autocomplete and typo safety** — IDEs list valid members; misspellings are
-  caught at assignment time.
-- **Greppable** — searching for `FitModeEnum.JOINT` finds every code path that
-  handles joint fitting.
-- **Type-safe dispatch** — `if mode == FitModeEnum.JOINT:` is checked by type
-  checkers; `if mode == 'joint':` is not.
-- **Consistent validation** — use `MembershipValidator` with the enum members
-  instead of `RegexValidator` with hand-written patterns.
+- **Autocomplete and typo safety** — IDEs list valid members;
+  misspellings are caught at assignment time.
+- **Greppable** — searching for `FitModeEnum.JOINT` finds every code
+  path that handles joint fitting.
+- **Type-safe dispatch** — `if mode == FitModeEnum.JOINT:` is checked by
+  type checkers; `if mode == 'joint':` is not.
+- **Consistent validation** — use `MembershipValidator` with the enum
+  members instead of `RegexValidator` with hand-written patterns.
 
-**Rule:** internal code must compare against enum members, never raw strings.
-User-facing setters accept either the enum member or its string value (because
-`str(EnumMember) == EnumMember.value` for `(str, Enum)`), but internal dispatch
-always uses the enum:
+**Rule:** internal code must compare against enum members, never raw
+strings. User-facing setters accept either the enum member or its string
+value (because `str(EnumMember) == EnumMember.value` for `(str, Enum)`),
+but internal dispatch always uses the enum:
 
 ```python
 # ✅ Correct — compare with enum
@@ -976,10 +1004,10 @@ if self._fit_mode.mode.value == 'joint':
 
 ### 9.7 Flat Category Structure — No Nested Categories
 
-Following CIF conventions, categories are **flat siblings** within their owner
-(datablock or analysis object). A category must never be a child of another
-category of a different type. Categories can reference each other via IDs, but
-the ownership hierarchy is always:
+Following CIF conventions, categories are **flat siblings** within their
+owner (datablock or analysis object). A category must never be a child
+of another category of a different type. Categories can reference each
+other via IDs, but the ownership hierarchy is always:
 
 ```
 Owner (DatablockItem / Analysis)
@@ -999,7 +1027,8 @@ Owner
 **Example — `fit_mode` and `joint_fit_experiments`:** `fit_mode` is a
 `CategoryItem` holding the active strategy (`'single'` or `'joint'`).
 `joint_fit_experiments` is a separate `CategoryCollection` holding
-per-experiment weights. Both are direct children of `Analysis`, not nested:
+per-experiment weights. Both are direct children of `Analysis`, not
+nested:
 
 ```python
 # ✅ Correct — sibling categories on Analysis
@@ -1027,8 +1056,8 @@ xrd  0.3
 ## 10. Issues
 
 - **Open:** [`issues_open.md`](issues_open.md) — prioritised backlog.
-- **Closed:** [`issues_closed.md`](issues_closed.md) — resolved items for
-  reference.
+- **Closed:** [`issues_closed.md`](issues_closed.md) — resolved items
+  for reference.
 
 When a resolution affects the architecture described above, the relevant
 sections of this document are updated accordingly.

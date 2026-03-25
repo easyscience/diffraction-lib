@@ -2,8 +2,8 @@
 
 # \_cell
 
-Data items in this category record details about the crystallographic cell
-parameters and their measurement. Please see the
+Data items in this category record details about the crystallographic
+cell parameters and their measurement. Please see the
 [IUCr page](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/CCELL.html)
 for further details.
 

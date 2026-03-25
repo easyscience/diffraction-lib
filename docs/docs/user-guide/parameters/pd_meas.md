@@ -7,8 +7,8 @@ This section contains the measured diffractogram, similar to this
 
 ## [\_pd_meas.2theta_scan](https://raw.githubusercontent.com/COMCIFS/Powder_Dictionary/master/cif_pow.dic)
 
-2θ diffraction angle (in degrees) for intensity points measured in a scanning
-method.
+2θ diffraction angle (in degrees) for intensity points measured in a
+scanning method.
 
 ## [\_pd_meas.time-of-flight](https://raw.githubusercontent.com/COMCIFS/Powder_Dictionary/master/cif_pow.dic)
 

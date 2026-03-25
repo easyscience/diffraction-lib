@@ -1,31 +1,31 @@
 # First Steps
 
-This section introduces the basic usage of the EasyDiffraction Python API.
-You'll learn how to import the package, use core classes and utility functions,
-and access built-in helper methods to streamline diffraction data analysis
-workflows.
+This section introduces the basic usage of the EasyDiffraction Python
+API. You'll learn how to import the package, use core classes and
+utility functions, and access built-in helper methods to streamline
+diffraction data analysis workflows.
 
 ## Importing EasyDiffraction
 
 ### Importing the entire package
 
-To start using EasyDiffraction, first import the package in your Python script
-or Jupyter Notebook. This can be done with the following command:
+To start using EasyDiffraction, first import the package in your Python
+script or Jupyter Notebook. This can be done with the following command:
 
 ```python
 import easydiffraction
 ```
 
-Alternatively, you can import it with an alias to avoid naming conflicts and for
-convenience:
+Alternatively, you can import it with an alias to avoid naming conflicts
+and for convenience:
 
 ```python
 import easydiffraction as ed
 ```
 
-The latter syntax allows you to access all the modules and classes within the
-package using the `ed` prefix. For example, you can create a project instance
-like this:
+The latter syntax allows you to access all the modules and classes
+within the package using the `ed` prefix. For example, you can create a
+project instance like this:
 
 ```python
 project = ed.Project()
@@ -36,9 +36,9 @@ A complete tutorial using the `import` syntax can be found
 
 ### Importing specific parts
 
-Alternatively, you can import specific classes or methods from the package. For
-example, you can import the `Project`, `Structure`, `Experiment` classes and
-`download_from_repository` method like this:
+Alternatively, you can import specific classes or methods from the
+package. For example, you can import the `Project`, `Structure`,
+`Experiment` classes and `download_from_repository` method like this:
 
 ```python
 from easydiffraction import Project
@@ -47,10 +47,10 @@ from easydiffraction import Experiment
 from easydiffraction import download_from_repository
 ```
 
-This enables you to use these classes and methods directly without the package
-prefix. This is especially useful when you're using only a few components and
-want to keep your code clean and concise. In this case, you can create a project
-instance like this:
+This enables you to use these classes and methods directly without the
+package prefix. This is especially useful when you're using only a few
+components and want to keep your code clean and concise. In this case,
+you can create a project instance like this:
 
 ```python
 project = Project()
@@ -61,10 +61,11 @@ A complete tutorial using the `from` syntax can be found
 
 ## Utility functions
 
-EasyDiffraction also provides several utility functions that can simplify your
-workflow. One of them is the `download_from_repository` function, which allows
-you to download data files from our remote repository, making it easy to access
-and use them while experimenting with EasyDiffraction.
+EasyDiffraction also provides several utility functions that can
+simplify your workflow. One of them is the `download_from_repository`
+function, which allows you to download data files from our remote
+repository, making it easy to access and use them while experimenting
+with EasyDiffraction.
 
 For example, you can download a data file like this:
 
@@ -78,29 +79,31 @@ ed.download_from_repository(
 )
 ```
 
-This command will download the `hrpt_lbco.xye` file from the `docs` branch of
-the EasyDiffraction repository and save it in the `data` directory of your
-current working directory. This is particularly useful for quickly accessing
-example datasets without having to manually download them.
+This command will download the `hrpt_lbco.xye` file from the `docs`
+branch of the EasyDiffraction repository and save it in the `data`
+directory of your current working directory. This is particularly useful
+for quickly accessing example datasets without having to manually
+download them.
 
 ## Help methods
 
-EasyDiffraction provides several helper methods to display supported engines for
-calculation, minimization, and plotting. These methods can be called on the
-`Project` instance to display the available options for different categories.
+EasyDiffraction provides several helper methods to display supported
+engines for calculation, minimization, and plotting. These methods can
+be called on the `Project` instance to display the available options for
+different categories.
 
 ### Supported calculators
 
-The calculator is automatically selected based on the experiment type. You can
-use the `show_supported_calculator_types()` method on an experiment to see which
-calculation engines are compatible:
+The calculator is automatically selected based on the experiment type.
+You can use the `show_supported_calculator_types()` method on an
+experiment to see which calculation engines are compatible:
 
 ```python
 project.experiments['hrpt'].show_supported_calculator_types()
 ```
 
-This will display a list of supported calculators along with their descriptions,
-allowing you to choose the one that best fits your needs.
+This will display a list of supported calculators along with their
+descriptions, allowing you to choose the one that best fits your needs.
 
 An example of the output for a Bragg diffraction experiment:
 
@@ -119,24 +122,25 @@ project.show_available_minimizers()
 
 ### Available parameters
 
-EasyDiffraction provides several methods for showing the available parameters
-grouped in different categories. For example, you can use:
+EasyDiffraction provides several methods for showing the available
+parameters grouped in different categories. For example, you can use:
 
-- `project.analysis.show_all_params()` – to display all available parameters for
-  the analysis step.
-- `project.analysis.show_fittable_params()` – to display only the parameters
-  that can be fitted during the analysis.
-- `project.analysis.show_free_params()` – to display the parameters that are
-  currently free to be adjusted during the fitting process.
+- `project.analysis.show_all_params()` – to display all available
+  parameters for the analysis step.
+- `project.analysis.show_fittable_params()` – to display only the
+  parameters that can be fitted during the analysis.
+- `project.analysis.show_free_params()` – to display the parameters that
+  are currently free to be adjusted during the fitting process.
 
-Finally, you can use the `project.analysis.how_to_access_parameters()` method to
-get a brief overview of how to access and modify parameters in the analysis
-step, along with their unique identifiers in the CIF format. This can be
-particularly useful for users who are new to the EasyDiffraction API or those
-who want to quickly understand how to work with parameters in their projects.
+Finally, you can use the `project.analysis.how_to_access_parameters()`
+method to get a brief overview of how to access and modify parameters in
+the analysis step, along with their unique identifiers in the CIF
+format. This can be particularly useful for users who are new to the
+EasyDiffraction API or those who want to quickly understand how to work
+with parameters in their projects.
 
-An example of the output for the `project.analysis.how_to_access_parameters()`
-method is:
+An example of the output for the
+`project.analysis.how_to_access_parameters()` method is:
 
 |     | Code variable                                       | Unique ID for CIF                |
 | --- | --------------------------------------------------- | -------------------------------- |
@@ -151,8 +155,9 @@ method is:
 
 ### Supported plotters
 
-To see the available plotters, you can use the `show_available_plotters()`
-method on the `plotter` attribute of the `Project` instance:
+To see the available plotters, you can use the
+`show_available_plotters()` method on the `plotter` attribute of the
+`Project` instance:
 
 ```python
 project.plotter.show_supported_engines()
@@ -167,16 +172,19 @@ An example of the output is:
 
 ## Data analysis workflow
 
-Once the EasyDiffraction package is imported, you can proceed with the **data
-analysis**. This step can be split into several sub-steps, such as creating a
-project, defining structures, adding experimental data, etc.
+Once the EasyDiffraction package is imported, you can proceed with the
+**data analysis**. This step can be split into several sub-steps, such
+as creating a project, defining structures, adding experimental data,
+etc.
 
-EasyDiffraction provides a **Python API** that allows you to perform these steps
-programmatically in a certain linear order. This is especially useful for users
-who prefer to work in a script or Jupyter Notebook environment. The API is
-designed to be intuitive and easy to use, allowing you to focus on the analysis
-rather than low-level implementation details.
+EasyDiffraction provides a **Python API** that allows you to perform
+these steps programmatically in a certain linear order. This is
+especially useful for users who prefer to work in a script or Jupyter
+Notebook environment. The API is designed to be intuitive and easy to
+use, allowing you to focus on the analysis rather than low-level
+implementation details.
 
-Because this workflow is an important part of the EasyDiffraction package, it is
-described in detail in the separate
-[Analysis Workflow](analysis-workflow/index.md) section of the documentation.
+Because this workflow is an important part of the EasyDiffraction
+package, it is described in detail in the separate
+[Analysis Workflow](analysis-workflow/index.md) section of the
+documentation.

@@ -1,46 +1,48 @@
 # Data Format
 
-Before starting the data analysis workflow, it is important to define the **data
-formats** used in EasyDiffraction.
+Before starting the data analysis workflow, it is important to define
+the **data formats** used in EasyDiffraction.
 
 ## Crystallographic Information File
 
-Each software package typically uses its own **data format** and **parameter
-names** for storing and sharing data. In EasyDiffraction, we use the
-**Crystallographic Information File (CIF)** format, which is widely used in
-crystallography and materials science. It provides both a human-readable syntax
-and a set of dictionaries that define the meaning of each parameter.
+Each software package typically uses its own **data format** and
+**parameter names** for storing and sharing data. In EasyDiffraction, we
+use the **Crystallographic Information File (CIF)** format, which is
+widely used in crystallography and materials science. It provides both a
+human-readable syntax and a set of dictionaries that define the meaning
+of each parameter.
 
 These dictionaries are maintained by the
 [International Union of Crystallography (IUCr)](https://www.iucr.org).  
 The base dictionary, **coreCIF**, contains the most common parameters in
-crystallography. The **pdCIF** dictionary covers parameters specific to powder
-diffraction, **magCIF** is used for magnetic structure analysis.
+crystallography. The **pdCIF** dictionary covers parameters specific to
+powder diffraction, **magCIF** is used for magnetic structure analysis.
 
-As most parameters needed for diffraction data analysis are already covered by
-IUCr dictionaries, EasyDiffraction uses the strict **CIF format** and follows
-these dictionaries as closely as possible — for both input and output —
-throughout the workflow described in the
+As most parameters needed for diffraction data analysis are already
+covered by IUCr dictionaries, EasyDiffraction uses the strict **CIF
+format** and follows these dictionaries as closely as possible — for
+both input and output — throughout the workflow described in the
 [Analysis Workflow](analysis-workflow/index.md) section.
 
 The key advantage of CIF is the standardized naming of parameters and
-categories, which promotes interoperability and familiarity among researchers.
+categories, which promotes interoperability and familiarity among
+researchers.
 
 If a required parameter is not defined in the standard dictionaries,
 EasyDiffraction introduces **custom CIF keywords**, documented in the
-[Parameters](parameters.md) section under the **CIF name for serialization**
-columns.
+[Parameters](parameters.md) section under the **CIF name for
+serialization** columns.
 
 ## Format Comparison
 
-Below, we compare **CIF** with another common data format in programming:
-**JSON**.
+Below, we compare **CIF** with another common data format in
+programming: **JSON**.
 
 ### Scientific Journals
 
 Let's assume the following structural data for La₀.₅Ba₀.₅CoO₃ (LBCO), as
-reported in a scientific publication. These parameters are to be refined during
-diffraction data analysis:
+reported in a scientific publication. These parameters are to be refined
+during diffraction data analysis:
 
 Table 1. Crystallographic data. Space group: _Pm3̅m_.
 
@@ -53,8 +55,8 @@ Table 1. Crystallographic data. Space group: _Pm3̅m_.
 | beta      | 90.0   |
 | gamma     | 90.0   |
 
-Table 2. Atomic coordinates (_x_, _y_, _z_), occupancies (occ) and isotropic
-displacement parameters (_Biso_)
+Table 2. Atomic coordinates (_x_, _y_, _z_), occupancies (occ) and
+isotropic displacement parameters (_Biso_)
 
 | Label | Type | x   | y   | z   | occ | Biso   |
 | ----- | ---- | --- | --- | --- | --- | ------ |
@@ -102,17 +104,17 @@ O  O    0   0.5 0.5   c   1    Biso 1.4041
 
 <!-- prettier-ignore-end -->
 
-Here, unit cell parameters are grouped under the `_cell` category, and atomic
-positions under the `_atom_site` category. The `loop_` keyword indicates that
-multiple rows follow for the listed parameters. Each atom is identified using
-`_atom_site.label`.
+Here, unit cell parameters are grouped under the `_cell` category, and
+atomic positions under the `_atom_site` category. The `loop_` keyword
+indicates that multiple rows follow for the listed parameters. Each atom
+is identified using `_atom_site.label`.
 
 ### JSON
 
-Representing the same data in **JSON** results in a format that is more verbose
-and less human-readable, especially for large datasets. JSON is ideal for
-structured data in programming environments, whereas CIF is better suited for
-human-readable crystallographic data.
+Representing the same data in **JSON** results in a format that is more
+verbose and less human-readable, especially for large datasets. JSON is
+ideal for structured data in programming environments, whereas CIF is
+better suited for human-readable crystallographic data.
 
 ```json
 {
@@ -173,11 +175,11 @@ human-readable crystallographic data.
 
 ## Experiment Definition
 
-The previous example described the **structure** (crystallographic model), but
-how is the **experiment** itself represented?
+The previous example described the **structure** (crystallographic
+model), but how is the **experiment** itself represented?
 
-The experiment is also saved as a CIF file. For example, background intensity in
-a powder diffraction experiment might be represented as:
+The experiment is also saved as a CIF file. For example, background
+intensity in a powder diffraction experiment might be represented as:
 
 <!-- prettier-ignore-start -->
 
@@ -197,13 +199,13 @@ loop_
 
 <!-- prettier-ignore-end -->
 
-More details on how to define the experiment in CIF format are provided in the
-[Experiment](analysis-workflow/experiment.md) section.
+More details on how to define the experiment in CIF format are provided
+in the [Experiment](analysis-workflow/experiment.md) section.
 
 ## Other Input/Output Blocks
 
-EasyDiffraction uses CIF consistently throughout its workflow, including in the
-following blocks:
+EasyDiffraction uses CIF consistently throughout its workflow, including
+in the following blocks:
 
 - **project**: contains the project information
 - **structure**: defines the structure
@@ -217,11 +219,13 @@ Example CIF files for each block are provided in the
 
 ## Other Data Formats
 
-While CIF is the primary format in EasyDiffraction, we also support other
-formats for importing measured data. These include plain text files with
-multiple columns. The meaning of the columns depends on the experiment type.
+While CIF is the primary format in EasyDiffraction, we also support
+other formats for importing measured data. These include plain text
+files with multiple columns. The meaning of the columns depends on the
+experiment type.
 
-For example, in a standard constant-wavelength powder diffraction experiment:
+For example, in a standard constant-wavelength powder diffraction
+experiment:
 
 - Column 1: 2θ angle
 - Column 2: intensity

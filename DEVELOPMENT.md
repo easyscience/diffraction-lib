@@ -19,8 +19,8 @@ This is an example of a workflow that describes the development process.
   ```bash
   cd diffraction-lib
   ```
-- Create the environment defined in `pixi.toml` and install all necessary
-  dependencies:
+- Create the environment defined in `pixi.toml` and install all
+  necessary dependencies:
   ```bash
   pixi install
   ```
@@ -111,8 +111,8 @@ This is an example of a workflow that describes the development process.
   ```bash
   pixi run docs-build
   ```
-- Test the documentation locally (built in the `site/` directory). E.g., on
-  macOS, open the site in the default browser via the terminal
+- Test the documentation locally (built in the `site/` directory). E.g.,
+  on macOS, open the site in the default browser via the terminal
   ```bash
   open http://127.0.0.1:8000
   ```
@@ -142,8 +142,8 @@ This is an example of a workflow that describes the development process.
   - `[scope] enhancement`
   - `[scope] maintenance`
   - `[scope] significant`
-- After approval, merge the pull request into the `develop` branch using "Squash
-  and merge" option
+- After approval, merge the pull request into the `develop` branch using
+  "Squash and merge" option
 - Delete the branch remotely
   ```bash
   git push origin --delete new-feature

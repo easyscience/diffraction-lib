@@ -5,35 +5,38 @@ icon: material/puzzle
 # :material-puzzle: Structure
 
 The **Structure** in EasyDiffraction represents the **crystallographic
-structure** used to calculate the diffraction pattern, which is then fitted to
-the **experimentally measured data** to refine the structural parameters.
+structure** used to calculate the diffraction pattern, which is then
+fitted to the **experimentally measured data** to refine the structural
+parameters.
 
 EasyDiffraction allows you to:
 
 - **Load an existing model** from a file (**CIF** format).
-- **Manually define** a new structure by specifying crystallographic parameters.
+- **Manually define** a new structure by specifying crystallographic
+  parameters.
 
-Below, you will find instructions on how to define and manage crystallographic
-models in EasyDiffraction. It is assumed that you have already created a
-`project` object, as described in the [Project](project.md) section.
+Below, you will find instructions on how to define and manage
+crystallographic models in EasyDiffraction. It is assumed that you have
+already created a `project` object, as described in the
+[Project](project.md) section.
 
 ## Adding a Model from CIF
 
-This is the most straightforward way to define a structure in EasyDiffraction.
-If you have a crystallographic information file (CIF) for your structure, you
-can add it to your project using the `add_from_cif_path` method of the
-`project.structures` collection. In this case, the name of the model will be
-taken from CIF.
+This is the most straightforward way to define a structure in
+EasyDiffraction. If you have a crystallographic information file (CIF)
+for your structure, you can add it to your project using the
+`add_from_cif_path` method of the `project.structures` collection. In
+this case, the name of the model will be taken from CIF.
 
 ```python
 # Load a phase from a CIF file
 project.structures.add_from_cif_path('data/lbco.cif')
 ```
 
-Accessing the model after loading it will be done through the `structures`
-collection of the `project` instance. The name of the model will be the same as
-the data block id in the CIF file. For example, if the CIF file contains a data
-block with the id `lbco`,
+Accessing the model after loading it will be done through the
+`structures` collection of the `project` instance. The name of the model
+will be the same as the data block id in the CIF file. For example, if
+the CIF file contains a data block with the id `lbco`,
 
 <!-- prettier-ignore-start -->
 
@@ -57,10 +60,10 @@ project.structures['lbco']
 
 ## Defining a Model Manually
 
-If you do not have a CIF file or prefer to define the model manually, you can
-use the `create` method of the `structures` object of the `project` instance. In
-this case, you will need to specify the name of the model, which will be used to
-reference it later.
+If you do not have a CIF file or prefer to define the model manually,
+you can use the `create` method of the `structures` object of the
+`project` instance. In this case, you will need to specify the name of
+the model, which will be used to reference it later.
 
 ```python
 # Add a structure with default parameters
@@ -68,15 +71,17 @@ reference it later.
 project.structures.create(name='nacl')
 ```
 
-The `add` method creates a new structure with default parameters. You can then
-modify its parameters to match your specific crystallographic structure. All
-parameters are grouped into the following categories, which makes it easier to
-manage the model:
+The `add` method creates a new structure with default parameters. You
+can then modify its parameters to match your specific crystallographic
+structure. All parameters are grouped into the following categories,
+which makes it easier to manage the model:
 
-1. **Space Group Category**: Defines the symmetry of the crystal structure.
-2. **Cell Category**: Specifies the dimensions and angles of the unit cell.
-3. **Atom Sites Category**: Describes the positions and properties of atoms
-   within the unit cell.
+1. **Space Group Category**: Defines the symmetry of the crystal
+   structure.
+2. **Cell Category**: Specifies the dimensions and angles of the unit
+   cell.
+3. **Atom Sites Category**: Describes the positions and properties of
+   atoms within the unit cell.
 
 ### 1. Space Group Category { #space-group-category }
 
@@ -177,10 +182,10 @@ Structure 🧩 'lbco' as cif
 
 ## Saving a Model
 
-Saving the project, as described in the [Project](project.md) section, will also
-save the model. Each model is saved as a separate CIF file in the `structures`
-subdirectory of the project directory. The project file contains references to
-these files.
+Saving the project, as described in the [Project](project.md) section,
+will also save the model. Each model is saved as a separate CIF file in
+the `structures` subdirectory of the project directory. The project file
+contains references to these files.
 
 Below is an example of the saved CIF file for the `lbco` model:
 
@@ -223,5 +228,5 @@ O  O    0   0.5 0.5   c   1    Biso 1.4041
 
 ---
 
-Now that the crystallographic model has been defined and added to the project,
-you can proceed to the next step: [Experiment](experiment.md).
+Now that the crystallographic model has been defined and added to the
+project, you can proceed to the next step: [Experiment](experiment.md).

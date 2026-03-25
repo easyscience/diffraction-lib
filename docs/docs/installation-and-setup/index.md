@@ -6,16 +6,16 @@ icon: material/cog-box
 
 ## Requirements
 
-EasyDiffraction is a cross-platform Python library compatible with **Python 3.11
-through 3.13**.  
+EasyDiffraction is a cross-platform Python library compatible with
+**Python 3.11 through 3.13**.  
 Make sure Python is installed on your system before proceeding with the
 installation.
 
 ## Environment Setup <small>optional</small> { #environment-setup data-toc-label="Environment Setup" }
 
-We recommend using a **virtual environment** to isolate dependencies and avoid
-conflicts with system-wide packages. If any issues arise, you can simply delete
-and recreate the environment.
+We recommend using a **virtual environment** to isolate dependencies and
+avoid conflicts with system-wide packages. If any issues arise, you can
+simply delete and recreate the environment.
 
 #### Creating and Activating a Virtual Environment:
 
@@ -76,22 +76,23 @@ and recreate the environment.
 
 ### Installing from PyPI <small>recommended</small> { #from-pypi data-toc-label="Installing from PyPI" }
 
-EasyDiffraction is available on **PyPI (Python Package Index)** and can be
-installed using `pip`. We strongly recommend installing it within a virtual
-environment, as described in the [Environment Setup](#environment-setup)
-section.
+EasyDiffraction is available on **PyPI (Python Package Index)** and can
+be installed using `pip`. We strongly recommend installing it within a
+virtual environment, as described in the
+[Environment Setup](#environment-setup) section.
 
 We recommend installing the latest release of EasyDiffraction with the
-`visualization` extras, which include optional dependencies used for simplified
-visualization of charts and tables. This can be especially useful for running
-the Jupyter Notebook examples. To do so, use the following command:
+`visualization` extras, which include optional dependencies used for
+simplified visualization of charts and tables. This can be especially
+useful for running the Jupyter Notebook examples. To do so, use the
+following command:
 
 ```bash
 pip install 'easydiffraction[visualization]'
 ```
 
-If only the core functionality is needed, the library can be installed simply
-with:
+If only the core functionality is needed, the library can be installed
+simply with:
 
 ```bash
 pip install easydiffraction
@@ -117,8 +118,8 @@ pip show easydiffraction
 
 ### Installing from GitHub
 
-Installing unreleased versions is generally not recommended but may be useful
-for testing.
+Installing unreleased versions is generally not recommended but may be
+useful for testing.
 
 To install EasyDiffraction from, e.g., the `develop` branch of GitHub:
 
@@ -134,18 +135,20 @@ pip install 'easydiffraction[visualization] @ git+https://github.com/easyscience
 
 ## How to Run Tutorials
 
-EasyDiffraction includes a collection of **Jupyter Notebook examples** that
-demonstrate key functionality. These tutorials serve as **step-by-step guides**
-to help users understand the diffraction data analysis workflow.
+EasyDiffraction includes a collection of **Jupyter Notebook examples**
+that demonstrate key functionality. These tutorials serve as
+**step-by-step guides** to help users understand the diffraction data
+analysis workflow.
 
 They are available as **static HTML pages** in the
-[:material-school: Tutorials](../tutorials/index.md) section. You can also run
-them interactively in two ways:
+[:material-school: Tutorials](../tutorials/index.md) section. You can
+also run them interactively in two ways:
 
 - **Run Locally** – Download the notebook via the :material-download:
   **Download** button and run it on your computer.
-- **Run Online** – Use the :google-colab: **Open in Google Colab** button to run
-  the tutorial directly in your browser (no setup required).
+- **Run Online** – Use the :google-colab: **Open in Google Colab**
+  button to run the tutorial directly in your browser (no setup
+  required).
 
 !!! note
 
@@ -154,8 +157,9 @@ them interactively in two ways:
 
 ### Run Tutorials Locally
 
-To run tutorials locally, install **Jupyter Notebook** or **JupyterLab**. Here
-are the steps to follow in the case of **Jupyter Notebook**:
+To run tutorials locally, install **Jupyter Notebook** or
+**JupyterLab**. Here are the steps to follow in the case of **Jupyter
+Notebook**:
 
 - Install Jupyter Notebook and IPython kernel:
   ```bash
@@ -177,32 +181,34 @@ are the steps to follow in the case of **Jupyter Notebook**:
   ```bash
   http://localhost:8888/
   ```
-- Open one of the `*.ipynb` files and select the `EasyDiffraction Python kernel`
-  to get started.
+- Open one of the `*.ipynb` files and select the
+  `EasyDiffraction Python kernel` to get started.
 
 ### Run Tutorials via Google Colab
 
-**Google Colab** lets you run Jupyter Notebooks in the cloud without any local
-installation.
+**Google Colab** lets you run Jupyter Notebooks in the cloud without any
+local installation.
 
 To use Google Colab:
 
 - Ensure you have a **Google account**.
-- Go to the **[:material-school: Tutorials](../tutorials/index.md)** section.
-- Click the :google-colab: **Open in Google Colab** button on any tutorial.
+- Go to the **[:material-school: Tutorials](../tutorials/index.md)**
+  section.
+- Click the :google-colab: **Open in Google Colab** button on any
+  tutorial.
 
-This is the fastest way to start experimenting with EasyDiffraction, without
-setting up Python on your system.
+This is the fastest way to start experimenting with EasyDiffraction,
+without setting up Python on your system.
 
 ## Installing with Pixi <small>alternative</small> { #installing-with-pixi data-toc-label="Installing with Pixi" }
 
-[Pixi](https://pixi.sh) is a modern package and environment manager for Python
-and Conda-compatible packages. It simplifies dependency management, environment
-isolation, and reproducibility.
+[Pixi](https://pixi.sh) is a modern package and environment manager for
+Python and Conda-compatible packages. It simplifies dependency
+management, environment isolation, and reproducibility.
 
 The following simple steps provide an alternative setup method for
-EasyDiffraction using Pixi, replacing the traditional virtual environment
-approach.
+EasyDiffraction using Pixi, replacing the traditional virtual
+environment approach.
 
 <!-- prettier-ignore-start -->
 

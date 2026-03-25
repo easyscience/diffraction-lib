@@ -2,16 +2,16 @@
 
 # \_space_group
 
-Contains all the data items that refer to the space group as a whole. Please see
-the
+Contains all the data items that refer to the space group as a whole.
+Please see the
 [IUCr page](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/CSPACE_GROUP.html)
 for further details.
 
 ## [\_space_group.name_H-M_alt](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Ispace_group.name_H-M_alt.html)
 
-The international Hermann-Mauguin space-group symbol as defined in International
-Tables for Crystallography Volume A. It allows any Hermann-Mauguin symbol to be
-given.
+The international Hermann-Mauguin space-group symbol as defined in
+International Tables for Crystallography Volume A. It allows any
+Hermann-Mauguin symbol to be given.
 
 ## [\_space_group.IT_coordinate_system_code](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Ispace_group.IT_coordinate_system_code.html)
 

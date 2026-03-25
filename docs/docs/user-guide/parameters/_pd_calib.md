@@ -2,8 +2,8 @@
 
 # \_pd_calib
 
-This section defines the parameters used for the calibration of the instrument,
-similar to this
+This section defines the parameters used for the calibration of the
+instrument, similar to this
 [IUCr section](https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd).
 
 ## [\_pd_calib.2theta_offset](https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd)

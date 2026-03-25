@@ -4,8 +4,8 @@
 
 Data items in this category describe the wavelength of radiation used in
 diffraction measurements. Please see the
-[IUCr page](https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd) for
-further details.
+[IUCr page](https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd)
+for further details.
 
 ## [\_diffrn_radiation_wavelength.wavelength](https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd)
 
