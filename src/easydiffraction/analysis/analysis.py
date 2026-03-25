@@ -64,6 +64,67 @@ class Analysis:
         self._joint_fit_experiments = JointFitExperiments()
         self.fitter = Fitter('lmfit')
 
+    def help(self) -> None:
+        """Print a summary of analysis properties and methods."""
+        from easydiffraction.core.guard import GuardedBase
+
+        console.paragraph("Help for 'Analysis'")
+
+        cls = type(self)
+
+        # Auto-discover properties from MRO
+        seen_props: dict = {}
+        for base in cls.mro():
+            for key, attr in base.__dict__.items():
+                if key.startswith('_') or not isinstance(attr, property):
+                    continue
+                if key not in seen_props:
+                    seen_props[key] = attr
+
+        prop_rows = []
+        for i, key in enumerate(sorted(seen_props), 1):
+            prop = seen_props[key]
+            writable = '✓' if prop.fset else '✗'
+            doc = GuardedBase._first_sentence(prop.fget.__doc__ if prop.fget else None)
+            prop_rows.append([str(i), key, writable, doc])
+
+        if prop_rows:
+            console.paragraph('Properties')
+            render_table(
+                columns_headers=['#', 'Name', 'Writable', 'Description'],
+                columns_alignment=['right', 'left', 'center', 'left'],
+                columns_data=prop_rows,
+            )
+
+        # Auto-discover methods from MRO
+        seen_methods: set = set()
+        methods_list: list = []
+        for base in cls.mro():
+            for key, attr in base.__dict__.items():
+                if key.startswith('_') or key in seen_methods:
+                    continue
+                if isinstance(attr, property):
+                    continue
+                raw = attr
+                if isinstance(raw, (staticmethod, classmethod)):
+                    raw = raw.__func__
+                if callable(raw):
+                    seen_methods.add(key)
+                    methods_list.append((key, raw))
+
+        method_rows = []
+        for i, (key, method) in enumerate(sorted(methods_list), 1):
+            doc = GuardedBase._first_sentence(getattr(method, '__doc__', None))
+            method_rows.append([str(i), f'{key}()', doc])
+
+        if method_rows:
+            console.paragraph('Methods')
+            render_table(
+                columns_headers=['#', 'Name', 'Description'],
+                columns_alignment=['right', 'left', 'left'],
+                columns_data=method_rows,
+            )
+
     # ------------------------------------------------------------------
     #  Aliases (switchable-category pattern)
     # ------------------------------------------------------------------

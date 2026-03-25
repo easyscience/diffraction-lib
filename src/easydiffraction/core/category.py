@@ -150,7 +150,7 @@ class CategoryItem(GuardedBase):
         if method_rows:
             console.paragraph('Methods')
             render_table(
-                columns_headers=['#', 'Method', 'Description'],
+                columns_headers=['#', 'Name', 'Description'],
                 columns_alignment=['right', 'left', 'left'],
                 columns_data=method_rows,
             )
