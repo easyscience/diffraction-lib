@@ -973,6 +973,54 @@ if self._fit_mode.mode.value == FitModeEnum.JOINT:
 if self._fit_mode.mode.value == 'joint':
 ```
 
+### 9.7 Flat Category Structure — No Nested Categories
+
+Following CIF conventions, categories are **flat siblings** within their owner
+(datablock or analysis object). A category must never be a child of another
+category of a different type. Categories can reference each other via IDs, but
+the ownership hierarchy is always:
+
+```
+Owner (DatablockItem / Analysis)
+├── CategoryA   (CategoryItem or CategoryCollection)
+├── CategoryB   (CategoryItem or CategoryCollection)
+└── CategoryC   (CategoryItem or CategoryCollection)
+```
+
+Never:
+
+```
+Owner
+└── CategoryA
+    └── CategoryB   ← WRONG: CategoryB is a child of CategoryA
+```
+
+**Example — `fit_mode` and `joint_fit_experiments`:** `fit_mode` is a
+`CategoryItem` holding the active strategy (`'single'` or `'joint'`).
+`joint_fit_experiments` is a separate `CategoryCollection` holding
+per-experiment weights. Both are direct children of `Analysis`, not nested:
+
+```python
+# ✅ Correct — sibling categories on Analysis
+project.analysis.fit_mode.mode = 'joint'
+project.analysis.joint_fit_experiments['npd'].weight = 0.7
+
+# ❌ Wrong — joint_fit_experiments as a child of fit_mode
+project.analysis.fit_mode.joint_fit_experiments['npd'].weight = 0.7
+```
+
+In CIF output, sibling categories appear as independent blocks:
+
+```
+_analysis.fit_mode  joint
+
+loop_
+_joint_fit_experiment.id
+_joint_fit_experiment.weight
+npd  0.7
+xrd  0.3
+```
+
 ---
 
 ## 10. Issues
