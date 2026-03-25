@@ -310,7 +310,7 @@ project.analysis.current_minimizer = 'lmfit'
 # #### Set Fit Mode
 
 # %%
-project.analysis.fit_mode = 'joint'
+project.analysis.fit_mode.mode = 'joint'
 
 # %% [markdown]
 # #### Set Free Parameters

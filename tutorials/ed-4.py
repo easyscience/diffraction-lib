@@ -264,7 +264,7 @@ project.experiments.add(expt2)
 # #### Set Fit Mode
 
 # %%
-project.analysis.fit_mode = 'joint'
+project.analysis.fit_mode.mode = 'joint'
 
 # %% [markdown]
 # #### Set Minimizer

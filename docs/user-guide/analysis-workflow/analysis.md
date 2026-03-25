@@ -152,32 +152,23 @@ In EasyDiffraction, you can set the **fit mode** to control how the refinement
 process is performed. The fit mode determines whether the refinement is
 performed independently for each experiment or jointly across all experiments.
 
-To show the supported fit modes:
+The supported fit modes are:
+
+| Mode   | Description                                                         |
+| ------ | ------------------------------------------------------------------- |
+| single | Independent fitting of each experiment; no shared parameters        |
+| joint  | Simultaneous fitting of all experiments; some parameters are shared |
+
+You can set the fit mode on the `analysis` object:
 
 ```python
-project.analysis.show_supported_fit_modes()
+project.analysis.fit_mode.mode = 'joint'
 ```
 
-An example of supported fit modes is:
-
-Supported fit modes
-
-| Strategy | Description                                                         |
-| -------- | ------------------------------------------------------------------- |
-| single   | Independent fitting of each experiment; no shared parameters        |
-| joint    | Simultaneous fitting of all experiments; some parameters are shared |
-
-You can set the fit mode using the `set_fit_mode` method of the `analysis`
-object:
+To check the current fit mode:
 
 ```python
-project.analysis.fit_mode = 'joint'
-```
-
-To check the current fit mode, you can use the `show_current_fit_mode` method:
-
-```python
-project.analysis.show_current_fit_mode()
+print(project.analysis.fit_mode.mode.value)
 ```
 
 ### Perform Fit

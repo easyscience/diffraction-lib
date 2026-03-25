@@ -37,22 +37,20 @@ def test_show_current_minimizer_prints(capsys):
 
 
 
-def test_fit_modes_show_and_switch_to_joint(monkeypatch, capsys):
+def test_fit_mode_category_and_joint_fit_experiments(monkeypatch, capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names(['e1', 'e2']))
 
-    a.show_available_fit_modes()
-    a.show_current_fit_mode()
-    out1 = capsys.readouterr().out
-    assert 'Available fit modes' in out1
-    assert 'Current fit mode' in out1
-    assert 'single' in out1
+    # Default fit mode is 'single'
+    assert a.fit_mode.mode.value == 'single'
 
-    a.fit_mode = 'joint'
-    out2 = capsys.readouterr().out
-    assert 'Current fit mode changed to' in out2
-    assert a.fit_mode == 'joint'
+    # Switch to joint
+    a.fit_mode.mode = 'joint'
+    assert a.fit_mode.mode.value == 'joint'
+
+    # joint_fit_experiments exists but is empty until fit() populates it
+    assert len(a.joint_fit_experiments) == 0
 
 
 def test_show_fit_results_warns_when_no_results(capsys):

@@ -182,9 +182,9 @@ project.experiments.add(pdf_expt)
 # #### Set Fit Mode and Weights
 
 # %%
-project.analysis.fit_mode = 'joint'
-project.analysis.joint_fit_experiments['sepd'].weight = 0.7
-project.analysis.joint_fit_experiments['nomad'].weight = 0.3
+project.analysis.fit_mode.mode = 'joint'
+project.analysis.joint_fit_experiments.create(id='sepd', weight=0.7)
+project.analysis.joint_fit_experiments.create(id='nomad', weight=0.3)
 
 # %% [markdown]
 # #### Set Minimizer

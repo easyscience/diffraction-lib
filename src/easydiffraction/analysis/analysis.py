@@ -9,6 +9,7 @@ import pandas as pd
 
 from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
+from easydiffraction.analysis.categories.fit_mode import FitMode
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
@@ -57,7 +58,8 @@ class Analysis:
         self._constraints_type: str = ConstraintsFactory.default_tag()
         self.constraints = ConstraintsFactory.create(self._constraints_type)
         self.constraints_handler = ConstraintsHandler.get()
-        self._fit_mode: str = 'single'
+        self._fit_mode = FitMode()
+        self._joint_fit_experiments = JointFitExperiments()
         self.fitter = Fitter('lmfit')
 
     # ------------------------------------------------------------------
@@ -428,71 +430,23 @@ class Analysis:
         console.paragraph('Current minimizer changed to')
         console.print(self.current_minimizer)
 
+    # ------------------------------------------------------------------
+    #  Fit mode (category)
+    # ------------------------------------------------------------------
+
     @property
-    def fit_mode(self) -> str:
-        """Current fitting strategy: either 'single' or 'joint'."""
+    def fit_mode(self):
+        """Fit-mode category item holding the active strategy."""
         return self._fit_mode
 
-    @fit_mode.setter
-    def fit_mode(self, strategy: str) -> None:
-        """Set the fitting strategy.
+    # ------------------------------------------------------------------
+    #  Joint-fit experiments (category)
+    # ------------------------------------------------------------------
 
-        When set to 'joint', all experiments get default weights and
-        are used together in a single optimization.
-
-        Args:
-                strategy: Either 'single' or 'joint'.
-
-        Raises:
-            ValueError: If an unsupported strategy value is
-                provided.
-        """
-        if strategy not in ['single', 'joint']:
-            raise ValueError("Fit mode must be either 'single' or 'joint'")
-        self._fit_mode = strategy
-        if strategy == 'joint' and not hasattr(self, 'joint_fit_experiments'):
-            # Pre-populate all experiments with weight 0.5
-            self.joint_fit_experiments = JointFitExperiments()
-            for id in self.project.experiments.names:
-                self.joint_fit_experiments.create(id=id, weight=0.5)
-        console.paragraph('Current fit mode changed to')
-        console.print(self._fit_mode)
-
-    def show_available_fit_modes(self) -> None:
-        """Print all supported fitting strategies and their
-        descriptions.
-        """
-        strategies = [
-            {
-                'Strategy': 'single',
-                'Description': 'Independent fitting of each experiment; no shared parameters',
-            },
-            {
-                'Strategy': 'joint',
-                'Description': 'Simultaneous fitting of all experiments; '
-                'some parameters are shared',
-            },
-        ]
-
-        columns_headers = ['Strategy', 'Description']
-        columns_alignment = ['left', 'left']
-        columns_data = []
-        for item in strategies:
-            strategy = item['Strategy']
-            description = item['Description']
-            columns_data.append([strategy, description])
-
-        console.paragraph('Available fit modes')
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=columns_data,
-        )
-
-    def show_current_fit_mode(self) -> None:
-        """Print the currently active fitting strategy."""
-        console.paragraph('Current fit mode')
-        console.print(self.fit_mode)
+    @property
+    def joint_fit_experiments(self):
+        """Per-experiment weight collection for joint fitting."""
+        return self._joint_fit_experiments
 
     def show_constraints(self) -> None:
         """Print a table of all user-defined symbolic constraints."""
@@ -567,23 +521,24 @@ class Analysis:
             return
 
         # Run the fitting process
-        if self.fit_mode == 'joint':
-            console.paragraph(
-                f"Using all experiments 🔬 {experiments.names} for '{self.fit_mode}' fitting"
-            )
+        mode = self._fit_mode.mode.value
+        if mode == 'joint':
+            # Auto-populate joint_fit_experiments if empty
+            if not len(self._joint_fit_experiments):
+                for id in experiments.names:
+                    self._joint_fit_experiments.create(id=id, weight=0.5)
+            console.paragraph(f"Using all experiments 🔬 {experiments.names} for '{mode}' fitting")
             self.fitter.fit(
                 structures,
                 experiments,
-                weights=self.joint_fit_experiments,
+                weights=self._joint_fit_experiments,
                 analysis=self,
             )
-        elif self.fit_mode == 'single':
+        elif mode == 'single':
             # TODO: Find a better way without creating dummy
             #  experiments?
             for expt_name in experiments.names:
-                console.paragraph(
-                    f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"
-                )
+                console.paragraph(f"Using experiment 🔬 '{expt_name}' for '{mode}' fitting")
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name
 
@@ -599,7 +554,7 @@ class Analysis:
                     analysis=self,
                 )
         else:
-            raise NotImplementedError(f'Fit mode {self.fit_mode} not implemented yet.')
+            raise NotImplementedError(f'Fit mode {mode} not implemented yet.')
 
         # After fitting, get the results
         self.fit_results = self.fitter.results

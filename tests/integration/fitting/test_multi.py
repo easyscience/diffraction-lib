@@ -200,7 +200,7 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
     project.experiments.add(pdf_expt)
 
     # Prepare for fitting
-    project.analysis.fit_mode = 'joint'
+    project.analysis.fit_mode.mode = 'joint'
     project.analysis.current_minimizer = 'lmfit'
 
     # Select fitting parameters — shared structure
