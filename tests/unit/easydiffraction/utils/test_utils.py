@@ -128,6 +128,7 @@ def test_is_pycharm_and_is_colab(monkeypatch):
 
 def test_render_table_terminal_branch(capsys, monkeypatch):
     import easydiffraction.utils.utils as MUT
+
     # Ensure non-notebook rendering; on CI/default env it's terminal anyway.
     MUT.render_table(
         columns_data=[[1, 2], [3, 4]],

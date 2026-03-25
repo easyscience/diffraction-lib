@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+
 def test_cwl_peak_classes_expose_expected_parameters_and_category():
     from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlPseudoVoigt
     from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlSplitPseudoVoigt

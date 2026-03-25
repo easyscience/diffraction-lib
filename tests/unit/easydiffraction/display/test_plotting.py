@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+
 def test_module_import():
     import easydiffraction.display.plotting as MUT
 
@@ -59,7 +60,9 @@ def test_plotter_error_paths_and_filtering(capsys):
     from easydiffraction.display.plotting import Plotter
 
     class Ptn:
-        def __init__(self, two_theta=None, intensity_meas=None, intensity_calc=None, d_spacing=None):
+        def __init__(
+            self, two_theta=None, intensity_meas=None, intensity_calc=None, d_spacing=None
+        ):
             self.two_theta = two_theta
             self.intensity_meas = intensity_meas
             self.intensity_calc = intensity_calc
@@ -90,13 +93,19 @@ def test_plotter_error_paths_and_filtering(capsys):
     out = capsys.readouterr().out
     assert 'No calculated data available for experiment E' in out
 
-    p.plot_meas_vs_calc(Ptn(two_theta=None, intensity_meas=None, intensity_calc=None), 'E', ExptType())
+    p.plot_meas_vs_calc(
+        Ptn(two_theta=None, intensity_meas=None, intensity_calc=None), 'E', ExptType()
+    )
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
-    p.plot_meas_vs_calc(Ptn(two_theta=[1], intensity_meas=None, intensity_calc=[1]), 'E', ExptType())
+    p.plot_meas_vs_calc(
+        Ptn(two_theta=[1], intensity_meas=None, intensity_calc=[1]), 'E', ExptType()
+    )
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
-    p.plot_meas_vs_calc(Ptn(two_theta=[1], intensity_meas=[1], intensity_calc=None), 'E', ExptType())
+    p.plot_meas_vs_calc(
+        Ptn(two_theta=[1], intensity_meas=[1], intensity_calc=None), 'E', ExptType()
+    )
     out = capsys.readouterr().out
     assert 'No calculated data available for experiment E' in out
 

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+
 def test_linked_phases_add_and_cif_headers():
     from easydiffraction.datablocks.experiment.categories.linked_phases import LinkedPhase
     from easydiffraction.datablocks.experiment.categories.linked_phases import LinkedPhases

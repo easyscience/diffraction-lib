@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+
 def test_instrument_base_sets_category_code():
     from easydiffraction.datablocks.experiment.categories.instrument.base import InstrumentBase
 
