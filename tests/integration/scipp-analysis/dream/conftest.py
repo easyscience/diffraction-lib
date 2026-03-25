@@ -1,5 +1,6 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright (c) 2026 DMSC
+
 """Shared fixtures for DREAM scipp-analysis integration tests.
 
 This module provides pytest fixtures for downloading and parsing

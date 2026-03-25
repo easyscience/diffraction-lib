@@ -1,5 +1,6 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright (c) 2026 DMSC
+
 """Tests for analyzing reduced diffraction data using easydiffraction.
 
 These tests verify the complete workflow:
