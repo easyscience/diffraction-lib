@@ -24,13 +24,13 @@ project = ed.Project()
 # ## Add Structure
 
 # %%
-project.structures.add_from_scratch(name='ni')
+project.structures.create(name='ni')
 
 # %%
 project.structures['ni'].space_group.name_h_m = 'F m -3 m'
 project.structures['ni'].space_group.it_coordinate_system_code = '1'
 project.structures['ni'].cell.length_a = 3.52387
-project.structures['ni'].atom_sites.add_from_scratch(
+project.structures['ni'].atom_sites.create(
     label='Ni',
     type_symbol='Ni',
     fract_x=0.0,
@@ -57,7 +57,7 @@ project.experiments.add_from_data_path(
 )
 
 # %%
-project.experiments['pdf'].linked_phases.add_from_scratch(id='ni', scale=1.0)
+project.experiments['pdf'].linked_phases.create(id='ni', scale=1.0)
 project.experiments['pdf'].peak.damp_q = 0
 project.experiments['pdf'].peak.broad_q = 0.03
 project.experiments['pdf'].peak.cutoff_q = 27.0
@@ -81,7 +81,6 @@ project.experiments['pdf'].peak.sharp_delta_2.free = True
 # ## Run Fitting
 
 # %%
-project.analysis.current_calculator = 'pdffit'
 project.analysis.fit()
 project.analysis.show_fit_results()
 

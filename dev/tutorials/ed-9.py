@@ -42,7 +42,7 @@ structure_1.cell.length_a = 3.8909
 # #### Set Atom Sites
 
 # %%
-structure_1.atom_sites.add_from_scratch(
+structure_1.atom_sites.create(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -52,7 +52,7 @@ structure_1.atom_sites.add_from_scratch(
     b_iso=0.2,
     occupancy=0.5,
 )
-structure_1.atom_sites.add_from_scratch(
+structure_1.atom_sites.create(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -62,7 +62,7 @@ structure_1.atom_sites.add_from_scratch(
     b_iso=0.2,
     occupancy=0.5,
 )
-structure_1.atom_sites.add_from_scratch(
+structure_1.atom_sites.create(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -71,7 +71,7 @@ structure_1.atom_sites.add_from_scratch(
     wyckoff_letter='b',
     b_iso=0.2567,
 )
-structure_1.atom_sites.add_from_scratch(
+structure_1.atom_sites.create(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -104,7 +104,7 @@ structure_2.cell.length_a = 5.43146
 # #### Set Atom Sites
 
 # %%
-structure_2.atom_sites.add_from_scratch(
+structure_2.atom_sites.create(
     label='Si',
     type_symbol='Si',
     fract_x=0.0,
@@ -173,26 +173,26 @@ experiment.background_type = 'line-segment'
 # Add background points.
 
 # %%
-experiment.background.add_from_scratch(id='1', x=45000, y=0.2)
-experiment.background.add_from_scratch(id='2', x=50000, y=0.2)
-experiment.background.add_from_scratch(id='3', x=55000, y=0.2)
-experiment.background.add_from_scratch(id='4', x=65000, y=0.2)
-experiment.background.add_from_scratch(id='5', x=70000, y=0.2)
-experiment.background.add_from_scratch(id='6', x=75000, y=0.2)
-experiment.background.add_from_scratch(id='7', x=80000, y=0.2)
-experiment.background.add_from_scratch(id='8', x=85000, y=0.2)
-experiment.background.add_from_scratch(id='9', x=90000, y=0.2)
-experiment.background.add_from_scratch(id='10', x=95000, y=0.2)
-experiment.background.add_from_scratch(id='11', x=100000, y=0.2)
-experiment.background.add_from_scratch(id='12', x=105000, y=0.2)
-experiment.background.add_from_scratch(id='13', x=110000, y=0.2)
+experiment.background.create(id='1', x=45000, y=0.2)
+experiment.background.create(id='2', x=50000, y=0.2)
+experiment.background.create(id='3', x=55000, y=0.2)
+experiment.background.create(id='4', x=65000, y=0.2)
+experiment.background.create(id='5', x=70000, y=0.2)
+experiment.background.create(id='6', x=75000, y=0.2)
+experiment.background.create(id='7', x=80000, y=0.2)
+experiment.background.create(id='8', x=85000, y=0.2)
+experiment.background.create(id='9', x=90000, y=0.2)
+experiment.background.create(id='10', x=95000, y=0.2)
+experiment.background.create(id='11', x=100000, y=0.2)
+experiment.background.create(id='12', x=105000, y=0.2)
+experiment.background.create(id='13', x=110000, y=0.2)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-experiment.linked_phases.add_from_scratch(id='lbco', scale=4.0)
-experiment.linked_phases.add_from_scratch(id='si', scale=0.2)
+experiment.linked_phases.create(id='lbco', scale=4.0)
+experiment.linked_phases.create(id='si', scale=0.2)
 
 # %% [markdown]
 # ## Define Project
@@ -236,8 +236,8 @@ project.plot_meas(expt_name='mcstas')
 # Add excluded regions.
 
 # %%
-experiment.excluded_regions.add_from_scratch(id='1', start=0, end=40000)
-experiment.excluded_regions.add_from_scratch(id='2', start=108000, end=200000)
+experiment.excluded_regions.create(id='1', start=0, end=40000)
+experiment.excluded_regions.create(id='2', start=108000, end=200000)
 
 # %% [markdown]
 # Show excluded regions.
@@ -263,16 +263,10 @@ project.experiments['mcstas'].show_as_cif()
 # This section outlines the analysis process, including how to configure
 # calculation and fitting engines.
 #
-# #### Set Calculator
-
-# %%
-project.analysis.current_calculator = 'cryspy'
-
-# %% [markdown]
 # #### Set Minimizer
 
 # %%
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]
 # #### Set Fitting Parameters

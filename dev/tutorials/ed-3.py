@@ -94,7 +94,7 @@ project.plotter.show_config()
 # #### Add Structure
 
 # %%
-project.structures.add_from_scratch(name='lbco')
+project.structures.create(name='lbco')
 
 # %% [markdown]
 # #### Show Defined Structures
@@ -130,7 +130,7 @@ project.structures['lbco'].cell.length_a = 3.88
 # Add atom sites to the structure.
 
 # %%
-project.structures['lbco'].atom_sites.add_from_scratch(
+project.structures['lbco'].atom_sites.create(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -140,7 +140,7 @@ project.structures['lbco'].atom_sites.add_from_scratch(
     b_iso=0.5,
     occupancy=0.5,
 )
-project.structures['lbco'].atom_sites.add_from_scratch(
+project.structures['lbco'].atom_sites.create(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -150,7 +150,7 @@ project.structures['lbco'].atom_sites.add_from_scratch(
     b_iso=0.5,
     occupancy=0.5,
 )
-project.structures['lbco'].atom_sites.add_from_scratch(
+project.structures['lbco'].atom_sites.create(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -159,7 +159,7 @@ project.structures['lbco'].atom_sites.add_from_scratch(
     wyckoff_letter='b',
     b_iso=0.5,
 )
-project.structures['lbco'].atom_sites.add_from_scratch(
+project.structures['lbco'].atom_sites.create(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -293,11 +293,11 @@ project.experiments['hrpt'].background_type = 'line-segment'
 # Add background points.
 
 # %%
-project.experiments['hrpt'].background.add_from_scratch(id='10', x=10, y=170)
-project.experiments['hrpt'].background.add_from_scratch(id='30', x=30, y=170)
-project.experiments['hrpt'].background.add_from_scratch(id='50', x=50, y=170)
-project.experiments['hrpt'].background.add_from_scratch(id='110', x=110, y=170)
-project.experiments['hrpt'].background.add_from_scratch(id='165', x=165, y=170)
+project.experiments['hrpt'].background.create(id='10', x=10, y=170)
+project.experiments['hrpt'].background.create(id='30', x=30, y=170)
+project.experiments['hrpt'].background.create(id='50', x=50, y=170)
+project.experiments['hrpt'].background.create(id='110', x=110, y=170)
+project.experiments['hrpt'].background.create(id='165', x=165, y=170)
 
 # %% [markdown]
 # Show current background points.
@@ -311,7 +311,7 @@ project.experiments['hrpt'].background.show()
 # Link the structure defined in the previous step to the experiment.
 
 # %%
-project.experiments['hrpt'].linked_phases.add_from_scratch(id='lbco', scale=10.0)
+project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
 
 # %% [markdown]
 # #### Show Experiment as CIF
@@ -333,22 +333,22 @@ project.save()
 #
 # #### Set Calculator
 #
-# Show supported calculation engines.
+# Show supported calculation engines for this experiment.
 
 # %%
-project.analysis.show_supported_calculators()
+project.experiments['hrpt'].show_supported_calculator_types()
 
 # %% [markdown]
-# Show current calculation engine.
+# Show current calculation engine for this experiment.
 
 # %%
-project.analysis.show_current_calculator()
+project.experiments['hrpt'].show_current_calculator_type()
 
 # %% [markdown]
 # Select the desired calculation engine.
 
 # %%
-project.analysis.current_calculator = 'cryspy'
+project.experiments['hrpt'].calculator_type = 'cryspy'
 
 # %% [markdown]
 # #### Show Calculated Data
@@ -397,19 +397,19 @@ project.analysis.show_free_params()
 # Show supported fit modes.
 
 # %%
-project.analysis.show_available_fit_modes()
+project.analysis.show_supported_fit_mode_types()
 
 # %% [markdown]
 # Show current fit mode.
 
 # %%
-project.analysis.show_current_fit_mode()
+project.analysis.show_current_fit_mode_type()
 
 # %% [markdown]
 # Select desired fit mode.
 
 # %%
-project.analysis.fit_mode = 'single'
+project.analysis.fit_mode.mode = 'single'
 
 # %% [markdown]
 # #### Set Minimizer
@@ -429,7 +429,7 @@ project.analysis.show_current_minimizer()
 # Select desired fitting engine.
 
 # %%
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]
 # ### Perform Fit 1/5
@@ -565,11 +565,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Set aliases for parameters.
 
 # %%
-project.analysis.aliases.add_from_scratch(
+project.analysis.aliases.create(
     label='biso_La',
     param_uid=project.structures['lbco'].atom_sites['La'].b_iso.uid,
 )
-project.analysis.aliases.add_from_scratch(
+project.analysis.aliases.create(
     label='biso_Ba',
     param_uid=project.structures['lbco'].atom_sites['Ba'].b_iso.uid,
 )
@@ -578,7 +578,7 @@ project.analysis.aliases.add_from_scratch(
 # Set constraints.
 
 # %%
-project.analysis.constraints.add_from_scratch(lhs_alias='biso_Ba', rhs_expr='biso_La')
+project.analysis.constraints.create(lhs_alias='biso_Ba', rhs_expr='biso_La')
 
 # %% [markdown]
 # Show defined constraints.
@@ -634,11 +634,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Set more aliases for parameters.
 
 # %%
-project.analysis.aliases.add_from_scratch(
+project.analysis.aliases.create(
     label='occ_La',
     param_uid=project.structures['lbco'].atom_sites['La'].occupancy.uid,
 )
-project.analysis.aliases.add_from_scratch(
+project.analysis.aliases.create(
     label='occ_Ba',
     param_uid=project.structures['lbco'].atom_sites['Ba'].occupancy.uid,
 )
@@ -647,7 +647,7 @@ project.analysis.aliases.add_from_scratch(
 # Set more constraints.
 
 # %%
-project.analysis.constraints.add_from_scratch(
+project.analysis.constraints.create(
     lhs_alias='occ_Ba',
     rhs_expr='1 - occ_La',
 )

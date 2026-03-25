@@ -1037,6 +1037,8 @@
       
         
       
+        
+      
     
     
     
@@ -1747,6 +1749,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1765,7 +1771,7 @@
   <span class="md-ellipsis">
     
   
-    Workshops & Schools
+    Multi-Structure & Multi-Experiment
   
 
     
@@ -1778,6 +1784,149 @@
         
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Multi-Structure & Multi-Experiment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PbSO4 advanced
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO+Si McStas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-16/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Si Bragg+PDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_7" id="__nav_4_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workshops & Schools
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2448,14 +2597,15 @@ models in EasyDiffraction. It is assumed that you have already created a
 <h2 id="adding-a-model-from-cif">Adding a Model from <abbr title="Crystallographic Information File.">CIF</abbr></h2>
 <p>This is the most straightforward way to define a structure in EasyDiffraction.
 If you have a crystallographic information file (<abbr title="Crystallographic Information File.">CIF</abbr>) for your structure, you
-can add it to your project using the <code>add_phase_from_file</code> method of the
-<code>project</code> instance. In this case, the name of the model will be taken from <abbr title="Crystallographic Information File.">CIF</abbr>.</p>
+can add it to your project using the <code>add_from_cif_path</code> method of the
+<code>project.structures</code> collection. In this case, the name of the model will be
+taken from <abbr title="Crystallographic Information File.">CIF</abbr>.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Load a phase from a CIF file</span>
-<span class="n">project</span><span class="o">.</span><span class="n">add_phase_from_file</span><span class="p">(</span><span class="s1">&#39;data/lbco.cif&#39;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">add_from_cif_path</span><span class="p">(</span><span class="s1">&#39;data/lbco.cif&#39;</span><span class="p">)</span>
 </code></pre></div>
 <p>Accessing the model after loading it will be done through the <code>structures</code>
-object of the <code>project</code> instance. The name of the model will be the same as the
-data block id in the <abbr title="Crystallographic Information File.">CIF</abbr> file. For example, if the <abbr title="Crystallographic Information File.">CIF</abbr> file contains a data
+collection of the <code>project</code> instance. The name of the model will be the same as
+the data block id in the <abbr title="Crystallographic Information File.">CIF</abbr> file. For example, if the <abbr title="Crystallographic Information File.">CIF</abbr> file contains a data
 block with the id <code>lbco</code>,</p>
 <!-- prettier-ignore-start -->
 
@@ -2476,12 +2626,12 @@ data_<span class="red"><b>lbco</b></span>
 </code></pre></div>
 <h2 id="defining-a-model-manually">Defining a Model Manually</h2>
 <p>If you do not have a <abbr title="Crystallographic Information File.">CIF</abbr> file or prefer to define the model manually, you can
-use the <code>add</code> method of the <code>structures</code> object of the <code>project</code> instance. In
+use the <code>create</code> method of the <code>structures</code> object of the <code>project</code> instance. In
 this case, you will need to specify the name of the model, which will be used to
 reference it later.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Add a structure with default parameters</span>
 <span class="c1"># The structure name is used to reference it later.</span>
-<span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">add_from_scratch</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;nacl&#39;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;nacl&#39;</span><span class="p">)</span>
 </code></pre></div>
 <p>The <code>add</code> method creates a new structure with default parameters. You can then
 modify its parameters to match your specific crystallographic structure. All
@@ -2503,7 +2653,7 @@ manage the model:</p>
 </code></pre></div>
 <h3 id="atom-sites-category">3. Atom Sites Category</h3>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Add atomic sites</span>
-<span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;nacl&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+<span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;nacl&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Na&#39;</span><span class="p">,</span>
     <span class="n">type_symbol</span><span class="o">=</span><span class="s1">&#39;Na&#39;</span><span class="p">,</span>
     <span class="n">fract_x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -2512,7 +2662,7 @@ manage the model:</p>
     <span class="n">occupancy</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">b_iso_or_equiv</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;nacl&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+<span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;nacl&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Cl&#39;</span><span class="p">,</span>
     <span class="n">type_symbol</span><span class="o">=</span><span class="s1">&#39;Cl&#39;</span><span class="p">,</span>
     <span class="n">fract_x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>

@@ -86,6 +86,10 @@ nav:
           - Ni pd-neut-cwl: tutorials/ed-10.ipynb
           - Si pd-neut-tof: tutorials/ed-11.ipynb
           - NaCl pd-xray: tutorials/ed-12.ipynb
+      - Multi-Structure & Multi-Experiment:
+          - PbSO4 NPD+XRD: tutorials/ed-4.ipynb
+          - LBCO+Si McStas: tutorials/ed-9.ipynb
+          - Si Bragg+PDF: tutorials/ed-16.ipynb
       - Workshops & Schools:
           - 2025 DMSC: tutorials/ed-13.ipynb
   - API Reference:

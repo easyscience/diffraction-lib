@@ -185,8 +185,8 @@ project_1.plot_meas(expt_name='sim_si')
 # for more details about excluding regions from the measured data.
 
 # %%
-project_1.experiments['sim_si'].excluded_regions.add_from_scratch(id='1', start=0, end=55000)
-project_1.experiments['sim_si'].excluded_regions.add_from_scratch(id='2', start=105500, end=200000)
+project_1.experiments['sim_si'].excluded_regions.create(id='1', start=0, end=55000)
+project_1.experiments['sim_si'].excluded_regions.create(id='2', start=105500, end=200000)
 
 # %% [markdown]
 # To visualize the effect of excluding the high TOF region, we can plot
@@ -355,13 +355,13 @@ project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0147
 
 # %%
 project_1.experiments['sim_si'].background_type = 'line-segment'
-project_1.experiments['sim_si'].background.add_from_scratch(id='1', x=50000, y=0.01)
-project_1.experiments['sim_si'].background.add_from_scratch(id='2', x=60000, y=0.01)
-project_1.experiments['sim_si'].background.add_from_scratch(id='3', x=70000, y=0.01)
-project_1.experiments['sim_si'].background.add_from_scratch(id='4', x=80000, y=0.01)
-project_1.experiments['sim_si'].background.add_from_scratch(id='5', x=90000, y=0.01)
-project_1.experiments['sim_si'].background.add_from_scratch(id='6', x=100000, y=0.01)
-project_1.experiments['sim_si'].background.add_from_scratch(id='7', x=110000, y=0.01)
+project_1.experiments['sim_si'].background.create(id='1', x=50000, y=0.01)
+project_1.experiments['sim_si'].background.create(id='2', x=60000, y=0.01)
+project_1.experiments['sim_si'].background.create(id='3', x=70000, y=0.01)
+project_1.experiments['sim_si'].background.create(id='4', x=80000, y=0.01)
+project_1.experiments['sim_si'].background.create(id='5', x=90000, y=0.01)
+project_1.experiments['sim_si'].background.create(id='6', x=100000, y=0.01)
+project_1.experiments['sim_si'].background.create(id='7', x=110000, y=0.01)
 
 # %% [markdown]
 # ### 🧩 Create a Structure – Si
@@ -448,7 +448,7 @@ project_1.experiments['sim_si'].background.add_from_scratch(id='7', x=110000, y=
 # #### Add Structure
 
 # %%
-project_1.structures.add_from_scratch(name='si')
+project_1.structures.create(name='si')
 
 # %% [markdown]
 # #### Set Space Group
@@ -482,7 +482,7 @@ project_1.structures['si'].cell.length_a = 5.43
 # for more details about the atom sites category.
 
 # %%
-project_1.structures['si'].atom_sites.add_from_scratch(
+project_1.structures['si'].atom_sites.create(
     label='Si',
     type_symbol='Si',
     fract_x=0,
@@ -506,7 +506,7 @@ project_1.structures['si'].atom_sites.add_from_scratch(
 # for more details about linking a structure to an experiment.
 
 # %%
-project_1.experiments['sim_si'].linked_phases.add_from_scratch(id='si', scale=1.0)
+project_1.experiments['sim_si'].linked_phases.create(id='si', scale=1.0)
 
 # %% [markdown]
 # ### 🚀 Analyze and Fit the Data
@@ -783,10 +783,8 @@ project_2.experiments.add_from_data_path(
 # %% tags=["solution", "hide-input"]
 project_2.plot_meas(expt_name='sim_lbco')
 
-project_2.experiments['sim_lbco'].excluded_regions.add_from_scratch(id='1', start=0, end=55000)
-project_2.experiments['sim_lbco'].excluded_regions.add_from_scratch(
-    id='2', start=105500, end=200000
-)
+project_2.experiments['sim_lbco'].excluded_regions.create(id='1', start=0, end=55000)
+project_2.experiments['sim_lbco'].excluded_regions.create(id='2', start=105500, end=200000)
 
 project_2.plot_meas(expt_name='sim_lbco')
 
@@ -863,13 +861,13 @@ project_2.experiments['sim_lbco'].peak.asym_alpha_1 = sim_si_peak.asym_alpha_1.v
 
 # %% tags=["solution", "hide-input"]
 project_2.experiments['sim_lbco'].background_type = 'line-segment'
-project_2.experiments['sim_lbco'].background.add_from_scratch(id='1', x=50000, y=0.2)
-project_2.experiments['sim_lbco'].background.add_from_scratch(id='2', x=60000, y=0.2)
-project_2.experiments['sim_lbco'].background.add_from_scratch(id='3', x=70000, y=0.2)
-project_2.experiments['sim_lbco'].background.add_from_scratch(id='4', x=80000, y=0.2)
-project_2.experiments['sim_lbco'].background.add_from_scratch(id='5', x=90000, y=0.2)
-project_2.experiments['sim_lbco'].background.add_from_scratch(id='6', x=100000, y=0.2)
-project_2.experiments['sim_lbco'].background.add_from_scratch(id='7', x=110000, y=0.2)
+project_2.experiments['sim_lbco'].background.create(id='1', x=50000, y=0.2)
+project_2.experiments['sim_lbco'].background.create(id='2', x=60000, y=0.2)
+project_2.experiments['sim_lbco'].background.create(id='3', x=70000, y=0.2)
+project_2.experiments['sim_lbco'].background.create(id='4', x=80000, y=0.2)
+project_2.experiments['sim_lbco'].background.create(id='5', x=90000, y=0.2)
+project_2.experiments['sim_lbco'].background.create(id='6', x=100000, y=0.2)
+project_2.experiments['sim_lbco'].background.create(id='7', x=110000, y=0.2)
 
 # %% [markdown]
 # ### 🧩 Exercise 3: Define a Structure – LBCO
@@ -955,7 +953,7 @@ project_2.experiments['sim_lbco'].background.add_from_scratch(id='7', x=110000, 
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.structures.add_from_scratch(name='lbco')
+project_2.structures.create(name='lbco')
 
 # %% [markdown]
 # #### Exercise 3.2: Set Space Group
@@ -1009,7 +1007,7 @@ project_2.structures['lbco'].cell.length_a = 3.88
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.structures['lbco'].atom_sites.add_from_scratch(
+project_2.structures['lbco'].atom_sites.create(
     label='La',
     type_symbol='La',
     fract_x=0,
@@ -1019,7 +1017,7 @@ project_2.structures['lbco'].atom_sites.add_from_scratch(
     b_iso=0.95,
     occupancy=0.5,
 )
-project_2.structures['lbco'].atom_sites.add_from_scratch(
+project_2.structures['lbco'].atom_sites.create(
     label='Ba',
     type_symbol='Ba',
     fract_x=0,
@@ -1029,7 +1027,7 @@ project_2.structures['lbco'].atom_sites.add_from_scratch(
     b_iso=0.95,
     occupancy=0.5,
 )
-project_2.structures['lbco'].atom_sites.add_from_scratch(
+project_2.structures['lbco'].atom_sites.create(
     label='Co',
     type_symbol='Co',
     fract_x=0.5,
@@ -1038,7 +1036,7 @@ project_2.structures['lbco'].atom_sites.add_from_scratch(
     wyckoff_letter='b',
     b_iso=0.80,
 )
-project_2.structures['lbco'].atom_sites.add_from_scratch(
+project_2.structures['lbco'].atom_sites.create(
     label='O',
     type_symbol='O',
     fract_x=0,
@@ -1064,7 +1062,7 @@ project_2.structures['lbco'].atom_sites.add_from_scratch(
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.experiments['sim_lbco'].linked_phases.add_from_scratch(id='lbco', scale=1.0)
+project_2.experiments['sim_lbco'].linked_phases.create(id='lbco', scale=1.0)
 
 # %% [markdown]
 # ### 🚀 Exercise 5: Analyze and Fit the Data
@@ -1373,7 +1371,7 @@ project_2.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=
 
 # %% tags=["solution", "hide-input"]
 # Set Space Group
-project_2.structures.add_from_scratch(name='si')
+project_2.structures.create(name='si')
 project_2.structures['si'].space_group.name_h_m = 'F d -3 m'
 project_2.structures['si'].space_group.it_coordinate_system_code = '2'
 
@@ -1381,7 +1379,7 @@ project_2.structures['si'].space_group.it_coordinate_system_code = '2'
 project_2.structures['si'].cell.length_a = 5.43
 
 # Set Atom Sites
-project_2.structures['si'].atom_sites.add_from_scratch(
+project_2.structures['si'].atom_sites.create(
     label='Si',
     type_symbol='Si',
     fract_x=0,
@@ -1392,7 +1390,7 @@ project_2.structures['si'].atom_sites.add_from_scratch(
 )
 
 # Assign Structure to Experiment
-project_2.experiments['sim_lbco'].linked_phases.add_from_scratch(id='si', scale=1.0)
+project_2.experiments['sim_lbco'].linked_phases.create(id='si', scale=1.0)
 
 # %% [markdown]
 # #### Exercise 5.11: Refine the Scale of the Si Phase

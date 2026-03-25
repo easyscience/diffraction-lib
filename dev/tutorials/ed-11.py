@@ -33,14 +33,14 @@ project.plotter.x_max = 40
 # ## Add Structure
 
 # %%
-project.structures.add_from_scratch(name='si')
+project.structures.create(name='si')
 
 # %%
 structure = project.structures['si']
 structure.space_group.name_h_m.value = 'F d -3 m'
 structure.space_group.it_coordinate_system_code = '1'
 structure.cell.length_a = 5.43146
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='Si',
     type_symbol='Si',
     fract_x=0,
@@ -68,7 +68,7 @@ project.experiments.add_from_data_path(
 
 # %%
 experiment = project.experiments['nomad']
-experiment.linked_phases.add_from_scratch(id='si', scale=1.0)
+experiment.linked_phases.create(id='si', scale=1.0)
 experiment.peak.damp_q = 0.02
 experiment.peak.broad_q = 0.03
 experiment.peak.cutoff_q = 35.0
@@ -94,7 +94,6 @@ experiment.peak.sharp_delta_2.free = True
 # ## Run Fitting
 
 # %%
-project.analysis.current_calculator = 'pdffit'
 project.analysis.fit()
 project.analysis.show_fit_results()
 

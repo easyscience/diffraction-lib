@@ -1159,6 +1159,8 @@
       
         
       
+        
+      
     
     
     
@@ -1869,6 +1871,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1887,7 +1893,7 @@
   <span class="md-ellipsis">
     
   
-    Workshops & Schools
+    Multi-Structure & Multi-Experiment
   
 
     
@@ -1900,6 +1906,149 @@
         
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Multi-Structure & Multi-Experiment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PbSO4 advanced
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO+Si McStas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-16/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Si Bragg+PDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_7" id="__nav_4_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workshops & Schools
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2713,11 +2862,13 @@ currently working on its integration into EasyDiffraction.</p>
 <p><a href="https://github.com/diffpy/diffpy.pdffit2/">PDFfit2</a> is a Python library for
 calculating the pair distribution function (PDF) from crystallographic models.</p>
 <h3 id="set-calculator">Set Calculator</h3>
-<p>To show the supported calculation engines:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">show_supported_calculators</span><span class="p">()</span>
+<p>The calculator is automatically selected based on the experiment type (e.g.,
+<code>cryspy</code> for Bragg diffraction, <code>pdffit</code> for total scattering). To show the
+supported calculation engines for a specific experiment:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">show_supported_calculator_types</span><span class="p">()</span>
 </code></pre></div>
 <p>The example of the output is:</p>
-<p>Supported calculators</p>
+<p>Supported calculator types</p>
 <table>
 <thead>
 <tr>
@@ -2730,14 +2881,10 @@ calculating the pair distribution function (PDF) from crystallographic models.</
 <td>cryspy</td>
 <td>CrysPy library for crystallographic calculations</td>
 </tr>
-<tr>
-<td>pdffit</td>
-<td>PDFfit2 library for pair distribution function calculations</td>
-</tr>
 </tbody>
 </table>
-<p>To select the desired calculation engine, e.g., 'cryspy':</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">current_calculator</span> <span class="o">=</span> <span class="s1">&#39;cryspy&#39;</span>
+<p>To explicitly select a calculation engine for an experiment:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">calculator_type</span> <span class="o">=</span> <span class="s1">&#39;cryspy&#39;</span>
 </code></pre></div>
 <h2 id="minimization-optimization">Minimization / Optimization</h2>
 <p>The process of refining model parameters involves iterating through multiple
@@ -2797,7 +2944,7 @@ least-squares minimization, without requiring derivatives of the objective.</p>
 </tr>
 <tr>
 <td>lmfit (least_squares)</td>
-<td>LMFIT library with SciPy’s trust region reflective algorithm</td>
+<td>LMFIT library with SciPy's trust region reflective algorithm</td>
 </tr>
 <tr>
 <td>dfols</td>
@@ -2805,22 +2952,18 @@ least-squares minimization, without requiring derivatives of the objective.</p>
 </tr>
 </tbody>
 </table>
-<p>To select the desired calculation engine, e.g., 'lmfit (least_squares)':</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">current_minimizer</span> <span class="o">=</span> <span class="s1">&#39;lmfit (leastsq)&#39;</span>
+<p>To select the desired minimizer, e.g., 'lmfit':</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">current_minimizer</span> <span class="o">=</span> <span class="s1">&#39;lmfit&#39;</span>
 </code></pre></div>
 <h3 id="fit-mode">Fit Mode</h3>
 <p>In EasyDiffraction, you can set the <strong>fit mode</strong> to control how the refinement
 process is performed. The fit mode determines whether the refinement is
 performed independently for each experiment or jointly across all experiments.</p>
-<p>To show the supported fit modes:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">show_supported_fit_modes</span><span class="p">()</span>
-</code></pre></div>
-<p>An example of supported fit modes is:</p>
-<p>Supported fit modes</p>
+<p>The supported fit modes are:</p>
 <table>
 <thead>
 <tr>
-<th>Strategy</th>
+<th>Mode</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -2835,12 +2978,11 @@ performed independently for each experiment or jointly across all experiments.</
 </tr>
 </tbody>
 </table>
-<p>You can set the fit mode using the <code>set_fit_mode</code> method of the <code>analysis</code>
-object:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit_mode</span> <span class="o">=</span> <span class="s1">&#39;joint&#39;</span>
+<p>You can set the fit mode on the <code>analysis</code> object:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit_mode</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;joint&#39;</span>
 </code></pre></div>
-<p>To check the current fit mode, you can use the <code>show_current_fit_mode</code> method:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">show_current_fit_mode</span><span class="p">()</span>
+<p>To check the current fit mode:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit_mode</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="perform-fit">Perform Fit</h3>
 <p>Refining the structure and experiment parameters against measured data is
@@ -2909,21 +3051,21 @@ Aliases are used to reference parameters in a more readable way, making it
 easier to manage constraints.</p>
 <p>An example of setting aliases for parameters in a structure:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Set aliases for the atomic displacement parameters</span>
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add_from_scratch</span><span class="p">(</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;biso_La&#39;</span><span class="p">,</span>
     <span class="n">param_uid</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">[</span><span class="s1">&#39;La&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">b_iso</span><span class="o">.</span><span class="n">uid</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add_from_scratch</span><span class="p">(</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;biso_Ba&#39;</span><span class="p">,</span>
     <span class="n">param_uid</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">[</span><span class="s1">&#39;Ba&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">b_iso</span><span class="o">.</span><span class="n">uid</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># Set aliases for the occupancies of the atom sites</span>
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add_from_scratch</span><span class="p">(</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;occ_La&#39;</span><span class="p">,</span>
     <span class="n">param_uid</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">[</span><span class="s1">&#39;La&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">occupancy</span><span class="o">.</span><span class="n">uid</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add_from_scratch</span><span class="p">(</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;occ_Ba&#39;</span><span class="p">,</span>
     <span class="n">param_uid</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">[</span><span class="s1">&#39;Ba&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">occupancy</span><span class="o">.</span><span class="n">uid</span><span class="p">,</span>
 <span class="p">)</span>
@@ -2935,12 +3077,12 @@ method of the <code>constraints</code> object. Constraints are defined by specif
 rhs expression can be a simple alias or a more complex expression involving
 other aliases.</p>
 <p>An example of setting constraints for the aliases defined above:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">add_from_scratch</span><span class="p">(</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
     <span class="n">lhs_alias</span><span class="o">=</span><span class="s1">&#39;biso_Ba&#39;</span><span class="p">,</span>
     <span class="n">rhs_expr</span><span class="o">=</span><span class="s1">&#39;biso_La&#39;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">add_from_scratch</span><span class="p">(</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
     <span class="n">lhs_alias</span><span class="o">=</span><span class="s1">&#39;occ_Ba&#39;</span><span class="p">,</span>
     <span class="n">rhs_expr</span><span class="o">=</span><span class="s1">&#39;1 - occ_La&#39;</span><span class="p">,</span>
 <span class="p">)</span>

@@ -49,7 +49,7 @@ structure.cell.length_c = 6.95
 # #### Set Atom Sites
 
 # %%
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='Pb',
     type_symbol='Pb',
     fract_x=0.1876,
@@ -58,7 +58,7 @@ structure.atom_sites.add_from_scratch(
     wyckoff_letter='c',
     b_iso=1.37,
 )
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='S',
     type_symbol='S',
     fract_x=0.0654,
@@ -67,7 +67,7 @@ structure.atom_sites.add_from_scratch(
     wyckoff_letter='c',
     b_iso=0.3777,
 )
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='O1',
     type_symbol='O',
     fract_x=0.9082,
@@ -76,7 +76,7 @@ structure.atom_sites.add_from_scratch(
     wyckoff_letter='c',
     b_iso=1.9764,
 )
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='O2',
     type_symbol='O',
     fract_x=0.1935,
@@ -85,7 +85,7 @@ structure.atom_sites.add_from_scratch(
     wyckoff_letter='c',
     b_iso=1.4456,
 )
-structure.atom_sites.add_from_scratch(
+structure.atom_sites.create(
     label='O3',
     type_symbol='O',
     fract_x=0.0811,
@@ -159,13 +159,13 @@ for id, x, y in [
     ('7', 120.0, 244.4525),
     ('8', 153.0, 226.0595),
 ]:
-    expt1.background.add_from_scratch(id=id, x=x, y=y)
+    expt1.background.create(id=id, x=x, y=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt1.linked_phases.add_from_scratch(id='pbso4', scale=1.5)
+expt1.linked_phases.create(id='pbso4', scale=1.5)
 
 # %% [markdown]
 # ### Experiment 2: xrd
@@ -223,13 +223,13 @@ for id, x, y in [
     ('5', 4, 54.552),
     ('6', 5, -20.661),
 ]:
-    expt2.background.add_from_scratch(id=id, order=x, coef=y)
+    expt2.background.create(id=id, order=x, coef=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt2.linked_phases.add_from_scratch(id='pbso4', scale=0.001)
+expt2.linked_phases.create(id='pbso4', scale=0.001)
 
 # %% [markdown]
 # ## Define Project
@@ -261,22 +261,16 @@ project.experiments.add(expt2)
 # This section outlines the analysis process, including how to configure
 # calculation and fitting engines.
 #
-# #### Set Calculator
-
-# %%
-project.analysis.current_calculator = 'cryspy'
-
-# %% [markdown]
 # #### Set Fit Mode
 
 # %%
-project.analysis.fit_mode = 'joint'
+project.analysis.fit_mode.mode = 'joint'
 
 # %% [markdown]
 # #### Set Minimizer
 
 # %%
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]
 # #### Set Fitting Parameters
