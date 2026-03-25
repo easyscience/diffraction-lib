@@ -47,11 +47,12 @@ class BraggPdExperiment(PdExperimentBase):
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self._instrument = InstrumentFactory.create_default_for(
+        self._instrument_type: str = InstrumentFactory.default_tag(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
             sample_form=self.type.sample_form.value,
         )
+        self._instrument = InstrumentFactory.create(self._instrument_type)
         self._background_type: str = BackgroundFactory.default_tag()
         self._background = BackgroundFactory.create(self._background_type)
 
@@ -99,9 +100,52 @@ class BraggPdExperiment(PdExperimentBase):
         console.paragraph('Data loaded successfully')
         console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
 
+    # ------------------------------------------------------------------
+    #  Instrument (switchable-category pattern)
+    # ------------------------------------------------------------------
+
     @property
     def instrument(self):
+        """Active instrument model for this experiment."""
         return self._instrument
+
+    @property
+    def instrument_type(self) -> str:
+        """Tag of the active instrument type."""
+        return self._instrument_type
+
+    @instrument_type.setter
+    def instrument_type(self, new_type: str) -> None:
+        """Switch to a different instrument type.
+
+        Args:
+            new_type: Instrument tag (e.g. ``'cwl-pd'``).
+        """
+        supported_tags = InstrumentFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported instrument type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_instrument_types()'",
+            )
+            return
+        self._instrument = InstrumentFactory.create(new_type)
+        self._instrument_type = new_type
+        console.paragraph(f"Instrument type for experiment '{self.name}' changed to")
+        console.print(new_type)
+
+    def show_supported_instrument_types(self) -> None:
+        """Print a table of supported instrument types."""
+        InstrumentFactory.show_supported()
+
+    def show_current_instrument_type(self) -> None:
+        """Print the currently used instrument type."""
+        console.paragraph('Current instrument type')
+        console.print(self.instrument_type)
+
+    # ------------------------------------------------------------------
+    #  Background (switchable-category pattern)
+    # ------------------------------------------------------------------
 
     @property
     def background_type(self):

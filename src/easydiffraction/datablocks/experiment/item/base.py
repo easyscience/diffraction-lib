@@ -216,16 +216,18 @@ class ScExperimentBase(ExperimentBase):
         self._extinction = ExtinctionFactory.create(self._extinction_type)
         self._linked_crystal_type: str = LinkedCrystalFactory.default_tag()
         self._linked_crystal = LinkedCrystalFactory.create(self._linked_crystal_type)
-        self._instrument = InstrumentFactory.create_default_for(
+        self._instrument_type: str = InstrumentFactory.default_tag(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
             sample_form=self.type.sample_form.value,
         )
-        self._data = DataFactory.create_default_for(
+        self._instrument = InstrumentFactory.create(self._instrument_type)
+        self._data_type: str = DataFactory.default_tag(
             sample_form=self.type.sample_form.value,
             beam_mode=self.type.beam_mode.value,
             scattering_type=self.type.scattering_type.value,
         )
+        self._data = DataFactory.create(self._data_type)
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
@@ -326,16 +328,90 @@ class ScExperimentBase(ExperimentBase):
         console.print(self.linked_crystal_type)
 
     # ------------------------------------------------------------------
-    #  Other properties
+    #  Instrument (switchable-category pattern)
     # ------------------------------------------------------------------
 
     @property
     def instrument(self):
+        """Active instrument model for this experiment."""
         return self._instrument
 
     @property
+    def instrument_type(self) -> str:
+        """Tag of the active instrument type."""
+        return self._instrument_type
+
+    @instrument_type.setter
+    def instrument_type(self, new_type: str) -> None:
+        """Switch to a different instrument type.
+
+        Args:
+            new_type: Instrument tag (e.g. ``'cwl-sc'``).
+        """
+        supported_tags = InstrumentFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported instrument type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_instrument_types()'",
+            )
+            return
+        self._instrument = InstrumentFactory.create(new_type)
+        self._instrument_type = new_type
+        console.paragraph(f"Instrument type for experiment '{self.name}' changed to")
+        console.print(new_type)
+
+    def show_supported_instrument_types(self) -> None:
+        """Print a table of supported instrument types."""
+        InstrumentFactory.show_supported()
+
+    def show_current_instrument_type(self) -> None:
+        """Print the currently used instrument type."""
+        console.paragraph('Current instrument type')
+        console.print(self.instrument_type)
+
+    # ------------------------------------------------------------------
+    #  Data (switchable-category pattern)
+    # ------------------------------------------------------------------
+
+    @property
     def data(self):
+        """Data collection for this experiment."""
         return self._data
+
+    @property
+    def data_type(self) -> str:
+        """Tag of the active data collection type."""
+        return self._data_type
+
+    @data_type.setter
+    def data_type(self, new_type: str) -> None:
+        """Switch to a different data collection type.
+
+        Args:
+            new_type: Data tag (e.g. ``'bragg-sc'``).
+        """
+        supported_tags = DataFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported data type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_data_types()'",
+            )
+            return
+        self._data = DataFactory.create(new_type)
+        self._data_type = new_type
+        console.paragraph(f"Data type for experiment '{self.name}' changed to")
+        console.print(new_type)
+
+    def show_supported_data_types(self) -> None:
+        """Print a table of supported data collection types."""
+        DataFactory.show_supported()
+
+    def show_current_data_type(self) -> None:
+        """Print the currently used data collection type."""
+        console.paragraph('Current data type')
+        console.print(self.data_type)
 
 
 class PdExperimentBase(ExperimentBase):
@@ -357,11 +433,12 @@ class PdExperimentBase(ExperimentBase):
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
         )
-        self._data = DataFactory.create_default_for(
+        self._data_type: str = DataFactory.default_tag(
             sample_form=self.type.sample_form.value,
             beam_mode=self.type.beam_mode.value,
             scattering_type=self.type.scattering_type.value,
         )
+        self._data = DataFactory.create(self._data_type)
         self._peak = PeakFactory.create(self._peak_profile_type)
 
     def _get_valid_linked_phases(
@@ -489,9 +566,48 @@ class PdExperimentBase(ExperimentBase):
         console.paragraph('Current excluded regions type')
         console.print(self.excluded_regions_type)
 
+    # ------------------------------------------------------------------
+    #  Data (switchable-category pattern)
+    # ------------------------------------------------------------------
+
     @property
     def data(self):
+        """Data collection for this experiment."""
         return self._data
+
+    @property
+    def data_type(self) -> str:
+        """Tag of the active data collection type."""
+        return self._data_type
+
+    @data_type.setter
+    def data_type(self, new_type: str) -> None:
+        """Switch to a different data collection type.
+
+        Args:
+            new_type: Data tag (e.g. ``'bragg-pd-cwl'``).
+        """
+        supported_tags = DataFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported data type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_data_types()'",
+            )
+            return
+        self._data = DataFactory.create(new_type)
+        self._data_type = new_type
+        console.paragraph(f"Data type for experiment '{self.name}' changed to")
+        console.print(new_type)
+
+    def show_supported_data_types(self) -> None:
+        """Print a table of supported data collection types."""
+        DataFactory.show_supported()
+
+    def show_current_data_type(self) -> None:
+        """Print the currently used data collection type."""
+        console.paragraph('Current data type')
+        console.print(self.data_type)
 
     @property
     def peak(self):
