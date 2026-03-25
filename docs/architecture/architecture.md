@@ -259,6 +259,10 @@ experiment.data  # CategoryCollection
 # Type-switchable — recreates the underlying object
 experiment.background_type = 'chebyshev'  # triggers BackgroundFactory.create(...)
 experiment.peak_profile_type = 'thompson-cox-hastings'  # triggers PeakFactory.create(...)
+experiment.extinction_type = 'shelx'  # triggers ExtinctionFactory.create(...)
+experiment.linked_crystal_type = 'default'  # triggers LinkedCrystalFactory.create(...)
+experiment.excluded_regions_type = 'default'  # triggers ExcludedRegionsFactory.create(...)
+experiment.linked_phases_type = 'default'  # triggers LinkedPhasesFactory.create(...)
 ```
 
 **Type switching pattern:** `expt.background_type = 'chebyshev'` rather than
@@ -870,8 +874,10 @@ simplifies maintenance.
 ### 9.4 Switchable-Category Convention
 
 Categories whose concrete implementation can be swapped at runtime (background,
-peak profile, etc.) are called **switchable categories**. They follow a fixed
-naming convention on the experiment:
+peak profile, etc.) are called **switchable categories**. Every factory-created
+category follows the switchable-category naming convention, even if only one
+implementation currently exists. This ensures a uniform API and makes adding a
+second implementation trivial.
 
 | Facet           | Naming pattern                               | Example                                          |
 | --------------- | -------------------------------------------- | ------------------------------------------------ |
@@ -879,6 +885,14 @@ naming convention on the experiment:
 | Active type tag | `<category>_type` property (getter + setter) | `expt.background_type`, `expt.peak_profile_type` |
 | Show supported  | `show_supported_<category>_types()`          | `expt.show_supported_background_types()`         |
 | Show current    | `show_current_<category>_type()`             | `expt.show_current_peak_profile_type()`          |
+
+The convention applies universally:
+
+- **Experiment:** `calculator_type`, `background_type`, `peak_profile_type`,
+  `extinction_type`, `linked_crystal_type`, `excluded_regions_type`,
+  `linked_phases_type`.
+- **Structure:** `cell_type`, `space_group_type`, `atom_sites_type`.
+- **Analysis:** `aliases_type`, `constraints_type`.
 
 **Design decisions:**
 
@@ -898,6 +912,15 @@ The user can always discover what is supported for the current experiment:
 expt.show_supported_peak_profile_types()
 expt.show_supported_background_types()
 expt.show_supported_calculator_types()
+expt.show_supported_extinction_types()
+expt.show_supported_linked_crystal_types()
+expt.show_supported_excluded_regions_types()
+expt.show_supported_linked_phases_types()
+struct.show_supported_cell_types()
+struct.show_supported_space_group_types()
+struct.show_supported_atom_sites_types()
+project.analysis.show_supported_aliases_types()
+project.analysis.show_supported_constraints_types()
 project.analysis.show_available_minimizers()
 ```
 

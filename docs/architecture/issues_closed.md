@@ -51,7 +51,10 @@ Analysis categories: `Aliases` / `AliasesFactory`, `Constraints` /
 
 `ShelxExtinction` and `LinkedCrystal` get the full switchable-category API on
 `ScExperimentBase` (`extinction_type`, `linked_crystal_type` getter+setter,
-`show_supported_*_types()`, `show_current_*_type()`). The remaining categories
-have only one implementation and no switchable API. Architecture §5.5 and §5.7
-tables updated. Unit tests extended with factory tests for extinction and
-linked-crystal.
+`show_supported_*_types()`, `show_current_*_type()`). `ExcludedRegions` and
+`LinkedPhases` get the same API on `PdExperimentBase`. `Cell`, `SpaceGroup`, and
+`AtomSites` get it on `Structure`. `Aliases` and `Constraints` get it on
+`Analysis`. Architecture §3.3, §5.5, §5.7, §9.4, §9.5 updated. Copilot
+instructions updated with universal switchable-category scope and
+architecture-first workflow rule. Unit tests extended with factory tests for
+extinction and linked-crystal.

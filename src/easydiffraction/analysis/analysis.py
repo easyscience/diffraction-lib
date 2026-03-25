@@ -7,8 +7,8 @@ from typing import Union
 
 import pandas as pd
 
-from easydiffraction.analysis.categories.aliases import Aliases
-from easydiffraction.analysis.categories.constraints import Constraints
+from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
+from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
@@ -52,11 +52,89 @@ class Analysis:
             project: The project that owns models and experiments.
         """
         self.project = project
-        self.aliases = Aliases()
-        self.constraints = Constraints()
+        self._aliases_type: str = AliasesFactory.default_tag()
+        self.aliases = AliasesFactory.create(self._aliases_type)
+        self._constraints_type: str = ConstraintsFactory.default_tag()
+        self.constraints = ConstraintsFactory.create(self._constraints_type)
         self.constraints_handler = ConstraintsHandler.get()
         self._fit_mode: str = 'single'
         self.fitter = Fitter('lmfit')
+
+    # ------------------------------------------------------------------
+    #  Aliases (switchable-category pattern)
+    # ------------------------------------------------------------------
+
+    @property
+    def aliases_type(self) -> str:
+        """Tag of the active aliases collection type."""
+        return self._aliases_type
+
+    @aliases_type.setter
+    def aliases_type(self, new_type: str) -> None:
+        """Switch to a different aliases collection type.
+
+        Args:
+            new_type: Aliases tag (e.g. ``'default'``).
+        """
+        supported_tags = AliasesFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported aliases type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_aliases_types()'",
+            )
+            return
+        self.aliases = AliasesFactory.create(new_type)
+        self._aliases_type = new_type
+        console.paragraph('Aliases type changed to')
+        console.print(new_type)
+
+    def show_supported_aliases_types(self) -> None:
+        """Print a table of supported aliases collection types."""
+        AliasesFactory.show_supported()
+
+    def show_current_aliases_type(self) -> None:
+        """Print the currently used aliases collection type."""
+        console.paragraph('Current aliases type')
+        console.print(self._aliases_type)
+
+    # ------------------------------------------------------------------
+    #  Constraints (switchable-category pattern)
+    # ------------------------------------------------------------------
+
+    @property
+    def constraints_type(self) -> str:
+        """Tag of the active constraints collection type."""
+        return self._constraints_type
+
+    @constraints_type.setter
+    def constraints_type(self, new_type: str) -> None:
+        """Switch to a different constraints collection type.
+
+        Args:
+            new_type: Constraints tag (e.g. ``'default'``).
+        """
+        supported_tags = ConstraintsFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported constraints type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_constraints_types()'",
+            )
+            return
+        self.constraints = ConstraintsFactory.create(new_type)
+        self._constraints_type = new_type
+        console.paragraph('Constraints type changed to')
+        console.print(new_type)
+
+    def show_supported_constraints_types(self) -> None:
+        """Print a table of supported constraints collection types."""
+        ConstraintsFactory.show_supported()
+
+    def show_current_constraints_type(self) -> None:
+        """Print the currently used constraints collection type."""
+        console.paragraph('Current constraints type')
+        console.print(self._constraints_type)
 
     def _get_params_as_dataframe(
         self,

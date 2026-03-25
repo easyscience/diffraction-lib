@@ -60,17 +60,23 @@
   `from .chebyshev import ChebyshevPolynomialBackground`). When adding a new
   concrete class, always add its import to the corresponding `__init__.py`.
 - Switchable categories (those whose implementation can be swapped at runtime
-  via a factory) follow a fixed naming convention on the experiment:
-  `<category>` (read-only property), `<category>_type` (getter + setter),
-  `show_supported_<category>_types()`, `show_current_<category>_type()`. The
-  experiment owns the type setter and the show methods; the show methods
-  delegate to `Factory.show_supported(...)` passing experiment context.
+  via a factory) follow a fixed naming convention on the owner (experiment,
+  structure, or analysis): `<category>` (read-only property), `<category>_type`
+  (getter + setter), `show_supported_<category>_types()`,
+  `show_current_<category>_type()`. The owner class owns the type setter and the
+  show methods; the show methods delegate to `Factory.show_supported(...)`
+  passing context. Every factory-created category must have this full API, even
+  if only one implementation exists today.
 - Keep `core/` free of domain logic — only base classes and utilities.
 - Don't introduce a new abstraction until there is a concrete second use case.
 - Don't add dependencies without asking.
 
 ## Changes
 
+- Before implementing any change, read `docs/architecture/architecture.md` to
+  understand the current design choices and conventions. Follow the documented
+  patterns (factory registration, switchable-category naming, metadata
+  classification, etc.) to stay consistent with the rest of the codebase.
 - The project is in beta; do not keep legacy code or add deprecation warnings.
   Instead, update tests and tutorials to follow the current API.
 - Minimal diffs: don't rewrite working code just to reformat it.

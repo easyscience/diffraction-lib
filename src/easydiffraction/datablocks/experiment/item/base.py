@@ -11,13 +11,17 @@ from typing import List
 
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
-from easydiffraction.datablocks.experiment.categories.excluded_regions import ExcludedRegions
+from easydiffraction.datablocks.experiment.categories.excluded_regions.factory import (
+    ExcludedRegionsFactory,
+)
 from easydiffraction.datablocks.experiment.categories.extinction.factory import ExtinctionFactory
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
 from easydiffraction.datablocks.experiment.categories.linked_crystal.factory import (
     LinkedCrystalFactory,
 )
-from easydiffraction.datablocks.experiment.categories.linked_phases import LinkedPhases
+from easydiffraction.datablocks.experiment.categories.linked_phases.factory import (
+    LinkedPhasesFactory,
+)
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
 from easydiffraction.io.cif.serialize import experiment_to_cif
 from easydiffraction.utils.logging import console
@@ -345,8 +349,10 @@ class PdExperimentBase(ExperimentBase):
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self._linked_phases: LinkedPhases = LinkedPhases()
-        self._excluded_regions: ExcludedRegions = ExcludedRegions()
+        self._linked_phases_type: str = LinkedPhasesFactory.default_tag()
+        self._linked_phases = LinkedPhasesFactory.create(self._linked_phases_type)
+        self._excluded_regions_type: str = ExcludedRegionsFactory.default_tag()
+        self._excluded_regions = ExcludedRegionsFactory.create(self._excluded_regions_type)
         self._peak_profile_type: str = PeakFactory.default_tag(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
@@ -407,9 +413,81 @@ class PdExperimentBase(ExperimentBase):
         return self._linked_phases
 
     @property
+    def linked_phases_type(self) -> str:
+        """Tag of the active linked-phases collection type."""
+        return self._linked_phases_type
+
+    @linked_phases_type.setter
+    def linked_phases_type(self, new_type: str) -> None:
+        """Switch to a different linked-phases collection type.
+
+        Args:
+            new_type: Linked-phases tag (e.g. ``'default'``).
+        """
+        supported_tags = LinkedPhasesFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported linked phases type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_linked_phases_types()'",
+            )
+            return
+
+        self._linked_phases = LinkedPhasesFactory.create(new_type)
+        self._linked_phases_type = new_type
+        console.paragraph(f"Linked phases type for experiment '{self.name}' changed to")
+        console.print(new_type)
+
+    def show_supported_linked_phases_types(self) -> None:
+        """Print a table of supported linked-phases collection types."""
+        LinkedPhasesFactory.show_supported()
+
+    def show_current_linked_phases_type(self) -> None:
+        """Print the currently used linked-phases collection type."""
+        console.paragraph('Current linked phases type')
+        console.print(self.linked_phases_type)
+
+    @property
     def excluded_regions(self):
         """Collection of excluded regions for the x-grid."""
         return self._excluded_regions
+
+    @property
+    def excluded_regions_type(self) -> str:
+        """Tag of the active excluded-regions collection type."""
+        return self._excluded_regions_type
+
+    @excluded_regions_type.setter
+    def excluded_regions_type(self, new_type: str) -> None:
+        """Switch to a different excluded-regions collection type.
+
+        Args:
+            new_type: Excluded-regions tag (e.g. ``'default'``).
+        """
+        supported_tags = ExcludedRegionsFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported excluded regions type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_excluded_regions_types()'",
+            )
+            return
+
+        self._excluded_regions = ExcludedRegionsFactory.create(new_type)
+        self._excluded_regions_type = new_type
+        console.paragraph(f"Excluded regions type for experiment '{self.name}' changed to")
+        console.print(new_type)
+
+    def show_supported_excluded_regions_types(self) -> None:
+        """Print a table of supported excluded-regions collection
+        types.
+        """
+        ExcludedRegionsFactory.show_supported()
+
+    def show_current_excluded_regions_type(self) -> None:
+        """Print the currently used excluded-regions collection type."""
+        console.paragraph('Current excluded regions type')
+        console.print(self.excluded_regions_type)
 
     @property
     def data(self):
