@@ -6,8 +6,12 @@ Represents an equation of the form ``lhs_alias = rhs_expr`` where
 ``rhs_expr`` is evaluated elsewhere by the analysis engine.
 """
 
+from __future__ import annotations
+
+from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RegexValidator
@@ -69,8 +73,14 @@ class Constraint(CategoryItem):
         self._rhs_expr.value = value
 
 
+@ConstraintsFactory.register
 class Constraints(CategoryCollection):
     """Collection of :class:`Constraint` items."""
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Symbolic parameter constraints',
+    )
 
     _update_priority = 90  # After most others, but before data categories
 

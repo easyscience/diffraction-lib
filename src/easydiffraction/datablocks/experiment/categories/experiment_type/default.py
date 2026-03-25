@@ -7,10 +7,16 @@ an experiment configuration and handles CIF serialization via
 ``CifHandler``.
 """
 
+from __future__ import annotations
+
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.experiment.categories.experiment_type.factory import (
+    ExperimentTypeFactory,
+)
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import RadiationProbeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -18,6 +24,7 @@ from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
 
 
+@ExperimentTypeFactory.register
 class ExperimentType(CategoryItem):
     """Container of categorical attributes defining experiment flavor.
 
@@ -27,6 +34,11 @@ class ExperimentType(CategoryItem):
         radiation_probe: Neutrons or X-rays.
         scattering_type: Bragg or Total.
     """
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Experiment type descriptor',
+    )
 
     def __init__(self):
         super().__init__()

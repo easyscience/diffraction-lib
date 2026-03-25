@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Space group category for crystallographic structures."""
 
+from __future__ import annotations
+
 from cryspy.A_functions_base.function_2_space_group import ACCESIBLE_NAME_HM_SHORT
 from cryspy.A_functions_base.function_2_space_group import (
     get_it_coordinate_system_codes_by_it_number,
@@ -9,12 +11,15 @@ from cryspy.A_functions_base.function_2_space_group import (
 from cryspy.A_functions_base.function_2_space_group import get_it_number_by_name_hm_short
 
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.structure.categories.space_group.factory import SpaceGroupFactory
 from easydiffraction.io.cif.handler import CifHandler
 
 
+@SpaceGroupFactory.register
 class SpaceGroup(CategoryItem):
     """Space group with Hermann–Mauguin symbol and IT coordinate system
     code.
@@ -24,6 +29,11 @@ class SpaceGroup(CategoryItem):
     Changing the symbol automatically resets the coordinate-system code
     to the first allowed value for the new group.
     """
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Space group symmetry',
+    )
 
     def __init__(self) -> None:
         """Initialise the space group with default values."""
@@ -126,10 +136,7 @@ class SpaceGroup(CategoryItem):
         return self._name_h_m
 
     @name_h_m.setter
-    def name_h_m(
-        self,
-        value: str,
-    ) -> None:
+    def name_h_m(self, value: str) -> None:
         """Set the Hermann–Mauguin symbol and reset the coordinate-
         system code.
 
@@ -150,10 +157,7 @@ class SpaceGroup(CategoryItem):
         return self._it_coordinate_system_code
 
     @it_coordinate_system_code.setter
-    def it_coordinate_system_code(
-        self,
-        value: str,
-    ) -> None:
+    def it_coordinate_system_code(self, value: str) -> None:
         """Set the IT coordinate-system code.
 
         Args:

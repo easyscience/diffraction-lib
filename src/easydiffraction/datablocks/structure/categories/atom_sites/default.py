@@ -6,10 +6,13 @@ Defines :class:`AtomSite` items and :class:`AtomSites` collection used
 in crystallographic structures.
 """
 
+from __future__ import annotations
+
 from cryspy.A_functions_base.database import DATABASE
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
@@ -17,6 +20,7 @@ from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.crystallography import crystallography as ecr
+from easydiffraction.datablocks.structure.categories.atom_sites.factory import AtomSitesFactory
 from easydiffraction.io.cif.handler import CifHandler
 
 
@@ -178,10 +182,7 @@ class AtomSite(CategoryItem):
         return self._label
 
     @label.setter
-    def label(
-        self,
-        value: str,
-    ) -> None:
+    def label(self, value: str) -> None:
         """Set the atom-site label.
 
         Args:
@@ -199,10 +200,7 @@ class AtomSite(CategoryItem):
         return self._type_symbol
 
     @type_symbol.setter
-    def type_symbol(
-        self,
-        value: str,
-    ) -> None:
+    def type_symbol(self, value: str) -> None:
         """Set the chemical element or isotope symbol.
 
         Args:
@@ -221,10 +219,7 @@ class AtomSite(CategoryItem):
         return self._adp_type
 
     @adp_type.setter
-    def adp_type(
-        self,
-        value: str,
-    ) -> None:
+    def adp_type(self, value: str) -> None:
         """Set the ADP type.
 
         Args:
@@ -242,10 +237,7 @@ class AtomSite(CategoryItem):
         return self._wyckoff_letter
 
     @wyckoff_letter.setter
-    def wyckoff_letter(
-        self,
-        value: str,
-    ) -> None:
+    def wyckoff_letter(self, value: str) -> None:
         """Set the Wyckoff letter.
 
         Args:
@@ -263,10 +255,7 @@ class AtomSite(CategoryItem):
         return self._fract_x
 
     @fract_x.setter
-    def fract_x(
-        self,
-        value: float,
-    ) -> None:
+    def fract_x(self, value: float) -> None:
         """Set the fractional *x*-coordinate.
 
         Args:
@@ -284,10 +273,7 @@ class AtomSite(CategoryItem):
         return self._fract_y
 
     @fract_y.setter
-    def fract_y(
-        self,
-        value: float,
-    ) -> None:
+    def fract_y(self, value: float) -> None:
         """Set the fractional *y*-coordinate.
 
         Args:
@@ -305,10 +291,7 @@ class AtomSite(CategoryItem):
         return self._fract_z
 
     @fract_z.setter
-    def fract_z(
-        self,
-        value: float,
-    ) -> None:
+    def fract_z(self, value: float) -> None:
         """Set the fractional *z*-coordinate.
 
         Args:
@@ -326,10 +309,7 @@ class AtomSite(CategoryItem):
         return self._occupancy
 
     @occupancy.setter
-    def occupancy(
-        self,
-        value: float,
-    ) -> None:
+    def occupancy(self, value: float) -> None:
         """Set the site occupancy.
 
         Args:
@@ -347,10 +327,7 @@ class AtomSite(CategoryItem):
         return self._b_iso
 
     @b_iso.setter
-    def b_iso(
-        self,
-        value: float,
-    ) -> None:
+    def b_iso(self, value: float) -> None:
         r"""Set the isotropic displacement parameter.
 
         Args:
@@ -359,8 +336,14 @@ class AtomSite(CategoryItem):
         self._b_iso.value = value
 
 
+@AtomSitesFactory.register
 class AtomSites(CategoryCollection):
     """Collection of :class:`AtomSite` instances."""
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Atom sites collection',
+    )
 
     def __init__(self) -> None:
         """Initialise an empty atom-sites collection."""

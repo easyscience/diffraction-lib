@@ -2,17 +2,25 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Exclude ranges of x from fitting/plotting (masked regions)."""
 
+from __future__ import annotations
+
 from typing import List
 
 import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import Compatibility
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.experiment.categories.excluded_regions.factory import (
+    ExcludedRegionsFactory,
+)
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
@@ -55,9 +63,6 @@ class ExcludedRegion(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_excluded_region.end']),
         )
-        # self._category_entry_attr_name = f'{start}-{end}'
-        # self._category_entry_attr_name = self.start.name
-        # self.name = self.start.value
         self._identity.category_code = 'excluded_regions'
         self._identity.category_entry_name = lambda: str(self._id.value)
 
@@ -90,6 +95,7 @@ class ExcludedRegion(CategoryItem):
         self._end.value = value
 
 
+@ExcludedRegionsFactory.register
 class ExcludedRegions(CategoryCollection):
     """Collection of ExcludedRegion instances.
 
@@ -97,6 +103,14 @@ class ExcludedRegions(CategoryCollection):
     that are to be excluded from calculations and, as a result, from
     fitting and plotting.
     """
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Excluded x-axis regions for fitting and plotting',
+    )
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+    )
 
     def __init__(self):
         super().__init__(item_type=ExcludedRegion)

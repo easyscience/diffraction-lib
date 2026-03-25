@@ -6,8 +6,14 @@ Stores per-experiment weights to be used when multiple experiments are
 fitted simultaneously.
 """
 
+from __future__ import annotations
+
+from easydiffraction.analysis.categories.joint_fit_experiments.factory import (
+    JointFitExperimentsFactory,
+)
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
@@ -70,8 +76,14 @@ class JointFitExperiment(CategoryItem):
         self._weight.value = value
 
 
+@JointFitExperimentsFactory.register
 class JointFitExperiments(CategoryCollection):
     """Collection of :class:`JointFitExperiment` items."""
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Joint-fit experiment weights',
+    )
 
     def __init__(self):
         """Create an empty joint-fit experiments collection."""

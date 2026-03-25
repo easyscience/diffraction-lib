@@ -372,16 +372,25 @@ from .line_segment import LineSegmentBackground
 
 ### 5.5 All Factories
 
-| Factory                | Domain                | Tags resolve to                                             |
-| ---------------------- | --------------------- | ----------------------------------------------------------- |
-| `BackgroundFactory`    | Background categories | `LineSegmentBackground`, `ChebyshevPolynomialBackground`    |
-| `PeakFactory`          | Peak profiles         | `CwlPseudoVoigt`, `TofPseudoVoigtIkedaCarpenter`, …         |
-| `InstrumentFactory`    | Instruments           | `CwlPdInstrument`, `TofPdInstrument`, …                     |
-| `DataFactory`          | Data collections      | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`          |
-| `ExtinctionFactory`    | Extinction models     | `ShelxExtinction`                                           |
-| `LinkedCrystalFactory` | Linked-crystal refs   | `LinkedCrystal`                                             |
-| `CalculatorFactory`    | Calculation engines   | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator` |
-| `MinimizerFactory`     | Minimisers            | `LmfitMinimizer`, `DfolsMinimizer`, …                       |
+| Factory                      | Domain                 | Tags resolve to                                             |
+| ---------------------------- | ---------------------- | ----------------------------------------------------------- |
+| `BackgroundFactory`          | Background categories  | `LineSegmentBackground`, `ChebyshevPolynomialBackground`    |
+| `PeakFactory`                | Peak profiles          | `CwlPseudoVoigt`, `TofPseudoVoigtIkedaCarpenter`, …         |
+| `InstrumentFactory`          | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                     |
+| `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`          |
+| `ExtinctionFactory`          | Extinction models      | `ShelxExtinction`                                           |
+| `LinkedCrystalFactory`       | Linked-crystal refs    | `LinkedCrystal`                                             |
+| `ExcludedRegionsFactory`     | Excluded regions       | `ExcludedRegions`                                           |
+| `LinkedPhasesFactory`        | Linked phases          | `LinkedPhases`                                              |
+| `ExperimentTypeFactory`      | Experiment descriptors | `ExperimentType`                                            |
+| `CellFactory`                | Unit cells             | `Cell`                                                      |
+| `SpaceGroupFactory`          | Space groups           | `SpaceGroup`                                                |
+| `AtomSitesFactory`           | Atom sites             | `AtomSites`                                                 |
+| `AliasesFactory`             | Parameter aliases      | `Aliases`                                                   |
+| `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                               |
+| `JointFitExperimentsFactory` | Joint-fit weights      | `JointFitExperiments`                                       |
+| `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator` |
+| `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `DfolsMinimizer`, …                       |
 
 > **Note:** `ExperimentFactory` and `StructureFactory` are _builder_ factories
 > with `from_cif_path`, `from_cif_str`, `from_data_path`, and `from_scratch`
@@ -513,54 +522,58 @@ collection type), not individual line-segment points.
 
 #### Singleton CategoryItems — factory-created (get all three)
 
-| Class                          | Factory                |
-| ------------------------------ | ---------------------- |
-| `CwlPdInstrument`              | `InstrumentFactory`    |
-| `CwlScInstrument`              | `InstrumentFactory`    |
-| `TofPdInstrument`              | `InstrumentFactory`    |
-| `TofScInstrument`              | `InstrumentFactory`    |
-| `CwlPseudoVoigt`               | `PeakFactory`          |
-| `CwlSplitPseudoVoigt`          | `PeakFactory`          |
-| `CwlThompsonCoxHastings`       | `PeakFactory`          |
-| `TofPseudoVoigt`               | `PeakFactory`          |
-| `TofPseudoVoigtIkedaCarpenter` | `PeakFactory`          |
-| `TofPseudoVoigtBackToBack`     | `PeakFactory`          |
-| `TotalGaussianDampedSinc`      | `PeakFactory`          |
-| `ShelxExtinction`              | `ExtinctionFactory`    |
-| `LinkedCrystal`                | `LinkedCrystalFactory` |
-
-#### Singleton CategoryItems — NOT factory-created (get `type_info` only, optionally `compatibility`)
-
-| Class            | Notes                                                   |
-| ---------------- | ------------------------------------------------------- |
-| `Cell`           | Always present on every Structure. No factory selection |
-| `SpaceGroup`     | Same as Cell                                            |
-| `ExperimentType` | Intrinsically universal                                 |
+| Class                          | Factory                 |
+| ------------------------------ | ----------------------- |
+| `CwlPdInstrument`              | `InstrumentFactory`     |
+| `CwlScInstrument`              | `InstrumentFactory`     |
+| `TofPdInstrument`              | `InstrumentFactory`     |
+| `TofScInstrument`              | `InstrumentFactory`     |
+| `CwlPseudoVoigt`               | `PeakFactory`           |
+| `CwlSplitPseudoVoigt`          | `PeakFactory`           |
+| `CwlThompsonCoxHastings`       | `PeakFactory`           |
+| `TofPseudoVoigt`               | `PeakFactory`           |
+| `TofPseudoVoigtIkedaCarpenter` | `PeakFactory`           |
+| `TofPseudoVoigtBackToBack`     | `PeakFactory`           |
+| `TotalGaussianDampedSinc`      | `PeakFactory`           |
+| `ShelxExtinction`              | `ExtinctionFactory`     |
+| `LinkedCrystal`                | `LinkedCrystalFactory`  |
+| `Cell`                         | `CellFactory`           |
+| `SpaceGroup`                   | `SpaceGroupFactory`     |
+| `ExperimentType`               | `ExperimentTypeFactory` |
 
 #### CategoryCollections — factory-created (get all three)
 
-| Class                           | Factory             |
-| ------------------------------- | ------------------- |
-| `LineSegmentBackground`         | `BackgroundFactory` |
-| `ChebyshevPolynomialBackground` | `BackgroundFactory` |
-| `PdCwlData`                     | `DataFactory`       |
-| `PdTofData`                     | `DataFactory`       |
-| `TotalData`                     | `DataFactory`       |
-| `ReflnData`                     | `DataFactory`       |
+| Class                           | Factory                      |
+| ------------------------------- | ---------------------------- |
+| `LineSegmentBackground`         | `BackgroundFactory`          |
+| `ChebyshevPolynomialBackground` | `BackgroundFactory`          |
+| `PdCwlData`                     | `DataFactory`                |
+| `PdTofData`                     | `DataFactory`                |
+| `TotalData`                     | `DataFactory`                |
+| `ReflnData`                     | `DataFactory`                |
+| `ExcludedRegions`               | `ExcludedRegionsFactory`     |
+| `LinkedPhases`                  | `LinkedPhasesFactory`        |
+| `AtomSites`                     | `AtomSitesFactory`           |
+| `Aliases`                       | `AliasesFactory`             |
+| `Constraints`                   | `ConstraintsFactory`         |
+| `JointFitExperiments`           | `JointFitExperimentsFactory` |
 
 #### CategoryItems that are ONLY children of collections (NO metadata)
 
-| Class            | Parent collection               |
-| ---------------- | ------------------------------- |
-| `LineSegment`    | `LineSegmentBackground`         |
-| `PolynomialTerm` | `ChebyshevPolynomialBackground` |
-| `AtomSite`       | `AtomSites`                     |
-| `PdCwlDataPoint` | `PdCwlData`                     |
-| `PdTofDataPoint` | `PdTofData`                     |
-| `TotalDataPoint` | `TotalData`                     |
-| `Refln`          | `ReflnData`                     |
-| `LinkedPhase`    | `LinkedPhases`                  |
-| `ExcludedRegion` | `ExcludedRegions`               |
+| Class                | Parent collection               |
+| -------------------- | ------------------------------- |
+| `LineSegment`        | `LineSegmentBackground`         |
+| `PolynomialTerm`     | `ChebyshevPolynomialBackground` |
+| `AtomSite`           | `AtomSites`                     |
+| `PdCwlDataPoint`     | `PdCwlData`                     |
+| `PdTofDataPoint`     | `PdTofData`                     |
+| `TotalDataPoint`     | `TotalData`                     |
+| `Refln`              | `ReflnData`                     |
+| `LinkedPhase`        | `LinkedPhases`                  |
+| `ExcludedRegion`     | `ExcludedRegions`               |
+| `Alias`              | `Aliases`                       |
+| `Constraint`         | `Constraints`                   |
+| `JointFitExperiment` | `JointFitExperiments`           |
 
 #### Non-category classes — factory-created (get `type_info` only)
 

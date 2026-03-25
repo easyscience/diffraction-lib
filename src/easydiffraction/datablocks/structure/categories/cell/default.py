@@ -2,14 +2,19 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Unit cell parameters category for structures."""
 
+from __future__ import annotations
+
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
 from easydiffraction.crystallography import crystallography as ecr
+from easydiffraction.datablocks.structure.categories.cell.factory import CellFactory
 from easydiffraction.io.cif.handler import CifHandler
 
 
+@CellFactory.register
 class Cell(CategoryItem):
     """Unit cell with lengths *a*, *b*, *c* and angles *alpha*, *beta*,
     *gamma*.
@@ -17,6 +22,11 @@ class Cell(CategoryItem):
     All six lattice parameters are exposed as :class:`Parameter`
     descriptors supporting validation, fitting and CIF serialization.
     """
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Unit cell parameters',
+    )
 
     def __init__(self) -> None:
         """Initialise the unit cell with default parameter values."""
@@ -146,10 +156,7 @@ class Cell(CategoryItem):
         return self._length_a
 
     @length_a.setter
-    def length_a(
-        self,
-        value: float,
-    ) -> None:
+    def length_a(self, value: float) -> None:
         """Set the length of the *a* axis.
 
         Args:
@@ -167,10 +174,7 @@ class Cell(CategoryItem):
         return self._length_b
 
     @length_b.setter
-    def length_b(
-        self,
-        value: float,
-    ) -> None:
+    def length_b(self, value: float) -> None:
         """Set the length of the *b* axis.
 
         Args:
@@ -188,10 +192,7 @@ class Cell(CategoryItem):
         return self._length_c
 
     @length_c.setter
-    def length_c(
-        self,
-        value: float,
-    ) -> None:
+    def length_c(self, value: float) -> None:
         """Set the length of the *c* axis.
 
         Args:
@@ -209,10 +210,7 @@ class Cell(CategoryItem):
         return self._angle_alpha
 
     @angle_alpha.setter
-    def angle_alpha(
-        self,
-        value: float,
-    ) -> None:
+    def angle_alpha(self, value: float) -> None:
         """Set the angle between edges *b* and *c*.
 
         Args:
@@ -230,10 +228,7 @@ class Cell(CategoryItem):
         return self._angle_beta
 
     @angle_beta.setter
-    def angle_beta(
-        self,
-        value: float,
-    ) -> None:
+    def angle_beta(self, value: float) -> None:
         """Set the angle between edges *a* and *c*.
 
         Args:
@@ -251,10 +246,7 @@ class Cell(CategoryItem):
         return self._angle_gamma
 
     @angle_gamma.setter
-    def angle_gamma(
-        self,
-        value: float,
-    ) -> None:
+    def angle_gamma(self, value: float) -> None:
         """Set the angle between edges *a* and *b*.
 
         Args:

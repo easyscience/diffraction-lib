@@ -6,8 +6,12 @@ Defines a small record type used by analysis configuration to refer to
 parameters via readable labels instead of raw unique identifiers.
 """
 
+from __future__ import annotations
+
+from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import StringDescriptor
@@ -72,8 +76,14 @@ class Alias(CategoryItem):
         self._param_uid.value = value
 
 
+@AliasesFactory.register
 class Aliases(CategoryCollection):
     """Collection of :class:`Alias` items."""
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Parameter alias mappings',
+    )
 
     def __init__(self):
         """Create an empty collection of aliases."""

@@ -33,14 +33,25 @@ Tutorials, tests, and docs updated.
 
 ## Add Universal Factories for All Categories
 
-**Resolution:** converted `Extinction` and `LinkedCrystal` from plain singleton
-categories to factory-created categories. `Extinction` → `ShelxExtinction`
-registered with `ExtinctionFactory` (tag `shelx`). `LinkedCrystal` registered
-with `LinkedCrystalFactory` (tag `default`). Both are now packages
-(`extinction/`, `linked_crystal/`) with `factory.py`, concrete class module, and
-`__init__.py`. `ScExperimentBase` uses factory creation and exposes the standard
-switchable-category API: `extinction_type` / `linked_crystal_type` (getter +
-setter), `show_supported_extinction_types()` /
-`show_supported_linked_crystal_types()`, `show_current_extinction_type()` /
-`show_current_linked_crystal_type()`. Architecture §5.5 and §5.7 tables updated.
-Unit tests extended with factory registration, creation, and default-tag tests.
+**Resolution:** converted every category to use the `FactoryBase` pattern. Each
+former single-file category is now a package with `factory.py` (trivial
+`FactoryBase` subclass), `default.py` (concrete class with `@register` +
+`type_info`), and `__init__.py` (re-exports preserving import compatibility).
+
+Experiment categories: `Extinction` → `ShelxExtinction` / `ExtinctionFactory`
+(tag `shelx`), `LinkedCrystal` / `LinkedCrystalFactory` (tag `default`),
+`ExcludedRegions` / `ExcludedRegionsFactory`, `LinkedPhases` /
+`LinkedPhasesFactory`, `ExperimentType` / `ExperimentTypeFactory`.
+
+Structure categories: `Cell` / `CellFactory`, `SpaceGroup` /
+`SpaceGroupFactory`, `AtomSites` / `AtomSitesFactory`.
+
+Analysis categories: `Aliases` / `AliasesFactory`, `Constraints` /
+`ConstraintsFactory`, `JointFitExperiments` / `JointFitExperimentsFactory`.
+
+`ShelxExtinction` and `LinkedCrystal` get the full switchable-category API on
+`ScExperimentBase` (`extinction_type`, `linked_crystal_type` getter+setter,
+`show_supported_*_types()`, `show_current_*_type()`). The remaining categories
+have only one implementation and no switchable API. Architecture §5.5 and §5.7
+tables updated. Unit tests extended with factory tests for extinction and
+linked-crystal.

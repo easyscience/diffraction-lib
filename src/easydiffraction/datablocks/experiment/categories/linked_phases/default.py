@@ -2,13 +2,21 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Linked phases allow combining phases with scale factors."""
 
+from __future__ import annotations
+
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import Compatibility
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.experiment.categories.linked_phases.factory import (
+    LinkedPhasesFactory,
+)
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.io.cif.handler import CifHandler
 
 
@@ -61,8 +69,17 @@ class LinkedPhase(CategoryItem):
         self._scale.value = value
 
 
+@LinkedPhasesFactory.register
 class LinkedPhases(CategoryCollection):
     """Collection of LinkedPhase instances."""
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Phase references with scale factors',
+    )
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+    )
 
     def __init__(self):
         """Create an empty collection of linked phases."""
