@@ -1590,7 +1590,7 @@
   <span class="md-ellipsis">
     
   
-    Multi-Structure/Experiment
+    Multiple Data Blocks
   
 
     
@@ -1606,7 +1606,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Multi-Structure/Experiment
+    Multiple Data Blocks
   
 
           </label>
@@ -1769,7 +1769,7 @@
   <span class="md-ellipsis">
     
   
-    2025 DMSC
+    DMSC Summer School
   
 
     
@@ -2617,13 +2617,12 @@ parameter enumeration, or <abbr title="Crystallographic Information File.">CIF</
 <h2 id="6-restrict-data_type-switching-to-compatible-types-and-preserve-data-safety">6. 🔴 Restrict <code>data_type</code> Switching to Compatible Types and Preserve Data Safety</h2>
 <p><strong>Type:</strong> Correctness + Data safety</p>
 <p><code>Experiment.data_type</code> currently validates against all registered data tags
-rather than only those compatible with the experiment's
-<code>sample_form</code> / <code>scattering_type</code> / <code>beam_mode</code>. This allows users to switch an
-experiment to an incompatible data collection class. The setter also replaces
-the existing data object with a fresh empty instance, discarding loaded data
-without warning.</p>
-<p><strong>Why high:</strong> the current API can create internally inconsistent experiments
-and silently lose measured data, which is especially dangerous for notebook and
+rather than only those compatible with the experiment's <code>sample_form</code> /
+<code>scattering_type</code> / <code>beam_mode</code>. This allows users to switch an experiment to an
+incompatible data collection class. The setter also replaces the existing data
+object with a fresh empty instance, discarding loaded data without warning.</p>
+<p><strong>Why high:</strong> the current API can create internally inconsistent experiments and
+silently lose measured data, which is especially dangerous for notebook and
 tutorial workflows.</p>
 <p><strong>Fix:</strong> filter supported data types through <code>DataFactory.supported_for(...)</code>
 using the current experiment context, and warn or block when a switch would
@@ -2911,7 +2910,7 @@ the exact active calculator configuration, not just a re-derivable default.</p>
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      © 2025 EasyDiffraction
+      © 2026 EasyDiffraction
     </div>
   
   
