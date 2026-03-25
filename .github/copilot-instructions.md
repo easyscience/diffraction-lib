@@ -58,7 +58,9 @@
 
 ## Architecture
 
-- Eager imports unless profiling proves a lazy alternative is needed.
+- Eager imports at the top of the module by default. Use lazy imports (inside a
+  method body) only when necessary to break circular dependencies or to keep
+  `core/` free of heavy utility imports on rarely-called paths (e.g. `help()`).
 - No `pkgutil` / `importlib` auto-discovery patterns.
 - No background/daemon threads.
 - No monkey-patching or runtime class mutation.
