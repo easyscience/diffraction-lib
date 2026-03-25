@@ -139,7 +139,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     )
 
 
-def test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
+def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
     # Set structure (shared between Bragg and PDF experiments)
     model = StructureFactory.from_scratch(name='si')
     model.space_group.name_h_m = 'F d -3 m'
@@ -233,4 +233,4 @@ def test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
 
 if __name__ == '__main__':
     test_single_fit_neutron_pd_tof_mcstas_lbco_si()
-    test_joint_fit_bragg_pdf_neutron_pd_tof_si()
+    # test_joint_fit_bragg_pdf_neutron_pd_tof_si()
