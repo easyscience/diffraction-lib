@@ -13,9 +13,9 @@ def test_module_import():
 
 def test_string_descriptor_type_override_raises_type_error():
     # Creating a StringDescriptor with a NUMERIC spec should raise via Diagnostics
-    from easydiffraction.core.variable import StringDescriptor
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.validation import DataTypes
+    from easydiffraction.core.variable import StringDescriptor
     from easydiffraction.io.cif.handler import CifHandler
 
     with pytest.raises(TypeError):
@@ -28,8 +28,8 @@ def test_string_descriptor_type_override_raises_type_error():
 
 
 def test_numeric_descriptor_str_includes_units():
-    from easydiffraction.core.variable import NumericDescriptor
     from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import NumericDescriptor
     from easydiffraction.io.cif.handler import CifHandler
 
     d = NumericDescriptor(
@@ -43,8 +43,8 @@ def test_numeric_descriptor_str_includes_units():
 
 
 def test_parameter_string_repr_and_as_cif_and_flags():
-    from easydiffraction.core.variable import Parameter
     from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
     from easydiffraction.io.cif.handler import CifHandler
 
     p = Parameter(
@@ -69,8 +69,8 @@ def test_parameter_string_repr_and_as_cif_and_flags():
 
 
 def test_parameter_uncertainty_must_be_non_negative():
-    from easydiffraction.core.variable import Parameter
     from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
     from easydiffraction.io.cif.handler import CifHandler
 
     p = Parameter(
@@ -83,8 +83,8 @@ def test_parameter_uncertainty_must_be_non_negative():
 
 
 def test_parameter_fit_bounds_assign_and_read():
-    from easydiffraction.core.variable import Parameter
     from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
     from easydiffraction.io.cif.handler import CifHandler
 
     p = Parameter(

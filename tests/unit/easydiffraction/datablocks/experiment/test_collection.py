@@ -10,8 +10,8 @@ def test_module_import():
 
 
 def test_experiments_show_and_remove(monkeypatch, capsys):
-    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
     from easydiffraction.datablocks.experiment.collection import Experiments
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 
     class DummyType:
         def __init__(self):

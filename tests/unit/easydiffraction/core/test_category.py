@@ -3,8 +3,8 @@
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
 
 
@@ -97,5 +97,3 @@ def test_category_collection_help(capsys):
     assert 'Items (2)' in out
     assert 'n1' in out
     assert 'n2' in out
-
-

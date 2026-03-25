@@ -5,7 +5,6 @@ import numpy as np
 import pytest
 
 
-
 def test_module_import():
     import easydiffraction.utils.utils as MUT
 
@@ -354,7 +353,6 @@ def test_download_all_tutorials_success(monkeypatch, tmp_path, capsys):
 
 
 def test_resolve_tutorial_url():
-    import easydiffraction.utils.utils as MUT
 
     # Test with a specific version
     url_template = 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb'
@@ -362,4 +360,3 @@ def test_resolve_tutorial_url():
     # So we just test that the function exists and replaces {version}
     result = url_template.replace('{version}', '0.8.0')
     assert result == 'https://example.com/0.8.0/tutorials/ed-1/ed-1.ipynb'
-

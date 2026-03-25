@@ -21,7 +21,6 @@ def _mk_type_sc_bragg():
     return et
 
 
-
 class _ConcreteCwlSc(CwlScExperiment):
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         # Not used in this test

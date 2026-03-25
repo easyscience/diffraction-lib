@@ -19,4 +19,3 @@ def test_project_help(capsys):
     assert 'experiments' in out
     assert 'analysis' in out
     assert 'summary' in out
-

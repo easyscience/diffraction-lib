@@ -5,7 +5,9 @@ import pytest
 
 
 def test_background_factory_default_and_errors():
-    from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
+    from easydiffraction.datablocks.experiment.categories.background.factory import (
+        BackgroundFactory,
+    )
 
     # Default via default_tag()
     obj = BackgroundFactory.create(BackgroundFactory.default_tag())

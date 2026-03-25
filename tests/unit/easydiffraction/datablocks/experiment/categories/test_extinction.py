@@ -74,5 +74,3 @@ def test_extinction_factory_default_tag():
     )
 
     assert ExtinctionFactory.default_tag() == 'shelx'
-
-

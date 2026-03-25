@@ -36,7 +36,6 @@ def test_show_current_minimizer_prints(capsys):
     assert 'lmfit' in out
 
 
-
 def test_fit_mode_category_and_joint_fit_experiments(monkeypatch, capsys):
     from easydiffraction.analysis.analysis import Analysis
 

@@ -191,10 +191,15 @@ testpaths = ['tests']
 # https://docs.astral.sh/ruff/rules/
 
 [tool.ruff]
-exclude = ['tmp']
+exclude = [
+  'tmp',
+  # Vendored jupyter_dark_detect: keep as-is from upstream for easy updates
+  # https://github.com/OpenMined/jupyter-dark-detect/tree/main/jupyter_dark_detect
+  'src/easydiffraction/utils/_vendored/jupyter_dark_detect',
+]
 indent-width = 4
 line-length = 99
-preview = true    # Enable new rules that are not yet stable, like DOC
+preview = true # Enable new rules that are not yet stable, like DOC
 
 # Formatting options for Ruff
 
@@ -289,15 +294,6 @@ ignore = [
 'docs/**' = [
   'INP001', # https://docs.astral.sh/ruff/rules/implicit-namespace-package/
   'T201',   # https://docs.astral.sh/ruff/rules/print/
-]
-# Vendored jupyter_dark_detect: keep as-is from upstream for easy updates
-# https://github.com/OpenMined/jupyter-dark-detect/tree/main/jupyter_dark_detect
-'src/easydiffraction/utils/_vendored/jupyter_dark_detect/*' = [
-  'S',
-  'TID',
-  'W',
-  'S',
-  'E',
 ]
 
 # Specific options for certain rules

@@ -25,4 +25,3 @@ def test_experiment_factory_from_scratch():
     )
     # Instance should be created (BraggPdExperiment)
     assert hasattr(ex, 'type') and ex.type.sample_form.value == SampleFormEnum.POWDER.value
-

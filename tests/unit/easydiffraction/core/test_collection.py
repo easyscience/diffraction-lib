@@ -55,10 +55,10 @@ def test_collection_contains():
 
 
 def test_collection_remove():
+    import pytest
+
     from easydiffraction.core.collection import CollectionBase
     from easydiffraction.core.identity import Identity
-
-    import pytest
 
     class Item:
         def __init__(self, name):
@@ -119,4 +119,3 @@ def test_collection_datablock_keyed_items():
     del c['beta']
     assert 'beta' not in c
     assert len(c) == 1
-

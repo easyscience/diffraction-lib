@@ -90,4 +90,3 @@ def test_refln_data_type_info():
 
     assert ReflnData.type_info.tag == 'bragg-sc'
     assert ReflnData.type_info.description == 'Bragg single-crystal reflection data'
-

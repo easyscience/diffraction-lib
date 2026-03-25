@@ -5,12 +5,11 @@ import pytest
 
 
 def test_data_factory_default_and_errors():
-    from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
-
     # Ensure concrete classes are registered
     from easydiffraction.datablocks.experiment.categories.data import bragg_pd  # noqa: F401
     from easydiffraction.datablocks.experiment.categories.data import bragg_sc  # noqa: F401
     from easydiffraction.datablocks.experiment.categories.data import total_pd  # noqa: F401
+    from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
 
     # Explicit type by tag
     obj = DataFactory.create('bragg-pd')
@@ -32,15 +31,14 @@ def test_data_factory_default_and_errors():
 
 
 def test_data_factory_default_tag_resolution():
-    from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
-    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
-    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
-    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-
     # Ensure concrete classes are registered
     from easydiffraction.datablocks.experiment.categories.data import bragg_pd  # noqa: F401
     from easydiffraction.datablocks.experiment.categories.data import bragg_sc  # noqa: F401
     from easydiffraction.datablocks.experiment.categories.data import total_pd  # noqa: F401
+    from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
     # Context-dependent default: Bragg powder CWL
     tag = DataFactory.default_tag(
@@ -74,16 +72,14 @@ def test_data_factory_default_tag_resolution():
 
 
 def test_data_factory_supported_tags():
-    from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
-
     # Ensure concrete classes are registered
     from easydiffraction.datablocks.experiment.categories.data import bragg_pd  # noqa: F401
     from easydiffraction.datablocks.experiment.categories.data import bragg_sc  # noqa: F401
     from easydiffraction.datablocks.experiment.categories.data import total_pd  # noqa: F401
+    from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
 
     tags = DataFactory.supported_tags()
     assert 'bragg-pd' in tags
     assert 'bragg-pd-tof' in tags
     assert 'bragg-sc' in tags
     assert 'total-pd' in tags
-

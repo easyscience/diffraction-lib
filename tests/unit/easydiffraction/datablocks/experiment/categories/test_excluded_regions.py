@@ -23,7 +23,7 @@ def test_excluded_regions_add_updates_datastore_and_cif():
         meas=full_meas.copy(),
         meas_su=full_meas_su.copy(),
     )
-    
+
     def set_calc_status(status):
         # _set_calc_status sets excluded to the inverse
         ds.excluded = ~status
@@ -31,7 +31,7 @@ def test_excluded_regions_add_updates_datastore_and_cif():
         ds.x = ds.full_x[status]
         ds.meas = ds.full_meas[status]
         ds.meas_su = ds.full_meas_su[status]
-    
+
     ds._set_calc_status = set_calc_status
 
     coll = ExcludedRegions()

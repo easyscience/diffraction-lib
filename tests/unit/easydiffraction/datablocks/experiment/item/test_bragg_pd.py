@@ -22,8 +22,6 @@ def _mk_type_powder_cwl_bragg():
     return et
 
 
-
-
 def test_background_defaults_and_change():
     expt = BraggPdExperiment(name='e1', type=_mk_type_powder_cwl_bragg())
     # default background type

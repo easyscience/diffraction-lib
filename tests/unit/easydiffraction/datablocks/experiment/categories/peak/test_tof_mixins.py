@@ -6,7 +6,9 @@ import numpy as np
 
 def test_tof_broadening_and_asymmetry_mixins():
     from easydiffraction.datablocks.experiment.categories.peak.base import PeakBase
-    from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import IkedaCarpenterAsymmetryMixin
+    from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import (
+        IkedaCarpenterAsymmetryMixin,
+    )
     from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import TofBroadeningMixin
 
     class TofPeak(PeakBase, TofBroadeningMixin, IkedaCarpenterAsymmetryMixin,):

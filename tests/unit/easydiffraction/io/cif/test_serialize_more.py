@@ -1,9 +1,6 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
-import numpy as np
-import pytest
-
 
 def test_datablock_item_to_cif_includes_item_and_collection():
     import easydiffraction.io.cif.serialize as MUT

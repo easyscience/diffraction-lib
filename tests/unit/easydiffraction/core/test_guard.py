@@ -99,5 +99,3 @@ def test_first_sentence_extracts_first_paragraph():
     assert GuardedBase._first_sentence('One liner.') == 'One liner.'
     assert GuardedBase._first_sentence('First.\n\nSecond.') == 'First.'
     assert GuardedBase._first_sentence('Line one\ncontinued.') == 'Line one continued.'
-
-

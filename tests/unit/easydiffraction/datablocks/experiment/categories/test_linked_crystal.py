@@ -86,5 +86,3 @@ def test_linked_crystal_factory_default_tag():
     )
 
     assert LinkedCrystalFactory.default_tag() == 'default'
-
-

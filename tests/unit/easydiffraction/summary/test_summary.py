@@ -46,11 +46,6 @@ def test_summary_show_report_prints_sections(capsys):
     assert 'FITTING' in out
 
 
-
-
-
-
-
 def test_module_import():
     import easydiffraction.summary.summary as MUT
 

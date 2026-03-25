@@ -89,4 +89,3 @@ def test_total_data_type_info():
 
     assert TotalData.type_info.tag == 'total-pd'
     assert TotalData.type_info.description == 'Total scattering (PDF) data'
-
