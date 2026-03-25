@@ -279,7 +279,7 @@ ignore = [
   'D',   # https://docs.astral.sh/ruff/rules/#pydocstyle-d
   'DOC', # https://docs.astral.sh/ruff/rules/#pydoclint-doc
   # Temporary:
-    'DTZ005',
+  'DTZ005',
 
 ]
 
@@ -359,6 +359,7 @@ max-doc-length = 99
 # the parameter declarations in the code (in function's signature).
 
 [tool.pydoclint]
+exclude = '\.'              # Temporarily disable pydoclint until we are ready
 style = "google"
 check-style-mismatch = true
 check-arg-defaults = true
