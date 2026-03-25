@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 from abc import ABC
 from abc import abstractmethod
 
@@ -16,6 +18,7 @@ class GuardedBase(ABC):
     _diagnoser = Diagnostics()
 
     def __init__(self):
+        super().__init__()
         self._identity = Identity(owner=self)
 
     def __str__(self) -> str:
@@ -141,3 +144,79 @@ class GuardedBase(ABC):
         by subclasses).
         """
         raise NotImplementedError
+
+    @staticmethod
+    def _first_sentence(docstring: str | None) -> str:
+        """Extract the first paragraph from a docstring.
+
+        Returns text before the first blank line, with continuation
+        lines joined into a single string.
+        """
+        if not docstring:
+            return ''
+        first_para = docstring.strip().split('\n\n')[0]
+        return ' '.join(line.strip() for line in first_para.splitlines())
+
+    @classmethod
+    def _iter_methods(cls):
+        """Iterate over public methods in the class hierarchy.
+
+        Yields:
+            tuple[str, callable]: Each (name, function) pair.
+        """
+        seen: set = set()
+        for base in cls.mro():
+            for key, attr in base.__dict__.items():
+                if key.startswith('_') or key in seen:
+                    continue
+                if isinstance(attr, property):
+                    continue
+                raw = attr
+                if isinstance(raw, (staticmethod, classmethod)):
+                    raw = raw.__func__
+                if callable(raw):
+                    seen.add(key)
+                    yield key, raw
+
+    def help(self) -> None:
+        """Print a summary of public properties and methods."""
+        from easydiffraction.utils.logging import console
+        from easydiffraction.utils.utils import render_table
+
+        cls = type(self)
+        console.paragraph(f"Help for '{cls.__name__}'")
+
+        # Deduplicate (MRO may yield the same name)
+        seen: dict = {}
+        for key, prop in cls._iter_properties():
+            if key not in seen:
+                seen[key] = prop
+
+        prop_rows = []
+        for i, key in enumerate(sorted(seen), 1):
+            prop = seen[key]
+            writable = '✓' if prop.fset else '✗'
+            doc = self._first_sentence(prop.fget.__doc__ if prop.fget else None)
+            prop_rows.append([str(i), key, writable, doc])
+
+        if prop_rows:
+            console.paragraph('Properties')
+            render_table(
+                columns_headers=['#', 'Name', 'Writable', 'Description'],
+                columns_alignment=['right', 'left', 'center', 'left'],
+                columns_data=prop_rows,
+            )
+
+        methods = dict(cls._iter_methods())
+        method_rows = []
+        for i, key in enumerate(sorted(methods), 1):
+            doc = self._first_sentence(getattr(methods[key], '__doc__', None))
+            method_rows.append([str(i), f'{key}()', doc])
+
+        if method_rows:
+            console.paragraph('Methods')
+            render_table(
+                columns_headers=['#', 'Name', 'Description'],
+                columns_alignment=['right', 'left', 'left'],
+                columns_data=method_rows,
+            )

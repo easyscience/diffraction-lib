@@ -2,7 +2,7 @@
 
 The data analysis process, introduced in the [Concept](concept.md) section,
 assumes that you mainly work with different parameters. The parameters are used
-to describe the sample model and the experiment and are required to set up the
+to describe the structure and the experiment and are required to set up the
 analysis.
 
 Each parameter in EasyDiffraction has a specific name used for code reference,
@@ -40,9 +40,9 @@ means the parameter is fixed. To optimize a parameter, set `free` to `True`.
 
 Although parameters are central, EasyDiffraction hides their creation and
 attribute handling from the user. The user only accesses the required parameters
-through the top-level objects, such as `project`, `sample_models`,
-`experiments`, etc. The parameters are created and initialized automatically
-when a new project is created or an existing one is loaded.
+through the top-level objects, such as `project`, `structures`, `experiments`,
+etc. The parameters are created and initialized automatically when a new project
+is created or an existing one is loaded.
 
 In the following sections, you can see a list of the parameters used in
 EasyDiffraction. Use the tabs to switch between how to access a parameter in
@@ -51,27 +51,26 @@ code and its CIF name for serialization.
 !!! warning "Important"
 
     Remember that parameters are accessed in code through their parent objects,
-    such as `project`, `sample_models`, or `experiments`. For example, if you
-    have a sample model with the ID `nacl`, you can access the space group name
+    such as `project`, `structures`, or `experiments`. For example, if you
+    have a structure with the ID `nacl`, you can access the space group name
     using the following syntax:
 
     ```python
-    project.sample_models['nacl'].space_group.name_h_m
+    project.structures['nacl'].space_group.name_h_m
     ```
 
-In the example above, `space_group` is a sample model category, and `name_h_m`
-is the parameter. For simplicity, only the last part (`category.parameter`) of
-the full access name will be shown in the tables below.
+In the example above, `space_group` is a structure category, and `name_h_m` is
+the parameter. For simplicity, only the last part (`category.parameter`) of the
+full access name will be shown in the tables below.
 
 In addition, the CIF names are also provided for each parameter, which are used
 to serialize the parameters in the CIF format.
 
 Tags defining the corresponding experiment type are also given before the table.
 
-## Sample model parameters
+## Structure parameters
 
-Below is a list of parameters used to describe the sample model in
-EasyDiffraction.
+Below is a list of parameters used to describe the structure in EasyDiffraction.
 
 ### Crystall structure parameters
 

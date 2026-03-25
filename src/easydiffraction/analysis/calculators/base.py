@@ -6,9 +6,9 @@ from abc import abstractmethod
 
 import numpy as np
 
-from easydiffraction.experiments.experiment.base import ExperimentBase
-from easydiffraction.sample_models.sample_model.base import SampleModelBase
-from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+from easydiffraction.datablocks.structure.collection import Structures
+from easydiffraction.datablocks.structure.item.base import Structure
 
 
 class CalculatorBase(ABC):
@@ -27,11 +27,11 @@ class CalculatorBase(ABC):
     @abstractmethod
     def calculate_structure_factors(
         self,
-        sample_model: SampleModelBase,
+        structure: Structure,
         experiment: ExperimentBase,
         called_by_minimizer: bool,
     ) -> None:
-        """Calculate structure factors for a single sample model and
+        """Calculate structure factors for a single structure and
         experiment.
         """
         pass
@@ -39,15 +39,15 @@ class CalculatorBase(ABC):
     @abstractmethod
     def calculate_pattern(
         self,
-        sample_model: SampleModels,  # TODO: SampleModelBase?
+        structure: Structures,  # TODO: Structure?
         experiment: ExperimentBase,
         called_by_minimizer: bool,
     ) -> np.ndarray:
-        """Calculate the diffraction pattern for a single sample model
-        and experiment.
+        """Calculate the diffraction pattern for a single structure and
+        experiment.
 
         Args:
-            sample_model: The sample model object.
+            structure: The structure object.
             experiment: The experiment object.
             called_by_minimizer: Whether the calculation is called by a
                 minimizer.

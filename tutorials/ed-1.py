@@ -2,8 +2,8 @@
 # # Structure Refinement: LBCO, HRPT
 #
 # This minimalistic example is designed to show how Rietveld refinement
-# of a crystal structure can be performed when both the sample model and
-# experiment are defined using CIF files.
+# can be performed when both the crystal structure and experiment
+# parameters are defined using CIF files.
 #
 # For this example, constant-wavelength neutron powder diffraction data
 # for La0.5Ba0.5CoO3 from HRPT at PSI is used.
@@ -33,14 +33,14 @@ import easydiffraction as ed
 project = ed.Project()
 
 # %% [markdown]
-# ## Step 2: Define Sample Model
+# ## Step 2: Define Crystal Structure
 
 # %%
 # Download CIF file from repository
-model_path = ed.download_data(id=1, destination='data')
+structure_path = ed.download_data(id=1, destination='data')
 
 # %%
-project.sample_models.add(cif_path=model_path)
+project.structures.add_from_cif_path(structure_path)
 
 # %% [markdown]
 # ## Step 3: Define Experiment
@@ -50,7 +50,7 @@ project.sample_models.add(cif_path=model_path)
 expt_path = ed.download_data(id=2, destination='data')
 
 # %%
-project.experiments.add(cif_path=expt_path)
+project.experiments.add_from_cif_path(expt_path)
 
 # %% [markdown]
 # ## Step 4: Perform Analysis

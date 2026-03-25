@@ -18,7 +18,7 @@ def test_show_params_empty_branches(capsys):
             return []
 
     class P:
-        sample_models = Empty()
+        structures = Empty()
         experiments = Empty()
         _varname = 'proj'
 

@@ -14,38 +14,38 @@
 # %%
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Sample Model
+# ## Define Structure
 #
-# This section covers how to add sample models and modify their
+# This section covers how to add structures and modify their
 # parameters.
 #
-# #### Create Sample Model
+# #### Create Structure
 
 # %%
-model = SampleModelFactory.create(name='ncaf')
+structure = StructureFactory.from_scratch(name='ncaf')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model.space_group.name_h_m = 'I 21 3'
-model.space_group.it_coordinate_system_code = '1'
+structure.space_group.name_h_m = 'I 21 3'
+structure.space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-model.cell.length_a = 10.250256
+structure.cell.length_a = 10.250256
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add(
+structure.atom_sites.create(
     label='Ca',
     type_symbol='Ca',
     fract_x=0.4663,
@@ -54,7 +54,7 @@ model.atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.92,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='Al',
     type_symbol='Al',
     fract_x=0.2521,
@@ -63,7 +63,7 @@ model.atom_sites.add(
     wyckoff_letter='a',
     b_iso=0.73,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='Na',
     type_symbol='Na',
     fract_x=0.0851,
@@ -72,7 +72,7 @@ model.atom_sites.add(
     wyckoff_letter='a',
     b_iso=2.08,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='F1',
     type_symbol='F',
     fract_x=0.1377,
@@ -81,7 +81,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.90,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='F2',
     type_symbol='F',
     fract_x=0.3625,
@@ -90,7 +90,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=1.37,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='F3',
     type_symbol='F',
     fract_x=0.4612,
@@ -104,7 +104,7 @@ model.atom_sites.add(
 # ## Define Experiment
 #
 # This section shows how to add experiments, configure their parameters,
-# and link the sample models defined in the previous step.
+# and link the structures defined in the previous step.
 #
 # #### Download Measured Data
 
@@ -118,14 +118,14 @@ data_path47 = download_data(id=10, destination='data')
 # #### Create Experiment
 
 # %%
-expt56 = ExperimentFactory.create(
+expt56 = ExperimentFactory.from_data_path(
     name='wish_5_6',
     data_path=data_path56,
     beam_mode='time-of-flight',
 )
 
 # %%
-expt47 = ExperimentFactory.create(
+expt47 = ExperimentFactory.from_data_path(
     name='wish_4_7',
     data_path=data_path47,
     beam_mode='time-of-flight',
@@ -205,7 +205,7 @@ for idx, (x, y) in enumerate(
     ],
     start=1,
 ):
-    expt56.background.add(id=str(idx), x=x, y=y)
+    expt56.background.create(id=str(idx), x=x, y=y)
 
 # %%
 expt47.background_type = 'line-segment'
@@ -241,32 +241,32 @@ for idx, (x, y) in enumerate(
     ],
     start=1,
 ):
-    expt47.background.add(id=str(idx), x=x, y=y)
+    expt47.background.create(id=str(idx), x=x, y=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt56.linked_phases.add(id='ncaf', scale=1.0)
+expt56.linked_phases.create(id='ncaf', scale=1.0)
 
 # %%
-expt47.linked_phases.add(id='ncaf', scale=2.0)
+expt47.linked_phases.create(id='ncaf', scale=2.0)
 
 # %% [markdown]
 # #### Set Excluded Regions
 
 # %%
-expt56.excluded_regions.add(id='1', start=0, end=10010)
-expt56.excluded_regions.add(id='2', start=100010, end=200000)
+expt56.excluded_regions.create(id='1', start=0, end=10010)
+expt56.excluded_regions.create(id='2', start=100010, end=200000)
 
 # %%
-expt47.excluded_regions.add(id='1', start=0, end=10006)
-expt47.excluded_regions.add(id='2', start=100004, end=200000)
+expt47.excluded_regions.create(id='1', start=0, end=10006)
+expt47.excluded_regions.create(id='2', start=100004, end=200000)
 
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage the sample model, experiments,
+# The project object is used to manage the structure, experiments,
 # and analysis
 #
 # #### Create Project
@@ -283,17 +283,17 @@ project = Project()
 # project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# #### Add Sample Model
+# #### Add Structure
 
 # %%
-project.sample_models.add(sample_model=model)
+project.structures.add(structure)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(experiment=expt56)
-project.experiments.add(experiment=expt47)
+project.experiments.add(expt56)
+project.experiments.add(expt47)
 
 # %% [markdown]
 # ## Perform Analysis
@@ -301,33 +301,27 @@ project.experiments.add(experiment=expt47)
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# #### Set Calculator
-
-# %%
-project.analysis.current_calculator = 'cryspy'
-
-# %% [markdown]
 # #### Set Minimizer
 
 # %%
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]
 # #### Set Fit Mode
 
 # %%
-project.analysis.fit_mode = 'joint'
+project.analysis.fit_mode.mode = 'joint'
 
 # %% [markdown]
 # #### Set Free Parameters
 
 # %%
-model.atom_sites['Ca'].b_iso.free = True
-model.atom_sites['Al'].b_iso.free = True
-model.atom_sites['Na'].b_iso.free = True
-model.atom_sites['F1'].b_iso.free = True
-model.atom_sites['F2'].b_iso.free = True
-model.atom_sites['F3'].b_iso.free = True
+structure.atom_sites['Ca'].b_iso.free = True
+structure.atom_sites['Al'].b_iso.free = True
+structure.atom_sites['Na'].b_iso.free = True
+structure.atom_sites['F1'].b_iso.free = True
+structure.atom_sites['F2'].b_iso.free = True
+structure.atom_sites['F3'].b_iso.free = True
 
 # %%
 expt56.linked_phases['ncaf'].scale.free = True

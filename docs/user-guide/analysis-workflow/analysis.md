@@ -20,7 +20,7 @@ EasyDiffraction relies on third-party crystallographic libraries, referred to as
 **calculation engines** or just **calculators**, to perform the calculations.
 
 The calculation engines are used to calculate the diffraction pattern for the
-defined model of the studied sample using the instrumental and other required
+defined model of the studied structure using the instrumental and other required
 experiment-related parameters, such as the wavelength, resolution, etc.
 
 You do not necessarily need the measured data to perform the calculations, but
@@ -53,25 +53,26 @@ calculating the pair distribution function (PDF) from crystallographic models.
 
 ### Set Calculator
 
-To show the supported calculation engines:
+The calculator is automatically selected based on the experiment type (e.g.,
+`cryspy` for Bragg diffraction, `pdffit` for total scattering). To show the
+supported calculation engines for a specific experiment:
 
 ```python
-project.analysis.show_supported_calculators()
+project.experiments['hrpt'].show_supported_calculator_types()
 ```
 
 The example of the output is:
 
-Supported calculators
+Supported calculator types
 
-| Calculator | Description                                                 |
-| ---------- | ----------------------------------------------------------- |
-| cryspy     | CrysPy library for crystallographic calculations            |
-| pdffit     | PDFfit2 library for pair distribution function calculations |
+| Calculator | Description                                      |
+| ---------- | ------------------------------------------------ |
+| cryspy     | CrysPy library for crystallographic calculations |
 
-To select the desired calculation engine, e.g., 'cryspy':
+To explicitly select a calculation engine for an experiment:
 
 ```python
-project.analysis.current_calculator = 'cryspy'
+project.experiments['hrpt'].calculator_type = 'cryspy'
 ```
 
 ## Minimization / Optimization
@@ -136,13 +137,13 @@ Supported minimizers
 | --------------------- | ------------------------------------------------------------------------ |
 | lmfit                 | LMFIT library using the default Levenberg-Marquardt least squares method |
 | lmfit (leastsq)       | LMFIT library with Levenberg-Marquardt least squares method              |
-| lmfit (least_squares) | LMFIT library with SciPy’s trust region reflective algorithm             |
+| lmfit (least_squares) | LMFIT library with SciPy's trust region reflective algorithm             |
 | dfols                 | DFO-LS library for derivative-free least-squares optimization            |
 
-To select the desired calculation engine, e.g., 'lmfit (least_squares)':
+To select the desired minimizer, e.g., 'lmfit':
 
 ```python
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+project.analysis.current_minimizer = 'lmfit'
 ```
 
 ### Fit Mode
@@ -151,37 +152,28 @@ In EasyDiffraction, you can set the **fit mode** to control how the refinement
 process is performed. The fit mode determines whether the refinement is
 performed independently for each experiment or jointly across all experiments.
 
-To show the supported fit modes:
+The supported fit modes are:
+
+| Mode   | Description                                                         |
+| ------ | ------------------------------------------------------------------- |
+| single | Independent fitting of each experiment; no shared parameters        |
+| joint  | Simultaneous fitting of all experiments; some parameters are shared |
+
+You can set the fit mode on the `analysis` object:
 
 ```python
-project.analysis.show_supported_fit_modes()
+project.analysis.fit_mode.mode = 'joint'
 ```
 
-An example of supported fit modes is:
-
-Supported fit modes
-
-| Strategy | Description                                                         |
-| -------- | ------------------------------------------------------------------- |
-| single   | Independent fitting of each experiment; no shared parameters        |
-| joint    | Simultaneous fitting of all experiments; some parameters are shared |
-
-You can set the fit mode using the `set_fit_mode` method of the `analysis`
-object:
+To check the current fit mode:
 
 ```python
-project.analysis.fit_mode = 'joint'
-```
-
-To check the current fit mode, you can use the `show_current_fit_mode` method:
-
-```python
-project.analysis.show_current_fit_mode()
+print(project.analysis.fit_mode.mode.value)
 ```
 
 ### Perform Fit
 
-Refining the sample model and experiment parameters against measured data is
+Refining the structure and experiment parameters against measured data is
 usually divided into several steps, where each step involves adding or removing
 parameters to be refined, calculating the model data, and comparing it to the
 experimental data as shown in the diagram above.
@@ -193,8 +185,8 @@ during the refinement process.
 Here is an example of how to set parameters to be refined:
 
 ```python
-# Set sample model parameters to be refined.
-project.sample_models['lbco'].cell.length_a.free = True
+# Set structure parameters to be refined.
+project.structures['lbco'].cell.length_a.free = True
 
 # Set experiment parameters to be refined.
 project.experiments['hrpt'].linked_phases['lbco'].scale.free = True
@@ -265,27 +257,27 @@ to constrain. This can be done using the `add` method of the `aliases` object.
 Aliases are used to reference parameters in a more readable way, making it
 easier to manage constraints.
 
-An example of setting aliases for parameters in a sample model:
+An example of setting aliases for parameters in a structure:
 
 ```python
 # Set aliases for the atomic displacement parameters
-project.analysis.aliases.add(
+project.analysis.aliases.create(
     label='biso_La',
-    param_uid=project.sample_models['lbco'].atom_sites['La'].b_iso.uid,
+    param_uid=project.structures['lbco'].atom_sites['La'].b_iso.uid,
 )
-project.analysis.aliases.add(
+project.analysis.aliases.create(
     label='biso_Ba',
-    param_uid=project.sample_models['lbco'].atom_sites['Ba'].b_iso.uid,
+    param_uid=project.structures['lbco'].atom_sites['Ba'].b_iso.uid,
 )
 
 # Set aliases for the occupancies of the atom sites
-project.analysis.aliases.add(
+project.analysis.aliases.create(
     label='occ_La',
-    param_uid=project.sample_models['lbco'].atom_sites['La'].occupancy.uid,
+    param_uid=project.structures['lbco'].atom_sites['La'].occupancy.uid,
 )
-project.analysis.aliases.add(
+project.analysis.aliases.create(
     label='occ_Ba',
-    param_uid=project.sample_models['lbco'].atom_sites['Ba'].occupancy.uid,
+    param_uid=project.structures['lbco'].atom_sites['Ba'].occupancy.uid,
 )
 ```
 
@@ -300,12 +292,12 @@ other aliases.
 An example of setting constraints for the aliases defined above:
 
 ```python
-project.analysis.constraints.add(
+project.analysis.constraints.create(
     lhs_alias='biso_Ba',
     rhs_expr='biso_La',
 )
 
-project.analysis.constraints.add(
+project.analysis.constraints.create(
     lhs_alias='occ_Ba',
     rhs_expr='1 - occ_La',
 )
@@ -339,8 +331,8 @@ User defined constraints
 To inspect an analysis configuration in CIF format, use:
 
 ```python
-# Show sample model as CIF
-project.sample_models['lbco'].show_as_cif()
+# Show structure as CIF
+project.structures['lbco'].show_as_cif()
 ```
 
 Example output:

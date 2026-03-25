@@ -73,7 +73,7 @@ def test_project_to_cif_assembles_present_sections():
     class Project:
         def __init__(self):
             self.info = Obj('I')
-            self.sample_models = None
+            self.structures = None
             self.experiments = Obj('E')
             self.analysis = None
             self.summary = None

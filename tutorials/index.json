@@ -3,14 +3,14 @@
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-1/ed-1.ipynb",
     "original_name": "quick_from-cif_pd-neut-cwl_LBCO-HRPT",
     "title": "Quick Start: LBCO from CIF",
-    "description": "Minimalistic Rietveld refinement of La0.5Ba0.5CoO3 using sample model and experiment defined via CIF files",
+    "description": "Minimalistic Rietveld refinement of La0.5Ba0.5CoO3 using structure and experiment defined via CIF files",
     "level": "quick"
   },
   "2": {
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-2/ed-2.ipynb",
     "original_name": "quick_from-code_pd-neut-cwl_LBCO-HRPT",
     "title": "Quick Start: LBCO from Code",
-    "description": "Minimalistic Rietveld refinement of La0.5Ba0.5CoO3 with sample model and experiment defined directly in code",
+    "description": "Minimalistic Rietveld refinement of La0.5Ba0.5CoO3 with structure and experiment defined directly in code",
     "level": "quick"
   },
   "3": {
@@ -96,5 +96,19 @@
     "title": "Crystal Structure: Tb2TiO7, HEiDi",
     "description": "Crystal structure refinement of Tb2TiO7 using single crystal neutron diffraction data from HEiDi at FRM II",
     "level": "intermediate"
+  },
+  "15": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-15/ed-15.ipynb",
+    "original_name": "",
+    "title": "Crystal Structure: Taurine, SENJU (TOF)",
+    "description": "Crystal structure refinement of Taurine using time-of-flight neutron single crystal diffraction data from SENJU at J-PARC",
+    "level": "intermediate"
+  },
+  "16": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-16/ed-16.ipynb",
+    "original_name": "advanced_joint-fit_bragg-pdf_pd-neut-tof_Si",
+    "title": "Advanced: Si Joint Bragg+PDF Fit",
+    "description": "Joint refinement of Si crystal structure combining Bragg diffraction (SEPD) and pair distribution function (NOMAD) analysis",
+    "level": "advanced"
   }
 }

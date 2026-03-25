@@ -6,7 +6,6 @@ Provides DataTypes, type/content validators, and AttributeSpec used by
 descriptors and parameters. Only documentation was added here.
 """
 
-import functools
 import re
 from abc import ABC
 from abc import abstractmethod
@@ -14,19 +13,26 @@ from enum import Enum
 from enum import auto
 
 import numpy as np
-from typeguard import TypeCheckError
-from typeguard import typechecked
 
 from easydiffraction.core.diagnostic import Diagnostics
-from easydiffraction.utils.logging import log
 
-# ==============================================================
+# ======================================================================
 # Shared constants
-# ==============================================================
+# ======================================================================
+
+
+# TODO: MkDocs doesn't unpack types
+class DataTypeHints:
+    Numeric = int | float | np.integer | np.floating
+    String = str
+    Bool = bool
+
+
+# ======================================================================
 
 
 class DataTypes(Enum):
-    NUMERIC = (int, float, np.integer, np.floating, np.number)
+    NUMERIC = (int, float, np.integer, np.floating)
     STRING = (str,)
     BOOL = (bool,)
     ANY = (object,)  # fallback for unconstrained
@@ -40,47 +46,9 @@ class DataTypes(Enum):
         return self.value
 
 
-# ==============================================================
-# Runtime type checking decorator
-# ==============================================================
-
-# Runtime type checking decorator for validating those methods
-# annotated with type hints, which are writable for the user, and
-# which are not covered by custom validators for Parameter attribute
-# types and content, implemented below.
-
-
-def checktype(func=None, *, context=None):
-    """Runtime type check decorator using typeguard.
-
-    When a TypeCheckError occurs, the error is logged and None is
-    returned. If context is provided, it is added to the message.
-    """
-
-    def decorator(f):
-        checked_func = typechecked(f)
-
-        @functools.wraps(f)
-        def wrapper(*args, **kwargs):
-            try:
-                return checked_func(*args, **kwargs)
-            except TypeCheckError as err:
-                msg = str(err)
-                if context:
-                    msg = f'{context}: {msg}'
-                log.error(message=msg, exc_type=TypeError)
-                return None
-
-        return wrapper
-
-    if func is None:
-        return decorator
-    return decorator(func)
-
-
-# ==============================================================
+# ======================================================================
 # Validation stages (enum/constant)
-# ==============================================================
+# ======================================================================
 
 
 class ValidationStage(Enum):
@@ -95,9 +63,9 @@ class ValidationStage(Enum):
         return self.name.lower()
 
 
-# ==============================================================
+# ======================================================================
 # Advanced runtime custom validators for Parameter types/content
-# ==============================================================
+# ======================================================================
 
 
 class ValidatorBase(ABC):
@@ -120,8 +88,11 @@ class ValidatorBase(ABC):
         return current if current is not None else default
 
 
+# ======================================================================
+
+
 class TypeValidator(ValidatorBase):
-    """Ensure a value is of the expected Python type."""
+    """Ensure a value is of the expected data type."""
 
     def __init__(self, expected_type: DataTypes):
         if isinstance(expected_type, DataTypes):
@@ -171,6 +142,9 @@ class TypeValidator(ValidatorBase):
         return value
 
 
+# ======================================================================
+
+
 class RangeValidator(ValidatorBase):
     """Ensure a numeric value lies within [ge, le]."""
 
@@ -207,6 +181,9 @@ class RangeValidator(ValidatorBase):
             stage=ValidationStage.RANGE,
         )
         return value
+
+
+# ======================================================================
 
 
 class MembershipValidator(ValidatorBase):
@@ -248,6 +225,9 @@ class MembershipValidator(ValidatorBase):
         return value
 
 
+# ======================================================================
+
+
 class RegexValidator(ValidatorBase):
     """Ensure that a string matches a given regular expression."""
 
@@ -280,9 +260,9 @@ class RegexValidator(ValidatorBase):
         return value
 
 
-# ==============================================================
+# ======================================================================
 # Attribute specification holding metadata and validators
-# ==============================================================
+# ======================================================================
 
 
 class AttributeSpec:
@@ -291,17 +271,15 @@ class AttributeSpec:
     def __init__(
         self,
         *,
-        value=None,
-        type_=None,
         default=None,
-        content_validator=None,
+        data_type=None,
+        validator=None,
         allow_none: bool = False,
     ):
-        self.value = value
         self.default = default
         self.allow_none = allow_none
-        self._type_validator = TypeValidator(type_) if type_ else None
-        self._content_validator = content_validator
+        self._data_type_validator = TypeValidator(data_type) if data_type else None
+        self._validator = validator
 
     def validated(
         self,
@@ -319,8 +297,8 @@ class AttributeSpec:
         default = self.default() if callable(self.default) else self.default
 
         # Type validation
-        if self._type_validator:
-            val = self._type_validator.validated(
+        if self._data_type_validator:
+            val = self._data_type_validator.validated(
                 val,
                 name,
                 default=default,
@@ -334,8 +312,8 @@ class AttributeSpec:
             return None
 
         # Content validation
-        if self._content_validator and val is not None:
-            val = self._content_validator.validated(
+        if self._validator and val is not None:
+            val = self._validator.validated(
                 val,
                 name,
                 default=default,

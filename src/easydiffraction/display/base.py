@@ -12,7 +12,7 @@ from typing import Tuple
 
 import pandas as pd
 
-from easydiffraction.core.singletons import SingletonBase
+from easydiffraction.core.singleton import SingletonBase
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 

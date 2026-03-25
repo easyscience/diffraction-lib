@@ -6,8 +6,8 @@ from typing import Tuple
 
 import numpy as np
 
-from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.datablocks.experiment.collection import Experiments
+from easydiffraction.datablocks.structure.collection import Structures
 
 
 def calculate_r_factor(
@@ -121,14 +121,14 @@ def calculate_reduced_chi_square(
 
 
 def get_reliability_inputs(
-    sample_models: SampleModels,
+    structures: Structures,
     experiments: Experiments,
 ) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
     """Collect observed and calculated data points for reliability
     calculations.
 
     Args:
-        sample_models: Collection of sample models.
+        structures: Collection of structures.
         experiments: Collection of experiments.
 
     Returns:
@@ -139,8 +139,8 @@ def get_reliability_inputs(
     y_calc_all = []
     y_err_all = []
     for experiment in experiments.values():
-        for sample_model in sample_models:
-            sample_model._update_categories()
+        for structure in structures:
+            structure._update_categories()
         experiment._update_categories()
 
         y_calc = experiment.data.intensity_calc

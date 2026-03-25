@@ -31,7 +31,7 @@ def test_fitter_early_exit_when_no_params(capsys, monkeypatch):
     f = Fitter()
     # Avoid creating a real minimizer
     f.minimizer = DummyMin()
-    f.fit(sample_models=DummyCollection(), experiments=DummyCollection())
+    f.fit(structures=DummyCollection(), experiments=DummyCollection())
     out = capsys.readouterr().out
     assert 'No parameters selected for fitting' in out
 
@@ -83,7 +83,7 @@ def test_fitter_fit_does_not_call_process_fit_results(monkeypatch):
 
     monkeypatch.setattr(f, '_process_fit_results', mock_process)
 
-    f.fit(sample_models=DummyCollection(), experiments=DummyCollection())
+    f.fit(structures=DummyCollection(), experiments=DummyCollection())
 
     assert not process_called['called'], (
         'Fitter.fit() should not call _process_fit_results automatically. '

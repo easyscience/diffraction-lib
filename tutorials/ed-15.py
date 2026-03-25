@@ -18,23 +18,23 @@ import easydiffraction as ed
 project = ed.Project()
 
 # %% [markdown]
-# ## Step 2: Define Sample Model
+# ## Step 2: Define Structure
 
 # %%
 # Download CIF file from repository
-model_path = ed.download_data(id=21, destination='data')
+structure_path = ed.download_data(id=21, destination='data')
 
 # %%
-project.sample_models.add(cif_path=model_path)
+project.structures.add_from_cif_path(structure_path)
 
 # %%
-project.sample_models.show_names()
+project.structures.show_names()
 
 # %%
-sample_model = project.sample_models['taurine']
+structure = project.structures['taurine']
 
 # %%
-# sample_model.show_as_cif()
+# structure.show_as_cif()
 
 # %% [markdown]
 # ## Step 3: Define Experiment
@@ -43,7 +43,7 @@ sample_model = project.sample_models['taurine']
 data_path = ed.download_data(id=22, destination='data')
 
 # %%
-project.experiments.add(
+project.experiments.add_from_data_path(
     name='senju',
     data_path=data_path,
     sample_form='single crystal',

@@ -51,3 +51,53 @@ def test_guard_allows_only_declared_public_properties_and_links_parent(monkeypat
     # Unknown attribute should raise AttributeError under current logging mode
     with pytest.raises(AttributeError):
         p.child.unknown_attr = 1
+
+
+def test_help_lists_public_properties(capsys):
+    from easydiffraction.core.guard import GuardedBase
+
+    class Obj(GuardedBase):
+        @property
+        def parameters(self):
+            return []
+
+        @property
+        def as_cif(self) -> str:
+            return ''
+
+        @property
+        def name(self):
+            """Human-readable name."""
+            return 'test'
+
+        @property
+        def score(self):
+            """Computed score."""
+            return 42
+
+        @score.setter
+        def score(self, v):
+            pass
+
+    obj = Obj()
+    obj.help()
+    out = capsys.readouterr().out
+    assert "Help for 'Obj'" in out
+    assert 'name' in out
+    assert 'score' in out
+    assert 'Properties' in out
+    assert 'Methods' in out
+    assert '✓' in out  # score is writable
+    assert '✗' in out  # name is read-only
+
+
+def test_first_sentence_extracts_first_paragraph():
+    from easydiffraction.core.guard import GuardedBase
+
+    assert GuardedBase._first_sentence(None) == ''
+    assert GuardedBase._first_sentence('') == ''
+    assert GuardedBase._first_sentence('One liner.') == 'One liner.'
+    assert GuardedBase._first_sentence('First.\n\nSecond.') == 'First.'
+    assert GuardedBase._first_sentence('Line one\ncontinued.') == 'Line one continued.'
+
+

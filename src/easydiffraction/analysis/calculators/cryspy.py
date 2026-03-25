@@ -12,10 +12,12 @@ from typing import Union
 import numpy as np
 
 from easydiffraction.analysis.calculators.base import CalculatorBase
-from easydiffraction.experiments.experiment.base import ExperimentBase
-from easydiffraction.experiments.experiment.enums import BeamModeEnum
-from easydiffraction.experiments.experiment.enums import SampleFormEnum
-from easydiffraction.sample_models.sample_model.base import SampleModelBase
+from easydiffraction.analysis.calculators.factory import CalculatorFactory
+from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.datablocks.structure.item.base import Structure
 
 try:
     import cryspy
@@ -31,6 +33,7 @@ except ImportError:
     cryspy = None
 
 
+@CalculatorFactory.register
 class CryspyCalculator(CalculatorBase):
     """Cryspy-based diffraction calculator.
 
@@ -38,6 +41,10 @@ class CryspyCalculator(CalculatorBase):
     patterns.
     """
 
+    type_info = TypeInfo(
+        tag='cryspy',
+        description='CrysPy library for crystallographic calculations',
+    )
     engine_imported: bool = cryspy is not None
 
     @property
@@ -50,7 +57,7 @@ class CryspyCalculator(CalculatorBase):
 
     def calculate_structure_factors(
         self,
-        sample_model: SampleModelBase,
+        structure: Structure,
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
     ):
@@ -58,23 +65,23 @@ class CryspyCalculator(CalculatorBase):
         implemented.
 
         Args:
-            sample_model: The sample model to calculate structure
+            structure: The structure to calculate structure
                 factors for.
             experiment: The experiment associated with the sample
                 models.
             called_by_minimizer: Whether the calculation is called by a
                 minimizer.
         """
-        combined_name = f'{sample_model.name}_{experiment.name}'
+        combined_name = f'{structure.name}_{experiment.name}'
 
         if called_by_minimizer:
             if self._cryspy_dicts and combined_name in self._cryspy_dicts:
-                cryspy_dict = self._recreate_cryspy_dict(sample_model, experiment)
+                cryspy_dict = self._recreate_cryspy_dict(structure, experiment)
             else:
-                cryspy_obj = self._recreate_cryspy_obj(sample_model, experiment)
+                cryspy_obj = self._recreate_cryspy_obj(structure, experiment)
                 cryspy_dict = cryspy_obj.get_dictionary()
         else:
-            cryspy_obj = self._recreate_cryspy_obj(sample_model, experiment)
+            cryspy_obj = self._recreate_cryspy_obj(structure, experiment)
             cryspy_dict = cryspy_obj.get_dictionary()
 
         self._cryspy_dicts[combined_name] = copy.deepcopy(cryspy_dict)
@@ -108,12 +115,12 @@ class CryspyCalculator(CalculatorBase):
 
     def calculate_pattern(
         self,
-        sample_model: SampleModelBase,
+        structure: Structure,
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
         """Calculates the diffraction pattern using Cryspy for the given
-        sample model and experiment.
+        structure and experiment.
 
         We only recreate the cryspy_obj if this method is
          - NOT called by the minimizer, or
@@ -122,8 +129,8 @@ class CryspyCalculator(CalculatorBase):
         This allows significantly speeding up the calculation
 
         Args:
-            sample_model: The sample model to calculate the pattern for.
-            experiment: The experiment associated with the sample model.
+            structure: The structure to calculate the pattern for.
+            experiment: The experiment associated with the structure.
             called_by_minimizer: Whether the calculation is called by a
                 minimizer.
 
@@ -131,16 +138,16 @@ class CryspyCalculator(CalculatorBase):
             The calculated diffraction pattern as a NumPy array or a
                 list of floats.
         """
-        combined_name = f'{sample_model.name}_{experiment.name}'
+        combined_name = f'{structure.name}_{experiment.name}'
 
         if called_by_minimizer:
             if self._cryspy_dicts and combined_name in self._cryspy_dicts:
-                cryspy_dict = self._recreate_cryspy_dict(sample_model, experiment)
+                cryspy_dict = self._recreate_cryspy_dict(structure, experiment)
             else:
-                cryspy_obj = self._recreate_cryspy_obj(sample_model, experiment)
+                cryspy_obj = self._recreate_cryspy_obj(structure, experiment)
                 cryspy_dict = cryspy_obj.get_dictionary()
         else:
-            cryspy_obj = self._recreate_cryspy_obj(sample_model, experiment)
+            cryspy_obj = self._recreate_cryspy_obj(structure, experiment)
             cryspy_dict = cryspy_obj.get_dictionary()
 
         self._cryspy_dicts[combined_name] = copy.deepcopy(cryspy_dict)
@@ -184,53 +191,53 @@ class CryspyCalculator(CalculatorBase):
 
     def _recreate_cryspy_dict(
         self,
-        sample_model: SampleModelBase,
+        structure: Structure,
         experiment: ExperimentBase,
     ) -> Dict[str, Any]:
-        """Recreates the Cryspy dictionary for the given sample model
-        and experiment.
+        """Recreates the Cryspy dictionary for the given structure and
+        experiment.
 
         Args:
-            sample_model: The sample model to update.
+            structure: The structure to update.
             experiment: The experiment to update.
 
         Returns:
             The updated Cryspy dictionary.
         """
-        combined_name = f'{sample_model.name}_{experiment.name}'
+        combined_name = f'{structure.name}_{experiment.name}'
         cryspy_dict = copy.deepcopy(self._cryspy_dicts[combined_name])
 
-        cryspy_model_id = f'crystal_{sample_model.name}'
+        cryspy_model_id = f'crystal_{structure.name}'
         cryspy_model_dict = cryspy_dict[cryspy_model_id]
 
         ################################
-        # Update sample model parameters
+        # Update structure parameters
         ################################
 
         # Cell
         cryspy_cell = cryspy_model_dict['unit_cell_parameters']
-        cryspy_cell[0] = sample_model.cell.length_a.value
-        cryspy_cell[1] = sample_model.cell.length_b.value
-        cryspy_cell[2] = sample_model.cell.length_c.value
-        cryspy_cell[3] = np.deg2rad(sample_model.cell.angle_alpha.value)
-        cryspy_cell[4] = np.deg2rad(sample_model.cell.angle_beta.value)
-        cryspy_cell[5] = np.deg2rad(sample_model.cell.angle_gamma.value)
+        cryspy_cell[0] = structure.cell.length_a.value
+        cryspy_cell[1] = structure.cell.length_b.value
+        cryspy_cell[2] = structure.cell.length_c.value
+        cryspy_cell[3] = np.deg2rad(structure.cell.angle_alpha.value)
+        cryspy_cell[4] = np.deg2rad(structure.cell.angle_beta.value)
+        cryspy_cell[5] = np.deg2rad(structure.cell.angle_gamma.value)
 
         # Atomic coordinates
         cryspy_xyz = cryspy_model_dict['atom_fract_xyz']
-        for idx, atom_site in enumerate(sample_model.atom_sites):
+        for idx, atom_site in enumerate(structure.atom_sites):
             cryspy_xyz[0][idx] = atom_site.fract_x.value
             cryspy_xyz[1][idx] = atom_site.fract_y.value
             cryspy_xyz[2][idx] = atom_site.fract_z.value
 
         # Atomic occupancies
         cryspy_occ = cryspy_model_dict['atom_occupancy']
-        for idx, atom_site in enumerate(sample_model.atom_sites):
+        for idx, atom_site in enumerate(structure.atom_sites):
             cryspy_occ[idx] = atom_site.occupancy.value
 
         # Atomic ADPs - Biso only for now
         cryspy_biso = cryspy_model_dict['atom_b_iso']
-        for idx, atom_site in enumerate(sample_model.atom_sites):
+        for idx, atom_site in enumerate(structure.atom_sites):
             cryspy_biso[idx] = atom_site.b_iso.value
 
         ##############################
@@ -298,14 +305,14 @@ class CryspyCalculator(CalculatorBase):
 
     def _recreate_cryspy_obj(
         self,
-        sample_model: SampleModelBase,
+        structure: Structure,
         experiment: ExperimentBase,
     ) -> Any:
-        """Recreates the Cryspy object for the given sample model and
+        """Recreates the Cryspy object for the given structure and
         experiment.
 
         Args:
-            sample_model: The sample model to recreate.
+            structure: The structure to recreate.
             experiment: The experiment to recreate.
 
         Returns:
@@ -313,14 +320,14 @@ class CryspyCalculator(CalculatorBase):
         """
         cryspy_obj = str_to_globaln('')
 
-        cryspy_sample_model_cif = self._convert_sample_model_to_cryspy_cif(sample_model)
-        cryspy_sample_model_obj = str_to_globaln(cryspy_sample_model_cif)
-        cryspy_obj.add_items(cryspy_sample_model_obj.items)
+        cryspy_structure_cif = self._convert_structure_to_cryspy_cif(structure)
+        cryspy_structure_obj = str_to_globaln(cryspy_structure_cif)
+        cryspy_obj.add_items(cryspy_structure_obj.items)
 
         # Add single experiment to cryspy_obj
         cryspy_experiment_cif = self._convert_experiment_to_cryspy_cif(
             experiment,
-            linked_sample_model=sample_model,
+            linked_structure=structure,
         )
 
         cryspy_experiment_obj = str_to_globaln(cryspy_experiment_cif)
@@ -328,30 +335,30 @@ class CryspyCalculator(CalculatorBase):
 
         return cryspy_obj
 
-    def _convert_sample_model_to_cryspy_cif(
+    def _convert_structure_to_cryspy_cif(
         self,
-        sample_model: SampleModelBase,
+        structure: Structure,
     ) -> str:
-        """Converts a sample model to a Cryspy CIF string.
+        """Converts a structure to a Cryspy CIF string.
 
         Args:
-            sample_model: The sample model to convert.
+            structure: The structure to convert.
 
         Returns:
-            The Cryspy CIF string representation of the sample model.
+            The Cryspy CIF string representation of the structure.
         """
-        return sample_model.as_cif
+        return structure.as_cif
 
     def _convert_experiment_to_cryspy_cif(
         self,
         experiment: ExperimentBase,
-        linked_sample_model: Any,
+        linked_structure: Any,
     ) -> str:
         """Converts an experiment to a Cryspy CIF string.
 
         Args:
             experiment: The experiment to convert.
-            linked_sample_model: The sample model linked to the
+            linked_structure: The structure linked to the
                 experiment.
 
         Returns:
@@ -487,14 +494,14 @@ class CryspyCalculator(CalculatorBase):
         # Add phase data
         if expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
             cif_lines.append('')
-            cif_lines.append(f'_phase_label {linked_sample_model.name}')
+            cif_lines.append(f'_phase_label {linked_structure.name}')
             cif_lines.append('_phase_scale 1.0')
         elif expt_type.sample_form.value == SampleFormEnum.POWDER:
             cif_lines.append('')
             cif_lines.append('loop_')
             cif_lines.append('_phase_label')
             cif_lines.append('_phase_scale')
-            cif_lines.append(f'{linked_sample_model.name} 1.0')
+            cif_lines.append(f'{linked_structure.name} 1.0')
 
         # Add background data
         if expt_type.sample_form.value == SampleFormEnum.POWDER:

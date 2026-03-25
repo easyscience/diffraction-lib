@@ -14,7 +14,7 @@ def test_lazy_attributes_resolve_and_are_accessible():
     # Access a few lazy attributes; just ensure they exist and are callable/class-like
     assert hasattr(ed, 'Project')
     assert hasattr(ed, 'ExperimentFactory')
-    assert hasattr(ed, 'SampleModelFactory')
+    assert hasattr(ed, 'StructureFactory')
 
     # Access utility functions from utils via lazy getattr
     assert callable(ed.show_version)

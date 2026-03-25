@@ -11,40 +11,40 @@
 # %%
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Sample Model
+# ## Define Structure
 #
-# This section shows how to add sample models and modify their
+# This section shows how to add structures and modify their
 # parameters.
 #
-# #### Create Sample Model
+# #### Create Structure
 
 # %%
-model = SampleModelFactory.create(name='hs')
+structure = StructureFactory.from_scratch(name='hs')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model.space_group.name_h_m = 'R -3 m'
-model.space_group.it_coordinate_system_code = 'h'
+structure.space_group.name_h_m = 'R -3 m'
+structure.space_group.it_coordinate_system_code = 'h'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 
 # %%
-model.cell.length_a = 6.9
-model.cell.length_c = 14.1
+structure.cell.length_a = 6.9
+structure.cell.length_c = 14.1
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add(
+structure.atom_sites.create(
     label='Zn',
     type_symbol='Zn',
     fract_x=0,
@@ -53,7 +53,7 @@ model.atom_sites.add(
     wyckoff_letter='b',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='Cu',
     type_symbol='Cu',
     fract_x=0.5,
@@ -62,7 +62,7 @@ model.atom_sites.add(
     wyckoff_letter='e',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='O',
     type_symbol='O',
     fract_x=0.21,
@@ -71,7 +71,7 @@ model.atom_sites.add(
     wyckoff_letter='h',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='Cl',
     type_symbol='Cl',
     fract_x=0,
@@ -80,7 +80,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='H',
     type_symbol='2H',
     fract_x=0.13,
@@ -94,7 +94,7 @@ model.atom_sites.add(
 # ## Define Experiment
 #
 # This section shows how to add experiments, configure their parameters,
-# and link the sample models defined in the previous step.
+# and link the structures defined in the previous step.
 #
 # #### Download Measured Data
 
@@ -105,7 +105,7 @@ data_path = download_data(id=11, destination='data')
 # #### Create Experiment
 
 # %%
-expt = ExperimentFactory.create(name='hrpt', data_path=data_path)
+expt = ExperimentFactory.from_data_path(name='hrpt', data_path=data_path)
 
 # %% [markdown]
 # #### Set Instrument
@@ -128,26 +128,26 @@ expt.peak.broad_lorentz_y = 0
 # #### Set Background
 
 # %%
-expt.background.add(id='1', x=4.4196, y=500)
-expt.background.add(id='2', x=6.6207, y=500)
-expt.background.add(id='3', x=10.4918, y=500)
-expt.background.add(id='4', x=15.4634, y=500)
-expt.background.add(id='5', x=45.6041, y=500)
-expt.background.add(id='6', x=74.6844, y=500)
-expt.background.add(id='7', x=103.4187, y=500)
-expt.background.add(id='8', x=121.6311, y=500)
-expt.background.add(id='9', x=159.4116, y=500)
+expt.background.create(id='1', x=4.4196, y=500)
+expt.background.create(id='2', x=6.6207, y=500)
+expt.background.create(id='3', x=10.4918, y=500)
+expt.background.create(id='4', x=15.4634, y=500)
+expt.background.create(id='5', x=45.6041, y=500)
+expt.background.create(id='6', x=74.6844, y=500)
+expt.background.create(id='7', x=103.4187, y=500)
+expt.background.create(id='8', x=121.6311, y=500)
+expt.background.create(id='9', x=159.4116, y=500)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add(id='hs', scale=0.5)
+expt.linked_phases.create(id='hs', scale=0.5)
 
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage the sample model, experiment, and
+# The project object is used to manage the structure, experiment, and
 # analysis.
 #
 # #### Create Project
@@ -164,16 +164,16 @@ project = Project()
 # project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# #### Add Sample Model
+# #### Add Structure
 
 # %%
-project.sample_models.add(sample_model=model)
+project.structures.add(structure)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(experiment=expt)
+project.experiments.add(expt)
 
 # %% [markdown]
 # ## Perform Analysis
@@ -181,16 +181,10 @@ project.experiments.add(experiment=expt)
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# #### Set Calculator
-
-# %%
-project.analysis.current_calculator = 'cryspy'
-
-# %% [markdown]
 # #### Set Minimizer
 
 # %%
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
@@ -207,8 +201,8 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=Tr
 # Set parameters to be refined.
 
 # %%
-model.cell.length_a.free = True
-model.cell.length_c.free = True
+structure.cell.length_a.free = True
+structure.cell.length_c.free = True
 
 expt.linked_phases['hs'].scale.free = True
 expt.instrument.calib_twotheta_offset.free = True
@@ -281,11 +275,11 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=Tr
 # Set more parameters to be refined.
 
 # %%
-model.atom_sites['O'].fract_x.free = True
-model.atom_sites['O'].fract_z.free = True
-model.atom_sites['Cl'].fract_z.free = True
-model.atom_sites['H'].fract_x.free = True
-model.atom_sites['H'].fract_z.free = True
+structure.atom_sites['O'].fract_x.free = True
+structure.atom_sites['O'].fract_z.free = True
+structure.atom_sites['Cl'].fract_z.free = True
+structure.atom_sites['H'].fract_x.free = True
+structure.atom_sites['H'].fract_z.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
@@ -317,11 +311,11 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=Tr
 # Set more parameters to be refined.
 
 # %%
-model.atom_sites['Zn'].b_iso.free = True
-model.atom_sites['Cu'].b_iso.free = True
-model.atom_sites['O'].b_iso.free = True
-model.atom_sites['Cl'].b_iso.free = True
-model.atom_sites['H'].b_iso.free = True
+structure.atom_sites['Zn'].b_iso.free = True
+structure.atom_sites['Cu'].b_iso.free = True
+structure.atom_sites['O'].b_iso.free = True
+structure.atom_sites['Cl'].b_iso.free = True
+structure.atom_sites['H'].b_iso.free = True
 
 # %% [markdown]
 # Show free parameters after selection.

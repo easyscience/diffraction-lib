@@ -173,8 +173,8 @@ human-readable crystallographic data.
 
 ## Experiment Definition
 
-The previous example described the **sample model** (crystallographic model),
-but how is the **experiment** itself represented?
+The previous example described the **structure** (crystallographic model), but
+how is the **experiment** itself represented?
 
 The experiment is also saved as a CIF file. For example, background intensity in
 a powder diffraction experiment might be represented as:
@@ -206,7 +206,7 @@ EasyDiffraction uses CIF consistently throughout its workflow, including in the
 following blocks:
 
 - **project**: contains the project information
-- **sample model**: defines the sample model
+- **structure**: defines the structure
 - **experiment**: contains the experiment setup and measured data
 - **analysis**: stores fitting and analysis parameters
 - **summary**: captures analysis results

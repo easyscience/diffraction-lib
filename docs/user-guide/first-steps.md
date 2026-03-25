@@ -37,12 +37,12 @@ A complete tutorial using the `import` syntax can be found
 ### Importing specific parts
 
 Alternatively, you can import specific classes or methods from the package. For
-example, you can import the `Project`, `SampleModel`, `Experiment` classes and
+example, you can import the `Project`, `Structure`, `Experiment` classes and
 `download_from_repository` method like this:
 
 ```python
 from easydiffraction import Project
-from easydiffraction import SampleModel
+from easydiffraction import Structure
 from easydiffraction import Experiment
 from easydiffraction import download_from_repository
 ```
@@ -66,7 +66,7 @@ workflow. One of them is the `download_from_repository` function, which allows
 you to download data files from our remote repository, making it easy to access
 and use them while experimenting with EasyDiffraction.
 
-For example, you can download a sample data file like this:
+For example, you can download a data file like this:
 
 ```python
 import easydiffraction as ed
@@ -91,22 +91,22 @@ calculation, minimization, and plotting. These methods can be called on the
 
 ### Supported calculators
 
-For example, you can use the `show_supported_calculators()` method to see which
-calculation engines are available for use in your project:
+The calculator is automatically selected based on the experiment type. You can
+use the `show_supported_calculator_types()` method on an experiment to see which
+calculation engines are compatible:
 
 ```python
-project.show_supported_calculators()
+project.experiments['hrpt'].show_supported_calculator_types()
 ```
 
 This will display a list of supported calculators along with their descriptions,
 allowing you to choose the one that best fits your needs.
 
-An example of the output for the `show_supported_calculators()` method is:
+An example of the output for a Bragg diffraction experiment:
 
-| Calculator | Description                                                 |
-| ---------- | ----------------------------------------------------------- |
-| cryspy     | CrysPy library for crystallographic calculations            |
-| pdffit     | PDFfit2 library for pair distribution function calculations |
+| Calculator | Description                                      |
+| ---------- | ------------------------------------------------ |
+| cryspy     | CrysPy library for crystallographic calculations |
 
 ### Supported minimizers
 
@@ -138,16 +138,16 @@ who want to quickly understand how to work with parameters in their projects.
 An example of the output for the `project.analysis.how_to_access_parameters()`
 method is:
 
-|     | Code variable                                          | Unique ID for CIF                |
-| --- | ------------------------------------------------------ | -------------------------------- |
-| 1   | project.sample_models['lbco'].atom_site['La'].adp_type | lbco.atom_site.La.ADP_type       |
-| 2   | project.sample_models['lbco'].atom_site['La'].b_iso    | lbco.atom_site.La.B_iso_or_equiv |
-| 3   | project.sample_models['lbco'].atom_site['La'].fract_x  | lbco.atom_site.La.fract_x        |
-| 4   | project.sample_models['lbco'].atom_site['La'].fract_y  | lbco.atom_site.La.fract_y        |
-| ... | ...                                                    | ...                              |
-| 59  | project.experiments['hrpt'].peak.broad_gauss_u         | hrpt.peak.broad_gauss_u          |
-| 60  | project.experiments['hrpt'].peak.broad_gauss_v         | hrpt.peak.broad_gauss_v          |
-| 61  | project.experiments['hrpt'].peak.broad_gauss_w         | hrpt.peak.broad_gauss_w          |
+|     | Code variable                                       | Unique ID for CIF                |
+| --- | --------------------------------------------------- | -------------------------------- |
+| 1   | project.structures['lbco'].atom_site['La'].adp_type | lbco.atom_site.La.ADP_type       |
+| 2   | project.structures['lbco'].atom_site['La'].b_iso    | lbco.atom_site.La.B_iso_or_equiv |
+| 3   | project.structures['lbco'].atom_site['La'].fract_x  | lbco.atom_site.La.fract_x        |
+| 4   | project.structures['lbco'].atom_site['La'].fract_y  | lbco.atom_site.La.fract_y        |
+| ... | ...                                                 | ...                              |
+| 59  | project.experiments['hrpt'].peak.broad_gauss_u      | hrpt.peak.broad_gauss_u          |
+| 60  | project.experiments['hrpt'].peak.broad_gauss_v      | hrpt.peak.broad_gauss_v          |
+| 61  | project.experiments['hrpt'].peak.broad_gauss_w      | hrpt.peak.broad_gauss_w          |
 
 ### Supported plotters
 
@@ -169,7 +169,7 @@ An example of the output is:
 
 Once the EasyDiffraction package is imported, you can proceed with the **data
 analysis**. This step can be split into several sub-steps, such as creating a
-project, defining sample models, adding experimental data, etc.
+project, defining structures, adding experimental data, etc.
 
 EasyDiffraction provides a **Python API** that allows you to perform these steps
 programmatically in a certain linear order. This is especially useful for users

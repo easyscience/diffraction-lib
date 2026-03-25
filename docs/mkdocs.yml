@@ -11,7 +11,7 @@ repo_url: https://github.com/easyscience/diffraction-lib/
 edit_uri: edit/develop/docs/
 
 # Copyright
-copyright: © 2025 EasyDiffraction
+copyright: © 2026 EasyDiffraction
 
 # Extra icons in the bottom right corner
 extra:
@@ -62,7 +62,7 @@ nav:
       - Analysis Workflow:
           - Analysis Workflow: user-guide/analysis-workflow/index.md
           - Project: user-guide/analysis-workflow/project.md
-          - Sample Model: user-guide/analysis-workflow/model.md
+          - Structure: user-guide/analysis-workflow/model.md
           - Experiment: user-guide/analysis-workflow/experiment.md
           - Analysis: user-guide/analysis-workflow/analysis.md
           - Summary: user-guide/analysis-workflow/summary.md
@@ -71,8 +71,7 @@ nav:
       - Getting Started:
           - LBCO quick CIF: tutorials/ed-1.ipynb
           - LBCO quick code: tutorials/ed-2.ipynb
-          - LBCO basic: tutorials/ed-3.ipynb
-          - PbSO4 advanced: tutorials/ed-4.ipynb
+          - LBCO complete: tutorials/ed-3.ipynb
       - Powder Diffraction:
           - Co2SiO4 pd-neut-cwl: tutorials/ed-5.ipynb
           - HS pd-neut-cwl: tutorials/ed-6.ipynb
@@ -86,17 +85,23 @@ nav:
           - Ni pd-neut-cwl: tutorials/ed-10.ipynb
           - Si pd-neut-tof: tutorials/ed-11.ipynb
           - NaCl pd-xray: tutorials/ed-12.ipynb
+      - Multiple Data Blocks:
+          - PbSO4 NPD+XRD: tutorials/ed-4.ipynb
+          - LBCO+Si McStas: tutorials/ed-9.ipynb
+          - Si Bragg+PDF: tutorials/ed-16.ipynb
       - Workshops & Schools:
-          - 2025 DMSC: tutorials/ed-13.ipynb
+          - DMSC Summer School: tutorials/ed-13.ipynb
   - API Reference:
       - API Reference: api-reference/index.md
       - analysis: api-reference/analysis.md
       - core: api-reference/core.md
       - crystallography: api-reference/crystallography.md
+      - datablocks:
+          - experiment: api-reference/datablocks/experiment.md
+          - structure: api-reference/datablocks/structure.md
       - display: api-reference/display.md
-      - experiments: api-reference/experiments.md
+      - experiments: api-reference/experiment.md
       - io: api-reference/io.md
       - project: api-reference/project.md
-      - sample_models: api-reference/sample_models.md
       - summary: api-reference/summary.md
       - utils: api-reference/utils.md

@@ -21,16 +21,16 @@ import easydiffraction as ed
 project = ed.Project()
 
 # %% [markdown]
-# ## Add Sample Model
+# ## Add Structure
 
 # %%
-project.sample_models.add(name='ni')
+project.structures.create(name='ni')
 
 # %%
-project.sample_models['ni'].space_group.name_h_m = 'F m -3 m'
-project.sample_models['ni'].space_group.it_coordinate_system_code = '1'
-project.sample_models['ni'].cell.length_a = 3.52387
-project.sample_models['ni'].atom_sites.add(
+project.structures['ni'].space_group.name_h_m = 'F m -3 m'
+project.structures['ni'].space_group.it_coordinate_system_code = '1'
+project.structures['ni'].cell.length_a = 3.52387
+project.structures['ni'].atom_sites.create(
     label='Ni',
     type_symbol='Ni',
     fract_x=0.0,
@@ -47,7 +47,7 @@ project.sample_models['ni'].atom_sites.add(
 data_path = ed.download_data(id=6, destination='data')
 
 # %%
-project.experiments.add(
+project.experiments.add_from_data_path(
     name='pdf',
     data_path=data_path,
     sample_form='powder',
@@ -57,7 +57,7 @@ project.experiments.add(
 )
 
 # %%
-project.experiments['pdf'].linked_phases.add(id='ni', scale=1.0)
+project.experiments['pdf'].linked_phases.create(id='ni', scale=1.0)
 project.experiments['pdf'].peak.damp_q = 0
 project.experiments['pdf'].peak.broad_q = 0.03
 project.experiments['pdf'].peak.cutoff_q = 27.0
@@ -69,8 +69,8 @@ project.experiments['pdf'].peak.damp_particle_diameter = 0
 # ## Select Fitting Parameters
 
 # %%
-project.sample_models['ni'].cell.length_a.free = True
-project.sample_models['ni'].atom_sites['Ni'].b_iso.free = True
+project.structures['ni'].cell.length_a.free = True
+project.structures['ni'].atom_sites['Ni'].b_iso.free = True
 
 # %%
 project.experiments['pdf'].linked_phases['ni'].scale.free = True
@@ -81,7 +81,6 @@ project.experiments['pdf'].peak.sharp_delta_2.free = True
 # ## Run Fitting
 
 # %%
-project.analysis.current_calculator = 'pdffit'
 project.analysis.fit()
 project.analysis.show_fit_results()
 

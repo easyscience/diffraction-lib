@@ -155,7 +155,7 @@ class MinimizerBase(ABC):
         self,
         engine_params: Dict[str, Any],
         parameters: List[Any],
-        sample_models: Any,
+        structures: Any,
         experiments: Any,
         calculator: Any,
     ) -> np.ndarray:
@@ -163,7 +163,7 @@ class MinimizerBase(ABC):
         return self._compute_residuals(
             engine_params,
             parameters,
-            sample_models,
+            structures,
             experiments,
             calculator,
         )
@@ -171,7 +171,7 @@ class MinimizerBase(ABC):
     def _create_objective_function(
         self,
         parameters: List[Any],
-        sample_models: Any,
+        structures: Any,
         experiments: Any,
         calculator: Any,
     ) -> Callable[[Dict[str, Any]], np.ndarray]:
@@ -179,7 +179,7 @@ class MinimizerBase(ABC):
         return lambda engine_params: self._objective_function(
             engine_params,
             parameters,
-            sample_models,
+            structures,
             experiments,
             calculator,
         )

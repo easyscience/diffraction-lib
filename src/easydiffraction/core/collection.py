@@ -40,9 +40,9 @@ class CollectionBase(GuardedBase):
 
     def __setitem__(self, name: str, item) -> None:
         """Insert or replace an item under the given identity key."""
-        # Check if item with same identity exists; if so, replace it
+        # Check if item with same key exists; if so, replace it
         for i, existing_item in enumerate(self._items):
-            if existing_item._identity.category_entry_name == name:
+            if self._key_for(existing_item) == name:
                 self._items[i] = item
                 self._rebuild_index()
                 return
@@ -53,14 +53,18 @@ class CollectionBase(GuardedBase):
 
     def __delitem__(self, name: str) -> None:
         """Delete an item by key or raise ``KeyError`` if missing."""
-        # Remove from _items by identity entry name
         for i, item in enumerate(self._items):
-            if item._identity.category_entry_name == name:
+            if self._key_for(item) == name:
                 object.__setattr__(item, '_parent', None)  # Unlink the parent before removal
                 del self._items[i]
                 self._rebuild_index()
                 return
         raise KeyError(name)
+
+    def __contains__(self, name: str) -> bool:
+        """Check whether an item with the given key exists."""
+        self._rebuild_index()
+        return name in self._index
 
     def __iter__(self):
         """Iterate over items in insertion order."""
@@ -70,9 +74,22 @@ class CollectionBase(GuardedBase):
         """Return the number of items in the collection."""
         return len(self._items)
 
+    def remove(self, name: str) -> None:
+        """Remove an item by its key.
+
+        Args:
+            name: Identity key of the item to remove.
+
+        Raises:
+            KeyError: If no item with the given key exists.
+        """
+        del self[name]
+
     def _key_for(self, item):
-        """Return the identity key for ``item`` (category or
-        datablock).
+        """Return the identity key for *item*.
+
+        Subclasses must override to return the appropriate key
+        (``category_entry_name`` or ``datablock_entry_name``).
         """
         return item._identity.category_entry_name or item._identity.datablock_entry_name
 
@@ -100,3 +117,25 @@ class CollectionBase(GuardedBase):
     def names(self):
         """List of all item keys in the collection."""
         return list(self.keys())
+
+    def help(self) -> None:
+        """Print a summary of public attributes and contained items."""
+        super().help()
+
+        from easydiffraction.utils.logging import console
+        from easydiffraction.utils.utils import render_table
+
+        if self._items:
+            console.paragraph(f'Items ({len(self._items)})')
+            rows = []
+            for i, item in enumerate(self._items, 1):
+                key = self._key_for(item)
+                rows.append([str(i), str(key), f"['{key}']"])
+            render_table(
+                columns_headers=['#', 'Name', 'Access'],
+                columns_alignment=['right', 'left', 'left'],
+                columns_data=rows,
+            )
+        else:
+            console.paragraph('Items')
+            console.print('(empty)')

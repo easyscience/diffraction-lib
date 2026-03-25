@@ -2,7 +2,7 @@
 # # Structure Refinement: PbSO4, NPD + XRD
 #
 # This example demonstrates a more advanced use of the EasyDiffraction
-# library by explicitly creating and configuring sample models and
+# library by explicitly creating and configuring structures and
 # experiments before adding them to a project. It could be more suitable
 # for users who are interested in creating custom workflows. This
 # tutorial provides minimal explanation and is intended for users
@@ -17,39 +17,39 @@
 # %%
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Sample Model
+# ## Define Structure
 #
-# This section shows how to add sample models and modify their
+# This section shows how to add structures and modify their
 # parameters.
 #
-# #### Create Sample Model
+# #### Create Structure
 
 # %%
-model = SampleModelFactory.create(name='pbso4')
+structure = StructureFactory.from_scratch(name='pbso4')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model.space_group.name_h_m = 'P n m a'
+structure.space_group.name_h_m = 'P n m a'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-model.cell.length_a = 8.47
-model.cell.length_b = 5.39
-model.cell.length_c = 6.95
+structure.cell.length_a = 8.47
+structure.cell.length_b = 5.39
+structure.cell.length_c = 6.95
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add(
+structure.atom_sites.create(
     label='Pb',
     type_symbol='Pb',
     fract_x=0.1876,
@@ -58,7 +58,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=1.37,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='S',
     type_symbol='S',
     fract_x=0.0654,
@@ -67,7 +67,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.3777,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='O1',
     type_symbol='O',
     fract_x=0.9082,
@@ -76,7 +76,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=1.9764,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='O2',
     type_symbol='O',
     fract_x=0.1935,
@@ -85,7 +85,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=1.4456,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='O3',
     type_symbol='O',
     fract_x=0.0811,
@@ -100,7 +100,7 @@ model.atom_sites.add(
 # ## Define Experiments
 #
 # This section shows how to add experiments, configure their parameters,
-# and link the sample models defined in the previous step.
+# and link the structures defined in the previous step.
 #
 # ### Experiment 1: npd
 #
@@ -113,7 +113,7 @@ data_path1 = download_data(id=13, destination='data')
 # #### Create Experiment
 
 # %%
-expt1 = ExperimentFactory.create(
+expt1 = ExperimentFactory.from_data_path(
     name='npd',
     data_path=data_path1,
     radiation_probe='neutron',
@@ -159,13 +159,13 @@ for id, x, y in [
     ('7', 120.0, 244.4525),
     ('8', 153.0, 226.0595),
 ]:
-    expt1.background.add(id=id, x=x, y=y)
+    expt1.background.create(id=id, x=x, y=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt1.linked_phases.add(id='pbso4', scale=1.5)
+expt1.linked_phases.create(id='pbso4', scale=1.5)
 
 # %% [markdown]
 # ### Experiment 2: xrd
@@ -179,7 +179,7 @@ data_path2 = download_data(id=16, destination='data')
 # #### Create Experiment
 
 # %%
-expt2 = ExperimentFactory.create(
+expt2 = ExperimentFactory.from_data_path(
     name='xrd',
     data_path=data_path2,
     radiation_probe='xray',
@@ -209,7 +209,7 @@ expt2.peak.broad_lorentz_y = 0.057691
 # Select background type.
 
 # %%
-expt2.background_type = 'chebyshev polynomial'
+expt2.background_type = 'chebyshev'
 
 # %% [markdown]
 # Add background points.
@@ -223,18 +223,18 @@ for id, x, y in [
     ('5', 4, 54.552),
     ('6', 5, -20.661),
 ]:
-    expt2.background.add(id=id, order=x, coef=y)
+    expt2.background.create(id=id, order=x, coef=y)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt2.linked_phases.add(id='pbso4', scale=0.001)
+expt2.linked_phases.create(id='pbso4', scale=0.001)
 
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage sample models, experiments, and
+# The project object is used to manage structures, experiments, and
 # analysis.
 #
 # #### Create Project
@@ -243,17 +243,17 @@ expt2.linked_phases.add(id='pbso4', scale=0.001)
 project = Project()
 
 # %% [markdown]
-# #### Add Sample Model
+# #### Add Structure
 
 # %%
-project.sample_models.add(sample_model=model)
+project.structures.add(structure)
 
 # %% [markdown]
 # #### Add Experiments
 
 # %%
-project.experiments.add(experiment=expt1)
-project.experiments.add(experiment=expt2)
+project.experiments.add(expt1)
+project.experiments.add(expt2)
 
 # %% [markdown]
 # ## Perform Analysis
@@ -261,32 +261,26 @@ project.experiments.add(experiment=expt2)
 # This section outlines the analysis process, including how to configure
 # calculation and fitting engines.
 #
-# #### Set Calculator
-
-# %%
-project.analysis.current_calculator = 'cryspy'
-
-# %% [markdown]
 # #### Set Fit Mode
 
 # %%
-project.analysis.fit_mode = 'joint'
+project.analysis.fit_mode.mode = 'joint'
 
 # %% [markdown]
 # #### Set Minimizer
 
 # %%
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]
 # #### Set Fitting Parameters
 #
-# Set sample model parameters to be optimized.
+# Set structure parameters to be optimized.
 
 # %%
-model.cell.length_a.free = True
-model.cell.length_b.free = True
-model.cell.length_c.free = True
+structure.cell.length_a.free = True
+structure.cell.length_b.free = True
+structure.cell.length_c.free = True
 
 # %% [markdown]
 # Set experiment parameters to be optimized.

@@ -11,38 +11,38 @@
 # %%
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Sample Model
+# ## Define Structure
 #
-# This section shows how to add sample models and modify their
+# This section shows how to add structures and modify their
 # parameters.
 #
-# #### Create Sample Model
+# #### Create Structure
 
 # %%
-model = SampleModelFactory.create(name='si')
+structure = StructureFactory.from_scratch(name='si')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model.space_group.name_h_m = 'F d -3 m'
-model.space_group.it_coordinate_system_code = '2'
+structure.space_group.name_h_m = 'F d -3 m'
+structure.space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-model.cell.length_a = 5.431
+structure.cell.length_a = 5.431
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add(
+structure.atom_sites.create(
     label='Si',
     type_symbol='Si',
     fract_x=0.125,
@@ -55,7 +55,7 @@ model.atom_sites.add(
 # ## Define Experiment
 #
 # This section shows how to add experiments, configure their
-# parameters, and link the sample models defined in the previous step.
+# parameters, and link the structures defined in the previous step.
 #
 # #### Download Measured Data
 
@@ -66,7 +66,9 @@ data_path = download_data(id=7, destination='data')
 # #### Create Experiment
 
 # %%
-expt = ExperimentFactory.create(name='sepd', data_path=data_path, beam_mode='time-of-flight')
+expt = ExperimentFactory.from_data_path(
+    name='sepd', data_path=data_path, beam_mode='time-of-flight'
+)
 
 # %% [markdown]
 # #### Set Instrument
@@ -101,18 +103,18 @@ expt.peak.asym_alpha_1 = 0.5971
 # %%
 expt.background_type = 'line-segment'
 for x in range(0, 35000, 5000):
-    expt.background.add(id=str(x), x=x, y=200)
+    expt.background.create(id=str(x), x=x, y=200)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add(id='si', scale=10.0)
+expt.linked_phases.create(id='si', scale=10.0)
 
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage the sample model, experiment, and
+# The project object is used to manage the structure, experiment, and
 # analysis.
 #
 # #### Create Project
@@ -121,16 +123,16 @@ expt.linked_phases.add(id='si', scale=10.0)
 project = Project()
 
 # %% [markdown]
-# #### Add Sample Model
+# #### Add Structure
 
 # %%
-project.sample_models.add(sample_model=model)
+project.structures.add(structure)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(experiment=expt)
+project.experiments.add(expt)
 
 # %% [markdown]
 # ## Perform Analysis
@@ -138,16 +140,10 @@ project.experiments.add(experiment=expt)
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# #### Set Calculator
-
-# %%
-project.analysis.current_calculator = 'cryspy'
-
-# %% [markdown]
 # #### Set Minimizer
 
 # %%
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
@@ -162,7 +158,7 @@ project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_resid
 # Set parameters to be refined.
 
 # %%
-model.cell.length_a.free = True
+structure.cell.length_a.free = True
 
 expt.linked_phases['si'].scale.free = True
 expt.instrument.calib_d_to_tof_offset.free = True
@@ -265,7 +261,7 @@ project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_resid
 # Set more parameters to be refined.
 
 # %%
-model.atom_sites['Si'].b_iso.free = True
+structure.atom_sites['Si'].b_iso.free = True
 
 # %% [markdown]
 # Show free parameters after selection.

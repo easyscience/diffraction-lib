@@ -3,9 +3,8 @@
 
 def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     from easydiffraction.analysis.analysis import Analysis
-    from easydiffraction.core.parameters import Parameter
+    from easydiffraction.core.variable import Parameter
     from easydiffraction.core.validation import AttributeSpec
-    from easydiffraction.core.validation import DataTypes
     from easydiffraction.io.cif.handler import CifHandler
     import easydiffraction.analysis.analysis as analysis_mod
 
@@ -13,9 +12,10 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     def make_param(db, cat, entry, name, val):
         p = Parameter(
             name=name,
-            value_spec=AttributeSpec(value=val, type_=DataTypes.NUMERIC, default=0.0),
+            value_spec=AttributeSpec(default=0.0),
             cif_handler=CifHandler(names=[f'_{cat}.{name}']),
         )
+        p.value = val
         # Inject identity metadata (avoid parent chain)
         p._identity.datablock_entry_name = lambda: db
         p._identity.category_code = cat
@@ -36,7 +36,7 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
         _varname = 'proj'
 
         def __init__(self):
-            self.sample_models = Coll([p1])
+            self.structures = Coll([p1])
             self.experiments = Coll([p2])
 
     # Capture the table payload by monkeypatching render_table to avoid
@@ -63,7 +63,7 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     flat_rows = [' '.join(map(str, row)) for row in data]
 
     # Python access paths
-    assert any("proj.sample_models['db1'].catA.alpha" in r for r in flat_rows)
+    assert any("proj.structures['db1'].catA.alpha" in r for r in flat_rows)
     assert any("proj.experiments['db2'].catB['row1'].beta" in r for r in flat_rows)
 
     # Now check CIF unique identifiers via the new API

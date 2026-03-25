@@ -57,7 +57,7 @@ class Summary:
         """
         console.section('Crystallographic data')
 
-        for model in self.project.sample_models.values():
+        for model in self.project.structures.values():
             console.paragraph('Phase datablock')
             console.print(f'🧩 {model.name}')
 
@@ -180,7 +180,8 @@ class Summary:
         console.section('Fitting')
 
         console.paragraph('Calculation engine')
-        console.print(self.project.analysis.current_calculator)
+        for expt in self.project.experiments.values():
+            console.print(f'  {expt.name}: {expt.calculator_type}')
 
         console.paragraph('Minimization engine')
         console.print(self.project.analysis.current_minimizer)

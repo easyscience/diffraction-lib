@@ -34,16 +34,16 @@ project.plotter.x_min = 2.0
 project.plotter.x_max = 30.0
 
 # %% [markdown]
-# ## Add Sample Model
+# ## Add Structure
 
 # %%
-project.sample_models.add(name='nacl')
+project.structures.create(name='nacl')
 
 # %%
-project.sample_models['nacl'].space_group.name_h_m = 'F m -3 m'
-project.sample_models['nacl'].space_group.it_coordinate_system_code = '1'
-project.sample_models['nacl'].cell.length_a = 5.62
-project.sample_models['nacl'].atom_sites.add(
+project.structures['nacl'].space_group.name_h_m = 'F m -3 m'
+project.structures['nacl'].space_group.it_coordinate_system_code = '1'
+project.structures['nacl'].cell.length_a = 5.62
+project.structures['nacl'].atom_sites.create(
     label='Na',
     type_symbol='Na',
     fract_x=0,
@@ -52,7 +52,7 @@ project.sample_models['nacl'].atom_sites.add(
     wyckoff_letter='a',
     b_iso=1.0,
 )
-project.sample_models['nacl'].atom_sites.add(
+project.structures['nacl'].atom_sites.create(
     label='Cl',
     type_symbol='Cl',
     fract_x=0.5,
@@ -69,7 +69,7 @@ project.sample_models['nacl'].atom_sites.add(
 data_path = ed.download_data(id=4, destination='data')
 
 # %%
-project.experiments.add(
+project.experiments.add_from_data_path(
     name='xray_pdf',
     data_path=data_path,
     sample_form='powder',
@@ -96,15 +96,15 @@ project.experiments['xray_pdf'].peak.sharp_delta_2 = 5
 project.experiments['xray_pdf'].peak.damp_particle_diameter = 0
 
 # %%
-project.experiments['xray_pdf'].linked_phases.add(id='nacl', scale=0.5)
+project.experiments['xray_pdf'].linked_phases.create(id='nacl', scale=0.5)
 
 # %% [markdown]
 # ## Select Fitting Parameters
 
 # %%
-project.sample_models['nacl'].cell.length_a.free = True
-project.sample_models['nacl'].atom_sites['Na'].b_iso.free = True
-project.sample_models['nacl'].atom_sites['Cl'].b_iso.free = True
+project.structures['nacl'].cell.length_a.free = True
+project.structures['nacl'].atom_sites['Na'].b_iso.free = True
+project.structures['nacl'].atom_sites['Cl'].b_iso.free = True
 
 # %%
 project.experiments['xray_pdf'].linked_phases['nacl'].scale.free = True
@@ -115,7 +115,6 @@ project.experiments['xray_pdf'].peak.sharp_delta_2.free = True
 # ## Run Fitting
 
 # %%
-project.analysis.current_calculator = 'pdffit'
 project.analysis.fit()
 project.analysis.show_fit_results()
 

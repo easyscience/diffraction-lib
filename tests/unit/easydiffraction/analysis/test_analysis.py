@@ -20,68 +20,97 @@ def _make_project_with_names(names):
 
     class P:
         experiments = ExpCol(names)
-        sample_models = object()
+        structures = object()
         _varname = 'proj'
 
     return P()
 
 
-def test_show_current_calculator_and_minimizer_prints(capsys):
+def test_show_current_minimizer_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names([]))
-    a.show_current_calculator()
     a.show_current_minimizer()
     out = capsys.readouterr().out
-    assert 'Current calculator' in out
-    assert 'cryspy' in out
     assert 'Current minimizer' in out
-    assert 'lmfit (leastsq)' in out
+    assert 'lmfit' in out
 
 
-def test_current_calculator_setter_success_and_unknown(monkeypatch, capsys):
-    from easydiffraction.analysis import calculators as calc_pkg
-    from easydiffraction.analysis.analysis import Analysis
 
-    a = Analysis(project=_make_project_with_names([]))
-
-    # Success path
-    monkeypatch.setattr(
-        calc_pkg.factory.CalculatorFactory,
-        'create_calculator',
-        lambda name: object(),
-    )
-    a.current_calculator = 'pdffit'
-    out = capsys.readouterr().out
-    assert 'Current calculator changed to' in out
-    assert a.current_calculator == 'pdffit'
-
-    # Unknown path (create_calculator returns None): no change
-    monkeypatch.setattr(
-        calc_pkg.factory.CalculatorFactory,
-        'create_calculator',
-        lambda name: None,
-    )
-    a.current_calculator = 'unknown'
-    assert a.current_calculator == 'pdffit'
-
-
-def test_fit_modes_show_and_switch_to_joint(monkeypatch, capsys):
+def test_fit_mode_category_and_joint_fit_experiments(monkeypatch, capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names(['e1', 'e2']))
 
-    a.show_available_fit_modes()
-    a.show_current_fit_mode()
-    out1 = capsys.readouterr().out
-    assert 'Available fit modes' in out1
-    assert 'Current fit mode' in out1
-    assert 'single' in out1
+    # Default fit mode is 'single'
+    assert a.fit_mode.mode.value == 'single'
 
-    a.fit_mode = 'joint'
-    out2 = capsys.readouterr().out
-    assert 'Current fit mode changed to' in out2
-    assert a.fit_mode == 'joint'
+    # Switch to joint
+    a.fit_mode.mode = 'joint'
+    assert a.fit_mode.mode.value == 'joint'
+
+    # joint_fit_experiments exists but is empty until fit() populates it
+    assert len(a.joint_fit_experiments) == 0
+
+
+def test_fit_mode_type_getter(capsys):
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    assert a.fit_mode_type == 'default'
+
+
+def test_show_supported_fit_mode_types(capsys):
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    a.show_supported_fit_mode_types()
+    out = capsys.readouterr().out
+    assert 'default' in out
+
+
+def test_show_current_fit_mode_type(capsys):
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    a.show_current_fit_mode_type()
+    out = capsys.readouterr().out
+    assert 'Current fit-mode type' in out
+    assert 'default' in out
+
+
+def test_fit_mode_type_setter_valid(capsys):
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    a.fit_mode_type = 'default'
+    assert a.fit_mode_type == 'default'
+
+
+def test_fit_mode_type_setter_invalid(capsys):
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    a.fit_mode_type = 'nonexistent'
+    out = capsys.readouterr().out
+    assert 'Unsupported' in out
+    # Type should remain unchanged
+    assert a.fit_mode_type == 'default'
+
+
+def test_analysis_help(capsys):
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    a.help()
+    out = capsys.readouterr().out
+    assert "Help for 'Analysis'" in out
+    assert 'fit_mode' in out
+    assert 'current_minimizer' in out
+    assert 'Properties' in out
+    assert 'Methods' in out
+    assert 'fit()' in out
+    assert 'show_fit_results()' in out
 
 
 def test_show_fit_results_warns_when_no_results(capsys):
@@ -105,13 +134,13 @@ def test_show_fit_results_calls_process_fit_results(monkeypatch):
     # Track if _process_fit_results was called
     process_called = {'called': False, 'args': None}
 
-    def mock_process_fit_results(sample_models, experiments):
+    def mock_process_fit_results(structures, experiments):
         process_called['called'] = True
-        process_called['args'] = (sample_models, experiments)
+        process_called['args'] = (structures, experiments)
 
-    # Create a mock project with sample_models and experiments
+    # Create a mock project with structures and experiments
     class MockProject:
-        sample_models = object()
+        structures = object()
         experiments = object()
         _varname = 'proj'
 
@@ -121,7 +150,7 @@ def test_show_fit_results_calls_process_fit_results(monkeypatch):
         experiments = experiments_cls()
 
     project = MockProject()
-    project.sample_models = object()
+    project.structures = object()
     project.experiments.names = []
 
     a = Analysis(project=project)

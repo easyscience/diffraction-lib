@@ -58,8 +58,8 @@ Credits: DOI 10.1126/science.1238932
 ## Data Analysis
 
 Data analysis uses the reduced data to extract meaningful information about the
-sample. This may include determining the crystal or magnetic structure,
-identifying phases, performing quantitative analysis, etc.
+crystallographic structure. This may include determining the crystal or magnetic
+structure, identifying phases, performing quantitative analysis, etc.
 
 Analysis often involves comparing experimental data with data calculated from a
 crystallographic model to validate and interpret the results. For powder
@@ -73,7 +73,7 @@ By "model", we usually refer to a **crystallographic model** of the sample. This
 includes unit cell parameters, space group, atomic positions, thermal
 parameters, and more. However, the term "model" also encompasses experimental
 aspects such as instrumental resolution, background, peak shape, etc. Therefore,
-EasyDiffraction separates the model into two parts: the **sample model** and the
+EasyDiffraction separates the model into two parts: the **structure** and the
 **experiment**.
 
 The aim of data analysis is to refine the structural parameters of the sample by

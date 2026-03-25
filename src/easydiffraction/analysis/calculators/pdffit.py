@@ -14,8 +14,10 @@ from typing import Optional
 import numpy as np
 
 from easydiffraction.analysis.calculators.base import CalculatorBase
-from easydiffraction.experiments.experiment.base import ExperimentBase
-from easydiffraction.sample_models.sample_model.base import SampleModelBase
+from easydiffraction.analysis.calculators.factory import CalculatorFactory
+from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+from easydiffraction.datablocks.structure.item.base import Structure
 
 try:
     from diffpy.pdffit2 import PdfFit
@@ -38,25 +40,30 @@ except ImportError:
     PdfFit = None
 
 
+@CalculatorFactory.register
 class PdffitCalculator(CalculatorBase):
     """Wrapper for Pdffit library."""
 
+    type_info = TypeInfo(
+        tag='pdffit',
+        description='PDFfit2 for pair distribution function calculations',
+    )
     engine_imported: bool = PdfFit is not None
 
     @property
     def name(self):
         return 'pdffit'
 
-    def calculate_structure_factors(self, sample_models, experiments):
+    def calculate_structure_factors(self, structures, experiments):
         # PDF doesn't compute HKL but we keep interface consistent
         # Intentionally unused, required by public API/signature
-        del sample_models, experiments
+        del structures, experiments
         print('[pdffit] Calculating HKLs (not applicable)...')
         return []
 
     def calculate_pattern(
         self,
-        sample_model: SampleModelBase,
+        structure: Structure,
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
     ):
@@ -67,12 +74,12 @@ class PdffitCalculator(CalculatorBase):
         calculator = PdfFit()
 
         # ---------------------------
-        # Set sample model parameters
+        # Set structure parameters
         # ---------------------------
 
         # TODO: move CIF v2 -> CIF v1 conversion to a separate module
-        # Convert the sample model to CIF supported by PDFfit
-        cif_string_v2 = sample_model.as_cif
+        # Convert the structure to CIF supported by PDFfit
+        cif_string_v2 = structure.as_cif
         # convert to version 1 of CIF format
         # this means: replace all dots with underscores for
         # cases where the dot is surrounded by letters on both sides.
@@ -80,18 +87,18 @@ class PdffitCalculator(CalculatorBase):
         cif_string_v1 = re.sub(pattern, '_', cif_string_v2)
 
         # Create the PDFit structure
-        structure = pdffit_cif_parser().parse(cif_string_v1)
+        pdffit_structure = pdffit_cif_parser().parse(cif_string_v1)
 
         # Set all model parameters:
         # space group, cell parameters, and atom sites (including ADPs)
-        calculator.add_structure(structure)
+        calculator.add_structure(pdffit_structure)
 
         # -------------------------
         # Set experiment parameters
         # -------------------------
 
         # Set some peak-related parameters
-        calculator.setvar('pscale', experiment.linked_phases[sample_model.name].scale.value)
+        calculator.setvar('pscale', experiment.linked_phases[structure.name].scale.value)
         calculator.setvar('delta1', experiment.peak.sharp_delta_1.value)
         calculator.setvar('delta2', experiment.peak.sharp_delta_2.value)
         calculator.setvar('spdiameter', experiment.peak.damp_particle_diameter.value)

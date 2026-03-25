@@ -8,18 +8,18 @@ from numpy.testing import assert_almost_equal
 
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 TEMP_DIR = tempfile.gettempdir()
 
 
 def test_single_fit_neutron_pd_cwl_lbco() -> None:
-    # Set sample model
-    model = SampleModelFactory.create(name='lbco')
+    # Set structure
+    model = StructureFactory.from_scratch(name='lbco')
     model.space_group.name_h_m = 'P m -3 m'
     model.cell.length_a = 3.88
-    model.atom_sites.add(
+    model.atom_sites.create(
         label='La',
         type_symbol='La',
         fract_x=0,
@@ -29,7 +29,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
         occupancy=0.5,
         b_iso=0.1,
     )
-    model.atom_sites.add(
+    model.atom_sites.create(
         label='Ba',
         type_symbol='Ba',
         fract_x=0,
@@ -39,7 +39,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
         occupancy=0.5,
         b_iso=0.1,
     )
-    model.atom_sites.add(
+    model.atom_sites.create(
         label='Co',
         type_symbol='Co',
         fract_x=0.5,
@@ -48,7 +48,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
         wyckoff_letter='b',
         b_iso=0.1,
     )
-    model.atom_sites.add(
+    model.atom_sites.create(
         label='O',
         type_symbol='O',
         fract_x=0,
@@ -61,7 +61,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     # Set experiment
     data_path = download_data(id=3, destination=TEMP_DIR)
 
-    expt = ExperimentFactory.create(
+    expt = ExperimentFactory.from_data_path(
         name='hrpt',
         data_path=data_path,
     )
@@ -75,19 +75,18 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     expt.peak.broad_lorentz_x = 0
     expt.peak.broad_lorentz_y = 0
 
-    expt.linked_phases.add(id='lbco', scale=5.0)
+    expt.linked_phases.create(id='lbco', scale=5.0)
 
-    expt.background.add(id='1', x=10, y=170)
-    expt.background.add(id='2', x=165, y=170)
+    expt.background.create(id='1', x=10, y=170)
+    expt.background.create(id='2', x=165, y=170)
 
     # Create project
     project = Project()
-    project.sample_models.add(sample_model=model)
-    project.experiments.add(experiment=expt)
+    project.structures.add(model)
+    project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.current_calculator = 'cryspy'
-    project.analysis.current_minimizer = 'lmfit (leastsq)'
+    project.analysis.current_minimizer = 'lmfit'
 
     # ------------ 1st fitting ------------
 
@@ -147,8 +146,8 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
 
 @pytest.mark.fast
 def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
-    # Set sample model
-    model = SampleModelFactory.create(name='lbco')
+    # Set structure
+    model = StructureFactory.from_scratch(name='lbco')
 
     space_group = model.space_group
     space_group.name_h_m = 'P m -3 m'
@@ -157,7 +156,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     cell.length_a = 3.8909
 
     atom_sites = model.atom_sites
-    atom_sites.add(
+    atom_sites.create(
         label='La',
         type_symbol='La',
         fract_x=0,
@@ -167,7 +166,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
         b_iso=1.0,
         occupancy=0.5,
     )
-    atom_sites.add(
+    atom_sites.create(
         label='Ba',
         type_symbol='Ba',
         fract_x=0,
@@ -177,7 +176,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
         b_iso=1.0,
         occupancy=0.5,
     )
-    atom_sites.add(
+    atom_sites.create(
         label='Co',
         type_symbol='Co',
         fract_x=0.5,
@@ -186,7 +185,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
         wyckoff_letter='b',
         b_iso=1.0,
     )
-    atom_sites.add(
+    atom_sites.create(
         label='O',
         type_symbol='O',
         fract_x=0,
@@ -199,7 +198,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Set experiment
     data_path = download_data(id=3, destination=TEMP_DIR)
 
-    expt = ExperimentFactory.create(
+    expt = ExperimentFactory.from_data_path(
         name='hrpt',
         data_path=data_path,
     )
@@ -216,27 +215,26 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     peak.broad_lorentz_y = 0.0797
 
     background = expt.background
-    background.add(id='10', x=10, y=174.3)
-    background.add(id='20', x=20, y=159.8)
-    background.add(id='30', x=30, y=167.9)
-    background.add(id='50', x=50, y=166.1)
-    background.add(id='70', x=70, y=172.3)
-    background.add(id='90', x=90, y=171.1)
-    background.add(id='110', x=110, y=172.4)
-    background.add(id='130', x=130, y=182.5)
-    background.add(id='150', x=150, y=173.0)
-    background.add(id='165', x=165, y=171.1)
+    background.create(id='10', x=10, y=174.3)
+    background.create(id='20', x=20, y=159.8)
+    background.create(id='30', x=30, y=167.9)
+    background.create(id='50', x=50, y=166.1)
+    background.create(id='70', x=70, y=172.3)
+    background.create(id='90', x=90, y=171.1)
+    background.create(id='110', x=110, y=172.4)
+    background.create(id='130', x=130, y=182.5)
+    background.create(id='150', x=150, y=173.0)
+    background.create(id='165', x=165, y=171.1)
 
-    expt.linked_phases.add(id='lbco', scale=9.0976)
+    expt.linked_phases.create(id='lbco', scale=9.0976)
 
     # Create project
     project = Project()
-    project.sample_models.add(sample_model=model)
-    project.experiments.add(experiment=expt)
+    project.structures.add(model)
+    project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.current_calculator = 'cryspy'
-    project.analysis.current_minimizer = 'lmfit (leastsq)'
+    project.analysis.current_minimizer = 'lmfit'
 
     # ------------ 1st fitting ------------
 
@@ -277,14 +275,26 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # ------------ 2nd fitting ------------
 
     # Set aliases for parameters
-    project.analysis.aliases.add(label='biso_La', param_uid=atom_sites['La'].b_iso.uid)
-    project.analysis.aliases.add(label='biso_Ba', param_uid=atom_sites['Ba'].b_iso.uid)
-    project.analysis.aliases.add(label='occ_La', param_uid=atom_sites['La'].occupancy.uid)
-    project.analysis.aliases.add(label='occ_Ba', param_uid=atom_sites['Ba'].occupancy.uid)
+    project.analysis.aliases.create(
+        label='biso_La',
+        param_uid=atom_sites['La'].b_iso.uid,
+    )
+    project.analysis.aliases.create(
+        label='biso_Ba',
+        param_uid=atom_sites['Ba'].b_iso.uid,
+    )
+    project.analysis.aliases.create(
+        label='occ_La',
+        param_uid=atom_sites['La'].occupancy.uid,
+    )
+    project.analysis.aliases.create(
+        label='occ_Ba',
+        param_uid=atom_sites['Ba'].occupancy.uid,
+    )
 
     # Set constraints
-    project.analysis.constraints.add(lhs_alias='biso_Ba', rhs_expr='biso_La')
-    project.analysis.constraints.add(lhs_alias='occ_Ba', rhs_expr='1 - occ_La')
+    project.analysis.constraints.create(lhs_alias='biso_Ba', rhs_expr='biso_La')
+    project.analysis.constraints.create(lhs_alias='occ_Ba', rhs_expr='1 - occ_La')
 
     # Apply constraints
     project.analysis.apply_constraints()
@@ -309,13 +319,13 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
 
 
 def test_fit_neutron_pd_cwl_hs() -> None:
-    # Set sample model
-    model = SampleModelFactory.create(name='hs')
+    # Set structure
+    model = StructureFactory.from_scratch(name='hs')
     model.space_group.name_h_m = 'R -3 m'
     model.space_group.it_coordinate_system_code = 'h'
     model.cell.length_a = 6.8615
     model.cell.length_c = 14.136
-    model.atom_sites.add(
+    model.atom_sites.create(
         label='Zn',
         type_symbol='Zn',
         fract_x=0,
@@ -324,7 +334,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
         wyckoff_letter='b',
         b_iso=0.1,
     )
-    model.atom_sites.add(
+    model.atom_sites.create(
         label='Cu',
         type_symbol='Cu',
         fract_x=0.5,
@@ -333,7 +343,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
         wyckoff_letter='e',
         b_iso=1.2,
     )
-    model.atom_sites.add(
+    model.atom_sites.create(
         label='O',
         type_symbol='O',
         fract_x=0.206,
@@ -342,7 +352,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
         wyckoff_letter='h',
         b_iso=0.7,
     )
-    model.atom_sites.add(
+    model.atom_sites.create(
         label='Cl',
         type_symbol='Cl',
         fract_x=0,
@@ -351,7 +361,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
         wyckoff_letter='c',
         b_iso=1.1,
     )
-    model.atom_sites.add(
+    model.atom_sites.create(
         label='H',
         type_symbol='2H',
         fract_x=0.132,
@@ -364,7 +374,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     # Set experiment
     data_path = download_data(id=11, destination=TEMP_DIR)
 
-    expt = ExperimentFactory.create(name='hrpt', data_path=data_path)
+    expt = ExperimentFactory.from_data_path(name='hrpt', data_path=data_path)
 
     expt.instrument.setup_wavelength = 1.89
     expt.instrument.calib_twotheta_offset = 0.0
@@ -375,26 +385,25 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     expt.peak.broad_lorentz_x = 0.2927
     expt.peak.broad_lorentz_y = 0
 
-    expt.background.add(id='1', x=4.4196, y=648.413)
-    expt.background.add(id='2', x=6.6207, y=523.788)
-    expt.background.add(id='3', x=10.4918, y=454.938)
-    expt.background.add(id='4', x=15.4634, y=435.913)
-    expt.background.add(id='5', x=45.6041, y=472.972)
-    expt.background.add(id='6', x=74.6844, y=486.606)
-    expt.background.add(id='7', x=103.4187, y=472.409)
-    expt.background.add(id='8', x=121.6311, y=496.734)
-    expt.background.add(id='9', x=159.4116, y=473.146)
+    expt.background.create(id='1', x=4.4196, y=648.413)
+    expt.background.create(id='2', x=6.6207, y=523.788)
+    expt.background.create(id='3', x=10.4918, y=454.938)
+    expt.background.create(id='4', x=15.4634, y=435.913)
+    expt.background.create(id='5', x=45.6041, y=472.972)
+    expt.background.create(id='6', x=74.6844, y=486.606)
+    expt.background.create(id='7', x=103.4187, y=472.409)
+    expt.background.create(id='8', x=121.6311, y=496.734)
+    expt.background.create(id='9', x=159.4116, y=473.146)
 
-    expt.linked_phases.add(id='hs', scale=0.492)
+    expt.linked_phases.create(id='hs', scale=0.492)
 
     # Create project
     project = Project()
-    project.sample_models.add(sample_model=model)
-    project.experiments.add(experiment=expt)
+    project.structures.add(model)
+    project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.current_calculator = 'cryspy'
-    project.analysis.current_minimizer = 'lmfit (leastsq)'
+    project.analysis.current_minimizer = 'lmfit'
 
     # ------------ 1st fitting ------------
 

@@ -8,13 +8,21 @@ from typing import List
 import lmfit
 
 from easydiffraction.analysis.minimizers.base import MinimizerBase
+from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+from easydiffraction.core.metadata import TypeInfo
 
 DEFAULT_METHOD = 'leastsq'
 DEFAULT_MAX_ITERATIONS = 1000
 
 
+@MinimizerFactory.register
 class LmfitMinimizer(MinimizerBase):
     """Minimizer using the lmfit package."""
+
+    type_info = TypeInfo(
+        tag='lmfit',
+        description='LMFIT with Levenberg-Marquardt least squares',
+    )
 
     def __init__(
         self,
@@ -88,7 +96,9 @@ class LmfitMinimizer(MinimizerBase):
         for param in parameters:
             param_result = param_values.get(param._minimizer_uid)
             if param_result is not None:
-                param._value = param_result.value  # Bypass ranges check
+                # Bypass validation but set the dirty flag so
+                # _update_categories() knows work is needed.
+                param._set_value_from_minimizer(param_result.value)
                 param.uncertainty = getattr(param_result, 'stderr', None)
 
     def _check_success(self, raw_result: Any) -> bool:

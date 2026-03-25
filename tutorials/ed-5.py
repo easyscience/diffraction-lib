@@ -11,40 +11,40 @@
 # %%
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
-from easydiffraction import SampleModelFactory
+from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Sample Model
+# ## Define Structure
 #
-# This section shows how to add sample models and modify their
+# This section shows how to add structures and modify their
 # parameters.
 #
-# #### Create Sample Model
+# #### Create Structure
 
 # %%
-model = SampleModelFactory.create(name='cosio')
+structure = StructureFactory.from_scratch(name='cosio')
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-model.space_group.name_h_m = 'P n m a'
-model.space_group.it_coordinate_system_code = 'abc'
+structure.space_group.name_h_m = 'P n m a'
+structure.space_group.it_coordinate_system_code = 'abc'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-model.cell.length_a = 10.3
-model.cell.length_b = 6.0
-model.cell.length_c = 4.8
+structure.cell.length_a = 10.3
+structure.cell.length_b = 6.0
+structure.cell.length_c = 4.8
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-model.atom_sites.add(
+structure.atom_sites.create(
     label='Co1',
     type_symbol='Co',
     fract_x=0,
@@ -53,7 +53,7 @@ model.atom_sites.add(
     wyckoff_letter='a',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='Co2',
     type_symbol='Co',
     fract_x=0.279,
@@ -62,7 +62,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='Si',
     type_symbol='Si',
     fract_x=0.094,
@@ -71,7 +71,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='O1',
     type_symbol='O',
     fract_x=0.091,
@@ -80,7 +80,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='O2',
     type_symbol='O',
     fract_x=0.448,
@@ -89,7 +89,7 @@ model.atom_sites.add(
     wyckoff_letter='c',
     b_iso=0.5,
 )
-model.atom_sites.add(
+structure.atom_sites.create(
     label='O3',
     type_symbol='O',
     fract_x=0.164,
@@ -103,7 +103,7 @@ model.atom_sites.add(
 # ## Define Experiment
 #
 # This section shows how to add experiments, configure their parameters,
-# and link the sample models defined in the previous step.
+# and link the structures defined in the previous step.
 #
 # #### Download Measured Data
 
@@ -114,7 +114,7 @@ data_path = download_data(id=12, destination='data')
 # #### Create Experiment
 
 # %%
-expt = ExperimentFactory.create(name='d20', data_path=data_path)
+expt = ExperimentFactory.from_data_path(name='d20', data_path=data_path)
 
 # %% [markdown]
 # #### Set Instrument
@@ -135,31 +135,31 @@ expt.peak.broad_gauss_w = 0.4
 # #### Set Background
 
 # %%
-expt.background.add(id='1', x=8, y=500)
-expt.background.add(id='2', x=9, y=500)
-expt.background.add(id='3', x=10, y=500)
-expt.background.add(id='4', x=11, y=500)
-expt.background.add(id='5', x=12, y=500)
-expt.background.add(id='6', x=15, y=500)
-expt.background.add(id='7', x=25, y=500)
-expt.background.add(id='8', x=30, y=500)
-expt.background.add(id='9', x=50, y=500)
-expt.background.add(id='10', x=70, y=500)
-expt.background.add(id='11', x=90, y=500)
-expt.background.add(id='12', x=110, y=500)
-expt.background.add(id='13', x=130, y=500)
-expt.background.add(id='14', x=150, y=500)
+expt.background.create(id='1', x=8, y=500)
+expt.background.create(id='2', x=9, y=500)
+expt.background.create(id='3', x=10, y=500)
+expt.background.create(id='4', x=11, y=500)
+expt.background.create(id='5', x=12, y=500)
+expt.background.create(id='6', x=15, y=500)
+expt.background.create(id='7', x=25, y=500)
+expt.background.create(id='8', x=30, y=500)
+expt.background.create(id='9', x=50, y=500)
+expt.background.create(id='10', x=70, y=500)
+expt.background.create(id='11', x=90, y=500)
+expt.background.create(id='12', x=110, y=500)
+expt.background.create(id='13', x=130, y=500)
+expt.background.create(id='14', x=150, y=500)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-expt.linked_phases.add(id='cosio', scale=1.0)
+expt.linked_phases.create(id='cosio', scale=1.0)
 
 # %% [markdown]
 # ## Define Project
 #
-# The project object is used to manage the sample model, experiment, and
+# The project object is used to manage the structure, experiment, and
 # analysis.
 #
 # #### Create Project
@@ -176,16 +176,16 @@ project = Project()
 # project.plotter.engine = 'plotly'
 
 # %% [markdown]
-# #### Add Sample Model
+# #### Add Structure
 
 # %%
-project.sample_models.add(sample_model=model)
+project.structures.add(structure)
 
 # %% [markdown]
 # #### Add Experiment
 
 # %%
-project.experiments.add(experiment=expt)
+project.experiments.add(expt)
 
 # %% [markdown]
 # ## Perform Analysis
@@ -193,16 +193,10 @@ project.experiments.add(experiment=expt)
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# #### Set Calculator
-
-# %%
-project.analysis.current_calculator = 'cryspy'
-
-# %% [markdown]
 # #### Set Minimizer
 
 # %%
-project.analysis.current_minimizer = 'lmfit (leastsq)'
+project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
@@ -217,28 +211,28 @@ project.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=Tru
 # #### Set Free Parameters
 
 # %%
-model.cell.length_a.free = True
-model.cell.length_b.free = True
-model.cell.length_c.free = True
+structure.cell.length_a.free = True
+structure.cell.length_b.free = True
+structure.cell.length_c.free = True
 
-model.atom_sites['Co2'].fract_x.free = True
-model.atom_sites['Co2'].fract_z.free = True
-model.atom_sites['Si'].fract_x.free = True
-model.atom_sites['Si'].fract_z.free = True
-model.atom_sites['O1'].fract_x.free = True
-model.atom_sites['O1'].fract_z.free = True
-model.atom_sites['O2'].fract_x.free = True
-model.atom_sites['O2'].fract_z.free = True
-model.atom_sites['O3'].fract_x.free = True
-model.atom_sites['O3'].fract_y.free = True
-model.atom_sites['O3'].fract_z.free = True
+structure.atom_sites['Co2'].fract_x.free = True
+structure.atom_sites['Co2'].fract_z.free = True
+structure.atom_sites['Si'].fract_x.free = True
+structure.atom_sites['Si'].fract_z.free = True
+structure.atom_sites['O1'].fract_x.free = True
+structure.atom_sites['O1'].fract_z.free = True
+structure.atom_sites['O2'].fract_x.free = True
+structure.atom_sites['O2'].fract_z.free = True
+structure.atom_sites['O3'].fract_x.free = True
+structure.atom_sites['O3'].fract_y.free = True
+structure.atom_sites['O3'].fract_z.free = True
 
-model.atom_sites['Co1'].b_iso.free = True
-model.atom_sites['Co2'].b_iso.free = True
-model.atom_sites['Si'].b_iso.free = True
-model.atom_sites['O1'].b_iso.free = True
-model.atom_sites['O2'].b_iso.free = True
-model.atom_sites['O3'].b_iso.free = True
+structure.atom_sites['Co1'].b_iso.free = True
+structure.atom_sites['Co2'].b_iso.free = True
+structure.atom_sites['Si'].b_iso.free = True
+structure.atom_sites['O1'].b_iso.free = True
+structure.atom_sites['O2'].b_iso.free = True
+structure.atom_sites['O3'].b_iso.free = True
 
 # %%
 expt.linked_phases['cosio'].scale.free = True
@@ -259,20 +253,20 @@ for point in expt.background:
 # Set aliases for parameters.
 
 # %%
-project.analysis.aliases.add(
+project.analysis.aliases.create(
     label='biso_Co1',
-    param_uid=project.sample_models['cosio'].atom_sites['Co1'].b_iso.uid,
+    param_uid=project.structures['cosio'].atom_sites['Co1'].b_iso.uid,
 )
-project.analysis.aliases.add(
+project.analysis.aliases.create(
     label='biso_Co2',
-    param_uid=project.sample_models['cosio'].atom_sites['Co2'].b_iso.uid,
+    param_uid=project.structures['cosio'].atom_sites['Co2'].b_iso.uid,
 )
 
 # %% [markdown]
 # Set constraints.
 
 # %%
-project.analysis.constraints.add(
+project.analysis.constraints.create(
     lhs_alias='biso_Co2',
     rhs_expr='biso_Co1',
 )

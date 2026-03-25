@@ -2,17 +2,16 @@
 icon: material/puzzle
 ---
 
-# :material-puzzle: Sample Model
+# :material-puzzle: Structure
 
-The **Sample Model** in EasyDiffraction represents the **crystallographic
+The **Structure** in EasyDiffraction represents the **crystallographic
 structure** used to calculate the diffraction pattern, which is then fitted to
 the **experimentally measured data** to refine the structural parameters.
 
 EasyDiffraction allows you to:
 
 - **Load an existing model** from a file (**CIF** format).
-- **Manually define** a new sample model by specifying crystallographic
-  parameters.
+- **Manually define** a new structure by specifying crystallographic parameters.
 
 Below, you will find instructions on how to define and manage crystallographic
 models in EasyDiffraction. It is assumed that you have already created a
@@ -20,20 +19,20 @@ models in EasyDiffraction. It is assumed that you have already created a
 
 ## Adding a Model from CIF
 
-This is the most straightforward way to define a sample model in
-EasyDiffraction. If you have a crystallographic information file (CIF) for your
-sample model, you can add it to your project using the `add_phase_from_file`
-method of the `project` instance. In this case, the name of the model will be
+This is the most straightforward way to define a structure in EasyDiffraction.
+If you have a crystallographic information file (CIF) for your structure, you
+can add it to your project using the `add_from_cif_path` method of the
+`project.structures` collection. In this case, the name of the model will be
 taken from CIF.
 
 ```python
 # Load a phase from a CIF file
-project.add_phase_from_file('data/lbco.cif')
+project.structures.add_from_cif_path('data/lbco.cif')
 ```
 
-Accessing the model after loading it will be done through the `sample_models`
-object of the `project` instance. The name of the model will be the same as the
-data block id in the CIF file. For example, if the CIF file contains a data
+Accessing the model after loading it will be done through the `structures`
+collection of the `project` instance. The name of the model will be the same as
+the data block id in the CIF file. For example, if the CIF file contains a data
 block with the id `lbco`,
 
 <!-- prettier-ignore-start -->
@@ -52,27 +51,27 @@ data_<span class="red"><b>lbco</b></span>
 you can access it in the code as follows:
 
 ```python
-# Access the sample model by its name
-project.sample_models['lbco']
+# Access the structure by its name
+project.structures['lbco']
 ```
 
 ## Defining a Model Manually
 
 If you do not have a CIF file or prefer to define the model manually, you can
-use the `add` method of the `sample_models` object of the `project` instance. In
+use the `create` method of the `structures` object of the `project` instance. In
 this case, you will need to specify the name of the model, which will be used to
 reference it later.
 
 ```python
-# Add a sample model with default parameters
-# The sample model name is used to reference it later.
-project.sample_models.add(name='nacl')
+# Add a structure with default parameters
+# The structure name is used to reference it later.
+project.structures.create(name='nacl')
 ```
 
-The `add` method creates a new sample model with default parameters. You can
-then modify its parameters to match your specific crystallographic structure.
-All parameters are grouped into the following categories, which makes it easier
-to manage the model:
+The `add` method creates a new structure with default parameters. You can then
+modify its parameters to match your specific crystallographic structure. All
+parameters are grouped into the following categories, which makes it easier to
+manage the model:
 
 1. **Space Group Category**: Defines the symmetry of the crystal structure.
 2. **Cell Category**: Specifies the dimensions and angles of the unit cell.
@@ -83,21 +82,21 @@ to manage the model:
 
 ```python
 # Set space group
-project.sample_models['nacl'].space_group.name_h_m = 'F m -3 m'
+project.structures['nacl'].space_group.name_h_m = 'F m -3 m'
 ```
 
 ### 2. Cell Category { #cell-category }
 
 ```python
 # Define unit cell parameters
-project.sample_models['nacl'].cell.length_a = 5.691694
+project.structures['nacl'].cell.length_a = 5.691694
 ```
 
 ### 3. Atom Sites Category { #atom-sites-category }
 
 ```python
 # Add atomic sites
-project.sample_models['nacl'].atom_sites.append(
+project.structures['nacl'].atom_sites.create(
     label='Na',
     type_symbol='Na',
     fract_x=0,
@@ -106,7 +105,7 @@ project.sample_models['nacl'].atom_sites.append(
     occupancy=1,
     b_iso_or_equiv=0.5,
 )
-project.sample_models['nacl'].atom_sites.append(
+project.structures['nacl'].atom_sites.create(
     label='Cl',
     type_symbol='Cl',
     fract_x=0,
@@ -119,33 +118,33 @@ project.sample_models['nacl'].atom_sites.append(
 
 ## Listing Defined Models
 
-To check which sample models have been added to the `project`, use:
+To check which structures have been added to the `project`, use:
 
 ```python
-# Show defined sample models
-project.sample_models.show_names()
+# Show defined structures
+project.structures.show_names()
 ```
 
 Expected output:
 
 ```
-Defined sample models 🧩
+Defined structures 🧩
 ['lbco', 'nacl']
 ```
 
 ## Viewing a Model as CIF
 
-To inspect a sample model in CIF format, use:
+To inspect a structure in CIF format, use:
 
 ```python
-# Show sample model as CIF
-project.sample_models['lbco'].show_as_cif()
+# Show structure as CIF
+project.structures['lbco'].show_as_cif()
 ```
 
 Example output:
 
 ```
-Sample model 🧩 'lbco' as cif
+Structure 🧩 'lbco' as cif
 ╒═══════════════════════════════════════════╕
 │ data_lbco                                 │
 │                                           │
@@ -179,9 +178,9 @@ Sample model 🧩 'lbco' as cif
 ## Saving a Model
 
 Saving the project, as described in the [Project](project.md) section, will also
-save the model. Each model is saved as a separate CIF file in the
-`sample_models` subdirectory of the project directory. The project file contains
-references to these files.
+save the model. Each model is saved as a separate CIF file in the `structures`
+subdirectory of the project directory. The project file contains references to
+these files.
 
 Below is an example of the saved CIF file for the `lbco` model:
 

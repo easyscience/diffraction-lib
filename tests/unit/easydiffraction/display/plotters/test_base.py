@@ -32,8 +32,8 @@ def test_default_engine_switches_with_notebook(monkeypatch):
 
 def test_default_axes_labels_keys_present():
     import easydiffraction.display.plotters.base as pb
-    from easydiffraction.experiments.experiment.enums import SampleFormEnum
-    from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
     # Powder Bragg
     assert (SampleFormEnum.POWDER, ScatteringTypeEnum.BRAGG, pb.XAxisType.TWO_THETA) in pb.DEFAULT_AXES_LABELS

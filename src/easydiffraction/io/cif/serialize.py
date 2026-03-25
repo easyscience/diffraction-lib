@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     from easydiffraction.core.category import CategoryCollection
     from easydiffraction.core.category import CategoryItem
-    from easydiffraction.core.parameters import GenericDescriptorBase
+    from easydiffraction.core.variable import GenericDescriptorBase
 
 
 def format_value(value) -> str:
@@ -189,8 +189,8 @@ def project_to_cif(project) -> str:
     parts: list[str] = []
     if hasattr(project, 'info'):
         parts.append(project.info.as_cif)
-    if getattr(project, 'sample_models', None):
-        parts.append(project.sample_models.as_cif)
+    if getattr(project, 'structures', None):
+        parts.append(project.structures.as_cif)
     if getattr(project, 'experiments', None):
         parts.append(project.experiments.as_cif)
     if getattr(project, 'analysis', None):
@@ -209,13 +209,16 @@ def analysis_to_cif(analysis) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
     cur_min = format_value(analysis.current_minimizer)
     lines: list[str] = []
-    lines.append(f'_analysis.calculator_engine  {format_value(analysis.current_calculator)}')
     lines.append(f'_analysis.fitting_engine  {cur_min}')
-    lines.append(f'_analysis.fit_mode  {format_value(analysis.fit_mode)}')
+    lines.append(analysis.fit_mode.as_cif)
     lines.append('')
     lines.append(analysis.aliases.as_cif)
     lines.append('')
     lines.append(analysis.constraints.as_cif)
+    jfe_cif = analysis.joint_fit_experiments.as_cif
+    if jfe_cif:
+        lines.append('')
+        lines.append(jfe_cif)
     return '\n'.join(lines)
 
 

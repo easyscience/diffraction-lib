@@ -35,5 +35,5 @@ def test_project_save_as_writes_core_files(tmp_path, monkeypatch):
     assert (target / 'project.cif').is_file()
     assert (target / 'analysis.cif').is_file()
     assert (target / 'summary.cif').is_file()
-    assert (target / 'sample_models').is_dir()
+    assert (target / 'structures').is_dir()
     assert (target / 'experiments').is_dir()

@@ -117,6 +117,8 @@ def test_experiment_to_cif_with_and_without_data():
 
 def test_analysis_to_cif_renders_all_sections():
     import easydiffraction.io.cif.serialize as MUT
+    from easydiffraction.analysis.categories.fit_mode import FitMode
+    from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 
     class Obj:
         def __init__(self, t):
@@ -127,16 +129,14 @@ def test_analysis_to_cif_renders_all_sections():
             return self._t
 
     class A:
-        current_calculator = 'cryspy engine'
-        current_minimizer = 'lmfit (leastsq)'
-        fit_mode = 'single'
+        current_minimizer = 'lmfit'
+        fit_mode = FitMode()
+        joint_fit_experiments = JointFitExperiments()
         aliases = Obj('ALIASES')
         constraints = Obj('CONSTRAINTS')
 
     out = MUT.analysis_to_cif(A())
     lines = out.splitlines()
-    assert lines[0].startswith('_analysis.calculator_engine')
-    assert '"cryspy engine"' in lines[0]
-    assert lines[1].startswith('_analysis.fitting_engine') and '"lmfit (leastsq)"' in lines[1]
-    assert lines[2].startswith('_analysis.fit_mode') and 'single' in lines[2]
+    assert lines[0].startswith('_analysis.fitting_engine') and 'lmfit' in lines[0]
+    assert lines[1].startswith('_analysis.fit_mode') and 'single' in lines[1]
     assert 'ALIASES' in out and 'CONSTRAINTS' in out

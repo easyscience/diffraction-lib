@@ -9,14 +9,22 @@ import numpy as np
 from dfols import solve
 
 from easydiffraction.analysis.minimizers.base import MinimizerBase
+from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+from easydiffraction.core.metadata import TypeInfo
 
 DEFAULT_MAX_ITERATIONS = 1000
 
 
+@MinimizerFactory.register
 class DfolsMinimizer(MinimizerBase):
     """Minimizer using the DFO-LS package (Derivative-Free Optimization
     for Least-Squares).
     """
+
+    type_info = TypeInfo(
+        tag='dfols',
+        description='DFO-LS derivative-free least-squares optimization',
+    )
 
     def __init__(
         self,
@@ -59,7 +67,9 @@ class DfolsMinimizer(MinimizerBase):
         result_values = raw_result.x if hasattr(raw_result, 'x') else raw_result
 
         for i, param in enumerate(parameters):
-            param.value = result_values[i]
+            # Bypass validation but set the dirty flag so
+            # _update_categories() knows work is needed.
+            param._set_value_from_minimizer(result_values[i])
             # DFO-LS doesn't provide uncertainties; set to None or
             # calculate later if needed
             param.uncertainty = None

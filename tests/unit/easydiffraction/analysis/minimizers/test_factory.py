@@ -4,34 +4,38 @@
 def test_minimizer_factory_list_and_show(capsys):
     from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 
-    lst = MinimizerFactory.list_available_minimizers()
+    lst = MinimizerFactory.supported_tags()
     assert isinstance(lst, list) and len(lst) >= 1
-    MinimizerFactory.show_available_minimizers()
+    MinimizerFactory.show_supported()
     out = capsys.readouterr().out
-    assert 'Supported minimizers' in out
+    assert 'Supported types' in out
 
 
 def test_minimizer_factory_unknown_raises():
     from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 
     try:
-        MinimizerFactory.create_minimizer('___unknown___')
+        MinimizerFactory.create('___unknown___')
     except ValueError as e:
-        assert 'Unknown minimizer' in str(e)
+        assert 'Unsupported type' in str(e)
     else:
         assert False, 'Expected ValueError'
 
 
-def test_minimizer_factory_create_known_and_register(monkeypatch):
+def test_minimizer_factory_create_known_and_register():
     from easydiffraction.analysis.minimizers.base import MinimizerBase
     from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+    from easydiffraction.core.metadata import TypeInfo
 
-    # Create a known minimizer instance (lmfit (leastsq) exists)
-    m = MinimizerFactory.create_minimizer('lmfit (leastsq)')
+    # Create a known minimizer instance (lmfit exists)
+    m = MinimizerFactory.create('lmfit')
     assert isinstance(m, MinimizerBase)
 
     # Register a custom minimizer and create it
+    @MinimizerFactory.register
     class Custom(MinimizerBase):
+        type_info = TypeInfo(tag='custom-test', description='x')
+
         def _prepare_solver_args(self, parameters):
             return {}
 
@@ -44,8 +48,5 @@ def test_minimizer_factory_create_known_and_register(monkeypatch):
         def _check_success(self, raw_result):
             return True
 
-    MinimizerFactory.register_minimizer(
-        name='custom-test', minimizer_cls=Custom, method=None, description='x'
-    )
-    created = MinimizerFactory.create_minimizer('custom-test')
+    created = MinimizerFactory.create('custom-test')
     assert isinstance(created, Custom)

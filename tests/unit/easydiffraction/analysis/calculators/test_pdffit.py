@@ -16,7 +16,7 @@ def test_pdffit_engine_flag_and_hkl_message(capsys):
     calc = PdffitCalculator()
     assert isinstance(calc.engine_imported, bool)
     # calculate_structure_factors prints fixed message and returns [] by contract
-    out = calc.calculate_structure_factors(sample_models=None, experiments=None)
+    out = calc.calculate_structure_factors(structures=None, experiments=None)
     assert out == []
     # The method prints a note
     printed = capsys.readouterr().out
@@ -53,7 +53,7 @@ def test_pdffit_cif_v2_to_v1_regex_behavior(monkeypatch):
             self.type = type('T', (), {'radiation_probe': type('P', (), {'value': 'neutron'})()})()
             self.linked_phases = DummyLinkedPhases()
 
-    class DummySampleModel:
+    class DummyStructure:
         name = 'PhaseA'
 
         @property
@@ -93,6 +93,6 @@ def test_pdffit_cif_v2_to_v1_regex_behavior(monkeypatch):
 
     calc = PdffitCalculator()
     pattern = calc.calculate_pattern(
-        DummySampleModel(), DummyExperiment(), called_by_minimizer=False
+        DummyStructure(), DummyExperiment(), called_by_minimizer=False
     )
     assert isinstance(pattern, np.ndarray) and pattern.shape[0] == 5
