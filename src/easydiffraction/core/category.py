@@ -172,6 +172,17 @@ class CategoryCollection(CollectionBase):
         """Return the category-level identity key for *item*."""
         return item._identity.category_entry_name
 
+    def _mark_parent_dirty(self) -> None:
+        """Set ``_need_categories_update`` on the parent datablock.
+
+        Called whenever the collection content changes (items added or
+        removed) so that subsequent ``_update_categories()`` calls
+        re-run all category updates.
+        """
+        parent = getattr(self, '_parent', None)
+        if parent is not None and hasattr(parent, '_need_categories_update'):
+            parent._need_categories_update = True
+
     def __str__(self) -> str:
         """Human-readable representation of this component."""
         name = self._log_name
@@ -211,6 +222,7 @@ class CategoryCollection(CollectionBase):
             item: A ``CategoryItem`` instance to add.
         """
         self[item._identity.category_entry_name] = item
+        self._mark_parent_dirty()
 
     def create(self, **kwargs) -> None:
         """Create a new item with the given attributes and add it.
