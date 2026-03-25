@@ -954,8 +954,6 @@
       
         
       
-        
-      
     
     
     
@@ -1066,35 +1064,7 @@
   <span class="md-ellipsis">
     
   
-    LBCO basic
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/ed-4/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PbSO4 advanced
+    LBCO complete
   
 
     
@@ -1620,7 +1590,7 @@
   <span class="md-ellipsis">
     
   
-    Multi-Structure & Multi-Experiment
+    Multi-Structure/Experiment
   
 
     
@@ -1636,7 +1606,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Multi-Structure & Multi-Experiment
+    Multi-Structure/Experiment
   
 
           </label>
@@ -1656,7 +1626,7 @@
   <span class="md-ellipsis">
     
   
-    PbSO4 advanced
+    PbSO4 NPD+XRD
   
 
     
@@ -2348,10 +2318,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#4-refresh-constraint-state-before-automatic-updates-and-fitting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 🔴 Refresh Constraint State Before Automatic Updates and Fitting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#5-make-analysis-a-datablockitem" class="md-nav__link">
     <span class="md-ellipsis">
       
         5. 🟡 Make Analysis a DatablockItem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-restrict-data_type-switching-to-compatible-types-and-preserve-data-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 🔴 Restrict data_type Switching to Compatible Types and Preserve Data Safety
       
     </span>
   </a>
@@ -2440,6 +2432,28 @@
     <span class="md-ellipsis">
       
         14. 🟢 Finer-Grained Parameter Change Tracking
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-validate-joint-fit-weights-before-residual-normalisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. 🟡 Validate Joint-Fit Weights Before Residual Normalisation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-persist-per-experiment-calculator_type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. 🟡 Persist Per-Experiment calculator_type
       
     </span>
   </a>
@@ -2574,6 +2588,22 @@ fit. At minimum, <code>fit()</code> should assert that the weight keys exactly m
 <code>project.experiments.names</code>.</p>
 <p><strong>Depends on:</strong> nothing.</p>
 <hr />
+<h2 id="4-refresh-constraint-state-before-automatic-updates-and-fitting">4. 🔴 Refresh Constraint State Before Automatic Updates and Fitting</h2>
+<p><strong>Type:</strong> Correctness</p>
+<p><code>ConstraintsHandler</code> is only synchronised from <code>analysis.aliases</code> and
+<code>analysis.constraints</code> when the user explicitly calls
+<code>project.analysis.apply_constraints()</code>. The normal fit / serialisation path
+calls <code>constraints_handler.apply()</code> directly, so newly added or edited aliases
+and constraints can be ignored until that manual sync step happens.</p>
+<p><strong>Why high:</strong> this produces silently incorrect results. A user can define
+constraints, run a fit, and believe they were applied when the active singleton
+still contains stale state from a previous run or no state at all.</p>
+<p><strong>Fix:</strong> before any automatic constraint application, always refresh the
+singleton from the current <code>Aliases</code> and <code>Constraints</code> collections. The sync
+should happen inside <code>Analysis._update_categories()</code> or inside the constraints
+category itself, not only in a user-facing helper method.</p>
+<p><strong>Depends on:</strong> nothing.</p>
+<hr />
 <h2 id="5-make-analysis-a-datablockitem">5. 🟡 Make <code>Analysis</code> a <code>DatablockItem</code></h2>
 <p><strong>Type:</strong> Consistency</p>
 <p><code>Analysis</code> owns categories (<code>Aliases</code>, <code>Constraints</code>, <code>JointFitExperiments</code>) but
@@ -2583,6 +2613,23 @@ parameter enumeration, or <abbr title="Crystallographic Information File.">CIF</
 <p><strong>Fix:</strong> make <code>Analysis</code> extend <code>DatablockItem</code>, or extract a shared
 <code>_update_categories()</code> protocol.</p>
 <p><strong>Depends on:</strong> benefits from issue 1 (load/save) being designed first.</p>
+<hr />
+<h2 id="6-restrict-data_type-switching-to-compatible-types-and-preserve-data-safety">6. 🔴 Restrict <code>data_type</code> Switching to Compatible Types and Preserve Data Safety</h2>
+<p><strong>Type:</strong> Correctness + Data safety</p>
+<p><code>Experiment.data_type</code> currently validates against all registered data tags
+rather than only those compatible with the experiment's
+<code>sample_form</code> / <code>scattering_type</code> / <code>beam_mode</code>. This allows users to switch an
+experiment to an incompatible data collection class. The setter also replaces
+the existing data object with a fresh empty instance, discarding loaded data
+without warning.</p>
+<p><strong>Why high:</strong> the current API can create internally inconsistent experiments
+and silently lose measured data, which is especially dangerous for notebook and
+tutorial workflows.</p>
+<p><strong>Fix:</strong> filter supported data types through <code>DataFactory.supported_for(...)</code>
+using the current experiment context, and warn or block when a switch would
+discard existing data. If runtime data-type switching is not a real user need,
+consider making <code>data</code> effectively fixed after experiment creation.</p>
+<p><strong>Depends on:</strong> nothing.</p>
 <hr />
 <h2 id="7-eliminate-dummy-experiments-wrapper-in-single-fit-mode">7. 🟡 Eliminate Dummy <code>Experiments</code> Wrapper in Single-Fit Mode</h2>
 <p><strong>Type:</strong> Fragility</p>
@@ -2695,6 +2742,28 @@ more granular approach could track which specific categories are dirty. Only
 implement when profiling proves it is needed.</p>
 <p><strong>Depends on:</strong> nothing, but low priority.</p>
 <hr />
+<h2 id="15-validate-joint-fit-weights-before-residual-normalisation">15. 🟡 Validate Joint-Fit Weights Before Residual Normalisation</h2>
+<p><strong>Type:</strong> Correctness</p>
+<p>Joint-fit weights currently allow invalid numeric values such as negatives or an
+all-zero set. The residual code then normalises by the total weight and applies
+<code>sqrt(weight)</code>, which can produce division-by-zero or <code>nan</code> residuals.</p>
+<p><strong>Fix:</strong> require weights to be strictly positive, or at minimum validate that
+all weights are non-negative and their total is greater than zero before
+normalisation. This should fail with a clear user-facing error instead of
+letting invalid floating-point values propagate into the minimiser.</p>
+<p><strong>Depends on:</strong> related to issue 3, but independent.</p>
+<hr />
+<h2 id="16-persist-per-experiment-calculator_type">16. 🟡 Persist Per-Experiment <code>calculator_type</code></h2>
+<p><strong>Type:</strong> Completeness</p>
+<p>The current architecture moved calculator selection to the experiment level via
+<code>calculator_type</code>, but this selection is not written to <abbr title="Crystallographic Information File.">CIF</abbr> during <code>save()</code> /
+<code>show_as_cif()</code>. Reloading or exporting a project therefore loses explicit
+calculator choices and falls back to auto-resolution.</p>
+<p><strong>Fix:</strong> serialise <code>calculator_type</code> as part of the experiment or analysis
+state, and make sure <code>load()</code> restores it. The saved project should represent
+the exact active calculator configuration, not just a re-derivable default.</p>
+<p><strong>Depends on:</strong> issue 1 (<code>Project.load()</code> implementation).</p>
+<hr />
 <h2 id="summary">Summary</h2>
 <table>
 <thead>
@@ -2725,10 +2794,22 @@ implement when profiling proves it is needed.</p>
 <td>Fragility</td>
 </tr>
 <tr>
+<td>4</td>
+<td>Refresh constraint state before auto-apply</td>
+<td>🔴 High</td>
+<td>Correctness</td>
+</tr>
+<tr>
 <td>5</td>
 <td><code>Analysis</code> as <code>DatablockItem</code></td>
 <td>🟡 Med</td>
 <td>Consistency</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Restrict <code>data_type</code> switching</td>
+<td>🔴 High</td>
+<td>Correctness/Data safety</td>
 </tr>
 <tr>
 <td>7</td>
@@ -2777,6 +2858,18 @@ implement when profiling proves it is needed.</p>
 <td>Finer-grained change tracking</td>
 <td>🟢 Low</td>
 <td>Performance</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Validate joint-fit weights</td>
+<td>🟡 Med</td>
+<td>Correctness</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Persist per-experiment <code>calculator_type</code></td>
+<td>🟡 Med</td>
+<td>Completeness</td>
 </tr>
 </tbody>
 </table>
