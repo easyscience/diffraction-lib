@@ -1,94 +1,446 @@
-# Contributing
+# Contributing to EasyDiffraction
 
-When contributing, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a
-change.
+Thank you for your interest in contributing to **EasyDiffraction**!
 
-Please note we have a code of conduct, please follow it in all your interactions
-with the project.
+This guide explains how you can:
 
-## Pull Request Process
+- Report issues
+- Contribute code
+- Improve documentation
+- Suggest enhancements
+- Interact with the EasyScience community
 
-1. Ensure any install or build dependencies are removed before the end of the
-   layer when doing a build.
-2. Update the README.md with details of changes to the interface, this includes
-   new environment variables, exposed ports, useful file locations and container
-   parameters.
-3. Increase the version numbers in any example files and the README.md to the
-   new version that this Pull Request would represent. The versioning scheme we
-   use is [SemVer](http://semver.org/).
-4. You may merge the Pull Request in once you have the sign-off of two other
-   developers, or if you do not have permission to do that, you may request the
-   second reviewer to merge it for you.
+Whether you are an experienced developer or contributing for the first
+time, this document walks you through the entire process step by step.
 
-## Code of Conduct
+Please make sure you follow the EasyScience organization-wide
+[Code of Conduct](https://github.com/easyscience/.github/blob/master/CODE_OF_CONDUCT.md).
 
-### Our Pledge
+---
 
-In the interest of fostering an open and welcoming environment, we as
-contributors and maintainers pledge to make participation in our project and our
-community a harassment-free experience for everyone, regardless of age, body
-size, disability, ethnicity, gender identity and expression, level of
-experience, nationality, personal appearance, race, religion, or sexual identity
-and orientation.
+## Table of Contents
 
-### Our Standards
+- [How to Interact With This Project](#how-to-interact-with-this-project)
+- [1. Understanding the Development Model](#1-understanding-the-development-model)
+- [2. Getting the Code](#2-getting-the-code)
+- [3. Setting Up the Development Environment](#3-setting-up-the-development-environment)
+- [4. Creating a Branch](#4-creating-a-branch)
+- [5. Implementing Your Changes](#5-implementing-your-changes)
+- [6. Code Quality Checks](#6-code-quality-checks)
+- [7. Opening a Pull Request](#7-opening-a-pull-request)
+- [8. Continuous Integration (CI)](#8-continuous-integration-ci)
+- [9. Code Review](#9-code-review)
+- [10. Documentation Contributions](#10-documentation-contributions)
+- [11. Reporting Issues](#11-reporting-issues)
+- [12. Security Issues](#12-security-issues)
+- [13. Releases](#13-releases)
 
-Examples of behavior that contributes to creating a positive environment
-include:
+---
 
-- Being respectful of differing viewpoints and experiences
-- Gracefully accepting constructive criticism
-- Focusing on what is best for the community
+## How to Interact With This Project
 
-Examples of unacceptable behavior by participants include:
+If you are not planning to contribute code, you may want to:
 
-- Trolling, insulting/derogatory comments, and personal or political attacks
-- Public or private harassment
-- Publishing others' private information, such as a physical or electronic
-  address, without explicit permission
-- Other conduct which could reasonably be considered inappropriate in a
-  professional setting
+- 🐞 Report a bug — see [Reporting Issues](#11-reporting-issues)
+- 🛡 Report a security issue —
+  see [Security Issues](#12-security-issues)
+- 💬 Ask a question or start a discussion at
+  [Project Discussions](https://github.com/easyscience/diffraction-lib/discussions)
 
-### Our Responsibilities
+If you plan to contribute code or documentation, continue below.
 
-Project maintainers are responsible for clarifying the standards of acceptable
-behavior and are expected to take appropriate and fair corrective action in
-response to any instances of unacceptable behavior.
+---
 
-Project maintainers have the right and responsibility to remove, edit, or reject
-comments, commits, code, wiki edits, issues, and other contributions that are
-not aligned to this Code of Conduct, or to ban temporarily or permanently any
-contributor for other behaviors that they deem inappropriate, threatening,
-offensive, or harmful.
+## 1. Understanding the Development Model
 
-### Scope
+Before you start coding, it is important to understand how development
+works in this project.
 
-This Code of Conduct applies both within project spaces and in public spaces
-when an individual is representing the project or its community. Examples of
-representing a project or community include using an official project e-mail
-address, posting via an official social media account, or acting as an appointed
-representative at an online or offline event. Representation of a project may be
-further defined and clarified by project maintainers.
+### Branching Strategy
 
-### Enforcement
+We use the following branches:
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at suport@easydiffraction.org. All
-complaints will be reviewed and investigated and will result in a response that
-is deemed necessary and appropriate to the circumstances. The project team is
-obligated to maintain confidentiality with regard to the reporter of an
-incident. Further details of specific enforcement policies may be posted
-separately.
+- `master` — stable releases only
+- `develop` — active development branch
+- Short-lived branches — feature or fix branches created for a single
+  contribution and deleted after merge
 
-Project maintainers who do not follow or enforce the Code of Conduct in good
-faith may face temporary or permanent repercussions as determined by other
-members of the project's leadership.
+> [!IMPORTANT]
+>
+> All normal contributions must target the `develop` branch.
+>
+> - Do **not** open Pull Requests against `master`
+> - Always create your branch from `develop`
+> - Always target `develop` when opening a Pull Request
 
-### Attribution
+See ADR easyscience/.github#12 for more details on the branching
+strategy.
 
-This Code of Conduct is adapted from the [Contributor Covenant][homepage],
-version 1.4, available at [http://contributor-covenant.org/version/1/4][version]
+---
 
-[homepage]: http://contributor-covenant.org
-[version]: http://contributor-covenant.org/version/1/4/
+## 2. Getting the Code
+
+### 2.1. If You Are an External Contributor
+
+If you are not a core maintainer of this repository, follow these steps.
+
+1. Open the repository page: `https://github.com/easyscience/diffraction-lib`
+
+2. Click the **Fork** button (top-right corner). This creates your own
+   copy of the repository.
+
+3. Clone your fork locally:
+
+   ```bash
+   git clone https://github.com/<your-username>/diffraction-lib.git
+   cd diffraction-lib
+   ```
+
+4. Add the original repository as `upstream`:
+
+   ```bash
+   git remote add upstream https://github.com/easyscience/diffraction-lib.git
+   ```
+
+5. Switch to the `develop` branch and update it:
+
+   ```bash
+   git fetch upstream
+   git checkout develop
+   git pull upstream develop
+   ```
+
+If you have contributed before, make sure your local `develop` branch is
+up to date before starting new work. You can update it with:
+
+```bash
+git fetch upstream
+git pull upstream develop
+```
+
+This ensures you are working on the latest version of the project.
+
+### 2.2. If You Are a Core Team Member
+
+Core team members can create branches directly in this repository and
+therefore do not need to fork it, but the rest of the workflow remains
+the same.
+
+---
+
+## 3. Setting Up the Development Environment
+
+You need:
+
+- Git
+- Pixi
+
+EasyScience projects use **Pixi** to manage the development environment.
+
+To install Pixi, follow the official instructions:
+https://pixi.prefix.dev/latest/installation/
+
+You do **not** need to manually install Python. Pixi automatically:
+
+- Creates the correct Python environment
+- Installs all required dependencies
+- Installs development tools (linters, formatters, test tools)
+
+Set up the environment:
+
+```bash
+pixi install
+pixi run post-install  # Install additional tooling
+```
+
+After this step, your development environment is ready.
+
+See ADR easyscience/.github#63 for more details about using Pixi for
+development.
+
+---
+
+## 4. Creating a Branch
+
+Never work directly on `develop`.
+
+Create a new branch:
+
+```bash
+git checkout -b my-change develop
+```
+
+> [!IMPORTANT]
+>
+> Use a clear and descriptive name, for example:
+>
+> - `improve-solver-speed`
+> - `fix-boundary-condition`
+> - `add-tutorial-example`
+
+Clear branch names make reviews and history easier to understand.
+
+---
+
+## 5. Implementing Your Changes
+
+While developing, make small, logical commits with clear messages.
+
+Example:
+
+```bash
+git add .
+git commit -m "Improve performance of time integrator for large systems"
+```
+
+---
+
+## 6. Code Quality Checks
+
+> [!IMPORTANT]
+>
+> When adding new functionality or making changes, make sure to add or
+> update the following as needed:
+>
+> - 📘 docstrings
+> - 🧪 unit tests
+
+Before opening a Pull Request, always run:
+
+```bash
+pixi run check
+```
+
+This command:
+
+- Validates the pyproject.toml file
+- Checks for licence headers in code files
+- Identifies linting and formatting issues in Python code
+- Checks docstring linting and formatting issues in Python code
+- Detects formatting issues in non-Python files (MD, YAML, TOML etc.)
+- Checks linting issues in Jupyter notebooks (if applicable)
+- Runs unit tests
+
+A successful run should look like this:
+
+```bash
+pixi run pyproject-check.......................Passed
+pixi run license-check.........................Passed
+pixi run py-lint-check.........................Passed
+pixi run py-format-check.......................Passed
+pixi run docstring-lint-check..................Passed
+pixi run docstring-format-check................Passed
+pixi run nonpy-format-check....................Passed
+pixi run notebook-lint-check...................Passed
+pixi run unit-tests............................Passed
+```
+
+If something fails, read the error message carefully and fix the issue.
+
+You can run individual checks, for example, to run only unit tests:
+
+```bash
+pixi run unit-tests
+```
+
+or to run only Python linting checks:
+
+```bash
+pixi run py-lint-check
+```
+
+Some formatting issues can be fixed automatically:
+
+```bash
+pixi run fix
+```
+
+If everything is correctly formatted, you will see:
+
+```text
+✅ All auto-formatting steps completed successfully!
+```
+
+This indicates that the auto-formatting pipeline completed successfully.
+If you do not see this message and no error messages appear, try running
+the command again.
+
+If errors are reported, resolve them and re-run:
+
+```bash
+pixi run check
+```
+
+> [!IMPORTANT]
+>
+> All checks must pass before your Pull Request can be merged.
+
+If you are unsure how to fix an issue, ask for help in your Pull Request
+discussion.
+
+---
+
+## 7. Opening a Pull Request
+
+Push your branch:
+
+```bash
+git push origin my-change
+```
+
+On GitHub:
+
+- Click **Compare & Pull Request**
+- Ensure the base branch is `develop`
+- Write a clear and concise title
+- Add a description explaining what changed and why
+- Add the required `[scope]` label
+
+### Pull Request Title
+
+> [!IMPORTANT]
+>
+> The PR title appears in release notes and changelogs. It should be
+> concise and informative.
+
+Good examples:
+
+- Improve performance of time integrator for large systems
+- Fix incorrect boundary condition handling in solver
+- Add adaptive step-size control to ODE solver
+- Add tutorial for custom model configuration
+- Refactor solver API for improved readability
+
+### Required `[scope]` Label
+
+> [!IMPORTANT]
+>
+> Each Pull Request must include a `[scope]` label, which is used for
+> automatically suggesting version bumps when preparing a new release.
+
+The available scopes are:
+
+| Label                   | Description                                                             |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `[scope] bug`           | Bug report or fix (major.minor.**PATCH**)                               |
+| `[scope] documentation` | Documentation-only changes (major.minor.patch.**POST**)                 |
+| `[scope] enhancement`   | Adds or improves features (major.**MINOR**.patch)                       |
+| `[scope] maintenance`   | Code/tooling cleanup without feature or bug fix (major.minor.**PATCH**) |
+| `[scope] significant`   | Breaking or major changes (**MAJOR**.minor.patch)                       |
+
+See ADR easyscience/.github#33 for more details on the standardized
+labeling scheme.
+
+---
+
+## 8. Continuous Integration (CI)
+
+After opening a Pull Request:
+
+- Automated checks run automatically
+- You will see green checkmarks or red crosses
+
+If checks fail:
+
+1. Open the failing check
+2. Read the logs
+3. Fix the issue locally
+4. Run `pixi run check`
+5. Push your changes
+
+The Pull Request updates automatically.
+
+---
+
+## 9. Code Review
+
+All Pull Requests are reviewed by at least one core team member.
+
+Code review is collaborative and aims to improve quality.
+
+Do not take comments personally — they are meant to help.
+
+To update your PR:
+
+```bash
+git add .
+git commit -m "Address review comments"
+git push
+```
+
+---
+
+## 10. Documentation Contributions
+
+> [!IMPORTANT]
+>
+> If your change affects user-facing functionality, update the project
+> documentation accordingly — specifically the `nav:` (navigation)
+> structure in `mkdocs.yml` and the relevant documentation Markdown
+> files in `docs/docs/`.
+>
+> ```text
+> 📁 docs
+> ├── 📁 docs        - Markdown files for documentation
+> │   └── ...
+> └── 📄 mkdocs.yml  - Configuration file (navigation, theme, etc.)
+> ```
+
+This may include:
+
+- API documentation
+- Examples
+- Tutorials
+- Jupyter notebooks
+
+Preview documentation locally:
+
+```bash
+pixi run docs-serve
+```
+
+Open the URL shown in the terminal to review your changes.
+
+---
+
+## 11. Reporting Issues
+
+If you find a bug but cannot work on a fix, please consider opening an
+issue.
+
+When reporting an issue, it helps to:
+
+- Search existing issues first.
+- Provide clear reproduction steps.
+- Include logs, screenshots, and environment details.
+
+Clear and detailed reports help maintainers investigate and resolve
+issues more effectively.
+
+---
+
+## 12. Security Issues
+
+> [!IMPORTANT]
+>
+> Please do **not** report security vulnerabilities publicly.
+
+If you discover a potential vulnerability, please contact the
+maintainers privately so the issue can be investigated and addressed
+responsibly.
+
+---
+
+## 13. Releases
+
+Once your contribution is merged into `develop`, it will eventually be
+included in the next stable release.
+
+When enough changes have accumulated in `develop`, core team members
+merge `develop` into `master` to prepare a new release. The release is
+then tagged and published on GitHub and PyPI.
+
+---
+
+Thank you for contributing to EasyDiffraction and the EasyScience
+ecosystem!

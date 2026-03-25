@@ -6,9 +6,10 @@
 name = 'easydiffraction'
 dynamic = ['version'] # Use versioningit to manage the version
 description = 'Diffraction data analysis'
-authors = [{ name = 'EasyDiffraction contributors' }]
+authors = [{ name = 'EasyScience contributors' }]
 readme = 'README.md'
-license = { file = 'LICENSE' }
+license = 'BSD-3-Clause'
+license-files = ['LICENSE']
 classifiers = [
   'Intended Audience :: Science/Research',
   'Topic :: Scientific/Engineering',
@@ -20,7 +21,7 @@ classifiers = [
   'Programming Language :: Python :: 3.12',
   'Programming Language :: Python :: 3.13',
 ]
-requires-python = '>=3.11,<3.14'
+requires-python = '>=3.11'
 dependencies = [
   'essdiffraction', # ESS-specific diffraction library
   'numpy',          # Numerical computing library
@@ -43,29 +44,36 @@ dependencies = [
   'diffpy.utils',   # Utilities for PDF calculations
   'uncertainties',  # Propagation of uncertainties
   'typeguard',      # Runtime type checking
+  'darkdetect',  # Detecting dark mode (system-level)
+  'pandas',      # Displaying tables in Jupyter notebooks
+  'plotly',      # Interactive plots
+  'py3Dmol',     # Visualisation of crystal structures
+  'jupyterlab',  # Jupyter notebooks
+  'pixi-kernel', # Pixi Jupyter kernel
 ]
 
 [project.optional-dependencies]
 dev = [
-  'build',                   # Building the package
-  'pre-commit',              # Pre-commit hooks
-  'jinja2',                  # Templating
-  'nbmake',                  # Building notebooks
-  'nbstripout',              # Strip output from notebooks
-  'nbqa',                    # Linting and formatting notebooks
-  'pytest',                  # Testing
-  'pytest-cov',              # Test coverage
-  'pytest-xdist',            # Enable parallel testing
-  'ruff',                    # Linting and formatting code
-  'radon',                   # Code complexity and maintainability
-  'validate-pyproject[all]', # Validate pyproject.toml
-  'versioningit',            # Automatic versioning from git tags
-  'jupytext',                # Jupyter notebook text format support
-  'jupyterquiz',             # Quizzes in Jupyter notebooks
-  'docformatter',            # Code formatter for docstrings
-  'interrogate',             # Check for missing docstrings
-]
-docs = [
+  'GitPython',                       # Interact with Git repositories
+  'build',                           # Building the package
+  'pre-commit',                      # Pre-commit hooks
+  'jinja2',                          # Templating
+  'nbmake',                          # Building notebooks
+  'nbstripout',                      # Strip output from notebooks
+  'nbqa',                            # Linting and formatting notebooks
+  'pytest',                          # Testing
+  'pytest-cov',                      # Test coverage
+  'pytest-xdist',                    # Enable parallel testing
+  'ruff',                            # Linting and formatting code
+  'radon',                           # Code complexity and maintainability
+  'validate-pyproject[all]',         # Validate pyproject.toml
+  'versioningit',                    # Automatic versioning from git tags
+  'jupytext',                        # Jupyter notebook text format support
+  'jupyterquiz',                     # Quizzes in Jupyter notebooks
+  'pydoclint',                       # Docstring linter
+  'docformatter',                    # Docstring formatter
+  'interrogate',                     # Docstring coverage checker
+  'copier',                          # Template management
   'mike',                            # MkDocs: Versioned documentation support
   'mkdocs',                          # Static site generator
   'mkdocs-material',                 # Documentation framework on top of MkDocs
@@ -75,34 +83,19 @@ docs = [
   'mkdocs-markdownextradata-plugin', # MkDocs: Markdown extra data support, such as global variables
   'mkdocstrings-python',             # MkDocs: Python docstring support
   'pyyaml',                          # YAML parser
-]
-visualization = [
-  'darkdetect', # Detecting dark mode (system-level)
-  'pandas',     # Displaying tables in Jupyter notebooks
-  'plotly',     # Interactive plots
-  'py3Dmol',    # Visualisation of crystal structures
-]
-all = [
-  'easydiffraction[dev]',
-  'easydiffraction[docs]',
-  'easydiffraction[visualization]',
+  'spdx-headers',                    # SPDX license header validation
 ]
 
 [project.urls]
-homepage = 'https://easydiffraction.org'
-documentation = 'https://docs.easydiffraction.org/lib'
-source = 'https://github.com/easyscience/diffraction-lib'
-tracker = 'https://github.com/easyscience/diffraction-lib/issues'
+Homepage = 'https://easydiffraction.org'
+Documentation = 'https://easyscience.github.io/diffraction-lib'
+'Release Notes' = 'https://github.com/easyscience/diffraction-lib/releases'
+'Source Code' = 'https://github.com/easyscience/diffraction-lib'
+'Issue Tracker' = 'https://github.com/easyscience/diffraction-lib/issues'
 
 ############################
 # Build system configuration
 ############################
-
-# Build system 'hatch' -- Python project manager
-# https://hatch.pypa.io/
-
-# Versioning system 'versioningit' -- Versioning from git tags
-# https://versioningit.readthedocs.io/
 
 [build-system]
 build-backend = 'hatchling.build'
@@ -111,6 +104,9 @@ requires = ['hatchling', 'versioningit']
 #############################
 # Configuration for hatchling
 #############################
+
+# 'hatch' -- Build system for Python
+# https://hatch.pypa.io/
 
 [tool.hatch.build.targets.wheel]
 packages = ['src/easydiffraction']
@@ -124,6 +120,9 @@ source = 'versioningit' # Use versioningit to manage the version
 ################################
 # Configuration for versioningit
 ################################
+
+# 'versioningit' -- Versioning from git tags
+# https://versioningit.readthedocs.io/
 
 # Versioningit generates versions from git tags, so we don't need to
 # either specify them statically in pyproject.toml or save them in the
@@ -145,6 +144,210 @@ match = ['v*']
 default-tag = 'v999.0.0'
 
 ################################
+# Configuration for interrogate
+################################
+
+# 'interrogate' -- Docstring coverage checker
+# https://interrogate.readthedocs.io/en/latest/
+
+[tool.interrogate]
+fail-under = 35 # Minimum docstring coverage percentage to pass
+verbose = 1
+#exclude = ['src/**/__init__.py']
+
+#######################################
+# Configuration for coverage/pytest-cov
+#######################################
+
+# 'coverage' -- Code coverage measurement tool
+# https://coverage.readthedocs.io/en/latest/
+
+[tool.coverage.run]
+branch = true    # Measure branch coverage as well
+source = ['src'] # Limit coverage to the source code directory
+
+[tool.coverage.report]
+show_missing = true  # Show missing lines
+skip_covered = false # Skip files with 100% coverage in the report
+fail_under = 60       # Minimum coverage percentage to pass
+
+##########################
+# Configuration for pytest
+##########################
+
+# 'pytest' -- Testing framework
+# https://docs.pytest.org/en/stable/
+
+[tool.pytest.ini_options]
+addopts = '--import-mode=importlib'
+markers = ['fast: mark test as fast (should be run on every push)']
+testpaths = ['tests']
+
+########################
+# Configuration for ruff
+########################
+
+# 'ruff' -- Python linter and code formatter
+# https://docs.astral.sh/ruff/rules/
+
+[tool.ruff]
+exclude = ['tmp']
+indent-width = 4
+line-length = 99
+preview = true    # Enable new rules that are not yet stable, like DOC
+
+# Formatting options for Ruff
+
+[tool.ruff.format]
+docstring-code-format = true    # Whether to format code snippets in docstrings
+docstring-code-line-length = 72 # Line length for code snippets in docstrings
+indent-style = 'space'          # PEP 8 recommends using spaces over tabs
+line-ending = 'lf'              # Line endings will be converted to \n
+quote-style = 'single'          # But double quotes in docstrings (PEP 8, PEP 257)
+
+# Linting rules to use with Ruff
+
+[tool.ruff.lint]
+select = [
+  # Various rules
+  #'C90',  # https://docs.astral.sh/ruff/rules/#mccabe-c90
+  'F',   # https://docs.astral.sh/ruff/rules/#pyflakes-f
+  'FLY',  # https://docs.astral.sh/ruff/rules/#flynt-fly
+  #'FURB', # https://docs.astral.sh/ruff/rules/#refurb-furb
+  'I', # https://docs.astral.sh/ruff/rules/#isort-i
+  'N',    # https://docs.astral.sh/ruff/rules/#pep8-naming-n
+  'NPY',  # https://docs.astral.sh/ruff/rules/#numpy-specific-rules-npy
+  'PGH',  # https://docs.astral.sh/ruff/rules/#pygrep-hooks-pgh
+  #'PERF', # https://docs.astral.sh/ruff/rules/#perflint-perf
+  #'RUF',  # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+  #'TRY',  # https://docs.astral.sh/ruff/rules/#tryceratops-try
+  #'UP',   # https://docs.astral.sh/ruff/rules/#pyupgrade-up
+  # pycodestyle (E, W) rules
+  'E', # https://docs.astral.sh/ruff/rules/#error-e
+  'W', # https://docs.astral.sh/ruff/rules/#warning-w
+  # Pylint (PL) rules
+  #'PLC', # https://docs.astral.sh/ruff/rules/#convention-plc
+  #'PLE', # https://docs.astral.sh/ruff/rules/#error-ple
+  #'PLR', # https://docs.astral.sh/ruff/rules/#refactor-plr
+  #'PLW', # https://docs.astral.sh/ruff/rules/#warning-plw
+  # flake8 rules
+  #'A',     # https://docs.astral.sh/ruff/rules/#flake8-builtins-a
+  #'ANN',   # https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
+  'ARG',   # https://docs.astral.sh/ruff/rules/#flake8-unused-arguments-arg
+  #'ASYNC', # https://docs.astral.sh/ruff/rules/#flake8-async-async
+  'B',     # https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
+  #'BLE',   # https://docs.astral.sh/ruff/rules/#flake8-blind-except-ble
+  #'C4',    # https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+  #'COM',   # https://docs.astral.sh/ruff/rules/#flake8-commas-com
+  'DTZ',   # https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
+  #'EM',    # https://docs.astral.sh/ruff/rules/#flake8-errmsg-em
+  #'FA',    # https://docs.astral.sh/ruff/rules/#flake8-future-annotations-fa
+  #'FBT',   # https://docs.astral.sh/ruff/rules/#flake8-boolean-trap-fbt
+  #'FIX',   # https://docs.astral.sh/ruff/rules/#flake8-fixme-fix
+  'G',     # https://docs.astral.sh/ruff/rules/#flake8-logging-format-g
+  'ICN',   # https://docs.astral.sh/ruff/rules/#flake8-import-conventions-icn
+  #'INP',   # https://docs.astral.sh/ruff/rules/#flake8-no-pep420-inp
+  #'ISC',   # https://docs.astral.sh/ruff/rules/#flake8-implicit-str-concat-isc
+  #'LOG',   # https://docs.astral.sh/ruff/rules/#flake8-logging-log
+  #'PIE',   # https://docs.astral.sh/ruff/rules/#flake8-pie-pie
+  #'PT',    # https://docs.astral.sh/ruff/rules/#flake8-pytest-style-pt
+  'PTH',   # https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
+  #'PYI',   # https://docs.astral.sh/ruff/rules/#flake8-pyi-pyi
+  #'RET',   # https://docs.astral.sh/ruff/rules/#flake8-return-ret
+  #'RSE',   # https://docs.astral.sh/ruff/rules/#flake8-raise-rse
+  'S', # https://docs.astral.sh/ruff/rules/#flake8-bandit-s
+  'SIM',   # https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
+  #'SLF',   # https://docs.astral.sh/ruff/rules/#flake8-self-slf
+  #'SLOT',  # https://docs.astral.sh/ruff/rules/#flake8-slots-slot
+  #'T20',   # https://docs.astral.sh/ruff/rules/#flake8-print-t20
+  #'TC',    # https://docs.astral.sh/ruff/rules/#flake8-type-checking-tc
+  #'TD',    # https://docs.astral.sh/ruff/rules/#flake8-todos-td
+  #'TID',   # https://docs.astral.sh/ruff/rules/#flake8-tidy-imports-tid
+]
+
+# Exceptions to the linting rules
+
+# Ignore specific rules globally
+ignore = [
+  'COM812', # https://docs.astral.sh/ruff/rules/missing-trailing-comma/
+  # The following covered by [tool.pydoclint] section below
+  'D',   # https://docs.astral.sh/ruff/rules/#pydocstyle-d
+  'DOC', # https://docs.astral.sh/ruff/rules/#pydoclint-doc
+]
+
+# Ignore specific rules in certain files or directories
+[tool.ruff.lint.per-file-ignores]
+'tests/**' = [
+  'ANN',    # https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
+  'DOC',    # https://docs.astral.sh/ruff/rules/#pydoclint-doc
+  'INP001', # https://docs.astral.sh/ruff/rules/implicit-namespace-package/
+  'S101',   # https://docs.astral.sh/ruff/rules/assert/
+]
+'docs/**' = [
+  'INP001', # https://docs.astral.sh/ruff/rules/implicit-namespace-package/
+  'T201',   # https://docs.astral.sh/ruff/rules/print/
+]
+# Vendored jupyter_dark_detect: keep as-is from upstream for easy updates
+# https://github.com/OpenMined/jupyter-dark-detect/tree/main/jupyter_dark_detect
+'src/easydiffraction/utils/_vendored/jupyter_dark_detect/*' = [
+  'S',
+  'TID',
+  'W',
+  'S',
+  'E',
+]
+
+# Specific options for certain rules
+
+[tool.ruff.lint.flake8-tidy-imports]
+# Disallow all relative imports
+ban-relative-imports = 'all'
+
+[tool.ruff.lint.isort]
+# Forces all from imports to appear on their own line
+force-single-line = true
+
+[tool.ruff.lint.mccabe]
+# Cyclomatic complexity threshold (default is 10)
+max-complexity = 10
+
+[tool.ruff.lint.pycodestyle]
+# PEP 8 line length guidance:
+# https://peps.python.org/pep-0008/#maximum-line-length
+# Use 99 characters as the project-wide maximum for regular code lines.
+max-line-length = 99
+# allow longer lines so that parameter declarations such as
+# `name (Type | Type | None):` remain on a single line. Splitting these
+# lines can prevent tools such as MkDocs and IDEs from correctly
+# parsing and rendering parameter documentation.
+# The descriptive text itself is wrapped more strictly by
+# `docformatter` (see the configuration in [tool.docformatter] below)
+# whenever it is treated as normal paragraph text.
+# The line length for code snippets in docstrings is also more strict,
+# as defined in the [tool.ruff.format] section above.
+max-doc-length = 99
+
+#############################
+# Configuration for pydoclint
+#############################
+
+# 'pydoclint' -- Docstring linter, a faster alternative to
+# 'darglint' or 'darglint2'.
+# https://pypi.org/project/pydoclint/
+
+# This is a more advanced docstring linter compared to Ruff's built-in
+# docstring check rules D or DOC. For example, among many other things,
+# it can check that arguments in the docstring, which are used by MkDocs
+# and IDEs to render parameter documentation, remain synchronized with
+# the parameter declarations in the code (in function's signature).
+
+[tool.pydoclint]
+style = "google"
+check-style-mismatch = true
+check-arg-defaults = true
+allow-init-docstring = true
+
+################################
 # Configuration for docformatter
 ################################
 
@@ -156,141 +359,3 @@ recursive = true
 wrap-summaries = 72
 wrap-descriptions = 72
 close-quotes-on-newline = true
-
-################################
-# Configuration for interrogate
-################################
-
-# 'interrogate' -- Check for missing docstrings
-# https://interrogate.readthedocs.io/en/latest/
-
-[tool.interrogate]
-fail-under = 35                  # Temporarily reduce to allow gradual improvement
-verbose = 1
-exclude = ["src/**/__init__.py"]
-
-#######################################
-# Configuration for coverage/pytest-cov
-#######################################
-
-[tool.coverage.run]
-branch = true                    # Measure branch coverage as well
-source = ['src/easydiffraction'] # Limit coverage to the source code directory
-
-[tool.coverage.report]
-show_missing = true # Show missing lines
-skip_covered = true # Skip files with 100% coverage in the report
-fail_under = 60     # Temporarily reduce to allow gradual improvement
-
-########################
-# Configuration for ruff
-########################
-
-# 'ruff' -- Python linter and code formatter
-# https://docs.astral.sh/ruff/rules/
-
-[tool.ruff]
-# Temporarily exclude some directories until we have improved the code quality there
-exclude = ['tmp', 'tests/unit']
-indent-width = 4
-line-length = 99
-# Enable new rules that are not yet stable, like DOC
-preview = true
-
-# https://docs.astral.sh/ruff/rules/
-[tool.ruff.lint]
-select = [
-  'ARG',    # Argument-related issues (e.g., unused arguments)
-  'B',      # Bugbear-specific checks (e.g., likely bugs, bad patterns)
-  'C',      # Complexity-related issues (e.g., high McCabe complexity)
-  'D',      # Docstring formatting issues (old rules)
-  'DOC',    # Docstring formatting issues (new rules)
-  'DTZ',    # Datetime timezone issues (e.g., inconsistent timezone formats)
-  'E',      # General PEP 8 style errors
-  'F',      # Pyflakes-specific checks (e.g., unused variables, imports)
-  'FLY',    # Flynt-specific checks (e.g., enforcing f-strings)
-  'G',      # Type annotation issues (e.g., missing or incorrect type hints)
-  'I',      # Import sorting issues (e.g., unsorted imports)
-  'ICN',    # Import conventions (e.g., enforce aliasing like import numpy as np)
-  'N',      # Naming convention issues (e.g., variable names, function names)
-  'NPY',    # NumPy-specific checks (e.g., array operations, broadcasting)
-  'PGH',    # Misc text patterns checks
-  'PTH',    # Encourages using pathlib over os.path
-  'S',      # Security-related issues (e.g., use of insecure functions or libraries)
-  'SIM',    # Simplification issues (e.g., redundant code, unnecessary constructs)
-  'TCH',    # Type checking issues (e.g., incompatible types, missing type annotations)
-  'TID252', # Enforces absolute imports over relative imports
-  'W',      # General PEP 8 warnings (e.g., lines too long, trailing whitespace)
-  #'ANN',   # Missing or incorrect type annotations
-  #'COM',   # Comment formatting issues
-  #'PERF',  # Performance-related issues (e.g., inefficient code patterns)
-  #'PIE',   # Potentially problematic idioms and errors
-  #'PL',    # PyLint-specific checks (e.g., code smells, potential errors)
-  #'PT',    # Pytest-related issues
-  #'RET',   # Return statement issues (e.g., inconsistent returns)
-  #'RUF',   # Ruff-specific checks (e.g., enforcing best practices)
-  #'SLF',   # Self argument-related issues (e.g., missing or misused self)
-  #'T20',   # Flake8-print-specific checks (e.g., print statements left in code)
-  #'TD',    # Type definition issues (e.g., incorrect or missing type definitions)
-  #'TRY',   # Tryceratops Try/Except-related issues (e.g., broad exceptions, empty except blocks)
-  #'UP',    # Pyupgrade-specific checks
-]
-# Temporarily disable some docstring checks until we have improved the docstring coverage
-ignore = [
-  'C408',   # Ignore: Unnecessary `dict()` call
-  'C416',   # Ignore: Unnecessary list comprehension
-  'D100',   # Ignore: Missing docstring in public module
-  'D101',   # Ignore: Missing docstring in class
-  'D102',   # Ignore: Missing docstring in public method
-  'D103',   # Ignore: Missing docstring in public function
-  'D104',   # Ignore: Missing docstring in public package
-  'D105',   # Ignore: Missing docstring in magic method
-  'D107',   # Ignore: Missing docstring in __init__
-  'D205',   # Ignore: 1 blank line required between summary and description
-  'DOC201', # Ignore: `return` is not documented in docstring
-  'DOC501', # Ignore: Raised exception `ValueError` missing from docstring
-  'DOC502', # Ignore: Raised exception is not explicitly raised: `TypeError`
-  'DTZ005', # Ignore: `datetime.datetime.now()` called without a `tz` argument
-]
-
-# Temporarily increase McCabe complexity limit to 19 to allow
-# refactoring in smaller steps.
-[tool.ruff.lint.mccabe]
-max-complexity = 37 # 19 # default is 10
-
-[tool.ruff.lint.flake8-tidy-imports]
-ban-relative-imports = 'all'
-
-[tool.ruff.lint.isort]
-force-single-line = true
-
-[tool.ruff.lint.per-file-ignores]
-'*test_*.py' = ['S101']    # allow asserts in test files
-'conftest.py' = ['S101']   # allow asserts in test files
-'*/__init__.py' = ['F401'] # re-exports are intentional in __init__.py
-# Vendored jupyter_dark_detect: keep as-is from upstream for easy updates
-# https://github.com/OpenMined/jupyter-dark-detect/tree/main/jupyter_dark_detect
-'src/easydiffraction/utils/_vendored/jupyter_dark_detect/*' = [
-  'S110',   # try-except-pass
-  'S112',   # try-except-continue
-  'S404',   # subprocess module
-  'S607',   # partial executable path
-  'TID252', # relative imports
-  'W291',   # trailing whitespace (in JS strings)
-  'W505',   # doc line too long
-  'E501',   # line too long (in JS strings)
-]
-
-[tool.ruff.lint.pycodestyle]
-max-line-length = 100 #99# https://peps.python.org/pep-0008/#maximum-line-length
-max-doc-length = 72   # https://peps.python.org/pep-0008/#maximum-line-length
-
-[tool.ruff.lint.pydocstyle]
-convention = 'google'
-
-[tool.ruff.format]
-docstring-code-format = true    # Whether to format code snippets in docstrings
-docstring-code-line-length = 72 # Line length for code snippets in docstrings
-indent-style = 'space'          # PEP 8 recommends using spaces over tabs
-line-ending = 'lf'              # Line endings will be converted to \n
-quote-style = 'single'          # But double quotes in docstrings (PEP 8, PEP 257)
