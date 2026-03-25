@@ -123,14 +123,13 @@ parameter enumeration, or CIF serialisation.
 **Type:** Correctness + Data safety
 
 `Experiment.data_type` currently validates against all registered data tags
-rather than only those compatible with the experiment's
-`sample_form` / `scattering_type` / `beam_mode`. This allows users to switch an
-experiment to an incompatible data collection class. The setter also replaces
-the existing data object with a fresh empty instance, discarding loaded data
-without warning.
+rather than only those compatible with the experiment's `sample_form` /
+`scattering_type` / `beam_mode`. This allows users to switch an experiment to an
+incompatible data collection class. The setter also replaces the existing data
+object with a fresh empty instance, discarding loaded data without warning.
 
-**Why high:** the current API can create internally inconsistent experiments
-and silently lose measured data, which is especially dangerous for notebook and
+**Why high:** the current API can create internally inconsistent experiments and
+silently lose measured data, which is especially dangerous for notebook and
 tutorial workflows.
 
 **Fix:** filter supported data types through `DataFactory.supported_for(...)`
@@ -320,21 +319,21 @@ the exact active calculator configuration, not just a re-derivable default.
 
 ## Summary
 
-| #   | Issue                                       | Severity | Type                 |
-| --- | ------------------------------------------- | -------- | -------------------- |
-| 1   | Implement `Project.load()`                  | 🔴 High  | Completeness         |
-| 2   | Restore minimiser variants                  | 🟡 Med   | Feature loss         |
-| 3   | Rebuild joint-fit weights                   | 🟡 Med   | Fragility            |
-| 4   | Refresh constraint state before auto-apply  | 🔴 High  | Correctness          |
-| 5   | `Analysis` as `DatablockItem`               | 🟡 Med   | Consistency          |
-| 6   | Restrict `data_type` switching              | 🔴 High  | Correctness/Data safety |
-| 7   | Eliminate dummy `Experiments`               | 🟡 Med   | Fragility            |
-| 8   | Explicit `create()` signatures              | 🟡 Med   | API safety           |
-| 9   | Future enum extensions                      | 🟢 Low   | Design               |
-| 10  | Unify update orchestration                  | 🟢 Low   | Maintainability      |
-| 11  | Document `_update` contract                 | 🟢 Low   | Maintainability      |
-| 12  | CIF round-trip integration test             | 🟢 Low   | Quality              |
-| 13  | Suppress redundant dirty-flag sets          | 🟢 Low   | Performance          |
-| 14  | Finer-grained change tracking               | 🟢 Low   | Performance          |
-| 15  | Validate joint-fit weights                  | 🟡 Med   | Correctness          |
-| 16  | Persist per-experiment `calculator_type`    | 🟡 Med   | Completeness         |
+| #   | Issue                                      | Severity | Type                    |
+| --- | ------------------------------------------ | -------- | ----------------------- |
+| 1   | Implement `Project.load()`                 | 🔴 High  | Completeness            |
+| 2   | Restore minimiser variants                 | 🟡 Med   | Feature loss            |
+| 3   | Rebuild joint-fit weights                  | 🟡 Med   | Fragility               |
+| 4   | Refresh constraint state before auto-apply | 🔴 High  | Correctness             |
+| 5   | `Analysis` as `DatablockItem`              | 🟡 Med   | Consistency             |
+| 6   | Restrict `data_type` switching             | 🔴 High  | Correctness/Data safety |
+| 7   | Eliminate dummy `Experiments`              | 🟡 Med   | Fragility               |
+| 8   | Explicit `create()` signatures             | 🟡 Med   | API safety              |
+| 9   | Future enum extensions                     | 🟢 Low   | Design                  |
+| 10  | Unify update orchestration                 | 🟢 Low   | Maintainability         |
+| 11  | Document `_update` contract                | 🟢 Low   | Maintainability         |
+| 12  | CIF round-trip integration test            | 🟢 Low   | Quality                 |
+| 13  | Suppress redundant dirty-flag sets         | 🟢 Low   | Performance             |
+| 14  | Finer-grained change tracking              | 🟢 Low   | Performance             |
+| 15  | Validate joint-fit weights                 | 🟡 Med   | Correctness             |
+| 16  | Persist per-experiment `calculator_type`   | 🟡 Med   | Completeness            |
