@@ -12,9 +12,11 @@ from typing import List
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
 from easydiffraction.datablocks.experiment.categories.excluded_regions import ExcludedRegions
-from easydiffraction.datablocks.experiment.categories.extinction import Extinction
+from easydiffraction.datablocks.experiment.categories.extinction.factory import ExtinctionFactory
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
-from easydiffraction.datablocks.experiment.categories.linked_crystal import LinkedCrystal
+from easydiffraction.datablocks.experiment.categories.linked_crystal.factory import (
+    LinkedCrystalFactory,
+)
 from easydiffraction.datablocks.experiment.categories.linked_phases import LinkedPhases
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
 from easydiffraction.io.cif.serialize import experiment_to_cif
@@ -206,8 +208,10 @@ class ScExperimentBase(ExperimentBase):
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self._linked_crystal: LinkedCrystal = LinkedCrystal()
-        self._extinction: Extinction = Extinction()
+        self._extinction_type: str = ExtinctionFactory.default_tag()
+        self._extinction = ExtinctionFactory.create(self._extinction_type)
+        self._linked_crystal_type: str = LinkedCrystalFactory.default_tag()
+        self._linked_crystal = LinkedCrystalFactory.create(self._linked_crystal_type)
         self._instrument = InstrumentFactory.create_default_for(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
@@ -229,14 +233,97 @@ class ScExperimentBase(ExperimentBase):
         """
         pass
 
+    # ------------------------------------------------------------------
+    #  Extinction (switchable-category pattern)
+    # ------------------------------------------------------------------
+
+    @property
+    def extinction(self):
+        """Active extinction correction model."""
+        return self._extinction
+
+    @property
+    def extinction_type(self) -> str:
+        """Tag of the active extinction correction model."""
+        return self._extinction_type
+
+    @extinction_type.setter
+    def extinction_type(self, new_type: str) -> None:
+        """Switch to a different extinction correction model.
+
+        Args:
+            new_type: Extinction tag (e.g. ``'shelx'``).
+        """
+        supported_tags = ExtinctionFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported extinction type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_extinction_types()'",
+            )
+            return
+
+        self._extinction = ExtinctionFactory.create(new_type)
+        self._extinction_type = new_type
+        console.paragraph(f"Extinction type for experiment '{self.name}' changed to")
+        console.print(new_type)
+
+    def show_supported_extinction_types(self) -> None:
+        """Print a table of supported extinction correction models."""
+        ExtinctionFactory.show_supported()
+
+    def show_current_extinction_type(self) -> None:
+        """Print the currently used extinction correction model."""
+        console.paragraph('Current extinction type')
+        console.print(self.extinction_type)
+
+    # ------------------------------------------------------------------
+    #  Linked crystal (switchable-category pattern)
+    # ------------------------------------------------------------------
+
     @property
     def linked_crystal(self):
         """Linked crystal model for this experiment."""
         return self._linked_crystal
 
     @property
-    def extinction(self):
-        return self._extinction
+    def linked_crystal_type(self) -> str:
+        """Tag of the active linked-crystal reference type."""
+        return self._linked_crystal_type
+
+    @linked_crystal_type.setter
+    def linked_crystal_type(self, new_type: str) -> None:
+        """Switch to a different linked-crystal reference type.
+
+        Args:
+            new_type: Linked-crystal tag (e.g. ``'default'``).
+        """
+        supported_tags = LinkedCrystalFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported linked crystal type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_linked_crystal_types()'",
+            )
+            return
+
+        self._linked_crystal = LinkedCrystalFactory.create(new_type)
+        self._linked_crystal_type = new_type
+        console.paragraph(f"Linked crystal type for experiment '{self.name}' changed to")
+        console.print(new_type)
+
+    def show_supported_linked_crystal_types(self) -> None:
+        """Print a table of supported linked-crystal reference types."""
+        LinkedCrystalFactory.show_supported()
+
+    def show_current_linked_crystal_type(self) -> None:
+        """Print the currently used linked-crystal reference type."""
+        console.paragraph('Current linked crystal type')
+        console.print(self.linked_crystal_type)
+
+    # ------------------------------------------------------------------
+    #  Other properties
+    # ------------------------------------------------------------------
 
     @property
     def instrument(self):

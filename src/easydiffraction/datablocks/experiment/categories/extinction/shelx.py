@@ -1,15 +1,33 @@
 # SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Shelx-style isotropic extinction correction."""
+
+from __future__ import annotations
 
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import Compatibility
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
+from easydiffraction.datablocks.experiment.categories.extinction.factory import ExtinctionFactory
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.io.cif.handler import CifHandler
 
 
-class Extinction(CategoryItem):
-    """Extinction correction category for single crystals."""
+@ExtinctionFactory.register
+class ShelxExtinction(CategoryItem):
+    """Shelx-style isotropic extinction correction for single
+    crystals.
+    """
+
+    type_info = TypeInfo(
+        tag='shelx',
+        description='Shelx-style isotropic extinction correction',
+    )
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+    )
 
     def __init__(self) -> None:
         super().__init__()

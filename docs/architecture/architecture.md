@@ -372,14 +372,16 @@ from .line_segment import LineSegmentBackground
 
 ### 5.5 All Factories
 
-| Factory             | Domain                | Tags resolve to                                             |
-| ------------------- | --------------------- | ----------------------------------------------------------- |
-| `BackgroundFactory` | Background categories | `LineSegmentBackground`, `ChebyshevPolynomialBackground`    |
-| `PeakFactory`       | Peak profiles         | `CwlPseudoVoigt`, `TofPseudoVoigtIkedaCarpenter`, …         |
-| `InstrumentFactory` | Instruments           | `CwlPdInstrument`, `TofPdInstrument`, …                     |
-| `DataFactory`       | Data collections      | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`          |
-| `CalculatorFactory` | Calculation engines   | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator` |
-| `MinimizerFactory`  | Minimisers            | `LmfitMinimizer`, `DfolsMinimizer`, …                       |
+| Factory                | Domain                | Tags resolve to                                             |
+| ---------------------- | --------------------- | ----------------------------------------------------------- |
+| `BackgroundFactory`    | Background categories | `LineSegmentBackground`, `ChebyshevPolynomialBackground`    |
+| `PeakFactory`          | Peak profiles         | `CwlPseudoVoigt`, `TofPseudoVoigtIkedaCarpenter`, …         |
+| `InstrumentFactory`    | Instruments           | `CwlPdInstrument`, `TofPdInstrument`, …                     |
+| `DataFactory`          | Data collections      | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`          |
+| `ExtinctionFactory`    | Extinction models     | `ShelxExtinction`                                           |
+| `LinkedCrystalFactory` | Linked-crystal refs   | `LinkedCrystal`                                             |
+| `CalculatorFactory`    | Calculation engines   | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator` |
+| `MinimizerFactory`     | Minimisers            | `LmfitMinimizer`, `DfolsMinimizer`, …                       |
 
 > **Note:** `ExperimentFactory` and `StructureFactory` are _builder_ factories
 > with `from_cif_path`, `from_cif_str`, `from_data_path`, and `from_scratch`
@@ -448,6 +450,18 @@ Tags are the user-facing identifiers for selecting types. They must be:
 | `bragg-sc`     | `ReflnData` |
 | `total-pd`     | `TotalData` |
 
+**Extinction tags**
+
+| Tag     | Class             |
+| ------- | ----------------- |
+| `shelx` | `ShelxExtinction` |
+
+**Linked-crystal tags**
+
+| Tag       | Class           |
+| --------- | --------------- |
+| `default` | `LinkedCrystal` |
+
 **Experiment tags**
 
 | Tag            | Class               |
@@ -499,19 +513,21 @@ collection type), not individual line-segment points.
 
 #### Singleton CategoryItems — factory-created (get all three)
 
-| Class                          | Factory             |
-| ------------------------------ | ------------------- |
-| `CwlPdInstrument`              | `InstrumentFactory` |
-| `CwlScInstrument`              | `InstrumentFactory` |
-| `TofPdInstrument`              | `InstrumentFactory` |
-| `TofScInstrument`              | `InstrumentFactory` |
-| `CwlPseudoVoigt`               | `PeakFactory`       |
-| `CwlSplitPseudoVoigt`          | `PeakFactory`       |
-| `CwlThompsonCoxHastings`       | `PeakFactory`       |
-| `TofPseudoVoigt`               | `PeakFactory`       |
-| `TofPseudoVoigtIkedaCarpenter` | `PeakFactory`       |
-| `TofPseudoVoigtBackToBack`     | `PeakFactory`       |
-| `TotalGaussianDampedSinc`      | `PeakFactory`       |
+| Class                          | Factory                |
+| ------------------------------ | ---------------------- |
+| `CwlPdInstrument`              | `InstrumentFactory`    |
+| `CwlScInstrument`              | `InstrumentFactory`    |
+| `TofPdInstrument`              | `InstrumentFactory`    |
+| `TofScInstrument`              | `InstrumentFactory`    |
+| `CwlPseudoVoigt`               | `PeakFactory`          |
+| `CwlSplitPseudoVoigt`          | `PeakFactory`          |
+| `CwlThompsonCoxHastings`       | `PeakFactory`          |
+| `TofPseudoVoigt`               | `PeakFactory`          |
+| `TofPseudoVoigtIkedaCarpenter` | `PeakFactory`          |
+| `TofPseudoVoigtBackToBack`     | `PeakFactory`          |
+| `TotalGaussianDampedSinc`      | `PeakFactory`          |
+| `ShelxExtinction`              | `ExtinctionFactory`    |
+| `LinkedCrystal`                | `LinkedCrystalFactory` |
 
 #### Singleton CategoryItems — NOT factory-created (get `type_info` only, optionally `compatibility`)
 
@@ -520,8 +536,6 @@ collection type), not individual line-segment points.
 | `Cell`           | Always present on every Structure. No factory selection |
 | `SpaceGroup`     | Same as Cell                                            |
 | `ExperimentType` | Intrinsically universal                                 |
-| `Extinction`     | Only used in single-crystal experiments                 |
-| `LinkedCrystal`  | Only single-crystal                                     |
 
 #### CategoryCollections — factory-created (get all three)
 

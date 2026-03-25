@@ -95,43 +95,6 @@ parameter enumeration, or CIF serialisation.
 
 ---
 
-## 6. 🟡 Add Universal Factories for All Categories
-
-**Type:** Consistency + Future-proofing
-
-Some categories (e.g. `Extinction`, `LinkedCrystal`) have only one
-implementation and no factory. Adding trivial factories with one registered
-class and a `frozenset(): tag` universal fallback rule would:
-
-1. **Uniform pattern.** Contributors learn one pattern and apply it everywhere.
-2. **Future-proof.** Adding a second extinction model requires no structural
-   changes — just register a new class and add a `_default_rules` entry.
-3. **Self-describing metadata.** Every category gets `type_info`,
-   `compatibility`, `calculator_support` for free.
-4. **Consistent user API.** All switchable categories follow the same
-   `show_supported_*_types()` / `*_type = '...'` pattern.
-
-**Example for Extinction:**
-
-```python
-class ExtinctionFactory(FactoryBase):
-    _default_rules = {
-        frozenset(): 'shelx',
-    }
-
-
-@ExtinctionFactory.register
-class ShelxExtinction(CategoryItem):
-    type_info = TypeInfo(tag='shelx', description='Shelx-style extinction correction')
-    compatibility = Compatibility(
-        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
-    )
-```
-
-**Depends on:** nothing.
-
----
-
 ## 7. 🟡 Eliminate Dummy `Experiments` Wrapper in Single-Fit Mode
 
 **Type:** Fragility
@@ -276,18 +239,17 @@ implement when profiling proves it is needed.
 
 ## Summary
 
-| #   | Issue                                  | Severity | Type            |
-| --- | -------------------------------------- | -------- | --------------- |
-| 1   | Implement `Project.load()`             | 🔴 High  | Completeness    |
-| 2   | Restore minimiser variants             | 🟡 Med   | Feature loss    |
-| 3   | Rebuild joint-fit weights              | 🟡 Med   | Fragility       |
-| 5   | `Analysis` as `DatablockItem`          | 🟡 Med   | Consistency     |
-| 6   | Universal factories for all categories | 🟡 Med   | Consistency     |
-| 7   | Eliminate dummy `Experiments`          | 🟡 Med   | Fragility       |
-| 8   | Explicit `create()` signatures         | 🟡 Med   | API safety      |
-| 9   | Future enum extensions                 | 🟢 Low   | Design          |
-| 10  | Unify update orchestration             | 🟢 Low   | Maintainability |
-| 11  | Document `_update` contract            | 🟢 Low   | Maintainability |
-| 12  | CIF round-trip integration test        | 🟢 Low   | Quality         |
-| 13  | Suppress redundant dirty-flag sets     | 🟢 Low   | Performance     |
-| 14  | Finer-grained change tracking          | 🟢 Low   | Performance     |
+| #   | Issue                              | Severity | Type            |
+| --- | ---------------------------------- | -------- | --------------- |
+| 1   | Implement `Project.load()`         | 🔴 High  | Completeness    |
+| 2   | Restore minimiser variants         | 🟡 Med   | Feature loss    |
+| 3   | Rebuild joint-fit weights          | 🟡 Med   | Fragility       |
+| 5   | `Analysis` as `DatablockItem`      | 🟡 Med   | Consistency     |
+| 7   | Eliminate dummy `Experiments`      | 🟡 Med   | Fragility       |
+| 8   | Explicit `create()` signatures     | 🟡 Med   | API safety      |
+| 9   | Future enum extensions             | 🟢 Low   | Design          |
+| 10  | Unify update orchestration         | 🟢 Low   | Maintainability |
+| 11  | Document `_update` contract        | 🟢 Low   | Maintainability |
+| 12  | CIF round-trip integration test    | 🟢 Low   | Quality         |
+| 13  | Suppress redundant dirty-flag sets | 🟢 Low   | Performance     |
+| 14  | Finer-grained change tracking      | 🟢 Low   | Performance     |
