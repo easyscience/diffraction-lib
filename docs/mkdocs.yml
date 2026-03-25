@@ -71,8 +71,7 @@ nav:
       - Getting Started:
           - LBCO quick CIF: tutorials/ed-1.ipynb
           - LBCO quick code: tutorials/ed-2.ipynb
-          - LBCO basic: tutorials/ed-3.ipynb
-          - PbSO4 advanced: tutorials/ed-4.ipynb
+          - LBCO complete: tutorials/ed-3.ipynb
       - Powder Diffraction:
           - Co2SiO4 pd-neut-cwl: tutorials/ed-5.ipynb
           - HS pd-neut-cwl: tutorials/ed-6.ipynb
@@ -86,7 +85,7 @@ nav:
           - Ni pd-neut-cwl: tutorials/ed-10.ipynb
           - Si pd-neut-tof: tutorials/ed-11.ipynb
           - NaCl pd-xray: tutorials/ed-12.ipynb
-      - Multi-Structure & Multi-Experiment:
+      - Multi-Structure/Experiment:
           - PbSO4 NPD+XRD: tutorials/ed-4.ipynb
           - LBCO+Si McStas: tutorials/ed-9.ipynb
           - Si Bragg+PDF: tutorials/ed-16.ipynb
