@@ -348,7 +348,12 @@ class ScExperimentBase(ExperimentBase):
         Args:
             new_type: Instrument tag (e.g. ``'cwl-sc'``).
         """
-        supported_tags = InstrumentFactory.supported_tags()
+        supported = InstrumentFactory.supported_for(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            sample_form=self.type.sample_form.value,
+        )
+        supported_tags = [k.type_info.tag for k in supported]
         if new_type not in supported_tags:
             log.warning(
                 f"Unsupported instrument type '{new_type}'. "
@@ -363,7 +368,11 @@ class ScExperimentBase(ExperimentBase):
 
     def show_supported_instrument_types(self) -> None:
         """Print a table of supported instrument types."""
-        InstrumentFactory.show_supported()
+        InstrumentFactory.show_supported(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+            sample_form=self.type.sample_form.value,
+        )
 
     def show_current_instrument_type(self) -> None:
         """Print the currently used instrument type."""
