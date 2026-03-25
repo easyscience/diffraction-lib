@@ -80,6 +80,18 @@ The tutorials are organized into the following categories.
 - [NaCl `pd-xray`](ed-12.ipynb) – Demonstrates a PDF analysis of NaCl using data
   collected from an X-ray powder diffraction experiment.
 
+## Multi-Structure & Multi-Experiment Refinement
+
+- [PbSO4 NPD+XRD](ed-4.ipynb) – Joint fit of PbSO4 using neutron and X-ray
+  constant wavelength powder diffraction data. Also listed under Getting
+  Started.
+- [LBCO+Si McStas](ed-9.ipynb) – Multi-phase Rietveld refinement of
+  La0.5Ba0.5CoO3 with Si impurity using time-of-flight neutron data simulated
+  with McStas. Also listed under Powder Diffraction.
+- [Si Bragg+PDF](ed-16.ipynb) – Joint refinement of Si combining Bragg
+  diffraction (SEPD) and pair distribution function (NOMAD) analysis. A single
+  shared structure is refined simultaneously against both datasets.
+
 ## Workshops & Schools
 
 - [2025 DMSC](ed-13.ipynb) – A workshop tutorial that demonstrates a Rietveld

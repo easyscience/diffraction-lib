@@ -5,6 +5,7 @@ import tempfile
 
 from numpy.testing import assert_almost_equal
 
+import easydiffraction as ed
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import StructureFactory
@@ -138,5 +139,98 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     )
 
 
+def test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
+    # Set structure (shared between Bragg and PDF experiments)
+    model = StructureFactory.from_scratch(name='si')
+    model.space_group.name_h_m = 'F d -3 m'
+    model.space_group.it_coordinate_system_code = '2'
+    model.cell.length_a = 5.431
+    model.atom_sites.create(
+        label='Si',
+        type_symbol='Si',
+        fract_x=0.125,
+        fract_y=0.125,
+        fract_z=0.125,
+        b_iso=0.5,
+    )
+
+    # Set Bragg experiment (SEPD, TOF)
+    bragg_data_path = download_data(id=7, destination=TEMP_DIR)
+    bragg_expt = ExperimentFactory.from_data_path(
+        name='sepd',
+        data_path=bragg_data_path,
+        beam_mode='time-of-flight',
+    )
+    bragg_expt.instrument.setup_twotheta_bank = 144.845
+    bragg_expt.instrument.calib_d_to_tof_offset = 0.0
+    bragg_expt.instrument.calib_d_to_tof_linear = 7476.91
+    bragg_expt.instrument.calib_d_to_tof_quad = -1.54
+    bragg_expt.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+    bragg_expt.peak.broad_gauss_sigma_0 = 3.0
+    bragg_expt.peak.broad_gauss_sigma_1 = 40.0
+    bragg_expt.peak.broad_gauss_sigma_2 = 2.0
+    bragg_expt.peak.broad_mix_beta_0 = 0.04221
+    bragg_expt.peak.broad_mix_beta_1 = 0.00946
+    bragg_expt.peak.asym_alpha_0 = 0.0
+    bragg_expt.peak.asym_alpha_1 = 0.5971
+    bragg_expt.linked_phases.create(id='si', scale=10.0)
+    for x in range(0, 35000, 5000):
+        bragg_expt.background.create(id=str(x), x=x, y=200)
+
+    # Set PDF experiment (NOMAD, TOF)
+    pdf_data_path = ed.download_data(id=5, destination=TEMP_DIR)
+    pdf_expt = ExperimentFactory.from_data_path(
+        name='nomad',
+        data_path=pdf_data_path,
+        beam_mode='time-of-flight',
+        scattering_type='total',
+    )
+    pdf_expt.peak.damp_q = 0.02
+    pdf_expt.peak.broad_q = 0.03
+    pdf_expt.peak.cutoff_q = 35.0
+    pdf_expt.peak.sharp_delta_1 = 0.0
+    pdf_expt.peak.sharp_delta_2 = 4.0
+    pdf_expt.peak.damp_particle_diameter = 0
+    pdf_expt.linked_phases.create(id='si', scale=1.0)
+
+    # Create project
+    project = Project()
+    project.structures.add(model)
+    project.experiments.add(bragg_expt)
+    project.experiments.add(pdf_expt)
+
+    # Prepare for fitting
+    project.analysis.fit_mode = 'joint'
+    project.analysis.current_minimizer = 'lmfit'
+
+    # Select fitting parameters — shared structure
+    model.cell.length_a.free = True
+    model.atom_sites['Si'].b_iso.free = True
+
+    # Select fitting parameters — Bragg experiment
+    bragg_expt.linked_phases['si'].scale.free = True
+    bragg_expt.instrument.calib_d_to_tof_offset.free = True
+    for point in bragg_expt.background:
+        point.y.free = True
+
+    # Select fitting parameters — PDF experiment
+    pdf_expt.linked_phases['si'].scale.free = True
+    pdf_expt.peak.damp_q.free = True
+    pdf_expt.peak.broad_q.free = True
+    pdf_expt.peak.sharp_delta_1.free = True
+    pdf_expt.peak.sharp_delta_2.free = True
+
+    # Perform fit
+    project.analysis.fit()
+
+    # Compare fit quality
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=8978.39,
+        decimal=-2,
+    )
+
+
 if __name__ == '__main__':
     test_single_fit_neutron_pd_tof_mcstas_lbco_si()
+    test_joint_fit_bragg_pdf_neutron_pd_tof_si()
