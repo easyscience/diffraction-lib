@@ -12,7 +12,7 @@ class BackgroundTypeEnum(str, Enum):
     """Supported background model types."""
 
     LINE_SEGMENT = 'line-segment'
-    CHEBYSHEV = 'chebyshev polynomial'
+    CHEBYSHEV = 'chebyshev'
 
     @classmethod
     def default(cls) -> 'BackgroundTypeEnum':
