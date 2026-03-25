@@ -79,6 +79,29 @@ fit. At minimum, `fit()` should assert that the weight keys exactly match
 
 ---
 
+## 4. 🔴 Refresh Constraint State Before Automatic Updates and Fitting
+
+**Type:** Correctness
+
+`ConstraintsHandler` is only synchronised from `analysis.aliases` and
+`analysis.constraints` when the user explicitly calls
+`project.analysis.apply_constraints()`. The normal fit / serialisation path
+calls `constraints_handler.apply()` directly, so newly added or edited aliases
+and constraints can be ignored until that manual sync step happens.
+
+**Why high:** this produces silently incorrect results. A user can define
+constraints, run a fit, and believe they were applied when the active singleton
+still contains stale state from a previous run or no state at all.
+
+**Fix:** before any automatic constraint application, always refresh the
+singleton from the current `Aliases` and `Constraints` collections. The sync
+should happen inside `Analysis._update_categories()` or inside the constraints
+category itself, not only in a user-facing helper method.
+
+**Depends on:** nothing.
+
+---
+
 ## 5. 🟡 Make `Analysis` a `DatablockItem`
 
 **Type:** Consistency
@@ -92,6 +115,30 @@ parameter enumeration, or CIF serialisation.
 `_update_categories()` protocol.
 
 **Depends on:** benefits from issue 1 (load/save) being designed first.
+
+---
+
+## 6. 🔴 Restrict `data_type` Switching to Compatible Types and Preserve Data Safety
+
+**Type:** Correctness + Data safety
+
+`Experiment.data_type` currently validates against all registered data tags
+rather than only those compatible with the experiment's
+`sample_form` / `scattering_type` / `beam_mode`. This allows users to switch an
+experiment to an incompatible data collection class. The setter also replaces
+the existing data object with a fresh empty instance, discarding loaded data
+without warning.
+
+**Why high:** the current API can create internally inconsistent experiments
+and silently lose measured data, which is especially dangerous for notebook and
+tutorial workflows.
+
+**Fix:** filter supported data types through `DataFactory.supported_for(...)`
+using the current experiment context, and warn or block when a switch would
+discard existing data. If runtime data-type switching is not a real user need,
+consider making `data` effectively fixed after experiment creation.
+
+**Depends on:** nothing.
 
 ---
 
@@ -237,19 +284,57 @@ implement when profiling proves it is needed.
 
 ---
 
+## 15. 🟡 Validate Joint-Fit Weights Before Residual Normalisation
+
+**Type:** Correctness
+
+Joint-fit weights currently allow invalid numeric values such as negatives or an
+all-zero set. The residual code then normalises by the total weight and applies
+`sqrt(weight)`, which can produce division-by-zero or `nan` residuals.
+
+**Fix:** require weights to be strictly positive, or at minimum validate that
+all weights are non-negative and their total is greater than zero before
+normalisation. This should fail with a clear user-facing error instead of
+letting invalid floating-point values propagate into the minimiser.
+
+**Depends on:** related to issue 3, but independent.
+
+---
+
+## 16. 🟡 Persist Per-Experiment `calculator_type`
+
+**Type:** Completeness
+
+The current architecture moved calculator selection to the experiment level via
+`calculator_type`, but this selection is not written to CIF during `save()` /
+`show_as_cif()`. Reloading or exporting a project therefore loses explicit
+calculator choices and falls back to auto-resolution.
+
+**Fix:** serialise `calculator_type` as part of the experiment or analysis
+state, and make sure `load()` restores it. The saved project should represent
+the exact active calculator configuration, not just a re-derivable default.
+
+**Depends on:** issue 1 (`Project.load()` implementation).
+
+---
+
 ## Summary
 
-| #   | Issue                              | Severity | Type            |
-| --- | ---------------------------------- | -------- | --------------- |
-| 1   | Implement `Project.load()`         | 🔴 High  | Completeness    |
-| 2   | Restore minimiser variants         | 🟡 Med   | Feature loss    |
-| 3   | Rebuild joint-fit weights          | 🟡 Med   | Fragility       |
-| 5   | `Analysis` as `DatablockItem`      | 🟡 Med   | Consistency     |
-| 7   | Eliminate dummy `Experiments`      | 🟡 Med   | Fragility       |
-| 8   | Explicit `create()` signatures     | 🟡 Med   | API safety      |
-| 9   | Future enum extensions             | 🟢 Low   | Design          |
-| 10  | Unify update orchestration         | 🟢 Low   | Maintainability |
-| 11  | Document `_update` contract        | 🟢 Low   | Maintainability |
-| 12  | CIF round-trip integration test    | 🟢 Low   | Quality         |
-| 13  | Suppress redundant dirty-flag sets | 🟢 Low   | Performance     |
-| 14  | Finer-grained change tracking      | 🟢 Low   | Performance     |
+| #   | Issue                                       | Severity | Type                 |
+| --- | ------------------------------------------- | -------- | -------------------- |
+| 1   | Implement `Project.load()`                  | 🔴 High  | Completeness         |
+| 2   | Restore minimiser variants                  | 🟡 Med   | Feature loss         |
+| 3   | Rebuild joint-fit weights                   | 🟡 Med   | Fragility            |
+| 4   | Refresh constraint state before auto-apply  | 🔴 High  | Correctness          |
+| 5   | `Analysis` as `DatablockItem`               | 🟡 Med   | Consistency          |
+| 6   | Restrict `data_type` switching              | 🔴 High  | Correctness/Data safety |
+| 7   | Eliminate dummy `Experiments`               | 🟡 Med   | Fragility            |
+| 8   | Explicit `create()` signatures              | 🟡 Med   | API safety           |
+| 9   | Future enum extensions                      | 🟢 Low   | Design               |
+| 10  | Unify update orchestration                  | 🟢 Low   | Maintainability      |
+| 11  | Document `_update` contract                 | 🟢 Low   | Maintainability      |
+| 12  | CIF round-trip integration test             | 🟢 Low   | Quality              |
+| 13  | Suppress redundant dirty-flag sets          | 🟢 Low   | Performance          |
+| 14  | Finer-grained change tracking               | 🟢 Low   | Performance          |
+| 15  | Validate joint-fit weights                  | 🟡 Med   | Correctness          |
+| 16  | Persist per-experiment `calculator_type`    | 🟡 Med   | Completeness         |
