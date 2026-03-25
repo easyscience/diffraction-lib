@@ -504,7 +504,7 @@ Tags are the user-facing identifiers for selecting types. They must be:
 
 > **Note:** minimizer variant tags (`lmfit (leastsq)`, `lmfit (least_squares)`)
 > are planned but not yet re-implemented after the `FactoryBase` migration. See
-> §11.8 and §11.9 for details.
+> `issues_open.md` for details.
 
 ### 5.7 Metadata Classification — Which Classes Get What
 
@@ -545,6 +545,7 @@ collection type), not individual line-segment points.
 | `Cell`                         | `CellFactory`           |
 | `SpaceGroup`                   | `SpaceGroupFactory`     |
 | `ExperimentType`               | `ExperimentTypeFactory` |
+| `FitMode`                      | `FitModeFactory`        |
 
 #### CategoryCollections — factory-created (get all three)
 
@@ -643,7 +644,7 @@ by tag (e.g. `'lmfit'`, `'dfols'`).
   `show_free_params()`, `how_to_access_parameters()`
 - Fitting: `fit()`, `show_fit_results()`
 - Aliases and constraints (switchable categories with `aliases_type`,
-  `constraints_type`, `joint_fit_experiments_type`)
+  `constraints_type`, `fit_mode_type`, `joint_fit_experiments_type`)
 
 ---
 
