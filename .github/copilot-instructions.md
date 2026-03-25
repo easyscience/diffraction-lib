@@ -21,6 +21,17 @@
   categories in CIF) and `CategoryCollection` (loop categories in CIF).
 - Metadata via frozen dataclasses: `TypeInfo`, `Compatibility`,
   `CalculatorSupport`.
+- The API is designed for scientists who use EasyDiffraction as a final product
+  in a user-friendly, intuitive way. The target users are not software
+  developers and may have little or no Python experience. The design is not
+  oriented toward developers building their own tooling on top of the library,
+  although experienced developers will find their own way. Prioritize
+  discoverability, clear error messages, and safe defaults so that
+  non-programmers are not stuck by standard API conventions.
+- This project must be developed to be as error-free as possible, with the same
+  rigour applied to critical software (e.g. nuclear-plant control systems).
+  Every code path must be tested, edge cases must be handled explicitly, and
+  silent failures are not acceptable.
 
 ## Code Style
 
