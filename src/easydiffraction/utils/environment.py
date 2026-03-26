@@ -20,7 +20,6 @@ def in_pycharm() -> bool:
     """
     Determines if the current environment is PyCharm.
 
-
     Returns
     -------
     bool
@@ -32,7 +31,6 @@ def in_pycharm() -> bool:
 def in_colab() -> bool:
     """
     Determines if the current environment is Google Colab.
-
 
     Returns
     -------
@@ -49,12 +47,10 @@ def in_jupyter() -> bool:
     """
     Return True when running inside a Jupyter Notebook.
 
-
     Returns
     -------
     bool
-        True if inside a Jupyter Notebook, False
-        otherwise.
+        True if inside a Jupyter Notebook, False otherwise.
     """
     try:
         import IPython  # type: ignore[import-not-found]
@@ -92,12 +88,10 @@ def in_github_ci() -> bool:
     """
     Return True when running under GitHub Actions CI.
 
-
     Returns
     -------
     bool
-        True if env var ``GITHUB_ACTIONS`` is set, False
-        otherwise.
+        True if env var ``GITHUB_ACTIONS`` is set, False otherwise.
     """
     return os.environ.get('GITHUB_ACTIONS') is not None
 

@@ -52,7 +52,7 @@ class PlotlyPlotter(PlotterBase):
         y
             1D array- like of y-axis values.
         label
-            Series identifier (``'meas'``, ``'calc'``, or         ``'resid'``).
+            Series identifier (``'meas'``, ``'calc'``, or ``'resid'``).
 
         Returns
         -------
@@ -95,7 +95,8 @@ class PlotlyPlotter(PlotterBase):
         Returns
         -------
         A configured
-            class:`plotly.graph_objects.Scatter` trace     with markers and error bars.
+            class:`plotly.graph_objects.Scatter` trace with markers and
+            error bars.
         """
         trace = go.Scatter(
             x=x_calc,
@@ -124,10 +125,8 @@ class PlotlyPlotter(PlotterBase):
         Returns a y=x diagonal line spanning the plot area using paper
         coordinates (0,0) to (1,1).
 
-
         Returns
         -------
-
             A dict configuring a diagonal line shape.
         """
         return dict(
@@ -146,10 +145,8 @@ class PlotlyPlotter(PlotterBase):
         """
         Return the Plotly figure configuration.
 
-
         Returns
         -------
-
             A dict with display and mode bar settings.
         """
         return dict(
@@ -284,8 +281,8 @@ class PlotlyPlotter(PlotterBase):
         """
         Render a line plot for powder diffraction data.
 
-        Suitable for powder diffraction data where intensity is plotted
-        against an x-axis variable (2θ, TOF, d-spacing).
+        Suitable for powder diffraction data where intensity is plotted against
+        an x-axis variable (2θ, TOF, d-spacing).
 
         Parameters
         ----------
@@ -331,9 +328,9 @@ class PlotlyPlotter(PlotterBase):
         """
         Render a scatter plot for single crystal diffraction data.
 
-        Suitable for single crystal diffraction data where measured
-        values are plotted against calculated values with error bars and
-        a diagonal reference line.
+        Suitable for single crystal diffraction data where measured values are
+        plotted against calculated values with error bars and a diagonal
+        reference line.
 
         Parameters
         ----------

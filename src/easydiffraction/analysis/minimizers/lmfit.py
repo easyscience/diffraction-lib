@@ -43,7 +43,6 @@ class LmfitMinimizer(MinimizerBase):
         """
         Prepares the solver arguments for the lmfit minimizer.
 
-
         Parameters
         ----------
         parameters
@@ -51,9 +50,7 @@ class LmfitMinimizer(MinimizerBase):
 
         Returns
         -------
-
-            A dictionary containing the prepared lmfit.
-            Parameters         object.
+            A dictionary containing the prepared lmfit. Parameters object.
         """
         engine_parameters = lmfit.Parameters()
         for param in parameters:
@@ -70,7 +67,6 @@ class LmfitMinimizer(MinimizerBase):
         """
         Runs the lmfit solver.
 
-
         Parameters
         ----------
         objective_function
@@ -80,7 +76,6 @@ class LmfitMinimizer(MinimizerBase):
 
         Returns
         -------
-
             The result of the lmfit minimization.
         """
         engine_parameters = kwargs.get('engine_parameters')
@@ -100,7 +95,6 @@ class LmfitMinimizer(MinimizerBase):
     ) -> None:
         """
         Synchronizes the result from the solver to the parameters.
-
 
         Parameters
         ----------
@@ -123,7 +117,6 @@ class LmfitMinimizer(MinimizerBase):
         """
         Determines success from lmfit MinimizerResult.
 
-
         Parameters
         ----------
         raw_result
@@ -131,9 +124,7 @@ class LmfitMinimizer(MinimizerBase):
 
         Returns
         -------
-
-            True if the optimization was successful, False
-            otherwise.
+            True if the optimization was successful, False otherwise.
         """
         return getattr(raw_result, 'success', False)
 

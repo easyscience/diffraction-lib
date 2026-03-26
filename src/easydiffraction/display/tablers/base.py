@@ -37,7 +37,6 @@ class TableBackendBase(ABC):
         """
         Format floats with fixed precision and others as strings.
 
-
         Parameters
         ----------
         value
@@ -45,9 +44,8 @@ class TableBackendBase(ABC):
 
         Returns
         -------
-
-            A string representation with fixed precision for
-            floats or     ``str(value)`` for other types.
+            A string representation with fixed precision for floats or
+            ``str(value)`` for other types.
         """
         return self._float_fmt(value) if isinstance(value, float) else str(value)
 
@@ -71,17 +69,14 @@ class TableBackendBase(ABC):
         """
         Convert a Rich color name to a CSS-style hex string.
 
-
         Parameters
         ----------
         color
             Rich color name or specification parsable by
-
-            mod:`rich`.
+        mod:`rich`.
 
         Returns
         -------
-
             Hex color string in the form ``#RRGGBB``.
         """
         c = Color.parse(color)
@@ -112,7 +107,8 @@ class TableBackendBase(ABC):
         Parameters
         ----------
         alignments
-            Iterable of column justifications (e.g., ``'left'`` or ``'center'``) corresponding to the data columns.
+            Iterable of column justifications (e.g., ``'left'`` or
+            ``'center'``) corresponding to the data columns.
         df
             Index-aware DataFrame with data to render.
         display_handle

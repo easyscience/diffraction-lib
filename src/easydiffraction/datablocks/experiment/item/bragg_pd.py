@@ -119,7 +119,6 @@ class BraggPdExperiment(PdExperimentBase):
         """
         Switch to a different instrument type.
 
-
         Parameters
         ----------
         new_type

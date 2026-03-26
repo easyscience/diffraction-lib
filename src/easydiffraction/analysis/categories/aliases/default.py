@@ -22,13 +22,15 @@ class Alias(CategoryItem):
     """
     Single alias entry.
 
-    Maps a human-readable ``label`` to a concrete ``param_uid`` used by
-    the engine.
+    Maps a human-readable ``label`` to a concrete ``param_uid`` used by the
+    engine.
 
     Parameters
     ----------
     label
-        Alias label. Must match ``^[A-Za- z_][A-Za-z0-9_]*$``.     param_uid: Target parameter uid. Same identifier pattern as         ``label``.
+        Alias label. Must match ``^[A-Za- z_][A-Za-z0-9_]*$``.
+        param_uid: Target parameter uid. Same identifier pattern as
+        ``label``.
     """
 
     def __init__(self) -> None:

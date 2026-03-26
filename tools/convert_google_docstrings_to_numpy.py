@@ -7,6 +7,7 @@ import ast
 import inspect
 import re
 import sys
+import textwrap
 from pathlib import Path
 
 from docstring_parser import DocstringStyle
@@ -32,6 +33,7 @@ GOOGLE_SECTION_RE = re.compile(
     + '|'.join(SECTION_NAMES)
     + r'):\s*(?P<rest>\S.*)?$'
 )
+NUMPY_SECTION_RE = re.compile(r'(?m)^[^\n]+\n-+\n')
 SECTION_KINDS_WITH_ITEMS = {'Args', 'Arguments', 'Attributes'}
 PRESERVE_BLOCK_SECTIONS = {'Examples', 'Notes'}
 GENERIC_ITEM_SECTIONS = {'Raises', 'Returns', 'Yields'}
@@ -106,8 +108,21 @@ def _strip_blank_edges(lines: list[str]) -> list[str]:
     return lines[start:end]
 
 
+def _join_wrapped_lines(lines: list[str]) -> str:
+    parts: list[str] = []
+    for line in lines:
+        text = re.sub(r'\s+', ' ', line.strip())
+        if not text:
+            continue
+        if parts and parts[-1].endswith('-') and not parts[-1].endswith(' -'):
+            parts[-1] = parts[-1][:-1] + text
+        else:
+            parts.append(text)
+    return ' '.join(parts)
+
+
 def _collapse_whitespace(lines: list[str]) -> str:
-    return ' '.join(line.strip() for line in lines if line.strip())
+    return _join_wrapped_lines(lines)
 
 
 def _repair_named_items(block_lines: list[str], names: list[str]) -> list[str] | None:
@@ -156,6 +171,9 @@ def _repair_section(section: str, block_lines: list[str], names: list[str]) -> l
         return []
 
     if section in SECTION_KINDS_WITH_ITEMS:
+        flat = _collapse_whitespace(stripped).lower().rstrip('.')
+        if flat == 'none':
+            return []
         repaired = _repair_named_items(stripped, names)
         if repaired is not None:
             return repaired
@@ -220,6 +238,10 @@ def _looks_google(docstring: str) -> bool:
     return bool(GOOGLE_SECTION_RE.search(docstring))
 
 
+def _looks_numpydoc(docstring: str) -> bool:
+    return bool(NUMPY_SECTION_RE.search(docstring))
+
+
 def _meta_kinds(parsed) -> set[str]:
     kinds: set[str] = set()
     for meta in parsed.meta:
@@ -265,11 +287,147 @@ def _is_safe_conversion(docstring: str, parsed) -> bool:
     return True
 
 
-def _tidy_numpydoc_output(docstring: str) -> str:
-    tidied = docstring.strip('\n')
-    tidied = re.sub(r'\n{3,}', '\n\n', tidied)
-    tidied = re.sub(r'(?m)^([^\n]+)\n(-+)\n\n( +\S)', r'\1\n\2\n\3', tidied)
-    return tidied
+def _is_section_header(lines: list[str], index: int) -> bool:
+    return index + 1 < len(lines) and bool(lines[index].strip()) and set(lines[index + 1].strip()) == {'-'}
+
+
+def _wrap_paragraph(lines: list[str], width: int, indent: str = '') -> list[str]:
+    if not lines:
+        return []
+
+    text = _join_wrapped_lines(lines)
+    if not text:
+        return [''] if lines else []
+
+    return textwrap.wrap(
+        text,
+        width=width,
+        initial_indent=indent,
+        subsequent_indent=indent,
+        break_long_words=False,
+        break_on_hyphens=False,
+    )
+
+
+def _format_freeform_block(lines: list[str], width: int = 72, indent: str = '') -> list[str]:
+    stripped = _strip_blank_edges(lines)
+    if not stripped:
+        return []
+
+    formatted: list[str] = []
+    paragraph: list[str] = []
+    for line in stripped:
+        if not line.strip():
+            if paragraph:
+                formatted.extend(_wrap_paragraph(paragraph, width=width, indent=indent))
+                paragraph = []
+            if formatted and formatted[-1] != '':
+                formatted.append('')
+            continue
+
+        content = line.strip()
+        if content.startswith(('>>>', '...')):
+            if paragraph:
+                formatted.extend(_wrap_paragraph(paragraph, width=width, indent=indent))
+                paragraph = []
+            formatted.append(f'{indent}{content}')
+            continue
+
+        paragraph.append(content)
+
+    if paragraph:
+        formatted.extend(_wrap_paragraph(paragraph, width=width, indent=indent))
+
+    return formatted
+
+
+def _format_named_section(block_lines: list[str]) -> list[str]:
+    lines = _strip_blank_edges(block_lines)
+    if not lines:
+        return []
+
+    formatted: list[str] = []
+    index = 0
+    while index < len(lines):
+        if not lines[index].strip():
+            index += 1
+            continue
+
+        header = lines[index].strip()
+        formatted.append(header)
+        index += 1
+
+        description: list[str] = []
+        while index < len(lines):
+            line = lines[index]
+            if not line.strip():
+                index += 1
+                if description:
+                    break
+                continue
+            if not line.startswith(' ') and not line.startswith('\t'):
+                break
+            description.append(line.strip())
+            index += 1
+
+        if description:
+            formatted.extend(_wrap_paragraph(description, width=68, indent='    '))
+        elif formatted and formatted[-1] != '':
+            formatted.append('')
+
+    if formatted and formatted[-1] == '':
+        formatted.pop()
+    return formatted
+
+
+def _format_return_like_section(block_lines: list[str]) -> list[str]:
+    lines = _strip_blank_edges(block_lines)
+    if not lines:
+        return []
+
+    first = next((line for line in lines if line.strip()), '')
+    if first.startswith((' ', '\t')):
+        return _format_freeform_block(lines, width=68, indent='    ')
+
+    return _format_named_section(lines)
+
+
+def _format_numpydoc_output(docstring: str) -> str:
+    lines = docstring.strip('\n').splitlines()
+    formatted: list[str] = []
+    index = 0
+
+    preamble: list[str] = []
+    while index < len(lines) and not _is_section_header(lines, index):
+        preamble.append(lines[index])
+        index += 1
+    formatted.extend(_format_freeform_block(preamble))
+
+    while index < len(lines):
+        if not _is_section_header(lines, index):
+            index += 1
+            continue
+
+        if formatted and formatted[-1] != '':
+            formatted.append('')
+        heading = lines[index].strip()
+        underline = lines[index + 1].strip()
+        formatted.extend([heading, underline])
+        index += 2
+
+        block: list[str] = []
+        while index < len(lines) and not _is_section_header(lines, index):
+            block.append(lines[index])
+            index += 1
+
+        if heading in {'Parameters', 'Attributes'}:
+            formatted.extend(_format_named_section(block))
+        elif heading in {'Returns', 'Raises', 'Yields'}:
+            formatted.extend(_format_return_like_section(block))
+        else:
+            formatted.extend(_format_freeform_block(block))
+
+    return '\n'.join(_strip_blank_edges(formatted))
 
 
 def _convert_docstring(docstring: str, names: list[str]) -> str | None:
@@ -287,8 +445,17 @@ def _convert_docstring(docstring: str, names: list[str]) -> str | None:
     if not _is_safe_conversion(repaired, parsed):
         return None
 
-    converted = _tidy_numpydoc_output(compose(parsed, style=DocstringStyle.NUMPYDOC))
+    converted = _format_numpydoc_output(compose(parsed, style=DocstringStyle.NUMPYDOC))
     return converted if converted != cleaned else None
+
+
+def _reformat_numpydoc_docstring(docstring: str) -> str | None:
+    cleaned = inspect.cleandoc(docstring)
+    if not _looks_numpydoc(cleaned):
+        return None
+
+    formatted = _format_numpydoc_output(cleaned)
+    return formatted if formatted != cleaned else None
 
 
 def _format_multiline_docstring(content: str, indent: int) -> str:
@@ -326,6 +493,8 @@ def _convert_file(path: Path) -> bool:
             continue
 
         converted = _convert_docstring(docstring, _collect_names(node))
+        if converted is None:
+            converted = _reformat_numpydoc_docstring(docstring)
         if converted is None:
             continue
 

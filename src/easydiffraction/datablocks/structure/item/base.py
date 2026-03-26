@@ -43,7 +43,6 @@ class Structure(DatablockItem):
         """
         Name identifier for this structure.
 
-
         Returns
         -------
         str
@@ -56,7 +55,6 @@ class Structure(DatablockItem):
     def name(self, new: str) -> None:
         """
         Set the name identifier for this structure.
-
 
         Parameters
         ----------
@@ -80,7 +78,6 @@ class Structure(DatablockItem):
         """
         Replace the unit-cell category for this structure.
 
-
         Parameters
         ----------
         new : Cell
@@ -97,7 +94,6 @@ class Structure(DatablockItem):
     def cell_type(self, new_type: str) -> None:
         """
         Switch to a different unit-cell type.
-
 
         Parameters
         ----------
@@ -141,7 +137,6 @@ class Structure(DatablockItem):
         """
         Replace the space-group category for this structure.
 
-
         Parameters
         ----------
         new : SpaceGroup
@@ -158,7 +153,6 @@ class Structure(DatablockItem):
     def space_group_type(self, new_type: str) -> None:
         """
         Switch to a different space-group type.
-
 
         Parameters
         ----------
@@ -202,7 +196,6 @@ class Structure(DatablockItem):
         """
         Replace the atom-sites collection for this structure.
 
-
         Parameters
         ----------
         new : AtomSites
@@ -219,7 +212,6 @@ class Structure(DatablockItem):
     def atom_sites_type(self, new_type: str) -> None:
         """
         Switch to a different atom-sites collection type.
-
 
         Parameters
         ----------

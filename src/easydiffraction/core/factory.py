@@ -83,14 +83,15 @@ class FactoryBase:
         """
         Resolve the default tag for a given experimental context.
 
-        Uses *largest-subset matching*: the rule whose key is the
-        biggest subset of the given conditions wins.  A rule with an
-        empty key (``frozenset()``) acts as a universal fallback.
+        Uses *largest-subset matching*: the rule whose key is the biggest subset
+        of the given conditions wins. A rule with an empty key (``frozenset()``)
+        acts as a universal fallback.
 
         Parameters
         ----------
         **conditions
-            Experimental-axis values, e.g. ``scattering_type=ScatteringTypeEnum.BRAGG``.
+            Experimental-axis values, e.g.
+            ``scattering_type=ScatteringTypeEnum.BRAGG``.
 
         Returns
         -------
@@ -149,7 +150,6 @@ class FactoryBase:
         Instantiate the default class for a given context.
 
         Combines ``default_tag(**conditions)`` with ``create(tag)``.
-
 
         Parameters
         ----------

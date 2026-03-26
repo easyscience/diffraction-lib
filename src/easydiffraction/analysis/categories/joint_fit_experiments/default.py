@@ -29,7 +29,8 @@ class JointFitExperiment(CategoryItem):
     Parameters
     ----------
     id
-        Experiment identifier used in the fit session. weight: Relative weight factor in the combined objective.
+        Experiment identifier used in the fit session. weight: Relative
+        weight factor in the combined objective.
     """
 
     def __init__(self) -> None:

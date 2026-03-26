@@ -94,7 +94,6 @@ class SpaceGroup(CategoryItem):
         """
         Return the list of recognised Hermann–Mauguin short symbols.
 
-
         Returns
         -------
         list[str]
@@ -105,15 +104,12 @@ class SpaceGroup(CategoryItem):
     @property
     def _it_coordinate_system_code_allowed_values(self) -> list[str]:
         """
-        Return allowed IT coordinate system codes for the current
-        group.
-
+        Return allowed IT coordinate system codes for the current group.
 
         Returns
         -------
         list[str]
-            Coordinate-system codes, or ``['']``
-            when none         are defined.
+            Coordinate-system codes, or ``['']`` when none are defined.
         """
         name = self.name_h_m.value
         it_number = get_it_number_by_name_hm_short(name)
@@ -125,7 +121,6 @@ class SpaceGroup(CategoryItem):
     def _it_coordinate_system_code_default_value(self) -> str:
         """
         Return the default IT coordinate system code.
-
 
         Returns
         -------

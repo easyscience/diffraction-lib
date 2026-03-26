@@ -139,7 +139,8 @@ class DatablockCollection(CollectionBase):
         Parameters
         ----------
         item
-            A ``DatablockItem`` instance (e.g. a ``Structure``         or ``ExperimentBase`` subclass).
+            A ``DatablockItem`` instance (e.g. a ``Structure`` or
+            ``ExperimentBase`` subclass).
         """
         self[item._identity.datablock_entry_name] = item
 

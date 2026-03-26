@@ -30,18 +30,18 @@ class GenericDescriptorBase(GuardedBase):
     """
     Base class for all parameter-like descriptors.
 
-    A descriptor encapsulates a typed value with validation, human-
-    readable name/description and a globally unique identifier that is
-    stable across the session. Concrete subclasses specialize the
-    expected data type and can extend the public API with additional
-    behavior (e.g. units).
+    A descriptor encapsulates a typed value with validation, human- readable
+    name/description and a globally unique identifier that is stable across
+    the session. Concrete subclasses specialize the expected data type and
+    can extend the public API with additional behavior (e.g. units).
 
     Attributes
     ----------
     name
         Local parameter name (e.g. 'a', 'b_iso').
     description
-        Optional human-readable description.     uid: Stable random identifier for external references.
+        Optional human-readable description. uid: Stable random
+        identifier for external references.
     """
 
     _BOOL_SPEC_TEMPLATE = AttributeSpec(
@@ -58,7 +58,6 @@ class GenericDescriptorBase(GuardedBase):
     ):
         """
         Initialize the descriptor with validation and identity.
-
 
         Parameters
         ----------
@@ -400,7 +399,6 @@ class StringDescriptor(GenericStringDescriptor):
         """
         String descriptor bound to a CIF handler.
 
-
         Parameters
         ----------
         cif_handler
@@ -426,7 +424,6 @@ class NumericDescriptor(GenericNumericDescriptor):
         """
         Numeric descriptor bound to a CIF handler.
 
-
         Parameters
         ----------
         cif_handler
@@ -451,7 +448,6 @@ class Parameter(GenericParameter):
     ) -> None:
         """
         Fittable parameter bound to a CIF handler.
-
 
         Parameters
         ----------

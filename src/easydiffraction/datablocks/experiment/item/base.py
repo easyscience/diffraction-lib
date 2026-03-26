@@ -61,7 +61,6 @@ class ExperimentBase(DatablockItem):
         """
         Rename the experiment.
 
-
         Parameters
         ----------
         new
@@ -92,7 +91,6 @@ class ExperimentBase(DatablockItem):
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """
         Load ASCII data from file into the experiment data category.
-
 
         Parameters
         ----------
@@ -247,7 +245,7 @@ class ScExperimentBase(ExperimentBase):
         Parameters
         ----------
         data_path
-            Path to data file with columns compatible with         the beam mode.
+            Path to data file with columns compatible with the beam mode.
         """
         pass
 
@@ -269,7 +267,6 @@ class ScExperimentBase(ExperimentBase):
     def extinction_type(self, new_type: str) -> None:
         """
         Switch to a different extinction correction model.
-
 
         Parameters
         ----------
@@ -318,7 +315,6 @@ class ScExperimentBase(ExperimentBase):
         """
         Switch to a different linked-crystal reference type.
 
-
         Parameters
         ----------
         new_type
@@ -365,7 +361,6 @@ class ScExperimentBase(ExperimentBase):
     def instrument_type(self, new_type: str) -> None:
         """
         Switch to a different instrument type.
-
 
         Parameters
         ----------
@@ -421,7 +416,6 @@ class ScExperimentBase(ExperimentBase):
     def data_type(self, new_type: str) -> None:
         """
         Switch to a different data collection type.
-
 
         Parameters
         ----------
@@ -485,7 +479,6 @@ class PdExperimentBase(ExperimentBase):
         """
         Get valid linked phases for this experiment.
 
-
         Parameters
         ----------
         structures
@@ -493,7 +486,6 @@ class PdExperimentBase(ExperimentBase):
 
         Returns
         -------
-
             A list of valid linked phases.
         """
         if not self.linked_phases:
@@ -525,7 +517,8 @@ class PdExperimentBase(ExperimentBase):
         Parameters
         ----------
         data_path
-            Path to data file with columns compatible with         the beam mode (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
+            Path to data file with columns compatible with the beam mode
+            (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
         """
         pass
 
@@ -543,7 +536,6 @@ class PdExperimentBase(ExperimentBase):
     def linked_phases_type(self, new_type: str) -> None:
         """
         Switch to a different linked-phases collection type.
-
 
         Parameters
         ----------
@@ -587,7 +579,6 @@ class PdExperimentBase(ExperimentBase):
     def excluded_regions_type(self, new_type: str) -> None:
         """
         Switch to a different excluded-regions collection type.
-
 
         Parameters
         ----------
@@ -638,7 +629,6 @@ class PdExperimentBase(ExperimentBase):
         """
         Switch to a different data collection type.
 
-
         Parameters
         ----------
         new_type
@@ -680,7 +670,6 @@ class PdExperimentBase(ExperimentBase):
     def peak_profile_type(self, new_type: str):
         """
         Change the active peak profile type, if supported.
-
 
         Parameters
         ----------

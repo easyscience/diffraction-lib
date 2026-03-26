@@ -36,7 +36,6 @@ class Structures(DatablockCollection):
         """
         Create a minimal structure and add it to the collection.
 
-
         Parameters
         ----------
         name : str
@@ -54,7 +53,6 @@ class Structures(DatablockCollection):
         """
         Create a structure from CIF content and add it.
 
-
         Parameters
         ----------
         cif_str : str
@@ -71,7 +69,6 @@ class Structures(DatablockCollection):
     ) -> None:
         """
         Create a structure from a CIF file and add it.
-
 
         Parameters
         ----------

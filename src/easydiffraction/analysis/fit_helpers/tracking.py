@@ -231,7 +231,6 @@ class FitProgressTracker:
         """
         Append a formatted row to the progress display.
 
-
         Parameters
         ----------
         row

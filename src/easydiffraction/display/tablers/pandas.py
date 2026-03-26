@@ -28,7 +28,8 @@ class PandasTableBackend(TableBackendBase):
         Parameters
         ----------
         color
-            CSS color value (e.g., ``#RRGGBB``) to use for borders and header accents.
+            CSS color value (e.g., ``#RRGGBB``) to use for borders and
+            header accents.
 
         Returns
         -------
@@ -88,7 +89,8 @@ class PandasTableBackend(TableBackendBase):
         df
             DataFrame whose columns are being rendered.
         alignments
-            Iterable of text alignment values (e.g., ``'left'``, ``'center'``) matching ``df`` columns.
+            Iterable of text alignment values (e.g., ``'left'``,
+            ``'center'``) matching ``df`` columns.
 
         Returns
         -------
@@ -137,9 +139,9 @@ class PandasTableBackend(TableBackendBase):
         """
         Single, consistent update path for Jupyter.
 
-        If a handle with ``update()`` is provided and it's a
-        DisplayHandle, update the output area in-place using HTML.
-        Otherwise, display once via IPython ``display()``.
+        If a handle with ``update()`` is provided and it's a DisplayHandle,
+        update the output area in-place using HTML. Otherwise, display once via
+        IPython ``display()``.
 
         Parameters
         ----------
@@ -182,7 +184,8 @@ class PandasTableBackend(TableBackendBase):
         df
             DataFrame whose index is displayed as the first column.
         display_handle
-            Optional IPython DisplayHandle to update an         existing output area in place when running in Jupyter.
+            Optional IPython DisplayHandle to update an existing output area
+            in place when running in Jupyter.
         """
         color = self._pandas_border_color
         styler = self._apply_styling(df, alignments, color)

@@ -45,9 +45,7 @@ class CalculatorBase(ABC):
         called_by_minimizer: bool,
     ) -> np.ndarray:
         """
-        Calculate the diffraction pattern for a single structure and
-        experiment.
-
+        Calculate the diffraction pattern for a single structure and experiment.
 
         Parameters
         ----------

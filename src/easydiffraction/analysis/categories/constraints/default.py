@@ -23,7 +23,6 @@ class Constraint(CategoryItem):
     """
     Single constraint item.
 
-
     Parameters
     ----------
     lhs_alias

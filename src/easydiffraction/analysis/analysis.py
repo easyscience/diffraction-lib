@@ -30,26 +30,27 @@ class Analysis:
     """
     High-level orchestration of analysis tasks for a Project.
 
-    This class wires calculators and minimizers, exposes a compact
-    interface for parameters, constraints and results, and coordinates
-    computations across the project's structures and experiments.
+    This class wires calculators and minimizers, exposes a compact interface
+    for parameters, constraints and results, and coordinates computations
+    across the project's structures and experiments.
 
     Typical usage:
 
-    - Display or filter parameters to fit. - Select a
-    calculator/minimizer implementation. - Calculate patterns and run
-    single or joint fits.
+    - Display or filter parameters to fit. - Select a calculator/minimizer
+    implementation. - Calculate patterns and run single or joint fits.
 
     Attributes
     ----------
     project
-        The parent Project object.     aliases: A registry of human-friendly aliases for parameters.     constraints: Symbolic constraints between parameters. calculator: Active calculator used for computations.     fitter: Active fitter/minimizer driver.
+        The parent Project object. aliases: A registry of human-friendly
+        aliases for parameters. constraints: Symbolic constraints
+        between parameters. calculator: Active calculator used for
+        computations. fitter: Active fitter/minimizer driver.
     """
 
     def __init__(self, project) -> None:
         """
         Create a new Analysis instance bound to a project.
-
 
         Parameters
         ----------
@@ -142,7 +143,6 @@ class Analysis:
         """
         Switch to a different aliases collection type.
 
-
         Parameters
         ----------
         new_type
@@ -184,7 +184,6 @@ class Analysis:
         """
         Switch to a different constraints collection type.
 
-
         Parameters
         ----------
         new_type
@@ -219,7 +218,6 @@ class Analysis:
         """
         Convert a list of parameters to a DataFrame.
 
-
         Parameters
         ----------
         params
@@ -227,9 +225,7 @@ class Analysis:
 
         Returns
         -------
-
-            A pandas DataFrame containing parameter
-            information.
+            A pandas DataFrame containing parameter information.
         """
         records = []
         for param in params:
@@ -505,7 +501,6 @@ class Analysis:
         """
         Switch to a different minimizer implementation.
 
-
         Parameters
         ----------
         selection
@@ -533,7 +528,6 @@ class Analysis:
     def fit_mode_type(self, new_type: str) -> None:
         """
         Switch to a different fit-mode category type.
-
 
         Parameters
         ----------
@@ -711,8 +705,8 @@ class Analysis:
         """
         Update all categories owned by Analysis.
 
-        This ensures aliases and constraints are up-to-date before
-        serialization or after parameter changes.
+        This ensures aliases and constraints are up-to-date before serialization
+        or after parameter changes.
 
         Parameters
         ----------
@@ -733,12 +727,9 @@ class Analysis:
         """
         Serialize the analysis section to a CIF string.
 
-
         Returns
         -------
-
-            The analysis section represented as a CIF document
-            string.
+            The analysis section represented as a CIF document string.
         """
         from easydiffraction.io.cif.serialize import analysis_to_cif
 

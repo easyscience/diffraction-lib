@@ -45,7 +45,6 @@ class MinimizerBase(ABC):
         """
         Initialize progress tracking and timer.
 
-
         Parameters
         ----------
         minimizer_name
@@ -65,7 +64,6 @@ class MinimizerBase(ABC):
         """
         Prepare keyword-arguments for the underlying solver.
 
-
         Parameters
         ----------
         parameters
@@ -73,9 +71,7 @@ class MinimizerBase(ABC):
 
         Returns
         -------
-
-            Mapping of keyword arguments to pass into
-            ``_run_solver``.
+            Mapping of keyword arguments to pass into ``_run_solver``.
         """
         pass
 
@@ -106,7 +102,6 @@ class MinimizerBase(ABC):
     ) -> FitResults:
         """
         Build :class:`FitResults` and store it on ``self.result``.
-
 
         Parameters
         ----------
@@ -150,7 +145,8 @@ class MinimizerBase(ABC):
         parameters
             Free parameters to optimize.
         objective_function
-            Callable returning residuals for a given set of engine arguments.
+            Callable returning residuals for a given set of engine
+            arguments.
 
         Returns
         -------

@@ -32,7 +32,6 @@ class AsciiPlotter(PlotterBase):
         The legend uses a colored line matching the series color and the
         human-readable name from :data:`SERIES_CONFIG`.
 
-
         Parameters
         ----------
         label
@@ -40,7 +39,6 @@ class AsciiPlotter(PlotterBase):
 
         Returns
         -------
-
             A formatted legend string with color escapes.
         """
         color_start = DEFAULT_COLORS[label]
@@ -62,9 +60,9 @@ class AsciiPlotter(PlotterBase):
         """
         Render a line plot for powder diffraction data.
 
-        Suitable for powder diffraction data where intensity is plotted
-        against an x-axis variable (2θ, TOF, d-spacing). Uses ASCII
-        characters for terminal display.
+        Suitable for powder diffraction data where intensity is plotted against
+        an x-axis variable (2θ, TOF, d-spacing). Uses ASCII characters for
+        terminal display.
 
         Parameters
         ----------
@@ -115,8 +113,8 @@ class AsciiPlotter(PlotterBase):
         """
         Render a scatter plot for single crystal diffraction data.
 
-        Creates an ASCII scatter plot showing measured vs calculated
-        values with a diagonal reference line.
+        Creates an ASCII scatter plot showing measured vs calculated values with
+        a diagonal reference line.
 
         Parameters
         ----------
@@ -125,7 +123,8 @@ class AsciiPlotter(PlotterBase):
         y_meas
             1D array-like of measured values (y-axis).
         y_meas_su
-            1D array-like of measurement uncertainties (ignored in ASCII mode).
+            1D array-like of measurement uncertainties (ignored in ASCII
+            mode).
         axes_labels
             Pair of strings for the x and y titles.
         title

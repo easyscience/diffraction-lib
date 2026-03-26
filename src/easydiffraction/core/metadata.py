@@ -18,15 +18,19 @@ from typing import FrozenSet
 @dataclass(frozen=True)
 class TypeInfo:
     """
-    Stable identity and human-readable description for a factory-
-    created class.
+    Stable identity and human-readable description for a factory- created
+    class.
 
     Attributes
     ----------
     tag
-        Short, stable string identifier used for serialization,         user-facing selection, and factory lookup. Must be unique         within a factory's registry.  Examples: ``'line-segment'``,         ``'pseudo-voigt'``, ``'cryspy'``.
+        Short, stable string identifier used for serialization,
+        user-facing selection, and factory lookup. Must be unique within
+        a factory's registry. Examples: ``'line-segment'``,
+        ``'pseudo-voigt'``, ``'cryspy'``.
     description
-        One-line human-readable explanation.  Used in ``show_supported()`` tables and documentation.
+        One-line human-readable explanation. Used in
+        ``show_supported()`` tables and documentation.
     """
 
     tag: str
@@ -87,7 +91,8 @@ class CalculatorSupport:
     Attributes
     ----------
     calculators
-        Frozenset of ``CalculatorEnum`` values. Empty         means "any calculator" (no restriction).
+        Frozenset of ``CalculatorEnum`` values. Empty means "any
+        calculator" (no restriction).
     """
 
     calculators: FrozenSet = frozenset()
@@ -96,7 +101,6 @@ class CalculatorSupport:
         """
         Check if a specific calculator can handle this class.
 
-
         Parameters
         ----------
         calculator
@@ -104,9 +108,8 @@ class CalculatorSupport:
 
         Returns
         -------
-
-            ``True`` if the calculator is in the set, or if the
-            set is     empty (meaning any calculator is accepted).
+            ``True`` if the calculator is in the set, or if the set is empty
+            (meaning any calculator is accepted).
         """
         if not self.calculators:
             return True

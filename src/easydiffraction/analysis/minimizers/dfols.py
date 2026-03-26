@@ -60,7 +60,6 @@ class DfolsMinimizer(MinimizerBase):
         """
         Synchronizes the result from the solver to the parameters.
 
-
         Parameters
         ----------
         parameters
@@ -83,7 +82,6 @@ class DfolsMinimizer(MinimizerBase):
         """
         Determines success from DFO-LS result dictionary.
 
-
         Parameters
         ----------
         raw_result
@@ -91,8 +89,6 @@ class DfolsMinimizer(MinimizerBase):
 
         Returns
         -------
-
-            True if the optimization was successful, False
-            otherwise.
+            True if the optimization was successful, False otherwise.
         """
         return raw_result.flag == raw_result.EXIT_SUCCESS

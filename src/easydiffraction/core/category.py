@@ -219,7 +219,6 @@ class CategoryCollection(CollectionBase):
         """
         Insert or replace a pre-built item into the collection.
 
-
         Parameters
         ----------
         item
@@ -232,9 +231,8 @@ class CategoryCollection(CollectionBase):
         """
         Create a new item with the given attributes and add it.
 
-        A default instance of the collection's item type is created,
-        then each keyword argument is applied via ``setattr``.
-
+        A default instance of the collection's item type is created, then each
+        keyword argument is applied via ``setattr``.
 
         Parameters
         ----------

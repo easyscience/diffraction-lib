@@ -138,7 +138,8 @@ class Cell(CategoryItem):
         Parameters
         ----------
         called_by_minimizer : bool, default=False
-            Whether the update was triggered by the fitting minimizer. Currently unused.
+            Whether the update was triggered by the fitting minimizer.
+            Currently unused.
         """
         del called_by_minimizer  # TODO: ???
 

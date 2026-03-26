@@ -47,7 +47,6 @@ class RichTableBackend(TableBackendBase):
         A fresh ``Console(record=True, file=StringIO())`` avoids private
         attribute access and guarantees no visible output in notebooks.
 
-
         Parameters
         ----------
         table
@@ -55,9 +54,7 @@ class RichTableBackend(TableBackendBase):
 
         Returns
         -------
-
-            HTML string with inline styles for notebook
-            display.
+            HTML string with inline styles for notebook display.
         """
         tmp = Console(force_jupyter=False, record=True, file=io.StringIO())
         tmp.print(table)
@@ -73,7 +70,6 @@ class RichTableBackend(TableBackendBase):
         """
         Construct a Rich Table with formatted data and alignment.
 
-
         Parameters
         ----------
         df
@@ -85,9 +81,8 @@ class RichTableBackend(TableBackendBase):
 
         Returns
         -------
-        A 
-            class:`~rich.table.Table` configured for
-            display.
+        A
+            class:`~rich.table.Table` configured for display.
         """
         table = Table(
             title=None,
@@ -115,18 +110,18 @@ class RichTableBackend(TableBackendBase):
         """
         Single, consistent update path for Jupyter and terminal.
 
-        - With a handle that has ``update()``:   * If it's an IPython
-        DisplayHandle, export to HTML and     update.   * Otherwise,
-        treat it as a terminal/live-like handle and     update with the
-        Rich renderable. - Without a handle, print once to the shared
-        console.
+        - With a handle that has ``update()``: * If it's an IPython
+        DisplayHandle, export to HTML and update. * Otherwise, treat it as a
+        terminal/live-like handle and update with the Rich renderable. - Without
+        a handle, print once to the shared console.
 
         Parameters
         ----------
         table
             Rich :class:`~rich.table.Table` to display.
         display_handle
-            Optional environment-specific handle for in- place updates (IPython or terminal live).
+            Optional environment-specific handle for in- place updates
+            (IPython or terminal live).
         """
         # Handle with update() method
         if display_handle is not None and hasattr(display_handle, 'update'):
@@ -167,7 +162,7 @@ class RichTableBackend(TableBackendBase):
         df
             Index-aware DataFrame to render.
         display_handle
-            Optional environment handle for in-place         updates.
+            Optional environment handle for in-place updates.
         """
         color = self._rich_border_color
         table = self._build_table(df, alignments, color)

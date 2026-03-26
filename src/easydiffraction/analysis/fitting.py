@@ -38,9 +38,9 @@ class Fitter:
         """
         Run the fitting process.
 
-        This method performs the optimization but does not display
-        results. Use :meth:`show_fit_results` on the Analysis object to
-        display the fit results after fitting is complete.
+        This method performs the optimization but does not display results. Use
+        :meth:`show_fit_results` on the Analysis object to display the fit
+        results after fitting is complete.
 
         Parameters
         ----------
@@ -51,7 +51,8 @@ class Fitter:
         weights
             Optional weights for joint fitting.
         analysis
-            Optional Analysis object to update its categories         during fitting.
+            Optional Analysis object to update its categories during
+            fitting.
         """
         params = structures.free_parameters + experiments.free_parameters
 
@@ -83,10 +84,9 @@ class Fitter:
         """
         Collect reliability inputs and display fit results.
 
-        This method is typically called by
-        :meth:`Analysis.show_fit_results` rather than directly. It
-        calculates R-factors and other metrics, then renders them to the
-        console.
+        This method is typically called by :meth:`Analysis.show_fit_results`
+        rather than directly. It calculates R-factors and other metrics, then
+        renders them to the console.
 
         Parameters
         ----------
@@ -144,9 +144,9 @@ class Fitter:
         analysis=None,
     ) -> np.ndarray:
         """
-        Residual function computes the difference between measured
-        and calculated patterns. It updates the parameter values
-        according to the optimizer-provided engine_params.
+        Residual function computes the difference between measured and
+        calculated patterns. It updates the parameter values according to the
+        optimizer-provided engine_params.
 
         Parameters
         ----------
@@ -161,7 +161,8 @@ class Fitter:
         weights
             Optional weights for joint fitting.
         analysis
-            Optional Analysis object to update its categories during fitting.
+            Optional Analysis object to update its categories during
+            fitting.
 
         Returns
         -------

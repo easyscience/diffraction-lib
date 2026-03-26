@@ -42,8 +42,7 @@ def calculate_weighted_r_factor(
     weights: np.ndarray,
 ) -> float:
     """
-    Calculate the weighted R-factor between observed and calculated
-    data.
+    Calculate the weighted R-factor between observed and calculated data.
 
     Parameters
     ----------
@@ -71,8 +70,7 @@ def calculate_rb_factor(
     y_calc: np.ndarray,
 ) -> float:
     """
-    Calculate the Bragg R-factor between observed and calculated
-    data.
+    Calculate the Bragg R-factor between observed and calculated data.
 
     Parameters
     ----------
@@ -97,8 +95,7 @@ def calculate_r_factor_squared(
     y_calc: np.ndarray,
 ) -> float:
     """
-    Calculate the R-factor squared between observed and calculated
-    data.
+    Calculate the R-factor squared between observed and calculated data.
 
     Parameters
     ----------
@@ -125,7 +122,6 @@ def calculate_reduced_chi_square(
     """
     Calculate the reduced chi-square statistic.
 
-
     Parameters
     ----------
     residuals
@@ -135,7 +131,6 @@ def calculate_reduced_chi_square(
 
     Returns
     -------
-
         Reduced chi-square value.
     """
     residuals = np.asarray(residuals)
@@ -165,7 +160,8 @@ def get_reliability_inputs(
 
     Returns
     -------
-        Tuple containing arrays of (observed values, calculated values,         error values)
+        Tuple containing arrays of (observed values, calculated values,
+        error values)
     """
     y_obs_all = []
     y_calc_all = []

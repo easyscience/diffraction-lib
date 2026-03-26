@@ -97,12 +97,10 @@ class ConsoleManager:
         """
         Detect a suitable console width for the shared Console.
 
-
         Returns
         -------
-
-            The detected terminal width, clamped at
-            ``_MIN_CONSOLE_WIDTH`` to avoid cramped layouts.
+            The detected terminal width, clamped at ``_MIN_CONSOLE_WIDTH``
+            to avoid cramped layouts.
         """
         min_width = ConsoleManager._MIN_CONSOLE_WIDTH
         try:
@@ -223,7 +221,6 @@ class ExceptionHookManager:
         """
         Install a verbose exception hook that prints rich tracebacks.
 
-
         Parameters
         ----------
         logger
@@ -256,7 +253,6 @@ class ExceptionHookManager:
         """
         Install a compact exception hook that logs message-only.
 
-
         Parameters
         ----------
         logger
@@ -285,9 +281,7 @@ class ExceptionHookManager:
     @staticmethod
     def _suppress_traceback(logger):
         """
-        Build a Jupyter custom exception callback that logs only the
-        message.
-
+        Build a Jupyter custom exception callback that logs only the message.
 
         Parameters
         ----------
@@ -296,10 +290,8 @@ class ExceptionHookManager:
 
         Returns
         -------
-
-            A callable suitable for IPython's set_custom_exc
-            that     suppresses full tracebacks and logs only the exception
-            message.
+            A callable suitable for IPython's set_custom_exc that suppresses
+            full tracebacks and logs only the exception message.
         """
 
         def suppress_jupyter_traceback(*args, **kwargs):
@@ -317,9 +309,8 @@ class ExceptionHookManager:
     @staticmethod
     def install_jupyter_traceback_suppressor(logger: logging.Logger) -> None:
         """
-        Install a Jupyter/IPython custom exception handler that
-        suppresses tracebacks.
-
+        Install a Jupyter/IPython custom exception handler that suppresses
+        tracebacks.
 
         Parameters
         ----------

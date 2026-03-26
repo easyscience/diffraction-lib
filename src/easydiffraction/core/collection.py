@@ -19,7 +19,8 @@ class CollectionBase(GuardedBase):
     Parameters
     ----------
     item_type
-        Type of items accepted by the collection. Used for         validation and tooling; not enforced at runtime here.
+        Type of items accepted by the collection. Used for validation
+        and tooling; not enforced at runtime here.
     """
 
     def __init__(self, item_type) -> None:
@@ -79,7 +80,6 @@ class CollectionBase(GuardedBase):
     def remove(self, name: str) -> None:
         """
         Remove an item by its key.
-
 
         Parameters
         ----------

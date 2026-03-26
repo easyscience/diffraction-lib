@@ -62,17 +62,16 @@ class CryspyCalculator(CalculatorBase):
         called_by_minimizer: bool = False,
     ):
         """
-        Raises a NotImplementedError as HKL calculation is not
-        implemented.
+        Raises a NotImplementedError as HKL calculation is not implemented.
 
         Parameters
         ----------
         structure
             The structure to calculate structure factors for.
         experiment
-            The experiment associated with the sample         models.
+            The experiment associated with the sample models.
         called_by_minimizer
-            Whether the calculation is called by a         minimizer.
+            Whether the calculation is called by a minimizer.
         """
         combined_name = f'{structure.name}_{experiment.name}'
 
@@ -122,13 +121,13 @@ class CryspyCalculator(CalculatorBase):
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
         """
-        Calculates the diffraction pattern using Cryspy for the given
-        structure and experiment.
+        Calculates the diffraction pattern using Cryspy for the given structure
+        and experiment.
 
-        We only recreate the cryspy_obj if this method is  - NOT called
-        by the minimizer, or  - the cryspy_dict is NOT yet created. In
-        other cases, we are modifying the existing cryspy_dict This
-        allows significantly speeding up the calculation
+        We only recreate the cryspy_obj if this method is - NOT called by the
+        minimizer, or - the cryspy_dict is NOT yet created. In other cases, we
+        are modifying the existing cryspy_dict This allows significantly
+        speeding up the calculation
 
         Parameters
         ----------
@@ -141,7 +140,8 @@ class CryspyCalculator(CalculatorBase):
 
         Returns
         -------
-            The calculated diffraction pattern as a NumPy array or a         list of floats.
+            The calculated diffraction pattern as a NumPy array or a list of
+            floats.
         """
         combined_name = f'{structure.name}_{experiment.name}'
 
@@ -200,8 +200,7 @@ class CryspyCalculator(CalculatorBase):
         experiment: ExperimentBase,
     ) -> Dict[str, Any]:
         """
-        Recreates the Cryspy dictionary for the given structure and
-        experiment.
+        Recreates the Cryspy dictionary for the given structure and experiment.
 
         Parameters
         ----------
@@ -319,8 +318,7 @@ class CryspyCalculator(CalculatorBase):
         experiment: ExperimentBase,
     ) -> Any:
         """
-        Recreates the Cryspy object for the given structure and
-        experiment.
+        Recreates the Cryspy object for the given structure and experiment.
 
         Parameters
         ----------
@@ -357,7 +355,6 @@ class CryspyCalculator(CalculatorBase):
         """
         Converts a structure to a Cryspy CIF string.
 
-
         Parameters
         ----------
         structure
@@ -365,9 +362,7 @@ class CryspyCalculator(CalculatorBase):
 
         Returns
         -------
-
-            The Cryspy CIF string representation of the
-            structure.
+            The Cryspy CIF string representation of the structure.
         """
         return structure.as_cif
 
@@ -379,7 +374,6 @@ class CryspyCalculator(CalculatorBase):
         """
         Converts an experiment to a Cryspy CIF string.
 
-
         Parameters
         ----------
         experiment
@@ -389,9 +383,7 @@ class CryspyCalculator(CalculatorBase):
 
         Returns
         -------
-
-            The Cryspy CIF string representation of the
-            experiment.
+            The Cryspy CIF string representation of the experiment.
         """
         # Try to get experiment attributes
         expt_type = getattr(experiment, 'type', None)

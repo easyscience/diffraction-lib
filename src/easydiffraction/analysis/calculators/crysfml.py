@@ -56,7 +56,7 @@ class CrysfmlCalculator(CalculatorBase):
         structures
             The structures to calculate structure factors for.
         experiments
-            The experiments associated with the sample         models.
+            The experiments associated with the sample models.
         """
         raise NotImplementedError('HKL calculation is not implemented for CrysfmlCalculator.')
 
@@ -67,8 +67,8 @@ class CrysfmlCalculator(CalculatorBase):
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
         """
-        Calculates the diffraction pattern using Crysfml for the
-        given structure and experiment.
+        Calculates the diffraction pattern using Crysfml for the given structure
+        and experiment.
 
         Parameters
         ----------
@@ -81,7 +81,8 @@ class CrysfmlCalculator(CalculatorBase):
 
         Returns
         -------
-            The calculated diffraction pattern as a NumPy array or a         list of floats.
+            The calculated diffraction pattern as a NumPy array or a list of
+            floats.
         """
         # Intentionally unused, required by public API/signature
         del called_by_minimizer
@@ -126,8 +127,8 @@ class CrysfmlCalculator(CalculatorBase):
         experiment: ExperimentBase,
     ) -> Dict[str, Union[ExperimentBase, Structure]]:
         """
-        Converts the structure and experiment into a dictionary
-        format for Crysfml.
+        Converts the structure and experiment into a dictionary format for
+        Crysfml.
 
         Parameters
         ----------
@@ -154,7 +155,6 @@ class CrysfmlCalculator(CalculatorBase):
         """
         Converts a structure into a dictionary format.
 
-
         Parameters
         ----------
         structure
@@ -162,7 +162,6 @@ class CrysfmlCalculator(CalculatorBase):
 
         Returns
         -------
-
             A dictionary representation of the structure.
         """
         structure_dict = {
@@ -200,7 +199,6 @@ class CrysfmlCalculator(CalculatorBase):
         """
         Converts an experiment into a dictionary format.
 
-
         Parameters
         ----------
         experiment
@@ -208,7 +206,6 @@ class CrysfmlCalculator(CalculatorBase):
 
         Returns
         -------
-
             A dictionary representation of the experiment.
         """
         expt_type = getattr(experiment, 'type', None)

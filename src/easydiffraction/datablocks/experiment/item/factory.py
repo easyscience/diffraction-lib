@@ -180,7 +180,6 @@ class ExperimentFactory(FactoryBase):
         """
         Create an experiment from a CIF string.
 
-
         Parameters
         ----------
         cif_str
@@ -188,7 +187,6 @@ class ExperimentFactory(FactoryBase):
 
         Returns
         -------
-
             A populated experiment instance.
         """
         doc = document_from_string(cif_str)
@@ -205,7 +203,6 @@ class ExperimentFactory(FactoryBase):
         """
         Create an experiment from a CIF file path.
 
-
         Parameters
         ----------
         cif_path
@@ -213,7 +210,6 @@ class ExperimentFactory(FactoryBase):
 
         Returns
         -------
-
             A populated experiment instance.
         """
         doc = document_from_path(cif_path)

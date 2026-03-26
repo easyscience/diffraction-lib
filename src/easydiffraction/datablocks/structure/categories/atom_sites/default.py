@@ -141,12 +141,10 @@ class AtomSite(CategoryItem):
         """
         Return chemical symbols accepted by *cryspy*.
 
-
         Returns
         -------
         list[str]
-            Unique element/isotope symbols from the
-            database.
+            Unique element/isotope symbols from the database.
         """
         return list({key[1] for key in DATABASE['Isotopes']})
 
@@ -154,7 +152,6 @@ class AtomSite(CategoryItem):
     def _wyckoff_letter_allowed_values(self) -> list[str]:
         """
         Return allowed Wyckoff-letter symbols.
-
 
         Returns
         -------
@@ -171,7 +168,6 @@ class AtomSite(CategoryItem):
     def _wyckoff_letter_default_value(self) -> str:
         """
         Return the default Wyckoff letter.
-
 
         Returns
         -------
@@ -371,7 +367,8 @@ class AtomSites(CategoryCollection):
         Parameters
         ----------
         called_by_minimizer : bool
-            Whether the update was triggered         by the fitting minimizer. Currently unused.
+            Whether the update was triggered by the fitting minimizer.
+            Currently unused.
         """
         del called_by_minimizer
 

@@ -69,7 +69,6 @@ class Experiments(DatablockCollection):
         """
         Add an experiment from a CIF string.
 
-
         Parameters
         ----------
         cif_str
@@ -86,7 +85,6 @@ class Experiments(DatablockCollection):
     ) -> None:
         """
         Add an experiment from a CIF file path.
-
 
         Parameters
         ----------

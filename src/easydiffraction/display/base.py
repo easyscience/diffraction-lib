@@ -97,7 +97,8 @@ class RendererFactoryBase(ABC):
         Parameters
         ----------
         engine_name
-            Identifier of the engine to instantiate as         listed in ``_registry()``.
+            Identifier of the engine to instantiate as listed in
+            ``_registry()``.
 
         Returns
         -------

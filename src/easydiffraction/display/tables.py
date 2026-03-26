@@ -72,9 +72,12 @@ class TableRenderer(RendererBase):
         Parameters
         ----------
         df
-            DataFrame with a two-level column index where the second level provides per-column alignment.
+            DataFrame with a two-level column index where the second level
+            provides per-column alignment.
         display_handle
-            Optional environment-specific handle used         to update an existing output area in-place (e.g., an         IPython DisplayHandle or a terminal live handle).
+            Optional environment-specific handle used to update an existing
+            output area in-place (e.g., an IPython DisplayHandle or a
+            terminal live handle).
 
         Returns
         -------

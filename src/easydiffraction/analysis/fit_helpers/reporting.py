@@ -58,7 +58,9 @@ class FitResults:
         fitting_time
             Time taken for the fitting process.
         **kwargs
-            Additional engine-specific fields. If ``redchi``         is provided and ``reduced_chi_square`` is not set, it is used as the reduced chi-square value.
+            Additional engine-specific fields. If ``redchi`` is provided and
+            ``reduced_chi_square`` is not set, it is used as the reduced
+            chi-square value.
         """
         self.success: bool = success
         self.parameters: List[Any] = parameters if parameters is not None else []

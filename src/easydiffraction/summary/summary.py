@@ -19,7 +19,6 @@ class Summary:
         """
         Initialize the summary with a reference to the project.
 
-
         Parameters
         ----------
         project

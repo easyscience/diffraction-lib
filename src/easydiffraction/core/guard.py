@@ -79,13 +79,12 @@ class GuardedBase(ABC):
     @classmethod
     def _iter_properties(cls):
         """
-        Iterate over all public properties defined in the class
-        hierarchy.
-
+        Iterate over all public properties defined in the class hierarchy.
 
         Yields
         ------
         Each (key, property) pair for
+
         public     attributes.
         """
         for base in cls.mro():
@@ -164,7 +163,6 @@ class GuardedBase(ABC):
     def _iter_methods(cls):
         """
         Iterate over public methods in the class hierarchy.
-
 
         Yields
         ------

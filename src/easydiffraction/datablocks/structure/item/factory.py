@@ -45,7 +45,6 @@ class StructureFactory:
         """
         Build a structure from a single *gemmi* CIF block.
 
-
         Parameters
         ----------
         block : gemmi.cif.Block
@@ -76,7 +75,6 @@ class StructureFactory:
         """
         Create a minimal default structure.
 
-
         Parameters
         ----------
         name : str
@@ -85,8 +83,7 @@ class StructureFactory:
         Returns
         -------
         Structure
-            An empty structure with default
-            categories.
+            An empty structure with default categories.
         """
         return Structure(name=name)
 
@@ -99,7 +96,6 @@ class StructureFactory:
     ) -> Structure:
         """
         Create a structure by parsing a CIF string.
-
 
         Parameters
         ----------
@@ -124,7 +120,6 @@ class StructureFactory:
     ) -> Structure:
         """
         Create a structure by reading and parsing a CIF file.
-
 
         Parameters
         ----------
