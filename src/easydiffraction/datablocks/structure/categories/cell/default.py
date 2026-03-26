@@ -64,7 +64,7 @@ class Cell(CategoryItem):
         )
         self._angle_alpha = Parameter(
             name='angle_alpha',
-            description='Angle between edges b and c.',
+            description='Angle between edges b and c',
             units='deg',
             value_spec=AttributeSpec(
                 default=90.0,
@@ -74,7 +74,7 @@ class Cell(CategoryItem):
         )
         self._angle_beta = Parameter(
             name='angle_beta',
-            description='Angle between edges a and c.',
+            description='Angle between edges a and c',
             units='deg',
             value_spec=AttributeSpec(
                 default=90.0,
@@ -84,7 +84,7 @@ class Cell(CategoryItem):
         )
         self._angle_gamma = Parameter(
             name='angle_gamma',
-            description='Angle between edges a and b.',
+            description='Angle between edges a and b',
             units='deg',
             value_spec=AttributeSpec(
                 default=90.0,
