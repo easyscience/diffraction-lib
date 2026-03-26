@@ -102,9 +102,8 @@ class TofPdInstrument(InstrumentBase):
     def setup_twotheta_bank(self) -> Parameter:
         """Detector bank position (deg).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._setup_twotheta_bank
 
@@ -116,9 +115,8 @@ class TofPdInstrument(InstrumentBase):
     def calib_d_to_tof_offset(self) -> Parameter:
         """TOF offset (µs).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._calib_d_to_tof_offset
 
@@ -130,9 +128,8 @@ class TofPdInstrument(InstrumentBase):
     def calib_d_to_tof_linear(self) -> Parameter:
         """TOF linear conversion (µs/Å).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._calib_d_to_tof_linear
 
@@ -144,9 +141,8 @@ class TofPdInstrument(InstrumentBase):
     def calib_d_to_tof_quad(self) -> Parameter:
         """TOF quadratic correction (µs/Å²).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._calib_d_to_tof_quad
 
@@ -158,9 +154,8 @@ class TofPdInstrument(InstrumentBase):
     def calib_d_to_tof_recip(self) -> Parameter:
         """TOF reciprocal velocity correction (µs·Å).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._calib_d_to_tof_recip
 

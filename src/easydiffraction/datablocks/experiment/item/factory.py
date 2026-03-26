@@ -142,15 +142,13 @@ class ExperimentFactory(FactoryBase):
     ) -> ExperimentBase:
         """Create an experiment without measured data.
 
-        Args:
-            name: Experiment identifier.
-            sample_form: Sample form (e.g. ``'powder'``).
-            beam_mode: Beam mode (e.g. ``'constant wavelength'``).
-            radiation_probe: Radiation probe (e.g. ``'neutron'``).
-            scattering_type: Scattering type (e.g. ``'bragg'``).
+        Args:     name: Experiment identifier.     sample_form: Sample
+        form (e.g. ``'powder'``).     beam_mode: Beam mode (e.g.
+        ``'constant wavelength'``).     radiation_probe: Radiation probe
+        (e.g. ``'neutron'``).     scattering_type: Scattering type (e.g.
+        ``'bragg'``).
 
-        Returns:
-            An experiment instance with only metadata.
+        Returns:     An experiment instance with only metadata.
         """
         expt_type = cls._create_experiment_type(
             sample_form=sample_form,
@@ -171,11 +169,9 @@ class ExperimentFactory(FactoryBase):
     ) -> ExperimentBase:
         """Create an experiment from a CIF string.
 
-        Args:
-            cif_str: Full CIF document as a string.
+        Args:     cif_str: Full CIF document as a string.
 
-        Returns:
-            A populated experiment instance.
+        Returns:     A populated experiment instance.
         """
         doc = document_from_string(cif_str)
         block = pick_sole_block(doc)
@@ -190,11 +186,9 @@ class ExperimentFactory(FactoryBase):
     ) -> ExperimentBase:
         """Create an experiment from a CIF file path.
 
-        Args:
-            cif_path: Path to a CIF file.
+        Args:     cif_path: Path to a CIF file.
 
-        Returns:
-            A populated experiment instance.
+        Returns:     A populated experiment instance.
         """
         doc = document_from_path(cif_path)
         block = pick_sole_block(doc)
@@ -214,16 +208,14 @@ class ExperimentFactory(FactoryBase):
     ) -> ExperimentBase:
         """Create an experiment from a raw data ASCII file.
 
-        Args:
-            name: Experiment identifier.
-            data_path: Path to the measured data file.
-            sample_form: Sample form (e.g. ``'powder'``).
-            beam_mode: Beam mode (e.g. ``'constant wavelength'``).
-            radiation_probe: Radiation probe (e.g. ``'neutron'``).
-            scattering_type: Scattering type (e.g. ``'bragg'``).
+        Args:     name: Experiment identifier.     data_path: Path to
+        the measured data file.     sample_form: Sample form (e.g.
+        ``'powder'``).     beam_mode: Beam mode (e.g. ``'constant
+        wavelength'``).     radiation_probe: Radiation probe (e.g.
+        ``'neutron'``).     scattering_type: Scattering type (e.g.
+        ``'bragg'``).
 
-        Returns:
-            An experiment instance with measured data attached.
+        Returns:     An experiment instance with measured data attached.
         """
         expt_obj = cls.from_scratch(
             name=name,

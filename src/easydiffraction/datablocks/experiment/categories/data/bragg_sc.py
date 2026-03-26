@@ -142,16 +142,17 @@ class Refln(CategoryItem):
         """Identifier of the reflection.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
+        ``StringDescriptor`` object.
         """
         return self._id
 
     @property
     def d_spacing(self) -> NumericDescriptor:
-        """The distance between lattice planes in the crystal for this reflection (Å).
+        """The distance between lattice planes in the crystal for this
+        reflection (Å).
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._d_spacing
 
@@ -160,7 +161,7 @@ class Refln(CategoryItem):
         """The sin(θ)/λ value for this reflection (Å⁻¹).
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._sin_theta_over_lambda
 
@@ -169,7 +170,7 @@ class Refln(CategoryItem):
         """Miller index h of a measured reflection.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._index_h
 
@@ -178,7 +179,7 @@ class Refln(CategoryItem):
         """Miller index k of a measured reflection.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._index_k
 
@@ -187,16 +188,17 @@ class Refln(CategoryItem):
         """Miller index l of a measured reflection.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._index_l
 
     @property
     def intensity_meas(self) -> NumericDescriptor:
-        """The intensity of the reflection derived from the measurements.
+        """The intensity of the reflection derived from the
+        measurements.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._intensity_meas
 
@@ -205,25 +207,27 @@ class Refln(CategoryItem):
         """Standard uncertainty of the measured intensity.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._intensity_meas_su
 
     @property
     def intensity_calc(self) -> NumericDescriptor:
-        """The intensity of the reflection calculated from the atom site data.
+        """The intensity of the reflection calculated from the atom site
+        data.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._intensity_calc
 
     @property
     def wavelength(self) -> NumericDescriptor:
-        """The mean wavelength of radiation used to measure this reflection (Å).
+        """The mean wavelength of radiation used to measure this
+        reflection (Å).
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._wavelength
 

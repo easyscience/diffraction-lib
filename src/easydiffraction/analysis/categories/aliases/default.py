@@ -24,10 +24,9 @@ class Alias(CategoryItem):
     Maps a human-readable ``label`` to a concrete ``param_uid`` used by
     the engine.
 
-    Args:
-        label: Alias label. Must match ``^[A-Za-z_][A-Za-z0-9_]*$``.
-        param_uid: Target parameter uid. Same identifier pattern as
-            ``label``.
+    Args:     label: Alias label. Must match ``^[A-Za-
+    z_][A-Za-z0-9_]*$``.     param_uid: Target parameter uid. Same
+    identifier pattern as         ``label``.
     """
 
     def __init__(self) -> None:
@@ -64,8 +63,8 @@ class Alias(CategoryItem):
         """...
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._label
 
@@ -78,8 +77,8 @@ class Alias(CategoryItem):
         """...
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._param_uid
 

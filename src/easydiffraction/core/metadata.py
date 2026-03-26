@@ -4,9 +4,9 @@
 
 Three frozen dataclasses describe a concrete class:
 
-- ``TypeInfo`` — stable tag and human-readable description.
-- ``Compatibility`` — experimental conditions (multiple fields).
-- ``CalculatorSupport`` — which calculation engines can handle it.
+- ``TypeInfo`` — stable tag and human-readable description. -
+``Compatibility`` — experimental conditions (multiple fields). -
+``CalculatorSupport`` — which calculation engines can handle it.
 """
 
 from __future__ import annotations
@@ -20,13 +20,12 @@ class TypeInfo:
     """Stable identity and human-readable description for a factory-
     created class.
 
-    Attributes:
-        tag: Short, stable string identifier used for serialization,
-            user-facing selection, and factory lookup.  Must be unique
-            within a factory's registry.  Examples: ``'line-segment'``,
-            ``'pseudo-voigt'``, ``'cryspy'``.
-        description: One-line human-readable explanation.  Used in
-            ``show_supported()`` tables and documentation.
+    Attributes:     tag: Short, stable string identifier used for
+    serialization,         user-facing selection, and factory lookup.
+    Must be unique         within a factory's registry.  Examples:
+    ``'line-segment'``,         ``'pseudo-voigt'``, ``'cryspy'``.
+    description: One-line human-readable explanation.  Used in
+    ``show_supported()`` tables and documentation.
     """
 
     tag: str
@@ -62,10 +61,8 @@ class Compatibility:
 
         Example::
 
-            compat.supports(
-                scattering_type=ScatteringTypeEnum.BRAGG,
-                beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH,
-            )
+        compat.supports(     scattering_type=ScatteringTypeEnum.BRAGG,
+        beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH, )
         """
         for axis, value in (
             ('sample_form', sample_form),
@@ -85,9 +82,8 @@ class Compatibility:
 class CalculatorSupport:
     """Which calculation engines can handle this class.
 
-    Attributes:
-        calculators: Frozenset of ``CalculatorEnum`` values.  Empty
-            means "any calculator" (no restriction).
+    Attributes:     calculators: Frozenset of ``CalculatorEnum`` values.
+    Empty         means "any calculator" (no restriction).
     """
 
     calculators: FrozenSet = frozenset()
@@ -95,12 +91,10 @@ class CalculatorSupport:
     def supports(self, calculator) -> bool:
         """Check if a specific calculator can handle this class.
 
-        Args:
-            calculator: A ``CalculatorEnum`` value.
+        Args:     calculator: A ``CalculatorEnum`` value.
 
-        Returns:
-            ``True`` if the calculator is in the set, or if the set is
-            empty (meaning any calculator is accepted).
+        Returns:     ``True`` if the calculator is in the set, or if the
+        set is     empty (meaning any calculator is accepted).
         """
         if not self.calculators:
             return True

@@ -71,7 +71,7 @@ dev = [
   'jupytext',                        # Jupyter notebook text format support
   'jupyterquiz',                     # Quizzes in Jupyter notebooks
   'pydoclint',                       # Docstring linter
-  'docformatter',                    # Docstring formatter
+  'format-docstring',                # Docstring formatter
   'interrogate',                     # Docstring coverage checker
   'copier',                          # Template management
   'mike',                            # MkDocs: Versioned documentation support
@@ -275,13 +275,9 @@ select = [
 # Ignore specific rules globally
 ignore = [
   'COM812', # https://docs.astral.sh/ruff/rules/missing-trailing-comma/
-  # The following covered by [tool.pydoclint] section below
+  # The following is replaced by [tool.pydoclint]
   'D',   # https://docs.astral.sh/ruff/rules/#pydocstyle-d
   'DOC', # https://docs.astral.sh/ruff/rules/#pydoclint-doc
-  # E501 applies max-line-length to ALL lines including docstrings.
-  # We ignore it because the ruff formatter already enforces line-length
-  # for code, and W505 enforces max-doc-length for docstrings.
-  #'E501', # https://docs.astral.sh/ruff/rules/line-too-long/
   # Temporary:
   'DTZ005',
 
@@ -342,7 +338,6 @@ max-complexity = 10
 max-line-length = 99 # See also `line-length` in [tool.ruff]
 max-doc-length = 72
 
-
 #############################
 # Configuration for pydoclint
 #############################
@@ -358,21 +353,22 @@ max-doc-length = 72
 # the parameter declarations in the code (in function's signature).
 
 [tool.pydoclint]
-exclude = '\.'              # Temporarily disable pydoclint until we are ready
-style = "google"
+#exclude = '\.' # Temporarily disable pydoclint until we are ready
+style = 'numpy'
 check-style-mismatch = true
 check-arg-defaults = true
 allow-init-docstring = true
 
-################################
-# Configuration for docformatter
-################################
+####################################
+# Configuration for format-docstring
+####################################
 
-# 'docformatter' -- Code formatter for docstrings
-# https://docformatter.readthedocs.io/en/latest/
+# 'format-docstring' -- Code formatter for docstrings
+# https://github.com/jsh9/format-docstring
 
-[tool.docformatter]
-recursive = true
-wrap-summaries = 72
-wrap-descriptions = 72
-close-quotes-on-newline = true
+[tool.format_docstring]
+docstring_style = 'numpy'
+line_length = 72
+fix_rst_backticks = true
+exclude = "src/easydiffraction/utils/_vendored/jupyter_dark_detect" # ED only
+verbose = 'diff'

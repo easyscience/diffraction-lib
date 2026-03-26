@@ -45,8 +45,7 @@ class TotalPdExperiment(PdExperimentBase):
         """Loads x, y, sy values from an ASCII data file into the
         experiment.
 
-        The file must be structured as:
-            x  y  sy
+        The file must be structured as:     x  y  sy
         """
         try:
             from diffpy.utils.parsers.loaddata import loadData

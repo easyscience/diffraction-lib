@@ -25,9 +25,8 @@ from easydiffraction.io.cif.handler import CifHandler
 class JointFitExperiment(CategoryItem):
     """A single joint-fit entry.
 
-    Args:
-        id: Experiment identifier used in the fit session.
-        weight: Relative weight factor in the combined objective.
+    Args:     id: Experiment identifier used in the fit session. weight:
+    Relative weight factor in the combined objective.
     """
 
     def __init__(self) -> None:
@@ -64,8 +63,8 @@ class JointFitExperiment(CategoryItem):
         """Experiment identifier.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._id
 
@@ -78,8 +77,8 @@ class JointFitExperiment(CategoryItem):
         """Weight factor.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``NumericDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._weight
 

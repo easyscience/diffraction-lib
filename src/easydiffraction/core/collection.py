@@ -15,9 +15,8 @@ from easydiffraction.core.guard import GuardedBase
 class CollectionBase(GuardedBase):
     """A minimal collection with stable iteration and name indexing.
 
-    Args:
-        item_type: Type of items accepted by the collection. Used for
-            validation and tooling; not enforced at runtime here.
+    Args:     item_type: Type of items accepted by the collection. Used
+    for         validation and tooling; not enforced at runtime here.
     """
 
     def __init__(self, item_type) -> None:
@@ -77,11 +76,9 @@ class CollectionBase(GuardedBase):
     def remove(self, name: str) -> None:
         """Remove an item by its key.
 
-        Args:
-            name: Identity key of the item to remove.
+        Args:     name: Identity key of the item to remove.
 
-        Raises:
-            KeyError: If no item with the given key exists.
+        Raises:     KeyError: If no item with the given key exists.
         """
         del self[name]
 

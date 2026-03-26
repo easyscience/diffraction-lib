@@ -75,8 +75,8 @@ class ExcludedRegion(CategoryItem):
         """Identifier for this excluded region.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._id
 
@@ -89,8 +89,8 @@ class ExcludedRegion(CategoryItem):
         """Start of the excluded region.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``NumericDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._start
 
@@ -103,8 +103,8 @@ class ExcludedRegion(CategoryItem):
         """End of the excluded region.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``NumericDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._end
 

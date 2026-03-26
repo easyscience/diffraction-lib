@@ -37,12 +37,11 @@ class Experiments(DatablockCollection):
     ) -> None:
         """Add an experiment without associating a data file.
 
-        Args:
-            name: Experiment identifier.
-            sample_form: Sample form (e.g. ``'powder'``).
-            beam_mode: Beam mode (e.g. ``'constant wavelength'``).
-            radiation_probe: Radiation probe (e.g. ``'neutron'``).
-            scattering_type: Scattering type (e.g. ``'bragg'``).
+        Args:     name: Experiment identifier.     sample_form: Sample
+        form (e.g. ``'powder'``).     beam_mode: Beam mode (e.g.
+        ``'constant wavelength'``).     radiation_probe: Radiation probe
+        (e.g. ``'neutron'``).     scattering_type: Scattering type (e.g.
+        ``'bragg'``).
         """
         experiment = ExperimentFactory.from_scratch(
             name=name,
@@ -61,8 +60,7 @@ class Experiments(DatablockCollection):
     ) -> None:
         """Add an experiment from a CIF string.
 
-        Args:
-            cif_str: Full CIF document as a string.
+        Args:     cif_str: Full CIF document as a string.
         """
         experiment = ExperimentFactory.from_cif_str(cif_str)
         self.add(experiment)
@@ -75,8 +73,7 @@ class Experiments(DatablockCollection):
     ) -> None:
         """Add an experiment from a CIF file path.
 
-        Args:
-            cif_path(str): Path to a CIF document.
+        Args:     cif_path(str): Path to a CIF document.
         """
         experiment = ExperimentFactory.from_cif_path(cif_path)
         self.add(experiment)
@@ -94,13 +91,12 @@ class Experiments(DatablockCollection):
     ) -> None:
         """Add an experiment from a data file path.
 
-        Args:
-            name: Experiment identifier.
-            data_path: Path to the measured data file.
-            sample_form: Sample form (e.g. ``'powder'``).
-            beam_mode: Beam mode (e.g. ``'constant wavelength'``).
-            radiation_probe: Radiation probe (e.g. ``'neutron'``).
-            scattering_type: Scattering type (e.g. ``'bragg'``).
+        Args:     name: Experiment identifier.     data_path: Path to
+        the measured data file.     sample_form: Sample form (e.g.
+        ``'powder'``).     beam_mode: Beam mode (e.g. ``'constant
+        wavelength'``).     radiation_probe: Radiation probe (e.g.
+        ``'neutron'``).     scattering_type: Scattering type (e.g.
+        ``'bragg'``).
         """
         experiment = ExperimentFactory.from_data_path(
             name=name,

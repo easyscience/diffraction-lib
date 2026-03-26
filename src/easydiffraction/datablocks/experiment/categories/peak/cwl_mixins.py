@@ -78,11 +78,11 @@ class CwlBroadeningMixin:
 
     @property
     def broad_gauss_u(self) -> Parameter:
-        """Gaussian broadening coefficient (dependent on sample size and instrument resolution) (deg²).
+        """Gaussian broadening coefficient (dependent on sample size and
+        instrument resolution) (deg²).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_gauss_u
 
@@ -92,11 +92,11 @@ class CwlBroadeningMixin:
 
     @property
     def broad_gauss_v(self) -> Parameter:
-        """Gaussian broadening coefficient (instrumental broadening contribution) (deg²).
+        """Gaussian broadening coefficient (instrumental broadening
+        contribution) (deg²).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_gauss_v
 
@@ -106,11 +106,11 @@ class CwlBroadeningMixin:
 
     @property
     def broad_gauss_w(self) -> Parameter:
-        """Gaussian broadening coefficient (instrumental broadening contribution) (deg²).
+        """Gaussian broadening coefficient (instrumental broadening
+        contribution) (deg²).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_gauss_w
 
@@ -120,11 +120,11 @@ class CwlBroadeningMixin:
 
     @property
     def broad_lorentz_x(self) -> Parameter:
-        """Lorentzian broadening coefficient (dependent on sample strain effects) (deg).
+        """Lorentzian broadening coefficient (dependent on sample strain
+        effects) (deg).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_lorentz_x
 
@@ -134,11 +134,11 @@ class CwlBroadeningMixin:
 
     @property
     def broad_lorentz_y(self) -> Parameter:
-        """Lorentzian broadening coefficient (dependent on microstructural defects and strain) (deg).
+        """Lorentzian broadening coefficient (dependent on
+        microstructural defects and strain) (deg).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_lorentz_y
 
@@ -202,9 +202,8 @@ class EmpiricalAsymmetryMixin:
     def asym_empir_1(self) -> Parameter:
         """Empirical asymmetry coefficient p1.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._asym_empir_1
 
@@ -216,9 +215,8 @@ class EmpiricalAsymmetryMixin:
     def asym_empir_2(self) -> Parameter:
         """Empirical asymmetry coefficient p2.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._asym_empir_2
 
@@ -230,9 +228,8 @@ class EmpiricalAsymmetryMixin:
     def asym_empir_3(self) -> Parameter:
         """Empirical asymmetry coefficient p3.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._asym_empir_3
 
@@ -244,9 +241,8 @@ class EmpiricalAsymmetryMixin:
     def asym_empir_4(self) -> Parameter:
         """Empirical asymmetry coefficient p4.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._asym_empir_4
 
@@ -290,9 +286,8 @@ class FcjAsymmetryMixin:
     def asym_fcj_1(self) -> Parameter:
         """Finger-Cox-Jephcoat asymmetry parameter 1.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._asym_fcj_1
 
@@ -304,9 +299,8 @@ class FcjAsymmetryMixin:
     def asym_fcj_2(self) -> Parameter:
         """Finger-Cox-Jephcoat asymmetry parameter 2.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._asym_fcj_2
 

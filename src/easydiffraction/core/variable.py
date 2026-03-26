@@ -29,16 +29,15 @@ if TYPE_CHECKING:
 class GenericDescriptorBase(GuardedBase):
     """Base class for all parameter-like descriptors.
 
-    A descriptor encapsulates a typed value with validation,
-    human-readable name/description and a globally unique identifier
-    that is stable across the session. Concrete subclasses specialize
-    the expected data type and can extend the public API with
-    additional behavior (e.g. units).
+    A descriptor encapsulates a typed value with validation, human-
+    readable name/description and a globally unique identifier that is
+    stable across the session. Concrete subclasses specialize the
+    expected data type and can extend the public API with additional
+    behavior (e.g. units).
 
-    Attributes:
-        name: Local parameter name (e.g. 'a', 'b_iso').
-        description: Optional human-readable description.
-        uid: Stable random identifier for external references.
+    Attributes:     name: Local parameter name (e.g. 'a', 'b_iso').
+    description: Optional human-readable description.     uid: Stable
+    random identifier for external references.
     """
 
     _BOOL_SPEC_TEMPLATE = AttributeSpec(
@@ -55,10 +54,9 @@ class GenericDescriptorBase(GuardedBase):
     ):
         """Initialize the descriptor with validation and identity.
 
-        Args:
-            value_spec: Validation specification for the value.
-            name: Local name of the descriptor within its category.
-            description: Optional human-readable description.
+        Args:     value_spec: Validation specification for the value.
+        name: Local name of the descriptor within its category.
+        description: Optional human-readable description.
         """
         super().__init__()
 
@@ -166,16 +164,16 @@ class GenericDescriptorBase(GuardedBase):
     def _set_value_from_minimizer(self, v) -> None:
         """Set the value from a minimizer, bypassing validation.
 
-        Writes ``_value`` directly — no type or range checks — but
-        still marks the owning :class:`DatablockItem` dirty so that
+        Writes ``_value`` directly — no type or range checks — but still
+        marks the owning :class:`DatablockItem` dirty so that
         ``_update_categories()`` knows work is needed.
 
         This exists because:
 
         1. Physical-range validators (e.g. intensity ≥ 0) would reject
-           trial values the minimizer needs to explore.
-        2. Validation overhead is measurable over thousands of
-           objective-function evaluations.
+        trial values the minimizer needs to explore. 2. Validation
+        overhead is measurable over thousands of    objective-function
+        evaluations.
         """
         self._value = v
         parent_datablock = self._datablock_item()
@@ -390,9 +388,8 @@ class StringDescriptor(GenericStringDescriptor):
     ) -> None:
         """String descriptor bound to a CIF handler.
 
-        Args:
-            cif_handler: Object that tracks CIF identifiers.
-            **kwargs: Forwarded to GenericStringDescriptor.
+        Args:     cif_handler: Object that tracks CIF identifiers.
+        **kwargs: Forwarded to GenericStringDescriptor.
         """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
@@ -411,9 +408,8 @@ class NumericDescriptor(GenericNumericDescriptor):
     ) -> None:
         """Numeric descriptor bound to a CIF handler.
 
-        Args:
-            cif_handler: Object that tracks CIF identifiers.
-            **kwargs: Forwarded to GenericNumericDescriptor.
+        Args:     cif_handler: Object that tracks CIF identifiers.
+        **kwargs: Forwarded to GenericNumericDescriptor.
         """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
@@ -432,9 +428,8 @@ class Parameter(GenericParameter):
     ) -> None:
         """Fittable parameter bound to a CIF handler.
 
-        Args:
-            cif_handler: Object that tracks CIF identifiers.
-            **kwargs: Forwarded to GenericParameter.
+        Args:     cif_handler: Object that tracks CIF identifiers.
+        **kwargs: Forwarded to GenericParameter.
         """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler

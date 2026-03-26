@@ -60,8 +60,7 @@ class ExperimentBase(DatablockItem):
     def name(self, new: str) -> None:
         """Rename the experiment.
 
-        Args:
-            new: New name for this experiment.
+        Args:     new: New name for this experiment.
         """
         self._name = new
 
@@ -88,8 +87,7 @@ class ExperimentBase(DatablockItem):
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """Load ASCII data from file into the experiment data category.
 
-        Args:
-            data_path: Path to the ASCII file to load.
+        Args:     data_path: Path to the ASCII file to load.
         """
         raise NotImplementedError()
 
@@ -120,9 +118,8 @@ class ExperimentBase(DatablockItem):
     def calculator_type(self, tag: str) -> None:
         """Switch to a different calculator backend.
 
-        Args:
-            tag: Calculator tag (e.g. ``'cryspy'``, ``'crysfml'``,
-                ``'pdffit'``).
+        Args:     tag: Calculator tag (e.g. ``'cryspy'``, ``'crysfml'``,
+        ``'pdffit'``).
         """
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
 
@@ -233,9 +230,8 @@ class ScExperimentBase(ExperimentBase):
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """Load single crystal data from an ASCII file.
 
-        Args:
-            data_path: Path to data file with columns compatible with
-                the beam mode.
+        Args:     data_path: Path to data file with columns compatible
+        with         the beam mode.
         """
         pass
 
@@ -257,8 +253,7 @@ class ScExperimentBase(ExperimentBase):
     def extinction_type(self, new_type: str) -> None:
         """Switch to a different extinction correction model.
 
-        Args:
-            new_type: Extinction tag (e.g. ``'shelx'``).
+        Args:     new_type: Extinction tag (e.g. ``'shelx'``).
         """
         supported_tags = ExtinctionFactory.supported_tags()
         if new_type not in supported_tags:
@@ -301,8 +296,7 @@ class ScExperimentBase(ExperimentBase):
     def linked_crystal_type(self, new_type: str) -> None:
         """Switch to a different linked-crystal reference type.
 
-        Args:
-            new_type: Linked-crystal tag (e.g. ``'default'``).
+        Args:     new_type: Linked-crystal tag (e.g. ``'default'``).
         """
         supported_tags = LinkedCrystalFactory.supported_tags()
         if new_type not in supported_tags:
@@ -345,8 +339,7 @@ class ScExperimentBase(ExperimentBase):
     def instrument_type(self, new_type: str) -> None:
         """Switch to a different instrument type.
 
-        Args:
-            new_type: Instrument tag (e.g. ``'cwl-sc'``).
+        Args:     new_type: Instrument tag (e.g. ``'cwl-sc'``).
         """
         supported = InstrumentFactory.supported_for(
             scattering_type=self.type.scattering_type.value,
@@ -397,8 +390,7 @@ class ScExperimentBase(ExperimentBase):
     def data_type(self, new_type: str) -> None:
         """Switch to a different data collection type.
 
-        Args:
-            new_type: Data tag (e.g. ``'bragg-sc'``).
+        Args:     new_type: Data tag (e.g. ``'bragg-sc'``).
         """
         supported_tags = DataFactory.supported_tags()
         if new_type not in supported_tags:
@@ -456,11 +448,9 @@ class PdExperimentBase(ExperimentBase):
     ) -> List[Any]:
         """Get valid linked phases for this experiment.
 
-        Args:
-            structures: Collection of structures.
+        Args:     structures: Collection of structures.
 
-        Returns:
-            A list of valid linked phases.
+        Returns:     A list of valid linked phases.
         """
         if not self.linked_phases:
             print('Warning: No linked phases defined. Returning empty pattern.')
@@ -487,9 +477,9 @@ class PdExperimentBase(ExperimentBase):
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """Load powder diffraction data from an ASCII file.
 
-        Args:
-            data_path: Path to data file with columns compatible with
-                the beam mode (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
+        Args:     data_path: Path to data file with columns compatible
+        with         the beam mode (e.g. 2θ/I/σ for CWL, TOF/I/σ for
+        TOF).
         """
         pass
 
@@ -507,8 +497,7 @@ class PdExperimentBase(ExperimentBase):
     def linked_phases_type(self, new_type: str) -> None:
         """Switch to a different linked-phases collection type.
 
-        Args:
-            new_type: Linked-phases tag (e.g. ``'default'``).
+        Args:     new_type: Linked-phases tag (e.g. ``'default'``).
         """
         supported_tags = LinkedPhasesFactory.supported_tags()
         if new_type not in supported_tags:
@@ -547,8 +536,7 @@ class PdExperimentBase(ExperimentBase):
     def excluded_regions_type(self, new_type: str) -> None:
         """Switch to a different excluded-regions collection type.
 
-        Args:
-            new_type: Excluded-regions tag (e.g. ``'default'``).
+        Args:     new_type: Excluded-regions tag (e.g. ``'default'``).
         """
         supported_tags = ExcludedRegionsFactory.supported_tags()
         if new_type not in supported_tags:
@@ -593,8 +581,7 @@ class PdExperimentBase(ExperimentBase):
     def data_type(self, new_type: str) -> None:
         """Switch to a different data collection type.
 
-        Args:
-            new_type: Data tag (e.g. ``'bragg-pd-cwl'``).
+        Args:     new_type: Data tag (e.g. ``'bragg-pd-cwl'``).
         """
         supported_tags = DataFactory.supported_tags()
         if new_type not in supported_tags:
@@ -632,8 +619,7 @@ class PdExperimentBase(ExperimentBase):
     def peak_profile_type(self, new_type: str):
         """Change the active peak profile type, if supported.
 
-        Args:
-            new_type: New profile type as tag string.
+        Args:     new_type: New profile type as tag string.
         """
         supported = PeakFactory.supported_for(
             scattering_type=self.type.scattering_type.value,

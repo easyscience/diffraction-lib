@@ -42,12 +42,10 @@ class LmfitMinimizer(MinimizerBase):
     ) -> Dict[str, Any]:
         """Prepares the solver arguments for the lmfit minimizer.
 
-        Args:
-            parameters: List of parameters to be optimized.
+        Args:     parameters: List of parameters to be optimized.
 
-        Returns:
-            A dictionary containing the prepared lmfit. Parameters
-                object.
+        Returns:     A dictionary containing the prepared lmfit.
+        Parameters         object.
         """
         engine_parameters = lmfit.Parameters()
         for param in parameters:
@@ -63,12 +61,10 @@ class LmfitMinimizer(MinimizerBase):
     def _run_solver(self, objective_function: Any, **kwargs: Any) -> Any:
         """Runs the lmfit solver.
 
-        Args:
-            objective_function: The objective function to minimize.
-            **kwargs: Additional arguments for the solver.
+        Args:     objective_function: The objective function to
+        minimize.     **kwargs: Additional arguments for the solver.
 
-        Returns:
-            The result of the lmfit minimization.
+        Returns:     The result of the lmfit minimization.
         """
         engine_parameters = kwargs.get('engine_parameters')
 
@@ -87,9 +83,8 @@ class LmfitMinimizer(MinimizerBase):
     ) -> None:
         """Synchronizes the result from the solver to the parameters.
 
-        Args:
-            parameters: List of parameters being optimized.
-            raw_result: The result object returned by the solver.
+        Args:     parameters: List of parameters being optimized.
+        raw_result: The result object returned by the solver.
         """
         param_values = raw_result.params if hasattr(raw_result, 'params') else raw_result
 
@@ -104,11 +99,10 @@ class LmfitMinimizer(MinimizerBase):
     def _check_success(self, raw_result: Any) -> bool:
         """Determines success from lmfit MinimizerResult.
 
-        Args:
-            raw_result: The result object returned by the solver.
+        Args:     raw_result: The result object returned by the solver.
 
-        Returns:
-            True if the optimization was successful, False otherwise.
+        Returns:     True if the optimization was successful, False
+        otherwise.
         """
         return getattr(raw_result, 'success', False)
 
@@ -122,12 +116,10 @@ class LmfitMinimizer(MinimizerBase):
     ) -> None:
         """Callback function for each iteration of the minimizer.
 
-        Args:
-            params: The current parameters.
-            iter: The current iteration number.
-            resid: The residuals.
-            *args: Additional positional arguments.
-            **kwargs: Additional keyword arguments.
+        Args:     params: The current parameters.     iter: The current
+        iteration number.     resid: The residuals.     *args:
+        Additional positional arguments.     **kwargs: Additional
+        keyword arguments.
         """
         # Intentionally unused, required by callback signature
         del params, resid, args, kwargs

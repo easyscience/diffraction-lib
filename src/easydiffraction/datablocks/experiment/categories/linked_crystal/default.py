@@ -66,8 +66,8 @@ class LinkedCrystal(CategoryItem):
         """Identifier of the linked crystal.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._id
 
@@ -79,9 +79,8 @@ class LinkedCrystal(CategoryItem):
     def scale(self) -> Parameter:
         """Scale factor of the linked crystal.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._scale
 

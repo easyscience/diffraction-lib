@@ -18,12 +18,10 @@ from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
 class MinimizerBase(ABC):
     """Abstract base for concrete minimizers.
 
-    Contract:
-    - Subclasses must implement ``_prepare_solver_args``,
-        ``_run_solver``, ``_sync_result_to_parameters`` and
-        ``_check_success``.
-    - The ``fit`` method orchestrates the full workflow and returns
-        :class:`FitResults`.
+    Contract: - Subclasses must implement ``_prepare_solver_args``,
+    ``_run_solver``, ``_sync_result_to_parameters`` and
+    ``_check_success``. - The ``fit`` method orchestrates the full
+    workflow and returns     :class:`FitResults`.
     """
 
     def __init__(
@@ -46,8 +44,7 @@ class MinimizerBase(ABC):
     def _start_tracking(self, minimizer_name: str) -> None:
         """Initialize progress tracking and timer.
 
-        Args:
-            minimizer_name: Human-readable name shown in progress.
+        Args:     minimizer_name: Human-readable name shown in progress.
         """
         self.tracker.reset()
         self.tracker.start_tracking(minimizer_name)
@@ -62,11 +59,10 @@ class MinimizerBase(ABC):
     def _prepare_solver_args(self, parameters: List[Any]) -> Dict[str, Any]:
         """Prepare keyword-arguments for the underlying solver.
 
-        Args:
-            parameters: List of free parameters to be fitted.
+        Args:     parameters: List of free parameters to be fitted.
 
-        Returns:
-            Mapping of keyword arguments to pass into ``_run_solver``.
+        Returns:     Mapping of keyword arguments to pass into
+        ``_run_solver``.
         """
         pass
 
@@ -97,12 +93,10 @@ class MinimizerBase(ABC):
     ) -> FitResults:
         """Build :class:`FitResults` and store it on ``self.result``.
 
-        Args:
-            parameters: Parameters after the solver finished.
-            raw_result: Backend-specific solver output object.
+        Args:     parameters: Parameters after the solver finished.
+        raw_result: Backend-specific solver output object.
 
-        Returns:
-            FitResults: Aggregated outcome of the fit.
+        Returns:     FitResults: Aggregated outcome of the fit.
         """
         self._sync_result_to_parameters(parameters, raw_result)
         success = self._check_success(raw_result)
@@ -128,13 +122,11 @@ class MinimizerBase(ABC):
     ) -> FitResults:
         """Run the full minimization workflow.
 
-        Args:
-            parameters: Free parameters to optimize.
-            objective_function: Callable returning residuals for a given
-                set of engine arguments.
+        Args:     parameters: Free parameters to optimize.
+        objective_function: Callable returning residuals for a given set
+        of engine arguments.
 
-        Returns:
-            FitResults with success flag, best chi2 and timing.
+        Returns:     FitResults with success flag, best chi2 and timing.
         """
         minimizer_name = self.name or 'Unnamed Minimizer'
         if self.method is not None:

@@ -35,8 +35,7 @@ class Structures(DatablockCollection):
     ) -> None:
         """Create a minimal structure and add it to the collection.
 
-        Args:
-            name (str): Identifier for the new structure.
+        Args:     name (str): Identifier for the new structure.
         """
         structure = StructureFactory.from_scratch(name=name)
         self.add(structure)
@@ -49,8 +48,7 @@ class Structures(DatablockCollection):
     ) -> None:
         """Create a structure from CIF content and add it.
 
-        Args:
-            cif_str (str): CIF file content as a string.
+        Args:     cif_str (str): CIF file content as a string.
         """
         structure = StructureFactory.from_cif_str(cif_str)
         self.add(structure)
@@ -63,8 +61,7 @@ class Structures(DatablockCollection):
     ) -> None:
         """Create a structure from a CIF file and add it.
 
-        Args:
-            cif_path (str): Filesystem path to a CIF file.
+        Args:     cif_path (str): Filesystem path to a CIF file.
         """
         structure = StructureFactory.from_cif_path(cif_path)
         self.add(structure)

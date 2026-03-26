@@ -44,13 +44,12 @@ def is_dark() -> bool:
 
     Detection order:
 
-    1. JupyterLab settings files (most reliable for JupyterLab)
-    2. VS Code settings (when running in VS Code)
-    3. JavaScript DOM inspection (for browser-based Jupyter)
-    4. System preferences (fallback - may differ from Jupyter theme)
+    1. JupyterLab settings files (most reliable for JupyterLab) 2. VS
+    Code settings (when running in VS Code) 3. JavaScript DOM inspection
+    (for browser-based Jupyter) 4. System preferences (fallback - may
+    differ from Jupyter theme)
 
-    Returns:
-        True if dark mode is detected, False otherwise.
+    Returns:     True if dark mode is detected, False otherwise.
     """
     # Try Jupyter-specific methods first
     result = _check_jupyterlab_settings()
@@ -79,9 +78,8 @@ def is_dark() -> bool:
 def get_detection_result() -> dict[str, Optional[bool]]:
     """Get results from all detection methods for debugging.
 
-    Returns:
-        Dictionary with detection method names as keys and their
-        results (True/False/None) as values.
+    Returns:     Dictionary with detection method names as keys and
+    their     results (True/False/None) as values.
     """
     return {
         'jupyterlab_settings': _check_jupyterlab_settings(),

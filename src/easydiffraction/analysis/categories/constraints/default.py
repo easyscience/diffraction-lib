@@ -22,9 +22,8 @@ from easydiffraction.io.cif.handler import CifHandler
 class Constraint(CategoryItem):
     """Single constraint item.
 
-    Args:
-        lhs_alias: Left-hand side alias name being constrained.
-        rhs_expr: Right-hand side expression as a string.
+    Args:     lhs_alias: Left-hand side alias name being constrained.
+    rhs_expr: Right-hand side expression as a string.
     """
 
     def __init__(self) -> None:
@@ -61,8 +60,8 @@ class Constraint(CategoryItem):
         """Left-hand side of the equation.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._lhs_alias
 
@@ -75,8 +74,8 @@ class Constraint(CategoryItem):
         """Right-hand side expression.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._rhs_expr
 

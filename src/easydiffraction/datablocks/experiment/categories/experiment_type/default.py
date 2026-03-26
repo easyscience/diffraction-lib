@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Experiment type descriptor (form, beam, probe, scattering).
 
-This lightweight container stores the categorical attributes defining
-an experiment configuration and handles CIF serialization via
+This lightweight container stores the categorical attributes defining an
+experiment configuration and handles CIF serialization via
 ``CifHandler``.
 """
 
@@ -28,11 +28,9 @@ from easydiffraction.io.cif.handler import CifHandler
 class ExperimentType(CategoryItem):
     """Container of categorical attributes defining experiment flavor.
 
-    Args:
-        sample_form: Powder or Single crystal.
-        beam_mode: Constant wavelength (CW) or time-of-flight (TOF).
-        radiation_probe: Neutrons or X-rays.
-        scattering_type: Bragg or Total.
+    Args:     sample_form: Powder or Single crystal.     beam_mode:
+    Constant wavelength (CW) or time-of-flight (TOF). radiation_probe:
+    Neutrons or X-rays.     scattering_type: Bragg or Total.
     """
 
     type_info = TypeInfo(
@@ -113,19 +111,21 @@ class ExperimentType(CategoryItem):
 
     @property
     def sample_form(self) -> StringDescriptor:
-        """Specifies whether the diffraction data corresponds to powder diffraction or single crystal diffraction.
+        """Specifies whether the diffraction data corresponds to powder
+        diffraction or single crystal diffraction.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
+        ``StringDescriptor`` object.
         """
         return self._sample_form
 
     @property
     def beam_mode(self) -> StringDescriptor:
-        """Defines whether the measurement is performed with a constant wavelength (CW) or time-of-flight (TOF) method.
+        """Defines whether the measurement is performed with a constant
+        wavelength (CW) or time-of-flight (TOF) method.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
+        ``StringDescriptor`` object.
         """
         return self._beam_mode
 
@@ -134,15 +134,18 @@ class ExperimentType(CategoryItem):
         """Specifies whether the measurement uses neutrons or X-rays.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
+        ``StringDescriptor`` object.
         """
         return self._radiation_probe
 
     @property
     def scattering_type(self) -> StringDescriptor:
-        """Specifies whether the experiment uses Bragg scattering (for conventional structure refinement) or total scattering (for pair distribution function analysis - PDF).
+        """Specifies whether the experiment uses Bragg scattering (for.
+
+        conventional structure refinement) or total scattering (for pair
+        distribution function analysis - PDF).
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
+        ``StringDescriptor`` object.
         """
         return self._scattering_type

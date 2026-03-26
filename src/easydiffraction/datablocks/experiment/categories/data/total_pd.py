@@ -125,7 +125,7 @@ class TotalDataPoint(CategoryItem):
         """Identifier for this data point in the dataset.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
+        ``StringDescriptor`` object.
         """
         return self._point_id
 
@@ -134,7 +134,7 @@ class TotalDataPoint(CategoryItem):
         """Interatomic distance in real space (Å).
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._r
 
@@ -143,7 +143,7 @@ class TotalDataPoint(CategoryItem):
         """Measured pair distribution function G(r).
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._g_r_meas
 
@@ -152,7 +152,7 @@ class TotalDataPoint(CategoryItem):
         """Standard uncertainty of measured G(r).
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._g_r_meas_su
 
@@ -161,7 +161,7 @@ class TotalDataPoint(CategoryItem):
         """Calculated pair distribution function G(r).
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._g_r_calc
 
@@ -170,7 +170,7 @@ class TotalDataPoint(CategoryItem):
         """Status code of the data point in calculation.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
+        ``StringDescriptor`` object.
         """
         return self._calc_status
 
@@ -305,8 +305,8 @@ class TotalDataBase(CategoryCollection):
 class TotalData(TotalDataBase):
     """Total scattering (PDF) data collection in r-space.
 
-    Note: Works for both CWL and TOF measurements as PDF data
-    is always transformed to r-space.
+    Note: Works for both CWL and TOF measurements as PDF data is always
+    transformed to r-space.
     """
 
     type_info = TypeInfo(tag='total-pd', description='Total scattering (PDF) data')

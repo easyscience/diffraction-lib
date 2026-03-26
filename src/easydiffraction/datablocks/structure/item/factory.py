@@ -44,11 +44,9 @@ class StructureFactory:
     ) -> Structure:
         """Build a structure from a single *gemmi* CIF block.
 
-        Args:
-            block (gemmi.cif.Block): Parsed CIF data block.
+        Args:     block (gemmi.cif.Block): Parsed CIF data block.
 
-        Returns:
-            Structure: A fully populated structure instance.
+        Returns:     Structure: A fully populated structure instance.
         """
         name = name_from_block(block)
         structure = Structure(name=name)
@@ -69,11 +67,10 @@ class StructureFactory:
     ) -> Structure:
         """Create a minimal default structure.
 
-        Args:
-            name (str): Identifier for the new structure.
+        Args:     name (str): Identifier for the new structure.
 
-        Returns:
-            Structure: An empty structure with default categories.
+        Returns:     Structure: An empty structure with default
+        categories.
         """
         return Structure(name=name)
 
@@ -86,11 +83,9 @@ class StructureFactory:
     ) -> Structure:
         """Create a structure by parsing a CIF string.
 
-        Args:
-            cif_str (str): Raw CIF content.
+        Args:     cif_str (str): Raw CIF content.
 
-        Returns:
-            Structure: A populated structure instance.
+        Returns:     Structure: A populated structure instance.
         """
         doc = document_from_string(cif_str)
         block = pick_sole_block(doc)
@@ -105,11 +100,9 @@ class StructureFactory:
     ) -> Structure:
         """Create a structure by reading and parsing a CIF file.
 
-        Args:
-            cif_path (str): Filesystem path to a CIF file.
+        Args:     cif_path (str): Filesystem path to a CIF file.
 
-        Returns:
-            Structure: A populated structure instance.
+        Returns:     Structure: A populated structure instance.
         """
         doc = document_from_path(cif_path)
         block = pick_sole_block(doc)

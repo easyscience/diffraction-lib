@@ -88,8 +88,8 @@ class PolynomialTerm(CategoryItem):
         """Identifier for this background polynomial term.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._id
 
@@ -102,8 +102,8 @@ class PolynomialTerm(CategoryItem):
         """Order used in a Chebyshev polynomial background term.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``NumericDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._order
 
@@ -115,9 +115,8 @@ class PolynomialTerm(CategoryItem):
     def coef(self) -> Parameter:
         """Coefficient used in a Chebyshev polynomial background term.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._coef
 

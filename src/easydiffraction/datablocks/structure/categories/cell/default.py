@@ -134,10 +134,8 @@ class Cell(CategoryItem):
     ) -> None:
         """Recalculate cell parameters after a change.
 
-        Args:
-            called_by_minimizer (bool, default=False): Whether the
-                update was triggered by the fitting minimizer. Currently
-                unused.
+        Args:     called_by_minimizer (bool, default=False): Whether the
+        update was triggered by the fitting minimizer. Currently unused.
         """
         del called_by_minimizer  # TODO: ???
 
@@ -151,9 +149,8 @@ class Cell(CategoryItem):
     def length_a(self) -> Parameter:
         """Length of the a axis of the unit cell (Å).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._length_a
 
@@ -165,9 +162,8 @@ class Cell(CategoryItem):
     def length_b(self) -> Parameter:
         """Length of the b axis of the unit cell (Å).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._length_b
 
@@ -179,9 +175,8 @@ class Cell(CategoryItem):
     def length_c(self) -> Parameter:
         """Length of the c axis of the unit cell (Å).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._length_c
 
@@ -193,9 +188,8 @@ class Cell(CategoryItem):
     def angle_alpha(self) -> Parameter:
         """Angle between edges b and c (deg).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._angle_alpha
 
@@ -207,9 +201,8 @@ class Cell(CategoryItem):
     def angle_beta(self) -> Parameter:
         """Angle between edges a and c (deg).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._angle_beta
 
@@ -221,9 +214,8 @@ class Cell(CategoryItem):
     def angle_gamma(self) -> Parameter:
         """Angle between edges a and b (deg).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._angle_gamma
 

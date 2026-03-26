@@ -21,9 +21,8 @@ from easydiffraction.utils._vendored.theme_detect import is_dark
 class TableBackendBase(ABC):
     """Abstract base class for concrete table backends.
 
-    Subclasses implement the ``render`` method which receives an
-    index-aware pandas DataFrame and the alignment for each column
-    header.
+    Subclasses implement the ``render`` method which receives an index-
+    aware pandas DataFrame and the alignment for each column header.
     """
 
     FLOAT_PRECISION = 5
@@ -37,12 +36,10 @@ class TableBackendBase(ABC):
     def _format_value(self, value: Any) -> Any:
         """Format floats with fixed precision and others as strings.
 
-        Args:
-            value: Cell value to format.
+        Args:     value: Cell value to format.
 
-        Returns:
-            A string representation with fixed precision for floats or
-            ``str(value)`` for other types.
+        Returns:     A string representation with fixed precision for
+        floats or     ``str(value)`` for other types.
         """
         return self._float_fmt(value) if isinstance(value, float) else str(value)
 
@@ -65,12 +62,10 @@ class TableBackendBase(ABC):
     def _rich_to_hex(self, color):
         """Convert a Rich color name to a CSS-style hex string.
 
-        Args:
-            color: Rich color name or specification parsable by
-                :mod:`rich`.
+        Args:     color: Rich color name or specification parsable by
+        :mod:`rich`.
 
-        Returns:
-            Hex color string in the form ``#RRGGBB``.
+        Returns:     Hex color string in the form ``#RRGGBB``.
         """
         c = Color.parse(color)
         rgb = c.get_truecolor()
@@ -96,15 +91,11 @@ class TableBackendBase(ABC):
     ) -> Any:
         """Render the provided DataFrame with backend-specific styling.
 
-        Args:
-            alignments: Iterable of column justifications (e.g.,
-                ``'left'`` or ``'center'``) corresponding to the data
-                columns.
-            df: Index-aware DataFrame with data to render.
-            display_handle: Optional environment-specific handle to
-                enable in-place updates.
+        Args:     alignments: Iterable of column justifications (e.g.,
+        ``'left'`` or ``'center'``) corresponding to the data columns.
+        df: Index-aware DataFrame with data to render. display_handle:
+        Optional environment-specific handle to enable in-place updates.
 
-        Returns:
-            Backend-defined return value (commonly ``None``).
+        Returns:     Backend-defined return value (commonly ``None``).
         """
         pass

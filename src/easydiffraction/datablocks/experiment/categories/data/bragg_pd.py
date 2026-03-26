@@ -126,43 +126,46 @@ class PdDataPointBaseMixin:
         """Identifier for this data point in the dataset.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
+        ``StringDescriptor`` object.
         """
         return self._point_id
 
     @property
     def d_spacing(self) -> NumericDescriptor:
-        """d-spacing value corresponding to this data point.
+        """D-spacing value corresponding to this data point.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._d_spacing
 
     @property
     def intensity_meas(self) -> NumericDescriptor:
-        """Intensity recorded at each measurement point as a function of angle/time.
+        """Intensity recorded at each measurement point as a function of
+        angle/time.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._intensity_meas
 
     @property
     def intensity_meas_su(self) -> NumericDescriptor:
-        """Standard uncertainty of the measured intensity at this data point.
+        """Standard uncertainty of the measured intensity at this data
+        point.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._intensity_meas_su
 
     @property
     def intensity_calc(self) -> NumericDescriptor:
-        """Intensity value for a computed diffractogram at this data point.
+        """Intensity value for a computed diffractogram at this data
+        point.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._intensity_calc
 
@@ -171,7 +174,7 @@ class PdDataPointBaseMixin:
         """Intensity value for a computed background at this data point.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._intensity_bkg
 
@@ -180,7 +183,7 @@ class PdDataPointBaseMixin:
         """Status code of the data point in the calculation process.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
+        ``StringDescriptor`` object.
         """
         return self._calc_status
 
@@ -218,7 +221,7 @@ class PdCwlDataPointMixin:
         """Measured 2θ diffraction angle (deg).
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._two_theta
 
@@ -249,7 +252,7 @@ class PdTofDataPointMixin:
         """Measured time for time-of-flight neutron measurement (µs).
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
+        ``NumericDescriptor`` object.
         """
         return self._time_of_flight
 

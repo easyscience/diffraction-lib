@@ -51,8 +51,8 @@ class FitMode(CategoryItem):
         """Fitting strategy.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._mode
 

@@ -17,12 +17,10 @@ def calculate_r_factor(
     """Calculate the R-factor (reliability factor) between observed and
     calculated data.
 
-    Args:
-        y_obs: Observed data points.
-        y_calc: Calculated data points.
+    Args:     y_obs: Observed data points.     y_calc: Calculated data
+    points.
 
-    Returns:
-        R-factor value.
+    Returns:     R-factor value.
     """
     y_obs = np.asarray(y_obs)
     y_calc = np.asarray(y_calc)
@@ -39,13 +37,10 @@ def calculate_weighted_r_factor(
     """Calculate the weighted R-factor between observed and calculated
     data.
 
-    Args:
-        y_obs: Observed data points.
-        y_calc: Calculated data points.
-        weights: Weights for each data point.
+    Args:     y_obs: Observed data points.     y_calc: Calculated data
+    points.     weights: Weights for each data point.
 
-    Returns:
-        Weighted R-factor value.
+    Returns:     Weighted R-factor value.
     """
     y_obs = np.asarray(y_obs)
     y_calc = np.asarray(y_calc)
@@ -62,12 +57,10 @@ def calculate_rb_factor(
     """Calculate the Bragg R-factor between observed and calculated
     data.
 
-    Args:
-        y_obs: Observed data points.
-        y_calc: Calculated data points.
+    Args:     y_obs: Observed data points.     y_calc: Calculated data
+    points.
 
-    Returns:
-        Bragg R-factor value.
+    Returns:     Bragg R-factor value.
     """
     y_obs = np.asarray(y_obs)
     y_calc = np.asarray(y_calc)
@@ -83,12 +76,10 @@ def calculate_r_factor_squared(
     """Calculate the R-factor squared between observed and calculated
     data.
 
-    Args:
-        y_obs: Observed data points.
-        y_calc: Calculated data points.
+    Args:     y_obs: Observed data points.     y_calc: Calculated data
+    points.
 
-    Returns:
-        R-factor squared value.
+    Returns:     R-factor squared value.
     """
     y_obs = np.asarray(y_obs)
     y_calc = np.asarray(y_calc)
@@ -103,12 +94,10 @@ def calculate_reduced_chi_square(
 ) -> float:
     """Calculate the reduced chi-square statistic.
 
-    Args:
-        residuals: Residuals between observed and calculated data.
-        num_parameters: Number of free parameters used in the model.
+    Args:     residuals: Residuals between observed and calculated data.
+    num_parameters: Number of free parameters used in the model.
 
-    Returns:
-        Reduced chi-square value.
+    Returns:     Reduced chi-square value.
     """
     residuals = np.asarray(residuals)
     chi_square = np.sum(residuals**2)
@@ -127,13 +116,11 @@ def get_reliability_inputs(
     """Collect observed and calculated data points for reliability
     calculations.
 
-    Args:
-        structures: Collection of structures.
-        experiments: Collection of experiments.
+    Args:     structures: Collection of structures.     experiments:
+    Collection of experiments.
 
-    Returns:
-        Tuple containing arrays of (observed values, calculated values,
-            error values)
+    Returns:     Tuple containing arrays of (observed values, calculated
+    values,         error values)
     """
     y_obs_all = []
     y_calc_all = []

@@ -44,14 +44,12 @@ class PlotlyPlotter(PlotterBase):
     ):
         """Create a Plotly trace for powder diffraction data.
 
-        Args:
-            x: 1D array-like of x-axis values.
-            y: 1D array-like of y-axis values.
-            label: Series identifier (``'meas'``, ``'calc'``, or
-                ``'resid'``).
+        Args:     x: 1D array-like of x-axis values.     y: 1D array-
+        like of y-axis values.     label: Series identifier (``'meas'``,
+        ``'calc'``, or         ``'resid'``).
 
-        Returns:
-            A configured :class:`plotly.graph_objects.Scatter` trace.
+        Returns:     A configured :class:`plotly.graph_objects.Scatter`
+        trace.
         """
         mode = SERIES_CONFIG[label]['mode']
         name = SERIES_CONFIG[label]['name']
@@ -76,14 +74,12 @@ class PlotlyPlotter(PlotterBase):
     ):
         """Create a Plotly trace for single crystal diffraction data.
 
-        Args:
-            x_calc: 1D array-like of calculated values (x-axis).
-            y_meas: 1D array-like of measured values (y-axis).
-            y_meas_su: 1D array-like of measurement uncertainties.
+        Args:     x_calc: 1D array-like of calculated values (x-axis).
+        y_meas: 1D array-like of measured values (y-axis). y_meas_su: 1D
+        array-like of measurement uncertainties.
 
-        Returns:
-            A configured :class:`plotly.graph_objects.Scatter` trace
-            with markers and error bars.
+        Returns:     A configured :class:`plotly.graph_objects.Scatter`
+        trace     with markers and error bars.
         """
         trace = go.Scatter(
             x=x_calc,
@@ -111,8 +107,7 @@ class PlotlyPlotter(PlotterBase):
         Returns a y=x diagonal line spanning the plot area using paper
         coordinates (0,0) to (1,1).
 
-        Returns:
-            A dict configuring a diagonal line shape.
+        Returns:     A dict configuring a diagonal line shape.
         """
         return dict(
             type='line',
@@ -129,8 +124,7 @@ class PlotlyPlotter(PlotterBase):
     def _get_config(self):
         """Return the Plotly figure configuration.
 
-        Returns:
-            A dict with display and mode bar settings.
+        Returns:     A dict with display and mode bar settings.
         """
         return dict(
             displaylogo=False,
@@ -150,12 +144,10 @@ class PlotlyPlotter(PlotterBase):
     ):
         """Create and configure a Plotly figure.
 
-        Args:
-            data: List of traces to include in the figure.
-            layout: Layout configuration dict.
+        Args:     data: List of traces to include in the figure. layout:
+        Layout configuration dict.
 
-        Returns:
-            A configured :class:`plotly.graph_objects.Figure`.
+        Returns:     A configured :class:`plotly.graph_objects.Figure`.
         """
         fig = go.Figure(data=data, layout=layout)
         # Format axis ticks:
@@ -173,8 +165,8 @@ class PlotlyPlotter(PlotterBase):
         Renders the figure using the appropriate method for the current
         environment (browser for PyCharm, inline HTML for Jupyter).
 
-        Args:
-            fig: A :class:`plotly.graph_objects.Figure` to display.
+        Args:     fig: A :class:`plotly.graph_objects.Figure` to
+        display.
         """
         config = self._get_config()
 
@@ -197,13 +189,11 @@ class PlotlyPlotter(PlotterBase):
     ):
         """Create a Plotly layout configuration.
 
-        Args:
-            title: Figure title.
-            axes_labels: Pair of strings for the x and y titles.
-            **kwargs: Additional layout parameters (e.g., shapes).
+        Args:     title: Figure title.     axes_labels: Pair of strings
+        for the x and y titles.     **kwargs: Additional layout
+        parameters (e.g., shapes).
 
-        Returns:
-            A configured :class:`plotly.graph_objects.Layout`.
+        Returns:     A configured :class:`plotly.graph_objects.Layout`.
         """
         return go.Layout(
             margin=dict(
@@ -250,13 +240,11 @@ class PlotlyPlotter(PlotterBase):
         Suitable for powder diffraction data where intensity is plotted
         against an x-axis variable (2θ, TOF, d-spacing).
 
-        Args:
-            x: 1D array-like of x-axis values.
-            y_series: Sequence of y arrays to plot.
-            labels: Series identifiers corresponding to y_series.
-            axes_labels: Pair of strings for the x and y titles.
-            title: Figure title.
-            height: Ignored; Plotly auto-sizes based on renderer.
+        Args:     x: 1D array-like of x-axis values.     y_series:
+        Sequence of y arrays to plot.     labels: Series identifiers
+        corresponding to y_series.     axes_labels: Pair of strings for
+        the x and y titles.     title: Figure title.     height:
+        Ignored; Plotly auto-sizes based on renderer.
         """
         # Intentionally unused; accepted for API compatibility
         del height
@@ -287,16 +275,14 @@ class PlotlyPlotter(PlotterBase):
         """Render a scatter plot for single crystal diffraction data.
 
         Suitable for single crystal diffraction data where measured
-        values are plotted against calculated values with error bars
-        and a diagonal reference line.
+        values are plotted against calculated values with error bars and
+        a diagonal reference line.
 
-        Args:
-            x_calc: 1D array-like of calculated values (x-axis).
-            y_meas: 1D array-like of measured values (y-axis).
-            y_meas_su: 1D array-like of measurement uncertainties.
-            axes_labels: Pair of strings for the x and y titles.
-            title: Figure title.
-            height: Ignored; Plotly auto-sizes based on renderer.
+        Args:     x_calc: 1D array-like of calculated values (x-axis).
+        y_meas: 1D array-like of measured values (y-axis). y_meas_su: 1D
+        array-like of measurement uncertainties. axes_labels: Pair of
+        strings for the x and y titles.     title: Figure title. height:
+        Ignored; Plotly auto-sizes based on renderer.
         """
         # Intentionally unused; accepted for API compatibility
         del height

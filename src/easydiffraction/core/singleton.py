@@ -106,7 +106,7 @@ class ConstraintsHandler(SingletonBase):
         """Sets the alias map (name → parameter wrapper).
 
         Called when user registers parameter aliases like:
-            alias='biso_La', param=model.atom_sites['La'].b_iso
+        alias='biso_La', param=model.atom_sites['La'].b_iso
         """
         self._alias_to_param = dict(aliases.items())
 
@@ -114,8 +114,8 @@ class ConstraintsHandler(SingletonBase):
         """Sets the constraints and triggers parsing into internal
         format.
 
-        Called when user registers expressions like:
-            lhs_alias='occ_Ba', rhs_expr='1 - occ_La'
+        Called when user registers expressions like: lhs_alias='occ_Ba',
+        rhs_expr='1 - occ_La'
         """
         self._constraints = constraints._items
         self._parse_constraints()
@@ -139,9 +139,8 @@ class ConstraintsHandler(SingletonBase):
         """Evaluates constraints and applies them to dependent
         parameters.
 
-        For each constraint:
-        - Evaluate RHS using current values of aliases
-        - Locate the dependent parameter by alias → uid → param
+        For each constraint: - Evaluate RHS using current values of
+        aliases - Locate the dependent parameter by alias → uid → param
         - Update its value and mark it as constrained
         """
         if not self._parsed_constraints:

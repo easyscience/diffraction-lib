@@ -140,8 +140,8 @@ class AtomSite(CategoryItem):
     def _type_symbol_allowed_values(self) -> list[str]:
         """Return chemical symbols accepted by *cryspy*.
 
-        Returns:
-            list[str]: Unique element/isotope symbols from the database.
+        Returns:     list[str]: Unique element/isotope symbols from the
+        database.
         """
         return list({key[1] for key in DATABASE['Isotopes']})
 
@@ -149,8 +149,7 @@ class AtomSite(CategoryItem):
     def _wyckoff_letter_allowed_values(self) -> list[str]:
         """Return allowed Wyckoff-letter symbols.
 
-        Returns:
-            list[str]: Currently a hard-coded placeholder list.
+        Returns:     list[str]: Currently a hard-coded placeholder list.
         """
         # TODO: Need to now current space group. How to access it? Via
         #  parent Cell? Then letters =
@@ -162,8 +161,7 @@ class AtomSite(CategoryItem):
     def _wyckoff_letter_default_value(self) -> str:
         """Return the default Wyckoff letter.
 
-        Returns:
-            str: First element of the allowed values list.
+        Returns:     str: First element of the allowed values list.
         """
         # TODO: What to pass as default?
         return self._wyckoff_letter_allowed_values[0]
@@ -177,8 +175,8 @@ class AtomSite(CategoryItem):
         """Unique identifier for the atom site.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._label
 
@@ -191,8 +189,8 @@ class AtomSite(CategoryItem):
         """Chemical symbol of the atom at this site.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._type_symbol
 
@@ -202,11 +200,12 @@ class AtomSite(CategoryItem):
 
     @property
     def adp_type(self) -> StringDescriptor:
-        """Type of atomic displacement parameter (ADP) used (e.g., Biso, Uiso, Uani, Bani).
+        """Type of atomic displacement parameter (ADP) used (e.g., Biso,
+        Uiso, Uani, Bani).
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._adp_type
 
@@ -216,11 +215,12 @@ class AtomSite(CategoryItem):
 
     @property
     def wyckoff_letter(self) -> StringDescriptor:
-        """Wyckoff letter indicating the symmetry of the atom site within the space group.
+        """Wyckoff letter indicating the symmetry of the atom site
+        within the space group.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._wyckoff_letter
 
@@ -230,11 +230,11 @@ class AtomSite(CategoryItem):
 
     @property
     def fract_x(self) -> Parameter:
-        """Fractional x-coordinate of the atom site within the unit cell.
+        """Fractional x-coordinate of the atom site within the unit
+        cell.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._fract_x
 
@@ -244,11 +244,11 @@ class AtomSite(CategoryItem):
 
     @property
     def fract_y(self) -> Parameter:
-        """Fractional y-coordinate of the atom site within the unit cell.
+        """Fractional y-coordinate of the atom site within the unit
+        cell.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._fract_y
 
@@ -258,11 +258,11 @@ class AtomSite(CategoryItem):
 
     @property
     def fract_z(self) -> Parameter:
-        """Fractional z-coordinate of the atom site within the unit cell.
+        """Fractional z-coordinate of the atom site within the unit
+        cell.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._fract_z
 
@@ -272,11 +272,11 @@ class AtomSite(CategoryItem):
 
     @property
     def occupancy(self) -> Parameter:
-        """Occupancy of the atom site, representing the fraction of the site occupied by the atom type.
+        """Occupancy of the atom site, representing the fraction of the
+        site occupied by the atom type.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._occupancy
 
@@ -286,11 +286,11 @@ class AtomSite(CategoryItem):
 
     @property
     def b_iso(self) -> Parameter:
-        """Isotropic atomic displacement parameter (ADP) for the atom site (Å²).
+        """Isotropic atomic displacement parameter (ADP) for the atom
+        site (Å²).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._b_iso
 
@@ -352,9 +352,8 @@ class AtomSites(CategoryCollection):
     ) -> None:
         """Recalculate atom sites after a change.
 
-        Args:
-            called_by_minimizer (bool): Whether the update was triggered
-                by the fitting minimizer. Currently unused.
+        Args:     called_by_minimizer (bool): Whether the update was
+        triggered         by the fitting minimizer. Currently unused.
         """
         del called_by_minimizer
 

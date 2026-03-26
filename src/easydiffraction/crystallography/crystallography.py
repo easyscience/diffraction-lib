@@ -24,12 +24,10 @@ def apply_cell_symmetry_constraints(
     """Apply symmetry constraints to unit cell parameters based on space
     group.
 
-    Args:
-        cell: Dictionary containing lattice parameters.
-        name_hm: Hermann-Mauguin symbol of the space group.
+    Args:     cell: Dictionary containing lattice parameters. name_hm:
+    Hermann-Mauguin symbol of the space group.
 
-    Returns:
-        The cell dictionary with applied symmetry constraints.
+    Returns:     The cell dictionary with applied symmetry constraints.
     """
     it_number = get_it_number_by_name_hm_short(name_hm)
     if it_number is None:
@@ -93,14 +91,12 @@ def apply_atom_site_symmetry_constraints(
     """Apply symmetry constraints to atomic coordinates based on site
     symmetry.
 
-    Args:
-        atom_site: Dictionary containing atom position data.
-        name_hm: Hermann-Mauguin symbol of the space group.
-        coord_code: Coordinate system code.
-        wyckoff_letter: Wyckoff position letter.
+    Args:     atom_site: Dictionary containing atom position data.
+    name_hm: Hermann-Mauguin symbol of the space group.     coord_code:
+    Coordinate system code.     wyckoff_letter: Wyckoff position letter.
 
-    Returns:
-        The atom_site dictionary with applied symmetry constraints.
+    Returns:     The atom_site dictionary with applied symmetry
+    constraints.
     """
     it_number = get_it_number_by_name_hm_short(name_hm)
     if it_number is None:

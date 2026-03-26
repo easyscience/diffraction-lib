@@ -81,9 +81,8 @@ class GuardedBase(ABC):
         """Iterate over all public properties defined in the class
         hierarchy.
 
-        Yields:
-            tuple[str, property]: Each (key, property) pair for public
-            attributes.
+        Yields:     tuple[str, property]: Each (key, property) pair for
+        public     attributes.
         """
         for base in cls.mro():
             for key, attr in base.__dict__.items():
@@ -161,8 +160,7 @@ class GuardedBase(ABC):
     def _iter_methods(cls):
         """Iterate over public methods in the class hierarchy.
 
-        Yields:
-            tuple[str, callable]: Each (name, function) pair.
+        Yields:     tuple[str, callable]: Each (name, function) pair.
         """
         seen: set = set()
         for base in cls.mro():

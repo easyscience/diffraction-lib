@@ -58,9 +58,8 @@ def _make_display_handle() -> Any | None:
     environment.
 
     - In Jupyter, returns an IPython DisplayHandle and creates a
-        placeholder.
-    - In terminal, returns a _TerminalLiveHandle backed by rich Live.
-    - If neither applies, returns None.
+    placeholder. - In terminal, returns a _TerminalLiveHandle backed by
+    rich Live. - If neither applies, returns None.
     """
     if in_jupyter() and display is not None and HTML is not None:
         h = DisplayHandle()
@@ -114,12 +113,10 @@ class FitProgressTracker:
     ) -> np.ndarray:
         """Update progress with current residuals and parameters.
 
-        Args:
-            residuals: Residuals between measured and calculated data.
-            parameters: Current free parameters being fitted.
+        Args:     residuals: Residuals between measured and calculated
+        data.     parameters: Current free parameters being fitted.
 
-        Returns:
-            Residuals unchanged, for optimizer consumption.
+        Returns:     Residuals unchanged, for optimizer consumption.
         """
         self._iteration += 1
 
@@ -202,8 +199,8 @@ class FitProgressTracker:
     def start_tracking(self, minimizer_name: str) -> None:
         """Initialize display and headers and announce the minimizer.
 
-        Args:
-            minimizer_name: Name of the minimizer used for the run.
+        Args:     minimizer_name: Name of the minimizer used for the
+        run.
         """
         console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
         console.print('📈 Goodness-of-fit (reduced χ²) change:')
@@ -223,8 +220,7 @@ class FitProgressTracker:
     def add_tracking_info(self, row: List[str]) -> None:
         """Append a formatted row to the progress display.
 
-        Args:
-            row: Columns corresponding to DEFAULT_HEADERS.
+        Args:     row: Columns corresponding to DEFAULT_HEADERS.
         """
         # Append and update via the active handle (Jupyter or
         # terminal live)

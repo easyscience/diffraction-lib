@@ -35,23 +35,21 @@ class Analysis:
 
     Typical usage:
 
-    - Display or filter parameters to fit.
-    - Select a calculator/minimizer implementation.
-    - Calculate patterns and run single or joint fits.
+    - Display or filter parameters to fit. - Select a
+    calculator/minimizer implementation. - Calculate patterns and run
+    single or joint fits.
 
-    Attributes:
-    project: The parent Project object.
-        aliases: A registry of human-friendly aliases for parameters.
-        constraints: Symbolic constraints between parameters.
-    calculator: Active calculator used for computations.
-        fitter: Active fitter/minimizer driver.
+    Attributes: project: The parent Project object.     aliases: A
+    registry of human-friendly aliases for parameters.     constraints:
+    Symbolic constraints between parameters. calculator: Active
+    calculator used for computations.     fitter: Active
+    fitter/minimizer driver.
     """
 
     def __init__(self, project) -> None:
         """Create a new Analysis instance bound to a project.
 
-        Args:
-            project: The project that owns models and experiments.
+        Args:     project: The project that owns models and experiments.
         """
         self.project = project
         self._aliases_type: str = AliasesFactory.default_tag()
@@ -138,8 +136,7 @@ class Analysis:
     def aliases_type(self, new_type: str) -> None:
         """Switch to a different aliases collection type.
 
-        Args:
-            new_type: Aliases tag (e.g. ``'default'``).
+        Args:     new_type: Aliases tag (e.g. ``'default'``).
         """
         supported_tags = AliasesFactory.supported_tags()
         if new_type not in supported_tags:
@@ -176,8 +173,7 @@ class Analysis:
     def constraints_type(self, new_type: str) -> None:
         """Switch to a different constraints collection type.
 
-        Args:
-            new_type: Constraints tag (e.g. ``'default'``).
+        Args:     new_type: Constraints tag (e.g. ``'default'``).
         """
         supported_tags = ConstraintsFactory.supported_tags()
         if new_type not in supported_tags:
@@ -207,11 +203,10 @@ class Analysis:
     ) -> pd.DataFrame:
         """Convert a list of parameters to a DataFrame.
 
-        Args:
-            params: List of DescriptorFloat or Parameter objects.
+        Args:     params: List of DescriptorFloat or Parameter objects.
 
-        Returns:
-            A pandas DataFrame containing parameter information.
+        Returns:     A pandas DataFrame containing parameter
+        information.
         """
         records = []
         for param in params:
@@ -486,8 +481,7 @@ class Analysis:
     def current_minimizer(self, selection: str) -> None:
         """Switch to a different minimizer implementation.
 
-        Args:
-            selection: Minimizer selection string, e.g. 'lmfit'.
+        Args:     selection: Minimizer selection string, e.g. 'lmfit'.
         """
         self.fitter = Fitter(selection)
         console.paragraph('Current minimizer changed to')
@@ -511,8 +505,7 @@ class Analysis:
     def fit_mode_type(self, new_type: str) -> None:
         """Switch to a different fit-mode category type.
 
-        Args:
-            new_type: Fit-mode tag (e.g. ``'default'``).
+        Args:     new_type: Fit-mode tag (e.g. ``'default'``).
         """
         supported_tags = FitModeFactory.supported_tags()
         if new_type not in supported_tags:
@@ -594,18 +587,18 @@ class Analysis:
         fitting to see a summary of the fit quality and parameter
         values.
 
-        In 'single' mode, fits each experiment independently. In
-        'joint' mode, performs a simultaneous fit across experiments
-        with weights.
+        In 'single' mode, fits each experiment independently. In 'joint'
+        mode, performs a simultaneous fit across experiments with
+        weights.
 
         Sets :attr:`fit_results` on success, which can be accessed
-        programmatically
-        (e.g., ``analysis.fit_results.reduced_chi_square``).
+        programmatically (e.g.,
+        ``analysis.fit_results.reduced_chi_square``).
 
         Example::
 
-            project.analysis.fit()
-            project.analysis.show_fit_results()  # Display results
+        project.analysis.fit() project.analysis.show_fit_results()  #
+        Display results
         """
         structures = self.project.structures
         if not structures:
@@ -670,8 +663,7 @@ class Analysis:
 
         Example::
 
-            project.analysis.fit()
-            project.analysis.show_fit_results()
+        project.analysis.fit() project.analysis.show_fit_results()
         """
         if not hasattr(self, 'fit_results') or self.fit_results is None:
             log.warning('No fit results available. Run fit() first.')
@@ -688,8 +680,8 @@ class Analysis:
         This ensures aliases and constraints are up-to-date before
         serialization or after parameter changes.
 
-        Args:
-            called_by_minimizer: Whether this is called during fitting.
+        Args:     called_by_minimizer: Whether this is called during
+        fitting.
         """
         # Apply constraints to sync dependent parameters
         if self.constraints._items:
@@ -704,8 +696,8 @@ class Analysis:
     def as_cif(self):
         """Serialize the analysis section to a CIF string.
 
-        Returns:
-            The analysis section represented as a CIF document string.
+        Returns:     The analysis section represented as a CIF document
+        string.
         """
         from easydiffraction.io.cif.serialize import analysis_to_cif
 

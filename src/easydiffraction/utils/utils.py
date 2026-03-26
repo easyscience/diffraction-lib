@@ -32,11 +32,9 @@ pooch.get_logger().setLevel('WARNING')  # Suppress pooch info messages
 def _validate_url(url: str) -> None:
     """Validate that a URL uses only safe HTTP/HTTPS schemes.
 
-    Args:
-        url: The URL to validate.
+    Args:     url: The URL to validate.
 
-    Raises:
-        ValueError: If the URL scheme is not HTTP or HTTPS.
+    Raises:     ValueError: If the URL scheme is not HTTP or HTTPS.
     """
     parsed = urlparse(url)
     if parsed.scheme not in ('http', 'https'):
@@ -102,8 +100,8 @@ def _fetch_tutorials_index() -> dict:
     (e.g., '0.8.0.post1'). For development versions, 'dev' is used.
 
     Returns:
-        dict: The tutorials index as a dictionary, or empty dict if
-            fetch fails.
+    dict: The tutorials index as a dictionary, or empty dict if
+    fetch fails.
     """
     version = _get_version_for_url()
     index_url = f'https://easyscience.github.io/diffraction-lib/{version}/tutorials/index.json'
@@ -128,21 +126,16 @@ def download_data(
     """Download a dataset by numeric ID using the remote diffraction
     index.
 
-    Example:
-        path = download_data(id=12, destination="data")
+    Example:     path = download_data(id=12, destination="data")
 
-    Args:
-        id: Numeric dataset id (e.g. 12).
-        destination: Directory to save the file into (created if
-            missing).
-        overwrite: Whether to overwrite the file if it already exists.
+    Args:     id: Numeric dataset id (e.g. 12).     destination:
+    Directory to save the file into (created if         missing).
+    overwrite: Whether to overwrite the file if it already exists.
 
-    Returns:
-        str: Full path to the downloaded file as string.
+    Returns:     str: Full path to the downloaded file as string.
 
-    Raises:
-        KeyError: If the id is not found in the index.
-        ValueError: If the resolved URL is not HTTP/HTTPS.
+    Raises:     KeyError: If the id is not found in the index.
+    ValueError: If the resolved URL is not HTTP/HTTPS.
     """
     index = _fetch_data_index()
     key = str(id)
@@ -197,12 +190,11 @@ def download_data(
 def package_version(package_name: str) -> str | None:
     """Get the installed version string of the specified package.
 
-    Args:
-        package_name (str): The name of the package to query.
+    Args:     package_name (str): The name of the package to query.
 
-    Returns:
-        str | None: The raw version string (may include local part,
-        e.g., '1.2.3+abc123'), or None if the package is not installed.
+    Returns:     str | None: The raw version string (may include local
+    part,     e.g., '1.2.3+abc123'), or None if the package is not
+    installed.
     """
     try:
         return version(package_name)
@@ -217,12 +209,10 @@ def stripped_package_version(package_name: str) -> str | None:
     Returns only the public version segment (e.g., '1.2.3' or
     '1.2.3.post4'), omitting any local segment (e.g., '+d136').
 
-    Args:
-        package_name (str): The name of the package to query.
+    Args:     package_name (str): The name of the package to query.
 
-    Returns:
-        str | None: The public version string, or None if the package
-        is not installed.
+    Returns:     str | None: The public version string, or None if the
+    package     is not installed.
     """
     v_str = package_version(package_name)
     if v_str is None:
@@ -238,18 +228,14 @@ def _is_dev_version(package_name: str) -> bool:
     """Check if the installed package version is a development/local
     version.
 
-    A version is considered "dev" if:
-    - The raw version contains '+dev', '+dirty', or '+devdirty' (local
-      suffixes from versioningit)
-    - The public version is '999.0.0' (versioningit default-tag
-      fallback)
+    A version is considered "dev" if: - The raw version contains '+dev',
+    '+dirty', or '+devdirty' (local   suffixes from versioningit) - The
+    public version is '999.0.0' (versioningit default-tag   fallback)
 
-    Args:
-        package_name (str): The name of the package to query.
+    Args:     package_name (str): The name of the package to query.
 
-    Returns:
-        bool: True if the version is a development version, False
-            otherwise.
+    Returns:     bool: True if the version is a development version,
+    False         otherwise.
     """
     raw_version = package_version(package_name)
     if raw_version is None:
@@ -271,12 +257,10 @@ def _get_version_for_url(package_name: str = 'easydiffraction') -> str:
     Returns the public version for released versions, or 'dev' for
     development/local versions.
 
-    Args:
-        package_name (str): The name of the package to query.
+    Args:     package_name (str): The name of the package to query.
 
-    Returns:
-        str: The version string to use in URLs ('dev' or a version like
-            '0.8.0.post1').
+    Returns:     str: The version string to use in URLs ('dev' or a
+    version like         '0.8.0.post1').
     """
     if _is_dev_version(package_name):
         return 'dev'
@@ -304,12 +288,11 @@ def _resolve_tutorial_url(url_template: str) -> str:
     """Replace {version} placeholder in URL template with actual
     version.
 
-    Args:
-        url_template (str): URL template containing {version}
-            placeholder.
+    Args:     url_template (str): URL template containing {version}
+    placeholder.
 
-    Returns:
-        str: URL with {version} replaced by actual version string.
+    Returns:     str: URL with {version} replaced by actual version
+    string.
     """
     version = _get_version_for_url()
     return url_template.replace('{version}', version)
@@ -355,21 +338,16 @@ def download_tutorial(
 ) -> str:
     """Download a tutorial notebook by numeric ID.
 
-    Example:
-        path = download_tutorial(id=1, destination="tutorials")
+    Example:     path = download_tutorial(id=1, destination="tutorials")
 
-    Args:
-        id: Numeric tutorial id (e.g. 1).
-        destination: Directory to save the file into (created if
-            missing).
-        overwrite: Whether to overwrite the file if it already exists.
+    Args:     id: Numeric tutorial id (e.g. 1).     destination:
+    Directory to save the file into (created if         missing).
+    overwrite: Whether to overwrite the file if it already exists.
 
-    Returns:
-        str: Full path to the downloaded file as string.
+    Returns:     str: Full path to the downloaded file as string.
 
-    Raises:
-        KeyError: If the id is not found in the index.
-        ValueError: If the resolved URL is not HTTP/HTTPS.
+    Raises:     KeyError: If the id is not found in the index.
+    ValueError: If the resolved URL is not HTTP/HTTPS.
     """
     index = _fetch_tutorials_index()
     key = str(id)
@@ -422,16 +400,13 @@ def download_all_tutorials(
 ) -> list[str]:
     """Download all available tutorial notebooks.
 
-    Example:
-        paths = download_all_tutorials(destination="tutorials")
+    Example:     paths = download_all_tutorials(destination="tutorials")
 
-    Args:
-        destination: Directory to save the files into (created if
-            missing).
-        overwrite: Whether to overwrite files if they already exist.
+    Args:     destination: Directory to save the files into (created if
+    missing).     overwrite: Whether to overwrite files if they already
+    exist.
 
-    Returns:
-        list[str]: List of full paths to the downloaded files.
+    Returns:     list[str]: List of full paths to the downloaded files.
     """
     index = _fetch_tutorials_index()
     if not index:
@@ -460,8 +435,7 @@ def download_all_tutorials(
 def show_version() -> None:
     """Print the installed version of the easydiffraction package.
 
-    Args:
-        None
+    Args:     None
     """
     current_ed_version = package_version('easydiffraction')
     console.print(f'Current easydiffraction v{current_ed_version}')
@@ -488,8 +462,7 @@ def render_cif(cif_text) -> None:
     """Display the CIF text as a formatted table in Jupyter Notebook or
     terminal.
 
-    Args:
-        cif_text: The CIF text to display.
+    Args:     cif_text: The CIF text to display.
     """
     # Split into lines
     lines: List[str] = [line for line in cif_text.splitlines()]
@@ -515,32 +488,25 @@ def tof_to_d(
     """Convert time-of-flight (TOF) to d-spacing using a quadratic
     calibration.
 
-    Model:
-        TOF = offset + linear * d + quad * d²
+    Model:     TOF = offset + linear * d + quad * d²
 
-    The function:
-      - Uses a linear fallback when the quadratic term is effectively
-        zero.
-      - Solves the quadratic for d and selects the smallest positive,
-        finite root.
-      - Returns NaN where no valid solution exists.
-      - Expects ``tof`` as a NumPy array; output matches its shape.
+    The function:   - Uses a linear fallback when the quadratic term is
+    effectively     zero.   - Solves the quadratic for d and selects the
+    smallest positive,     finite root.   - Returns NaN where no valid
+    solution exists.   - Expects ``tof`` as a NumPy array; output
+    matches its shape.
 
-    Args:
-        tof (np.ndarray): Time-of-flight values (µs). Must be a NumPy
-            array.
-        offset (float): Calibration offset (µs).
-        linear (float): Linear calibration coefficient (µs/Å).
-        quad (float): Quadratic calibration coefficient (µs/Å²).
-        quad_eps (float, optional): Threshold to treat ``quad`` as zero.
-            Defaults to 1e-20.
+    Args:     tof (np.ndarray): Time-of-flight values (µs). Must be a
+    NumPy         array.     offset (float): Calibration offset (µs).
+    linear (float): Linear calibration coefficient (µs/Å).     quad
+    (float): Quadratic calibration coefficient (µs/Å²).     quad_eps
+    (float, optional): Threshold to treat ``quad`` as zero. Defaults to
+    1e-20.
 
-    Returns:
-        np.ndarray: d-spacing values (Å), NaN where invalid.
+    Returns:     np.ndarray: d-spacing values (Å), NaN where invalid.
 
-    Raises:
-        TypeError: If ``tof`` is not a NumPy array or coefficients are
-            not real numbers.
+    Raises:     TypeError: If ``tof`` is not a NumPy array or
+    coefficients are         not real numbers.
     """
     # Type checks
     if not isinstance(tof, np.ndarray):
@@ -597,12 +563,10 @@ def tof_to_d(
 def twotheta_to_d(twotheta, wavelength):
     """Convert 2-theta to d-spacing using Bragg's law.
 
-    Parameters:
-        twotheta (float or np.ndarray): 2-theta angle in degrees.
-        wavelength (float): Wavelength in Å.
+    Parameters:     twotheta (float or np.ndarray): 2-theta angle in
+    degrees.     wavelength (float): Wavelength in Å.
 
-    Returns:
-        d (float or np.ndarray): d-spacing in Å.
+    Returns:     d (float or np.ndarray): d-spacing in Å.
     """
     # Convert twotheta from degrees to radians
     theta_rad = np.radians(twotheta / 2)
@@ -616,12 +580,10 @@ def twotheta_to_d(twotheta, wavelength):
 def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda):
     """Convert sin(theta)/lambda to d-spacing.
 
-    Parameters:
-        sin_theta_over_lambda (float or np.ndarray): sin(theta)/lambda
-            in 1/Å.
+    Parameters:     sin_theta_over_lambda (float or np.ndarray):
+    sin(theta)/lambda         in 1/Å.
 
-    Returns:
-        d (float or np.ndarray): d-spacing in Å.
+    Returns:     d (float or np.ndarray): d-spacing in Å.
     """
     # Avoid division by zero
     with np.errstate(divide='ignore', invalid='ignore'):
@@ -635,15 +597,12 @@ def get_value_from_xye_header(file_path, key):
     """Extracts a floating point value from the first line of the file,
     corresponding to the given key.
 
-    Parameters:
-        file_path (str): Path to the input file.
-        key (str): The key to extract ('DIFC' or 'two_theta').
+    Parameters:     file_path (str): Path to the input file.     key
+    (str): The key to extract ('DIFC' or 'two_theta').
 
-    Returns:
-        float: The extracted value.
+    Returns:     float: The extracted value.
 
-    Raises:
-        ValueError: If the key is not found.
+    Raises:     ValueError: If the key is not found.
     """
     pattern = rf'{key}\s*=\s*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)'
 
@@ -661,34 +620,25 @@ def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
     """Parse a CIF-style numeric string into a `ufloat` with an optional
     uncertainty.
 
-    Examples of supported input:
-    - "3.566"       → ufloat(3.566, nan)
-    - "3.566(2)"    → ufloat(3.566, 0.002)
-    - None          → ufloat(default, nan)
+    Examples of supported input: - "3.566"       → ufloat(3.566, nan) -
+    "3.566(2)"    → ufloat(3.566, 0.002) - None          →
+    ufloat(default, nan)
 
-    Behavior:
-    - If the input string contains a value with parentheses (e.g.
-      "3.566(2)"), the number in parentheses is interpreted as an
-      estimated standard deviation (esd) in the last digit(s).
-    - If the input string has no parentheses, an uncertainty of NaN is
-      assigned to indicate "no esd provided".
-    - If parsing fails, the function falls back to the given `default`
-      value with uncertainty NaN.
+    Behavior: - If the input string contains a value with parentheses
+    (e.g.   "3.566(2)"), the number in parentheses is interpreted as an
+    estimated standard deviation (esd) in the last digit(s). - If the
+    input string has no parentheses, an uncertainty of NaN is   assigned
+    to indicate "no esd provided". - If parsing fails, the function
+    falls back to the given `default`   value with uncertainty NaN.
 
-    Parameters
-    ----------
-    s : str or None
-        Numeric string in CIF format (e.g. "3.566", "3.566(2)") or None.
-    default : float or None, optional
-        Default value to use if `s` is None or parsing fails.
-        Defaults to None.
+    Parameters ---------- s : str or None     Numeric string in CIF
+    format (e.g. "3.566", "3.566(2)") or None. default : float or None,
+    optional     Default value to use if `s` is None or parsing fails.
+    Defaults to None.
 
-    Returns:
-    -------
-    UFloat
-        An `uncertainties.UFloat` object with the parsed value and
-        uncertainty. The uncertainty will be NaN if not specified or
-        parsing failed.
+    Returns: ------- UFloat     An `uncertainties.UFloat` object with
+    the parsed value and     uncertainty. The uncertainty will be NaN if
+    not specified or     parsing failed.
     """
     if s is None:
         return ufloat(default, np.nan)

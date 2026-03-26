@@ -93,8 +93,7 @@ class SpaceGroup(CategoryItem):
     def _name_h_m_allowed_values(self) -> list[str]:
         """Return the list of recognised Hermann–Mauguin short symbols.
 
-        Returns:
-            list[str]: All short H-M symbols known to *cryspy*.
+        Returns:     list[str]: All short H-M symbols known to *cryspy*.
         """
         return ACCESIBLE_NAME_HM_SHORT
 
@@ -103,9 +102,8 @@ class SpaceGroup(CategoryItem):
         """Return allowed IT coordinate system codes for the current
         group.
 
-        Returns:
-            list[str]: Coordinate-system codes, or ``['']`` when none
-                are defined.
+        Returns:     list[str]: Coordinate-system codes, or ``['']``
+        when none         are defined.
         """
         name = self.name_h_m.value
         it_number = get_it_number_by_name_hm_short(name)
@@ -117,8 +115,7 @@ class SpaceGroup(CategoryItem):
     def _it_coordinate_system_code_default_value(self) -> str:
         """Return the default IT coordinate system code.
 
-        Returns:
-            str: First element of the allowed codes list.
+        Returns:     str: First element of the allowed codes list.
         """
         return self._it_coordinate_system_code_allowed_values[0]
 
@@ -131,8 +128,8 @@ class SpaceGroup(CategoryItem):
         """Hermann-Mauguin symbol of the space group.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._name_h_m
 
@@ -146,8 +143,8 @@ class SpaceGroup(CategoryItem):
         """A qualifier identifying which setting in IT is used.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._it_coordinate_system_code
 

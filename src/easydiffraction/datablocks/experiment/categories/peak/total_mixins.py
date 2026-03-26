@@ -90,11 +90,11 @@ class TotalBroadeningMixin:
 
     @property
     def damp_q(self) -> Parameter:
-        """Instrumental Q-resolution damping factor (affects high-r PDF peak amplitude) (Å⁻¹).
+        """Instrumental Q-resolution damping factor (affects high-r PDF
+        peak amplitude) (Å⁻¹).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._damp_q
 
@@ -104,11 +104,11 @@ class TotalBroadeningMixin:
 
     @property
     def broad_q(self) -> Parameter:
-        """Quadratic PDF peak broadening coefficient (thermal and model uncertainty contribution) (Å⁻²).
+        """Quadratic PDF peak broadening coefficient (thermal and model
+        uncertainty contribution) (Å⁻²).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_q
 
@@ -118,11 +118,11 @@ class TotalBroadeningMixin:
 
     @property
     def cutoff_q(self) -> Parameter:
-        """Q-value cutoff applied to model PDF for Fourier transform (controls real-space resolution) (Å⁻¹).
+        """Q-value cutoff applied to model PDF for Fourier transform
+        (controls real-space resolution) (Å⁻¹).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._cutoff_q
 
@@ -134,9 +134,8 @@ class TotalBroadeningMixin:
     def sharp_delta_1(self) -> Parameter:
         """PDF peak sharpening coefficient (1/r dependence) (Å).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._sharp_delta_1
 
@@ -148,9 +147,8 @@ class TotalBroadeningMixin:
     def sharp_delta_2(self) -> Parameter:
         """PDF peak sharpening coefficient (1/r² dependence) (Å²).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._sharp_delta_2
 
@@ -160,11 +158,11 @@ class TotalBroadeningMixin:
 
     @property
     def damp_particle_diameter(self) -> Parameter:
-        """Particle diameter for spherical envelope damping correction in PDF (Å).
+        """Particle diameter for spherical envelope damping correction
+        in PDF (Å).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._damp_particle_diameter
 

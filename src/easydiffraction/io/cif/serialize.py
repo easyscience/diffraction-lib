@@ -26,10 +26,9 @@ def format_value(value) -> str:
     """Format a single CIF value, quoting strings with whitespace, and
     format floats with global precision.
 
-    .. note::
-        The precision must be high enough so that the minimizer's
-        finite-difference Jacobian probes (typically ~1e-8 relative)
-        survive the float→string→float round-trip through CIF.
+    .. note::     The precision must be high enough so that the
+    minimizer's     finite-difference Jacobian probes (typically ~1e-8
+    relative)     survive the float→string→float round-trip through CIF.
     """
     width = 12
     precision = 8

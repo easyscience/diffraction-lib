@@ -5,6 +5,6 @@
 This subpackage implements plotting engines used by the high-level
 plotting facade:
 
-- :mod:`.ascii` for terminal-friendly ASCII plots.
-- :mod:`.plotly` for interactive plots in notebooks or browsers.
+- :mod:`.ascii` for terminal-friendly ASCII plots. - :mod:`.plotly` for
+interactive plots in notebooks or browsers.
 """

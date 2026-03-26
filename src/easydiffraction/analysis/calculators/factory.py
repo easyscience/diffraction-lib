@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Calculator factory — delegates to ``FactoryBase``.
 
-Overrides ``_supported_map`` to filter out calculators whose engines
-are not importable in the current environment.
+Overrides ``_supported_map`` to filter out calculators whose engines are
+not importable in the current environment.
 """
 
 from __future__ import annotations

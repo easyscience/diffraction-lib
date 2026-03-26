@@ -176,8 +176,8 @@ class CategoryCollection(CollectionBase):
         """Set ``_need_categories_update`` on the parent datablock.
 
         Called whenever the collection content changes (items added or
-        removed) so that subsequent ``_update_categories()`` calls
-        re-run all category updates.
+        removed) so that subsequent ``_update_categories()`` calls re-
+        run all category updates.
         """
         parent = getattr(self, '_parent', None)
         if parent is not None and hasattr(parent, '_need_categories_update'):
@@ -218,8 +218,7 @@ class CategoryCollection(CollectionBase):
     def add(self, item) -> None:
         """Insert or replace a pre-built item into the collection.
 
-        Args:
-            item: A ``CategoryItem`` instance to add.
+        Args:     item: A ``CategoryItem`` instance to add.
         """
         self[item._identity.category_entry_name] = item
         self._mark_parent_dirty()
@@ -230,8 +229,7 @@ class CategoryCollection(CollectionBase):
         A default instance of the collection's item type is created,
         then each keyword argument is applied via ``setattr``.
 
-        Args:
-            **kwargs: Attribute names and values for the new item.
+        Args:     **kwargs: Attribute names and values for the new item.
         """
         child_obj = self._item_type()
 

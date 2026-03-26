@@ -96,9 +96,8 @@ class ConsoleManager:
     def _detect_width() -> int:
         """Detect a suitable console width for the shared Console.
 
-        Returns:
-            The detected terminal width, clamped at
-            ``_MIN_CONSOLE_WIDTH`` to avoid cramped layouts.
+        Returns:     The detected terminal width, clamped at
+        ``_MIN_CONSOLE_WIDTH`` to avoid cramped layouts.
         """
         min_width = ConsoleManager._MIN_CONSOLE_WIDTH
         try:
@@ -136,11 +135,10 @@ class LoggerConfig:
     ) -> None:
         """Install Rich handler and optional Jupyter traceback support.
 
-        Args:
-            logger: Logger instance to attach handlers to.
-            level: Minimum log level to emit.
-            rich_tracebacks: Whether to enable Rich tracebacks.
-            mode: Output mode name ("compact" or "verbose").
+        Args:     logger: Logger instance to attach handlers to. level:
+        Minimum log level to emit.     rich_tracebacks: Whether to
+        enable Rich tracebacks.     mode: Output mode name ("compact" or
+        "verbose").
         """
         logger.handlers.clear()
         logger.propagate = False
@@ -177,11 +175,9 @@ class LoggerConfig:
     ) -> None:
         """Configure the logger with RichHandler and exception hooks.
 
-        Args:
-            logger: Logger instance to configure.
-            mode: Output mode (compact or verbose).
-            level: Minimum log level to emit.
-            rich_tracebacks: Whether to enable Rich tracebacks.
+        Args:     logger: Logger instance to configure.     mode: Output
+        mode (compact or verbose).     level: Minimum log level to emit.
+        rich_tracebacks: Whether to enable Rich tracebacks.
         """
         LoggerConfig.setup_handlers(
             logger,
@@ -206,8 +202,7 @@ class ExceptionHookManager:
     def install_verbose_hook(logger: logging.Logger) -> None:
         """Install a verbose exception hook that prints rich tracebacks.
 
-        Args:
-            logger: Logger used to emit the exception information.
+        Args:     logger: Logger used to emit the exception information.
         """
         if not hasattr(Logger, '_orig_excepthook'):
             Logger._orig_excepthook = sys.excepthook  # type: ignore[attr-defined]
@@ -235,8 +230,7 @@ class ExceptionHookManager:
     def install_compact_hook(logger: logging.Logger) -> None:
         """Install a compact exception hook that logs message-only.
 
-        Args:
-            logger: Logger used to emit the error message.
+        Args:     logger: Logger used to emit the error message.
         """
         if not hasattr(Logger, '_orig_excepthook'):
             Logger._orig_excepthook = sys.excepthook  # type: ignore[attr-defined]
@@ -263,13 +257,11 @@ class ExceptionHookManager:
         """Build a Jupyter custom exception callback that logs only the
         message.
 
-        Args:
-            logger: Logger used to emit error messages.
+        Args:     logger: Logger used to emit error messages.
 
-        Returns:
-            A callable suitable for IPython's set_custom_exc that
-            suppresses full tracebacks and logs only the exception
-            message.
+        Returns:     A callable suitable for IPython's set_custom_exc
+        that     suppresses full tracebacks and logs only the exception
+        message.
         """
 
         def suppress_jupyter_traceback(*args, **kwargs):
@@ -289,8 +281,7 @@ class ExceptionHookManager:
         """Install a Jupyter/IPython custom exception handler that
         suppresses tracebacks.
 
-        Args:
-            logger: Logger used to emit error messages.
+        Args:     logger: Logger used to emit error messages.
         """
         try:
             from IPython import get_ipython
@@ -313,9 +304,8 @@ class ExceptionHookManager:
 class Logger:
     """Centralized logging with Rich formatting and two modes.
 
-    Environment variables:
-    ED_LOG_MODE: set default mode ('verbose' or 'compact')
-    ED_LOG_LEVEL: set default level ('DEBUG', 'INFO', etc.)
+    Environment variables: ED_LOG_MODE: set default mode ('verbose' or
+    'compact') ED_LOG_LEVEL: set default level ('DEBUG', 'INFO', etc.)
     """
 
     # --- Enums ---
@@ -371,13 +361,12 @@ class Logger:
     ) -> None:
         """Configure logger.
 
-        mode: default COMPACT in Jupyter else VERBOSE
-        level: minimum log level
-        rich_tracebacks: override automatic choice
+        mode: default COMPACT in Jupyter else VERBOSE level: minimum log
+        level rich_tracebacks: override automatic choice
 
-        Environment variables:
-        ED_LOG_MODE: set default mode ('verbose' or 'compact')
-        ED_LOG_LEVEL: set default level ('DEBUG', 'INFO', etc.)
+        Environment variables: ED_LOG_MODE: set default mode ('verbose'
+        or 'compact') ED_LOG_LEVEL: set default level ('DEBUG', 'INFO',
+        etc.)
         """
         env_mode = os.getenv('ED_LOG_MODE')
         env_level = os.getenv('ED_LOG_LEVEL')
@@ -514,9 +503,8 @@ class ConsolePrinter:
         """Print objects to the console with left padding.
 
         - Renderables (Rich types like Text, Table, Panel, etc.) are
-          kept as-is.
-        - Non-renderables (ints, floats, Path, etc.) are converted to
-          str().
+        kept as-is. - Non-renderables (ints, floats, Path, etc.) are
+        converted to   str().
         """
         safe_objects = []
         for obj in objects:

@@ -42,8 +42,7 @@ class Structure(DatablockItem):
     def name(self) -> str:
         """Name identifier for this structure.
 
-        Returns:
-            str: The structure's name.
+        Returns:     str: The structure's name.
         """
         return self._name
 
@@ -52,8 +51,7 @@ class Structure(DatablockItem):
     def name(self, new: str) -> None:
         """Set the name identifier for this structure.
 
-        Args:
-            new (str): New name string.
+        Args:     new (str): New name string.
         """
         self._name = new
 
@@ -71,8 +69,7 @@ class Structure(DatablockItem):
     def cell(self, new: Cell) -> None:
         """Replace the unit-cell category for this structure.
 
-        Args:
-            new (Cell): New unit-cell instance.
+        Args:     new (Cell): New unit-cell instance.
         """
         self._cell = new
 
@@ -85,8 +82,7 @@ class Structure(DatablockItem):
     def cell_type(self, new_type: str) -> None:
         """Switch to a different unit-cell type.
 
-        Args:
-            new_type: Cell tag (e.g. ``'default'``).
+        Args:     new_type: Cell tag (e.g. ``'default'``).
         """
         supported_tags = CellFactory.supported_tags()
         if new_type not in supported_tags:
@@ -124,8 +120,7 @@ class Structure(DatablockItem):
     def space_group(self, new: SpaceGroup) -> None:
         """Replace the space-group category for this structure.
 
-        Args:
-            new (SpaceGroup): New space-group instance.
+        Args:     new (SpaceGroup): New space-group instance.
         """
         self._space_group = new
 
@@ -138,8 +133,7 @@ class Structure(DatablockItem):
     def space_group_type(self, new_type: str) -> None:
         """Switch to a different space-group type.
 
-        Args:
-            new_type: Space-group tag (e.g. ``'default'``).
+        Args:     new_type: Space-group tag (e.g. ``'default'``).
         """
         supported_tags = SpaceGroupFactory.supported_tags()
         if new_type not in supported_tags:
@@ -177,8 +171,7 @@ class Structure(DatablockItem):
     def atom_sites(self, new: AtomSites) -> None:
         """Replace the atom-sites collection for this structure.
 
-        Args:
-            new (AtomSites): New atom-sites collection.
+        Args:     new (AtomSites): New atom-sites collection.
         """
         self._atom_sites = new
 
@@ -191,8 +184,7 @@ class Structure(DatablockItem):
     def atom_sites_type(self, new_type: str) -> None:
         """Switch to a different atom-sites collection type.
 
-        Args:
-            new_type: Atom-sites tag (e.g. ``'default'``).
+        Args:     new_type: Atom-sites tag (e.g. ``'default'``).
         """
         supported_tags = AtomSitesFactory.supported_tags()
         if new_type not in supported_tags:

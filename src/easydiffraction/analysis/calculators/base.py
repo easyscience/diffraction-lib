@@ -31,7 +31,8 @@ class CalculatorBase(ABC):
         experiment: ExperimentBase,
         called_by_minimizer: bool,
     ) -> None:
-        """Calculate structure factors for a single structure and
+        """
+        Calculate structure factors for a single structure and
         experiment.
         """
         pass
@@ -43,16 +44,24 @@ class CalculatorBase(ABC):
         experiment: ExperimentBase,
         called_by_minimizer: bool,
     ) -> np.ndarray:
-        """Calculate the diffraction pattern for a single structure and
+        """
+        Calculate the diffraction pattern for a single structure and
         experiment.
 
-        Args:
-            structure: The structure object.
-            experiment: The experiment object.
-            called_by_minimizer: Whether the calculation is called by a
-                minimizer.
 
-        Returns:
+        Parameters
+        ----------
+        structure : Structures
+            The structure object.
+        experiment : ExperimentBase
+            The experiment object.
+        called_by_minimizer : bool
+            Whether the calculation is called by a minimizer. Default is
+            False.
+
+        Returns
+        -------
+        np.ndarray
             The calculated diffraction pattern as a NumPy array.
         """
         pass

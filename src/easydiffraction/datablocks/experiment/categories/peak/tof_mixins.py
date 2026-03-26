@@ -110,11 +110,11 @@ class TofBroadeningMixin:
 
     @property
     def broad_gauss_sigma_0(self) -> Parameter:
-        """Gaussian broadening coefficient (instrumental resolution) (µs²).
+        """Gaussian broadening coefficient (instrumental resolution)
+        (µs²).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_gauss_sigma_0
 
@@ -124,11 +124,11 @@ class TofBroadeningMixin:
 
     @property
     def broad_gauss_sigma_1(self) -> Parameter:
-        """Gaussian broadening coefficient (dependent on d-spacing) (µs/Å).
+        """Gaussian broadening coefficient (dependent on d-spacing)
+        (µs/Å).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_gauss_sigma_1
 
@@ -138,11 +138,11 @@ class TofBroadeningMixin:
 
     @property
     def broad_gauss_sigma_2(self) -> Parameter:
-        """Gaussian broadening coefficient (instrument-dependent term) (µs²/Å²).
+        """Gaussian broadening coefficient (instrument-dependent term)
+        (µs²/Å²).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_gauss_sigma_2
 
@@ -152,11 +152,11 @@ class TofBroadeningMixin:
 
     @property
     def broad_lorentz_gamma_0(self) -> Parameter:
-        """Lorentzian broadening coefficient (dependent on microstrain effects) (µs).
+        """Lorentzian broadening coefficient (dependent on microstrain
+        effects) (µs).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_lorentz_gamma_0
 
@@ -166,11 +166,11 @@ class TofBroadeningMixin:
 
     @property
     def broad_lorentz_gamma_1(self) -> Parameter:
-        """Lorentzian broadening coefficient (dependent on d-spacing) (µs/Å).
+        """Lorentzian broadening coefficient (dependent on d-spacing)
+        (µs/Å).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_lorentz_gamma_1
 
@@ -180,11 +180,11 @@ class TofBroadeningMixin:
 
     @property
     def broad_lorentz_gamma_2(self) -> Parameter:
-        """Lorentzian broadening coefficient (instrument-dependent term) (µs²/Å²).
+        """Lorentzian broadening coefficient (instrument-dependent term)
+        (µs²/Å²).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_lorentz_gamma_2
 
@@ -194,11 +194,11 @@ class TofBroadeningMixin:
 
     @property
     def broad_mix_beta_0(self) -> Parameter:
-        """Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles (deg).
+        """Mixing parameter. Defines the ratio of Gaussian to Lorentzian
+        contributions in TOF profiles (deg).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_mix_beta_0
 
@@ -208,11 +208,11 @@ class TofBroadeningMixin:
 
     @property
     def broad_mix_beta_1(self) -> Parameter:
-        """Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles (deg).
+        """Mixing parameter. Defines the ratio of Gaussian to Lorentzian
+        contributions in TOF profiles (deg).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._broad_mix_beta_1
 
@@ -252,9 +252,8 @@ class IkedaCarpenterAsymmetryMixin:
     def asym_alpha_0(self) -> Parameter:
         """Ikeda-Carpenter asymmetry parameter α₀.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._asym_alpha_0
 
@@ -266,9 +265,8 @@ class IkedaCarpenterAsymmetryMixin:
     def asym_alpha_1(self) -> Parameter:
         """Ikeda-Carpenter asymmetry parameter α₁.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._asym_alpha_1
 

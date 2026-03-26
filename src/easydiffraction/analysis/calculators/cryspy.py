@@ -64,13 +64,10 @@ class CryspyCalculator(CalculatorBase):
         """Raises a NotImplementedError as HKL calculation is not
         implemented.
 
-        Args:
-            structure: The structure to calculate structure
-                factors for.
-            experiment: The experiment associated with the sample
-                models.
-            called_by_minimizer: Whether the calculation is called by a
-                minimizer.
+        Args:     structure: The structure to calculate structure
+        factors for.     experiment: The experiment associated with the
+        sample         models.     called_by_minimizer: Whether the
+        calculation is called by a         minimizer.
         """
         combined_name = f'{structure.name}_{experiment.name}'
 
@@ -122,21 +119,18 @@ class CryspyCalculator(CalculatorBase):
         """Calculates the diffraction pattern using Cryspy for the given
         structure and experiment.
 
-        We only recreate the cryspy_obj if this method is
-         - NOT called by the minimizer, or
-         - the cryspy_dict is NOT yet created.
-        In other cases, we are modifying the existing cryspy_dict
-        This allows significantly speeding up the calculation
+        We only recreate the cryspy_obj if this method is  - NOT called
+        by the minimizer, or  - the cryspy_dict is NOT yet created. In
+        other cases, we are modifying the existing cryspy_dict This
+        allows significantly speeding up the calculation
 
-        Args:
-            structure: The structure to calculate the pattern for.
-            experiment: The experiment associated with the structure.
-            called_by_minimizer: Whether the calculation is called by a
-                minimizer.
+        Args:     structure: The structure to calculate the pattern for.
+        experiment: The experiment associated with the structure.
+        called_by_minimizer: Whether the calculation is called by a
+        minimizer.
 
-        Returns:
-            The calculated diffraction pattern as a NumPy array or a
-                list of floats.
+        Returns:     The calculated diffraction pattern as a NumPy array
+        or a         list of floats.
         """
         combined_name = f'{structure.name}_{experiment.name}'
 
@@ -197,12 +191,10 @@ class CryspyCalculator(CalculatorBase):
         """Recreates the Cryspy dictionary for the given structure and
         experiment.
 
-        Args:
-            structure: The structure to update.
-            experiment: The experiment to update.
+        Args:     structure: The structure to update.     experiment:
+        The experiment to update.
 
-        Returns:
-            The updated Cryspy dictionary.
+        Returns:     The updated Cryspy dictionary.
         """
         combined_name = f'{structure.name}_{experiment.name}'
         cryspy_dict = copy.deepcopy(self._cryspy_dicts[combined_name])
@@ -311,12 +303,10 @@ class CryspyCalculator(CalculatorBase):
         """Recreates the Cryspy object for the given structure and
         experiment.
 
-        Args:
-            structure: The structure to recreate.
-            experiment: The experiment to recreate.
+        Args:     structure: The structure to recreate.     experiment:
+        The experiment to recreate.
 
-        Returns:
-            The recreated Cryspy object.
+        Returns:     The recreated Cryspy object.
         """
         cryspy_obj = str_to_globaln('')
 
@@ -341,11 +331,10 @@ class CryspyCalculator(CalculatorBase):
     ) -> str:
         """Converts a structure to a Cryspy CIF string.
 
-        Args:
-            structure: The structure to convert.
+        Args:     structure: The structure to convert.
 
-        Returns:
-            The Cryspy CIF string representation of the structure.
+        Returns:     The Cryspy CIF string representation of the
+        structure.
         """
         return structure.as_cif
 
@@ -356,13 +345,11 @@ class CryspyCalculator(CalculatorBase):
     ) -> str:
         """Converts an experiment to a Cryspy CIF string.
 
-        Args:
-            experiment: The experiment to convert.
-            linked_structure: The structure linked to the
-                experiment.
+        Args:     experiment: The experiment to convert.
+        linked_structure: The structure linked to the experiment.
 
-        Returns:
-            The Cryspy CIF string representation of the experiment.
+        Returns:     The Cryspy CIF string representation of the
+        experiment.
         """
         # Try to get experiment attributes
         expt_type = getattr(experiment, 'type', None)

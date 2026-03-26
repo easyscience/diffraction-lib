@@ -3,8 +3,8 @@
 """Base factory with registration, lookup, and context-dependent
 defaults.
 
-Concrete factories inherit from ``FactoryBase`` and only need to
-define ``_default_rules``.
+Concrete factories inherit from ``FactoryBase`` and only need to define
+``_default_rules``.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ class FactoryBase:
     Subclasses must set:
 
     * ``_default_rules`` -- mapping of ``frozenset`` conditions to tag
-      strings.  Use ``frozenset(): 'tag'`` for a universal default.
+    strings.  Use ``frozenset(): 'tag'`` for a universal default.
 
     The ``__init_subclass__`` hook ensures every subclass gets its own
     independent ``_registry`` list.
@@ -52,9 +52,8 @@ class FactoryBase:
 
         Usage::
 
-            @SomeFactory.register
-            class MyClass(SomeBase):
-                type_info = TypeInfo(...)
+        @SomeFactory.register class MyClass(SomeBase):     type_info =
+        TypeInfo(...)
 
         Returns the class unmodified.
         """
@@ -87,15 +86,12 @@ class FactoryBase:
         biggest subset of the given conditions wins.  A rule with an
         empty key (``frozenset()``) acts as a universal fallback.
 
-        Args:
-            **conditions: Experimental-axis values, e.g.
-                ``scattering_type=ScatteringTypeEnum.BRAGG``.
+        Args:     **conditions: Experimental-axis values, e.g.
+        ``scattering_type=ScatteringTypeEnum.BRAGG``.
 
-        Returns:
-            The resolved default tag string.
+        Returns:     The resolved default tag string.
 
-        Raises:
-            ValueError: If no rule matches the given conditions.
+        Raises:     ValueError: If no rule matches the given conditions.
         """
         condition_set = frozenset(conditions.items())
         best_match_tag: str | None = None
@@ -121,12 +117,10 @@ class FactoryBase:
     def create(cls, tag: str, **kwargs) -> Any:
         """Instantiate a registered class by *tag*.
 
-        Args:
-            tag: ``type_info.tag`` value.
-            **kwargs: Forwarded to the class constructor.
+        Args:     tag: ``type_info.tag`` value.     **kwargs: Forwarded
+        to the class constructor.
 
-        Raises:
-            ValueError: If *tag* is not in the registry.
+        Raises:     ValueError: If *tag* is not in the registry.
         """
         supported = cls._supported_map()
         if tag not in supported:
@@ -139,8 +133,7 @@ class FactoryBase:
 
         Combines ``default_tag(**conditions)`` with ``create(tag)``.
 
-        Args:
-            **conditions: Experimental-axis values.
+        Args:     **conditions: Experimental-axis values.
         """
         tag = cls.default_tag(**conditions)
         return cls.create(tag)
@@ -161,12 +154,11 @@ class FactoryBase:
     ) -> List[Type]:
         """Return classes matching conditions and/or calculator.
 
-        Args:
-            calculator: Optional ``CalculatorEnum`` value.
-            sample_form: Optional ``SampleFormEnum`` value.
-            scattering_type: Optional ``ScatteringTypeEnum`` value.
-            beam_mode: Optional ``BeamModeEnum`` value.
-            radiation_probe: Optional ``RadiationProbeEnum`` value.
+        Args:     calculator: Optional ``CalculatorEnum`` value.
+        sample_form: Optional ``SampleFormEnum`` value. scattering_type:
+        Optional ``ScatteringTypeEnum`` value. beam_mode: Optional
+        ``BeamModeEnum`` value.     radiation_probe: Optional
+        ``RadiationProbeEnum`` value.
         """
         result = []
         for klass in cls._supported_map().values():
@@ -200,12 +192,11 @@ class FactoryBase:
     ) -> None:
         """Pretty-print a table of supported types.
 
-        Args:
-            calculator: Optional ``CalculatorEnum`` filter.
-            sample_form: Optional ``SampleFormEnum`` filter.
-            scattering_type: Optional ``ScatteringTypeEnum`` filter.
-            beam_mode: Optional ``BeamModeEnum`` filter.
-            radiation_probe: Optional ``RadiationProbeEnum`` filter.
+        Args:     calculator: Optional ``CalculatorEnum`` filter.
+        sample_form: Optional ``SampleFormEnum`` filter.
+        scattering_type: Optional ``ScatteringTypeEnum`` filter.
+        beam_mode: Optional ``BeamModeEnum`` filter. radiation_probe:
+        Optional ``RadiationProbeEnum`` filter.
         """
         matching = cls.supported_for(
             calculator=calculator,

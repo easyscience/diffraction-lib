@@ -123,9 +123,9 @@ class DatablockCollection(CollectionBase):
 
     Each item is a DatablockItem.
 
-    Subclasses provide explicit ``add_from_*`` convenience methods
-    that delegate to the corresponding factory classmethods, then
-    call :meth:`add` with the resulting item.
+    Subclasses provide explicit ``add_from_*`` convenience methods that
+    delegate to the corresponding factory classmethods, then call
+    :meth:`add` with the resulting item.
     """
 
     def _key_for(self, item):
@@ -135,9 +135,8 @@ class DatablockCollection(CollectionBase):
     def add(self, item) -> None:
         """Add a pre-built item to the collection.
 
-        Args:
-            item: A ``DatablockItem`` instance (e.g. a ``Structure``
-                or ``ExperimentBase`` subclass).
+        Args:     item: A ``DatablockItem`` instance (e.g. a
+        ``Structure``         or ``ExperimentBase`` subclass).
         """
         self[item._identity.datablock_entry_name] = item
 

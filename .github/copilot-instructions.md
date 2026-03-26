@@ -42,7 +42,7 @@
   and UPPER_SNAKE_CASE for constants.
 - Use `from __future__ import annotations` in every module.
 - Type-annotate all public function signatures.
-- Docstrings on all public classes and methods (Google style).
+- Docstrings on all public classes and methods (numpy style).
 - Prefer flat over nested, explicit over clever.
 - Write straightforward code; do not add defensive checks for unlikely
   edge cases.

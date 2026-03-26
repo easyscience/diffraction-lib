@@ -71,9 +71,8 @@ class ShelxExtinction(CategoryItem):
     def mosaicity(self) -> Parameter:
         """Mosaicity value for extinction correction (deg).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._mosaicity
 
@@ -85,9 +84,8 @@ class ShelxExtinction(CategoryItem):
     def radius(self) -> Parameter:
         """Crystal radius for extinction correction (µm).
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._radius
 

@@ -68,15 +68,13 @@ class TableRenderer(RendererBase):
     def render(self, df, display_handle: Any | None = None) -> Any:
         """Render a DataFrame as a table using the active backend.
 
-        Args:
-            df: DataFrame with a two-level column index where the
-                second level provides per-column alignment.
-            display_handle: Optional environment-specific handle used
-                to update an existing output area in-place (e.g., an
-                IPython DisplayHandle or a terminal live handle).
+        Args:     df: DataFrame with a two-level column index where the
+        second level provides per-column alignment.     display_handle:
+        Optional environment-specific handle used         to update an
+        existing output area in-place (e.g., an         IPython
+        DisplayHandle or a terminal live handle).
 
-        Returns:
-            Backend-specific return value (usually ``None``).
+        Returns:     Backend-specific return value (usually ``None``).
         """
         # Work on a copy to avoid mutating the original DataFrame
         df = df.copy()
@@ -101,8 +99,8 @@ class TableRendererFactory(RendererFactoryBase):
         """Build registry, adapting available engines to the
         environment.
 
-        - In Jupyter: expose both 'rich' and 'pandas'.
-        - In terminal: expose only 'rich' (pandas is notebook-only).
+        - In Jupyter: expose both 'rich' and 'pandas'. - In terminal:
+        expose only 'rich' (pandas is notebook-only).
         """
         base = {
             TableEngineEnum.RICH.value: {

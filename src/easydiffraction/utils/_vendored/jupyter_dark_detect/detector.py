@@ -14,14 +14,11 @@ from typing import Optional
 def is_dark() -> bool:
     """Check if Jupyter Notebook/Lab is running in dark mode.
 
-    This function attempts multiple detection strategies:
-    1. JupyterLab theme settings files
-    2. VS Code settings (when running in VS Code)
-    3. JavaScript DOM inspection
-    4. System preferences (macOS)
+    This function attempts multiple detection strategies: 1. JupyterLab
+    theme settings files 2. VS Code settings (when running in VS Code)
+    3. JavaScript DOM inspection 4. System preferences (macOS)
 
-    Returns:
-        bool: True if dark mode is detected, False otherwise
+    Returns:     bool: True if dark mode is detected, False otherwise
     """
     # Try JupyterLab settings first
     result = _check_jupyterlab_settings()

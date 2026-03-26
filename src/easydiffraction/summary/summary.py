@@ -18,8 +18,7 @@ class Summary:
     def __init__(self, project) -> None:
         """Initialize the summary with a reference to the project.
 
-        Args:
-            project: The Project instance this summary belongs to.
+        Args:     project: The Project instance this summary belongs to.
         """
         self.project = project
 

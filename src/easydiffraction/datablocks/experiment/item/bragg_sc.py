@@ -48,8 +48,8 @@ class CwlScExperiment(ScExperimentBase):
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """Load measured data from an ASCII file into the data category.
 
-        The file format is space/column separated with 5 columns:
-        ``h k l Iobs sIobs``.
+        The file format is space/column separated with 5 columns: ``h k
+        l Iobs sIobs``.
         """
         try:
             data = np.loadtxt(data_path)
@@ -112,8 +112,8 @@ class TofScExperiment(ScExperimentBase):
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """Load measured data from an ASCII file into the data category.
 
-        The file format is space/column separated with 6 columns:
-        ``h k l Iobs sIobs wavelength``.
+        The file format is space/column separated with 6 columns: ``h k
+        l Iobs sIobs wavelength``.
         """
         try:
             data = np.loadtxt(data_path)

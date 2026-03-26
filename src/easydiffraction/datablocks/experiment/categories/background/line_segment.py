@@ -97,8 +97,8 @@ class LineSegment(CategoryItem):
         """Identifier for this background line segment.
 
         Reading this property returns the underlying
-        ``StringDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._id
 
@@ -108,11 +108,12 @@ class LineSegment(CategoryItem):
 
     @property
     def x(self) -> NumericDescriptor:
-        """X-coordinates used to create many straight-line segments representing the background in a calculated diffractogram.
+        """X-coordinates used to create many straight-line segments
+        representing the background in a calculated diffractogram.
 
         Reading this property returns the underlying
-        ``NumericDescriptor` object.
-        Assigning to it updates the parameter value.
+        ``NumericDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._x
 
@@ -122,11 +123,11 @@ class LineSegment(CategoryItem):
 
     @property
     def y(self) -> Parameter:
-        """Intensity used to create many straight-line segments representing the background in a calculated diffractogram.
+        """Intensity used to create many straight-line segments
+        representing the background in a calculated diffractogram.
 
-        Reading this property returns the underlying
-        ``Parameter` object.
-        Assigning to it updates the parameter value.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._y
 

@@ -20,8 +20,8 @@ DEFAULT_MAX = np.inf
 class XAxisType(str, Enum):
     """X-axis types for diffraction plots.
 
-    Values match attribute names in data models for direct use
-    with ``getattr(pattern, x_axis)``.
+    Values match attribute names in data models for direct use with
+    ``getattr(pattern, x_axis)``.
     """
 
     TWO_THETA = 'two_theta'
@@ -156,11 +156,10 @@ class PlotterBase(ABC):
     Implementations accept x values, multiple y-series, optional labels
     and render a plot to the chosen medium.
 
-    Two main plot types are supported:
-    - ``plot_powder``: Line plots for powder diffraction patterns
-      (intensity vs. 2θ/TOF/d-spacing).
-    - ``plot_single_crystal``: Scatter plots comparing measured vs.
-      calculated values (e.g., F²meas vs F²calc for single crystal).
+    Two main plot types are supported: - ``plot_powder``: Line plots for
+    powder diffraction patterns   (intensity vs. 2θ/TOF/d-spacing). -
+    ``plot_single_crystal``: Scatter plots comparing measured vs.
+    calculated values (e.g., F²meas vs F²calc for single crystal).
     """
 
     @abstractmethod
@@ -178,13 +177,11 @@ class PlotterBase(ABC):
         Suitable for powder diffraction data where intensity is plotted
         against an x-axis variable (2θ, TOF, d-spacing).
 
-        Args:
-            x: 1D array of x-axis values.
-            y_series: Sequence of y arrays to plot.
-            labels: Identifiers corresponding to y_series.
-            axes_labels: Pair of strings for the x and y titles.
-            title: Figure title.
-            height: Backend-specific height (text rows or pixels).
+        Args:     x: 1D array of x-axis values.     y_series: Sequence
+        of y arrays to plot.     labels: Identifiers corresponding to
+        y_series.     axes_labels: Pair of strings for the x and y
+        titles.     title: Figure title.     height: Backend-specific
+        height (text rows or pixels).
         """
         pass
 
@@ -203,12 +200,10 @@ class PlotterBase(ABC):
         Suitable for single crystal diffraction data where measured
         values are plotted against calculated values with error bars.
 
-        Args:
-            x_calc: 1D array of calculated values (x-axis).
-            y_meas: 1D array of measured values (y-axis).
-            y_meas_su: 1D array of measurement uncertainties.
-            axes_labels: Pair of strings for the x and y titles.
-            title: Figure title.
-            height: Backend-specific height (text rows or pixels).
+        Args:     x_calc: 1D array of calculated values (x-axis).
+        y_meas: 1D array of measured values (y-axis).     y_meas_su: 1D
+        array of measurement uncertainties.     axes_labels: Pair of
+        strings for the x and y titles.     title: Figure title. height:
+        Backend-specific height (text rows or pixels).
         """
         pass
