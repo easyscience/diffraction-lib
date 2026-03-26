@@ -21,12 +21,15 @@ class GuardedBase(ABC):
         self._identity = Identity(owner=self)
 
     def __str__(self) -> str:
+        """Return the string representation of this object."""
         return f'<{self.unique_name}>'
 
     def __repr__(self) -> str:
+        """Return the developer representation of this object."""
         return self.__str__()
 
     def __getattr__(self, key: str) -> None:
+        """Raise a descriptive error for unknown attribute access."""
         cls = type(self)
         allowed = cls._public_attrs()
         if key not in allowed:
@@ -38,6 +41,7 @@ class GuardedBase(ABC):
             )
 
     def __setattr__(self, key: str, value: object) -> None:
+        """Set an attribute with access-control diagnostics."""
         # Always allow private or special attributes without diagnostics
         if key.startswith('_'):
             object.__setattr__(self, key, value)

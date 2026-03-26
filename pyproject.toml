@@ -282,9 +282,8 @@ ignore = [
   'D200', # https://docs.astral.sh/ruff/rules/unnecessary-multiline-docstring/
   # Temporary:
   'D100',
-  #'D101',
   'D104',
-  'D105',
+  #'D105',
   'DTZ005',
 ]
 

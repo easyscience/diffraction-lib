@@ -98,6 +98,7 @@ class GenericDescriptorBase(GuardedBase):
         self._value = default() if callable(default) else default
 
     def __str__(self) -> str:
+        """Return the string representation of this descriptor."""
         return f'<{self.unique_name} = {self.value!r}>'
 
     @property
@@ -237,6 +238,7 @@ class GenericNumericDescriptor(GenericDescriptorBase):
         self._units: str = units
 
     def __str__(self) -> str:
+        """Return the string representation including units."""
         s: str = super().__str__()
         s = s[1:-1]  # strip <>
         if self.units:
@@ -289,6 +291,7 @@ class GenericParameter(GenericNumericDescriptor):
         UidMapHandler.get().add_to_uid_map(self)
 
     def __str__(self) -> str:
+        """Return string representation with uncertainty and free."""
         s = GenericDescriptorBase.__str__(self)
         s = s[1:-1]  # strip <>
         if self.uncertainty is not None:

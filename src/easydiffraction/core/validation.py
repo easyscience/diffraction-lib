@@ -43,6 +43,7 @@ class DataTypes(Enum):
     ANY = (object,)  # fallback for unconstrained
 
     def __str__(self) -> str:
+        """Return the lowercase name of the data type."""
         return self.name.lower()
 
     @property
@@ -65,6 +66,7 @@ class ValidationStage(Enum):
     REGEX = auto()
 
     def __str__(self) -> str:
+        """Return the lowercase name of the validation stage."""
         return self.name.lower()
 
 
