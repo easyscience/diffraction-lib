@@ -61,9 +61,9 @@ class DfolsMinimizer(MinimizerBase):
 
         Parameters
         ----------
-        parameters
+        parameters : List[object]
             List of parameters being optimized.
-        raw_result
+        raw_result : object
             The result object returned by the solver.
         """
         # Ensure compatibility with raw_result coming from dfols.solve()
@@ -83,11 +83,12 @@ class DfolsMinimizer(MinimizerBase):
 
         Parameters
         ----------
-        raw_result
+        raw_result : object
             The result object returned by the solver.
 
         Returns
         -------
+        bool
             True if the optimization was successful, False otherwise.
         """
         return raw_result.flag == raw_result.EXIT_SUCCESS

@@ -115,13 +115,14 @@ class FitProgressTracker:
 
         Parameters
         ----------
-        residuals
+        residuals : np.ndarray
             Residuals between measured and calculated data.
-        parameters
+        parameters : List[float]
             Current free parameters being fitted.
 
         Returns
         -------
+        np.ndarray
             Residuals unchanged, for optimizer consumption.
         """
         self._iteration += 1
@@ -208,7 +209,7 @@ class FitProgressTracker:
 
         Parameters
         ----------
-        minimizer_name
+        minimizer_name : str
             Name of the minimizer used for the run.
         """
         console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
@@ -232,7 +233,7 @@ class FitProgressTracker:
 
         Parameters
         ----------
-        row
+        row : List[str]
             Columns corresponding to DEFAULT_HEADERS.
         """
         # Append and update via the active handle (Jupyter or

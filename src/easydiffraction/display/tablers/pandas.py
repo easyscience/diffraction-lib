@@ -25,12 +25,13 @@ class PandasTableBackend(TableBackendBase):
 
         Parameters
         ----------
-        color
+        color : str
             CSS color value (e.g., ``#RRGGBB``) to use for borders and
             header accents.
 
         Returns
         -------
+        list[dict]
             A list of ``Styler.set_table_styles`` dictionaries.
         """
         return [
@@ -84,14 +85,15 @@ class PandasTableBackend(TableBackendBase):
 
         Parameters
         ----------
-        df
+        df : object
             DataFrame whose columns are being rendered.
-        alignments
+        alignments : object
             Iterable of text alignment values (e.g., ``'left'``,
             ``'center'``) matching ``df`` columns.
 
         Returns
         -------
+        list[dict]
             A list of CSS rules for header cell alignment.
         """
         return [
@@ -108,15 +110,16 @@ class PandasTableBackend(TableBackendBase):
 
         Parameters
         ----------
-        df
+        df : object
             DataFrame to style.
-        alignments
+        alignments : object
             Iterable of text alignment values for columns.
-        color
+        color : str
             CSS color value used for borders/header.
 
         Returns
         -------
+        object
             A configured pandas Styler ready for display.
         """
         table_styles = self._build_base_styles(color)
@@ -143,9 +146,9 @@ class PandasTableBackend(TableBackendBase):
 
         Parameters
         ----------
-        styler
+        styler : object
             Configured DataFrame Styler to be rendered.
-        display_handle
+        display_handle : object
             Optional IPython DisplayHandle used for in-place updates.
         """
         # Handle with update() method
@@ -177,13 +180,18 @@ class PandasTableBackend(TableBackendBase):
 
         Parameters
         ----------
-        alignments
+        alignments : object
             Iterable of column justifications (e.g. 'left').
-        df
+        df : object
             DataFrame whose index is displayed as the first column.
-        display_handle
+        display_handle : object | None, default=None
             Optional IPython DisplayHandle to update an existing output area
             in place when running in Jupyter.
+
+        Returns
+        -------
+        object
+            Backend-defined return value (commonly ``None``).
         """
         color = self._pandas_border_color
         styler = self._apply_styling(df, alignments, color)

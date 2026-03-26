@@ -48,11 +48,12 @@ class RichTableBackend(TableBackendBase):
 
         Parameters
         ----------
-        table
+        table : Table
             Rich :class:`~rich.table.Table` to export.
 
         Returns
         -------
+        str
             HTML string with inline styles for notebook display.
         """
         tmp = Console(force_jupyter=False, record=True, file=io.StringIO())
@@ -71,17 +72,17 @@ class RichTableBackend(TableBackendBase):
 
         Parameters
         ----------
-        df
+        df : object
             DataFrame-like object providing rows to render.
-        alignments
+        alignments : object
             Iterable of text alignment values for columns.
-        color
+        color : str
             Rich color name used for borders/index style.
 
         Returns
         -------
-        A
-            class:`~rich.table.Table` configured for display.
+        Table
+            A :class:`~rich.table.Table` configured for display.
         """
         table = Table(
             title=None,
@@ -116,9 +117,9 @@ class RichTableBackend(TableBackendBase):
 
         Parameters
         ----------
-        table
+        table : Table
             Rich :class:`~rich.table.Table` to display.
-        display_handle
+        display_handle : object
             Optional environment-specific handle for in- place updates
             (IPython or terminal live).
         """
@@ -156,12 +157,17 @@ class RichTableBackend(TableBackendBase):
 
         Parameters
         ----------
-        alignments
+        alignments : object
             Iterable of text-align values for columns.
-        df
+        df : object
             Index-aware DataFrame to render.
-        display_handle
+        display_handle : object, default=None
             Optional environment handle for in-place updates.
+
+        Returns
+        -------
+        object
+            Backend-defined return value (commonly ``None``).
         """
         color = self._rich_border_color
         table = self._build_table(df, alignments, color)

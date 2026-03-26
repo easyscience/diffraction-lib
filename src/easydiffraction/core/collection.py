@@ -21,7 +21,7 @@ class CollectionBase(GuardedBase):
 
     Parameters
     ----------
-    item_type
+    item_type : type
         Type of items accepted by the collection. Used for validation
         and tooling; not enforced at runtime here.
     """
@@ -86,7 +86,7 @@ class CollectionBase(GuardedBase):
 
         Parameters
         ----------
-        name
+        name : str
             Identity key of the item to remove.
 
         Raises
@@ -94,7 +94,10 @@ class CollectionBase(GuardedBase):
         KeyError
             If no item with the given key exists.
         """
-        del self[name]
+        try:
+            del self[name]
+        except KeyError:
+            raise
 
     def _key_for(self, item: GuardedBase) -> str | None:
         """Return the identity key for *item*.

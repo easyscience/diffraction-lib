@@ -35,7 +35,7 @@ def _validate_url(url: str) -> None:
 
     Parameters
     ----------
-    url
+    url : str
         The URL to validate.
 
     Raises
@@ -140,11 +140,11 @@ def download_data(
 
     Parameters
     ----------
-    id
+    id : int | str
         Numeric dataset id (e.g. 12).
-    destination
+    destination : str, default='data'
         Directory to save the file into (created if missing).
-    overwrite
+    overwrite : bool, default=False
         Whether to overwrite the file if it already exists.
 
     Returns
@@ -155,9 +155,7 @@ def download_data(
     Raises
     ------
     KeyError
-
-    If the id is not found in the index. ValueError
-        If the resolved URL is not HTTP/HTTPS.
+        If the id is not found in the index.
     """
     index = _fetch_data_index()
     key = str(id)
@@ -299,7 +297,7 @@ def _get_version_for_url(package_name: str = 'easydiffraction') -> str:
 
     Parameters
     ----------
-    package_name : str
+    package_name : str, default='easydiffraction'
         The name of the package to query.
 
     Returns
@@ -393,11 +391,11 @@ def download_tutorial(
 
     Parameters
     ----------
-    id
+    id : int | str
         Numeric tutorial id (e.g. 1).
-    destination
+    destination : str, default='tutorials'
         Directory to save the file into (created if missing).
-    overwrite
+    overwrite : bool, default=False
         Whether to overwrite the file if it already exists.
 
     Returns
@@ -408,9 +406,7 @@ def download_tutorial(
     Raises
     ------
     KeyError
-
-    If the id is not found in the index. ValueError
-        If the resolved URL is not HTTP/HTTPS.
+        If the id is not found in the index.
     """
     index = _fetch_tutorials_index()
     key = str(id)
@@ -468,9 +464,9 @@ def download_all_tutorials(
 
     Parameters
     ----------
-    destination
+    destination : str, default='tutorials'
         Directory to save the files into (created if missing).
-    overwrite
+    overwrite : bool, default=False
         Whether to overwrite files if they already exist.
 
     Returns
@@ -532,7 +528,7 @@ def render_cif(cif_text: str) -> None:
 
     Parameters
     ----------
-    cif_text
+    cif_text : str
         The CIF text to display.
     """
     # Split into lines
@@ -576,8 +572,8 @@ def tof_to_d(
         Linear calibration coefficient (µs/Å).
     quad : float
         Quadratic calibration coefficient (µs/Å²).
-    quad_eps : float, optional
-        Threshold to treat ``quad`` as zero. Defaults to 1e-20.
+    quad_eps : float, default=1e-20
+        Threshold to treat ``quad`` as zero.
 
     Returns
     -------
@@ -646,13 +642,17 @@ def twotheta_to_d(twotheta: object, wavelength: float) -> object:
     """
     Convert 2-theta to d-spacing using Bragg's law.
 
-    Parameters: twotheta (float or np.ndarray): 2-theta angle in degrees.
-    wavelength (float): Wavelength in Å.
+    Parameters
+    ----------
+    twotheta : object
+        2-theta angle in degrees (float or np.ndarray).
+    wavelength : float
+        Wavelength in Å.
 
     Returns
     -------
-    d (float or np.ndarray)
-        d-spacing in Å.
+    object
+        d-spacing in Å (float or np.ndarray).
     """
     # Convert twotheta from degrees to radians
     theta_rad = np.radians(twotheta / 2)
@@ -667,13 +667,15 @@ def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda: object) -> object:
     """
     Convert sin(theta)/lambda to d-spacing.
 
-    Parameters: sin_theta_over_lambda (float or np.ndarray):
-    sin(theta)/lambda in 1/Å.
+    Parameters
+    ----------
+    sin_theta_over_lambda : object
+        sin(theta)/lambda in 1/Å (float or np.ndarray).
 
     Returns
     -------
-    d (float or np.ndarray)
-        d-spacing in Å.
+    object
+        d-spacing in Å (float or np.ndarray).
     """
     # Avoid division by zero
     with np.errstate(divide='ignore', invalid='ignore'):
@@ -688,8 +690,12 @@ def get_value_from_xye_header(file_path: str, key: str) -> float:
     Extracts a floating point value from the first line of the file,
     corresponding to the given key.
 
-    Parameters: file_path (str): Path to the input file. key (str): The key
-    to extract ('DIFC' or 'two_theta').
+    Parameters
+    ----------
+    file_path : str
+        Path to the input file.
+    key : str
+        The key to extract ('DIFC' or 'two_theta').
 
     Returns
     -------
@@ -728,15 +734,19 @@ def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
     provided". - If parsing fails, the function falls back to the given
     `default` value with uncertainty NaN.
 
-    Parameters ---------- s : str or None Numeric string in CIF format (e.g.
-    "3.566", "3.566(2)") or None. default : float or None, optional Default
-    value to use if `s` is None or parsing fails. Defaults to None.
+    Parameters
+    ----------
+    s : Optional[str]
+        Numeric string in CIF format (e.g. "3.566", "3.566(2)") or None.
+    default : Optional[float], default=None
+        Default value to use if `s` is None or parsing fails.
 
     Returns
     -------
-        ------- UFloat An `uncertainties.UFloat` object with the parsed
-        value and uncertainty. The uncertainty will be NaN if not
-        specified or parsing failed.
+    UFloat
+        An `uncertainties.UFloat` object with the parsed value and
+        uncertainty. The uncertainty will be NaN if not specified or
+        parsing failed.
     """
     if s is None:
         return ufloat(default, np.nan)

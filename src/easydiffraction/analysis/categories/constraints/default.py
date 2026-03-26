@@ -22,13 +22,6 @@ from easydiffraction.io.cif.handler import CifHandler
 class Constraint(CategoryItem):
     """
     Single constraint item.
-
-    Parameters
-    ----------
-    lhs_alias
-        Left-hand side alias name being constrained.
-    rhs_expr
-        Right-hand side expression as a string.
     """
 
     def __init__(self) -> None:

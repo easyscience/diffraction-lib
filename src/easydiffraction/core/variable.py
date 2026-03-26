@@ -29,18 +29,10 @@ class GenericDescriptorBase(GuardedBase):
     """
     Base class for all parameter-like descriptors.
 
-    A descriptor encapsulates a typed value with validation, human- readable
+    A descriptor encapsulates a typed value with validation, human-readable
     name/description and a globally unique identifier that is stable across
     the session. Concrete subclasses specialize the expected data type and
     can extend the public API with additional behavior (e.g. units).
-
-    Attributes
-    ----------
-    name
-        Local parameter name (e.g. 'a', 'b_iso').
-    description
-        Optional human-readable description. uid: Stable random
-        identifier for external references.
     """
 
     _BOOL_SPEC_TEMPLATE = AttributeSpec(
@@ -60,11 +52,11 @@ class GenericDescriptorBase(GuardedBase):
 
         Parameters
         ----------
-        value_spec
+        value_spec : AttributeSpec
             Validation specification for the value.
-        name
+        name : str
             Local name of the descriptor within its category.
-        description
+        description : str, default=None
             Optional human-readable description.
         """
         super().__init__()
@@ -117,7 +109,6 @@ class GenericDescriptorBase(GuardedBase):
         """Fully qualified name including datablock, category and entry
         name.
         """
-        # 7c: Use filter(None, [...])
         parts = [
             self._identity.datablock_entry_name,
             self._identity.category_code,
@@ -400,9 +391,9 @@ class StringDescriptor(GenericStringDescriptor):
 
         Parameters
         ----------
-        cif_handler
+        cif_handler : CifHandler
             Object that tracks CIF identifiers.
-        **kwargs
+        **kwargs : object
             Forwarded to GenericStringDescriptor.
         """
         super().__init__(**kwargs)
@@ -425,9 +416,9 @@ class NumericDescriptor(GenericNumericDescriptor):
 
         Parameters
         ----------
-        cif_handler
+        cif_handler : CifHandler
             Object that tracks CIF identifiers.
-        **kwargs
+        **kwargs : object
             Forwarded to GenericNumericDescriptor.
         """
         super().__init__(**kwargs)
@@ -450,9 +441,9 @@ class Parameter(GenericParameter):
 
         Parameters
         ----------
-        cif_handler
+        cif_handler : CifHandler
             Object that tracks CIF identifiers.
-        **kwargs
+        **kwargs : object
             Forwarded to GenericParameter.
         """
         super().__init__(**kwargs)

@@ -44,11 +44,12 @@ class LmfitMinimizer(MinimizerBase):
 
         Parameters
         ----------
-        parameters
+        parameters : List[object]
             List of parameters to be optimized.
 
         Returns
         -------
+        Dict[str, object]
             A dictionary containing the prepared lmfit. Parameters object.
         """
         engine_parameters = lmfit.Parameters()
@@ -68,13 +69,14 @@ class LmfitMinimizer(MinimizerBase):
 
         Parameters
         ----------
-        objective_function
-            The objective function to
-        minimize.     **kwargs
+        objective_function : object
+            The objective function to minimize.
+        **kwargs : object
             Additional arguments for the solver.
 
         Returns
         -------
+        object
             The result of the lmfit minimization.
         """
         engine_parameters = kwargs.get('engine_parameters')
@@ -97,9 +99,9 @@ class LmfitMinimizer(MinimizerBase):
 
         Parameters
         ----------
-        parameters
+        parameters : List[object]
             List of parameters being optimized.
-        raw_result
+        raw_result : object
             The result object returned by the solver.
         """
         param_values = raw_result.params if hasattr(raw_result, 'params') else raw_result
@@ -118,11 +120,12 @@ class LmfitMinimizer(MinimizerBase):
 
         Parameters
         ----------
-        raw_result
+        raw_result : object
             The result object returned by the solver.
 
         Returns
         -------
+        bool
             True if the optimization was successful, False otherwise.
         """
         return getattr(raw_result, 'success', False)
@@ -140,15 +143,15 @@ class LmfitMinimizer(MinimizerBase):
 
         Parameters
         ----------
-        params
+        params : lmfit.Parameters
             The current parameters.
-        iter
+        iter : int
             The current iteration number.
-        resid
+        resid : object
             The residuals.
-        *args
+        *args : object
             Additional positional arguments.
-        **kwargs
+        **kwargs : object
             Additional keyword arguments.
         """
         # Intentionally unused, required by callback signature

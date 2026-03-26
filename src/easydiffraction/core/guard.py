@@ -84,9 +84,8 @@ class GuardedBase(ABC):
 
         Yields
         ------
-        Each (key, property) pair for
-
-        public     attributes.
+        tuple[str, property]
+            Each (key, property) pair for public attributes.
         """
         for base in cls.mro():
             for key, attr in base.__dict__.items():
@@ -167,7 +166,8 @@ class GuardedBase(ABC):
 
         Yields
         ------
-        Each (name, function) pair.
+        tuple[str, object]
+            Each (name, function) pair.
         """
         seen: set = set()
         for base in cls.mro():

@@ -38,25 +38,25 @@ class FitResults:
 
         Parameters
         ----------
-        success
+        success : bool, default=False
             Indicates if the fit was successful.
-        parameters
+        parameters : Optional[List[object]], default=None
             List of parameters used in the fit.
-        chi_square
+        chi_square : Optional[float], default=None
             Chi-square value of the fit.
-        reduced_chi_square
+        reduced_chi_square : Optional[float], default=None
             Reduced chi-square value of the fit.
-        message
+        message : str, default=''
             Message related to the fit.
-        iterations
+        iterations : int, default=0
             Number of iterations performed.
-        engine_result
+        engine_result : Optional[object], default=None
             Result from the fitting engine.
-        starting_parameters
+        starting_parameters : Optional[List[object]], default=None
             Initial parameters for the fit.
-        fitting_time
+        fitting_time : Optional[float], default=None
             Time taken for the fitting process.
-        **kwargs
+        **kwargs : object
             Additional engine-specific fields. If ``redchi`` is provided and
             ``reduced_chi_square`` is not set, it is used as the reduced
             chi-square value.
@@ -93,15 +93,15 @@ class FitResults:
 
         Parameters
         ----------
-        y_obs
+        y_obs : Optional[List[float]], default=None
             Observed intensities for pattern R-factor metrics.
-        y_calc
+        y_calc : Optional[List[float]], default=None
             Calculated intensities for pattern R-factor metrics.
-        y_err
+        y_err : Optional[List[float]], default=None
             Standard deviations of observed intensities for wR.
-        f_obs
+        f_obs : Optional[List[float]], default=None
             Observed structure-factor magnitudes for Bragg R.
-        f_calc
+        f_calc : Optional[List[float]], default=None
             Calculated structure-factor magnitudes for Bragg R.
         """
         status_icon = '✅' if self.success else '❌'

@@ -66,11 +66,11 @@ class CryspyCalculator(CalculatorBase):
 
         Parameters
         ----------
-        structure
+        structure : Structure
             The structure to calculate structure factors for.
-        experiment
+        experiment : ExperimentBase
             The experiment associated with the sample models.
-        called_by_minimizer
+        called_by_minimizer : bool, default=False
             Whether the calculation is called by a minimizer.
         """
         combined_name = f'{structure.name}_{experiment.name}'
@@ -131,17 +131,18 @@ class CryspyCalculator(CalculatorBase):
 
         Parameters
         ----------
-        structure
+        structure : Structure
             The structure to calculate the pattern for.
-        experiment
+        experiment : ExperimentBase
             The experiment associated with the structure.
-        called_by_minimizer
+        called_by_minimizer : bool, default=False
             Whether the calculation is called by a minimizer.
 
         Returns
         -------
-            The calculated diffraction pattern as a NumPy array or a list of
-            floats.
+        Union[np.ndarray, List[float]]
+            The calculated diffraction pattern as a NumPy array or a
+            list of floats.
         """
         combined_name = f'{structure.name}_{experiment.name}'
 
@@ -204,13 +205,14 @@ class CryspyCalculator(CalculatorBase):
 
         Parameters
         ----------
-        structure
+        structure : Structure
             The structure to update.
-        experiment
+        experiment : ExperimentBase
             The experiment to update.
 
         Returns
         -------
+        Dict[str, Any]
             The updated Cryspy dictionary.
         """
         combined_name = f'{structure.name}_{experiment.name}'
@@ -322,13 +324,14 @@ class CryspyCalculator(CalculatorBase):
 
         Parameters
         ----------
-        structure
+        structure : Structure
             The structure to recreate.
-        experiment
+        experiment : ExperimentBase
             The experiment to recreate.
 
         Returns
         -------
+        object
             The recreated Cryspy object.
         """
         cryspy_obj = str_to_globaln('')
@@ -357,11 +360,12 @@ class CryspyCalculator(CalculatorBase):
 
         Parameters
         ----------
-        structure
+        structure : Structure
             The structure to convert.
 
         Returns
         -------
+        str
             The Cryspy CIF string representation of the structure.
         """
         return structure.as_cif
@@ -376,13 +380,14 @@ class CryspyCalculator(CalculatorBase):
 
         Parameters
         ----------
-        experiment
+        experiment : ExperimentBase
             The experiment to convert.
-        linked_structure
+        linked_structure : object
             The structure linked to the experiment.
 
         Returns
         -------
+        str
             The Cryspy CIF string representation of the experiment.
         """
         # Try to get experiment attributes

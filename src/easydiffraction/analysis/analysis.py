@@ -38,14 +38,6 @@ class Analysis:
 
     - Display or filter parameters to fit. - Select a calculator/minimizer
     implementation. - Calculate patterns and run single or joint fits.
-
-    Attributes
-    ----------
-    project
-        The parent Project object. aliases: A registry of human-friendly
-        aliases for parameters. constraints: Symbolic constraints
-        between parameters. calculator: Active calculator used for
-        computations. fitter: Active fitter/minimizer driver.
     """
 
     def __init__(self, project: object) -> None:
@@ -54,7 +46,7 @@ class Analysis:
 
         Parameters
         ----------
-        project
+        project : object
             The project that owns models and experiments.
         """
         self.project = project
@@ -145,7 +137,7 @@ class Analysis:
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Aliases tag (e.g. ``'default'``).
         """
         supported_tags = AliasesFactory.supported_tags()
@@ -186,7 +178,7 @@ class Analysis:
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Constraints tag (e.g. ``'default'``).
         """
         supported_tags = ConstraintsFactory.supported_tags()
@@ -220,11 +212,12 @@ class Analysis:
 
         Parameters
         ----------
-        params
+        params : List[Union[NumericDescriptor, Parameter]]
             List of DescriptorFloat or Parameter objects.
 
         Returns
         -------
+        pd.DataFrame
             A pandas DataFrame containing parameter information.
         """
         records = []
@@ -503,7 +496,7 @@ class Analysis:
 
         Parameters
         ----------
-        selection
+        selection : str
             Minimizer selection string, e.g. 'lmfit'.
         """
         self.fitter = Fitter(selection)
@@ -531,7 +524,7 @@ class Analysis:
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Fit-mode tag (e.g. ``'default'``).
         """
         supported_tags = FitModeFactory.supported_tags()
@@ -710,7 +703,7 @@ class Analysis:
 
         Parameters
         ----------
-        called_by_minimizer
+        called_by_minimizer : bool, default=False
             Whether this is called during fitting.
         """
         # Apply constraints to sync dependent parameters
@@ -729,6 +722,7 @@ class Analysis:
 
         Returns
         -------
+        str
             The analysis section represented as a CIF document string.
         """
         from easydiffraction.io.cif.serialize import analysis_to_cif

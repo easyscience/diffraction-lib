@@ -47,17 +47,17 @@ class PlotlyPlotter(PlotterBase):
 
         Parameters
         ----------
-        x
+        x : object
             1D array-like of x-axis values.
-        y
+        y : object
             1D array- like of y-axis values.
-        label
+        label : str
             Series identifier (``'meas'``, ``'calc'``, or ``'resid'``).
 
         Returns
         -------
-        A configured
-            class:`plotly.graph_objects.Scatter` trace.
+        object
+            A configured :class:`plotly.graph_objects.Scatter` trace.
         """
         mode = SERIES_CONFIG[label]['mode']
         name = SERIES_CONFIG[label]['name']
@@ -85,18 +85,18 @@ class PlotlyPlotter(PlotterBase):
 
         Parameters
         ----------
-        x_calc
+        x_calc : object
             1D array-like of calculated values (x-axis).
-        y_meas
+        y_meas : object
             1D array-like of measured values (y-axis).
-        y_meas_su
+        y_meas_su : object
             1D array-like of measurement uncertainties.
 
         Returns
         -------
-        A configured
-            class:`plotly.graph_objects.Scatter` trace with markers and
-            error bars.
+        object
+            A configured :class:`plotly.graph_objects.Scatter` trace with
+            markers and error bars.
         """
         trace = go.Scatter(
             x=x_calc,
@@ -127,6 +127,7 @@ class PlotlyPlotter(PlotterBase):
 
         Returns
         -------
+        dict
             A dict configuring a diagonal line shape.
         """
         return dict(
@@ -147,6 +148,7 @@ class PlotlyPlotter(PlotterBase):
 
         Returns
         -------
+        dict
             A dict with display and mode bar settings.
         """
         return dict(
@@ -170,15 +172,15 @@ class PlotlyPlotter(PlotterBase):
 
         Parameters
         ----------
-        data
+        data : object
             List of traces to include in the figure.
-        layout
+        layout : object
             Layout configuration dict.
 
         Returns
         -------
-        A configured
-            class:`plotly.graph_objects.Figure`.
+        object
+            A configured :class:`plotly.graph_objects.Figure`.
         """
         fig = go.Figure(data=data, layout=layout)
         # Format axis ticks:
@@ -199,7 +201,7 @@ class PlotlyPlotter(PlotterBase):
 
         Parameters
         ----------
-        fig
+        fig : object
             A :class:`plotly.graph_objects.Figure` to display.
         """
         config = self._get_config()
@@ -226,17 +228,17 @@ class PlotlyPlotter(PlotterBase):
 
         Parameters
         ----------
-        title
+        title : str
             Figure title.
-        axes_labels
+        axes_labels : object
             Pair of strings for the x and y titles.
-        **kwargs
+        **kwargs : object
             Additional layout parameters (e.g., shapes).
 
         Returns
         -------
-        A configured
-            class:`plotly.graph_objects.Layout`.
+        object
+            A configured :class:`plotly.graph_objects.Layout`.
         """
         return go.Layout(
             margin=dict(
@@ -286,17 +288,17 @@ class PlotlyPlotter(PlotterBase):
 
         Parameters
         ----------
-        x
+        x : object
             1D array-like of x-axis values.
-        y_series
+        y_series : object
             Sequence of y arrays to plot.
-        labels
+        labels : object
             Series identifiers corresponding to y_series.
-        axes_labels
+        axes_labels : object
             Pair of strings for the x and y titles.
-        title
+        title : str
             Figure title.
-        height
+        height : int | None, default=None
             Ignored; Plotly auto-sizes based on renderer.
         """
         # Intentionally unused; accepted for API compatibility
@@ -334,17 +336,17 @@ class PlotlyPlotter(PlotterBase):
 
         Parameters
         ----------
-        x_calc
+        x_calc : object
             1D array-like of calculated values (x-axis).
-        y_meas
+        y_meas : object
             1D array-like of measured values (y-axis).
-        y_meas_su
+        y_meas_su : object
             1D array-like of measurement uncertainties.
-        axes_labels
+        axes_labels : object
             Pair of strings for the x and y titles.
-        title
+        title : str
             Figure title.
-        height
+        height : int | None, default=None
             Ignored; Plotly auto-sizes based on renderer.
         """
         # Intentionally unused; accepted for API compatibility

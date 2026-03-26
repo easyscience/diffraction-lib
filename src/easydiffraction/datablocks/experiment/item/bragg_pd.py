@@ -121,7 +121,7 @@ class BraggPdExperiment(PdExperimentBase):
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Instrument tag (e.g. ``'cwl-pd'``).
         """
         supported = InstrumentFactory.supported_for(

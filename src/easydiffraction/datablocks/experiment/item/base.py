@@ -63,7 +63,7 @@ class ExperimentBase(DatablockItem):
 
         Parameters
         ----------
-        new
+        new : str
             New name for this experiment.
         """
         self._name = new
@@ -94,8 +94,13 @@ class ExperimentBase(DatablockItem):
 
         Parameters
         ----------
-        data_path
+        data_path : str
             Path to the ASCII file to load.
+
+        Raises
+        ------
+        NotImplementedError
+            Subclasses must implement this method.
         """
         raise NotImplementedError()
 
@@ -129,7 +134,7 @@ class ExperimentBase(DatablockItem):
 
         Parameters
         ----------
-        tag
+        tag : str
             Calculator tag (e.g. ``'cryspy'``, ``'crysfml'``, ``'pdffit'``).
         """
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
@@ -244,7 +249,7 @@ class ScExperimentBase(ExperimentBase):
 
         Parameters
         ----------
-        data_path
+        data_path : str
             Path to data file with columns compatible with the beam mode.
         """
         pass
@@ -270,7 +275,7 @@ class ScExperimentBase(ExperimentBase):
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Extinction tag (e.g. ``'shelx'``).
         """
         supported_tags = ExtinctionFactory.supported_tags()
@@ -317,7 +322,7 @@ class ScExperimentBase(ExperimentBase):
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Linked-crystal tag (e.g. ``'default'``).
         """
         supported_tags = LinkedCrystalFactory.supported_tags()
@@ -364,7 +369,7 @@ class ScExperimentBase(ExperimentBase):
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Instrument tag (e.g. ``'cwl-sc'``).
         """
         supported = InstrumentFactory.supported_for(
@@ -419,7 +424,7 @@ class ScExperimentBase(ExperimentBase):
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Data tag (e.g. ``'bragg-sc'``).
         """
         supported_tags = DataFactory.supported_tags()
@@ -481,11 +486,12 @@ class PdExperimentBase(ExperimentBase):
 
         Parameters
         ----------
-        structures
+        structures : Structures
             Collection of structures.
 
         Returns
         -------
+        List[Any]
             A list of valid linked phases.
         """
         if not self.linked_phases:
@@ -516,7 +522,7 @@ class PdExperimentBase(ExperimentBase):
 
         Parameters
         ----------
-        data_path
+        data_path : str
             Path to data file with columns compatible with the beam mode
             (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
         """
@@ -539,7 +545,7 @@ class PdExperimentBase(ExperimentBase):
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Linked-phases tag (e.g. ``'default'``).
         """
         supported_tags = LinkedPhasesFactory.supported_tags()
@@ -582,7 +588,7 @@ class PdExperimentBase(ExperimentBase):
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Excluded-regions tag (e.g. ``'default'``).
         """
         supported_tags = ExcludedRegionsFactory.supported_tags()
@@ -631,7 +637,7 @@ class PdExperimentBase(ExperimentBase):
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Data tag (e.g. ``'bragg-pd-cwl'``).
         """
         supported_tags = DataFactory.supported_tags()
@@ -673,7 +679,7 @@ class PdExperimentBase(ExperimentBase):
 
         Parameters
         ----------
-        new_type
+        new_type : str
             New profile type as tag string.
         """
         supported = PeakFactory.supported_for(

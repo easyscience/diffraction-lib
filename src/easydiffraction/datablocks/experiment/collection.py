@@ -40,15 +40,15 @@ class Experiments(DatablockCollection):
 
         Parameters
         ----------
-        name
+        name : str
             Experiment identifier.
-        sample_form
+        sample_form : str | None, default=None
             Sample form (e.g. ``'powder'``).
-        beam_mode
+        beam_mode : str | None, default=None
             Beam mode (e.g. ``'constant wavelength'``).
-        radiation_probe
+        radiation_probe : str | None, default=None
             Radiation probe (e.g. ``'neutron'``).
-        scattering_type
+        scattering_type : str | None, default=None
             Scattering type (e.g. ``'bragg'``).
         """
         experiment = ExperimentFactory.from_scratch(
@@ -71,7 +71,7 @@ class Experiments(DatablockCollection):
 
         Parameters
         ----------
-        cif_str
+        cif_str : str
             Full CIF document as a string.
         """
         experiment = ExperimentFactory.from_cif_str(cif_str)
@@ -110,17 +110,17 @@ class Experiments(DatablockCollection):
 
         Parameters
         ----------
-        name
+        name : str
             Experiment identifier.
-        data_path
+        data_path : str
             Path to the measured data file.
-        sample_form
+        sample_form : str | None, default=None
             Sample form (e.g. ``'powder'``).
-        beam_mode
+        beam_mode : str | None, default=None
             Beam mode (e.g. ``'constant wavelength'``).
-        radiation_probe
+        radiation_probe : str | None, default=None
             Radiation probe (e.g. ``'neutron'``).
-        scattering_type
+        scattering_type : str | None, default=None
             Scattering type (e.g. ``'bragg'``).
         """
         experiment = ExperimentFactory.from_data_path(

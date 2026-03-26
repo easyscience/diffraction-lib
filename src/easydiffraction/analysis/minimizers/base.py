@@ -47,7 +47,7 @@ class MinimizerBase(ABC):
 
         Parameters
         ----------
-        minimizer_name
+        minimizer_name : str
             Human-readable name shown in progress.
         """
         self.tracker.reset()
@@ -66,11 +66,12 @@ class MinimizerBase(ABC):
 
         Parameters
         ----------
-        parameters
+        parameters : List[Any]
             List of free parameters to be fitted.
 
         Returns
         -------
+        Dict[str, Any]
             Mapping of keyword arguments to pass into ``_run_solver``.
         """
         pass
@@ -105,9 +106,9 @@ class MinimizerBase(ABC):
 
         Parameters
         ----------
-        parameters
+        parameters : List[object]
             Parameters after the solver finished.
-        raw_result
+        raw_result : object
             Backend-specific solver output object.
 
         Returns
@@ -142,14 +143,15 @@ class MinimizerBase(ABC):
 
         Parameters
         ----------
-        parameters
+        parameters : List[object]
             Free parameters to optimize.
-        objective_function
+        objective_function : Callable[..., object]
             Callable returning residuals for a given set of engine
             arguments.
 
         Returns
         -------
+        FitResults
             FitResults with success flag, best chi2 and timing.
         """
         minimizer_name = self.name or 'Unnamed Minimizer'

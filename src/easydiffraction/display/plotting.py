@@ -92,17 +92,18 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        pattern
+        pattern : object
             Data pattern object (needs ``intensity_meas``).
-        x_array
+        x_array : object
             Full x-axis array.
-        x_min
+        x_min : object
             Current minimum (may be ``None``).
-        x_max
+        x_max : object
             Current maximum (may be ``None``).
 
         Returns
         -------
+        tuple
             Tuple of ``(x_min, x_max)``, possibly narrowed.
         """
         if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
@@ -126,17 +127,18 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        y_array
+        y_array : object
             1D array-like of y values.
-        x_array
+        x_array : object
             1D array-like of x values (same length as ``y_array``).
-        x_min
+        x_min : object
             Minimum x limit (or ``None`` to use default).
-        x_max
+        x_max : object
             Maximum x limit (or ``None`` to use default).
 
         Returns
         -------
+        object
             Filtered ``y_array`` values where ``x_array`` lies within
             ``[x_min, x_max]``.
         """
@@ -178,27 +180,28 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        pattern
+        pattern : object
             Data pattern object with intensity arrays.
-        expt_name
+        expt_name : str
             Experiment name for error messages.
-        expt_type
+        expt_type : object
             Experiment type with sample_form, scattering, and beam enums.
-        x_min
+        x_min : object
             Optional minimum x-axis limit.
-        x_max
+        x_max : object
             Optional maximum x-axis limit.
-        x
+        x : object
             Explicit x-axis type or ``None``.
-        need_meas
+        need_meas : bool, default=False
             Whether ``intensity_meas`` is required.
-        need_calc
+        need_calc : bool, default=False
             Whether ``intensity_calc`` is required.
-        show_residual
+        show_residual : bool, default=False
             If ``True``, compute meas − calc residual.
 
         Returns
         -------
+        dict | None
             A dict with keys ``x_filtered``, ``y_series``, ``y_labels``,
             ``axes_labels``, and ``x_axis``; or ``None`` when a required
             array is missing.
@@ -262,14 +265,15 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        expt_type
+        expt_type : object
             Experiment type with sample_form, scattering_type, and beam_mode
             enums.
-        x
+        x : object
             Explicit x-axis type or ``None`` to auto-detect.
 
         Returns
         -------
+        tuple
             Tuple of ``(x_axis, x_name, sample_form, scattering_type,
             beam_mode)``.
         """
@@ -296,7 +300,7 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        value
+        value : object
             Minimum limit or ``None`` to reset to default.
         """
         if value is not None:
@@ -316,7 +320,7 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        value
+        value : object
             Maximum limit or ``None`` to reset to default.
         """
         if value is not None:
@@ -336,7 +340,7 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        value
+        value : object
             Height value or ``None`` to reset to default.
         """
         if value is not None:
@@ -377,18 +381,18 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        pattern
+        pattern : object
             Object with x-axis arrays (``two_theta``, ``time_of_flight``,
             ``d_spacing``) and ``meas`` array.
-        expt_name
+        expt_name : str
             Experiment name for the title.
-        expt_type
+        expt_type : object
             Experiment type with scattering/beam enums.
-        x_min
+        x_min : object, default=None
             Optional minimum x-axis limit.
-        x_max
+        x_max : object, default=None
             Optional maximum x-axis limit.
-        x
+        x : object, default=None
             X-axis type (``'two_theta'``, ``'time_of_flight'``, or
             ``'d_spacing'``). If ``None``, auto-detected from beam mode.
         """
@@ -427,18 +431,18 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        pattern
+        pattern : object
             Object with x-axis arrays (``two_theta``, ``time_of_flight``,
             ``d_spacing``) and ``calc`` array.
-        expt_name
+        expt_name : str
             Experiment name for the title.
-        expt_type
+        expt_type : object
             Experiment type with scattering/beam enums.
-        x_min
+        x_min : object, default=None
             Optional minimum x-axis limit.
-        x_max
+        x_max : object, default=None
             Optional maximum x-axis limit.
-        x
+        x : object, default=None
             X-axis type (``'two_theta'``, ``'time_of_flight'``, or
             ``'d_spacing'``). If ``None``, auto-detected from beam mode.
         """
@@ -486,19 +490,19 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        pattern
+        pattern : object
             Data pattern object with meas/calc arrays.
-        expt_name
+        expt_name : str
             Experiment name for the title.
-        expt_type
+        expt_type : object
             Experiment type with sample_form, scattering, and beam enums.
-        x_min
+        x_min : object, default=None
             Optional minimum x-axis limit.
-        x_max
+        x_max : object, default=None
             Optional maximum x-axis limit.
-        show_residual
+        show_residual : bool, default=False
             If ``True``, add residual series (powder only).
-        x
+        x : object, default=None
             X-axis type. If ``None``, auto-detected from sample form and
             beam mode.
         """

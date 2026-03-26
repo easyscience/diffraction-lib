@@ -23,12 +23,12 @@ class TypeInfo:
 
     Attributes
     ----------
-    tag
+    tag : str
         Short, stable string identifier used for serialization,
         user-facing selection, and factory lookup. Must be unique within
         a factory's registry. Examples: ``'line-segment'``,
         ``'pseudo-voigt'``, ``'cryspy'``.
-    description
+    description : str, default=''
         One-line human-readable explanation. Used in
         ``show_supported()`` tables and documentation.
     """
@@ -90,7 +90,7 @@ class CalculatorSupport:
 
     Attributes
     ----------
-    calculators
+    calculators : FrozenSet, default=frozenset()
         Frozenset of ``CalculatorEnum`` values. Empty means "any
         calculator" (no restriction).
     """
@@ -103,11 +103,12 @@ class CalculatorSupport:
 
         Parameters
         ----------
-        calculator
+        calculator : object
             A ``CalculatorEnum`` value.
 
         Returns
         -------
+        bool
             ``True`` if the calculator is in the set, or if the set is empty
             (meaning any calculator is accepted).
         """

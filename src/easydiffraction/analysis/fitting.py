@@ -44,13 +44,13 @@ class Fitter:
 
         Parameters
         ----------
-        structures
+        structures : Structures
             Collection of structures.
-        experiments
+        experiments : Experiments
             Collection of experiments.
-        weights
+        weights : Optional[np.array], default=None
             Optional weights for joint fitting.
-        analysis
+        analysis : object, default=None
             Optional Analysis object to update its categories during
             fitting.
         """
@@ -90,9 +90,9 @@ class Fitter:
 
         Parameters
         ----------
-        structures
+        structures : Structures
             Collection of structures.
-        experiments
+        experiments : Experiments
             Collection of experiments.
         """
         y_obs, y_calc, y_err = get_reliability_inputs(
@@ -122,13 +122,14 @@ class Fitter:
 
         Parameters
         ----------
-        structures
+        structures : Structures
             Collection of structures.
-        experiments
+        experiments : Experiments
             Collection of experiments.
 
         Returns
         -------
+        List[Parameter]
             List of free parameters.
         """
         free_params: List[Parameter] = structures.free_parameters + experiments.free_parameters
@@ -150,22 +151,23 @@ class Fitter:
 
         Parameters
         ----------
-        engine_params
+        engine_params : Dict[str, Any]
             Engine-specific parameter dict.
-        parameters
+        parameters : List[Parameter]
             List of parameters being optimized.
-        structures
+        structures : Structures
             Collection of structures.
-        experiments
+        experiments : Experiments
             Collection of experiments.
-        weights
+        weights : Optional[np.array], default=None
             Optional weights for joint fitting.
-        analysis
+        analysis : object, default=None
             Optional Analysis object to update its categories during
             fitting.
 
         Returns
         -------
+        np.ndarray
             Array of weighted residuals.
         """
         # Sync parameters back to objects

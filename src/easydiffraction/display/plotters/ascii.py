@@ -34,11 +34,12 @@ class AsciiPlotter(PlotterBase):
 
         Parameters
         ----------
-        label
+        label : str
             Series identifier (e.g., ``'meas'``).
 
         Returns
         -------
+        str
             A formatted legend string with color escapes.
         """
         color_start = DEFAULT_COLORS[label]
@@ -66,17 +67,17 @@ class AsciiPlotter(PlotterBase):
 
         Parameters
         ----------
-        x
+        x : object
             1D array-like of x values (only used for range display).
-        y_series
+        y_series : object
             Sequence of y arrays to plot.
-        labels
+        labels : object
             Series identifiers corresponding to y_series.
-        axes_labels
+        axes_labels : object
             Ignored; kept for API compatibility.
-        title
+        title : str
             Figure title printed above the chart.
-        height
+        height : int | None, default=None
             Number of text rows to allocate for the chart.
         """
         # Intentionally unused; kept for a consistent display API
@@ -118,18 +119,18 @@ class AsciiPlotter(PlotterBase):
 
         Parameters
         ----------
-        x_calc
+        x_calc : object
             1D array-like of calculated values (x-axis).
-        y_meas
+        y_meas : object
             1D array-like of measured values (y-axis).
-        y_meas_su
+        y_meas_su : object
             1D array-like of measurement uncertainties (ignored in ASCII
             mode).
-        axes_labels
+        axes_labels : object
             Pair of strings for the x and y titles.
-        title
+        title : str
             Figure title.
-        height
+        height : int | None, default=None
             Number of text rows for the chart (default: 15).
         """
         # Intentionally unused; ASCII scatter doesn't show error bars

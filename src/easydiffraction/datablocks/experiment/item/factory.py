@@ -145,19 +145,20 @@ class ExperimentFactory(FactoryBase):
 
         Parameters
         ----------
-        name
+        name : str
             Experiment identifier.
-        sample_form
+        sample_form : str | None, default=None
             Sample form (e.g. ``'powder'``).
-        beam_mode
+        beam_mode : str | None, default=None
             Beam mode (e.g. ``'constant wavelength'``).
-        radiation_probe
+        radiation_probe : str | None, default=None
             Radiation probe (e.g. ``'neutron'``).
-        scattering_type
+        scattering_type : str | None, default=None
             Scattering type (e.g. ``'bragg'``).
 
         Returns
         -------
+        ExperimentBase
             An experiment instance with only metadata.
         """
         expt_type = cls._create_experiment_type(
@@ -182,11 +183,12 @@ class ExperimentFactory(FactoryBase):
 
         Parameters
         ----------
-        cif_str
+        cif_str : str
             Full CIF document as a string.
 
         Returns
         -------
+        ExperimentBase
             A populated experiment instance.
         """
         doc = document_from_string(cif_str)
@@ -205,11 +207,12 @@ class ExperimentFactory(FactoryBase):
 
         Parameters
         ----------
-        cif_path
+        cif_path : str
             Path to a CIF file.
 
         Returns
         -------
+        ExperimentBase
             A populated experiment instance.
         """
         doc = document_from_path(cif_path)
@@ -233,21 +236,22 @@ class ExperimentFactory(FactoryBase):
 
         Parameters
         ----------
-        name
+        name : str
             Experiment identifier.
-        data_path
+        data_path : str
             Path to the measured data file.
-        sample_form
+        sample_form : str | None, default=None
             Sample form (e.g. ``'powder'``).
-        beam_mode
+        beam_mode : str | None, default=None
             Beam mode (e.g. ``'constant wavelength'``).
-        radiation_probe
+        radiation_probe : str | None, default=None
             Radiation probe (e.g. ``'neutron'``).
-        scattering_type
+        scattering_type : str | None, default=None
             Scattering type (e.g. ``'bragg'``).
 
         Returns
         -------
+        ExperimentBase
             An experiment instance with measured data attached.
         """
         expt_obj = cls.from_scratch(

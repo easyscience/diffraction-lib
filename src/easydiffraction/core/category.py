@@ -221,7 +221,7 @@ class CategoryCollection(CollectionBase):
 
         Parameters
         ----------
-        item
+        item : object
             A ``CategoryItem`` instance to add.
         """
         self[item._identity.category_entry_name] = item
@@ -236,7 +236,7 @@ class CategoryCollection(CollectionBase):
 
         Parameters
         ----------
-        **kwargs
+        **kwargs : object
             Attribute names and values for the new item.
         """
         child_obj = self._item_type()

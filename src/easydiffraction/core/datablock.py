@@ -138,7 +138,7 @@ class DatablockCollection(CollectionBase):
 
         Parameters
         ----------
-        item
+        item : object
             A ``DatablockItem`` instance (e.g. a ``Structure`` or
             ``ExperimentBase`` subclass).
         """

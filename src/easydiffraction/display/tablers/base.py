@@ -38,11 +38,12 @@ class TableBackendBase(ABC):
 
         Parameters
         ----------
-        value
+        value : object
             Cell value to format.
 
         Returns
         -------
+        object
             A string representation with fixed precision for floats or
             ``str(value)`` for other types.
         """
@@ -70,12 +71,12 @@ class TableBackendBase(ABC):
 
         Parameters
         ----------
-        color
-            Rich color name or specification parsable by
-        mod:`rich`.
+        color : str
+            Rich color name or specification parsable by :mod:`rich`.
 
         Returns
         -------
+        str
             Hex color string in the form ``#RRGGBB``.
         """
         c = Color.parse(color)
@@ -105,16 +106,17 @@ class TableBackendBase(ABC):
 
         Parameters
         ----------
-        alignments
+        alignments : object
             Iterable of column justifications (e.g., ``'left'`` or
             ``'center'``) corresponding to the data columns.
-        df
+        df : object
             Index-aware DataFrame with data to render.
-        display_handle
+        display_handle : object | None, default=None
             Optional environment-specific handle to enable in-place updates.
 
         Returns
         -------
+        object
             Backend-defined return value (commonly ``None``).
         """
         pass

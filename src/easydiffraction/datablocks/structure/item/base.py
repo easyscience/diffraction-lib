@@ -97,7 +97,7 @@ class Structure(DatablockItem):
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Cell tag (e.g. ``'default'``).
         """
         supported_tags = CellFactory.supported_tags()
@@ -156,7 +156,7 @@ class Structure(DatablockItem):
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Space-group tag (e.g. ``'default'``).
         """
         supported_tags = SpaceGroupFactory.supported_tags()
@@ -215,7 +215,7 @@ class Structure(DatablockItem):
 
         Parameters
         ----------
-        new_type
+        new_type : str
             Atom-sites tag (e.g. ``'default'``).
         """
         supported_tags = AtomSitesFactory.supported_tags()

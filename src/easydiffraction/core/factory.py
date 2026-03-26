@@ -89,12 +89,13 @@ class FactoryBase:
 
         Parameters
         ----------
-        **conditions
+        **conditions : object
             Experimental-axis values, e.g.
             ``scattering_type=ScatteringTypeEnum.BRAGG``.
 
         Returns
         -------
+        str
             The resolved default tag string.
 
         Raises
@@ -129,10 +130,15 @@ class FactoryBase:
 
         Parameters
         ----------
-        tag
+        tag : str
             ``type_info.tag`` value.
-        **kwargs
+        **kwargs : object
             Forwarded to the class constructor.
+
+        Returns
+        -------
+        object
+            A new instance of the registered class.
 
         Raises
         ------
@@ -153,8 +159,13 @@ class FactoryBase:
 
         Parameters
         ----------
-        **conditions
+        **conditions : object
             Experimental-axis values.
+
+        Returns
+        -------
+        object
+            A new instance of the default class.
         """
         tag = cls.default_tag(**conditions)
         return cls.create(tag)
@@ -178,16 +189,21 @@ class FactoryBase:
 
         Parameters
         ----------
-        calculator
+        calculator : object, default=None
             Optional ``CalculatorEnum`` value.
-        sample_form
+        sample_form : object, default=None
             Optional ``SampleFormEnum`` value.
-        scattering_type
+        scattering_type : object, default=None
             Optional ``ScatteringTypeEnum`` value.
-        beam_mode
+        beam_mode : object, default=None
             Optional ``BeamModeEnum`` value.
-        radiation_probe
+        radiation_probe : object, default=None
             Optional ``RadiationProbeEnum`` value.
+
+        Returns
+        -------
+        List[Type]
+            Classes matching the given conditions.
         """
         result = []
         for klass in cls._supported_map().values():
@@ -224,15 +240,15 @@ class FactoryBase:
 
         Parameters
         ----------
-        calculator
+        calculator : object, default=None
             Optional ``CalculatorEnum`` filter.
-        sample_form
+        sample_form : object, default=None
             Optional ``SampleFormEnum`` filter.
-        scattering_type
+        scattering_type : object, default=None
             Optional ``ScatteringTypeEnum`` filter.
-        beam_mode
+        beam_mode : object, default=None
             Optional ``BeamModeEnum`` filter.
-        radiation_probe
+        radiation_probe : object, default=None
             Optional ``RadiationProbeEnum`` filter.
         """
         matching = cls.supported_for(

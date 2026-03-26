@@ -180,17 +180,17 @@ class PlotterBase(ABC):
 
         Parameters
         ----------
-        x
+        x : object
             1D array of x-axis values.
-        y_series
+        y_series : object
             Sequence of y arrays to plot.
-        labels
+        labels : object
             Identifiers corresponding to y_series.
-        axes_labels
+        axes_labels : object
             Pair of strings for the x and y titles.
-        title
+        title : str
             Figure title.
-        height
+        height : int | None
             Backend-specific height (text rows or pixels).
         """
         pass
@@ -213,17 +213,17 @@ class PlotterBase(ABC):
 
         Parameters
         ----------
-        x_calc
+        x_calc : object
             1D array of calculated values (x-axis).
-        y_meas
+        y_meas : object
             1D array of measured values (y-axis).
-        y_meas_su
+        y_meas_su : object
             1D array of measurement uncertainties.
-        axes_labels
+        axes_labels : object
             Pair of strings for the x and y titles.
-        title
+        title : str
             Figure title.
-        height
+        height : int | None
             Backend-specific height (text rows or pixels).
         """
         pass

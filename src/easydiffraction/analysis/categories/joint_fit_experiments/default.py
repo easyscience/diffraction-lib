@@ -25,12 +25,6 @@ from easydiffraction.io.cif.handler import CifHandler
 class JointFitExperiment(CategoryItem):
     """
     A single joint-fit entry.
-
-    Parameters
-    ----------
-    id
-        Experiment identifier used in the fit session. weight: Relative
-        weight factor in the combined objective.
     """
 
     def __init__(self) -> None:

@@ -21,7 +21,7 @@ class Summary:
 
         Parameters
         ----------
-        project
+        project : object
             The Project instance this summary belongs to.
         """
         self.project = project

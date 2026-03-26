@@ -20,13 +20,14 @@ def calculate_r_factor(
 
     Parameters
     ----------
-    y_obs
+    y_obs : np.ndarray
         Observed data points.
-    y_calc
+    y_calc : np.ndarray
         Calculated data points.
 
     Returns
     -------
+    float
         R-factor value.
     """
     y_obs = np.asarray(y_obs)
@@ -46,15 +47,16 @@ def calculate_weighted_r_factor(
 
     Parameters
     ----------
-    y_obs
+    y_obs : np.ndarray
         Observed data points.
-    y_calc
+    y_calc : np.ndarray
         Calculated data points.
-    weights
+    weights : np.ndarray
         Weights for each data point.
 
     Returns
     -------
+    float
         Weighted R-factor value.
     """
     y_obs = np.asarray(y_obs)
@@ -74,13 +76,14 @@ def calculate_rb_factor(
 
     Parameters
     ----------
-    y_obs
+    y_obs : np.ndarray
         Observed data points.
-    y_calc
+    y_calc : np.ndarray
         Calculated data points.
 
     Returns
     -------
+    float
         Bragg R-factor value.
     """
     y_obs = np.asarray(y_obs)
@@ -99,13 +102,14 @@ def calculate_r_factor_squared(
 
     Parameters
     ----------
-    y_obs
+    y_obs : np.ndarray
         Observed data points.
-    y_calc
+    y_calc : np.ndarray
         Calculated data points.
 
     Returns
     -------
+    float
         R-factor squared value.
     """
     y_obs = np.asarray(y_obs)
@@ -124,13 +128,14 @@ def calculate_reduced_chi_square(
 
     Parameters
     ----------
-    residuals
+    residuals : np.ndarray
         Residuals between observed and calculated data.
-    num_parameters
+    num_parameters : int
         Number of free parameters used in the model.
 
     Returns
     -------
+    float
         Reduced chi-square value.
     """
     residuals = np.asarray(residuals)
@@ -153,15 +158,19 @@ def get_reliability_inputs(
 
     Parameters
     ----------
-    structures
+    structures : Structures
         Collection of structures.
-    experiments
+    experiments : Experiments
         Collection of experiments.
 
     Returns
     -------
-        Tuple containing arrays of (observed values, calculated values,
-        error values)
+    np.ndarray
+        Observed values.
+    np.ndarray
+        Calculated values.
+    Optional[np.ndarray]
+        Error values, or None if not available.
     """
     y_obs_all = []
     y_calc_all = []

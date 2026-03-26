@@ -366,7 +366,7 @@ class AtomSites(CategoryCollection):
 
         Parameters
         ----------
-        called_by_minimizer : bool
+        called_by_minimizer : bool, default=False
             Whether the update was triggered by the fitting minimizer.
             Currently unused.
         """

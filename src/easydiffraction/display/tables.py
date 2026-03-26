@@ -70,16 +70,17 @@ class TableRenderer(RendererBase):
 
         Parameters
         ----------
-        df
+        df : object
             DataFrame with a two-level column index where the second level
             provides per-column alignment.
-        display_handle
+        display_handle : object | None, default=None
             Optional environment-specific handle used to update an existing
             output area in-place (e.g., an IPython DisplayHandle or a
             terminal live handle).
 
         Returns
         -------
+        object
             Backend-specific return value (usually ``None``).
         """
         # Work on a copy to avoid mutating the original DataFrame

@@ -99,6 +99,7 @@ class ConsoleManager:
 
         Returns
         -------
+        int
             The detected terminal width, clamped at ``_MIN_CONSOLE_WIDTH``
             to avoid cramped layouts.
         """
@@ -141,13 +142,13 @@ class LoggerConfig:
 
         Parameters
         ----------
-        logger
+        logger : logging.Logger
             Logger instance to attach handlers to.
-        level
+        level : int
             Minimum log level to emit.
-        rich_tracebacks
+        rich_tracebacks : bool
             Whether to enable Rich tracebacks.
-        mode
+        mode : str, default='compact'
             Output mode name ("compact" or "verbose").
         """
         logger.handlers.clear()
@@ -188,13 +189,13 @@ class LoggerConfig:
 
         Parameters
         ----------
-        logger
+        logger : logging.Logger
             Logger instance to configure.
-        mode
+        mode : Logger.Mode
             Output mode (compact or verbose).
-        level
+        level : Logger.Level
             Minimum log level to emit.
-        rich_tracebacks
+        rich_tracebacks : bool
             Whether to enable Rich tracebacks.
         """
         LoggerConfig.setup_handlers(
@@ -223,7 +224,7 @@ class ExceptionHookManager:
 
         Parameters
         ----------
-        logger
+        logger : logging.Logger
             Logger used to emit the exception information.
         """
         if not hasattr(Logger, '_orig_excepthook'):
@@ -255,7 +256,7 @@ class ExceptionHookManager:
 
         Parameters
         ----------
-        logger
+        logger : logging.Logger
             Logger used to emit the error message.
         """
         if not hasattr(Logger, '_orig_excepthook'):
@@ -285,11 +286,12 @@ class ExceptionHookManager:
 
         Parameters
         ----------
-        logger
+        logger : object
             Logger used to emit error messages.
 
         Returns
         -------
+        object
             A callable suitable for IPython's set_custom_exc that suppresses
             full tracebacks and logs only the exception message.
         """
@@ -314,7 +316,7 @@ class ExceptionHookManager:
 
         Parameters
         ----------
-        logger
+        logger : logging.Logger
             Logger used to emit error messages.
         """
         try:

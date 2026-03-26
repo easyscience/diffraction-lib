@@ -49,7 +49,10 @@ def is_dark() -> bool:
     (for browser-based Jupyter) 4. System preferences (fallback - may
     differ from Jupyter theme)
 
-    Returns:     True if dark mode is detected, False otherwise.
+    Returns
+    -------
+    bool
+        True if dark mode is detected, False otherwise.
     """
     # Try Jupyter-specific methods first
     result = _check_jupyterlab_settings()
@@ -78,8 +81,11 @@ def is_dark() -> bool:
 def get_detection_result() -> dict[str, Optional[bool]]:
     """Get results from all detection methods for debugging.
 
-    Returns:     Dictionary with detection method names as keys and
-    their     results (True/False/None) as values.
+    Returns
+    -------
+    dict[str, Optional[bool]]
+        Dictionary with detection method names as keys and
+        their results (True/False/None) as values.
     """
     return {
         'jupyterlab_settings': _check_jupyterlab_settings(),
