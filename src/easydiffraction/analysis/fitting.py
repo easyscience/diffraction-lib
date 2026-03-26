@@ -159,8 +159,9 @@ class Fitter:
         analysis: object = None,
     ) -> np.ndarray:
         """
-        Residual function computes the difference between measured and
-        calculated patterns. It updates the parameter values according
+        Compute residuals between measured and calculated patterns.
+
+        It updates the parameter values according
         to the optimizer-provided engine_params.
 
         Parameters

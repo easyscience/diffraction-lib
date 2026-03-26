@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""
-Total scattering / pair distribution function (PDF) peak-profile
-component classes.
+"""Total scattering / PDF peak-profile component classes.
 
 This module provides classes that add broadening and asymmetry
 parameters. They are composed into concrete peak classes elsewhere via
@@ -23,7 +21,7 @@ class TotalBroadeningMixin:
 
         self._damp_q = Parameter(
             name='damp_q',
-            description='Instrumental Q-resolution damping (affects high-r PDF peak amplitude)',
+            description='Q-resolution damping for high-r PDF peak amplitude',
             units='Å⁻¹',
             value_spec=AttributeSpec(
                 default=0.05,
@@ -33,7 +31,7 @@ class TotalBroadeningMixin:
         )
         self._broad_q = Parameter(
             name='broad_q',
-            description='Quadratic peak broadening (thermal and model uncertainty contribution)',
+            description='Quadratic peak broadening from thermal uncertainty',
             units='Å⁻²',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -43,7 +41,7 @@ class TotalBroadeningMixin:
         )
         self._cutoff_q = Parameter(
             name='cutoff_q',
-            description='Q-value cutoff for Fourier transform (controls real-space resolution)',
+            description='Q-value cutoff for Fourier transform',
             units='Å⁻¹',
             value_spec=AttributeSpec(
                 default=25.0,
@@ -53,7 +51,7 @@ class TotalBroadeningMixin:
         )
         self._sharp_delta_1 = Parameter(
             name='sharp_delta_1',
-            description='PDF peak sharpening coefficient (1/r dependence)',
+            description='Peak sharpening coefficient (1/r dependence)',
             units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -63,7 +61,7 @@ class TotalBroadeningMixin:
         )
         self._sharp_delta_2 = Parameter(
             name='sharp_delta_2',
-            description='PDF peak sharpening coefficient (1/r² dependence)',
+            description='Peak sharpening coefficient (1/r² dependence)',
             units='Å²',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -89,8 +87,7 @@ class TotalBroadeningMixin:
     @property
     def damp_q(self) -> Parameter:
         """
-        Instrumental Q-resolution damping (affects high-r PDF peak
-        amplitude) (Å⁻¹).
+        Q-resolution damping for high-r PDF peak amplitude (Å⁻¹).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -104,8 +101,7 @@ class TotalBroadeningMixin:
     @property
     def broad_q(self) -> Parameter:
         """
-        Quadratic peak broadening (thermal and model uncertainty
-        contribution) (Å⁻²).
+        Quadratic peak broadening from thermal uncertainty (Å⁻²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -119,8 +115,7 @@ class TotalBroadeningMixin:
     @property
     def cutoff_q(self) -> Parameter:
         """
-        Q-value cutoff for Fourier transform (controls real-space
-        resolution) (Å⁻¹).
+        Q-value cutoff for Fourier transform (Å⁻¹).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

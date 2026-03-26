@@ -22,7 +22,7 @@ class CwlBroadeningMixin:
 
         self._broad_gauss_u: Parameter = Parameter(
             name='broad_gauss_u',
-            description='Gaussian broadening (sample size and instrument resolution)',
+            description='Gaussian broadening from sample size and resolution',
             units='deg²',
             value_spec=AttributeSpec(
                 default=0.01,
@@ -32,7 +32,7 @@ class CwlBroadeningMixin:
         )
         self._broad_gauss_v: Parameter = Parameter(
             name='broad_gauss_v',
-            description='Gaussian broadening (instrumental broadening contribution)',
+            description='Gaussian broadening instrumental contribution',
             units='deg²',
             value_spec=AttributeSpec(
                 default=-0.01,
@@ -42,7 +42,7 @@ class CwlBroadeningMixin:
         )
         self._broad_gauss_w: Parameter = Parameter(
             name='broad_gauss_w',
-            description='Gaussian broadening (instrumental broadening contribution)',
+            description='Gaussian broadening instrumental contribution',
             units='deg²',
             value_spec=AttributeSpec(
                 default=0.02,
@@ -52,7 +52,7 @@ class CwlBroadeningMixin:
         )
         self._broad_lorentz_x: Parameter = Parameter(
             name='broad_lorentz_x',
-            description='Lorentzian broadening (sample strain effects)',
+            description='Lorentzian broadening from sample strain effects',
             units='deg',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -62,7 +62,7 @@ class CwlBroadeningMixin:
         )
         self._broad_lorentz_y: Parameter = Parameter(
             name='broad_lorentz_y',
-            description='Lorentzian broadening (microstructural defects and strain)',
+            description='Lorentzian broadening from microstructural defects',
             units='deg',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -78,8 +78,7 @@ class CwlBroadeningMixin:
     @property
     def broad_gauss_u(self) -> Parameter:
         """
-        Gaussian broadening (sample size and instrument resolution)
-        (deg²).
+        Gaussian broadening from sample size and resolution (deg²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -93,8 +92,7 @@ class CwlBroadeningMixin:
     @property
     def broad_gauss_v(self) -> Parameter:
         """
-        Gaussian broadening (instrumental broadening contribution)
-        (deg²).
+        Gaussian broadening instrumental contribution (deg²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -108,8 +106,7 @@ class CwlBroadeningMixin:
     @property
     def broad_gauss_w(self) -> Parameter:
         """
-        Gaussian broadening (instrumental broadening contribution)
-        (deg²).
+        Gaussian broadening instrumental contribution (deg²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -137,8 +134,7 @@ class CwlBroadeningMixin:
     @property
     def broad_lorentz_y(self) -> Parameter:
         """
-        Lorentzian broadening (microstructural defects and strain)
-        (deg).
+        Lorentzian broadening from microstructural defects (deg).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

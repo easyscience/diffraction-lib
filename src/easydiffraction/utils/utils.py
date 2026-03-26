@@ -49,9 +49,7 @@ def _validate_url(url: str) -> None:
 
 
 def _filename_for_id_from_url(data_id: int | str, url: str) -> str:
-    """
-    Return local filename like 'ed-12.xye' using extension from the URL.
-    """
+    """Return local filename like 'ed-12.xye' using extension from the URL."""
     suffix = pathlib.Path(urlparse(url).path).suffix  # includes leading dot ('.cif', '.xye', ...)
     # If URL has no suffix, fall back to no extension.
     return f'ed-{data_id}{suffix}'
@@ -72,9 +70,7 @@ def _normalize_known_hash(value: str | None) -> str | None:
 
 
 def _fetch_data_index() -> dict:
-    """
-    Fetch & cache the diffraction data index.json and return it as dict.
-    """
+    """Fetch & cache the diffraction data index.json and return it as dict."""
     index_url = 'https://raw.githubusercontent.com/easyscience/data/refs/heads/master/diffraction/index.json'
     _validate_url(index_url)
 
@@ -99,8 +95,7 @@ def _fetch_data_index() -> dict:
 @functools.lru_cache(maxsize=1)
 def _fetch_tutorials_index() -> dict:
     """
-    Fetch & cache the tutorials index.json from gh-pages and return it
-    as dict.
+    Fetch and cache the tutorials index.json from gh-pages.
 
     The index is fetched from:
     https://easyscience.github.io/diffraction-lib/{version}/tutorials/index.json
@@ -231,8 +226,7 @@ def package_version(package_name: str) -> str | None:
 
 def stripped_package_version(package_name: str) -> str | None:
     """
-    Get the installed version of the specified package, stripped of any
-    local version part.
+    Get installed package version, stripped of local version parts.
 
     Returns only the public version segment (e.g., '1.2.3' or
     '1.2.3.post4'), omitting any local segment (e.g., '+d136').
@@ -260,8 +254,7 @@ def stripped_package_version(package_name: str) -> str | None:
 
 def _is_dev_version(package_name: str) -> bool:
     """
-    Check if the installed package version is a development/local
-    version.
+    Check if the installed package version is a dev version.
 
     A version is considered "dev" if: - The raw version contains '+dev',
     '+dirty', or '+devdirty' (local suffixes from versioningit) - The
@@ -543,8 +536,7 @@ def render_table(
 
 def render_cif(cif_text: str) -> None:
     """
-    Display the CIF text as a formatted table in Jupyter Notebook or
-    terminal.
+    Display CIF text as a formatted table in Jupyter or terminal.
 
     Parameters
     ----------
@@ -573,8 +565,7 @@ def tof_to_d(
     quad_eps: float = 1e-20,
 ) -> np.ndarray:
     """
-    Convert time-of-flight (TOF) to d-spacing using a quadratic
-    calibration.
+    Convert time-of-flight to d-spacing using quadratic calibration.
 
     Model: TOF = offset + linear * d + quad * d²
 
@@ -709,8 +700,7 @@ def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda: object) -> object:
 
 def get_value_from_xye_header(file_path: str, key: str) -> float:
     """
-    Extracts a floating point value from the first line of the file,
-    corresponding to the given key.
+    Extract a float from the first line of the file by key.
 
     Parameters
     ----------
@@ -743,8 +733,7 @@ def get_value_from_xye_header(file_path: str, key: str) -> float:
 
 def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
     """
-    Parse a CIF-style numeric string into a ``ufloat`` with an optional
-    uncertainty.
+    Parse a CIF-style numeric string into a ufloat.
 
     Examples of supported input: - "3.566" → ufloat(3.566, nan) -
     "3.566(2)" → ufloat(3.566, 0.002) - None → ufloat(default, nan)

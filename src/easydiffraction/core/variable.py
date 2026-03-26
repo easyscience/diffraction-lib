@@ -107,10 +107,7 @@ class GenericDescriptorBase(GuardedBase):
 
     @property
     def unique_name(self) -> str:
-        """
-        Fully qualified name including datablock, category and entry
-        name.
-        """
+        """Fully qualified name: datablock, category and entry."""
         parts = [
             self._identity.datablock_entry_name,
             self._identity.category_code,
@@ -120,10 +117,7 @@ class GenericDescriptorBase(GuardedBase):
         return '.'.join(filter(None, parts))
 
     def _parent_of_type(self, cls: type) -> object | None:
-        """
-        Walk up the parent chain and return the first parent of type
-        ``cls``.
-        """
+        """Traverse parents and return the first of type cls."""
         obj = getattr(self, '_parent', None)
         visited = set()
         while obj is not None and id(obj) not in visited:
@@ -346,10 +340,7 @@ class GenericParameter(GenericNumericDescriptor):
 
     @property
     def uncertainty(self) -> float | None:
-        """
-        Estimated standard uncertainty of the fitted value, if
-        available.
-        """
+        """Estimated standard uncertainty of the fitted value."""
         return self._uncertainty
 
     @uncertainty.setter

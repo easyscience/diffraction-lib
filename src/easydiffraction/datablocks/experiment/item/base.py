@@ -34,10 +34,7 @@ if TYPE_CHECKING:
 
 
 class ExperimentBase(DatablockItem):
-    """
-    Base class for all experiment datablock items with only core
-    attributes.
-    """
+    """Base class for all experiment datablock items."""
 
     def __init__(
         self,
@@ -71,9 +68,7 @@ class ExperimentBase(DatablockItem):
 
     @property
     def type(self) -> object:  # TODO: Consider another name
-        """
-        Experiment type descriptor (sample form, probe, beam mode).
-        """
+        """Experiment type descriptor (sample form, probe, beam mode)."""
         return self._type
 
     @property
@@ -156,10 +151,7 @@ class ExperimentBase(DatablockItem):
         console.print(tag)
 
     def show_supported_calculator_types(self) -> None:
-        """
-        Print a table of calculator backends supported by this
-        experiment.
-        """
+        """Print a table of supported calculator backends."""
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
 
         supported_tags = self._supported_calculator_tags()
@@ -186,10 +178,7 @@ class ExperimentBase(DatablockItem):
         console.print(self.calculator_type)
 
     def _resolve_calculator(self) -> None:
-        """
-        Auto-resolve the default calculator from the data category's
-        ``calculator_support`` and ``CalculatorFactory._default_rules``.
-        """
+        """Auto-resolve the default calculator from data category."""
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
 
         tag = CalculatorFactory.default_tag(
@@ -612,9 +601,7 @@ class PdExperimentBase(ExperimentBase):
         console.print(new_type)
 
     def show_supported_excluded_regions_types(self) -> None:
-        """
-        Print a table of supported excluded-regions collection types.
-        """
+        """Print a table of supported excluded-regions collection types."""
         ExcludedRegionsFactory.show_supported()
 
     def show_current_excluded_regions_type(self) -> None:

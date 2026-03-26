@@ -24,8 +24,7 @@ if TYPE_CHECKING:
 
 def format_value(value: object) -> str:
     """
-    Format a single CIF value, quoting strings with whitespace, and
-    format floats with global precision.
+    Format a single CIF value for output.
 
     .. note::     The precision must be high enough so that the
     minimizer's     finite-difference Jacobian probes (typically ~1e-8
@@ -160,9 +159,7 @@ def datablock_collection_to_cif(collection: object) -> str:
 
 
 def project_info_to_cif(info: object) -> str:
-    """
-    Render ProjectInfo to CIF text (id, title, description, dates).
-    """
+    """Render ProjectInfo to CIF text (id, title, description, dates)."""
     name = f'{info.name}'
 
     title = f'{info.title}'

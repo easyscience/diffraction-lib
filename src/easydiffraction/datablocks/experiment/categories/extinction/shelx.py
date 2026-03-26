@@ -17,9 +17,7 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @ExtinctionFactory.register
 class ShelxExtinction(CategoryItem):
-    """
-    Shelx-style isotropic extinction correction for single crystals.
-    """
+    """Shelx-style isotropic extinction correction for single crystals."""
 
     type_info = TypeInfo(
         tag='shelx',

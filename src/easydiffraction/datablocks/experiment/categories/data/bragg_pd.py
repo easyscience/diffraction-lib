@@ -59,7 +59,7 @@ class PdDataPointBaseMixin:
         )
         self._intensity_meas = NumericDescriptor(
             name='intensity_meas',
-            description='Intensity recorded at each measurement point as a function of angle/time',
+            description='Intensity recorded at each measurement point (angle/time)',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -144,8 +144,7 @@ class PdDataPointBaseMixin:
     @property
     def intensity_meas(self) -> NumericDescriptor:
         """
-        Intensity recorded at each measurement point as a function of
-        angle/time.
+        Intensity recorded at each measurement point (angle/time).
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -194,9 +193,7 @@ class PdDataPointBaseMixin:
 
 
 class PdCwlDataPointMixin:
-    """
-    Mixin for powder diffraction data points with constant wavelength.
-    """
+    """Mixin for powder diffraction data points with constant wavelength."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -277,9 +274,7 @@ class PdCwlDataPoint(
     #  But also says, that in fact, it is just for consistency. And both
     #  orders work.
 ):
-    """
-    Powder diffraction data point for constant-wavelength experiments.
-    """
+    """Powder diffraction data point for constant-wavelength experiments."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -326,9 +321,7 @@ class PdDataBase(CategoryCollection):
             p.intensity_meas._value = v
 
     def _set_intensity_meas_su(self, values: object) -> None:
-        """
-        Helper method to set standard uncertainty of measured intensity.
-        """
+        """Helper method to set standard uncertainty of measured intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas_su._value = v
 
@@ -531,9 +524,7 @@ class PdCwlData(PdDataBase):
 
     @property
     def two_theta(self) -> np.ndarray:
-        """
-        Get the 2θ values for data points included in calculations.
-        """
+        """Get the 2θ values for data points included in calculations."""
         return np.fromiter(
             (p.two_theta.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
@@ -608,9 +599,7 @@ class PdTofData(PdDataBase):
 
     @property
     def time_of_flight(self) -> np.ndarray:
-        """
-        Get the TOF values for data points included in calculations.
-        """
+        """Get the TOF values for data points included in calculations."""
         return np.fromiter(
             (p.time_of_flight.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?

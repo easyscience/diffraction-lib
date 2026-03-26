@@ -25,10 +25,7 @@ if TYPE_CHECKING:
 
 @ExperimentFactory.register
 class BraggPdExperiment(PdExperimentBase):
-    """
-    Standard (Bragg) Powder Diffraction experiment class with specific
-    attributes.
-    """
+    """Standard Bragg powder diffraction experiment."""
 
     type_info = TypeInfo(
         tag='bragg-pd',

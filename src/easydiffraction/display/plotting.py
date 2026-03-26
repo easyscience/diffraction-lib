@@ -159,10 +159,7 @@ class Plotter(RendererBase):
         scattering_type: object,
         x_axis: object,
     ) -> list:
-        """
-        Look up axis labels for the given experiment / x-axis
-        combination.
-        """
+        """Look up axis labels for the experiment / x-axis."""
         return DEFAULT_AXES_LABELS[(sample_form, scattering_type, x_axis)]
 
     def _prepare_powder_data(

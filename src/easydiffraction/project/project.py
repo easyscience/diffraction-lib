@@ -75,9 +75,7 @@ class Project(GuardedBase):
 
     @property
     def name(self) -> str:
-        """
-        Convenience property to access the project's name directly.
-        """
+        """Convenience property to access the project's name directly."""
         return self._info.name
 
     @property

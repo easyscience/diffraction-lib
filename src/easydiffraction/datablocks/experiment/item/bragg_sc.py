@@ -23,10 +23,7 @@ if TYPE_CHECKING:
 
 @ExperimentFactory.register
 class CwlScExperiment(ScExperimentBase):
-    """
-    Standard (Bragg) constant wavelength single srystal experiment class
-    with specific attributes.
-    """
+    """Bragg constant-wavelength single-crystal experiment."""
 
     type_info = TypeInfo(
         tag='bragg-sc-cwl',
@@ -89,10 +86,7 @@ class CwlScExperiment(ScExperimentBase):
 
 @ExperimentFactory.register
 class TofScExperiment(ScExperimentBase):
-    """
-    Standard (Bragg) time-of-flight single srystal experiment class with
-    specific attributes.
-    """
+    """Bragg time-of-flight single-crystal experiment."""
 
     type_info = TypeInfo(
         tag='bragg-sc-tof',

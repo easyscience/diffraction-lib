@@ -19,8 +19,7 @@ from typing import FrozenSet
 @dataclass(frozen=True)
 class TypeInfo:
     """
-    Stable identity and human-readable description for a factory-
-    created class.
+    Stable identity and description for a factory-created class.
 
     Attributes
     ----------

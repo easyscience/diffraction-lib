@@ -21,10 +21,7 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @LinkedCrystalFactory.register
 class LinkedCrystal(CategoryItem):
-    """
-    Linked crystal category for referencing from the experiment for
-    single crystal diffraction.
-    """
+    """Linked crystal reference for single-crystal diffraction."""
 
     type_info = TypeInfo(
         tag='default',

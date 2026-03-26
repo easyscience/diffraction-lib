@@ -216,8 +216,7 @@ class AtomSite(CategoryItem):
     @property
     def adp_type(self) -> StringDescriptor:
         """
-        Type of atomic displacement parameter (ADP) used (e.g., Biso,
-        Uiso, Uani, Bani).
+        ADP type used (e.g., Biso, Uiso, Uani, Bani).
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
@@ -232,8 +231,7 @@ class AtomSite(CategoryItem):
     @property
     def wyckoff_letter(self) -> StringDescriptor:
         """
-        Wyckoff letter indicating the symmetry of the atom site within
-        the space group.
+        Wyckoff letter for the atom site symmetry position.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
@@ -290,8 +288,7 @@ class AtomSite(CategoryItem):
     @property
     def occupancy(self) -> Parameter:
         """
-        Occupancy of the atom site, representing the fraction of the
-        site occupied by the atom type.
+        Occupancy fraction of the atom type at this site.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -305,8 +302,7 @@ class AtomSite(CategoryItem):
     @property
     def b_iso(self) -> Parameter:
         """
-        Isotropic atomic displacement parameter (ADP) for the atom site
-        (Å²).
+        Isotropic ADP for the atom site (Å²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

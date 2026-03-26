@@ -253,10 +253,7 @@ class Analysis:
         return df
 
     def show_all_params(self) -> None:
-        """
-        Print a table with all parameters for structures and
-        experiments.
-        """
+        """Print all parameters for structures and experiments."""
         structures_params = self.project.structures.parameters
         experiments_params = self.project.experiments.parameters
 
@@ -286,9 +283,7 @@ class Analysis:
         tabler.render(filtered_df)
 
     def show_fittable_params(self) -> None:
-        """
-        Print a table with parameters that can be included in fitting.
-        """
+        """Print a table with parameters that can be included in fitting."""
         structures_params = self.project.structures.fittable_parameters
         experiments_params = self.project.experiments.fittable_parameters
 
@@ -320,9 +315,7 @@ class Analysis:
         tabler.render(filtered_df)
 
     def show_free_params(self) -> None:
-        """
-        Print a table with only currently-free (varying) parameters.
-        """
+        """Print a table with only currently-free (varying) parameters."""
         structures_params = self.project.structures.free_parameters
         experiments_params = self.project.experiments.free_parameters
         free_params = structures_params + experiments_params
@@ -482,9 +475,7 @@ class Analysis:
 
     @staticmethod
     def show_available_minimizers() -> None:
-        """
-        Print a table of available minimizer drivers on this system.
-        """
+        """Print a table of available minimizer drivers on this system."""
         MinimizerFactory.show_supported()
 
     @property
@@ -590,9 +581,7 @@ class Analysis:
         )
 
     def apply_constraints(self) -> None:
-        """
-        Apply the currently defined constraints to the active project.
-        """
+        """Apply the currently defined constraints to the active project."""
         if not self.constraints._items:
             log.warning('No constraints defined.')
             return
@@ -603,8 +592,7 @@ class Analysis:
 
     def fit(self) -> None:
         """
-        Execute fitting using the selected mode, calculator and
-        minimizer.
+        Execute fitting for all experiments.
 
         This method performs the optimization but does not display
         results automatically. Call :meth:`show_fit_results` after
@@ -736,9 +724,7 @@ class Analysis:
         return analysis_to_cif(self)
 
     def show_as_cif(self) -> None:
-        """
-        Render the analysis section as CIF in a formatted console view.
-        """
+        """Render the analysis section as CIF in a formatted console view."""
         cif_text: str = self.as_cif()
         paragraph_title: str = 'Analysis 🧮 info as cif'
         console.paragraph(paragraph_title)

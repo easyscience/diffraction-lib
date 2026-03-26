@@ -17,8 +17,7 @@ from easydiffraction.io.cif.handler import CifHandler
 @CellFactory.register
 class Cell(CategoryItem):
     """
-    Unit cell with lengths *a*, *b*, *c* and angles *alpha*, *beta*,
-    *gamma*.
+    Unit cell with lengths a, b, c and angles alpha, beta, gamma.
 
     All six lattice parameters are exposed as :class:`Parameter`
     descriptors supporting validation, fitting and CIF serialization.

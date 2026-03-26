@@ -68,10 +68,7 @@ class DatablockItem(GuardedBase):
 
     @property
     def categories(self) -> list:
-        """
-        All category objects in this datablock, sorted by update
-        priority.
-        """
+        """All category objects in this datablock by priority."""
         cats = [
             v for v in vars(self).values() if isinstance(v, (CategoryItem, CategoryCollection))
         ]
@@ -80,9 +77,7 @@ class DatablockItem(GuardedBase):
 
     @property
     def parameters(self) -> list:
-        """
-        All parameters from all categories contained in this datablock.
-        """
+        """All parameters from all categories contained in this datablock."""
         params = []
         for v in self.categories:
             params.extend(v.parameters)
@@ -124,8 +119,7 @@ class DatablockItem(GuardedBase):
 
 class DatablockCollection(CollectionBase):
     """
-    Handles top-level category collections (e.g. Structures,
-    Experiments).
+    Collection of top-level datablocks (e.g. Structures, Experiments).
 
     Each item is a DatablockItem.
 
@@ -158,9 +152,7 @@ class DatablockCollection(CollectionBase):
 
     @property
     def unique_name(self) -> str | None:
-        """
-        Return None; collections do not carry their own unique name.
-        """
+        """Return None; collections do not carry their own unique name."""
         return None
 
     @property
@@ -173,9 +165,7 @@ class DatablockCollection(CollectionBase):
 
     @property
     def fittable_parameters(self) -> list:
-        """
-        All non-constrained Parameter instances in this collection.
-        """
+        """All non-constrained Parameter instances in this collection."""
         return [p for p in self.parameters if isinstance(p, Parameter) and not p.constrained]
 
     @property

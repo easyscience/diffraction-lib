@@ -57,10 +57,7 @@ class Summary:
             print('\n'.join(desc_lines))
 
     def show_crystallographic_data(self) -> None:
-        """
-        Print crystallographic data including phase datablocks, space
-        groups, cell parameters, and atom sites.
-        """
+        """Print crystallographic data for all phases."""
         console.section('Crystallographic data')
 
         for model in self.project.structures.values():
@@ -120,10 +117,7 @@ class Summary:
             )
 
     def show_experimental_data(self) -> None:
-        """
-        Print experimental data including experiment datablocks, types,
-        instrument settings, and peak profile information.
-        """
+        """Print experimental data for all experiments."""
         console.section('Experiments')
 
         for expt in self.project.experiments.values():
@@ -181,10 +175,7 @@ class Summary:
                     )
 
     def show_fitting_details(self) -> None:
-        """
-        Print fitting details including calculation and minimization
-        engines, and fit quality metrics.
-        """
+        """Print fitting details including engines and metrics."""
         console.section('Fitting')
 
         console.paragraph('Calculation engine')
@@ -214,9 +205,7 @@ class Summary:
     # ------------------------------------------
 
     def as_cif(self) -> str:
-        """
-        Export the final fitted data and analysis results as CIF format.
-        """
+        """Export the final fitted data and analysis results as CIF format."""
         from easydiffraction.io.cif.serialize import summary_to_cif
 
         return summary_to_cif(self)

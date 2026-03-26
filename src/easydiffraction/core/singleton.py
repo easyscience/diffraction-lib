@@ -86,8 +86,7 @@ class UidMapHandler(SingletonBase):
 #  when removing constraints
 class ConstraintsHandler(SingletonBase):
     """
-    Manages user-defined parameter constraints using aliases and
-    expressions.
+    Manage parameter constraints using aliases and expressions.
 
     Uses the asteval interpreter for safe evaluation of mathematical
     expressions. Constraints are defined as: lhs_alias =
@@ -126,11 +125,7 @@ class ConstraintsHandler(SingletonBase):
         self._parse_constraints()
 
     def _parse_constraints(self) -> None:
-        """
-        Converts raw expression input into a normalized internal list of
-        (lhs_alias, rhs_expr) pairs, stripping whitespace and skipping
-        invalid entries.
-        """
+        """Parse raw expressions into (lhs_alias, rhs_expr) pairs."""
         self._parsed_constraints = []
 
         for expr_obj in self._constraints:

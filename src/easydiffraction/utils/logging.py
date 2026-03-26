@@ -44,10 +44,7 @@ from easydiffraction.utils.environment import in_warp
 
 
 class IconifiedRichHandler(RichHandler):
-    """
-    RichHandler that uses icons for log levels in compact mode, Rich
-    default in verbose mode.
-    """
+    """RichHandler using icons (compact) or names (verbose)."""
 
     _icons = {
         logging.CRITICAL: '💀',
@@ -311,8 +308,7 @@ class ExceptionHookManager:
     @staticmethod
     def _suppress_traceback(logger: object) -> object:
         """
-        Build a Jupyter custom exception callback that logs only the
-        message.
+        Build a Jupyter exception callback that logs the message only.
 
         Parameters
         ----------
@@ -328,9 +324,7 @@ class ExceptionHookManager:
         """
 
         def suppress_jupyter_traceback(*args: object, **kwargs: object) -> None:
-            """
-            Log only the exception message, suppressing the traceback.
-            """
+            """Log only the exception message, suppressing the traceback."""
             try:
                 _evalue = (
                     args[2] if len(args) > 2 else kwargs.get('_evalue') or kwargs.get('evalue')
@@ -345,8 +339,7 @@ class ExceptionHookManager:
     @staticmethod
     def install_jupyter_traceback_suppressor(logger: logging.Logger) -> None:
         """
-        Install a Jupyter/IPython custom exception handler that
-        suppresses tracebacks.
+        Install a Jupyter/IPython exception handler for tracebacks.
 
         Parameters
         ----------
@@ -482,9 +475,7 @@ class Logger:
 
     @classmethod
     def _install_jupyter_traceback_suppressor(cls) -> None:
-        """
-        Install traceback suppressor in Jupyter, safely and lint- clean.
-        """
+        """Install traceback suppressor in Jupyter, safely and lint- clean."""
         ExceptionHookManager.install_jupyter_traceback_suppressor(cls._logger)
 
     # ===== Helpers =====
@@ -637,10 +628,7 @@ class Logger:
 
 
 class ConsolePrinter:
-    """
-    Printer utility that prints objects to the shared console with left
-    padding.
-    """
+    """Printer utility for the shared console with left padding."""
 
     _console = ConsoleManager.get()
 
@@ -706,10 +694,7 @@ class ConsolePrinter:
 
     @classmethod
     def chapter(cls, title: str) -> None:
-        """
-        Formats a chapter header with bold magenta text, uppercase, and
-        padding.
-        """
+        """Format a chapter header in bold magenta, uppercase."""
         width = ConsoleManager._detect_width()
         symbol = '—'
         full_title = f' {title.upper()} '

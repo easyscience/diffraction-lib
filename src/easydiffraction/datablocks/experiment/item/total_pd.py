@@ -43,8 +43,7 @@ class TotalPdExperiment(PdExperimentBase):
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """
-        Loads x, y, sy values from an ASCII data file into the
-        experiment.
+        Load x, y, sy values from an ASCII file into the experiment.
 
         The file must be structured as:     x  y  sy
         """

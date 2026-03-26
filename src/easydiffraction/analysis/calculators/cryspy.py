@@ -64,8 +64,7 @@ class CryspyCalculator(CalculatorBase):
         called_by_minimizer: bool = False,
     ) -> None:
         """
-        Raises a NotImplementedError as HKL calculation is not
-        implemented.
+        Raise NotImplementedError as HKL calculation is not implemented.
 
         Parameters
         ----------
@@ -124,8 +123,7 @@ class CryspyCalculator(CalculatorBase):
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
         """
-        Calculates the diffraction pattern using Cryspy for the given
-        structure and experiment.
+        Calculate the diffraction pattern using Cryspy.
 
         We only recreate the cryspy_obj if this method is - NOT called
         by the minimizer, or - the cryspy_dict is NOT yet created. In
@@ -204,8 +202,7 @@ class CryspyCalculator(CalculatorBase):
         experiment: ExperimentBase,
     ) -> Dict[str, Any]:
         """
-        Recreates the Cryspy dictionary for the given structure and
-        experiment.
+        Recreate the Cryspy dictionary for structure and experiment.
 
         Parameters
         ----------
@@ -324,8 +321,7 @@ class CryspyCalculator(CalculatorBase):
         experiment: ExperimentBase,
     ) -> object:
         """
-        Recreates the Cryspy object for the given structure and
-        experiment.
+        Recreate the Cryspy object for structure and experiment.
 
         Parameters
         ----------

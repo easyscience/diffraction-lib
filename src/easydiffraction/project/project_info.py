@@ -12,10 +12,7 @@ from easydiffraction.utils.utils import render_cif
 
 
 class ProjectInfo(GuardedBase):
-    """
-    Stores metadata about the project, such as name, title, description,
-    and file paths.
-    """
+    """Store project metadata: name, title, description, paths."""
 
     def __init__(
         self,

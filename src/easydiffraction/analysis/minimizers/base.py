@@ -92,10 +92,7 @@ class MinimizerBase(ABC):
         raw_result: object,
         parameters: List[object],
     ) -> None:
-        """
-        Copy values from ``raw_result`` back to ``parameters`` in-
-        place.
-        """
+        """Copy values from ``raw_result`` back to ``parameters`` in-place."""
         pass
 
     def _finalize_fit(

@@ -23,9 +23,7 @@ class CalculatorBase(ABC):
     @property
     @abstractmethod
     def engine_imported(self) -> bool:
-        """
-        Whether the underlying calculation library could be imported.
-        """
+        """Whether the underlying calculation library could be imported."""
         pass
 
     @abstractmethod
@@ -35,10 +33,7 @@ class CalculatorBase(ABC):
         experiment: ExperimentBase,
         called_by_minimizer: bool,
     ) -> None:
-        """
-        Calculate structure factors for a single structure and
-        experiment.
-        """
+        """Calculate structure factors for one structure-experiment pair."""
         pass
 
     @abstractmethod
@@ -49,8 +44,7 @@ class CalculatorBase(ABC):
         called_by_minimizer: bool,
     ) -> np.ndarray:
         """
-        Calculate the diffraction pattern for a single structure and
-        experiment.
+        Calculate diffraction pattern for one structure-experiment pair.
 
         Parameters
         ----------

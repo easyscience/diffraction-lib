@@ -73,8 +73,7 @@ class CrysfmlCalculator(CalculatorBase):
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
         """
-        Calculates the diffraction pattern using Crysfml for the given
-        structure and experiment.
+        Calculate the diffraction pattern using Crysfml.
 
         Parameters
         ----------
@@ -135,8 +134,7 @@ class CrysfmlCalculator(CalculatorBase):
         experiment: ExperimentBase,
     ) -> Dict[str, Union[ExperimentBase, Structure]]:
         """
-        Converts the structure and experiment into a dictionary format
-        for Crysfml.
+        Convert structure and experiment into a Crysfml dictionary.
 
         Parameters
         ----------

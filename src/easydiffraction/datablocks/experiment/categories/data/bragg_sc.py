@@ -26,9 +26,7 @@ from easydiffraction.utils.utils import sin_theta_over_lambda_to_d_spacing
 
 
 class Refln(CategoryItem):
-    """
-    Single reflection for single crystal diffraction data category.
-    """
+    """Single reflection for single crystal diffraction data category."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -47,7 +45,7 @@ class Refln(CategoryItem):
         )
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
-            description='The distance between lattice planes in the crystal for this reflection',
+            description='Distance between lattice planes for this reflection',
             units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -112,7 +110,7 @@ class Refln(CategoryItem):
         )
         self._intensity_calc = NumericDescriptor(
             name='intensity_calc',
-            description='The intensity of the reflection calculated from the atom site data.',
+            description='Intensity of the reflection calculated from atom site data',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -121,7 +119,7 @@ class Refln(CategoryItem):
         )
         self._wavelength = NumericDescriptor(
             name='wavelength',
-            description='The mean wavelength of radiation used to measure this reflection.',
+            description='Mean wavelength of radiation for this reflection',
             units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -150,8 +148,7 @@ class Refln(CategoryItem):
     @property
     def d_spacing(self) -> NumericDescriptor:
         """
-        The distance between lattice planes in the crystal for this
-        reflection (Å).
+        Distance between lattice planes for this reflection (Å).
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -221,8 +218,7 @@ class Refln(CategoryItem):
     @property
     def intensity_calc(self) -> NumericDescriptor:
         """
-        The intensity of the reflection calculated from the atom site
-        data.
+        Intensity of the reflection calculated from atom site data.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -232,8 +228,7 @@ class Refln(CategoryItem):
     @property
     def wavelength(self) -> NumericDescriptor:
         """
-        The mean wavelength of radiation used to measure this reflection
-        (Å).
+        Mean wavelength of radiation for this reflection (Å).
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -300,9 +295,7 @@ class ReflnData(CategoryCollection):
             p.intensity_meas._value = v
 
     def _set_intensity_meas_su(self, values: object) -> None:
-        """
-        Helper method to set standard uncertainty of measured intensity.
-        """
+        """Helper method to set standard uncertainty of measured intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas_su._value = v
 
@@ -426,9 +419,7 @@ class ReflnData(CategoryCollection):
 
     @property
     def intensity_calc(self) -> np.ndarray:
-        """
-        Calculated structure-factor intensities for all reflections.
-        """
+        """Calculated structure-factor intensities for all reflections."""
         return np.fromiter(
             (p.intensity_calc.value for p in self._items),
             dtype=float,

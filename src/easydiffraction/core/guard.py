@@ -12,9 +12,7 @@ from easydiffraction.core.identity import Identity
 
 
 class GuardedBase(ABC):
-    """
-    Base class enforcing controlled attribute access and parent linkage.
-    """
+    """Base class enforcing controlled attribute access and parent linkage."""
 
     _diagnoser = Diagnostics()
 
@@ -80,8 +78,7 @@ class GuardedBase(ABC):
     @classmethod
     def _iter_properties(cls) -> Generator[tuple[str, property], None, None]:
         """
-        Iterate over all public properties defined in the class
-        hierarchy.
+        Iterate over all public properties in the class hierarchy.
 
         Yields
         ------
@@ -136,19 +133,13 @@ class GuardedBase(ABC):
     @property
     @abstractmethod
     def parameters(self) -> list:
-        """
-        Return a list of parameter objects (to be implemented by
-        subclasses).
-        """
+        """Return a list of parameters (implemented by subclasses)."""
         raise NotImplementedError
 
     @property
     @abstractmethod
     def as_cif(self) -> str:
-        """
-        Return CIF representation of this object (to be implemented by
-        subclasses).
-        """
+        """Return CIF representation (implemented by subclasses)."""
         raise NotImplementedError
 
     @staticmethod
