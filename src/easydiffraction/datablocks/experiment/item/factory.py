@@ -75,7 +75,7 @@ class ExperimentFactory(FactoryBase):
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
     ) -> ExperimentType:
-        """Construct an ExperimentType, using defaults for omitted values."""
+        """Construct ExperimentType with defaults for omitted values."""
         # Note: validation of input values is done via Descriptor setter
         # methods
 

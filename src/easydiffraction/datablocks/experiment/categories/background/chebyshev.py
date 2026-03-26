@@ -99,6 +99,9 @@ class PolynomialTerm(CategoryItem):
     @id.setter
     def id(self, value: str) -> None:
         self._id.value = value
+
+    @property
+    def order(self) -> NumericDescriptor:
         """
         Order used in a Chebyshev polynomial background term.
 
@@ -110,7 +113,6 @@ class PolynomialTerm(CategoryItem):
 
     @order.setter
     def order(self, value: float) -> None:
-        """Set the polynomial order."""
         self._order.value = value
 
     @property

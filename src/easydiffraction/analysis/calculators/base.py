@@ -23,7 +23,7 @@ class CalculatorBase(ABC):
     @property
     @abstractmethod
     def engine_imported(self) -> bool:
-        """Whether the underlying calculation library could be imported."""
+        """True if the underlying calculation library is available."""
         pass
 
     @abstractmethod
@@ -33,7 +33,7 @@ class CalculatorBase(ABC):
         experiment: ExperimentBase,
         called_by_minimizer: bool,
     ) -> None:
-        """Calculate structure factors for one structure-experiment pair."""
+        """Calculate structure factors for one experiment."""
         pass
 
     @abstractmethod

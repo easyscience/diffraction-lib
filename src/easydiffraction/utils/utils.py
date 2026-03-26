@@ -49,7 +49,7 @@ def _validate_url(url: str) -> None:
 
 
 def _filename_for_id_from_url(data_id: int | str, url: str) -> str:
-    """Return local filename like 'ed-12.xye' using extension from the URL."""
+    """Return local filename using the extension from the URL."""
     suffix = pathlib.Path(urlparse(url).path).suffix  # includes leading dot ('.cif', '.xye', ...)
     # If URL has no suffix, fall back to no extension.
     return f'ed-{data_id}{suffix}'
@@ -70,7 +70,7 @@ def _normalize_known_hash(value: str | None) -> str | None:
 
 
 def _fetch_data_index() -> dict:
-    """Fetch & cache the diffraction data index.json and return it as dict."""
+    """Fetch and cache the diffraction data index.json."""
     index_url = 'https://raw.githubusercontent.com/easyscience/data/refs/heads/master/diffraction/index.json'
     _validate_url(index_url)
 

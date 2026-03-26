@@ -77,7 +77,7 @@ class DatablockItem(GuardedBase):
 
     @property
     def parameters(self) -> list:
-        """All parameters from all categories contained in this datablock."""
+        """All parameters from all categories in this datablock."""
         params = []
         for v in self.categories:
             params.extend(v.parameters)
@@ -152,7 +152,7 @@ class DatablockCollection(CollectionBase):
 
     @property
     def unique_name(self) -> str | None:
-        """Return None; collections do not carry their own unique name."""
+        """Return None; collections have no unique name."""
         return None
 
     @property
@@ -165,7 +165,7 @@ class DatablockCollection(CollectionBase):
 
     @property
     def fittable_parameters(self) -> list:
-        """All non-constrained Parameter instances in this collection."""
+        """All non-constrained Parameters in this collection."""
         return [p for p in self.parameters if isinstance(p, Parameter) and not p.constrained]
 
     @property

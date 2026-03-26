@@ -68,7 +68,7 @@ class ExperimentBase(DatablockItem):
 
     @property
     def type(self) -> object:  # TODO: Consider another name
-        """Experiment type descriptor (sample form, probe, beam mode)."""
+        """Experiment type: sample form, probe, beam mode."""
         return self._type
 
     @property
@@ -601,7 +601,7 @@ class PdExperimentBase(ExperimentBase):
         console.print(new_type)
 
     def show_supported_excluded_regions_types(self) -> None:
-        """Print a table of supported excluded-regions collection types."""
+        """Print a table of supported excluded-regions types."""
         ExcludedRegionsFactory.show_supported()
 
     def show_current_excluded_regions_type(self) -> None:

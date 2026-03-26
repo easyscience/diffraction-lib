@@ -27,7 +27,7 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @ExperimentTypeFactory.register
 class ExperimentType(CategoryItem):
-    """Container of categorical attributes defining experiment flavor."""
+    """Container of attributes defining the experiment type."""
 
     type_info = TypeInfo(
         tag='default',

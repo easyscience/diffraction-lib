@@ -57,7 +57,7 @@ class Diagnostics:
         allowed: set[str],
         label: str = 'Allowed',
     ) -> None:
-        """Log access to an unknown attribute and suggest closest key."""
+        """Log unknown attribute access and suggest closest key."""
         suggestion = Diagnostics._build_suggestion(key, allowed)
         # Use consistent (label) logic for allowed
         hint = suggestion or Diagnostics._build_allowed(allowed, label=label)

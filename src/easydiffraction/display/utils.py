@@ -18,7 +18,7 @@ except Exception:
 
 
 class JupyterScrollManager:
-    """Ensures that Jupyter output cells are not scrollable (applied once)."""
+    """Ensures Jupyter output cells are not scrollable (once)."""
 
     _applied: ClassVar[bool] = False
 

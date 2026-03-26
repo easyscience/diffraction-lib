@@ -324,7 +324,7 @@ class ExceptionHookManager:
         """
 
         def suppress_jupyter_traceback(*args: object, **kwargs: object) -> None:
-            """Log only the exception message, suppressing the traceback."""
+            """Log only the exception message."""
             try:
                 _evalue = (
                     args[2] if len(args) > 2 else kwargs.get('_evalue') or kwargs.get('evalue')
@@ -475,7 +475,7 @@ class Logger:
 
     @classmethod
     def _install_jupyter_traceback_suppressor(cls) -> None:
-        """Install traceback suppressor in Jupyter, safely and lint- clean."""
+        """Install the Jupyter traceback suppressor safely."""
         ExceptionHookManager.install_jupyter_traceback_suppressor(cls._logger)
 
     # ===== Helpers =====

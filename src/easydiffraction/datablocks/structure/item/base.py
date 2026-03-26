@@ -245,7 +245,7 @@ class Structure(DatablockItem):
     # ------------------------------------------------------------------
 
     def show(self) -> None:
-        """Display an ASCII projection of the structure on a 2D plane."""
+        """Display an ASCII projection of the structure in 2D."""
         console.paragraph(f"Structure 🧩 '{self.name}'")
         console.print('Not implemented yet.')
 

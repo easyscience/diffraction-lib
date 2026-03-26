@@ -205,7 +205,7 @@ class Summary:
     # ------------------------------------------
 
     def as_cif(self) -> str:
-        """Export the final fitted data and analysis results as CIF format."""
+        """Export fitted data and analysis results as CIF."""
         from easydiffraction.io.cif.serialize import summary_to_cif
 
         return summary_to_cif(self)

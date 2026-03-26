@@ -36,7 +36,7 @@ class CategoryItem(GuardedBase):
 
     @property
     def unique_name(self) -> str:
-        """Fully qualified name combining datablock, category, and entry."""
+        """Fully qualified name: datablock, category, entry."""
         parts = [
             self._identity.datablock_entry_name,
             self._identity.category_code,
@@ -200,7 +200,7 @@ class CategoryCollection(CollectionBase):
 
     @property
     def unique_name(self) -> str | None:
-        """Return None; collections do not carry their own unique name."""
+        """Return None; collections have no unique name."""
         return None
 
     @property

@@ -12,7 +12,7 @@ from easydiffraction.core.identity import Identity
 
 
 class GuardedBase(ABC):
-    """Base class enforcing controlled attribute access and parent linkage."""
+    """Base class enforcing controlled attribute access and linkage."""
 
     _diagnoser = Diagnostics()
 

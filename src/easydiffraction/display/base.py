@@ -141,7 +141,7 @@ class RendererFactoryBase(ABC):
 
     @classmethod
     def descriptions(cls) -> List[Tuple[str, str]]:
-        """Return pairs of engine name and human-friendly description."""
+        """Return (name, description) pairs for each engine."""
         items = cls._registry().items()
         return [(name, config.get('description')) for name, config in items]
 

@@ -159,7 +159,7 @@ def datablock_collection_to_cif(collection: object) -> str:
 
 
 def project_info_to_cif(info: object) -> str:
-    """Render ProjectInfo to CIF text (id, title, description, dates)."""
+    """Render ProjectInfo to CIF text (id, title, description)."""
     name = f'{info.name}'
 
     title = f'{info.title}'

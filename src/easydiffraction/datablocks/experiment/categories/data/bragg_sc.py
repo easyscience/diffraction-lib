@@ -26,7 +26,7 @@ from easydiffraction.utils.utils import sin_theta_over_lambda_to_d_spacing
 
 
 class Refln(CategoryItem):
-    """Single reflection for single crystal diffraction data category."""
+    """Single reflection for single-crystal diffraction data."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -295,7 +295,7 @@ class ReflnData(CategoryCollection):
             p.intensity_meas._value = v
 
     def _set_intensity_meas_su(self, values: object) -> None:
-        """Helper method to set standard uncertainty of measured intensity."""
+        """Set standard uncertainty of measured intensity values."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas_su._value = v
 
@@ -419,7 +419,7 @@ class ReflnData(CategoryCollection):
 
     @property
     def intensity_calc(self) -> np.ndarray:
-        """Calculated structure-factor intensities for all reflections."""
+        """Calculated intensities for all reflections."""
         return np.fromiter(
             (p.intensity_calc.value for p in self._items),
             dtype=float,

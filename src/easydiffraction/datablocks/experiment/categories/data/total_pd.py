@@ -204,7 +204,7 @@ class TotalDataBase(CategoryCollection):
             p.g_r_meas._value = v
 
     def _set_g_r_meas_su(self, values: object) -> None:
-        """Helper method to set standard uncertainty of measured G(r)."""
+        """Set standard uncertainty of measured G(r) values."""
         for p, v in zip(self._items, values, strict=True):
             p.g_r_meas_su._value = v
 
