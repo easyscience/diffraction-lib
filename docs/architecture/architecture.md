@@ -1100,14 +1100,14 @@ def length_a(self) -> Parameter:
 
 **Quick-reference table:**
 
-| Element                | Text                                                                                        |
-| ---------------------- | ------------------------------------------------------------------------------------------- |
-| Getter summary line    | `"""{desc} ({units}).` (or `"""{desc}.` when unitless)                                      |
+| Element                | Text                                                                                                           |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Getter summary line    | `"""{desc} ({units}).` (or `"""{desc}.` when unitless)                                                         |
 | Getter body (writable) | `Reading this property returns the underlying ``{Type}`` object. Assigning to it updates the parameter value.` |
-| Getter body (readonly) | `Reading this property returns the underlying ``{Type}`` object.`                           |
-| Setter docstring       | *(none — not rendered by griffe / MkDocs)*                                                  |
-| Getter annotation      | `-> {Type}`                                                                                 |
-| Setter annotation      | `value: {ann}` and `-> None`                                                                |
+| Getter body (readonly) | `Reading this property returns the underlying ``{Type}`` object.`                                              |
+| Setter docstring       | _(none — not rendered by griffe / MkDocs)_                                                                     |
+| Getter annotation      | `-> {Type}`                                                                                                    |
+| Setter annotation      | `value: {ann}` and `-> None`                                                                                   |
 
 **Notes:**
 

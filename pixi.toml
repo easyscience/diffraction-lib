@@ -128,7 +128,7 @@ nonpy-format-fix-modified = "python tools/nonpy_prettier_modified.py --write"
 success-message = 'echo "✅ All auto-formatting steps completed successfully!"'
 
 fix = { depends-on = [
-  'param-docstring-fix', # ED only
+  'param-docstring-fix',  # ED only
   'docstring-format-fix',
   'py-format-fix',
   'py-lint-fix',
