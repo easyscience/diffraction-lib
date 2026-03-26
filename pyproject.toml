@@ -280,8 +280,6 @@ ignore = [
   'DOC', # https://docs.astral.sh/ruff/rules/#pydoclint-doc
   # Temporary:
   'DTZ005',
-  'W505',
-
 ]
 
 # Ignore specific rules in certain files or directories
@@ -309,6 +307,10 @@ ignore = [
   'N801',
   'N805',
   'N812',
+  'PLC',
+  'PLE',
+  'PLR',
+  'PLW',
   'SIM117',
   'W505',
 ]
