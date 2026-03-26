@@ -174,164 +174,177 @@ class AtomSite(CategoryItem):
 
     @property
     def label(self) -> StringDescriptor:
-        """Unique label for this atom site.
+        """Unique identifier for the atom site.
 
         Returns:
-            StringDescriptor: Descriptor holding the site label.
+            StringDescriptor: Unique identifier for the atom site.
         """
         return self._label
 
     @label.setter
     def label(self, value: str) -> None:
-        """Set the atom-site label.
+        """Set the unique identifier for the atom site.
 
         Args:
-            value (str): New label string.
+            value: Unique identifier for the atom site.
         """
         self._label.value = value
 
     @property
     def type_symbol(self) -> StringDescriptor:
-        """Chemical element or isotope symbol.
+        """Chemical symbol of the atom at this site.
 
         Returns:
-            StringDescriptor: Descriptor holding the type symbol.
+            StringDescriptor: Chemical symbol of the atom at this site.
         """
         return self._type_symbol
 
     @type_symbol.setter
     def type_symbol(self, value: str) -> None:
-        """Set the chemical element or isotope symbol.
+        """Set the chemical symbol of the atom at this site.
 
         Args:
-            value (str): New type symbol (must be in the *cryspy*
-                database).
+            value: Chemical symbol of the atom at this site.
         """
         self._type_symbol.value = value
 
     @property
     def adp_type(self) -> StringDescriptor:
-        """Type of atomic displacement parameter (e.g. ``'Biso'``).
+        """Type of atomic displacement parameter (ADP) used (e.g., Biso,
+        Uiso, Uani, Bani).
 
         Returns:
-            StringDescriptor: Descriptor holding the ADP type.
+            StringDescriptor: Type of atomic displacement parameter (ADP) used (e.g., Biso, Uiso, Uani, Bani).
         """
         return self._adp_type
 
     @adp_type.setter
     def adp_type(self, value: str) -> None:
-        """Set the ADP type.
+        """Set the type of atomic displacement parameter (ADP) used
+        (e.g., Biso, Uiso, Uani, Bani).
 
         Args:
-            value (str): New ADP type string.
+            value: Type of atomic displacement parameter (ADP) used (e.g., Biso, Uiso, Uani, Bani).
         """
         self._adp_type.value = value
 
     @property
     def wyckoff_letter(self) -> StringDescriptor:
-        """Wyckoff letter for the symmetry site.
+        """Wyckoff letter indicating the symmetry of the atom site
+        within the space group.
 
         Returns:
-            StringDescriptor: Descriptor holding the Wyckoff letter.
+            StringDescriptor: Wyckoff letter indicating the symmetry of the atom site within the space group.
         """
         return self._wyckoff_letter
 
     @wyckoff_letter.setter
     def wyckoff_letter(self, value: str) -> None:
-        """Set the Wyckoff letter.
+        """Set the wyckoff letter indicating the symmetry of the atom
+        site within the space group.
 
         Args:
-            value (str): New Wyckoff letter.
+            value: Wyckoff letter indicating the symmetry of the atom site within the space group.
         """
         self._wyckoff_letter.value = value
 
     @property
     def fract_x(self) -> Parameter:
-        """Fractional *x*-coordinate within the unit cell.
+        """Fractional x-coordinate of the atom site within the unit
+        cell.
 
         Returns:
-            Parameter: Descriptor for the *x* coordinate.
+            Parameter: Fractional x-coordinate of the atom site within the unit cell.
         """
         return self._fract_x
 
     @fract_x.setter
     def fract_x(self, value: float) -> None:
-        """Set the fractional *x*-coordinate.
+        """Set the fractional x-coordinate of the atom site within the
+        unit cell.
 
         Args:
-            value (float): New *x* coordinate.
+            value: Fractional x-coordinate of the atom site within the unit cell.
         """
         self._fract_x.value = value
 
     @property
     def fract_y(self) -> Parameter:
-        """Fractional *y*-coordinate within the unit cell.
+        """Fractional y-coordinate of the atom site within the unit
+        cell.
 
         Returns:
-            Parameter: Descriptor for the *y* coordinate.
+            Parameter: Fractional y-coordinate of the atom site within the unit cell.
         """
         return self._fract_y
 
     @fract_y.setter
     def fract_y(self, value: float) -> None:
-        """Set the fractional *y*-coordinate.
+        """Set the fractional y-coordinate of the atom site within the
+        unit cell.
 
         Args:
-            value (float): New *y* coordinate.
+            value: Fractional y-coordinate of the atom site within the unit cell.
         """
         self._fract_y.value = value
 
     @property
     def fract_z(self) -> Parameter:
-        """Fractional *z*-coordinate within the unit cell.
+        """Fractional z-coordinate of the atom site within the unit
+        cell.
 
         Returns:
-            Parameter: Descriptor for the *z* coordinate.
+            Parameter: Fractional z-coordinate of the atom site within the unit cell.
         """
         return self._fract_z
 
     @fract_z.setter
     def fract_z(self, value: float) -> None:
-        """Set the fractional *z*-coordinate.
+        """Set the fractional z-coordinate of the atom site within the
+        unit cell.
 
         Args:
-            value (float): New *z* coordinate.
+            value: Fractional z-coordinate of the atom site within the unit cell.
         """
         self._fract_z.value = value
 
     @property
     def occupancy(self) -> Parameter:
-        """Site occupancy fraction.
+        """Occupancy of the atom site, representing the fraction of the
+        site occupied by the atom type.
 
         Returns:
-            Parameter: Descriptor for the occupancy (0–1).
+            Parameter: Occupancy of the atom site, representing the fraction of the site occupied by the atom type.
         """
         return self._occupancy
 
     @occupancy.setter
     def occupancy(self, value: float) -> None:
-        """Set the site occupancy.
+        """Set the occupancy of the atom site, representing the fraction
+        of the site occupied by the atom type.
 
         Args:
-            value (float): New occupancy fraction.
+            value: Occupancy of the atom site, representing the fraction of the site occupied by the atom type.
         """
         self._occupancy.value = value
 
     @property
     def b_iso(self) -> Parameter:
-        r"""Isotropic atomic displacement parameter (*B*-factor).
+        """Isotropic atomic displacement parameter (ADP) for the atom
+        site.
 
         Returns:
-            Parameter: Descriptor for *B*\_iso (Å²).
+            Parameter: Isotropic atomic displacement parameter (ADP) for the atom site (Å²).
         """
         return self._b_iso
 
     @b_iso.setter
     def b_iso(self, value: float) -> None:
-        r"""Set the isotropic displacement parameter.
+        """Set the isotropic atomic displacement parameter (ADP) for the
+        atom site.
 
         Args:
-            value (float): New *B*\_iso value in Å².
+            value: Isotropic atomic displacement parameter (ADP) for the atom site (Å²).
         """
         self._b_iso.value = value
 

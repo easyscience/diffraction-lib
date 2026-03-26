@@ -1051,6 +1051,79 @@ npd  0.7
 xrd  0.3
 ```
 
+### 9.8 Property Docstring and Type-Hint Template
+
+Every public property backed by a private `Parameter`,
+`NumericDescriptor`, or `StringDescriptor` attribute must follow the
+template below. The `description` field on the descriptor is the
+**single source of truth**; docstrings and type hints are mechanically
+derived from it.
+
+**Definitions:**
+
+| Symbol       | Meaning                                                               |
+| ------------ | --------------------------------------------------------------------- |
+| `{desc}`     | `description` string without trailing period                          |
+| `{units}`    | `units` string; omit the `({units})` parenthetical when absent/empty  |
+| `{Type}`     | Descriptor class name: `Parameter`, `NumericDescriptor`, or `StringDescriptor` |
+| `{ann}`      | Setter value annotation: `float` for numeric descriptors, `str` for string descriptors |
+
+**Template:**
+
+```python
+# ── Private attribute (in __init__) ──────────────────────────────
+self._length_a = Parameter(
+    name='length_a',
+    description='Length of the a axis of the unit cell.',
+    units='Å',
+    value_spec=AttributeSpec(
+        default=10.0,
+        validator=RangeValidator(ge=0, le=1000),
+    ),
+    cif_handler=CifHandler(names=['_cell.length_a']),
+)
+
+# ── Getter ───────────────────────────────────────────────────────
+@property
+def length_a(self) -> Parameter:
+    """Length of the a axis of the unit cell.
+
+    Returns:
+        Parameter: Length of the a axis of the unit cell (Å).
+    """
+    return self._length_a
+
+# ── Setter ───────────────────────────────────────────────────────
+@length_a.setter
+def length_a(self, value: float) -> None:
+    """Set the length of the a axis of the unit cell.
+
+    Args:
+        value: Length of the a axis of the unit cell (Å).
+    """
+    self._length_a.value = value
+```
+
+**Quick-reference table:**
+
+| Location           | Text                                                    |
+| ------------------ | ------------------------------------------------------- |
+| Getter 1st line    | `"""{desc}.`                                            |
+| Getter `Returns:`  | `{Type}: {desc} ({units}).` (or `{Type}: {desc}.`)      |
+| Setter 1st line    | `"""Set the {desc, first letter lowercased}.`           |
+| Setter `Args:`     | `value: {desc} ({units}).` (or `value: {desc}.`)        |
+| Getter annotation  | `-> {Type}`                                             |
+| Setter annotation  | `value: {ann}` and `-> None`                            |
+
+**Notes:**
+
+- Do **not** repeat the type in the docstring `Args:` line (e.g. avoid
+  `value (float):`). The type is already in the function signature.
+- Avoid markdown emphasis (`*a*`) in docstrings; use plain text to stay
+  in sync with the `description` field.
+- The CI tool `pixi run param-consistency-check` validates compliance;
+  `pixi run param-consistency-fix` auto-fixes violations.
+
 ---
 
 ## 10. Issues

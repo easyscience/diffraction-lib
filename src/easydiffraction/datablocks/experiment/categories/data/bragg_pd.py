@@ -123,30 +123,68 @@ class PdDataPointBaseMixin:
 
     @property
     def point_id(self) -> StringDescriptor:
+        """Identifier for this data point in the dataset.
+
+        Returns:
+            StringDescriptor: Identifier for this data point in the dataset.
+        """
         return self._point_id
 
     @property
     def d_spacing(self) -> NumericDescriptor:
+        """D-spacing value corresponding to this data point.
+
+        Returns:
+            NumericDescriptor: d-spacing value corresponding to this data point.
+        """
         return self._d_spacing
 
     @property
     def intensity_meas(self) -> NumericDescriptor:
+        """Intensity recorded at each measurement point as a function of
+        angle/time.
+
+        Returns:
+            NumericDescriptor: Intensity recorded at each measurement point as a function of angle/time.
+        """
         return self._intensity_meas
 
     @property
     def intensity_meas_su(self) -> NumericDescriptor:
+        """Standard uncertainty of the measured intensity at this data
+        point.
+
+        Returns:
+            NumericDescriptor: Standard uncertainty of the measured intensity at this data point.
+        """
         return self._intensity_meas_su
 
     @property
     def intensity_calc(self) -> NumericDescriptor:
+        """Intensity value for a computed diffractogram at this data
+        point.
+
+        Returns:
+            NumericDescriptor: Intensity value for a computed diffractogram at this data point.
+        """
         return self._intensity_calc
 
     @property
     def intensity_bkg(self) -> NumericDescriptor:
+        """Intensity value for a computed background at this data point.
+
+        Returns:
+            NumericDescriptor: Intensity value for a computed background at this data point.
+        """
         return self._intensity_bkg
 
     @property
     def calc_status(self) -> StringDescriptor:
+        """Status code of the data point in the calculation process.
+
+        Returns:
+            StringDescriptor: Status code of the data point in the calculation process.
+        """
         return self._calc_status
 
 
@@ -179,7 +217,12 @@ class PdCwlDataPointMixin:
     # ------------------------------------------------------------------
 
     @property
-    def two_theta(self):
+    def two_theta(self) -> NumericDescriptor:
+        """Measured 2θ diffraction angle.
+
+        Returns:
+            NumericDescriptor: Measured 2θ diffraction angle (deg).
+        """
         return self._two_theta
 
 
@@ -205,7 +248,12 @@ class PdTofDataPointMixin:
     # ------------------------------------------------------------------
 
     @property
-    def time_of_flight(self):
+    def time_of_flight(self) -> NumericDescriptor:
+        """Measured time for time-of-flight neutron measurement.
+
+        Returns:
+            NumericDescriptor: Measured time for time-of-flight neutron measurement (µs).
+        """
         return self._time_of_flight
 
 

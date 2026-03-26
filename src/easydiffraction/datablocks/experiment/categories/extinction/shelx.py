@@ -68,17 +68,37 @@ class ShelxExtinction(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def mosaicity(self):
+    def mosaicity(self) -> Parameter:
+        """Mosaicity value for extinction correction.
+
+        Returns:
+            Parameter: Mosaicity value for extinction correction (deg).
+        """
         return self._mosaicity
 
     @mosaicity.setter
-    def mosaicity(self, value):
+    def mosaicity(self, value: float) -> None:
+        """Set the mosaicity value for extinction correction.
+
+        Args:
+            value: Mosaicity value for extinction correction (deg).
+        """
         self._mosaicity.value = value
 
     @property
-    def radius(self):
+    def radius(self) -> Parameter:
+        """Crystal radius for extinction correction.
+
+        Returns:
+            Parameter: Crystal radius for extinction correction (µm).
+        """
         return self._radius
 
     @radius.setter
-    def radius(self, value):
+    def radius(self, value: float) -> None:
+        """Set the crystal radius for extinction correction.
+
+        Args:
+            value: Crystal radius for extinction correction (µm).
+        """
         self._radius.value = value

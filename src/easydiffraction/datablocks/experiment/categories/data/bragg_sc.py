@@ -139,42 +139,96 @@ class Refln(CategoryItem):
 
     @property
     def id(self) -> StringDescriptor:
+        """Identifier of the reflection.
+
+        Returns:
+            StringDescriptor: Identifier of the reflection.
+        """
         return self._id
 
     @property
     def d_spacing(self) -> NumericDescriptor:
+        """The distance between lattice planes in the crystal for this
+        reflection.
+
+        Returns:
+            NumericDescriptor: The distance between lattice planes in the crystal for this reflection (Å).
+        """
         return self._d_spacing
 
     @property
     def sin_theta_over_lambda(self) -> NumericDescriptor:
+        """The sin(θ)/λ value for this reflection.
+
+        Returns:
+            NumericDescriptor: The sin(θ)/λ value for this reflection (Å⁻¹).
+        """
         return self._sin_theta_over_lambda
 
     @property
     def index_h(self) -> NumericDescriptor:
+        """Miller index h of a measured reflection.
+
+        Returns:
+            NumericDescriptor: Miller index h of a measured reflection.
+        """
         return self._index_h
 
     @property
     def index_k(self) -> NumericDescriptor:
+        """Miller index k of a measured reflection.
+
+        Returns:
+            NumericDescriptor: Miller index k of a measured reflection.
+        """
         return self._index_k
 
     @property
     def index_l(self) -> NumericDescriptor:
+        """Miller index l of a measured reflection.
+
+        Returns:
+            NumericDescriptor: Miller index l of a measured reflection.
+        """
         return self._index_l
 
     @property
     def intensity_meas(self) -> NumericDescriptor:
+        """The intensity of the reflection derived from the
+        measurements.
+
+        Returns:
+            NumericDescriptor:  The intensity of the reflection derived from the measurements.
+        """
         return self._intensity_meas
 
     @property
     def intensity_meas_su(self) -> NumericDescriptor:
+        """Standard uncertainty of the measured intensity.
+
+        Returns:
+            NumericDescriptor: Standard uncertainty of the measured intensity.
+        """
         return self._intensity_meas_su
 
     @property
     def intensity_calc(self) -> NumericDescriptor:
+        """The intensity of the reflection calculated from the atom site
+        data.
+
+        Returns:
+            NumericDescriptor: The intensity of the reflection calculated from the atom site data.
+        """
         return self._intensity_calc
 
     @property
     def wavelength(self) -> NumericDescriptor:
+        """The mean wavelength of radiation used to measure this
+        reflection.
+
+        Returns:
+            NumericDescriptor: The mean wavelength of radiation used to measure this reflection (Å).
+        """
         return self._wavelength
 
 

@@ -84,27 +84,58 @@ class PolynomialTerm(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def id(self):
+    def id(self) -> StringDescriptor:
+        """Identifier for this background polynomial term.
+
+        Returns:
+            StringDescriptor: Identifier for this background polynomial term.
+        """
         return self._id
 
     @id.setter
-    def id(self, value):
+    def id(self, value: str) -> None:
+        """Set the identifier for this background polynomial term.
+
+        Args:
+            value: Identifier for this background polynomial term.
+        """
         self._id.value = value
 
     @property
-    def order(self):
+    def order(self) -> NumericDescriptor:
+        """Order used in a Chebyshev polynomial background term.
+
+        Returns:
+            NumericDescriptor: Order used in a Chebyshev polynomial background term.
+        """
         return self._order
 
     @order.setter
-    def order(self, value):
+    def order(self, value: float) -> None:
+        """Set the order used in a Chebyshev polynomial background term.
+
+        Args:
+            value: Order used in a Chebyshev polynomial background term.
+        """
         self._order.value = value
 
     @property
-    def coef(self):
+    def coef(self) -> Parameter:
+        """Coefficient used in a Chebyshev polynomial background term.
+
+        Returns:
+            Parameter: Coefficient used in a Chebyshev polynomial background term.
+        """
         return self._coef
 
     @coef.setter
-    def coef(self, value):
+    def coef(self, value: float) -> None:
+        """Set the coefficient used in a Chebyshev polynomial background
+        term.
+
+        Args:
+            value: Coefficient used in a Chebyshev polynomial background term.
+        """
         self._coef.value = value
 
 

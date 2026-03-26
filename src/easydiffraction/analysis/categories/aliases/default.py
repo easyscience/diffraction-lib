@@ -60,19 +60,39 @@ class Alias(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def label(self):
+    def label(self) -> StringDescriptor:
+        """...
+
+        Returns:
+            StringDescriptor: ...
+        """
         return self._label
 
     @label.setter
-    def label(self, value):
+    def label(self, value: str) -> None:
+        """Set the ...
+
+        Args:
+            value: ...
+        """
         self._label.value = value
 
     @property
-    def param_uid(self):
+    def param_uid(self) -> StringDescriptor:
+        """...
+
+        Returns:
+            StringDescriptor: ...
+        """
         return self._param_uid
 
     @param_uid.setter
-    def param_uid(self, value):
+    def param_uid(self, value: str) -> None:
+        """Set the ...
+
+        Args:
+            value: ...
+        """
         self._param_uid.value = value
 
 

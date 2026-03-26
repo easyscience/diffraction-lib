@@ -63,16 +63,36 @@ class LinkedCrystal(CategoryItem):
 
     @property
     def id(self) -> StringDescriptor:
+        """Identifier of the linked crystal.
+
+        Returns:
+            StringDescriptor: Identifier of the linked crystal.
+        """
         return self._id
 
     @id.setter
-    def id(self, value: str):
+    def id(self, value: str) -> None:
+        """Set the identifier of the linked crystal.
+
+        Args:
+            value: Identifier of the linked crystal.
+        """
         self._id.value = value
 
     @property
     def scale(self) -> Parameter:
+        """Scale factor of the linked crystal.
+
+        Returns:
+            Parameter: Scale factor of the linked crystal.
+        """
         return self._scale
 
     @scale.setter
-    def scale(self, value: float):
+    def scale(self, value: float) -> None:
+        """Set the scale factor of the linked crystal.
+
+        Args:
+            value: Scale factor of the linked crystal.
+        """
         self._scale.value = value

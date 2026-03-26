@@ -109,68 +109,159 @@ class TofBroadeningMixin:
     # ------------------------------------------------------------------
 
     @property
-    def broad_gauss_sigma_0(self):
+    def broad_gauss_sigma_0(self) -> Parameter:
+        """Gaussian broadening coefficient (instrumental resolution).
+
+        Returns:
+            Parameter: Gaussian broadening coefficient (instrumental resolution) (µs²).
+        """
         return self._broad_gauss_sigma_0
 
     @broad_gauss_sigma_0.setter
-    def broad_gauss_sigma_0(self, value):
+    def broad_gauss_sigma_0(self, value: float) -> None:
+        """Set the gaussian broadening coefficient (instrumental
+        resolution).
+
+        Args:
+            value: Gaussian broadening coefficient (instrumental resolution) (µs²).
+        """
         self._broad_gauss_sigma_0.value = value
 
     @property
-    def broad_gauss_sigma_1(self):
+    def broad_gauss_sigma_1(self) -> Parameter:
+        """Gaussian broadening coefficient (dependent on d-spacing).
+
+        Returns:
+            Parameter: Gaussian broadening coefficient (dependent on d-spacing) (µs/Å).
+        """
         return self._broad_gauss_sigma_1
 
     @broad_gauss_sigma_1.setter
-    def broad_gauss_sigma_1(self, value):
+    def broad_gauss_sigma_1(self, value: float) -> None:
+        """Set the gaussian broadening coefficient (dependent on
+        d-spacing).
+
+        Args:
+            value: Gaussian broadening coefficient (dependent on d-spacing) (µs/Å).
+        """
         self._broad_gauss_sigma_1.value = value
 
     @property
-    def broad_gauss_sigma_2(self):
+    def broad_gauss_sigma_2(self) -> Parameter:
+        """Gaussian broadening coefficient (instrument-dependent term).
+
+        Returns:
+            Parameter: Gaussian broadening coefficient (instrument-dependent term) (µs²/Å²).
+        """
         return self._broad_gauss_sigma_2
 
     @broad_gauss_sigma_2.setter
-    def broad_gauss_sigma_2(self, value):
-        """Set Gaussian sigma_2 parameter."""
+    def broad_gauss_sigma_2(self, value: float) -> None:
+        """Set the gaussian broadening coefficient (instrument-dependent
+        term).
+
+        Args:
+            value: Gaussian broadening coefficient (instrument-dependent term) (µs²/Å²).
+        """
         self._broad_gauss_sigma_2.value = value
 
     @property
-    def broad_lorentz_gamma_0(self):
+    def broad_lorentz_gamma_0(self) -> Parameter:
+        """Lorentzian broadening coefficient (dependent on microstrain
+        effects).
+
+        Returns:
+            Parameter: Lorentzian broadening coefficient (dependent on microstrain effects) (µs).
+        """
         return self._broad_lorentz_gamma_0
 
     @broad_lorentz_gamma_0.setter
-    def broad_lorentz_gamma_0(self, value):
+    def broad_lorentz_gamma_0(self, value: float) -> None:
+        """Set the lorentzian broadening coefficient (dependent on
+        microstrain effects).
+
+        Args:
+            value: Lorentzian broadening coefficient (dependent on microstrain effects) (µs).
+        """
         self._broad_lorentz_gamma_0.value = value
 
     @property
-    def broad_lorentz_gamma_1(self):
+    def broad_lorentz_gamma_1(self) -> Parameter:
+        """Lorentzian broadening coefficient (dependent on d-spacing).
+
+        Returns:
+            Parameter: Lorentzian broadening coefficient (dependent on d-spacing) (µs/Å).
+        """
         return self._broad_lorentz_gamma_1
 
     @broad_lorentz_gamma_1.setter
-    def broad_lorentz_gamma_1(self, value):
+    def broad_lorentz_gamma_1(self, value: float) -> None:
+        """Set the lorentzian broadening coefficient (dependent on
+        d-spacing).
+
+        Args:
+            value: Lorentzian broadening coefficient (dependent on d-spacing) (µs/Å).
+        """
         self._broad_lorentz_gamma_1.value = value
 
     @property
-    def broad_lorentz_gamma_2(self):
+    def broad_lorentz_gamma_2(self) -> Parameter:
+        """Lorentzian broadening coefficient (instrument-dependent
+        term).
+
+        Returns:
+            Parameter: Lorentzian broadening coefficient (instrument-dependent term) (µs²/Å²).
+        """
         return self._broad_lorentz_gamma_2
 
     @broad_lorentz_gamma_2.setter
-    def broad_lorentz_gamma_2(self, value):
+    def broad_lorentz_gamma_2(self, value: float) -> None:
+        """Set the lorentzian broadening coefficient (instrument-
+        dependent term).
+
+        Args:
+            value: Lorentzian broadening coefficient (instrument-dependent term) (µs²/Å²).
+        """
         self._broad_lorentz_gamma_2.value = value
 
     @property
-    def broad_mix_beta_0(self):
+    def broad_mix_beta_0(self) -> Parameter:
+        """Mixing parameter. Defines the ratio of Gaussian to Lorentzian
+        contributions in TOF profiles.
+
+        Returns:
+            Parameter: Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles (deg).
+        """
         return self._broad_mix_beta_0
 
     @broad_mix_beta_0.setter
-    def broad_mix_beta_0(self, value):
+    def broad_mix_beta_0(self, value: float) -> None:
+        """Set the mixing parameter. Defines the ratio of Gaussian to
+        Lorentzian contributions in TOF profiles.
+
+        Args:
+            value: Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles (deg).
+        """
         self._broad_mix_beta_0.value = value
 
     @property
-    def broad_mix_beta_1(self):
+    def broad_mix_beta_1(self) -> Parameter:
+        """Mixing parameter. Defines the ratio of Gaussian to Lorentzian
+        contributions in TOF profiles.
+
+        Returns:
+            Parameter: Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles (deg).
+        """
         return self._broad_mix_beta_1
 
     @broad_mix_beta_1.setter
-    def broad_mix_beta_1(self, value):
+    def broad_mix_beta_1(self, value: float) -> None:
+        """Set the mixing parameter. Defines the ratio of Gaussian to
+        Lorentzian contributions in TOF profiles.
+
+        Args:
+            value: Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles (deg).
+        """
         self._broad_mix_beta_1.value = value
 
 
@@ -202,17 +293,37 @@ class IkedaCarpenterAsymmetryMixin:
         )
 
     @property
-    def asym_alpha_0(self):
+    def asym_alpha_0(self) -> Parameter:
+        """Ikeda-Carpenter asymmetry parameter α₀.
+
+        Returns:
+            Parameter: Ikeda-Carpenter asymmetry parameter α₀.
+        """
         return self._asym_alpha_0
 
     @asym_alpha_0.setter
-    def asym_alpha_0(self, value):
+    def asym_alpha_0(self, value: float) -> None:
+        """Set the ikeda-Carpenter asymmetry parameter α₀.
+
+        Args:
+            value: Ikeda-Carpenter asymmetry parameter α₀.
+        """
         self._asym_alpha_0.value = value
 
     @property
-    def asym_alpha_1(self):
+    def asym_alpha_1(self) -> Parameter:
+        """Ikeda-Carpenter asymmetry parameter α₁.
+
+        Returns:
+            Parameter: Ikeda-Carpenter asymmetry parameter α₁.
+        """
         return self._asym_alpha_1
 
     @asym_alpha_1.setter
-    def asym_alpha_1(self, value):
+    def asym_alpha_1(self, value: float) -> None:
+        """Set the ikeda-Carpenter asymmetry parameter α₁.
+
+        Args:
+            value: Ikeda-Carpenter asymmetry parameter α₁.
+        """
         self._asym_alpha_1.value = value

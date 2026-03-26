@@ -47,15 +47,19 @@ class FitMode(CategoryItem):
         self._identity.category_code = 'fit_mode'
 
     @property
-    def mode(self):
-        """Active fitting strategy descriptor."""
+    def mode(self) -> StringDescriptor:
+        """Fitting strategy.
+
+        Returns:
+            StringDescriptor: Fitting strategy.
+        """
         return self._mode
 
     @mode.setter
     def mode(self, value: str) -> None:
-        """Set the fitting strategy value.
+        """Set the fitting strategy.
 
         Args:
-            value: ``'single'`` or ``'joint'``.
+            value: Fitting strategy.
         """
         self._mode.value = value

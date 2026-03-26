@@ -60,19 +60,39 @@ class JointFitExperiment(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def id(self):
+    def id(self) -> StringDescriptor:
+        """Experiment identifier.
+
+        Returns:
+            StringDescriptor: Experiment identifier.
+        """
         return self._id
 
     @id.setter
-    def id(self, value):
+    def id(self, value: str) -> None:
+        """Set the experiment identifier.
+
+        Args:
+            value: Experiment identifier.
+        """
         self._id.value = value
 
     @property
-    def weight(self):
+    def weight(self) -> NumericDescriptor:
+        """Weight factor.
+
+        Returns:
+            NumericDescriptor: Weight factor.
+        """
         return self._weight
 
     @weight.setter
-    def weight(self, value):
+    def weight(self, value: float) -> None:
+        """Set the weight factor.
+
+        Args:
+            value: Weight factor.
+        """
         self._weight.value = value
 
 

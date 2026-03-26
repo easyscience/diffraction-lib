@@ -93,27 +93,62 @@ class LineSegment(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def id(self):
+    def id(self) -> StringDescriptor:
+        """Identifier for this background line segment.
+
+        Returns:
+            StringDescriptor: Identifier for this background line segment.
+        """
         return self._id
 
     @id.setter
-    def id(self, value):
+    def id(self, value: str) -> None:
+        """Set the identifier for this background line segment.
+
+        Args:
+            value: Identifier for this background line segment.
+        """
         self._id.value = value
 
     @property
-    def x(self):
+    def x(self) -> NumericDescriptor:
+        """X-coordinates used to create many straight-line segments
+        representing the background in a calculated diffractogram.
+
+        Returns:
+            NumericDescriptor: X-coordinates used to create many straight-line segments representing the background in a calculated diffractogram.
+        """
         return self._x
 
     @x.setter
-    def x(self, value):
+    def x(self, value: float) -> None:
+        """Set the x-coordinates used to create many straight-line
+        segments representing the background in a calculated
+        diffractogram.
+
+        Args:
+            value: X-coordinates used to create many straight-line segments representing the background in a calculated diffractogram.
+        """
         self._x.value = value
 
     @property
-    def y(self):
+    def y(self) -> Parameter:
+        """Intensity used to create many straight-line segments
+        representing the background in a calculated diffractogram.
+
+        Returns:
+            Parameter: Intensity used to create many straight-line segments representing the background in a calculated diffractogram.
+        """
         return self._y
 
     @y.setter
-    def y(self, value):
+    def y(self, value: float) -> None:
+        """Set the intensity used to create many straight-line segments
+        representing the background in a calculated diffractogram.
+
+        Args:
+            value: Intensity used to create many straight-line segments representing the background in a calculated diffractogram.
+        """
         self._y.value = value
 
 

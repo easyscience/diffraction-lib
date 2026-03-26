@@ -148,108 +148,108 @@ class Cell(CategoryItem):
 
     @property
     def length_a(self) -> Parameter:
-        """Length of the *a* axis.
+        """Length of the a axis of the unit cell.
 
         Returns:
-            Parameter: Descriptor for lattice parameter *a* (Å).
+            Parameter: Length of the a axis of the unit cell (Å).
         """
         return self._length_a
 
     @length_a.setter
     def length_a(self, value: float) -> None:
-        """Set the length of the *a* axis.
+        """Set the length of the a axis of the unit cell.
 
         Args:
-            value (float): New length in ångströms.
+            value: Length of the a axis of the unit cell (Å).
         """
         self._length_a.value = value
 
     @property
     def length_b(self) -> Parameter:
-        """Length of the *b* axis.
+        """Length of the b axis of the unit cell.
 
         Returns:
-            Parameter: Descriptor for lattice parameter *b* (Å).
+            Parameter: Length of the b axis of the unit cell (Å).
         """
         return self._length_b
 
     @length_b.setter
     def length_b(self, value: float) -> None:
-        """Set the length of the *b* axis.
+        """Set the length of the b axis of the unit cell.
 
         Args:
-            value (float): New length in ångströms.
+            value: Length of the b axis of the unit cell (Å).
         """
         self._length_b.value = value
 
     @property
     def length_c(self) -> Parameter:
-        """Length of the *c* axis.
+        """Length of the c axis of the unit cell.
 
         Returns:
-            Parameter: Descriptor for lattice parameter *c* (Å).
+            Parameter: Length of the c axis of the unit cell (Å).
         """
         return self._length_c
 
     @length_c.setter
     def length_c(self, value: float) -> None:
-        """Set the length of the *c* axis.
+        """Set the length of the c axis of the unit cell.
 
         Args:
-            value (float): New length in ångströms.
+            value: Length of the c axis of the unit cell (Å).
         """
         self._length_c.value = value
 
     @property
     def angle_alpha(self) -> Parameter:
-        """Angle between edges *b* and *c*.
+        """Angle between edges b and c.
 
         Returns:
-            Parameter: Descriptor for angle *α* (degrees).
+            Parameter: Angle between edges b and c (deg).
         """
         return self._angle_alpha
 
     @angle_alpha.setter
     def angle_alpha(self, value: float) -> None:
-        """Set the angle between edges *b* and *c*.
+        """Set the angle between edges b and c.
 
         Args:
-            value (float): New angle in degrees.
+            value: Angle between edges b and c (deg).
         """
         self._angle_alpha.value = value
 
     @property
     def angle_beta(self) -> Parameter:
-        """Angle between edges *a* and *c*.
+        """Angle between edges a and c.
 
         Returns:
-            Parameter: Descriptor for angle *β* (degrees).
+            Parameter: Angle between edges a and c (deg).
         """
         return self._angle_beta
 
     @angle_beta.setter
     def angle_beta(self, value: float) -> None:
-        """Set the angle between edges *a* and *c*.
+        """Set the angle between edges a and c.
 
         Args:
-            value (float): New angle in degrees.
+            value: Angle between edges a and c (deg).
         """
         self._angle_beta.value = value
 
     @property
     def angle_gamma(self) -> Parameter:
-        """Angle between edges *a* and *b*.
+        """Angle between edges a and b.
 
         Returns:
-            Parameter: Descriptor for angle *γ* (degrees).
+            Parameter: Angle between edges a and b (deg).
         """
         return self._angle_gamma
 
     @angle_gamma.setter
     def angle_gamma(self, value: float) -> None:
-        """Set the angle between edges *a* and *b*.
+        """Set the angle between edges a and b.
 
         Args:
-            value (float): New angle in degrees.
+            value: Angle between edges a and b (deg).
         """
         self._angle_gamma.value = value

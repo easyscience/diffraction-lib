@@ -122,26 +122,56 @@ class TotalDataPoint(CategoryItem):
 
     @property
     def point_id(self) -> StringDescriptor:
+        """Identifier for this data point in the dataset.
+
+        Returns:
+            StringDescriptor: Identifier for this data point in the dataset.
+        """
         return self._point_id
 
     @property
     def r(self) -> NumericDescriptor:
+        """Interatomic distance in real space.
+
+        Returns:
+            NumericDescriptor: Interatomic distance in real space (Å).
+        """
         return self._r
 
     @property
     def g_r_meas(self) -> NumericDescriptor:
+        """Measured pair distribution function G(r).
+
+        Returns:
+            NumericDescriptor: Measured pair distribution function G(r).
+        """
         return self._g_r_meas
 
     @property
     def g_r_meas_su(self) -> NumericDescriptor:
+        """Standard uncertainty of measured G(r).
+
+        Returns:
+            NumericDescriptor: Standard uncertainty of measured G(r).
+        """
         return self._g_r_meas_su
 
     @property
     def g_r_calc(self) -> NumericDescriptor:
+        """Calculated pair distribution function G(r).
+
+        Returns:
+            NumericDescriptor: Calculated pair distribution function G(r).
+        """
         return self._g_r_calc
 
     @property
     def calc_status(self) -> StringDescriptor:
+        """Status code of the data point in calculation.
+
+        Returns:
+            StringDescriptor: Status code of the data point in calculation.
+        """
         return self._calc_status
 
 

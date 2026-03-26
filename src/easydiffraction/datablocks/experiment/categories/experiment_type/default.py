@@ -112,17 +112,39 @@ class ExperimentType(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def sample_form(self):
+    def sample_form(self) -> StringDescriptor:
+        """Specifies whether the diffraction data corresponds to powder
+        diffraction or single crystal diffraction.
+
+        Returns:
+            StringDescriptor: Specifies whether the diffraction data corresponds to powder diffraction or single crystal diffraction.
+        """
         return self._sample_form
 
     @property
-    def beam_mode(self):
+    def beam_mode(self) -> StringDescriptor:
+        """Defines whether the measurement is performed with a constant
+        wavelength (CW) or time-of-flight (TOF) method.
+
+        Returns:
+            StringDescriptor: Defines whether the measurement is performed with a constant wavelength (CW) or time-of-flight (TOF) method.
+        """
         return self._beam_mode
 
     @property
-    def radiation_probe(self):
+    def radiation_probe(self) -> StringDescriptor:
+        """Specifies whether the measurement uses neutrons or X-rays.
+
+        Returns:
+            StringDescriptor: Specifies whether the measurement uses neutrons or X-rays.
+        """
         return self._radiation_probe
 
     @property
-    def scattering_type(self):
+    def scattering_type(self) -> StringDescriptor:
+        """Specifies whether the experiment uses Bragg scattering (for conventional structure refinement) or total scattering (for pair distribution function analysis - PDF).
+
+        Returns:
+            StringDescriptor: Specifies whether the experiment uses Bragg scattering (for conventional structure refinement) or total scattering (for pair distribution function analysis - PDF).
+        """
         return self._scattering_type

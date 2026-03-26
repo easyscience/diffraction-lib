@@ -57,19 +57,39 @@ class Constraint(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def lhs_alias(self):
+    def lhs_alias(self) -> StringDescriptor:
+        """Left-hand side of the equation.
+
+        Returns:
+            StringDescriptor: Left-hand side of the equation.
+        """
         return self._lhs_alias
 
     @lhs_alias.setter
-    def lhs_alias(self, value):
+    def lhs_alias(self, value: str) -> None:
+        """Set the left-hand side of the equation.
+
+        Args:
+            value: Left-hand side of the equation.
+        """
         self._lhs_alias.value = value
 
     @property
-    def rhs_expr(self):
+    def rhs_expr(self) -> StringDescriptor:
+        """Right-hand side expression.
+
+        Returns:
+            StringDescriptor: Right-hand side expression.
+        """
         return self._rhs_expr
 
     @rhs_expr.setter
-    def rhs_expr(self, value):
+    def rhs_expr(self, value: str) -> None:
+        """Set the right-hand side expression.
+
+        Args:
+            value: Right-hand side expression.
+        """
         self._rhs_expr.value = value
 
 
