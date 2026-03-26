@@ -13,10 +13,13 @@ from easydiffraction.core.guard import GuardedBase
 
 
 class CollectionBase(GuardedBase):
-    """A minimal collection with stable iteration and name indexing.
+    """
+    A minimal collection with stable iteration and name indexing.
 
-    Args:     item_type: Type of items accepted by the collection. Used
-    for         validation and tooling; not enforced at runtime here.
+    Parameters
+    ----------
+    item_type
+        Type of items accepted by the collection. Used for         validation and tooling; not enforced at runtime here.
     """
 
     def __init__(self, item_type) -> None:

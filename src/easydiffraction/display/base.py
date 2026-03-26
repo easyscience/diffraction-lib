@@ -91,15 +91,22 @@ class RendererFactoryBase(ABC):
 
     @classmethod
     def create(cls, engine_name: str) -> Any:
-        """Create a backend instance for the given engine.
+        """
+        Create a backend instance for the given engine.
 
-        Args:     engine_name: Identifier of the engine to instantiate
-        as         listed in ``_registry()``.
+        Parameters
+        ----------
+        engine_name
+            Identifier of the engine to instantiate as         listed in ``_registry()``.
 
-        Returns:     A new backend instance corresponding to
-        ``engine_name``.
+        Returns
+        -------
+            A new backend instance corresponding to ``engine_name``.
 
-        Raises:     ValueError: If the engine name is not supported.
+        Raises
+        ------
+        ValueError
+            If the engine name is not supported.
         """
         registry = cls._registry()
         if engine_name not in registry:

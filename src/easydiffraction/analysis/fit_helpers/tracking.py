@@ -111,12 +111,19 @@ class FitProgressTracker:
         residuals: np.ndarray,
         parameters: List[float],
     ) -> np.ndarray:
-        """Update progress with current residuals and parameters.
+        """
+        Update progress with current residuals and parameters.
 
-        Args:     residuals: Residuals between measured and calculated
-        data.     parameters: Current free parameters being fitted.
+        Parameters
+        ----------
+        residuals
+            Residuals between measured and calculated data.
+        parameters
+            Current free parameters being fitted.
 
-        Returns:     Residuals unchanged, for optimizer consumption.
+        Returns
+        -------
+            Residuals unchanged, for optimizer consumption.
         """
         self._iteration += 1
 
@@ -197,10 +204,13 @@ class FitProgressTracker:
         self._fitting_time = self._end_time - self._start_time
 
     def start_tracking(self, minimizer_name: str) -> None:
-        """Initialize display and headers and announce the minimizer.
+        """
+        Initialize display and headers and announce the minimizer.
 
-        Args:     minimizer_name: Name of the minimizer used for the
-        run.
+        Parameters
+        ----------
+        minimizer_name
+            Name of the minimizer used for the run.
         """
         console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
         console.print('📈 Goodness-of-fit (reduced χ²) change:')

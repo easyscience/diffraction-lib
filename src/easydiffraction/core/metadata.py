@@ -17,15 +17,16 @@ from typing import FrozenSet
 
 @dataclass(frozen=True)
 class TypeInfo:
-    """Stable identity and human-readable description for a factory-
+    """
+    Stable identity and human-readable description for a factory-
     created class.
 
-    Attributes:     tag: Short, stable string identifier used for
-    serialization,         user-facing selection, and factory lookup.
-    Must be unique         within a factory's registry.  Examples:
-    ``'line-segment'``,         ``'pseudo-voigt'``, ``'cryspy'``.
-    description: One-line human-readable explanation.  Used in
-    ``show_supported()`` tables and documentation.
+    Attributes
+    ----------
+    tag
+        Short, stable string identifier used for serialization,         user-facing selection, and factory lookup. Must be unique         within a factory's registry.  Examples: ``'line-segment'``,         ``'pseudo-voigt'``, ``'cryspy'``.
+    description
+        One-line human-readable explanation.  Used in ``show_supported()`` tables and documentation.
     """
 
     tag: str
@@ -80,10 +81,13 @@ class Compatibility:
 
 @dataclass(frozen=True)
 class CalculatorSupport:
-    """Which calculation engines can handle this class.
+    """
+    Which calculation engines can handle this class.
 
-    Attributes:     calculators: Frozenset of ``CalculatorEnum`` values.
-    Empty         means "any calculator" (no restriction).
+    Attributes
+    ----------
+    calculators
+        Frozenset of ``CalculatorEnum`` values. Empty         means "any calculator" (no restriction).
     """
 
     calculators: FrozenSet = frozenset()

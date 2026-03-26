@@ -365,10 +365,13 @@ class AtomSites(CategoryCollection):
         self,
         called_by_minimizer: bool = False,
     ) -> None:
-        """Recalculate atom sites after a change.
+        """
+        Recalculate atom sites after a change.
 
-        Args:     called_by_minimizer (bool): Whether the update was
-        triggered         by the fitting minimizer. Currently unused.
+        Parameters
+        ----------
+        called_by_minimizer : bool
+            Whether the update was triggered         by the fitting minimizer. Currently unused.
         """
         del called_by_minimizer
 

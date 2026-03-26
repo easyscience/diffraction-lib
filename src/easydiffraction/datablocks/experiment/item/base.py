@@ -126,10 +126,13 @@ class ExperimentBase(DatablockItem):
 
     @calculator_type.setter
     def calculator_type(self, tag: str) -> None:
-        """Switch to a different calculator backend.
+        """
+        Switch to a different calculator backend.
 
-        Args:     tag: Calculator tag (e.g. ``'cryspy'``, ``'crysfml'``,
-        ``'pdffit'``).
+        Parameters
+        ----------
+        tag
+            Calculator tag (e.g. ``'cryspy'``, ``'crysfml'``, ``'pdffit'``).
         """
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
 
@@ -238,10 +241,13 @@ class ScExperimentBase(ExperimentBase):
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load single crystal data from an ASCII file.
+        """
+        Load single crystal data from an ASCII file.
 
-        Args:     data_path: Path to data file with columns compatible
-        with         the beam mode.
+        Parameters
+        ----------
+        data_path
+            Path to data file with columns compatible with         the beam mode.
         """
         pass
 
@@ -513,11 +519,13 @@ class PdExperimentBase(ExperimentBase):
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load powder diffraction data from an ASCII file.
+        """
+        Load powder diffraction data from an ASCII file.
 
-        Args:     data_path: Path to data file with columns compatible
-        with         the beam mode (e.g. 2θ/I/σ for CWL, TOF/I/σ for
-        TOF).
+        Parameters
+        ----------
+        data_path
+            Path to data file with columns compatible with         the beam mode (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
         """
         pass
 

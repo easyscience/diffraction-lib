@@ -19,14 +19,16 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class Alias(CategoryItem):
-    """Single alias entry.
+    """
+    Single alias entry.
 
     Maps a human-readable ``label`` to a concrete ``param_uid`` used by
     the engine.
 
-    Args:     label: Alias label. Must match ``^[A-Za-
-    z_][A-Za-z0-9_]*$``.     param_uid: Target parameter uid. Same
-    identifier pattern as         ``label``.
+    Parameters
+    ----------
+    label
+        Alias label. Must match ``^[A-Za- z_][A-Za-z0-9_]*$``.     param_uid: Target parameter uid. Same identifier pattern as         ``label``.
     """
 
     def __init__(self) -> None:

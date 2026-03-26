@@ -27,7 +27,8 @@ from easydiffraction.utils.utils import render_table
 
 
 class Analysis:
-    """High-level orchestration of analysis tasks for a Project.
+    """
+    High-level orchestration of analysis tasks for a Project.
 
     This class wires calculators and minimizers, exposes a compact
     interface for parameters, constraints and results, and coordinates
@@ -39,11 +40,10 @@ class Analysis:
     calculator/minimizer implementation. - Calculate patterns and run
     single or joint fits.
 
-    Attributes: project: The parent Project object.     aliases: A
-    registry of human-friendly aliases for parameters.     constraints:
-    Symbolic constraints between parameters. calculator: Active
-    calculator used for computations.     fitter: Active
-    fitter/minimizer driver.
+    Attributes
+    ----------
+    project
+        The parent Project object.     aliases: A registry of human-friendly aliases for parameters.     constraints: Symbolic constraints between parameters. calculator: Active calculator used for computations.     fitter: Active fitter/minimizer driver.
     """
 
     def __init__(self, project) -> None:
@@ -708,13 +708,16 @@ class Analysis:
         self.fitter._process_fit_results(structures, experiments)
 
     def _update_categories(self, called_by_minimizer=False) -> None:
-        """Update all categories owned by Analysis.
+        """
+        Update all categories owned by Analysis.
 
         This ensures aliases and constraints are up-to-date before
         serialization or after parameter changes.
 
-        Args:     called_by_minimizer: Whether this is called during
-        fitting.
+        Parameters
+        ----------
+        called_by_minimizer
+            Whether this is called during fitting.
         """
         # Apply constraints to sync dependent parameters
         if self.constraints._items:

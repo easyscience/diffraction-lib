@@ -68,12 +68,21 @@ class TableBackendBase(ABC):
         return is_dark()
 
     def _rich_to_hex(self, color):
-        """Convert a Rich color name to a CSS-style hex string.
+        """
+        Convert a Rich color name to a CSS-style hex string.
 
-        Args:     color: Rich color name or specification parsable by
-        :mod:`rich`.
 
-        Returns:     Hex color string in the form ``#RRGGBB``.
+        Parameters
+        ----------
+        color
+            Rich color name or specification parsable by
+
+            mod:`rich`.
+
+        Returns
+        -------
+
+            Hex color string in the form ``#RRGGBB``.
         """
         c = Color.parse(color)
         rgb = c.get_truecolor()
@@ -97,13 +106,20 @@ class TableBackendBase(ABC):
         df,
         display_handle: Any | None = None,
     ) -> Any:
-        """Render the provided DataFrame with backend-specific styling.
+        """
+        Render the provided DataFrame with backend-specific styling.
 
-        Args:     alignments: Iterable of column justifications (e.g.,
-        ``'left'`` or ``'center'``) corresponding to the data columns.
-        df: Index-aware DataFrame with data to render. display_handle:
-        Optional environment-specific handle to enable in-place updates.
+        Parameters
+        ----------
+        alignments
+            Iterable of column justifications (e.g., ``'left'`` or ``'center'``) corresponding to the data columns.
+        df
+            Index-aware DataFrame with data to render.
+        display_handle
+            Optional environment-specific handle to enable in-place updates.
 
-        Returns:     Backend-defined return value (commonly ``None``).
+        Returns
+        -------
+            Backend-defined return value (commonly ``None``).
         """
         pass

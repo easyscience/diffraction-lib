@@ -66,15 +66,19 @@ class TableRenderer(RendererBase):
         TableRenderer.get().render(df)
 
     def render(self, df, display_handle: Any | None = None) -> Any:
-        """Render a DataFrame as a table using the active backend.
+        """
+        Render a DataFrame as a table using the active backend.
 
-        Args:     df: DataFrame with a two-level column index where the
-        second level provides per-column alignment.     display_handle:
-        Optional environment-specific handle used         to update an
-        existing output area in-place (e.g., an         IPython
-        DisplayHandle or a terminal live handle).
+        Parameters
+        ----------
+        df
+            DataFrame with a two-level column index where the second level provides per-column alignment.
+        display_handle
+            Optional environment-specific handle used         to update an existing output area in-place (e.g., an         IPython DisplayHandle or a terminal live handle).
 
-        Returns:     Backend-specific return value (usually ``None``).
+        Returns
+        -------
+            Backend-specific return value (usually ``None``).
         """
         # Work on a copy to avoid mutating the original DataFrame
         df = df.copy()

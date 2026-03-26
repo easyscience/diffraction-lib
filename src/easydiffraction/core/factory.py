@@ -80,18 +80,26 @@ class FactoryBase:
 
     @classmethod
     def default_tag(cls, **conditions) -> str:
-        """Resolve the default tag for a given experimental context.
+        """
+        Resolve the default tag for a given experimental context.
 
         Uses *largest-subset matching*: the rule whose key is the
         biggest subset of the given conditions wins.  A rule with an
         empty key (``frozenset()``) acts as a universal fallback.
 
-        Args:     **conditions: Experimental-axis values, e.g.
-        ``scattering_type=ScatteringTypeEnum.BRAGG``.
+        Parameters
+        ----------
+        **conditions
+            Experimental-axis values, e.g. ``scattering_type=ScatteringTypeEnum.BRAGG``.
 
-        Returns:     The resolved default tag string.
+        Returns
+        -------
+            The resolved default tag string.
 
-        Raises:     ValueError: If no rule matches the given conditions.
+        Raises
+        ------
+        ValueError
+            If no rule matches the given conditions.
         """
         condition_set = frozenset(conditions.items())
         best_match_tag: str | None = None
@@ -115,12 +123,20 @@ class FactoryBase:
 
     @classmethod
     def create(cls, tag: str, **kwargs) -> Any:
-        """Instantiate a registered class by *tag*.
+        """
+        Instantiate a registered class by *tag*.
 
-        Args:     tag: ``type_info.tag`` value.     **kwargs: Forwarded
-        to the class constructor.
+        Parameters
+        ----------
+        tag
+            ``type_info.tag`` value.
+        **kwargs
+            Forwarded to the class constructor.
 
-        Raises:     ValueError: If *tag* is not in the registry.
+        Raises
+        ------
+        ValueError
+            If *tag* is not in the registry.
         """
         supported = cls._supported_map()
         if tag not in supported:
@@ -157,13 +173,21 @@ class FactoryBase:
         beam_mode=None,
         radiation_probe=None,
     ) -> List[Type]:
-        """Return classes matching conditions and/or calculator.
+        """
+        Return classes matching conditions and/or calculator.
 
-        Args:     calculator: Optional ``CalculatorEnum`` value.
-        sample_form: Optional ``SampleFormEnum`` value. scattering_type:
-        Optional ``ScatteringTypeEnum`` value. beam_mode: Optional
-        ``BeamModeEnum`` value.     radiation_probe: Optional
-        ``RadiationProbeEnum`` value.
+        Parameters
+        ----------
+        calculator
+            Optional ``CalculatorEnum`` value.
+        sample_form
+            Optional ``SampleFormEnum`` value.
+        scattering_type
+            Optional ``ScatteringTypeEnum`` value.
+        beam_mode
+            Optional ``BeamModeEnum`` value.
+        radiation_probe
+            Optional ``RadiationProbeEnum`` value.
         """
         result = []
         for klass in cls._supported_map().values():
@@ -195,13 +219,21 @@ class FactoryBase:
         beam_mode=None,
         radiation_probe=None,
     ) -> None:
-        """Pretty-print a table of supported types.
+        """
+        Pretty-print a table of supported types.
 
-        Args:     calculator: Optional ``CalculatorEnum`` filter.
-        sample_form: Optional ``SampleFormEnum`` filter.
-        scattering_type: Optional ``ScatteringTypeEnum`` filter.
-        beam_mode: Optional ``BeamModeEnum`` filter. radiation_probe:
-        Optional ``RadiationProbeEnum`` filter.
+        Parameters
+        ----------
+        calculator
+            Optional ``CalculatorEnum`` filter.
+        sample_form
+            Optional ``SampleFormEnum`` filter.
+        scattering_type
+            Optional ``ScatteringTypeEnum`` filter.
+        beam_mode
+            Optional ``BeamModeEnum`` filter.
+        radiation_probe
+            Optional ``RadiationProbeEnum`` filter.
         """
         matching = cls.supported_for(
             calculator=calculator,

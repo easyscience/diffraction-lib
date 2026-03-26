@@ -35,13 +35,21 @@ class Experiments(DatablockCollection):
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
     ) -> None:
-        """Add an experiment without associating a data file.
+        """
+        Add an experiment without associating a data file.
 
-        Args:     name: Experiment identifier.     sample_form: Sample
-        form (e.g. ``'powder'``).     beam_mode: Beam mode (e.g.
-        ``'constant wavelength'``).     radiation_probe: Radiation probe
-        (e.g. ``'neutron'``).     scattering_type: Scattering type (e.g.
-        ``'bragg'``).
+        Parameters
+        ----------
+        name
+            Experiment identifier.
+        sample_form
+            Sample form (e.g. ``'powder'``).
+        beam_mode
+            Beam mode (e.g. ``'constant wavelength'``).
+        radiation_probe
+            Radiation probe (e.g. ``'neutron'``).
+        scattering_type
+            Scattering type (e.g. ``'bragg'``).
         """
         experiment = ExperimentFactory.from_scratch(
             name=name,
@@ -99,14 +107,23 @@ class Experiments(DatablockCollection):
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
     ) -> None:
-        """Add an experiment from a data file path.
+        """
+        Add an experiment from a data file path.
 
-        Args:     name: Experiment identifier.     data_path: Path to
-        the measured data file.     sample_form: Sample form (e.g.
-        ``'powder'``).     beam_mode: Beam mode (e.g. ``'constant
-        wavelength'``).     radiation_probe: Radiation probe (e.g.
-        ``'neutron'``).     scattering_type: Scattering type (e.g.
-        ``'bragg'``).
+        Parameters
+        ----------
+        name
+            Experiment identifier.
+        data_path
+            Path to the measured data file.
+        sample_form
+            Sample form (e.g. ``'powder'``).
+        beam_mode
+            Beam mode (e.g. ``'constant wavelength'``).
+        radiation_probe
+            Radiation probe (e.g. ``'neutron'``).
+        scattering_type
+            Scattering type (e.g. ``'bragg'``).
         """
         experiment = ExperimentFactory.from_data_path(
             name=name,

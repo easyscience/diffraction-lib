@@ -26,14 +26,22 @@ class AsciiPlotter(PlotterBase):
     """Terminal-based plotter using ASCII art."""
 
     def _get_legend_item(self, label):
-        """Return a colored legend entry for a given series label.
+        """
+        Return a colored legend entry for a given series label.
 
         The legend uses a colored line matching the series color and the
         human-readable name from :data:`SERIES_CONFIG`.
 
-        Args:     label: Series identifier (e.g., ``'meas'``).
 
-        Returns:     A formatted legend string with color escapes.
+        Parameters
+        ----------
+        label
+            Series identifier (e.g., ``'meas'``).
+
+        Returns
+        -------
+
+            A formatted legend string with color escapes.
         """
         color_start = DEFAULT_COLORS[label]
         color_end = asciichartpy.reset
@@ -51,18 +59,27 @@ class AsciiPlotter(PlotterBase):
         title,
         height=None,
     ):
-        """Render a line plot for powder diffraction data.
+        """
+        Render a line plot for powder diffraction data.
 
         Suitable for powder diffraction data where intensity is plotted
         against an x-axis variable (2θ, TOF, d-spacing). Uses ASCII
         characters for terminal display.
 
-        Args:     x: 1D array-like of x values (only used for range
-        display).     y_series: Sequence of y arrays to plot. labels:
-        Series identifiers corresponding to y_series. axes_labels:
-        Ignored; kept for API compatibility.     title: Figure title
-        printed above the chart.     height: Number of text rows to
-        allocate for the chart.
+        Parameters
+        ----------
+        x
+            1D array-like of x values (only used for range display).
+        y_series
+            Sequence of y arrays to plot.
+        labels
+            Series identifiers corresponding to y_series.
+        axes_labels
+            Ignored; kept for API compatibility.
+        title
+            Figure title printed above the chart.
+        height
+            Number of text rows to allocate for the chart.
         """
         # Intentionally unused; kept for a consistent display API
         del axes_labels
@@ -95,17 +112,26 @@ class AsciiPlotter(PlotterBase):
         title,
         height=None,
     ):
-        """Render a scatter plot for single crystal diffraction data.
+        """
+        Render a scatter plot for single crystal diffraction data.
 
         Creates an ASCII scatter plot showing measured vs calculated
         values with a diagonal reference line.
 
-        Args:     x_calc: 1D array-like of calculated values (x-axis).
-        y_meas: 1D array-like of measured values (y-axis). y_meas_su: 1D
-        array-like of measurement uncertainties (ignored in ASCII mode).
-        axes_labels: Pair of strings for the x and y titles.     title:
-        Figure title.     height: Number of text rows for the chart
-        (default: 15).
+        Parameters
+        ----------
+        x_calc
+            1D array-like of calculated values (x-axis).
+        y_meas
+            1D array-like of measured values (y-axis).
+        y_meas_su
+            1D array-like of measurement uncertainties (ignored in ASCII mode).
+        axes_labels
+            Pair of strings for the x and y titles.
+        title
+            Figure title.
+        height
+            Number of text rows for the chart (default: 15).
         """
         # Intentionally unused; ASCII scatter doesn't show error bars
         del y_meas_su

@@ -35,16 +35,23 @@ class Fitter:
         weights: Optional[np.array] = None,
         analysis=None,
     ) -> None:
-        """Run the fitting process.
+        """
+        Run the fitting process.
 
         This method performs the optimization but does not display
         results. Use :meth:`show_fit_results` on the Analysis object to
         display the fit results after fitting is complete.
 
-        Args:     structures: Collection of structures.     experiments:
-        Collection of experiments.     weights: Optional weights for
-        joint fitting.     analysis: Optional Analysis object to update
-        its categories         during fitting.
+        Parameters
+        ----------
+        structures
+            Collection of structures.
+        experiments
+            Collection of experiments.
+        weights
+            Optional weights for joint fitting.
+        analysis
+            Optional Analysis object to update its categories         during fitting.
         """
         params = structures.free_parameters + experiments.free_parameters
 
@@ -73,15 +80,20 @@ class Fitter:
         structures: Structures,
         experiments: Experiments,
     ) -> None:
-        """Collect reliability inputs and display fit results.
+        """
+        Collect reliability inputs and display fit results.
 
         This method is typically called by
         :meth:`Analysis.show_fit_results` rather than directly. It
         calculates R-factors and other metrics, then renders them to the
         console.
 
-        Args:     structures: Collection of structures.     experiments:
-        Collection of experiments.
+        Parameters
+        ----------
+        structures
+            Collection of structures.
+        experiments
+            Collection of experiments.
         """
         y_obs, y_calc, y_err = get_reliability_inputs(
             structures,
@@ -105,12 +117,19 @@ class Fitter:
         structures: Structures,
         experiments: Experiments,
     ) -> List[Parameter]:
-        """Collect free parameters from structures and experiments.
+        """
+        Collect free parameters from structures and experiments.
 
-        Args:     structures: Collection of structures.     experiments:
-        Collection of experiments.
+        Parameters
+        ----------
+        structures
+            Collection of structures.
+        experiments
+            Collection of experiments.
 
-        Returns:     List of free parameters.
+        Returns
+        -------
+            List of free parameters.
         """
         free_params: List[Parameter] = structures.free_parameters + experiments.free_parameters
         return free_params
@@ -124,18 +143,29 @@ class Fitter:
         weights: Optional[np.array] = None,
         analysis=None,
     ) -> np.ndarray:
-        """Residual function computes the difference between measured
+        """
+        Residual function computes the difference between measured
         and calculated patterns. It updates the parameter values
         according to the optimizer-provided engine_params.
 
-        Args:     engine_params: Engine-specific parameter dict.
-        parameters: List of parameters being optimized.     structures:
-        Collection of structures.     experiments: Collection of
-        experiments.     weights: Optional weights for joint fitting.
-        analysis: Optional Analysis object to update its categories
-        during fitting.
+        Parameters
+        ----------
+        engine_params
+            Engine-specific parameter dict.
+        parameters
+            List of parameters being optimized.
+        structures
+            Collection of structures.
+        experiments
+            Collection of experiments.
+        weights
+            Optional weights for joint fitting.
+        analysis
+            Optional Analysis object to update its categories during fitting.
 
-        Returns:     Array of weighted residuals.
+        Returns
+        -------
+            Array of weighted residuals.
         """
         # Sync parameters back to objects
         self.minimizer._sync_result_to_parameters(parameters, engine_params)

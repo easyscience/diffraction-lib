@@ -135,19 +135,31 @@ def download_data(
     destination: str = 'data',
     overwrite: bool = False,
 ) -> str:
-    """Download a dataset by numeric ID using the remote diffraction
+    """
+    Download a dataset by numeric ID using the remote diffraction
     index.
 
     Example:     path = download_data(id=12, destination="data")
 
-    Args:     id: Numeric dataset id (e.g. 12).     destination:
-    Directory to save the file into (created if         missing).
-    overwrite: Whether to overwrite the file if it already exists.
+    Parameters
+    ----------
+    id
+        Numeric dataset id (e.g. 12).
+    destination
+        Directory to save the file into (created if         missing).
+    overwrite
+        Whether to overwrite the file if it already exists.
 
-    Returns:     str: Full path to the downloaded file as string.
+    Returns
+    -------
+    str
+        Full path to the downloaded file as string.
 
-    Raises:     KeyError: If the id is not found in the index.
-    ValueError: If the resolved URL is not HTTP/HTTPS.
+    Raises
+    ------
+    KeyError
+    If the id is not found in the index. ValueError
+        If the resolved URL is not HTTP/HTTPS.
     """
     index = _fetch_data_index()
     key = str(id)
@@ -329,14 +341,19 @@ def _safe_urlopen(request_or_url):  # type: ignore[no-untyped-def]
 
 
 def _resolve_tutorial_url(url_template: str) -> str:
-    """Replace {version} placeholder in URL template with actual
+    """
+    Replace {version} placeholder in URL template with actual
     version.
 
-    Args:     url_template (str): URL template containing {version}
-    placeholder.
+    Parameters
+    ----------
+    url_template : str
+        URL template containing {version} placeholder.
 
-    Returns:     str: URL with {version} replaced by actual version
-    string.
+    Returns
+    -------
+    str
+        URL with {version} replaced by actual version string.
     """
     version = _get_version_for_url()
     return url_template.replace('{version}', version)
@@ -380,18 +397,30 @@ def download_tutorial(
     destination: str = 'tutorials',
     overwrite: bool = False,
 ) -> str:
-    """Download a tutorial notebook by numeric ID.
+    """
+    Download a tutorial notebook by numeric ID.
 
     Example:     path = download_tutorial(id=1, destination="tutorials")
 
-    Args:     id: Numeric tutorial id (e.g. 1).     destination:
-    Directory to save the file into (created if         missing).
-    overwrite: Whether to overwrite the file if it already exists.
+    Parameters
+    ----------
+    id
+        Numeric tutorial id (e.g. 1).
+    destination
+        Directory to save the file into (created if         missing).
+    overwrite
+        Whether to overwrite the file if it already exists.
 
-    Returns:     str: Full path to the downloaded file as string.
+    Returns
+    -------
+    str
+        Full path to the downloaded file as string.
 
-    Raises:     KeyError: If the id is not found in the index.
-    ValueError: If the resolved URL is not HTTP/HTTPS.
+    Raises
+    ------
+    KeyError
+    If the id is not found in the index. ValueError
+        If the resolved URL is not HTTP/HTTPS.
     """
     index = _fetch_tutorials_index()
     key = str(id)
@@ -442,15 +471,22 @@ def download_all_tutorials(
     destination: str = 'tutorials',
     overwrite: bool = False,
 ) -> list[str]:
-    """Download all available tutorial notebooks.
+    """
+    Download all available tutorial notebooks.
 
     Example:     paths = download_all_tutorials(destination="tutorials")
 
-    Args:     destination: Directory to save the files into (created if
-    missing).     overwrite: Whether to overwrite files if they already
-    exist.
+    Parameters
+    ----------
+    destination
+        Directory to save the files into (created if missing).
+    overwrite
+        Whether to overwrite files if they already exist.
 
-    Returns:     list[str]: List of full paths to the downloaded files.
+    Returns
+    -------
+    list[str]
+        List of full paths to the downloaded files.
     """
     index = _fetch_tutorials_index()
     if not index:
@@ -534,7 +570,8 @@ def tof_to_d(
     quad: float,
     quad_eps=1e-20,
 ) -> np.ndarray:
-    """Convert time-of-flight (TOF) to d-spacing using a quadratic
+    """
+    Convert time-of-flight (TOF) to d-spacing using a quadratic
     calibration.
 
     Model:     TOF = offset + linear * d + quad * d²
@@ -545,17 +582,28 @@ def tof_to_d(
     solution exists.   - Expects ``tof`` as a NumPy array; output
     matches its shape.
 
-    Args:     tof (np.ndarray): Time-of-flight values (µs). Must be a
-    NumPy         array.     offset (float): Calibration offset (µs).
-    linear (float): Linear calibration coefficient (µs/Å).     quad
-    (float): Quadratic calibration coefficient (µs/Å²).     quad_eps
-    (float, optional): Threshold to treat ``quad`` as zero. Defaults to
-    1e-20.
+    Parameters
+    ----------
+    tof : np.ndarray
+        Time-of-flight values (µs). Must be a NumPy         array.
+    offset : float
+        Calibration offset (µs).
+    linear : float
+        Linear calibration coefficient (µs/Å).
+    quad : float
+        Quadratic calibration coefficient (µs/Å²).
+    quad_eps : float, optional
+        Threshold to treat ``quad`` as zero. Defaults to 1e-20.
 
-    Returns:     np.ndarray: d-spacing values (Å), NaN where invalid.
+    Returns
+    -------
+    np.ndarray
+        d-spacing values (Å), NaN where invalid.
 
-    Raises:     TypeError: If ``tof`` is not a NumPy array or
-    coefficients are         not real numbers.
+    Raises
+    ------
+    TypeError
+        If ``tof`` is not a NumPy array or coefficients are         not real numbers.
     """
     # Type checks
     if not isinstance(tof, np.ndarray):
@@ -684,7 +732,8 @@ def get_value_from_xye_header(file_path, key):
 
 
 def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
-    """Parse a CIF-style numeric string into a `ufloat` with an optional
+    """
+    Parse a CIF-style numeric string into a `ufloat` with an optional
     uncertainty.
 
     Examples of supported input: - "3.566"       → ufloat(3.566, nan) -
@@ -703,9 +752,9 @@ def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
     optional     Default value to use if `s` is None or parsing fails.
     Defaults to None.
 
-    Returns: ------- UFloat     An `uncertainties.UFloat` object with
-    the parsed value and     uncertainty. The uncertainty will be NaN if
-    not specified or     parsing failed.
+    Returns
+    -------
+        ------- UFloat     An `uncertainties.UFloat` object with the parsed value and     uncertainty. The uncertainty will be NaN if not specified or     parsing failed.
     """
     if s is None:
         return ufloat(default, np.nan)

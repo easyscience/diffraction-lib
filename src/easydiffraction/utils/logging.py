@@ -138,12 +138,19 @@ class LoggerConfig:
         rich_tracebacks: bool,
         mode: str = 'compact',
     ) -> None:
-        """Install Rich handler and optional Jupyter traceback support.
+        """
+        Install Rich handler and optional Jupyter traceback support.
 
-        Args:     logger: Logger instance to attach handlers to. level:
-        Minimum log level to emit.     rich_tracebacks: Whether to
-        enable Rich tracebacks.     mode: Output mode name ("compact" or
-        "verbose").
+        Parameters
+        ----------
+        logger
+            Logger instance to attach handlers to.
+        level
+            Minimum log level to emit.
+        rich_tracebacks
+            Whether to enable Rich tracebacks.
+        mode
+            Output mode name ("compact" or "verbose").
         """
         logger.handlers.clear()
         logger.propagate = False
@@ -178,11 +185,19 @@ class LoggerConfig:
         level: 'Logger.Level',
         rich_tracebacks: bool,
     ) -> None:
-        """Configure the logger with RichHandler and exception hooks.
+        """
+        Configure the logger with RichHandler and exception hooks.
 
-        Args:     logger: Logger instance to configure.     mode: Output
-        mode (compact or verbose).     level: Minimum log level to emit.
-        rich_tracebacks: Whether to enable Rich tracebacks.
+        Parameters
+        ----------
+        logger
+            Logger instance to configure.
+        mode
+            Output mode (compact or verbose).
+        level
+            Minimum log level to emit.
+        rich_tracebacks
+            Whether to enable Rich tracebacks.
         """
         LoggerConfig.setup_handlers(
             logger,

@@ -42,14 +42,22 @@ class PlotlyPlotter(PlotterBase):
         y,
         label,
     ):
-        """Create a Plotly trace for powder diffraction data.
+        """
+        Create a Plotly trace for powder diffraction data.
 
-        Args:     x: 1D array-like of x-axis values.     y: 1D array-
-        like of y-axis values.     label: Series identifier (``'meas'``,
-        ``'calc'``, or         ``'resid'``).
+        Parameters
+        ----------
+        x
+            1D array-like of x-axis values.
+        y
+            1D array- like of y-axis values.
+        label
+            Series identifier (``'meas'``, ``'calc'``, or         ``'resid'``).
 
-        Returns:     A configured :class:`plotly.graph_objects.Scatter`
-        trace.
+        Returns
+        -------
+        A configured
+            class:`plotly.graph_objects.Scatter` trace.
         """
         mode = SERIES_CONFIG[label]['mode']
         name = SERIES_CONFIG[label]['name']
@@ -72,14 +80,22 @@ class PlotlyPlotter(PlotterBase):
         y_meas,
         y_meas_su,
     ):
-        """Create a Plotly trace for single crystal diffraction data.
+        """
+        Create a Plotly trace for single crystal diffraction data.
 
-        Args:     x_calc: 1D array-like of calculated values (x-axis).
-        y_meas: 1D array-like of measured values (y-axis). y_meas_su: 1D
-        array-like of measurement uncertainties.
+        Parameters
+        ----------
+        x_calc
+            1D array-like of calculated values (x-axis).
+        y_meas
+            1D array-like of measured values (y-axis).
+        y_meas_su
+            1D array-like of measurement uncertainties.
 
-        Returns:     A configured :class:`plotly.graph_objects.Scatter`
-        trace     with markers and error bars.
+        Returns
+        -------
+        A configured
+            class:`plotly.graph_objects.Scatter` trace     with markers and error bars.
         """
         trace = go.Scatter(
             x=x_calc,
@@ -152,12 +168,20 @@ class PlotlyPlotter(PlotterBase):
         data,
         layout,
     ):
-        """Create and configure a Plotly figure.
+        """
+        Create and configure a Plotly figure.
 
-        Args:     data: List of traces to include in the figure. layout:
-        Layout configuration dict.
+        Parameters
+        ----------
+        data
+            List of traces to include in the figure.
+        layout
+            Layout configuration dict.
 
-        Returns:     A configured :class:`plotly.graph_objects.Figure`.
+        Returns
+        -------
+        A configured
+            class:`plotly.graph_objects.Figure`.
         """
         fig = go.Figure(data=data, layout=layout)
         # Format axis ticks:
@@ -170,13 +194,16 @@ class PlotlyPlotter(PlotterBase):
         self,
         fig,
     ):
-        """Display a Plotly figure.
+        """
+        Display a Plotly figure.
 
         Renders the figure using the appropriate method for the current
         environment (browser for PyCharm, inline HTML for Jupyter).
 
-        Args:     fig: A :class:`plotly.graph_objects.Figure` to
-        display.
+        Parameters
+        ----------
+        fig
+            A :class:`plotly.graph_objects.Figure` to display.
         """
         config = self._get_config()
 
@@ -197,13 +224,22 @@ class PlotlyPlotter(PlotterBase):
         axes_labels,
         **kwargs,
     ):
-        """Create a Plotly layout configuration.
+        """
+        Create a Plotly layout configuration.
 
-        Args:     title: Figure title.     axes_labels: Pair of strings
-        for the x and y titles.     **kwargs: Additional layout
-        parameters (e.g., shapes).
+        Parameters
+        ----------
+        title
+            Figure title.
+        axes_labels
+            Pair of strings for the x and y titles.
+        **kwargs
+            Additional layout parameters (e.g., shapes).
 
-        Returns:     A configured :class:`plotly.graph_objects.Layout`.
+        Returns
+        -------
+        A configured
+            class:`plotly.graph_objects.Layout`.
         """
         return go.Layout(
             margin=dict(
@@ -245,16 +281,26 @@ class PlotlyPlotter(PlotterBase):
         title,
         height=None,
     ):
-        """Render a line plot for powder diffraction data.
+        """
+        Render a line plot for powder diffraction data.
 
         Suitable for powder diffraction data where intensity is plotted
         against an x-axis variable (2θ, TOF, d-spacing).
 
-        Args:     x: 1D array-like of x-axis values.     y_series:
-        Sequence of y arrays to plot.     labels: Series identifiers
-        corresponding to y_series.     axes_labels: Pair of strings for
-        the x and y titles.     title: Figure title.     height:
-        Ignored; Plotly auto-sizes based on renderer.
+        Parameters
+        ----------
+        x
+            1D array-like of x-axis values.
+        y_series
+            Sequence of y arrays to plot.
+        labels
+            Series identifiers corresponding to y_series.
+        axes_labels
+            Pair of strings for the x and y titles.
+        title
+            Figure title.
+        height
+            Ignored; Plotly auto-sizes based on renderer.
         """
         # Intentionally unused; accepted for API compatibility
         del height
@@ -282,17 +328,27 @@ class PlotlyPlotter(PlotterBase):
         title,
         height=None,
     ):
-        """Render a scatter plot for single crystal diffraction data.
+        """
+        Render a scatter plot for single crystal diffraction data.
 
         Suitable for single crystal diffraction data where measured
         values are plotted against calculated values with error bars and
         a diagonal reference line.
 
-        Args:     x_calc: 1D array-like of calculated values (x-axis).
-        y_meas: 1D array-like of measured values (y-axis). y_meas_su: 1D
-        array-like of measurement uncertainties. axes_labels: Pair of
-        strings for the x and y titles.     title: Figure title. height:
-        Ignored; Plotly auto-sizes based on renderer.
+        Parameters
+        ----------
+        x_calc
+            1D array-like of calculated values (x-axis).
+        y_meas
+            1D array-like of measured values (y-axis).
+        y_meas_su
+            1D array-like of measurement uncertainties.
+        axes_labels
+            Pair of strings for the x and y titles.
+        title
+            Figure title.
+        height
+            Ignored; Plotly auto-sizes based on renderer.
         """
         # Intentionally unused; accepted for API compatibility
         del height

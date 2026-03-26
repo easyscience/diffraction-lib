@@ -172,16 +172,26 @@ class PlotterBase(ABC):
         title,
         height,
     ):
-        """Render a line plot for powder diffraction data.
+        """
+        Render a line plot for powder diffraction data.
 
         Suitable for powder diffraction data where intensity is plotted
         against an x-axis variable (2θ, TOF, d-spacing).
 
-        Args:     x: 1D array of x-axis values.     y_series: Sequence
-        of y arrays to plot.     labels: Identifiers corresponding to
-        y_series.     axes_labels: Pair of strings for the x and y
-        titles.     title: Figure title.     height: Backend-specific
-        height (text rows or pixels).
+        Parameters
+        ----------
+        x
+            1D array of x-axis values.
+        y_series
+            Sequence of y arrays to plot.
+        labels
+            Identifiers corresponding to y_series.
+        axes_labels
+            Pair of strings for the x and y titles.
+        title
+            Figure title.
+        height
+            Backend-specific height (text rows or pixels).
         """
         pass
 
@@ -195,15 +205,25 @@ class PlotterBase(ABC):
         title,
         height,
     ):
-        """Render a scatter plot for single crystal diffraction data.
+        """
+        Render a scatter plot for single crystal diffraction data.
 
         Suitable for single crystal diffraction data where measured
         values are plotted against calculated values with error bars.
 
-        Args:     x_calc: 1D array of calculated values (x-axis).
-        y_meas: 1D array of measured values (y-axis).     y_meas_su: 1D
-        array of measurement uncertainties.     axes_labels: Pair of
-        strings for the x and y titles.     title: Figure title. height:
-        Backend-specific height (text rows or pixels).
+        Parameters
+        ----------
+        x_calc
+            1D array of calculated values (x-axis).
+        y_meas
+            1D array of measured values (y-axis).
+        y_meas_su
+            1D array of measurement uncertainties.
+        axes_labels
+            Pair of strings for the x and y titles.
+        title
+            Figure title.
+        height
+            Backend-specific height (text rows or pixels).
         """
         pass

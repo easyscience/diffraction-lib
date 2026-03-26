@@ -132,10 +132,13 @@ class Cell(CategoryItem):
         self,
         called_by_minimizer: bool = False,
     ) -> None:
-        """Recalculate cell parameters after a change.
+        """
+        Recalculate cell parameters after a change.
 
-        Args:     called_by_minimizer (bool, default=False): Whether the
-        update was triggered by the fitting minimizer. Currently unused.
+        Parameters
+        ----------
+        called_by_minimizer : bool, default=False
+            Whether the update was triggered by the fitting minimizer. Currently unused.
         """
         del called_by_minimizer  # TODO: ???
 

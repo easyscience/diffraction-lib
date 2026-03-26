@@ -48,11 +48,15 @@ class CrysfmlCalculator(CalculatorBase):
         structures: Structures,
         experiments: Experiments,
     ) -> None:
-        """Call Crysfml to calculate structure factors.
+        """
+        Call Crysfml to calculate structure factors.
 
-        Args:     structures: The structures to calculate structure
-        factors for.     experiments: The experiments associated with
-        the sample         models.
+        Parameters
+        ----------
+        structures
+            The structures to calculate structure factors for.
+        experiments
+            The experiments associated with the sample         models.
         """
         raise NotImplementedError('HKL calculation is not implemented for CrysfmlCalculator.')
 
@@ -62,16 +66,22 @@ class CrysfmlCalculator(CalculatorBase):
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
-        """Calculates the diffraction pattern using Crysfml for the
+        """
+        Calculates the diffraction pattern using Crysfml for the
         given structure and experiment.
 
-        Args:     structure: The structure to calculate the pattern for.
-        experiment: The experiment associated with the structure.
-        called_by_minimizer: Whether the calculation is called by a
-        minimizer.
+        Parameters
+        ----------
+        structure
+            The structure to calculate the pattern for.
+        experiment
+            The experiment associated with the structure.
+        called_by_minimizer
+            Whether the calculation is called by a minimizer.
 
-        Returns:     The calculated diffraction pattern as a NumPy array
-        or a         list of floats.
+        Returns
+        -------
+            The calculated diffraction pattern as a NumPy array or a         list of floats.
         """
         # Intentionally unused, required by public API/signature
         del called_by_minimizer
@@ -90,12 +100,19 @@ class CrysfmlCalculator(CalculatorBase):
         pattern: List[float],
         target_length: int,
     ) -> List[float]:
-        """Adjusts the length of the pattern to match the target length.
+        """
+        Adjusts the length of the pattern to match the target length.
 
-        Args:     pattern: The pattern to adjust.     target_length: The
-        desired length of the pattern.
+        Parameters
+        ----------
+        pattern
+            The pattern to adjust.
+        target_length
+            The desired length of the pattern.
 
-        Returns:     The adjusted pattern.
+        Returns
+        -------
+            The adjusted pattern.
         """
         # TODO: Check the origin of this discrepancy coming from
         #  PyCrysFML
@@ -108,14 +125,20 @@ class CrysfmlCalculator(CalculatorBase):
         structure: Structures,
         experiment: ExperimentBase,
     ) -> Dict[str, Union[ExperimentBase, Structure]]:
-        """Converts the structure and experiment into a dictionary
+        """
+        Converts the structure and experiment into a dictionary
         format for Crysfml.
 
-        Args:     structure: The structure to convert.     experiment:
-        The experiment to convert.
+        Parameters
+        ----------
+        structure
+            The structure to convert.
+        experiment
+            The experiment to convert.
 
-        Returns:     A dictionary representation of the structure and
-        experiment.
+        Returns
+        -------
+            A dictionary representation of the structure and experiment.
         """
         structure_dict = self._convert_structure_to_dict(structure)
         experiment_dict = self._convert_experiment_to_dict(experiment)

@@ -140,15 +140,25 @@ class ExperimentFactory(FactoryBase):
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
     ) -> ExperimentBase:
-        """Create an experiment without measured data.
+        """
+        Create an experiment without measured data.
 
-        Args:     name: Experiment identifier.     sample_form: Sample
-        form (e.g. ``'powder'``).     beam_mode: Beam mode (e.g.
-        ``'constant wavelength'``).     radiation_probe: Radiation probe
-        (e.g. ``'neutron'``).     scattering_type: Scattering type (e.g.
-        ``'bragg'``).
+        Parameters
+        ----------
+        name
+            Experiment identifier.
+        sample_form
+            Sample form (e.g. ``'powder'``).
+        beam_mode
+            Beam mode (e.g. ``'constant wavelength'``).
+        radiation_probe
+            Radiation probe (e.g. ``'neutron'``).
+        scattering_type
+            Scattering type (e.g. ``'bragg'``).
 
-        Returns:     An experiment instance with only metadata.
+        Returns
+        -------
+            An experiment instance with only metadata.
         """
         expt_type = cls._create_experiment_type(
             sample_form=sample_form,
@@ -222,16 +232,27 @@ class ExperimentFactory(FactoryBase):
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
     ) -> ExperimentBase:
-        """Create an experiment from a raw data ASCII file.
+        """
+        Create an experiment from a raw data ASCII file.
 
-        Args:     name: Experiment identifier.     data_path: Path to
-        the measured data file.     sample_form: Sample form (e.g.
-        ``'powder'``).     beam_mode: Beam mode (e.g. ``'constant
-        wavelength'``).     radiation_probe: Radiation probe (e.g.
-        ``'neutron'``).     scattering_type: Scattering type (e.g.
-        ``'bragg'``).
+        Parameters
+        ----------
+        name
+            Experiment identifier.
+        data_path
+            Path to the measured data file.
+        sample_form
+            Sample form (e.g. ``'powder'``).
+        beam_mode
+            Beam mode (e.g. ``'constant wavelength'``).
+        radiation_probe
+            Radiation probe (e.g. ``'neutron'``).
+        scattering_type
+            Scattering type (e.g. ``'bragg'``).
 
-        Returns:     An experiment instance with measured data attached.
+        Returns
+        -------
+            An experiment instance with measured data attached.
         """
         expt_obj = cls.from_scratch(
             name=name,

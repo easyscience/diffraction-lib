@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import ast
+import inspect
 import re
 import sys
 from pathlib import Path
@@ -32,7 +33,11 @@ GOOGLE_SECTION_RE = re.compile(
     + r'):\s*(?P<rest>\S.*)?$'
 )
 SECTION_KINDS_WITH_ITEMS = {'Args', 'Arguments', 'Attributes'}
-RST_ROLE_RE = re.compile(r':[A-Za-z_][A-Za-z0-9_]*:`')
+PRESERVE_BLOCK_SECTIONS = {'Examples', 'Notes'}
+GENERIC_ITEM_SECTIONS = {'Raises', 'Returns', 'Yields'}
+GENERIC_ITEM_RE = re.compile(
+    r'(?<!\S)(?P<label>[A-Za-z_][A-Za-z0-9_\.\[\], \|\(\)]{0,80}?)\s*:'
+)
 
 
 def _iter_python_files(paths: list[Path]) -> list[Path]:
@@ -91,50 +96,122 @@ def _collect_names(node: ast.AST) -> list[str]:
     return list(dict.fromkeys(names))
 
 
+def _strip_blank_edges(lines: list[str]) -> list[str]:
+    start = 0
+    end = len(lines)
+    while start < end and not lines[start].strip():
+        start += 1
+    while end > start and not lines[end - 1].strip():
+        end -= 1
+    return lines[start:end]
+
+
+def _collapse_whitespace(lines: list[str]) -> str:
+    return ' '.join(line.strip() for line in lines if line.strip())
+
+
+def _repair_named_items(block_lines: list[str], names: list[str]) -> list[str] | None:
+    flat = _collapse_whitespace(block_lines)
+    if not flat or not names:
+        return None
+
+    label_pattern = '|'.join(re.escape(name) for name in sorted(set(names), key=len, reverse=True))
+    item_re = re.compile(
+        rf'(?<!\S)(?P<label>\*{{0,2}}(?:{label_pattern})(?:\s*\([^)]*\))?)\s*:'
+    )
+    matches = list(item_re.finditer(flat))
+    if not matches or matches[0].start() != 0:
+        return None
+
+    repaired: list[str] = []
+    for index, match in enumerate(matches):
+        start = match.end()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(flat)
+        description = flat[start:end].strip()
+        repaired.append(f'    {match.group("label")}: {description}' if description else f'    {match.group("label")}:')
+    return repaired
+
+
+def _repair_generic_items(block_lines: list[str]) -> list[str] | None:
+    flat = _collapse_whitespace(block_lines)
+    if not flat:
+        return None
+
+    matches = list(GENERIC_ITEM_RE.finditer(flat))
+    if not matches or matches[0].start() != 0:
+        return None
+
+    repaired: list[str] = []
+    for index, match in enumerate(matches):
+        start = match.end()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(flat)
+        description = flat[start:end].strip()
+        repaired.append(f'    {match.group("label")}: {description}' if description else f'    {match.group("label")}:')
+    return repaired
+
+
+def _repair_section(section: str, block_lines: list[str], names: list[str]) -> list[str]:
+    stripped = _strip_blank_edges(block_lines)
+    if not stripped:
+        return []
+
+    if section in SECTION_KINDS_WITH_ITEMS:
+        repaired = _repair_named_items(stripped, names)
+        if repaired is not None:
+            return repaired
+
+    if section in GENERIC_ITEM_SECTIONS:
+        repaired = _repair_generic_items(stripped)
+        if repaired is not None:
+            return repaired
+
+    if section in PRESERVE_BLOCK_SECTIONS:
+        return [f'    {line}' if line else '' for line in stripped]
+
+    flat = _collapse_whitespace(stripped)
+    return [f'    {flat}'] if flat else []
+
+
 def _repair_inline_sections(docstring: str, names: list[str]) -> str:
-    repaired = docstring.replace('\r\n', '\n')
-    lines = repaired.split('\n')
+    cleaned = inspect.cleandoc(docstring.replace('\r\n', '\n'))
+    lines = cleaned.split('\n')
     out: list[str] = []
-    current_section: str | None = None
-    section_indent = ''
+    index = 0
 
-    for raw_line in lines:
+    while index < len(lines):
+        raw_line = lines[index]
         heading = GOOGLE_SECTION_RE.match(raw_line)
-        if heading:
-            current_section = heading.group('section')
-            section_indent = heading.group('indent')
-            section_name = 'Args' if current_section == 'Arguments' else current_section
-            out.append(f'{section_indent}{section_name}:')
-            rest = heading.group('rest')
-            if rest:
-                out.append(f'{section_indent}    {rest.strip()}')
+        if heading is None:
+            out.append(raw_line.rstrip())
+            index += 1
             continue
 
-        if current_section is not None and raw_line.strip():
-            stripped = raw_line.strip()
-            if current_section in SECTION_KINDS_WITH_ITEMS:
-                for name in sorted(names, key=len, reverse=True):
-                    stripped = re.sub(
-                        rf'([ \t]{{2,}})({re.escape(name)}(?:\s*\([^)]*\))?:)',
-                        rf'\n{section_indent}    \2',
-                        stripped,
-                    )
-            out.extend(
-                (
-                    line
-                    if line.startswith(f'{section_indent}    ')
-                    else f'{section_indent}    {line.strip()}'
-                )
-                for line in stripped.split('\n')
-            )
-            continue
+        section = heading.group('section')
+        section_name = 'Args' if section == 'Arguments' else section
+        out.append(f'{section_name}:')
 
-        out.append(raw_line)
-        if not raw_line.strip():
-            continue
+        block_lines: list[str] = []
+        rest = heading.group('rest')
+        if rest:
+            block_lines.append(rest)
 
-        current_section = None
-        section_indent = ''
+        index += 1
+        while index < len(lines):
+            next_line = lines[index]
+            if GOOGLE_SECTION_RE.match(next_line):
+                break
+            if (
+                section_name not in PRESERVE_BLOCK_SECTIONS
+                and not next_line.strip()
+                and index + 1 < len(lines)
+                and lines[index + 1].strip()
+                and GOOGLE_SECTION_RE.match(lines[index + 1]) is None
+            ):
+                break
+            block_lines.append(next_line.rstrip())
+            index += 1
+
+        out.extend(_repair_section(section_name, block_lines, names))
 
     return '\n'.join(out)
 
@@ -160,8 +237,12 @@ def _contains_unparsed_sections(parsed) -> bool:
     return False
 
 
+def _has_section_heading(docstring: str, section: str) -> bool:
+    return re.search(rf'(?m)^[ \t]*{re.escape(section)}:\s*(?:\S.*)?$', docstring) is not None
+
+
 def _is_safe_conversion(docstring: str, parsed) -> bool:
-    if RST_ROLE_RE.search(docstring) or '::' in docstring:
+    if '::' in docstring:
         return False
 
     kinds = _meta_kinds(parsed)
@@ -178,17 +259,25 @@ def _is_safe_conversion(docstring: str, parsed) -> bool:
         'Examples': 'examples',
     }
     for section, expected_kind in expectations.items():
-        if section in docstring and expected_kind not in kinds:
+        if _has_section_heading(docstring, section) and expected_kind not in kinds:
             return False
 
     return True
 
 
+def _tidy_numpydoc_output(docstring: str) -> str:
+    tidied = docstring.strip('\n')
+    tidied = re.sub(r'\n{3,}', '\n\n', tidied)
+    tidied = re.sub(r'(?m)^([^\n]+)\n(-+)\n\n( +\S)', r'\1\n\2\n\3', tidied)
+    return tidied
+
+
 def _convert_docstring(docstring: str, names: list[str]) -> str | None:
-    if not _looks_google(docstring):
+    cleaned = inspect.cleandoc(docstring)
+    if not _looks_google(cleaned):
         return None
 
-    repaired = _repair_inline_sections(docstring, names)
+    repaired = _repair_inline_sections(cleaned, names)
 
     try:
         parsed = parse(repaired, style=DocstringStyle.GOOGLE)
@@ -198,8 +287,8 @@ def _convert_docstring(docstring: str, names: list[str]) -> str | None:
     if not _is_safe_conversion(repaired, parsed):
         return None
 
-    converted = compose(parsed, style=DocstringStyle.NUMPYDOC)
-    return converted if converted != docstring else None
+    converted = _tidy_numpydoc_output(compose(parsed, style=DocstringStyle.NUMPYDOC))
+    return converted if converted != cleaned else None
 
 
 def _format_multiline_docstring(content: str, indent: int) -> str:

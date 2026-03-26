@@ -27,7 +27,8 @@ if TYPE_CHECKING:
 
 
 class GenericDescriptorBase(GuardedBase):
-    """Base class for all parameter-like descriptors.
+    """
+    Base class for all parameter-like descriptors.
 
     A descriptor encapsulates a typed value with validation, human-
     readable name/description and a globally unique identifier that is
@@ -35,9 +36,12 @@ class GenericDescriptorBase(GuardedBase):
     expected data type and can extend the public API with additional
     behavior (e.g. units).
 
-    Attributes:     name: Local parameter name (e.g. 'a', 'b_iso').
-    description: Optional human-readable description.     uid: Stable
-    random identifier for external references.
+    Attributes
+    ----------
+    name
+        Local parameter name (e.g. 'a', 'b_iso').
+    description
+        Optional human-readable description.     uid: Stable random identifier for external references.
     """
 
     _BOOL_SPEC_TEMPLATE = AttributeSpec(

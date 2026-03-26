@@ -145,12 +145,21 @@ class LmfitMinimizer(MinimizerBase):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        """Callback function for each iteration of the minimizer.
+        """
+        Callback function for each iteration of the minimizer.
 
-        Args:     params: The current parameters.     iter: The current
-        iteration number.     resid: The residuals.     *args:
-        Additional positional arguments.     **kwargs: Additional
-        keyword arguments.
+        Parameters
+        ----------
+        params
+            The current parameters.
+        iter
+            The current iteration number.
+        resid
+            The residuals.
+        *args
+            Additional positional arguments.
+        **kwargs
+            Additional keyword arguments.
         """
         # Intentionally unused, required by callback signature
         del params, resid, args, kwargs

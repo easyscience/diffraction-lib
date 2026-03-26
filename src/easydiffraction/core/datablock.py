@@ -133,10 +133,13 @@ class DatablockCollection(CollectionBase):
         return item._identity.datablock_entry_name
 
     def add(self, item) -> None:
-        """Add a pre-built item to the collection.
+        """
+        Add a pre-built item to the collection.
 
-        Args:     item: A ``DatablockItem`` instance (e.g. a
-        ``Structure``         or ``ExperimentBase`` subclass).
+        Parameters
+        ----------
+        item
+            A ``DatablockItem`` instance (e.g. a ``Structure``         or ``ExperimentBase`` subclass).
         """
         self[item._identity.datablock_entry_name] = item
 

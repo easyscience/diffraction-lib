@@ -104,12 +104,21 @@ class MinimizerBase(ABC):
         parameters: List[Any],
         raw_result: Any,
     ) -> FitResults:
-        """Build :class:`FitResults` and store it on ``self.result``.
+        """
+        Build :class:`FitResults` and store it on ``self.result``.
 
-        Args:     parameters: Parameters after the solver finished.
-        raw_result: Backend-specific solver output object.
 
-        Returns:     FitResults: Aggregated outcome of the fit.
+        Parameters
+        ----------
+        parameters
+            Parameters after the solver finished.
+        raw_result
+            Backend-specific solver output object.
+
+        Returns
+        -------
+        FitResults
+            Aggregated outcome of the fit.
         """
         self._sync_result_to_parameters(parameters, raw_result)
         success = self._check_success(raw_result)
@@ -133,13 +142,19 @@ class MinimizerBase(ABC):
         parameters: List[Any],
         objective_function: Callable[..., Any],
     ) -> FitResults:
-        """Run the full minimization workflow.
+        """
+        Run the full minimization workflow.
 
-        Args:     parameters: Free parameters to optimize.
-        objective_function: Callable returning residuals for a given set
-        of engine arguments.
+        Parameters
+        ----------
+        parameters
+            Free parameters to optimize.
+        objective_function
+            Callable returning residuals for a given set of engine arguments.
 
-        Returns:     FitResults with success flag, best chi2 and timing.
+        Returns
+        -------
+            FitResults with success flag, best chi2 and timing.
         """
         minimizer_name = self.name or 'Unnamed Minimizer'
         if self.method is not None:
