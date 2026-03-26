@@ -1061,12 +1061,12 @@ derived from it.
 
 **Definitions:**
 
-| Symbol       | Meaning                                                               |
-| ------------ | --------------------------------------------------------------------- |
-| `{desc}`     | `description` string without trailing period                          |
-| `{units}`    | `units` string; omit the `({units})` parenthetical when absent/empty  |
-| `{Type}`     | Descriptor class name: `Parameter`, `NumericDescriptor`, or `StringDescriptor` |
-| `{ann}`      | Setter value annotation: `float` for numeric descriptors, `str` for string descriptors |
+| Symbol    | Meaning                                                                                |
+| --------- | -------------------------------------------------------------------------------------- |
+| `{desc}`  | `description` string without trailing period                                           |
+| `{units}` | `units` string; omit the `({units})` parenthetical when absent/empty                   |
+| `{Type}`  | Descriptor class name: `Parameter`, `NumericDescriptor`, or `StringDescriptor`         |
+| `{ann}`   | Setter value annotation: `float` for numeric descriptors, `str` for string descriptors |
 
 **Template:**
 
@@ -1106,14 +1106,14 @@ def length_a(self, value: float) -> None:
 
 **Quick-reference table:**
 
-| Location           | Text                                                              |
-| ------------------ | ----------------------------------------------------------------- |
-| Getter 1st line    | `"""{desc}.`                                                      |
-| Getter `Returns:`  | `{Type}: {desc} ({units}).` (or `{Type}: {desc}.`)                |
-| Setter 1st line    | `"""Set the {desc, first letter lowercased}.`                     |
-| Setter `Args:`     | `value ({ann}): {desc} ({units}).` (or `value ({ann}): {desc}.`)  |
-| Getter annotation  | `-> {Type}`                                                       |
-| Setter annotation  | `value: {ann}` and `-> None`                                      |
+| Location          | Text                                                             |
+| ----------------- | ---------------------------------------------------------------- |
+| Getter 1st line   | `"""{desc}.`                                                     |
+| Getter `Returns:` | `{Type}: {desc} ({units}).` (or `{Type}: {desc}.`)               |
+| Setter 1st line   | `"""Set the {desc, first letter lowercased}.`                    |
+| Setter `Args:`    | `value ({ann}): {desc} ({units}).` (or `value ({ann}): {desc}.`) |
+| Getter annotation | `-> {Type}`                                                      |
+| Setter annotation | `value: {ann}` and `-> None`                                     |
 
 **Notes:**
 
