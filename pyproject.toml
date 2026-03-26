@@ -198,7 +198,7 @@ exclude = [
   'src/easydiffraction/utils/_vendored/jupyter_dark_detect',
 ]
 indent-width = 4
-line-length = 99
+line-length = 99 # See also `max-line-length` in [tool.ruff.lint.pycodestyle]
 preview = true # Enable new rules that are not yet stable, like DOC
 
 # Formatting options for Ruff
@@ -281,7 +281,7 @@ ignore = [
   # E501 applies max-line-length to ALL lines including docstrings.
   # We ignore it because the ruff formatter already enforces line-length
   # for code, and W505 enforces max-doc-length for docstrings.
-  'E501', # https://docs.astral.sh/ruff/rules/line-too-long/
+  #'E501', # https://docs.astral.sh/ruff/rules/line-too-long/
   # Temporary:
   'DTZ005',
 
@@ -308,10 +308,12 @@ ignore = [
   'E501',
   'E741',
   'F841',
+  'I001',
   'N801',
   'N805',
   'N812',
   'SIM117',
+  'W505',
 ]
 'docs/**' = [
   'INP001', # https://docs.astral.sh/ruff/rules/implicit-namespace-package/
@@ -336,17 +338,10 @@ max-complexity = 10
 # PEP 8 line length guidance:
 # https://peps.python.org/pep-0008/#maximum-line-length
 # Use 99 characters as the project-wide maximum for regular code lines.
-max-line-length = 99
-# Allow longer docstring lines so that parameter declarations such as
-# `name (Type | Type | None): Description text (units).` remain on a
-# single line.  Splitting these lines can prevent tools such as MkDocs
-# and IDEs from correctly parsing and rendering parameter documentation.
-# The descriptive text itself is wrapped more strictly by
-# `docformatter` (see the configuration in [tool.docformatter] below)
-# whenever it is treated as normal paragraph text.
-# The line length for code snippets in docstrings is also more strict,
-# as defined in the [tool.ruff.format] section above.
-max-doc-length = 200
+# Use 72 characters for docstrings.
+max-line-length = 99 # See also `line-length` in [tool.ruff]
+max-doc-length = 72
+
 
 #############################
 # Configuration for pydoclint
