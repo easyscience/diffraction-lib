@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Total scattering / PDF peak-profile component classes.
+"""
+Total scattering / PDF peak-profile component classes.
 
 This module provides classes that add broadening and asymmetry
 parameters. They are composed into concrete peak classes elsewhere via

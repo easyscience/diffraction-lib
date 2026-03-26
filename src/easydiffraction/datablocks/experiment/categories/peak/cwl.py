@@ -24,7 +24,10 @@ class CwlPseudoVoigt(
 ):
     """Constant-wavelength pseudo-Voigt peak shape."""
 
-    type_info = TypeInfo(tag='pseudo-voigt', description='Pseudo-Voigt profile',)
+    type_info = TypeInfo(
+        tag='pseudo-voigt',
+        description='Pseudo-Voigt profile',
+    )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),

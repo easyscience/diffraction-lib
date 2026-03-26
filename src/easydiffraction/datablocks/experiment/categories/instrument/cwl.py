@@ -52,7 +52,10 @@ class CwlInstrumentBase(InstrumentBase):
 
 @InstrumentFactory.register
 class CwlScInstrument(CwlInstrumentBase):
-    type_info = TypeInfo(tag='cwl-sc', description='CW single-crystal diffractometer',)
+    type_info = TypeInfo(
+        tag='cwl-sc',
+        description='CW single-crystal diffractometer',
+    )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
@@ -68,7 +71,10 @@ class CwlScInstrument(CwlInstrumentBase):
 
 @InstrumentFactory.register
 class CwlPdInstrument(CwlInstrumentBase):
-    type_info = TypeInfo(tag='cwl-pd', description='CW powder diffractometer',)
+    type_info = TypeInfo(
+        tag='cwl-pd',
+        description='CW powder diffractometer',
+    )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG, ScatteringTypeEnum.TOTAL}),
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),

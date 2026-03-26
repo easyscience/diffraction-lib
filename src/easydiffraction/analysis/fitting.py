@@ -161,8 +161,8 @@ class Fitter:
         """
         Compute residuals between measured and calculated patterns.
 
-        It updates the parameter values according
-        to the optimizer-provided engine_params.
+        It updates the parameter values according to the
+        optimizer-provided engine_params.
 
         Parameters
         ----------

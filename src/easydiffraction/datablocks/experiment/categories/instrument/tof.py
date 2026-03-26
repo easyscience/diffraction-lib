@@ -18,7 +18,10 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @InstrumentFactory.register
 class TofScInstrument(InstrumentBase):
-    type_info = TypeInfo(tag='tof-sc', description='TOF single-crystal diffractometer',)
+    type_info = TypeInfo(
+        tag='tof-sc',
+        description='TOF single-crystal diffractometer',
+    )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
@@ -34,7 +37,10 @@ class TofScInstrument(InstrumentBase):
 
 @InstrumentFactory.register
 class TofPdInstrument(InstrumentBase):
-    type_info = TypeInfo(tag='tof-pd', description='TOF powder diffractometer',)
+    type_info = TypeInfo(
+        tag='tof-pd',
+        description='TOF powder diffractometer',
+    )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),

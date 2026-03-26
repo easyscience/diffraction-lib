@@ -319,7 +319,10 @@ class TotalData(TotalDataBase):
     transformed to r-space.
     """
 
-    type_info = TypeInfo(tag='total-pd', description='Total scattering (PDF) data',)
+    type_info = TypeInfo(
+        tag='total-pd',
+        description='Total scattering (PDF) data',
+    )
     compatibility = Compatibility(
         sample_form=frozenset({SampleFormEnum.POWDER}),
         scattering_type=frozenset({ScatteringTypeEnum.TOTAL}),
