@@ -32,6 +32,7 @@ GOOGLE_SECTION_RE = re.compile(
     + r'):\s*(?P<rest>\S.*)?$'
 )
 SECTION_KINDS_WITH_ITEMS = {'Args', 'Arguments', 'Attributes'}
+RST_ROLE_RE = re.compile(r':[A-Za-z_][A-Za-z0-9_]*:`')
 
 
 def _iter_python_files(paths: list[Path]) -> list[Path]:
@@ -142,6 +143,47 @@ def _looks_google(docstring: str) -> bool:
     return bool(GOOGLE_SECTION_RE.search(docstring))
 
 
+def _meta_kinds(parsed) -> set[str]:
+    kinds: set[str] = set()
+    for meta in parsed.meta:
+        args = getattr(meta, 'args', None) or []
+        if not args:
+            continue
+        kinds.add(str(args[0]).lower())
+    return kinds
+
+
+def _contains_unparsed_sections(parsed) -> bool:
+    for text in (parsed.short_description, parsed.long_description):
+        if text and GOOGLE_SECTION_RE.search(text):
+            return True
+    return False
+
+
+def _is_safe_conversion(docstring: str, parsed) -> bool:
+    if RST_ROLE_RE.search(docstring) or '::' in docstring:
+        return False
+
+    kinds = _meta_kinds(parsed)
+    if _contains_unparsed_sections(parsed):
+        return False
+
+    expectations = {
+        'Args': 'param',
+        'Arguments': 'param',
+        'Attributes': 'attribute',
+        'Returns': 'returns',
+        'Raises': 'raises',
+        'Yields': 'yields',
+        'Examples': 'examples',
+    }
+    for section, expected_kind in expectations.items():
+        if section in docstring and expected_kind not in kinds:
+            return False
+
+    return True
+
+
 def _convert_docstring(docstring: str, names: list[str]) -> str | None:
     if not _looks_google(docstring):
         return None
@@ -153,8 +195,18 @@ def _convert_docstring(docstring: str, names: list[str]) -> str | None:
     except Exception:
         return None
 
+    if not _is_safe_conversion(repaired, parsed):
+        return None
+
     converted = compose(parsed, style=DocstringStyle.NUMPYDOC)
     return converted if converted != docstring else None
+
+
+def _format_multiline_docstring(content: str, indent: int) -> str:
+    indent_str = ' ' * indent
+    lines = content.strip('\n').splitlines()
+    body = '\n'.join(f'{indent_str}{line}' if line else '' for line in lines)
+    return f'\n{body}\n{indent_str}'
 
 
 def _convert_file(path: Path) -> bool:
@@ -191,7 +243,9 @@ def _convert_file(path: Path) -> bool:
         start = calc_abs_pos(source_code, line_starts, value.lineno, value.col_offset)
         end = calc_abs_pos(source_code, line_starts, end_lineno, end_col_offset)
         original_literal = source_code[start:end]
-        new_literal = rebuild_literal(original_literal, converted)
+        leading_indent = getattr(value, 'col_offset', 0)
+        formatted = _format_multiline_docstring(converted, leading_indent)
+        new_literal = rebuild_literal(original_literal, formatted)
         if new_literal is None or new_literal == original_literal:
             continue
 
@@ -205,6 +259,7 @@ def _convert_file(path: Path) -> bool:
     for start, end, replacement in replacements:
         new_source = new_source[:start] + replacement + new_source[end:]
 
+    compile(new_source, str(path), 'exec')
     path.write_text(new_source)
     return True
 

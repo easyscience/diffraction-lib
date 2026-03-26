@@ -216,20 +216,30 @@ class CategoryCollection(CollectionBase):
         category_collection_from_cif(self, block)
 
     def add(self, item) -> None:
-        """Insert or replace a pre-built item into the collection.
+        """
+        Insert or replace a pre-built item into the collection.
 
-        Args:     item: A ``CategoryItem`` instance to add.
+
+        Parameters
+        ----------
+        item
+            A ``CategoryItem`` instance to add.
         """
         self[item._identity.category_entry_name] = item
         self._mark_parent_dirty()
 
     def create(self, **kwargs) -> None:
-        """Create a new item with the given attributes and add it.
+        """
+        Create a new item with the given attributes and add it.
 
         A default instance of the collection's item type is created,
         then each keyword argument is applied via ``setattr``.
 
-        Args:     **kwargs: Attribute names and values for the new item.
+
+        Parameters
+        ----------
+        **kwargs
+            Attribute names and values for the new item.
         """
         child_obj = self._item_type()
 

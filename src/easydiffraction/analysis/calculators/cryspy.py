@@ -329,12 +329,20 @@ class CryspyCalculator(CalculatorBase):
         self,
         structure: Structure,
     ) -> str:
-        """Converts a structure to a Cryspy CIF string.
+        """
+        Converts a structure to a Cryspy CIF string.
 
-        Args:     structure: The structure to convert.
 
-        Returns:     The Cryspy CIF string representation of the
-        structure.
+        Parameters
+        ----------
+        structure
+            The structure to convert.
+
+        Returns
+        -------
+
+            The Cryspy CIF string representation of the
+            structure.
         """
         return structure.as_cif
 
@@ -343,13 +351,22 @@ class CryspyCalculator(CalculatorBase):
         experiment: ExperimentBase,
         linked_structure: Any,
     ) -> str:
-        """Converts an experiment to a Cryspy CIF string.
+        """
+        Converts an experiment to a Cryspy CIF string.
 
-        Args:     experiment: The experiment to convert.
-        linked_structure: The structure linked to the experiment.
 
-        Returns:     The Cryspy CIF string representation of the
-        experiment.
+        Parameters
+        ----------
+        experiment
+            The experiment to convert.
+        linked_structure
+            The structure linked to the experiment.
+
+        Returns
+        -------
+
+            The Cryspy CIF string representation of the
+            experiment.
         """
         # Try to get experiment attributes
         expt_type = getattr(experiment, 'type', None)

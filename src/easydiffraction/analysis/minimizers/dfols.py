@@ -57,10 +57,16 @@ class DfolsMinimizer(MinimizerBase):
         parameters: List[Any],
         raw_result: Any,
     ) -> None:
-        """Synchronizes the result from the solver to the parameters.
+        """
+        Synchronizes the result from the solver to the parameters.
 
-        Args:     parameters: List of parameters being optimized.
-        raw_result: The result object returned by the solver.
+
+        Parameters
+        ----------
+        parameters
+            List of parameters being optimized.
+        raw_result
+            The result object returned by the solver.
         """
         # Ensure compatibility with raw_result coming from dfols.solve()
         result_values = raw_result.x if hasattr(raw_result, 'x') else raw_result
@@ -74,11 +80,19 @@ class DfolsMinimizer(MinimizerBase):
             param.uncertainty = None
 
     def _check_success(self, raw_result: Any) -> bool:
-        """Determines success from DFO-LS result dictionary.
+        """
+        Determines success from DFO-LS result dictionary.
 
-        Args:     raw_result: The result object returned by the solver.
 
-        Returns:     True if the optimization was successful, False
-        otherwise.
+        Parameters
+        ----------
+        raw_result
+            The result object returned by the solver.
+
+        Returns
+        -------
+
+            True if the optimization was successful, False
+            otherwise.
         """
         return raw_result.flag == raw_result.EXIT_SUCCESS

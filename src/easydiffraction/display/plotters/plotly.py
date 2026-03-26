@@ -102,12 +102,17 @@ class PlotlyPlotter(PlotterBase):
         return trace
 
     def _get_diagonal_shape(self):
-        """Create a diagonal reference line shape.
+        """
+        Create a diagonal reference line shape.
 
         Returns a y=x diagonal line spanning the plot area using paper
         coordinates (0,0) to (1,1).
 
-        Returns:     A dict configuring a diagonal line shape.
+
+        Returns
+        -------
+
+            A dict configuring a diagonal line shape.
         """
         return dict(
             type='line',
@@ -122,9 +127,14 @@ class PlotlyPlotter(PlotterBase):
         )
 
     def _get_config(self):
-        """Return the Plotly figure configuration.
+        """
+        Return the Plotly figure configuration.
 
-        Returns:     A dict with display and mode bar settings.
+
+        Returns
+        -------
+
+            A dict with display and mode bar settings.
         """
         return dict(
             displaylogo=False,

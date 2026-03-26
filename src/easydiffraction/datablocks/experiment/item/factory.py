@@ -167,11 +167,19 @@ class ExperimentFactory(FactoryBase):
         cls,
         cif_str: str,
     ) -> ExperimentBase:
-        """Create an experiment from a CIF string.
+        """
+        Create an experiment from a CIF string.
 
-        Args:     cif_str: Full CIF document as a string.
 
-        Returns:     A populated experiment instance.
+        Parameters
+        ----------
+        cif_str
+            Full CIF document as a string.
+
+        Returns
+        -------
+
+            A populated experiment instance.
         """
         doc = document_from_string(cif_str)
         block = pick_sole_block(doc)
@@ -184,11 +192,19 @@ class ExperimentFactory(FactoryBase):
         cls,
         cif_path: str,
     ) -> ExperimentBase:
-        """Create an experiment from a CIF file path.
+        """
+        Create an experiment from a CIF file path.
 
-        Args:     cif_path: Path to a CIF file.
 
-        Returns:     A populated experiment instance.
+        Parameters
+        ----------
+        cif_path
+            Path to a CIF file.
+
+        Returns
+        -------
+
+            A populated experiment instance.
         """
         doc = document_from_path(cif_path)
         block = pick_sole_block(doc)

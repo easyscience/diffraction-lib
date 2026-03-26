@@ -42,9 +42,14 @@ class MinimizerBase(ABC):
         self.tracker: FitProgressTracker = FitProgressTracker()
 
     def _start_tracking(self, minimizer_name: str) -> None:
-        """Initialize progress tracking and timer.
+        """
+        Initialize progress tracking and timer.
 
-        Args:     minimizer_name: Human-readable name shown in progress.
+
+        Parameters
+        ----------
+        minimizer_name
+            Human-readable name shown in progress.
         """
         self.tracker.reset()
         self.tracker.start_tracking(minimizer_name)
@@ -57,12 +62,20 @@ class MinimizerBase(ABC):
 
     @abstractmethod
     def _prepare_solver_args(self, parameters: List[Any]) -> Dict[str, Any]:
-        """Prepare keyword-arguments for the underlying solver.
+        """
+        Prepare keyword-arguments for the underlying solver.
 
-        Args:     parameters: List of free parameters to be fitted.
 
-        Returns:     Mapping of keyword arguments to pass into
-        ``_run_solver``.
+        Parameters
+        ----------
+        parameters
+            List of free parameters to be fitted.
+
+        Returns
+        -------
+
+            Mapping of keyword arguments to pass into
+            ``_run_solver``.
         """
         pass
 

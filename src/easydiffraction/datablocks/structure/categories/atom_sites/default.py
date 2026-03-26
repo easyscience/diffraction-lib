@@ -138,18 +138,28 @@ class AtomSite(CategoryItem):
 
     @property
     def _type_symbol_allowed_values(self) -> list[str]:
-        """Return chemical symbols accepted by *cryspy*.
+        """
+        Return chemical symbols accepted by *cryspy*.
 
-        Returns:     list[str]: Unique element/isotope symbols from the
-        database.
+
+        Returns
+        -------
+        list[str]
+            Unique element/isotope symbols from the
+            database.
         """
         return list({key[1] for key in DATABASE['Isotopes']})
 
     @property
     def _wyckoff_letter_allowed_values(self) -> list[str]:
-        """Return allowed Wyckoff-letter symbols.
+        """
+        Return allowed Wyckoff-letter symbols.
 
-        Returns:     list[str]: Currently a hard-coded placeholder list.
+
+        Returns
+        -------
+        list[str]
+            Currently a hard-coded placeholder list.
         """
         # TODO: Need to now current space group. How to access it? Via
         #  parent Cell? Then letters =
@@ -159,9 +169,14 @@ class AtomSite(CategoryItem):
 
     @property
     def _wyckoff_letter_default_value(self) -> str:
-        """Return the default Wyckoff letter.
+        """
+        Return the default Wyckoff letter.
 
-        Returns:     str: First element of the allowed values list.
+
+        Returns
+        -------
+        str
+            First element of the allowed values list.
         """
         # TODO: What to pass as default?
         return self._wyckoff_letter_allowed_values[0]

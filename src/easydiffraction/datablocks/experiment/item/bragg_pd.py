@@ -116,9 +116,14 @@ class BraggPdExperiment(PdExperimentBase):
 
     @instrument_type.setter
     def instrument_type(self, new_type: str) -> None:
-        """Switch to a different instrument type.
+        """
+        Switch to a different instrument type.
 
-        Args:     new_type: Instrument tag (e.g. ``'cwl-pd'``).
+
+        Parameters
+        ----------
+        new_type
+            Instrument tag (e.g. ``'cwl-pd'``).
         """
         supported = InstrumentFactory.supported_for(
             scattering_type=self.type.scattering_type.value,

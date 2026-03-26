@@ -17,17 +17,27 @@ def in_warp() -> bool:
 
 
 def in_pycharm() -> bool:
-    """Determines if the current environment is PyCharm.
+    """
+    Determines if the current environment is PyCharm.
 
-    Returns:     bool: True if running inside PyCharm, False otherwise.
+
+    Returns
+    -------
+    bool
+        True if running inside PyCharm, False otherwise.
     """
     return os.environ.get('PYCHARM_HOSTED') == '1'
 
 
 def in_colab() -> bool:
-    """Determines if the current environment is Google Colab.
+    """
+    Determines if the current environment is Google Colab.
 
-    Returns:     bool: True if running in Google Colab, False otherwise.
+
+    Returns
+    -------
+    bool
+        True if running in Google Colab, False otherwise.
     """
     try:
         return find_spec('google.colab') is not None
@@ -36,10 +46,15 @@ def in_colab() -> bool:
 
 
 def in_jupyter() -> bool:
-    """Return True when running inside a Jupyter Notebook.
+    """
+    Return True when running inside a Jupyter Notebook.
 
-    Returns:     bool: True if inside a Jupyter Notebook, False
-    otherwise.
+
+    Returns
+    -------
+    bool
+        True if inside a Jupyter Notebook, False
+        otherwise.
     """
     try:
         import IPython  # type: ignore[import-not-found]
@@ -74,10 +89,15 @@ def in_jupyter() -> bool:
 
 
 def in_github_ci() -> bool:
-    """Return True when running under GitHub Actions CI.
+    """
+    Return True when running under GitHub Actions CI.
 
-    Returns:     bool: True if env var ``GITHUB_ACTIONS`` is set, False
-    otherwise.
+
+    Returns
+    -------
+    bool
+        True if env var ``GITHUB_ACTIONS`` is set, False
+        otherwise.
     """
     return os.environ.get('GITHUB_ACTIONS') is not None
 

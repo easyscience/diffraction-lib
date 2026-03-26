@@ -26,11 +26,17 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @ExperimentTypeFactory.register
 class ExperimentType(CategoryItem):
-    """Container of categorical attributes defining experiment flavor.
+    """
+    Container of categorical attributes defining experiment flavor.
 
-    Args:     sample_form: Powder or Single crystal.     beam_mode:
-    Constant wavelength (CW) or time-of-flight (TOF). radiation_probe:
-    Neutrons or X-rays.     scattering_type: Bragg or Total.
+
+    Parameters
+    ----------
+    sample_form
+        Powder or Single crystal.     beam_mode:
+    Constant wavelength : CW) or time-of-flight (TOF
+    Neutrons or X-rays.     scattering_type
+        Bragg or Total.
     """
 
     type_info = TypeInfo(

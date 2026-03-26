@@ -74,11 +74,19 @@ class CollectionBase(GuardedBase):
         return len(self._items)
 
     def remove(self, name: str) -> None:
-        """Remove an item by its key.
+        """
+        Remove an item by its key.
 
-        Args:     name: Identity key of the item to remove.
 
-        Raises:     KeyError: If no item with the given key exists.
+        Parameters
+        ----------
+        name
+            Identity key of the item to remove.
+
+        Raises
+        ------
+        KeyError
+            If no item with the given key exists.
         """
         del self[name]
 

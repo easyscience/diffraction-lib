@@ -128,11 +128,19 @@ class CrysfmlCalculator(CalculatorBase):
         self,
         structure: Structure,
     ) -> Dict[str, Any]:
-        """Converts a structure into a dictionary format.
+        """
+        Converts a structure into a dictionary format.
 
-        Args:     structure: The structure to convert.
 
-        Returns:     A dictionary representation of the structure.
+        Parameters
+        ----------
+        structure
+            The structure to convert.
+
+        Returns
+        -------
+
+            A dictionary representation of the structure.
         """
         structure_dict = {
             structure.name: {
@@ -166,11 +174,19 @@ class CrysfmlCalculator(CalculatorBase):
         self,
         experiment: ExperimentBase,
     ) -> Dict[str, Any]:
-        """Converts an experiment into a dictionary format.
+        """
+        Converts an experiment into a dictionary format.
 
-        Args:     experiment: The experiment to convert.
 
-        Returns:     A dictionary representation of the experiment.
+        Parameters
+        ----------
+        experiment
+            The experiment to convert.
+
+        Returns
+        -------
+
+            A dictionary representation of the experiment.
         """
         expt_type = getattr(experiment, 'type', None)
         instrument = getattr(experiment, 'instrument', None)

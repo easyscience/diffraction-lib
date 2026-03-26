@@ -30,11 +30,19 @@ pooch.get_logger().setLevel('WARNING')  # Suppress pooch info messages
 
 
 def _validate_url(url: str) -> None:
-    """Validate that a URL uses only safe HTTP/HTTPS schemes.
+    """
+    Validate that a URL uses only safe HTTP/HTTPS schemes.
 
-    Args:     url: The URL to validate.
 
-    Raises:     ValueError: If the URL scheme is not HTTP or HTTPS.
+    Parameters
+    ----------
+    url
+        The URL to validate.
+
+    Raises
+    ------
+    ValueError
+        If the URL scheme is not HTTP or HTTPS.
     """
     parsed = urlparse(url)
     if parsed.scheme not in ('http', 'https'):
@@ -90,7 +98,8 @@ def _fetch_data_index() -> dict:
 
 @functools.lru_cache(maxsize=1)
 def _fetch_tutorials_index() -> dict:
-    """Fetch & cache the tutorials index.json from gh-pages and return
+    """
+    Fetch & cache the tutorials index.json from gh-pages and return
     it as dict.
 
     The index is fetched from:
@@ -99,9 +108,12 @@ def _fetch_tutorials_index() -> dict:
     For released versions, {version} is the public version string
     (e.g., '0.8.0.post1'). For development versions, 'dev' is used.
 
-    Returns:
-    dict: The tutorials index as a dictionary, or empty dict if
-    fetch fails.
+
+    Returns
+    -------
+    dict
+        The tutorials index as a dictionary, or empty dict if
+        fetch fails.
     """
     version = _get_version_for_url()
     index_url = f'https://easyscience.github.io/diffraction-lib/{version}/tutorials/index.json'
@@ -188,13 +200,21 @@ def download_data(
 
 
 def package_version(package_name: str) -> str | None:
-    """Get the installed version string of the specified package.
+    """
+    Get the installed version string of the specified package.
 
-    Args:     package_name (str): The name of the package to query.
 
-    Returns:     str | None: The raw version string (may include local
-    part,     e.g., '1.2.3+abc123'), or None if the package is not
-    installed.
+    Parameters
+    ----------
+    package_name : str
+        The name of the package to query.
+
+    Returns
+    -------
+    str | None
+        The raw version string (may include local
+        part,     e.g., '1.2.3+abc123'), or None if the package is not
+        installed.
     """
     try:
         return version(package_name)
@@ -203,16 +223,24 @@ def package_version(package_name: str) -> str | None:
 
 
 def stripped_package_version(package_name: str) -> str | None:
-    """Get the installed version of the specified package, stripped of
+    """
+    Get the installed version of the specified package, stripped of
     any local version part.
 
     Returns only the public version segment (e.g., '1.2.3' or
     '1.2.3.post4'), omitting any local segment (e.g., '+d136').
 
-    Args:     package_name (str): The name of the package to query.
 
-    Returns:     str | None: The public version string, or None if the
-    package     is not installed.
+    Parameters
+    ----------
+    package_name : str
+        The name of the package to query.
+
+    Returns
+    -------
+    str | None
+        The public version string, or None if the
+        package     is not installed.
     """
     v_str = package_version(package_name)
     if v_str is None:
@@ -225,17 +253,25 @@ def stripped_package_version(package_name: str) -> str | None:
 
 
 def _is_dev_version(package_name: str) -> bool:
-    """Check if the installed package version is a development/local
+    """
+    Check if the installed package version is a development/local
     version.
 
     A version is considered "dev" if: - The raw version contains '+dev',
     '+dirty', or '+devdirty' (local   suffixes from versioningit) - The
     public version is '999.0.0' (versioningit default-tag   fallback)
 
-    Args:     package_name (str): The name of the package to query.
 
-    Returns:     bool: True if the version is a development version,
-    False         otherwise.
+    Parameters
+    ----------
+    package_name : str
+        The name of the package to query.
+
+    Returns
+    -------
+    bool
+        True if the version is a development version,
+        False         otherwise.
     """
     raw_version = package_version(package_name)
     if raw_version is None:
@@ -251,16 +287,24 @@ def _is_dev_version(package_name: str) -> bool:
 
 
 def _get_version_for_url(package_name: str = 'easydiffraction') -> str:
-    """Get the version string to use in URLs for fetching remote
+    """
+    Get the version string to use in URLs for fetching remote
     resources.
 
     Returns the public version for released versions, or 'dev' for
     development/local versions.
 
-    Args:     package_name (str): The name of the package to query.
 
-    Returns:     str: The version string to use in URLs ('dev' or a
-    version like         '0.8.0.post1').
+    Parameters
+    ----------
+    package_name : str
+        The name of the package to query.
+
+    Returns
+    -------
+    str
+        The version string to use in URLs ('dev' or a
+        version like         '0.8.0.post1').
     """
     if _is_dev_version(package_name):
         return 'dev'
@@ -459,10 +503,15 @@ def render_table(
 
 
 def render_cif(cif_text) -> None:
-    """Display the CIF text as a formatted table in Jupyter Notebook or
+    """
+    Display the CIF text as a formatted table in Jupyter Notebook or
     terminal.
 
-    Args:     cif_text: The CIF text to display.
+
+    Parameters
+    ----------
+    cif_text
+        The CIF text to display.
     """
     # Split into lines
     lines: List[str] = [line for line in cif_text.splitlines()]
@@ -561,12 +610,17 @@ def tof_to_d(
 
 
 def twotheta_to_d(twotheta, wavelength):
-    """Convert 2-theta to d-spacing using Bragg's law.
+    """
+    Convert 2-theta to d-spacing using Bragg's law.
 
     Parameters:     twotheta (float or np.ndarray): 2-theta angle in
     degrees.     wavelength (float): Wavelength in Å.
 
-    Returns:     d (float or np.ndarray): d-spacing in Å.
+
+    Returns
+    -------
+    d (float or np.ndarray)
+        d-spacing in Å.
     """
     # Convert twotheta from degrees to radians
     theta_rad = np.radians(twotheta / 2)
@@ -578,12 +632,17 @@ def twotheta_to_d(twotheta, wavelength):
 
 
 def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda):
-    """Convert sin(theta)/lambda to d-spacing.
+    """
+    Convert sin(theta)/lambda to d-spacing.
 
     Parameters:     sin_theta_over_lambda (float or np.ndarray):
     sin(theta)/lambda         in 1/Å.
 
-    Returns:     d (float or np.ndarray): d-spacing in Å.
+
+    Returns
+    -------
+    d (float or np.ndarray)
+        d-spacing in Å.
     """
     # Avoid division by zero
     with np.errstate(divide='ignore', invalid='ignore'):
@@ -594,15 +653,23 @@ def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda):
 
 
 def get_value_from_xye_header(file_path, key):
-    """Extracts a floating point value from the first line of the file,
+    """
+    Extracts a floating point value from the first line of the file,
     corresponding to the given key.
 
     Parameters:     file_path (str): Path to the input file.     key
     (str): The key to extract ('DIFC' or 'two_theta').
 
-    Returns:     float: The extracted value.
 
-    Raises:     ValueError: If the key is not found.
+    Returns
+    -------
+    float
+        The extracted value.
+
+    Raises
+    ------
+    ValueError
+        If the key is not found.
     """
     pattern = rf'{key}\s*=\s*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)'
 

@@ -52,11 +52,18 @@ class GenericDescriptorBase(GuardedBase):
         name: str,
         description: str = None,
     ):
-        """Initialize the descriptor with validation and identity.
+        """
+        Initialize the descriptor with validation and identity.
 
-        Args:     value_spec: Validation specification for the value.
-        name: Local name of the descriptor within its category.
-        description: Optional human-readable description.
+
+        Parameters
+        ----------
+        value_spec
+            Validation specification for the value.
+        name
+            Local name of the descriptor within its category.
+        description
+            Optional human-readable description.
         """
         super().__init__()
 
@@ -386,10 +393,16 @@ class StringDescriptor(GenericStringDescriptor):
         cif_handler: CifHandler,
         **kwargs: Any,
     ) -> None:
-        """String descriptor bound to a CIF handler.
+        """
+        String descriptor bound to a CIF handler.
 
-        Args:     cif_handler: Object that tracks CIF identifiers.
-        **kwargs: Forwarded to GenericStringDescriptor.
+
+        Parameters
+        ----------
+        cif_handler
+            Object that tracks CIF identifiers.
+        **kwargs
+            Forwarded to GenericStringDescriptor.
         """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
@@ -406,10 +419,16 @@ class NumericDescriptor(GenericNumericDescriptor):
         cif_handler: CifHandler,
         **kwargs: Any,
     ) -> None:
-        """Numeric descriptor bound to a CIF handler.
+        """
+        Numeric descriptor bound to a CIF handler.
 
-        Args:     cif_handler: Object that tracks CIF identifiers.
-        **kwargs: Forwarded to GenericNumericDescriptor.
+
+        Parameters
+        ----------
+        cif_handler
+            Object that tracks CIF identifiers.
+        **kwargs
+            Forwarded to GenericNumericDescriptor.
         """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
@@ -426,10 +445,16 @@ class Parameter(GenericParameter):
         cif_handler: CifHandler,
         **kwargs: Any,
     ) -> None:
-        """Fittable parameter bound to a CIF handler.
+        """
+        Fittable parameter bound to a CIF handler.
 
-        Args:     cif_handler: Object that tracks CIF identifiers.
-        **kwargs: Forwarded to GenericParameter.
+
+        Parameters
+        ----------
+        cif_handler
+            Object that tracks CIF identifiers.
+        **kwargs
+            Forwarded to GenericParameter.
         """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler

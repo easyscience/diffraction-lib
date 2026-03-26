@@ -129,11 +129,16 @@ class FactoryBase:
 
     @classmethod
     def create_default_for(cls, **conditions) -> Any:
-        """Instantiate the default class for a given context.
+        """
+        Instantiate the default class for a given context.
 
         Combines ``default_tag(**conditions)`` with ``create(tag)``.
 
-        Args:     **conditions: Experimental-axis values.
+
+        Parameters
+        ----------
+        **conditions
+            Experimental-axis values.
         """
         tag = cls.default_tag(**conditions)
         return cls.create(tag)

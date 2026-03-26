@@ -58,9 +58,14 @@ class Experiments(DatablockCollection):
         self,
         cif_str: str,
     ) -> None:
-        """Add an experiment from a CIF string.
+        """
+        Add an experiment from a CIF string.
 
-        Args:     cif_str: Full CIF document as a string.
+
+        Parameters
+        ----------
+        cif_str
+            Full CIF document as a string.
         """
         experiment = ExperimentFactory.from_cif_str(cif_str)
         self.add(experiment)
@@ -71,9 +76,14 @@ class Experiments(DatablockCollection):
         self,
         cif_path: str,
     ) -> None:
-        """Add an experiment from a CIF file path.
+        """
+        Add an experiment from a CIF file path.
 
-        Args:     cif_path(str): Path to a CIF document.
+
+        Parameters
+        ----------
+        cif_path : str
+            Path to a CIF document.
         """
         experiment = ExperimentFactory.from_cif_path(cif_path)
         self.add(experiment)

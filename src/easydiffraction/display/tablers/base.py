@@ -34,12 +34,20 @@ class TableBackendBase(ABC):
         self._float_fmt = f'{{:.{self.FLOAT_PRECISION}f}}'.format
 
     def _format_value(self, value: Any) -> Any:
-        """Format floats with fixed precision and others as strings.
+        """
+        Format floats with fixed precision and others as strings.
 
-        Args:     value: Cell value to format.
 
-        Returns:     A string representation with fixed precision for
-        floats or     ``str(value)`` for other types.
+        Parameters
+        ----------
+        value
+            Cell value to format.
+
+        Returns
+        -------
+
+            A string representation with fixed precision for
+            floats or     ``str(value)`` for other types.
         """
         return self._float_fmt(value) if isinstance(value, float) else str(value)
 

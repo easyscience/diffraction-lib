@@ -218,9 +218,14 @@ class FitProgressTracker:
         )
 
     def add_tracking_info(self, row: List[str]) -> None:
-        """Append a formatted row to the progress display.
+        """
+        Append a formatted row to the progress display.
 
-        Args:     row: Columns corresponding to DEFAULT_HEADERS.
+
+        Parameters
+        ----------
+        row
+            Columns corresponding to DEFAULT_HEADERS.
         """
         # Append and update via the active handle (Jupyter or
         # terminal live)

@@ -47,9 +47,14 @@ class Analysis:
     """
 
     def __init__(self, project) -> None:
-        """Create a new Analysis instance bound to a project.
+        """
+        Create a new Analysis instance bound to a project.
 
-        Args:     project: The project that owns models and experiments.
+
+        Parameters
+        ----------
+        project
+            The project that owns models and experiments.
         """
         self.project = project
         self._aliases_type: str = AliasesFactory.default_tag()
@@ -134,9 +139,14 @@ class Analysis:
 
     @aliases_type.setter
     def aliases_type(self, new_type: str) -> None:
-        """Switch to a different aliases collection type.
+        """
+        Switch to a different aliases collection type.
 
-        Args:     new_type: Aliases tag (e.g. ``'default'``).
+
+        Parameters
+        ----------
+        new_type
+            Aliases tag (e.g. ``'default'``).
         """
         supported_tags = AliasesFactory.supported_tags()
         if new_type not in supported_tags:
@@ -171,9 +181,14 @@ class Analysis:
 
     @constraints_type.setter
     def constraints_type(self, new_type: str) -> None:
-        """Switch to a different constraints collection type.
+        """
+        Switch to a different constraints collection type.
 
-        Args:     new_type: Constraints tag (e.g. ``'default'``).
+
+        Parameters
+        ----------
+        new_type
+            Constraints tag (e.g. ``'default'``).
         """
         supported_tags = ConstraintsFactory.supported_tags()
         if new_type not in supported_tags:
@@ -201,12 +216,20 @@ class Analysis:
         self,
         params: List[Union[NumericDescriptor, Parameter]],
     ) -> pd.DataFrame:
-        """Convert a list of parameters to a DataFrame.
+        """
+        Convert a list of parameters to a DataFrame.
 
-        Args:     params: List of DescriptorFloat or Parameter objects.
 
-        Returns:     A pandas DataFrame containing parameter
-        information.
+        Parameters
+        ----------
+        params
+            List of DescriptorFloat or Parameter objects.
+
+        Returns
+        -------
+
+            A pandas DataFrame containing parameter
+            information.
         """
         records = []
         for param in params:
@@ -479,9 +502,14 @@ class Analysis:
 
     @current_minimizer.setter
     def current_minimizer(self, selection: str) -> None:
-        """Switch to a different minimizer implementation.
+        """
+        Switch to a different minimizer implementation.
 
-        Args:     selection: Minimizer selection string, e.g. 'lmfit'.
+
+        Parameters
+        ----------
+        selection
+            Minimizer selection string, e.g. 'lmfit'.
         """
         self.fitter = Fitter(selection)
         console.paragraph('Current minimizer changed to')
@@ -503,9 +531,14 @@ class Analysis:
 
     @fit_mode_type.setter
     def fit_mode_type(self, new_type: str) -> None:
-        """Switch to a different fit-mode category type.
+        """
+        Switch to a different fit-mode category type.
 
-        Args:     new_type: Fit-mode tag (e.g. ``'default'``).
+
+        Parameters
+        ----------
+        new_type
+            Fit-mode tag (e.g. ``'default'``).
         """
         supported_tags = FitModeFactory.supported_tags()
         if new_type not in supported_tags:
@@ -694,10 +727,15 @@ class Analysis:
                 category._update(called_by_minimizer=called_by_minimizer)
 
     def as_cif(self):
-        """Serialize the analysis section to a CIF string.
+        """
+        Serialize the analysis section to a CIF string.
 
-        Returns:     The analysis section represented as a CIF document
-        string.
+
+        Returns
+        -------
+
+            The analysis section represented as a CIF document
+            string.
         """
         from easydiffraction.io.cif.serialize import analysis_to_cif
 

@@ -92,12 +92,21 @@ def calculate_reduced_chi_square(
     residuals: np.ndarray,
     num_parameters: int,
 ) -> float:
-    """Calculate the reduced chi-square statistic.
+    """
+    Calculate the reduced chi-square statistic.
 
-    Args:     residuals: Residuals between observed and calculated data.
-    num_parameters: Number of free parameters used in the model.
 
-    Returns:     Reduced chi-square value.
+    Parameters
+    ----------
+    residuals
+        Residuals between observed and calculated data.
+    num_parameters
+        Number of free parameters used in the model.
+
+    Returns
+    -------
+
+        Reduced chi-square value.
     """
     residuals = np.asarray(residuals)
     chi_square = np.sum(residuals**2)

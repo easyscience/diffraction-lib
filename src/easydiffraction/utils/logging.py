@@ -94,10 +94,15 @@ class ConsoleManager:
 
     @staticmethod
     def _detect_width() -> int:
-        """Detect a suitable console width for the shared Console.
+        """
+        Detect a suitable console width for the shared Console.
 
-        Returns:     The detected terminal width, clamped at
-        ``_MIN_CONSOLE_WIDTH`` to avoid cramped layouts.
+
+        Returns
+        -------
+
+            The detected terminal width, clamped at
+            ``_MIN_CONSOLE_WIDTH`` to avoid cramped layouts.
         """
         min_width = ConsoleManager._MIN_CONSOLE_WIDTH
         try:
@@ -200,9 +205,14 @@ class ExceptionHookManager:
 
     @staticmethod
     def install_verbose_hook(logger: logging.Logger) -> None:
-        """Install a verbose exception hook that prints rich tracebacks.
+        """
+        Install a verbose exception hook that prints rich tracebacks.
 
-        Args:     logger: Logger used to emit the exception information.
+
+        Parameters
+        ----------
+        logger
+            Logger used to emit the exception information.
         """
         if not hasattr(Logger, '_orig_excepthook'):
             Logger._orig_excepthook = sys.excepthook  # type: ignore[attr-defined]
@@ -228,9 +238,14 @@ class ExceptionHookManager:
 
     @staticmethod
     def install_compact_hook(logger: logging.Logger) -> None:
-        """Install a compact exception hook that logs message-only.
+        """
+        Install a compact exception hook that logs message-only.
 
-        Args:     logger: Logger used to emit the error message.
+
+        Parameters
+        ----------
+        logger
+            Logger used to emit the error message.
         """
         if not hasattr(Logger, '_orig_excepthook'):
             Logger._orig_excepthook = sys.excepthook  # type: ignore[attr-defined]
@@ -254,14 +269,22 @@ class ExceptionHookManager:
     # Jupyter-specific traceback suppression (inlined here)
     @staticmethod
     def _suppress_traceback(logger):
-        """Build a Jupyter custom exception callback that logs only the
+        """
+        Build a Jupyter custom exception callback that logs only the
         message.
 
-        Args:     logger: Logger used to emit error messages.
 
-        Returns:     A callable suitable for IPython's set_custom_exc
-        that     suppresses full tracebacks and logs only the exception
-        message.
+        Parameters
+        ----------
+        logger
+            Logger used to emit error messages.
+
+        Returns
+        -------
+
+            A callable suitable for IPython's set_custom_exc
+            that     suppresses full tracebacks and logs only the exception
+            message.
         """
 
         def suppress_jupyter_traceback(*args, **kwargs):
@@ -278,10 +301,15 @@ class ExceptionHookManager:
 
     @staticmethod
     def install_jupyter_traceback_suppressor(logger: logging.Logger) -> None:
-        """Install a Jupyter/IPython custom exception handler that
+        """
+        Install a Jupyter/IPython custom exception handler that
         suppresses tracebacks.
 
-        Args:     logger: Logger used to emit error messages.
+
+        Parameters
+        ----------
+        logger
+            Logger used to emit error messages.
         """
         try:
             from IPython import get_ipython

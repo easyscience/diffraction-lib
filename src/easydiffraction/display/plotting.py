@@ -241,9 +241,14 @@ class Plotter(RendererBase):
 
     @x_min.setter
     def x_min(self, value):
-        """Set the minimum x-axis limit.
+        """
+        Set the minimum x-axis limit.
 
-        Args:     value: Minimum limit or ``None`` to reset to default.
+
+        Parameters
+        ----------
+        value
+            Minimum limit or ``None`` to reset to default.
         """
         if value is not None:
             self._x_min = value
@@ -257,9 +262,14 @@ class Plotter(RendererBase):
 
     @x_max.setter
     def x_max(self, value):
-        """Set the maximum x-axis limit.
+        """
+        Set the maximum x-axis limit.
 
-        Args:     value: Maximum limit or ``None`` to reset to default.
+
+        Parameters
+        ----------
+        value
+            Maximum limit or ``None`` to reset to default.
         """
         if value is not None:
             self._x_max = value
@@ -273,9 +283,14 @@ class Plotter(RendererBase):
 
     @height.setter
     def height(self, value):
-        """Set plot height.
+        """
+        Set plot height.
 
-        Args:     value: Height value or ``None`` to reset to default.
+
+        Parameters
+        ----------
+        value
+            Height value or ``None`` to reset to default.
         """
         if value is not None:
             self._height = value

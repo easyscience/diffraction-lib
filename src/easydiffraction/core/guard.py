@@ -78,10 +78,14 @@ class GuardedBase(ABC):
 
     @classmethod
     def _iter_properties(cls):
-        """Iterate over all public properties defined in the class
+        """
+        Iterate over all public properties defined in the class
         hierarchy.
 
-        Yields:     tuple[str, property]: Each (key, property) pair for
+
+        Yields
+        ------
+        Each (key, property) pair for
         public     attributes.
         """
         for base in cls.mro():
@@ -158,9 +162,13 @@ class GuardedBase(ABC):
 
     @classmethod
     def _iter_methods(cls):
-        """Iterate over public methods in the class hierarchy.
+        """
+        Iterate over public methods in the class hierarchy.
 
-        Yields:     tuple[str, callable]: Each (name, function) pair.
+
+        Yields
+        ------
+        Each (name, function) pair.
         """
         seen: set = set()
         for base in cls.mro():

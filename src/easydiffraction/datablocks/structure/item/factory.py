@@ -42,11 +42,19 @@ class StructureFactory:
         cls,
         block: gemmi.cif.Block,
     ) -> Structure:
-        """Build a structure from a single *gemmi* CIF block.
+        """
+        Build a structure from a single *gemmi* CIF block.
 
-        Args:     block (gemmi.cif.Block): Parsed CIF data block.
 
-        Returns:     Structure: A fully populated structure instance.
+        Parameters
+        ----------
+        block : gemmi.cif.Block
+            Parsed CIF data block.
+
+        Returns
+        -------
+        Structure
+            A fully populated structure instance.
         """
         name = name_from_block(block)
         structure = Structure(name=name)
@@ -65,12 +73,20 @@ class StructureFactory:
         *,
         name: str,
     ) -> Structure:
-        """Create a minimal default structure.
+        """
+        Create a minimal default structure.
 
-        Args:     name (str): Identifier for the new structure.
 
-        Returns:     Structure: An empty structure with default
-        categories.
+        Parameters
+        ----------
+        name : str
+            Identifier for the new structure.
+
+        Returns
+        -------
+        Structure
+            An empty structure with default
+            categories.
         """
         return Structure(name=name)
 
@@ -81,11 +97,19 @@ class StructureFactory:
         cls,
         cif_str: str,
     ) -> Structure:
-        """Create a structure by parsing a CIF string.
+        """
+        Create a structure by parsing a CIF string.
 
-        Args:     cif_str (str): Raw CIF content.
 
-        Returns:     Structure: A populated structure instance.
+        Parameters
+        ----------
+        cif_str : str
+            Raw CIF content.
+
+        Returns
+        -------
+        Structure
+            A populated structure instance.
         """
         doc = document_from_string(cif_str)
         block = pick_sole_block(doc)
@@ -98,11 +122,19 @@ class StructureFactory:
         cls,
         cif_path: str,
     ) -> Structure:
-        """Create a structure by reading and parsing a CIF file.
+        """
+        Create a structure by reading and parsing a CIF file.
 
-        Args:     cif_path (str): Filesystem path to a CIF file.
 
-        Returns:     Structure: A populated structure instance.
+        Parameters
+        ----------
+        cif_path : str
+            Filesystem path to a CIF file.
+
+        Returns
+        -------
+        Structure
+            A populated structure instance.
         """
         doc = document_from_path(cif_path)
         block = pick_sole_block(doc)

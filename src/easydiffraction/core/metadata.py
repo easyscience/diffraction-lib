@@ -89,12 +89,20 @@ class CalculatorSupport:
     calculators: FrozenSet = frozenset()
 
     def supports(self, calculator) -> bool:
-        """Check if a specific calculator can handle this class.
+        """
+        Check if a specific calculator can handle this class.
 
-        Args:     calculator: A ``CalculatorEnum`` value.
 
-        Returns:     ``True`` if the calculator is in the set, or if the
-        set is     empty (meaning any calculator is accepted).
+        Parameters
+        ----------
+        calculator
+            A ``CalculatorEnum`` value.
+
+        Returns
+        -------
+
+            ``True`` if the calculator is in the set, or if the
+            set is     empty (meaning any calculator is accepted).
         """
         if not self.calculators:
             return True
