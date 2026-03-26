@@ -10,7 +10,6 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
-from typing import Any
 
 from IPython import get_ipython
 from rich.color import Color
@@ -33,7 +32,7 @@ class TableBackendBase(ABC):
         super().__init__()
         self._float_fmt = f'{{:.{self.FLOAT_PRECISION}f}}'.format
 
-    def _format_value(self, value: Any) -> Any:
+    def _format_value(self, value: object) -> object:
         """
         Format floats with fixed precision and others as strings.
 
@@ -65,7 +64,7 @@ class TableBackendBase(ABC):
 
         return is_dark()
 
-    def _rich_to_hex(self, color):
+    def _rich_to_hex(self, color: str) -> str:
         """
         Convert a Rich color name to a CSS-style hex string.
 
@@ -97,10 +96,10 @@ class TableBackendBase(ABC):
     @abstractmethod
     def render(
         self,
-        alignments,
-        df,
-        display_handle: Any | None = None,
-    ) -> Any:
+        alignments: object,
+        df: object,
+        display_handle: object | None = None,
+    ) -> object:
         """
         Render the provided DataFrame with backend-specific styling.
 

@@ -16,7 +16,7 @@ from easydiffraction.io.cif.handler import CifHandler
 class CwlBroadeningMixin:
     """CWL Gaussian and Lorentz broadening parameters."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._broad_gauss_u: Parameter = Parameter(
@@ -150,7 +150,7 @@ class CwlBroadeningMixin:
 class EmpiricalAsymmetryMixin:
     """Empirical CWL peak asymmetry parameters."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._asym_empir_1: Parameter = Parameter(
@@ -254,7 +254,7 @@ class EmpiricalAsymmetryMixin:
 class FcjAsymmetryMixin:
     """Finger–Cox–Jephcoat (FCJ) asymmetry parameters."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._asym_fcj_1: Parameter = Parameter(

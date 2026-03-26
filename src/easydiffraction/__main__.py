@@ -25,7 +25,7 @@ def main(
         help='Show easydiffraction version and exit.',
         is_eager=True,
     ),
-):
+) -> None:
     """EasyDiffraction command-line interface."""
     if version:
         ed.show_version()
@@ -38,7 +38,7 @@ def main(
 
 
 @app.command('list-tutorials')
-def list_tutorials():
+def list_tutorials() -> None:
     """List available tutorial notebooks."""
     ed.list_tutorials()
 
@@ -58,7 +58,7 @@ def download_tutorial(
         '-o',
         help='Overwrite existing file if present.',
     ),
-):
+) -> None:
     """Download a specific tutorial notebook by ID."""
     ed.download_tutorial(id=id, destination=destination, overwrite=overwrite)
 
@@ -77,7 +77,7 @@ def download_all_tutorials(
         '-o',
         help='Overwrite existing files if present.',
     ),
-):
+) -> None:
     """Download all available tutorial notebooks."""
     ed.download_all_tutorials(destination=destination, overwrite=overwrite)
 

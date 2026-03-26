@@ -51,10 +51,10 @@ class PdffitCalculator(CalculatorBase):
     engine_imported: bool = PdfFit is not None
 
     @property
-    def name(self):
+    def name(self) -> str:
         return 'pdffit'
 
-    def calculate_structure_factors(self, structures, experiments):
+    def calculate_structure_factors(self, structures: object, experiments: object) -> list:
         # PDF doesn't compute HKL but we keep interface consistent
         # Intentionally unused, required by public API/signature
         del structures, experiments
@@ -66,7 +66,7 @@ class PdffitCalculator(CalculatorBase):
         structure: Structure,
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
-    ):
+    ) -> None:
         # Intentionally unused, required by public API/signature
         del called_by_minimizer
 

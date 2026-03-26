@@ -313,7 +313,7 @@ def _get_version_for_url(package_name: str = 'easydiffraction') -> str:
     return stripped_package_version(package_name) or 'dev'
 
 
-def _safe_urlopen(request_or_url):  # type: ignore[no-untyped-def]
+def _safe_urlopen(request_or_url: object) -> object:  # type: ignore[no-untyped-def]
     """Wrapper for urlopen with prior validation.
 
     Centralises lint suppression for validated HTTPS requests.
@@ -511,11 +511,11 @@ def show_version() -> None:
 # TODO: This is a temporary utility function. Complete migration to
 #  TableRenderer (as e.g. in show_all_params) and remove this.
 def render_table(
-    columns_data,
-    columns_alignment,
-    columns_headers=None,
-    display_handle=None,
-):
+    columns_data: object,
+    columns_alignment: object,
+    columns_headers: object = None,
+    display_handle: object = None,
+) -> None:
     headers = [
         (col, align) for col, align in zip(columns_headers, columns_alignment, strict=False)
     ]
@@ -525,7 +525,7 @@ def render_table(
     tabler.render(df, display_handle=display_handle)
 
 
-def render_cif(cif_text) -> None:
+def render_cif(cif_text: str) -> None:
     """
     Display the CIF text as a formatted table in Jupyter Notebook or
     terminal.
@@ -554,7 +554,7 @@ def tof_to_d(
     offset: float,
     linear: float,
     quad: float,
-    quad_eps=1e-20,
+    quad_eps: float = 1e-20,
 ) -> np.ndarray:
     """
     Convert time-of-flight (TOF) to d-spacing using a quadratic calibration.
@@ -642,7 +642,7 @@ def tof_to_d(
     return d_out
 
 
-def twotheta_to_d(twotheta, wavelength):
+def twotheta_to_d(twotheta: object, wavelength: float) -> object:
     """
     Convert 2-theta to d-spacing using Bragg's law.
 
@@ -663,7 +663,7 @@ def twotheta_to_d(twotheta, wavelength):
     return d
 
 
-def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda):
+def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda: object) -> object:
     """
     Convert sin(theta)/lambda to d-spacing.
 
@@ -683,7 +683,7 @@ def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda):
     return d
 
 
-def get_value_from_xye_header(file_path, key):
+def get_value_from_xye_header(file_path: str, key: str) -> float:
     """
     Extracts a floating point value from the first line of the file,
     corresponding to the given key.

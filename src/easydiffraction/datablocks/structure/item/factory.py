@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 class StructureFactory:
     """Create :class:`Structure` instances from supported inputs."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         log.error(
             'Structure objects must be created using class methods such as '
             '`StructureFactory.from_cif_str(...)`, etc.'

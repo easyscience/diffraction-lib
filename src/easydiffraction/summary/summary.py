@@ -15,7 +15,7 @@ class Summary:
     fitted model, experiments, and analysis results.
     """
 
-    def __init__(self, project) -> None:
+    def __init__(self, project: object) -> None:
         """
         Initialize the summary with a reference to the project.
 

@@ -55,7 +55,7 @@ class IconifiedRichHandler(RichHandler):
         logging.INFO: 'ℹ️',
     }
 
-    def __init__(self, *args, mode: str = 'compact', **kwargs):
+    def __init__(self, *args: object, mode: str = 'compact', **kwargs: object) -> None:
         super().__init__(*args, **kwargs)
         self.mode = mode
 
@@ -272,14 +272,14 @@ class ExceptionHookManager:
         sys.excepthook = compact_excepthook  # type: ignore[assignment]
 
     @staticmethod
-    def restore_original_hook():
+    def restore_original_hook() -> None:
         """Restore the original sys.excepthook if it was overridden."""
         if hasattr(Logger, '_orig_excepthook'):
             sys.excepthook = Logger._orig_excepthook  # type: ignore[attr-defined]
 
     # Jupyter-specific traceback suppression (inlined here)
     @staticmethod
-    def _suppress_traceback(logger):
+    def _suppress_traceback(logger: object) -> object:
         """
         Build a Jupyter custom exception callback that logs only the message.
 
@@ -294,7 +294,7 @@ class ExceptionHookManager:
             full tracebacks and logs only the exception message.
         """
 
-        def suppress_jupyter_traceback(*args, **kwargs):
+        def suppress_jupyter_traceback(*args: object, **kwargs: object) -> None:
             try:
                 _evalue = (
                     args[2] if len(args) > 2 else kwargs.get('_evalue') or kwargs.get('evalue')
@@ -350,7 +350,7 @@ class Logger:
         COMPACT = 'compact'  # single line; no traceback
 
         @classmethod
-        def default(cls):
+        def default(cls) -> Logger.Mode:
             return cls.COMPACT
 
     class Level(IntEnum):
@@ -363,7 +363,7 @@ class Logger:
         CRITICAL = logging.CRITICAL
 
         @classmethod
-        def default(cls):
+        def default(cls) -> Logger.Level:
             return cls.WARNING
 
     class Reaction(Enum):
@@ -373,7 +373,7 @@ class Logger:
         WARN = auto()
 
         @classmethod
-        def default(cls):
+        def default(cls) -> Logger.Reaction:
             return cls.RAISE
 
     # --- Internal state ---
@@ -533,7 +533,7 @@ class ConsolePrinter:
     _console = ConsoleManager.get()
 
     @classmethod
-    def print(cls, *objects, **kwargs):
+    def print(cls, *objects: object, **kwargs: object) -> None:
         """Print objects to the console with left padding.
 
         - Renderables (Rich types like Text, Table, Panel, etc.) are

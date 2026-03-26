@@ -5,7 +5,6 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
 
 import pandas as pd
 
@@ -65,7 +64,7 @@ class TableRenderer(RendererBase):
         console.paragraph('Current tabler configuration')
         TableRenderer.get().render(df)
 
-    def render(self, df, display_handle: Any | None = None) -> Any:
+    def render(self, df: object, display_handle: object | None = None) -> object:
         """
         Render a DataFrame as a table using the active backend.
 

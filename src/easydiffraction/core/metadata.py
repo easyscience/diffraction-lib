@@ -53,10 +53,10 @@ class Compatibility:
 
     def supports(
         self,
-        sample_form=None,
-        scattering_type=None,
-        beam_mode=None,
-        radiation_probe=None,
+        sample_form: object = None,
+        scattering_type: object = None,
+        beam_mode: object = None,
+        radiation_probe: object = None,
     ) -> bool:
         """Check if this compatibility matches the given conditions.
 
@@ -97,7 +97,7 @@ class CalculatorSupport:
 
     calculators: FrozenSet = frozenset()
 
-    def supports(self, calculator) -> bool:
+    def supports(self, calculator: object) -> bool:
         """
         Check if a specific calculator can handle this class.
 

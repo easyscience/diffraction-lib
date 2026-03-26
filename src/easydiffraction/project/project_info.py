@@ -69,7 +69,7 @@ class ProjectInfo(GuardedBase):
         return self._path
 
     @path.setter
-    def path(self, value) -> None:
+    def path(self, value: object) -> None:
         # Accept str or Path; normalize to Path
         self._path = pathlib.Path(value)
 
@@ -87,7 +87,7 @@ class ProjectInfo(GuardedBase):
         """Update the last modified timestamp."""
         self._last_modified = datetime.datetime.now()
 
-    def parameters(self):
+    def parameters(self) -> None:
         """Placeholder for parameter listing."""
         pass
 

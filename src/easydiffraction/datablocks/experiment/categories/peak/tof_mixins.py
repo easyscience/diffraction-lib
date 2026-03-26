@@ -18,7 +18,7 @@ from easydiffraction.io.cif.handler import CifHandler
 class TofBroadeningMixin:
     """TOF Gaussian/Lorentz broadening and mixing parameters."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._broad_gauss_sigma_0 = Parameter(
@@ -224,7 +224,7 @@ class TofBroadeningMixin:
 class IkedaCarpenterAsymmetryMixin:
     """Ikeda–Carpenter asymmetry parameters."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._asym_alpha_0 = Parameter(

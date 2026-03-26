@@ -38,10 +38,10 @@ class TotalPdExperiment(PdExperimentBase):
         self,
         name: str,
         type: ExperimentType,
-    ):
+    ) -> None:
         super().__init__(name=name, type=type)
 
-    def _load_ascii_data_to_experiment(self, data_path):
+    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
         """Loads x, y, sy values from an ASCII data file into the
         experiment.
 

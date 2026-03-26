@@ -6,7 +6,6 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
-from typing import Any
 from typing import List
 from typing import Tuple
 
@@ -25,7 +24,7 @@ class RendererBase(SingletonBase, ABC):
     supported engines in a table-friendly format.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._engine = self._default_engine()
         self._backend = self._factory().create(self._engine)
 
@@ -90,7 +89,7 @@ class RendererFactoryBase(ABC):
     """Base factory that manages discovery and creation of backends."""
 
     @classmethod
-    def create(cls, engine_name: str) -> Any:
+    def create(cls, engine_name: str) -> object:
         """
         Create a backend instance for the given engine.
 

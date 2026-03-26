@@ -13,7 +13,7 @@ from easydiffraction.core.variable import Parameter
 class DatablockItem(GuardedBase):
     """Base class for items in a datablock collection."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._need_categories_update = True
 
@@ -33,7 +33,7 @@ class DatablockItem(GuardedBase):
 
     def _update_categories(
         self,
-        called_by_minimizer=False,
+        called_by_minimizer: bool = False,
     ) -> None:
         # TODO: Make abstract method and implement in subclasses.
         # This should call apply_symmetry and apply_constraints in the
@@ -62,11 +62,11 @@ class DatablockItem(GuardedBase):
         self._need_categories_update = False
 
     @property
-    def unique_name(self):
+    def unique_name(self) -> str | None:
         return self._identity.datablock_entry_name
 
     @property
-    def categories(self):
+    def categories(self) -> list:
         cats = [
             v for v in vars(self).values() if isinstance(v, (CategoryItem, CategoryCollection))
         ]
@@ -74,7 +74,7 @@ class DatablockItem(GuardedBase):
         return sorted(cats, key=lambda c: type(c)._update_priority)
 
     @property
-    def parameters(self):
+    def parameters(self) -> list:
         """All parameters from all categories contained in this
         datablock.
         """
@@ -128,11 +128,11 @@ class DatablockCollection(CollectionBase):
     :meth:`add` with the resulting item.
     """
 
-    def _key_for(self, item):
+    def _key_for(self, item: object) -> str | None:
         """Return the datablock-level identity key for *item*."""
         return item._identity.datablock_entry_name
 
-    def add(self, item) -> None:
+    def add(self, item: object) -> None:
         """
         Add a pre-built item to the collection.
 
@@ -151,11 +151,11 @@ class DatablockCollection(CollectionBase):
         return f'<{name} collection ({size} items)>'
 
     @property
-    def unique_name(self):
+    def unique_name(self) -> str | None:
         return None
 
     @property
-    def parameters(self):
+    def parameters(self) -> list:
         """All parameters from all datablocks in this collection."""
         params = []
         for db in self._items:

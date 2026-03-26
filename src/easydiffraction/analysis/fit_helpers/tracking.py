@@ -3,7 +3,6 @@
 
 import time
 from contextlib import suppress
-from typing import Any
 from typing import List
 from typing import Optional
 
@@ -42,10 +41,10 @@ class _TerminalLiveHandle:
     the underlying UI mechanism.
     """
 
-    def __init__(self, live) -> None:
+    def __init__(self, live: object) -> None:
         self._live = live
 
-    def update(self, renderable) -> None:
+    def update(self, renderable: object) -> None:
         self._live.update(renderable, refresh=True)
 
     def close(self) -> None:
@@ -53,7 +52,7 @@ class _TerminalLiveHandle:
             self._live.stop()
 
 
-def _make_display_handle() -> Any | None:
+def _make_display_handle() -> object | None:
     """Create and initialize a display/update handle for the
     environment.
 
@@ -93,8 +92,8 @@ class FitProgressTracker:
         self._fitting_time: Optional[float] = None
 
         self._df_rows: List[List[str]] = []
-        self._display_handle: Optional[Any] = None
-        self._live: Optional[Any] = None
+        self._display_handle: Optional[object] = None
+        self._live: Optional[object] = None
 
     def reset(self) -> None:
         """Reset internal state before a new optimization run."""

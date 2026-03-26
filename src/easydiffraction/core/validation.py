@@ -37,11 +37,11 @@ class DataTypes(Enum):
     BOOL = (bool,)
     ANY = (object,)  # fallback for unconstrained
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name.lower()
 
     @property
-    def expected_type(self):
+    def expected_type(self) -> DataTypes:
         """Convenience alias for tuple of allowed Python types."""
         return self.value
 
@@ -59,7 +59,7 @@ class ValidationStage(Enum):
     MEMBERSHIP = auto()
     REGEX = auto()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name.lower()
 
 
@@ -72,7 +72,7 @@ class ValidatorBase(ABC):
     """Abstract base class for all validators."""
 
     @abstractmethod
-    def validated(self, value, name, default=None, current=None):
+    def validated(self, value: object, name: str, default: object = None, current: object = None) -> object:
         """Return a validated value or fallback.
 
         Subclasses must implement this method.
@@ -81,9 +81,9 @@ class ValidatorBase(ABC):
 
     def _fallback(
         self,
-        current=None,
-        default=None,
-    ):
+        current: object = None,
+        default: object = None,
+    ) -> object:
         """Return current if set, else default."""
         return current if current is not None else default
 
@@ -94,7 +94,7 @@ class ValidatorBase(ABC):
 class TypeValidator(ValidatorBase):
     """Ensure a value is of the expected data type."""
 
-    def __init__(self, expected_type: DataTypes):
+    def __init__(self, expected_type: DataTypes) -> None:
         if isinstance(expected_type, DataTypes):
             self.expected_type = expected_type
             self.expected_label = str(expected_type)
@@ -103,12 +103,12 @@ class TypeValidator(ValidatorBase):
 
     def validated(
         self,
-        value,
-        name,
-        default=None,
-        current=None,
-        allow_none=False,
-    ):
+        value: object,
+        name: str,
+        default: object = None,
+        current: object = None,
+        allow_none: bool = False,
+    ) -> object:
         """Validate type and return value or fallback.
 
         If allow_none is True, None bypasses content checks.
@@ -151,18 +151,18 @@ class RangeValidator(ValidatorBase):
     def __init__(
         self,
         *,
-        ge=-np.inf,
-        le=np.inf,
-    ):
+        ge: float = -np.inf,
+        le: float = np.inf,
+    ) -> None:
         self.ge, self.le = ge, le
 
     def validated(
         self,
-        value,
-        name,
-        default=None,
-        current=None,
-    ):
+        value: object,
+        name: str,
+        default: object = None,
+        current: object = None,
+    ) -> object:
         """Validate range and return value or fallback."""
         if not (self.ge <= value <= self.le):
             Diagnostics.range_mismatch(
@@ -192,17 +192,17 @@ class MembershipValidator(ValidatorBase):
     `allowed` may be an iterable or a callable returning a collection.
     """
 
-    def __init__(self, allowed):
+    def __init__(self, allowed: object) -> None:
         # Do not convert immediately to list — may be callable
         self.allowed = allowed
 
     def validated(
         self,
-        value,
-        name,
-        default=None,
-        current=None,
-    ):
+        value: object,
+        name: str,
+        default: object = None,
+        current: object = None,
+    ) -> object:
         """Validate membership and return value or fallback."""
         # Dynamically evaluate allowed if callable (e.g. lambda)
         allowed_values = self.allowed() if callable(self.allowed) else self.allowed
@@ -231,16 +231,16 @@ class MembershipValidator(ValidatorBase):
 class RegexValidator(ValidatorBase):
     """Ensure that a string matches a given regular expression."""
 
-    def __init__(self, pattern):
+    def __init__(self, pattern: str) -> None:
         self.pattern = re.compile(pattern)
 
     def validated(
         self,
-        value,
-        name,
-        default=None,
-        current=None,
-    ):
+        value: object,
+        name: str,
+        default: object = None,
+        current: object = None,
+    ) -> object:
         """Validate regex and return value or fallback."""
         if not self.pattern.fullmatch(value):
             Diagnostics.regex_mismatch(
@@ -271,11 +271,11 @@ class AttributeSpec:
     def __init__(
         self,
         *,
-        default=None,
-        data_type=None,
-        validator=None,
+        default: object = None,
+        data_type: DataTypes | None = None,
+        validator: ValidatorBase | None = None,
         allow_none: bool = False,
-    ):
+    ) -> None:
         self.default = default
         self.allow_none = allow_none
         self._data_type_validator = TypeValidator(data_type) if data_type else None
@@ -283,10 +283,10 @@ class AttributeSpec:
 
     def validated(
         self,
-        value,
-        name,
-        current=None,
-    ):
+        value: object,
+        name: str,
+        current: object = None,
+    ) -> object:
         """Validate through type and content validators.
 
         Returns validated value, possibly default or current if errors

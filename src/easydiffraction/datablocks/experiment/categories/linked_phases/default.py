@@ -23,7 +23,7 @@ from easydiffraction.io.cif.handler import CifHandler
 class LinkedPhase(CategoryItem):
     """Link to a phase by id with a scale factor."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._id = StringDescriptor(
@@ -92,6 +92,6 @@ class LinkedPhases(CategoryCollection):
         sample_form=frozenset({SampleFormEnum.POWDER}),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create an empty collection of linked phases."""
         super().__init__(item_type=LinkedPhase)

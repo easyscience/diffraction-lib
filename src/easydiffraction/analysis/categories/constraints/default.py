@@ -100,11 +100,11 @@ class Constraints(CategoryCollection):
 
     _update_priority = 90  # After most others, but before data categories
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create an empty constraints collection."""
         super().__init__(item_type=Constraint)
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         del called_by_minimizer
 
         constraints = ConstraintsHandler.get()

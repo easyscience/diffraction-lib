@@ -35,7 +35,7 @@ class FactoryBase:
     _registry: List[Type] = []
     _default_rules: Dict[FrozenSet[Tuple[str, Any]], str] = {}
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs: object) -> None:
         """Give each subclass its own independent registry and rules."""
         super().__init_subclass__(**kwargs)
         cls._registry = []
@@ -47,7 +47,7 @@ class FactoryBase:
     # ------------------------------------------------------------------
 
     @classmethod
-    def register(cls, klass):
+    def register(cls, klass: type) -> type:
         """Class decorator to register a concrete class.
 
         Usage::
@@ -79,7 +79,7 @@ class FactoryBase:
     # ------------------------------------------------------------------
 
     @classmethod
-    def default_tag(cls, **conditions) -> str:
+    def default_tag(cls, **conditions: object) -> str:
         """
         Resolve the default tag for a given experimental context.
 
@@ -123,7 +123,7 @@ class FactoryBase:
     # ------------------------------------------------------------------
 
     @classmethod
-    def create(cls, tag: str, **kwargs) -> Any:
+    def create(cls, tag: str, **kwargs: object) -> object:
         """
         Instantiate a registered class by *tag*.
 
@@ -145,7 +145,7 @@ class FactoryBase:
         return supported[tag](**kwargs)
 
     @classmethod
-    def create_default_for(cls, **conditions) -> Any:
+    def create_default_for(cls, **conditions: object) -> object:
         """
         Instantiate the default class for a given context.
 
@@ -167,11 +167,11 @@ class FactoryBase:
     def supported_for(
         cls,
         *,
-        calculator=None,
-        sample_form=None,
-        scattering_type=None,
-        beam_mode=None,
-        radiation_probe=None,
+        calculator: object = None,
+        sample_form: object = None,
+        scattering_type: object = None,
+        beam_mode: object = None,
+        radiation_probe: object = None,
     ) -> List[Type]:
         """
         Return classes matching conditions and/or calculator.
@@ -213,11 +213,11 @@ class FactoryBase:
     def show_supported(
         cls,
         *,
-        calculator=None,
-        sample_form=None,
-        scattering_type=None,
-        beam_mode=None,
-        radiation_probe=None,
+        calculator: object = None,
+        sample_form: object = None,
+        scattering_type: object = None,
+        beam_mode: object = None,
+        radiation_probe: object = None,
     ) -> None:
         """
         Pretty-print a table of supported types.

@@ -60,7 +60,7 @@ class CryspyCalculator(CalculatorBase):
         structure: Structure,
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
-    ):
+    ) -> None:
         """
         Raises a NotImplementedError as HKL calculation is not implemented.
 
@@ -316,7 +316,7 @@ class CryspyCalculator(CalculatorBase):
         self,
         structure: Structure,
         experiment: ExperimentBase,
-    ) -> Any:
+    ) -> object:
         """
         Recreates the Cryspy object for the given structure and experiment.
 
@@ -369,7 +369,7 @@ class CryspyCalculator(CalculatorBase):
     def _convert_experiment_to_cryspy_cif(
         self,
         experiment: ExperimentBase,
-        linked_structure: Any,
+        linked_structure: object,
     ) -> str:
         """
         Converts an experiment to a Cryspy CIF string.

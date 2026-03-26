@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from easydiffraction.core.variable import GenericDescriptorBase
 
 
-def format_value(value) -> str:
+def format_value(value: object) -> str:
     """Format a single CIF value, quoting strings with whitespace, and
     format floats with global precision.
 
@@ -60,7 +60,7 @@ def format_value(value) -> str:
 ##################
 
 
-def param_to_cif(param) -> str:
+def param_to_cif(param: object) -> str:
     """Render a single descriptor/parameter to a CIF line.
 
     Expects ``param`` to expose ``_cif_handler.names`` and ``value``.
@@ -70,7 +70,7 @@ def param_to_cif(param) -> str:
     return f'{main_key} {format_value(param.value)}'
 
 
-def category_item_to_cif(item) -> str:
+def category_item_to_cif(item: object) -> str:
     """Render a CategoryItem-like object to CIF text.
 
     Expects ``item.parameters`` iterable of params with
@@ -83,7 +83,7 @@ def category_item_to_cif(item) -> str:
 
 
 def category_collection_to_cif(
-    collection,
+    collection: object,
     max_display: Optional[int] = 20,
 ) -> str:
     """Render a CategoryCollection-like object to CIF text.
@@ -124,7 +124,7 @@ def category_collection_to_cif(
     return '\n'.join(lines)
 
 
-def datablock_item_to_cif(datablock) -> str:
+def datablock_item_to_cif(datablock: object) -> str:
     """Render a DatablockItem-like object to CIF text.
 
     Emits a data_ header and then concatenates category CIF sections.
@@ -149,12 +149,12 @@ def datablock_item_to_cif(datablock) -> str:
     return '\n\n'.join(parts)
 
 
-def datablock_collection_to_cif(collection) -> str:
+def datablock_collection_to_cif(collection: object) -> str:
     """Render a collection of datablocks by joining their CIF blocks."""
     return '\n\n'.join([block.as_cif for block in collection.values()])
 
 
-def project_info_to_cif(info) -> str:
+def project_info_to_cif(info: object) -> str:
     """Render ProjectInfo to CIF text (id, title, description,
     dates).
     """
@@ -183,7 +183,7 @@ def project_info_to_cif(info) -> str:
     )
 
 
-def project_to_cif(project) -> str:
+def project_to_cif(project: object) -> str:
     """Render a whole project by concatenating sections when present."""
     parts: list[str] = []
     if hasattr(project, 'info'):
@@ -199,12 +199,12 @@ def project_to_cif(project) -> str:
     return '\n\n'.join([p for p in parts if p])
 
 
-def experiment_to_cif(experiment) -> str:
+def experiment_to_cif(experiment: object) -> str:
     """Render an experiment: datablock part plus measured data."""
     return datablock_item_to_cif(experiment)
 
 
-def analysis_to_cif(analysis) -> str:
+def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
     cur_min = format_value(analysis.current_minimizer)
     lines: list[str] = []
@@ -221,7 +221,7 @@ def analysis_to_cif(analysis) -> str:
     return '\n'.join(lines)
 
 
-def summary_to_cif(_summary) -> str:
+def summary_to_cif(_summary: object) -> str:
     """Render a summary CIF block (placeholder for now)."""
     return 'To be added...'
 
@@ -301,7 +301,7 @@ def category_collection_from_cif(
 
     # Iterate over category parameters and their possible CIF names
     # trying to find the whole loop it belongs to inside the CIF block
-    def _get_loop(block, category_item):
+    def _get_loop(block: object, category_item: object) -> object | None:
         for param in category_item.parameters:
             for name in param._cif_handler.names:
                 loop = block.find_loop(name).get_loop()

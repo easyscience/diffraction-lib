@@ -105,7 +105,7 @@ class BraggPdExperiment(PdExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def instrument(self):
+    def instrument(self) -> object:
         """Active instrument model for this experiment."""
         return self._instrument
 
@@ -160,12 +160,12 @@ class BraggPdExperiment(PdExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def background_type(self):
+    def background_type(self) -> object:
         """Current background type enum value."""
         return self._background_type
 
     @background_type.setter
-    def background_type(self, new_type):
+    def background_type(self, new_type: str) -> None:
         """Set a new background type and recreate background object."""
         if self._background_type == new_type:
             console.paragraph(f"Background type for experiment '{self.name}' already set to")
@@ -193,14 +193,14 @@ class BraggPdExperiment(PdExperimentBase):
         console.print(new_type)
 
     @property
-    def background(self):
+    def background(self) -> object:
         return self._background
 
-    def show_supported_background_types(self):
+    def show_supported_background_types(self) -> None:
         """Print a table of supported background types."""
         BackgroundFactory.show_supported()
 
-    def show_current_background_type(self):
+    def show_current_background_type(self) -> None:
         """Print the currently used background type."""
         console.paragraph('Current background type')
         console.print(self.background_type)

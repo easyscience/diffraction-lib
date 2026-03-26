@@ -43,7 +43,7 @@ class ExperimentBase(DatablockItem):
         *,
         name: str,
         type: ExperimentType,
-    ):
+    ) -> None:
         super().__init__()
         self._name = name
         self._type = type
@@ -69,7 +69,7 @@ class ExperimentBase(DatablockItem):
         self._name = new
 
     @property
-    def type(self):  # TODO: Consider another name
+    def type(self) -> object:  # TODO: Consider another name
         """Experiment type descriptor (sample form, probe, beam
         mode).
         """
@@ -104,7 +104,7 @@ class ExperimentBase(DatablockItem):
     # ------------------------------------------------------------------
 
     @property
-    def calculator(self):
+    def calculator(self) -> object:
         """The active calculator instance for this experiment.
 
         Auto-resolved on first access from the experiment's data
@@ -254,7 +254,7 @@ class ScExperimentBase(ExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def extinction(self):
+    def extinction(self) -> object:
         """Active extinction correction model."""
         return self._extinction
 
@@ -301,7 +301,7 @@ class ScExperimentBase(ExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def linked_crystal(self):
+    def linked_crystal(self) -> object:
         """Linked crystal model for this experiment."""
         return self._linked_crystal
 
@@ -348,7 +348,7 @@ class ScExperimentBase(ExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def instrument(self):
+    def instrument(self) -> object:
         """Active instrument model for this experiment."""
         return self._instrument
 
@@ -403,7 +403,7 @@ class ScExperimentBase(ExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def data(self):
+    def data(self) -> object:
         """Data collection for this experiment."""
         return self._data
 
@@ -523,7 +523,7 @@ class PdExperimentBase(ExperimentBase):
         pass
 
     @property
-    def linked_phases(self):
+    def linked_phases(self) -> object:
         """Collection of phases linked to this experiment."""
         return self._linked_phases
 
@@ -566,7 +566,7 @@ class PdExperimentBase(ExperimentBase):
         console.print(self.linked_phases_type)
 
     @property
-    def excluded_regions(self):
+    def excluded_regions(self) -> object:
         """Collection of excluded regions for the x-grid."""
         return self._excluded_regions
 
@@ -615,7 +615,7 @@ class PdExperimentBase(ExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def data(self):
+    def data(self) -> object:
         """Data collection for this experiment."""
         return self._data
 
@@ -657,17 +657,17 @@ class PdExperimentBase(ExperimentBase):
         console.print(self.data_type)
 
     @property
-    def peak(self):
+    def peak(self) -> object:
         """Peak category object with profile parameters and mixins."""
         return self._peak
 
     @property
-    def peak_profile_type(self):
+    def peak_profile_type(self) -> object:
         """Currently selected peak profile type enum."""
         return self._peak_profile_type
 
     @peak_profile_type.setter
-    def peak_profile_type(self, new_type: str):
+    def peak_profile_type(self, new_type: str) -> None:
         """
         Change the active peak profile type, if supported.
 
@@ -700,14 +700,14 @@ class PdExperimentBase(ExperimentBase):
         console.paragraph(f"Peak profile type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_peak_profile_types(self):
+    def show_supported_peak_profile_types(self) -> None:
         """Print available peak profile types for this experiment."""
         PeakFactory.show_supported(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
         )
 
-    def show_current_peak_profile_type(self):
+    def show_current_peak_profile_type(self) -> None:
         """Print the currently selected peak profile type."""
         console.paragraph('Current peak profile type')
         console.print(self.peak_profile_type)

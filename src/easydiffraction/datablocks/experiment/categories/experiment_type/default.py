@@ -44,7 +44,7 @@ class ExperimentType(CategoryItem):
         description='Experiment type descriptor',
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._sample_form = StringDescriptor(

@@ -100,6 +100,6 @@ class Aliases(CategoryCollection):
         description='Parameter alias mappings',
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create an empty collection of aliases."""
         super().__init__(item_type=Alias)

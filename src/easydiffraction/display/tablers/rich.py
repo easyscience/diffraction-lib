@@ -5,7 +5,6 @@
 from __future__ import annotations
 
 import io
-from typing import Any
 
 from rich.box import Box
 from rich.console import Console
@@ -66,7 +65,7 @@ class RichTableBackend(TableBackendBase):
         )
         return html
 
-    def _build_table(self, df, alignments, color: str) -> Table:
+    def _build_table(self, df: object, alignments: object, color: str) -> Table:
         """
         Construct a Rich Table with formatted data and alignment.
 
@@ -106,7 +105,7 @@ class RichTableBackend(TableBackendBase):
 
         return table
 
-    def _update_display(self, table: Table, display_handle) -> None:
+    def _update_display(self, table: Table, display_handle: object) -> None:
         """
         Single, consistent update path for Jupyter and terminal.
 
@@ -148,10 +147,10 @@ class RichTableBackend(TableBackendBase):
 
     def render(
         self,
-        alignments,
-        df,
-        display_handle=None,
-    ) -> Any:
+        alignments: object,
+        df: object,
+        display_handle: object = None,
+    ) -> object:
         """
         Render a styled table using Rich.
 

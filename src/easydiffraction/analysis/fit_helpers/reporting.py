@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Any
 from typing import List
 from typing import Optional
 
@@ -24,15 +23,15 @@ class FitResults:
     def __init__(
         self,
         success: bool = False,
-        parameters: Optional[List[Any]] = None,
+        parameters: Optional[List[object]] = None,
         chi_square: Optional[float] = None,
         reduced_chi_square: Optional[float] = None,
         message: str = '',
         iterations: int = 0,
-        engine_result: Optional[Any] = None,
-        starting_parameters: Optional[List[Any]] = None,
+        engine_result: Optional[object] = None,
+        starting_parameters: Optional[List[object]] = None,
         fitting_time: Optional[float] = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """
         Initialize FitResults with the given parameters.
@@ -63,14 +62,14 @@ class FitResults:
             chi-square value.
         """
         self.success: bool = success
-        self.parameters: List[Any] = parameters if parameters is not None else []
+        self.parameters: List[object] = parameters if parameters is not None else []
         self.chi_square: Optional[float] = chi_square
         self.reduced_chi_square: Optional[float] = reduced_chi_square
         self.message: str = message
         self.iterations: int = iterations
-        self.engine_result: Optional[Any] = engine_result
-        self.result: Optional[Any] = None
-        self.starting_parameters: List[Any] = (
+        self.engine_result: Optional[object] = engine_result
+        self.result: Optional[object] = None
+        self.starting_parameters: List[object] = (
             starting_parameters if starting_parameters is not None else []
         )
         self.fitting_time: Optional[float] = fitting_time

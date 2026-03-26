@@ -144,10 +144,10 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         }),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=PolynomialTerm)
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         """Evaluate polynomial background over x data."""
         del called_by_minimizer
 

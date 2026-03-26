@@ -29,7 +29,7 @@ from easydiffraction.utils.utils import twotheta_to_d
 class PdDataPointBaseMixin:
     """Single base data point mixin for powder diffraction data."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._point_id = StringDescriptor(
@@ -193,7 +193,7 @@ class PdCwlDataPointMixin:
     wavelength.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._two_theta = NumericDescriptor(
@@ -229,7 +229,7 @@ class PdCwlDataPointMixin:
 class PdTofDataPointMixin:
     """Mixin for powder diffraction data points with time-of-flight."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._time_of_flight = NumericDescriptor(
@@ -308,17 +308,17 @@ class PdDataBase(CategoryCollection):
 
     # Should be set only once
 
-    def _set_point_id(self, values) -> None:
+    def _set_point_id(self, values: object) -> None:
         """Helper method to set point IDs."""
         for p, v in zip(self._items, values, strict=True):
             p.point_id._value = v
 
-    def _set_intensity_meas(self, values) -> None:
+    def _set_intensity_meas(self, values: object) -> None:
         """Helper method to set measured intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas._value = v
 
-    def _set_intensity_meas_su(self, values) -> None:
+    def _set_intensity_meas_su(self, values: object) -> None:
         """Helper method to set standard uncertainty of measured
         intensity.
         """
@@ -327,22 +327,22 @@ class PdDataBase(CategoryCollection):
 
     # Can be set multiple times
 
-    def _set_d_spacing(self, values) -> None:
+    def _set_d_spacing(self, values: object) -> None:
         """Helper method to set d-spacing values."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.d_spacing._value = v
 
-    def _set_intensity_calc(self, values) -> None:
+    def _set_intensity_calc(self, values: object) -> None:
         """Helper method to set calculated intensity."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_calc._value = v
 
-    def _set_intensity_bkg(self, values) -> None:
+    def _set_intensity_bkg(self, values: object) -> None:
         """Helper method to set background intensity."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_bkg._value = v
 
-    def _set_calc_status(self, values) -> None:
+    def _set_calc_status(self, values: object) -> None:
         """Helper method to set refinement status."""
         for p, v in zip(self._items, values, strict=True):
             if v:
@@ -359,13 +359,13 @@ class PdDataBase(CategoryCollection):
         return self.calc_status == 'incl'
 
     @property
-    def _calc_items(self):
+    def _calc_items(self) -> list:
         """Get only the items included in calculations."""
         return [item for item, mask in zip(self._items, self._calc_mask, strict=False) if mask]
 
     # Misc
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         experiment = self._parent
         experiments = experiment._parent
         project = experiments._parent
@@ -472,7 +472,7 @@ class PdCwlData(PdDataBase):
         calculators=frozenset({CalculatorEnum.CRYSPY}),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=PdCwlDataPoint)
 
     #################
@@ -481,7 +481,7 @@ class PdCwlData(PdDataBase):
 
     # Should be set only once
 
-    def _create_items_set_xcoord_and_id(self, values) -> None:
+    def _create_items_set_xcoord_and_id(self, values: object) -> None:
         """Helper method to set 2θ values."""
         # TODO: split into multiple methods
 
@@ -497,7 +497,7 @@ class PdCwlData(PdDataBase):
 
     # Misc
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         super()._update(called_by_minimizer)
 
         experiment = self._parent
@@ -547,7 +547,7 @@ class PdTofData(PdDataBase):
         calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=PdTofDataPoint)
 
     #################
@@ -556,7 +556,7 @@ class PdTofData(PdDataBase):
 
     # Should be set only once
 
-    def _create_items_set_xcoord_and_id(self, values) -> None:
+    def _create_items_set_xcoord_and_id(self, values: object) -> None:
         """Helper method to set time-of-flight values."""
         # TODO: split into multiple methods
 
@@ -572,7 +572,7 @@ class PdTofData(PdDataBase):
 
     # Misc
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         super()._update(called_by_minimizer)
 
         experiment = self._parent

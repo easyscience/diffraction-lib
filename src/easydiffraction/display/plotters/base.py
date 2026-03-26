@@ -165,13 +165,13 @@ class PlotterBase(ABC):
     @abstractmethod
     def plot_powder(
         self,
-        x,
-        y_series,
-        labels,
-        axes_labels,
-        title,
-        height,
-    ):
+        x: object,
+        y_series: object,
+        labels: object,
+        axes_labels: object,
+        title: str,
+        height: int | None,
+    ) -> None:
         """
         Render a line plot for powder diffraction data.
 
@@ -198,13 +198,13 @@ class PlotterBase(ABC):
     @abstractmethod
     def plot_single_crystal(
         self,
-        x_calc,
-        y_meas,
-        y_meas_su,
-        axes_labels,
-        title,
-        height,
-    ):
+        x_calc: object,
+        y_meas: object,
+        y_meas_su: object,
+        axes_labels: object,
+        title: str,
+        height: int | None,
+    ) -> None:
         """
         Render a scatter plot for single crystal diffraction data.
 

@@ -25,7 +25,7 @@ DEFAULT_COLORS = {
 class AsciiPlotter(PlotterBase):
     """Terminal-based plotter using ASCII art."""
 
-    def _get_legend_item(self, label):
+    def _get_legend_item(self, label: str) -> str:
         """
         Return a colored legend entry for a given series label.
 
@@ -50,13 +50,13 @@ class AsciiPlotter(PlotterBase):
 
     def plot_powder(
         self,
-        x,
-        y_series,
-        labels,
-        axes_labels,
-        title,
-        height=None,
-    ):
+        x: object,
+        y_series: object,
+        labels: object,
+        axes_labels: object,
+        title: str,
+        height: int | None = None,
+    ) -> None:
         """
         Render a line plot for powder diffraction data.
 
@@ -103,13 +103,13 @@ class AsciiPlotter(PlotterBase):
 
     def plot_single_crystal(
         self,
-        x_calc,
-        y_meas,
-        y_meas_su,
-        axes_labels,
-        title,
-        height=None,
-    ):
+        x_calc: object,
+        y_meas: object,
+        y_meas_su: object,
+        axes_labels: object,
+        title: str,
+        height: int | None = None,
+    ) -> None:
         """
         Render a scatter plot for single crystal diffraction data.
 

@@ -186,17 +186,17 @@ class TotalDataBase(CategoryCollection):
 
     # Should be set only once
 
-    def _set_point_id(self, values) -> None:
+    def _set_point_id(self, values: object) -> None:
         """Helper method to set point IDs."""
         for p, v in zip(self._items, values, strict=True):
             p.point_id._value = v
 
-    def _set_g_r_meas(self, values) -> None:
+    def _set_g_r_meas(self, values: object) -> None:
         """Helper method to set measured G(r)."""
         for p, v in zip(self._items, values, strict=True):
             p.g_r_meas._value = v
 
-    def _set_g_r_meas_su(self, values) -> None:
+    def _set_g_r_meas_su(self, values: object) -> None:
         """Helper method to set standard uncertainty of measured
         G(r).
         """
@@ -205,12 +205,12 @@ class TotalDataBase(CategoryCollection):
 
     # Can be set multiple times
 
-    def _set_g_r_calc(self, values) -> None:
+    def _set_g_r_calc(self, values: object) -> None:
         """Helper method to set calculated G(r)."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.g_r_calc._value = v
 
-    def _set_calc_status(self, values) -> None:
+    def _set_calc_status(self, values: object) -> None:
         """Helper method to set calculation status."""
         for p, v in zip(self._items, values, strict=True):
             if v:
@@ -227,13 +227,13 @@ class TotalDataBase(CategoryCollection):
         return self.calc_status == 'incl'
 
     @property
-    def _calc_items(self):
+    def _calc_items(self) -> list:
         """Get only the items included in calculations."""
         return [item for item, mask in zip(self._items, self._calc_mask, strict=False) if mask]
 
     # Misc
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         experiment = self._parent
         experiments = experiment._parent
         project = experiments._parent
@@ -319,7 +319,7 @@ class TotalData(TotalDataBase):
         calculators=frozenset({CalculatorEnum.PDFFIT}),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=TotalDataPoint)
 
     #################
@@ -328,7 +328,7 @@ class TotalData(TotalDataBase):
 
     # Should be set only once
 
-    def _create_items_set_xcoord_and_id(self, values) -> None:
+    def _create_items_set_xcoord_and_id(self, values: object) -> None:
         """Helper method to set r values."""
         # TODO: split into multiple methods
 

@@ -94,42 +94,42 @@ class Project(GuardedBase):
         self._structures = structures
 
     @property
-    def experiments(self):
+    def experiments(self) -> Experiments:
         """Collection of experiments in the project."""
         return self._experiments
 
     @experiments.setter
     @typechecked
-    def experiments(self, experiments: Experiments):
+    def experiments(self, experiments: Experiments) -> None:
         self._experiments = experiments
 
     @property
-    def plotter(self):
+    def plotter(self) -> Plotter:
         """Plotting facade bound to the project."""
         return self._plotter
 
     @property
-    def tabler(self):
+    def tabler(self) -> TableRenderer:
         """Tables rendering facade bound to the project."""
         return self._tabler
 
     @property
-    def analysis(self):
+    def analysis(self) -> Analysis:
         """Analysis entry-point bound to the project."""
         return self._analysis
 
     @property
-    def summary(self):
+    def summary(self) -> Summary:
         """Summary report builder bound to the project."""
         return self._summary
 
     @property
-    def parameters(self):
+    def parameters(self) -> list:
         """Return parameters from all structures and experiments."""
         return self.structures.parameters + self.experiments.parameters
 
     @property
-    def as_cif(self):
+    def as_cif(self) -> str:
         """Export whole project as CIF text."""
         # Concatenate sections using centralized CIF serializers
         return project_to_cif(self)
@@ -216,7 +216,7 @@ class Project(GuardedBase):
     # Plotting
     # ------------------------------------------
 
-    def _update_categories(self, expt_name) -> None:
+    def _update_categories(self, expt_name: str) -> None:
         for structure in self.structures:
             structure._update_categories()
         self.analysis._update_categories()
@@ -225,11 +225,11 @@ class Project(GuardedBase):
 
     def plot_meas(
         self,
-        expt_name,
-        x_min=None,
-        x_max=None,
-        x=None,
-    ):
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        x: object | None = None,
+    ) -> None:
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
 
@@ -244,11 +244,11 @@ class Project(GuardedBase):
 
     def plot_calc(
         self,
-        expt_name,
-        x_min=None,
-        x_max=None,
-        x=None,
-    ):
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        x: object | None = None,
+    ) -> None:
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
 
@@ -263,12 +263,12 @@ class Project(GuardedBase):
 
     def plot_meas_vs_calc(
         self,
-        expt_name,
-        x_min=None,
-        x_max=None,
-        show_residual=False,
-        x=None,
-    ):
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        show_residual: bool = False,
+        x: object | None = None,
+    ) -> None:
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
 

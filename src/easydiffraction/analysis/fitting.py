@@ -33,7 +33,7 @@ class Fitter:
         structures: Structures,
         experiments: Experiments,
         weights: Optional[np.array] = None,
-        analysis=None,
+        analysis: object = None,
     ) -> None:
         """
         Run the fitting process.
@@ -141,7 +141,7 @@ class Fitter:
         structures: Structures,
         experiments: Experiments,
         weights: Optional[np.array] = None,
-        analysis=None,
+        analysis: object = None,
     ) -> np.ndarray:
         """
         Residual function computes the difference between measured and

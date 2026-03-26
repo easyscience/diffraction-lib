@@ -248,7 +248,7 @@ class ReflnData(CategoryCollection):
 
     _update_priority = 100
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=Refln)
 
     #################
@@ -257,7 +257,7 @@ class ReflnData(CategoryCollection):
 
     # Should be set only once
 
-    def _create_items_set_hkl_and_id(self, indices_h, indices_k, indices_l) -> None:
+    def _create_items_set_hkl_and_id(self, indices_h: object, indices_k: object, indices_l: object) -> None:
         """Helper method to set Miller indices."""
         # TODO: split into multiple methods
 
@@ -275,48 +275,48 @@ class ReflnData(CategoryCollection):
         # Set reflection IDs
         self._set_id([str(i + 1) for i in range(indices_h.size)])
 
-    def _set_id(self, values) -> None:
+    def _set_id(self, values: object) -> None:
         """Helper method to set reflection IDs."""
         for p, v in zip(self._items, values, strict=True):
             p.id._value = v
 
-    def _set_intensity_meas(self, values) -> None:
+    def _set_intensity_meas(self, values: object) -> None:
         """Helper method to set measured intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas._value = v
 
-    def _set_intensity_meas_su(self, values) -> None:
+    def _set_intensity_meas_su(self, values: object) -> None:
         """Helper method to set standard uncertainty of measured
         intensity.
         """
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas_su._value = v
 
-    def _set_wavelength(self, values) -> None:
+    def _set_wavelength(self, values: object) -> None:
         """Helper method to set wavelength."""
         for p, v in zip(self._items, values, strict=True):
             p.wavelength._value = v
 
     # Can be set multiple times
 
-    def _set_d_spacing(self, values) -> None:
+    def _set_d_spacing(self, values: object) -> None:
         """Helper method to set d-spacing values."""
         for p, v in zip(self._items, values, strict=True):
             p.d_spacing._value = v
 
-    def _set_sin_theta_over_lambda(self, values) -> None:
+    def _set_sin_theta_over_lambda(self, values: object) -> None:
         """Helper method to set sin(theta)/lambda values."""
         for p, v in zip(self._items, values, strict=True):
             p.sin_theta_over_lambda._value = v
 
-    def _set_intensity_calc(self, values) -> None:
+    def _set_intensity_calc(self, values: object) -> None:
         """Helper method to set calculated intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_calc._value = v
 
     # Misc
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         experiment = self._parent
         experiments = experiment._parent
         project = experiments._parent

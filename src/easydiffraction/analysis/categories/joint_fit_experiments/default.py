@@ -100,6 +100,6 @@ class JointFitExperiments(CategoryCollection):
         description='Joint-fit experiment weights',
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create an empty joint-fit experiments collection."""
         super().__init__(item_type=JointFitExperiment)

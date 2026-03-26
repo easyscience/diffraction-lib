@@ -48,7 +48,7 @@ class Analysis:
         computations. fitter: Active fitter/minimizer driver.
     """
 
-    def __init__(self, project) -> None:
+    def __init__(self, project: object) -> None:
         """
         Create a new Analysis instance bound to a project.
 
@@ -515,7 +515,7 @@ class Analysis:
     # ------------------------------------------------------------------
 
     @property
-    def fit_mode(self):
+    def fit_mode(self) -> object:
         """Fit-mode category item holding the active strategy."""
         return self._fit_mode
 
@@ -561,7 +561,7 @@ class Analysis:
     # ------------------------------------------------------------------
 
     @property
-    def joint_fit_experiments(self):
+    def joint_fit_experiments(self) -> object:
         """Per-experiment weight collection for joint fitting."""
         return self._joint_fit_experiments
 
@@ -593,7 +593,7 @@ class Analysis:
             columns_data=rows,
         )
 
-    def apply_constraints(self):
+    def apply_constraints(self) -> None:
         """Apply the currently defined constraints to the active
         project.
         """
@@ -605,7 +605,7 @@ class Analysis:
         self.constraints_handler.set_constraints(self.constraints)
         self.constraints_handler.apply()
 
-    def fit(self):
+    def fit(self) -> None:
         """Execute fitting using the selected mode, calculator and
         minimizer.
 
@@ -701,7 +701,7 @@ class Analysis:
 
         self.fitter._process_fit_results(structures, experiments)
 
-    def _update_categories(self, called_by_minimizer=False) -> None:
+    def _update_categories(self, called_by_minimizer: bool = False) -> None:
         """
         Update all categories owned by Analysis.
 
@@ -723,7 +723,7 @@ class Analysis:
             if hasattr(category, '_update'):
                 category._update(called_by_minimizer=called_by_minimizer)
 
-    def as_cif(self):
+    def as_cif(self) -> str:
         """
         Serialize the analysis section to a CIF string.
 

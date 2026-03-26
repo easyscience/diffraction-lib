@@ -30,12 +30,12 @@ class CategoryItem(GuardedBase):
         return f'<{name} ({params})>'
 
     # TODO: Common for all categories
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         del called_by_minimizer
         pass
 
     @property
-    def unique_name(self):
+    def unique_name(self) -> str:
         parts = [
             self._identity.datablock_entry_name,
             self._identity.category_code,
@@ -46,7 +46,7 @@ class CategoryItem(GuardedBase):
         return '.'.join(str_parts)
 
     @property
-    def parameters(self):
+    def parameters(self) -> list:
         return [v for v in vars(self).values() if isinstance(v, GenericDescriptorBase)]
 
     @property
@@ -54,7 +54,7 @@ class CategoryItem(GuardedBase):
         """Return CIF representation of this object."""
         return category_item_to_cif(self)
 
-    def from_cif(self, block, idx=0):
+    def from_cif(self, block: object, idx: int = 0) -> None:
         """Populate this item from a CIF block."""
         category_item_from_cif(self, block, idx)
 
@@ -168,7 +168,7 @@ class CategoryCollection(CollectionBase):
     # TODO: Common for all categories
     _update_priority = 10  # Default. Lower values run first.
 
-    def _key_for(self, item):
+    def _key_for(self, item: object) -> str | None:
         """Return the category-level identity key for *item*."""
         return item._identity.category_entry_name
 
@@ -190,16 +190,16 @@ class CategoryCollection(CollectionBase):
         return f'<{name} collection ({size} items)>'
 
     # TODO: Common for all categories
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         del called_by_minimizer
         pass
 
     @property
-    def unique_name(self):
+    def unique_name(self) -> str | None:
         return None
 
     @property
-    def parameters(self):
+    def parameters(self) -> list:
         """All parameters from all items in this collection."""
         params = []
         for item in self._items:
@@ -211,11 +211,11 @@ class CategoryCollection(CollectionBase):
         """Return CIF representation of this object."""
         return category_collection_to_cif(self)
 
-    def from_cif(self, block):
+    def from_cif(self, block: object) -> None:
         """Populate this collection from a CIF block."""
         category_collection_from_cif(self, block)
 
-    def add(self, item) -> None:
+    def add(self, item: object) -> None:
         """
         Insert or replace a pre-built item into the collection.
 
@@ -227,7 +227,7 @@ class CategoryCollection(CollectionBase):
         self[item._identity.category_entry_name] = item
         self._mark_parent_dirty()
 
-    def create(self, **kwargs) -> None:
+    def create(self, **kwargs: object) -> None:
         """
         Create a new item with the given attributes and add it.
 

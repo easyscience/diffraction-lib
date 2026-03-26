@@ -55,7 +55,7 @@ class ExperimentFactory(FactoryBase):
     }
 
     # TODO: Add to core/factory.py?
-    def __init__(self):
+    def __init__(self) -> None:
         log.error(
             'Experiment objects must be created using class methods such as '
             '`ExperimentFactory.from_cif_str(...)`, etc.'
@@ -95,7 +95,7 @@ class ExperimentFactory(FactoryBase):
 
     @classmethod
     @typechecked
-    def _resolve_class(cls, expt_type: ExperimentType):
+    def _resolve_class(cls, expt_type: ExperimentType) -> type:
         """Look up the experiment class from the type enums."""
         tag = cls.default_tag(
             scattering_type=expt_type.scattering_type.value,

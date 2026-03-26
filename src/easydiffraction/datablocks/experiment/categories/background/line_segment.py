@@ -149,10 +149,10 @@ class LineSegmentBackground(BackgroundBase):
         calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=LineSegment)
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         """Interpolate background points over x data."""
         del called_by_minimizer
 

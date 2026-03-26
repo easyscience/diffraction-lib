@@ -38,10 +38,10 @@ class PlotlyPlotter(PlotterBase):
 
     def _get_powder_trace(
         self,
-        x,
-        y,
-        label,
-    ):
+        x: object,
+        y: object,
+        label: str,
+    ) -> object:
         """
         Create a Plotly trace for powder diffraction data.
 
@@ -76,10 +76,10 @@ class PlotlyPlotter(PlotterBase):
 
     def _get_single_crystal_trace(
         self,
-        x_calc,
-        y_meas,
-        y_meas_su,
-    ):
+        x_calc: object,
+        y_meas: object,
+        y_meas_su: object,
+    ) -> object:
         """
         Create a Plotly trace for single crystal diffraction data.
 
@@ -118,7 +118,7 @@ class PlotlyPlotter(PlotterBase):
 
         return trace
 
-    def _get_diagonal_shape(self):
+    def _get_diagonal_shape(self) -> dict:
         """
         Create a diagonal reference line shape.
 
@@ -141,7 +141,7 @@ class PlotlyPlotter(PlotterBase):
             line=dict(width=0.5),
         )
 
-    def _get_config(self):
+    def _get_config(self) -> dict:
         """
         Return the Plotly figure configuration.
 
@@ -162,9 +162,9 @@ class PlotlyPlotter(PlotterBase):
 
     def _get_figure(
         self,
-        data,
-        layout,
-    ):
+        data: object,
+        layout: object,
+    ) -> object:
         """
         Create and configure a Plotly figure.
 
@@ -189,8 +189,8 @@ class PlotlyPlotter(PlotterBase):
 
     def _show_figure(
         self,
-        fig,
-    ):
+        fig: object,
+    ) -> None:
         """
         Display a Plotly figure.
 
@@ -217,10 +217,10 @@ class PlotlyPlotter(PlotterBase):
 
     def _get_layout(
         self,
-        title,
-        axes_labels,
-        **kwargs,
-    ):
+        title: str,
+        axes_labels: object,
+        **kwargs: object,
+    ) -> object:
         """
         Create a Plotly layout configuration.
 
@@ -271,13 +271,13 @@ class PlotlyPlotter(PlotterBase):
 
     def plot_powder(
         self,
-        x,
-        y_series,
-        labels,
-        axes_labels,
-        title,
-        height=None,
-    ):
+        x: object,
+        y_series: object,
+        labels: object,
+        axes_labels: object,
+        title: str,
+        height: int | None = None,
+    ) -> None:
         """
         Render a line plot for powder diffraction data.
 
@@ -318,13 +318,13 @@ class PlotlyPlotter(PlotterBase):
 
     def plot_single_crystal(
         self,
-        x_calc,
-        y_meas,
-        y_meas_su,
-        axes_labels,
-        title,
-        height=None,
-    ):
+        x_calc: object,
+        y_meas: object,
+        y_meas_su: object,
+        axes_labels: object,
+        title: str,
+        height: int | None = None,
+    ) -> None:
         """
         Render a scatter plot for single crystal diffraction data.
 

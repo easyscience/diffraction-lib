@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
+from typing import Generator
 
 from easydiffraction.core.diagnostic import Diagnostics
 from easydiffraction.core.identity import Identity
@@ -17,7 +18,7 @@ class GuardedBase(ABC):
 
     _diagnoser = Diagnostics()
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._identity = Identity(owner=self)
 
@@ -27,7 +28,7 @@ class GuardedBase(ABC):
     def __repr__(self) -> str:
         return self.__str__()
 
-    def __getattr__(self, key: str):
+    def __getattr__(self, key: str) -> None:
         cls = type(self)
         allowed = cls._public_attrs()
         if key not in allowed:
@@ -38,7 +39,7 @@ class GuardedBase(ABC):
                 label='Allowed readable/writable',
             )
 
-    def __setattr__(self, key: str, value):
+    def __setattr__(self, key: str, value: object) -> None:
         # Always allow private or special attributes without diagnostics
         if key.startswith('_'):
             object.__setattr__(self, key, value)
@@ -70,14 +71,14 @@ class GuardedBase(ABC):
 
         self._assign_attr(key, value)
 
-    def _assign_attr(self, key, value):
+    def _assign_attr(self, key: str, value: object) -> None:
         """Low-level assignment with parent linkage."""
         object.__setattr__(self, key, value)
         if key != '_parent' and isinstance(value, GuardedBase):
             object.__setattr__(value, '_parent', self)
 
     @classmethod
-    def _iter_properties(cls):
+    def _iter_properties(cls) -> Generator[tuple[str, property], None, None]:
         """
         Iterate over all public properties defined in the class hierarchy.
 
@@ -94,12 +95,12 @@ class GuardedBase(ABC):
                 yield key, attr
 
     @classmethod
-    def _public_attrs(cls):
+    def _public_attrs(cls) -> set[str]:
         """All public properties (read-only + writable)."""
         return {key for key, _ in cls._iter_properties()}
 
     @classmethod
-    def _public_readonly_attrs(cls):
+    def _public_readonly_attrs(cls) -> set[str]:
         """Public properties without a setter."""
         return {key for key, prop in cls._iter_properties() if prop.fset is None}
 
@@ -108,18 +109,18 @@ class GuardedBase(ABC):
         """Public properties with a setter."""
         return {key for key, prop in cls._iter_properties() if prop.fset is not None}
 
-    def _allowed_attrs(self, writable_only=False):
+    def _allowed_attrs(self, writable_only: bool = False) -> set[str]:
         cls = type(self)
         if writable_only:
             return cls._public_writable_attrs()
         return cls._public_attrs()
 
     @property
-    def _log_name(self):
+    def _log_name(self) -> str:
         return self.unique_name or type(self).__name__
 
     @property
-    def unique_name(self):
+    def unique_name(self) -> str:
         return type(self).__name__
 
     # @property
@@ -133,7 +134,7 @@ class GuardedBase(ABC):
 
     @property
     @abstractmethod
-    def parameters(self):
+    def parameters(self) -> list:
         """Return a list of parameter objects (to be implemented by
         subclasses).
         """
@@ -160,7 +161,7 @@ class GuardedBase(ABC):
         return ' '.join(line.strip() for line in first_para.splitlines())
 
     @classmethod
-    def _iter_methods(cls):
+    def _iter_methods(cls) -> Generator[tuple[str, object], None, None]:
         """
         Iterate over public methods in the class hierarchy.
 

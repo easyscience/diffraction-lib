@@ -9,6 +9,9 @@ set and delete, along with iteration over the items.
 
 from __future__ import annotations
 
+from typing import Generator
+from typing import Iterator
+
 from easydiffraction.core.guard import GuardedBase
 
 
@@ -23,13 +26,13 @@ class CollectionBase(GuardedBase):
         and tooling; not enforced at runtime here.
     """
 
-    def __init__(self, item_type) -> None:
+    def __init__(self, item_type: type) -> None:
         super().__init__()
         self._items: list = []
         self._index: dict = {}
         self._item_type = item_type
 
-    def __getitem__(self, name: str):
+    def __getitem__(self, name: str) -> GuardedBase:
         """Return an item by its identity key.
 
         Rebuilds the internal index on a cache miss to stay consistent
@@ -41,7 +44,7 @@ class CollectionBase(GuardedBase):
             self._rebuild_index()
             return self._index[name]
 
-    def __setitem__(self, name: str, item) -> None:
+    def __setitem__(self, name: str, item: GuardedBase) -> None:
         """Insert or replace an item under the given identity key."""
         # Check if item with same key exists; if so, replace it
         for i, existing_item in enumerate(self._items):
@@ -69,7 +72,7 @@ class CollectionBase(GuardedBase):
         self._rebuild_index()
         return name in self._index
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[GuardedBase]:
         """Iterate over items in insertion order."""
         return iter(self._items)
 
@@ -93,7 +96,7 @@ class CollectionBase(GuardedBase):
         """
         del self[name]
 
-    def _key_for(self, item):
+    def _key_for(self, item: GuardedBase) -> str | None:
         """Return the identity key for *item*.
 
         Subclasses must override to return the appropriate key
@@ -109,20 +112,20 @@ class CollectionBase(GuardedBase):
             if key:
                 self._index[key] = item
 
-    def keys(self):
+    def keys(self) -> Generator[str | None, None, None]:
         """Yield keys for all items in insertion order."""
         return (self._key_for(item) for item in self._items)
 
-    def values(self):
+    def values(self) -> Generator[GuardedBase, None, None]:
         """Yield items in insertion order."""
         return (item for item in self._items)
 
-    def items(self):
+    def items(self) -> Generator[tuple[str | None, GuardedBase], None, None]:
         """Yield ``(key, item)`` pairs in insertion order."""
         return ((self._key_for(item), item) for item in self._items)
 
     @property
-    def names(self):
+    def names(self) -> list[str | None]:
         """List of all item keys in the collection."""
         return list(self.keys())
 

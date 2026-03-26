@@ -46,7 +46,7 @@ class UidMapHandler(SingletonBase):
         """Returns the current UID-to-Parameter map."""
         return self._uid_map
 
-    def add_to_uid_map(self, parameter):
+    def add_to_uid_map(self, parameter: object) -> None:
         """Adds a single Parameter or Descriptor object to the UID map.
 
         Only Descriptor or Parameter instances are allowed (not
@@ -61,7 +61,7 @@ class UidMapHandler(SingletonBase):
             )
         self._uid_map[parameter.uid] = parameter
 
-    def replace_uid(self, old_uid, new_uid):
+    def replace_uid(self, old_uid: str, new_uid: str) -> None:
         """Replaces an existing UID key in the UID map with a new UID.
 
         Moves the associated parameter from old_uid to new_uid. Raises a
@@ -102,7 +102,7 @@ class ConstraintsHandler(SingletonBase):
         # Internally parsed constraints as (lhs_alias, rhs_expr) tuples
         self._parsed_constraints: List[Tuple[str, str]] = []
 
-    def set_aliases(self, aliases):
+    def set_aliases(self, aliases: object) -> None:
         """Sets the alias map (name → parameter wrapper).
 
         Called when user registers parameter aliases like:
@@ -110,7 +110,7 @@ class ConstraintsHandler(SingletonBase):
         """
         self._alias_to_param = dict(aliases.items())
 
-    def set_constraints(self, constraints):
+    def set_constraints(self, constraints: object) -> None:
         """Sets the constraints and triggers parsing into internal
         format.
 

@@ -29,7 +29,7 @@ from easydiffraction.utils.utils import render_table
 class ExcludedRegion(CategoryItem):
     """Closed interval [start, end] to be excluded."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         # TODO: Add point_id as for the background
@@ -130,10 +130,10 @@ class ExcludedRegions(CategoryCollection):
         sample_form=frozenset({SampleFormEnum.POWDER}),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=ExcludedRegion)
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         del called_by_minimizer
 
         data = self._parent.data

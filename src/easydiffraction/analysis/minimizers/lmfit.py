@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Any
 from typing import Dict
 from typing import List
 
@@ -38,8 +37,8 @@ class LmfitMinimizer(MinimizerBase):
 
     def _prepare_solver_args(
         self,
-        parameters: List[Any],
-    ) -> Dict[str, Any]:
+        parameters: List[object],
+    ) -> Dict[str, object]:
         """
         Prepares the solver arguments for the lmfit minimizer.
 
@@ -63,7 +62,7 @@ class LmfitMinimizer(MinimizerBase):
             )
         return {'engine_parameters': engine_parameters}
 
-    def _run_solver(self, objective_function: Any, **kwargs: Any) -> Any:
+    def _run_solver(self, objective_function: object, **kwargs: object) -> object:
         """
         Runs the lmfit solver.
 
@@ -90,8 +89,8 @@ class LmfitMinimizer(MinimizerBase):
 
     def _sync_result_to_parameters(
         self,
-        parameters: List[Any],
-        raw_result: Any,
+        parameters: List[object],
+        raw_result: object,
     ) -> None:
         """
         Synchronizes the result from the solver to the parameters.
@@ -113,7 +112,7 @@ class LmfitMinimizer(MinimizerBase):
                 param._set_value_from_minimizer(param_result.value)
                 param.uncertainty = getattr(param_result, 'stderr', None)
 
-    def _check_success(self, raw_result: Any) -> bool:
+    def _check_success(self, raw_result: object) -> bool:
         """
         Determines success from lmfit MinimizerResult.
 
@@ -132,9 +131,9 @@ class LmfitMinimizer(MinimizerBase):
         self,
         params: lmfit.Parameters,
         iter: int,
-        resid: Any,
-        *args: Any,
-        **kwargs: Any,
+        resid: object,
+        *args: object,
+        **kwargs: object,
     ) -> None:
         """
         Callback function for each iteration of the minimizer.

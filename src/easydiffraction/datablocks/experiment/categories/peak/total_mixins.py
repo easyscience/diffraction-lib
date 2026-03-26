@@ -17,7 +17,7 @@ from easydiffraction.io.cif.handler import CifHandler
 class TotalBroadeningMixin:
     """PDF broadening/damping/sharpening parameters."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._damp_q = Parameter(

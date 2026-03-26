@@ -10,10 +10,9 @@ involved.
 import gzip
 import pickle  # noqa: S403 - trusted internal pickle file (package data only)
 from pathlib import Path
-from typing import Any
 
 
-def _restricted_pickle_load(file_obj) -> Any:
+def _restricted_pickle_load(file_obj: object) -> object:
     """Load pickle data from an internal gz file (trusted boundary).
 
     The archive lives in the package; no user-controlled input enters
@@ -23,7 +22,7 @@ def _restricted_pickle_load(file_obj) -> Any:
     return data
 
 
-def _load():
+def _load() -> object:
     """Load space-group data from the packaged archive."""
     path = Path(__file__).with_name('space_groups.pkl.gz')
     with gzip.open(path, 'rb') as f:

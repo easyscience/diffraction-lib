@@ -56,7 +56,7 @@ class Plotter(RendererBase):
     #  Private special methods
     # ------------------------------------------------------------------
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         # X-axis limits
         self._x_min = DEFAULT_MIN
@@ -80,7 +80,7 @@ class Plotter(RendererBase):
     #  Private helper methods
     # ------------------------------------------------------------------
 
-    def _auto_x_range_for_ascii(self, pattern, x_array, x_min, x_max):
+    def _auto_x_range_for_ascii(self, pattern: object, x_array: object, x_min: object, x_max: object) -> tuple:
         """
         For the ASCII engine, narrow the range around the tallest peak.
 
@@ -110,11 +110,11 @@ class Plotter(RendererBase):
 
     def _filtered_y_array(
         self,
-        y_array,
-        x_array,
-        x_min,
-        x_max,
-    ):
+        y_array: object,
+        x_array: object,
+        x_min: object,
+        x_max: object,
+    ) -> object:
         """
         Filter an array by the inclusive x-range limits.
 
@@ -144,7 +144,7 @@ class Plotter(RendererBase):
 
         return filtered_y_array
 
-    def _get_axes_labels(self, sample_form, scattering_type, x_axis):
+    def _get_axes_labels(self, sample_form: object, scattering_type: object, x_axis: object) -> list:
         """Look up axis labels for the given experiment / x-axis
         combination.
         """
@@ -152,16 +152,16 @@ class Plotter(RendererBase):
 
     def _prepare_powder_data(
         self,
-        pattern,
-        expt_name,
-        expt_type,
-        x_min,
-        x_max,
-        x,
-        need_meas=False,
-        need_calc=False,
-        show_residual=False,
-    ):
+        pattern: object,
+        expt_name: str,
+        expt_type: object,
+        x_min: object,
+        x_max: object,
+        x: object,
+        need_meas: bool = False,
+        need_calc: bool = False,
+        show_residual: bool = False,
+    ) -> dict | None:
         """
         Validate, resolve axes, auto-range, and filter arrays.
 
@@ -245,7 +245,7 @@ class Plotter(RendererBase):
             'x_axis': x_axis,
         }
 
-    def _resolve_x_axis(self, expt_type, x):
+    def _resolve_x_axis(self, expt_type: object, x: object) -> tuple:
         """
         Determine the x-axis type from experiment metadata.
 
@@ -274,12 +274,12 @@ class Plotter(RendererBase):
     # ------------------------------------------------------------------
 
     @property
-    def x_min(self):
+    def x_min(self) -> float:
         """Minimum x-axis limit."""
         return self._x_min
 
     @x_min.setter
-    def x_min(self, value):
+    def x_min(self, value: object) -> None:
         """
         Set the minimum x-axis limit.
 
@@ -294,12 +294,12 @@ class Plotter(RendererBase):
             self._x_min = DEFAULT_MIN
 
     @property
-    def x_max(self):
+    def x_max(self) -> float:
         """Maximum x-axis limit."""
         return self._x_max
 
     @x_max.setter
-    def x_max(self, value):
+    def x_max(self, value: object) -> None:
         """
         Set the maximum x-axis limit.
 
@@ -314,12 +314,12 @@ class Plotter(RendererBase):
             self._x_max = DEFAULT_MAX
 
     @property
-    def height(self):
+    def height(self) -> int:
         """Plot height (rows for ASCII, pixels for Plotly)."""
         return self._height
 
     @height.setter
-    def height(self, value):
+    def height(self, value: object) -> None:
         """
         Set plot height.
 
@@ -337,7 +337,7 @@ class Plotter(RendererBase):
     #  Public methods
     # ------------------------------------------------------------------
 
-    def show_config(self):
+    def show_config(self) -> None:
         """Display the current plotting configuration."""
         headers = [
             ('Parameter', 'left'),
@@ -354,13 +354,13 @@ class Plotter(RendererBase):
 
     def plot_meas(
         self,
-        pattern,
-        expt_name,
-        expt_type,
-        x_min=None,
-        x_max=None,
-        x=None,
-    ):
+        pattern: object,
+        expt_name: str,
+        expt_type: object,
+        x_min: object = None,
+        x_max: object = None,
+        x: object = None,
+    ) -> None:
         """
         Plot measured pattern using the current engine.
 
@@ -404,13 +404,13 @@ class Plotter(RendererBase):
 
     def plot_calc(
         self,
-        pattern,
-        expt_name,
-        expt_type,
-        x_min=None,
-        x_max=None,
-        x=None,
-    ):
+        pattern: object,
+        expt_name: str,
+        expt_type: object,
+        x_min: object = None,
+        x_max: object = None,
+        x: object = None,
+    ) -> None:
         """
         Plot calculated pattern using the current engine.
 
@@ -454,14 +454,14 @@ class Plotter(RendererBase):
 
     def plot_meas_vs_calc(
         self,
-        pattern,
-        expt_name,
-        expt_type,
-        x_min=None,
-        x_max=None,
-        show_residual=False,
-        x=None,
-    ):
+        pattern: object,
+        expt_name: str,
+        expt_type: object,
+        x_min: object = None,
+        x_max: object = None,
+        show_residual: bool = False,
+        x: object = None,
+    ) -> None:
         """
         Plot measured and calculated series and optional residual.
 

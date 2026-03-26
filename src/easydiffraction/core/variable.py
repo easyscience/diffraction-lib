@@ -6,7 +6,6 @@ from __future__ import annotations
 import secrets
 import string
 from typing import TYPE_CHECKING
-from typing import Any
 
 import numpy as np
 
@@ -55,7 +54,7 @@ class GenericDescriptorBase(GuardedBase):
         value_spec: AttributeSpec,
         name: str,
         description: str = None,
-    ):
+    ) -> None:
         """
         Initialize the descriptor with validation and identity.
 
@@ -114,7 +113,7 @@ class GenericDescriptorBase(GuardedBase):
         return self._name
 
     @property
-    def unique_name(self):
+    def unique_name(self) -> str:
         """Fully qualified name including datablock, category and entry
         name.
         """
@@ -127,7 +126,7 @@ class GenericDescriptorBase(GuardedBase):
         ]
         return '.'.join(filter(None, parts))
 
-    def _parent_of_type(self, cls):
+    def _parent_of_type(self, cls: type) -> object | None:
         """Walk up the parent chain and return the first parent of type
         `cls`.
         """
@@ -140,19 +139,19 @@ class GenericDescriptorBase(GuardedBase):
             obj = getattr(obj, '_parent', None)
         return None
 
-    def _datablock_item(self):
+    def _datablock_item(self) -> object | None:
         """Return the DatablockItem ancestor, if any."""
         from easydiffraction.core.datablock import DatablockItem
 
         return self._parent_of_type(DatablockItem)
 
     @property
-    def value(self):
+    def value(self) -> object:
         """Current validated value."""
         return self._value
 
     @value.setter
-    def value(self, v):
+    def value(self, v: object) -> None:
         """Set a new value after validating against the spec."""
         # Do nothing if the value is unchanged
         if self._value == v:
@@ -171,7 +170,7 @@ class GenericDescriptorBase(GuardedBase):
         if parent_datablock is not None:
             parent_datablock._need_categories_update = True
 
-    def _set_value_from_minimizer(self, v) -> None:
+    def _set_value_from_minimizer(self, v: object) -> None:
         """Set the value from a minimizer, bypassing validation.
 
         Writes ``_value`` directly — no type or range checks — but still
@@ -191,12 +190,12 @@ class GenericDescriptorBase(GuardedBase):
             parent_datablock._need_categories_update = True
 
     @property
-    def description(self):
+    def description(self) -> str | None:
         """Optional human-readable description."""
         return self._description
 
     @property
-    def parameters(self):
+    def parameters(self) -> list[GenericDescriptorBase]:
         """Return a flat list of parameters contained by this object.
 
         For a single descriptor, it returns a one-element list with
@@ -210,7 +209,7 @@ class GenericDescriptorBase(GuardedBase):
         """Serialize this descriptor to a CIF-formatted string."""
         return param_to_cif(self)
 
-    def from_cif(self, block, idx=0):
+    def from_cif(self, block: object, idx: int = 0) -> None:
         """Populate this parameter from a CIF block."""
         param_from_cif(self, block, idx)
 
@@ -223,7 +222,7 @@ class GenericStringDescriptor(GenericDescriptorBase):
 
     def __init__(
         self,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         super().__init__(**kwargs)
 
@@ -238,7 +237,7 @@ class GenericNumericDescriptor(GenericDescriptorBase):
         self,
         *,
         units: str = '',
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         super().__init__(**kwargs)
         self._units: str = units
@@ -269,8 +268,8 @@ class GenericParameter(GenericNumericDescriptor):
 
     def __init__(
         self,
-        **kwargs: Any,
-    ):
+        **kwargs: object,
+    ) -> None:
         super().__init__(**kwargs)
 
         # Initial validated states
@@ -310,22 +309,22 @@ class GenericParameter(GenericNumericDescriptor):
         return ''.join(secrets.choice(letters) for _ in range(length))
 
     @property
-    def uid(self):
+    def uid(self) -> str:
         """Stable random identifier for this descriptor."""
         return self._uid
 
     @property
-    def _minimizer_uid(self):
+    def _minimizer_uid(self) -> str:
         """Variant of uid that is safe for minimizer engines."""
         # return self.unique_name.replace('.', '__')
         return self.uid
 
     @property
-    def constrained(self):
+    def constrained(self) -> bool:
         """Whether this parameter is part of a constraint expression."""
         return self._constrained
 
-    def _set_value_constrained(self, v) -> None:
+    def _set_value_constrained(self, v: object) -> None:
         """Set the value from a constraint expression.
 
         Validates against the spec, marks the parent datablock dirty,
@@ -336,50 +335,50 @@ class GenericParameter(GenericNumericDescriptor):
         self._constrained = True
 
     @property
-    def free(self):
+    def free(self) -> bool:
         """Whether this parameter is currently varied during fitting."""
         return self._free
 
     @free.setter
-    def free(self, v):
+    def free(self, v: bool) -> None:
         """Set the "free" flag after validation."""
         self._free = self._free_spec.validated(
             v, name=f'{self.unique_name}.free', current=self._free
         )
 
     @property
-    def uncertainty(self):
+    def uncertainty(self) -> float | None:
         """Estimated standard uncertainty of the fitted value, if
         available.
         """
         return self._uncertainty
 
     @uncertainty.setter
-    def uncertainty(self, v):
+    def uncertainty(self, v: float | None) -> None:
         """Set the uncertainty value (must be non-negative or None)."""
         self._uncertainty = self._uncertainty_spec.validated(
             v, name=f'{self.unique_name}.uncertainty', current=self._uncertainty
         )
 
     @property
-    def fit_min(self):
+    def fit_min(self) -> float:
         """Lower fitting bound."""
         return self._fit_min
 
     @fit_min.setter
-    def fit_min(self, v):
+    def fit_min(self, v: float) -> None:
         """Set the lower bound for the parameter value."""
         self._fit_min = self._fit_min_spec.validated(
             v, name=f'{self.unique_name}.fit_min', current=self._fit_min
         )
 
     @property
-    def fit_max(self):
+    def fit_max(self) -> float:
         """Upper fitting bound."""
         return self._fit_max
 
     @fit_max.setter
-    def fit_max(self, v):
+    def fit_max(self, v: float) -> None:
         """Set the upper bound for the parameter value."""
         self._fit_max = self._fit_max_spec.validated(
             v, name=f'{self.unique_name}.fit_max', current=self._fit_max
@@ -394,7 +393,7 @@ class StringDescriptor(GenericStringDescriptor):
         self,
         *,
         cif_handler: CifHandler,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """
         String descriptor bound to a CIF handler.
@@ -419,7 +418,7 @@ class NumericDescriptor(GenericNumericDescriptor):
         self,
         *,
         cif_handler: CifHandler,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """
         Numeric descriptor bound to a CIF handler.
@@ -444,7 +443,7 @@ class Parameter(GenericParameter):
         self,
         *,
         cif_handler: CifHandler,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """
         Fittable parameter bound to a CIF handler.

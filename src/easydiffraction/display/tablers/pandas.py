@@ -4,8 +4,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 try:
     from IPython.display import HTML
     from IPython.display import display
@@ -80,7 +78,7 @@ class PandasTableBackend(TableBackendBase):
             },
         ]
 
-    def _build_header_alignment_styles(self, df, alignments) -> list[dict]:
+    def _build_header_alignment_styles(self, df: object, alignments: object) -> list[dict]:
         """
         Generate header cell alignment styles per column.
 
@@ -104,7 +102,7 @@ class PandasTableBackend(TableBackendBase):
             for column, align in zip(df.columns, alignments, strict=False)
         ]
 
-    def _apply_styling(self, df, alignments, color: str):
+    def _apply_styling(self, df: object, alignments: object, color: str) -> object:
         """
         Build a configured Styler with alignments and base styles.
 
@@ -135,7 +133,7 @@ class PandasTableBackend(TableBackendBase):
             )
         return styler
 
-    def _update_display(self, styler, display_handle) -> None:
+    def _update_display(self, styler: object, display_handle: object) -> None:
         """
         Single, consistent update path for Jupyter.
 
@@ -170,10 +168,10 @@ class PandasTableBackend(TableBackendBase):
 
     def render(
         self,
-        alignments,
-        df,
-        display_handle: Any | None = None,
-    ) -> Any:
+        alignments: object,
+        df: object,
+        display_handle: object | None = None,
+    ) -> object:
         """
         Render a styled DataFrame.
 

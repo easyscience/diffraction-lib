@@ -78,17 +78,17 @@ class MinimizerBase(ABC):
     @abstractmethod
     def _run_solver(
         self,
-        objective_function: Callable[..., Any],
-        engine_parameters: Dict[str, Any],
-    ) -> Any:
+        objective_function: Callable[..., object],
+        engine_parameters: Dict[str, object],
+    ) -> object:
         """Execute the concrete solver and return its raw result."""
         pass
 
     @abstractmethod
     def _sync_result_to_parameters(
         self,
-        raw_result: Any,
-        parameters: List[Any],
+        raw_result: object,
+        parameters: List[object],
     ) -> None:
         """Copy values from ``raw_result`` back to ``parameters`` in-
         place.
@@ -97,8 +97,8 @@ class MinimizerBase(ABC):
 
     def _finalize_fit(
         self,
-        parameters: List[Any],
-        raw_result: Any,
+        parameters: List[object],
+        raw_result: object,
     ) -> FitResults:
         """
         Build :class:`FitResults` and store it on ``self.result``.
@@ -128,14 +128,14 @@ class MinimizerBase(ABC):
         return self.result
 
     @abstractmethod
-    def _check_success(self, raw_result: Any) -> bool:
+    def _check_success(self, raw_result: object) -> bool:
         """Determine whether the fit was successful."""
         pass
 
     def fit(
         self,
-        parameters: List[Any],
-        objective_function: Callable[..., Any],
+        parameters: List[object],
+        objective_function: Callable[..., object],
     ) -> FitResults:
         """
         Run the full minimization workflow.
@@ -169,11 +169,11 @@ class MinimizerBase(ABC):
 
     def _objective_function(
         self,
-        engine_params: Dict[str, Any],
-        parameters: List[Any],
-        structures: Any,
-        experiments: Any,
-        calculator: Any,
+        engine_params: Dict[str, object],
+        parameters: List[object],
+        structures: object,
+        experiments: object,
+        calculator: object,
     ) -> np.ndarray:
         """Default objective helper computing residuals array."""
         return self._compute_residuals(
@@ -186,11 +186,11 @@ class MinimizerBase(ABC):
 
     def _create_objective_function(
         self,
-        parameters: List[Any],
-        structures: Any,
-        experiments: Any,
-        calculator: Any,
-    ) -> Callable[[Dict[str, Any]], np.ndarray]:
+        parameters: List[object],
+        structures: object,
+        experiments: object,
+        calculator: object,
+    ) -> Callable[[Dict[str, object]], np.ndarray]:
         """Return a closure capturing problem context for the solver."""
         return lambda engine_params: self._objective_function(
             engine_params,

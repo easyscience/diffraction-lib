@@ -16,7 +16,7 @@ class CifHandler:
         self._names = names
         self._owner = None  # set by attach
 
-    def attach(self, owner):
+    def attach(self, owner: object) -> None:
         """Attach to a descriptor or parameter instance."""
         self._owner = owner
 
