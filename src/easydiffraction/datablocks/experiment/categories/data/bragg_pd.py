@@ -311,12 +311,12 @@ class PdDataBase(CategoryCollection):
     # Should be set only once
 
     def _set_point_id(self, values: object) -> None:
-        """Helper method to set point IDs."""
+        """Set point IDs."""
         for p, v in zip(self._items, values, strict=True):
             p.point_id._value = v
 
     def _set_intensity_meas(self, values: object) -> None:
-        """Helper method to set measured intensity."""
+        """Set measured intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas._value = v
 
@@ -328,22 +328,22 @@ class PdDataBase(CategoryCollection):
     # Can be set multiple times
 
     def _set_d_spacing(self, values: object) -> None:
-        """Helper method to set d-spacing values."""
+        """Set d-spacing values."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.d_spacing._value = v
 
     def _set_intensity_calc(self, values: object) -> None:
-        """Helper method to set calculated intensity."""
+        """Set calculated intensity."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_calc._value = v
 
     def _set_intensity_bkg(self, values: object) -> None:
-        """Helper method to set background intensity."""
+        """Set background intensity."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_bkg._value = v
 
     def _set_calc_status(self, values: object) -> None:
-        """Helper method to set refinement status."""
+        """Set refinement status."""
         for p, v in zip(self._items, values, strict=True):
             if v:
                 p.calc_status._value = 'incl'
@@ -493,7 +493,7 @@ class PdCwlData(PdDataBase):
     # Should be set only once
 
     def _create_items_set_xcoord_and_id(self, values: object) -> None:
-        """Helper method to set 2θ values."""
+        """Set 2θ values."""
         # TODO: split into multiple methods
 
         # Create items
@@ -566,7 +566,7 @@ class PdTofData(PdDataBase):
     # Should be set only once
 
     def _create_items_set_xcoord_and_id(self, values: object) -> None:
-        """Helper method to set time-of-flight values."""
+        """Set time-of-flight values."""
         # TODO: split into multiple methods
 
         # Create items

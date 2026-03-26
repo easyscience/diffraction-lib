@@ -55,7 +55,7 @@ class DfolsMinimizer(MinimizerBase):
         raw_result: object,
     ) -> None:
         """
-        Synchronizes the result from the solver to the parameters.
+        Synchronize the solver result back to the parameters.
 
         Parameters
         ----------
@@ -77,7 +77,7 @@ class DfolsMinimizer(MinimizerBase):
 
     def _check_success(self, raw_result: object) -> bool:
         """
-        Determines success from DFO-LS result dictionary.
+        Determine success from DFO-LS result dictionary.
 
         Parameters
         ----------

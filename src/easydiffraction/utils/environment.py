@@ -35,7 +35,7 @@ def in_warp() -> bool:
 
 def in_pycharm() -> bool:
     """
-    Determines if the current environment is PyCharm.
+    Check whether the current environment is PyCharm.
 
     Returns
     -------
@@ -47,7 +47,7 @@ def in_pycharm() -> bool:
 
 def in_colab() -> bool:
     """
-    Determines if the current environment is Google Colab.
+    Check whether the current environment is Google Colab.
 
     Returns
     -------

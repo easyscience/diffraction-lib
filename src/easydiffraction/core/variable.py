@@ -386,7 +386,7 @@ class StringDescriptor(GenericStringDescriptor):
         **kwargs: object,
     ) -> None:
         """
-        String descriptor bound to a CIF handler.
+        Initialize a string descriptor bound to a CIF handler.
 
         Parameters
         ----------

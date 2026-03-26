@@ -27,7 +27,7 @@ class SingletonBase:
 
     @classmethod
     def get(cls: Type[T]) -> T:
-        """Returns the shared instance, creating it if needed."""
+        """Return the shared instance, creating it if needed."""
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance
@@ -44,12 +44,12 @@ class UidMapHandler(SingletonBase):
         self._uid_map: Dict[str, Any] = {}
 
     def get_uid_map(self) -> Dict[str, Any]:
-        """Returns the current UID-to-Parameter map."""
+        """Return the current UID-to-Parameter map."""
         return self._uid_map
 
     def add_to_uid_map(self, parameter: object) -> None:
         """
-        Adds a single Parameter or Descriptor object to the UID map.
+        Add a single Parameter or Descriptor object to the UID map.
 
         Only Descriptor or Parameter instances are allowed (not
         Components or others).
@@ -65,7 +65,7 @@ class UidMapHandler(SingletonBase):
 
     def replace_uid(self, old_uid: str, new_uid: str) -> None:
         """
-        Replaces an existing UID key in the UID map with a new UID.
+        Replace an existing UID key in the UID map with a new UID.
 
         Moves the associated parameter from old_uid to new_uid. Raises a
         KeyError if the old_uid doesn't exist.
@@ -107,7 +107,7 @@ class ConstraintsHandler(SingletonBase):
 
     def set_aliases(self, aliases: object) -> None:
         """
-        Sets the alias map (name → parameter wrapper).
+        Set the alias map (name → parameter wrapper).
 
         Called when user registers parameter aliases like:
         alias='biso_La', param=model.atom_sites['La'].b_iso
@@ -116,7 +116,7 @@ class ConstraintsHandler(SingletonBase):
 
     def set_constraints(self, constraints: object) -> None:
         """
-        Sets the constraints and triggers parsing into internal format.
+        Set the constraints and triggers parsing into internal format.
 
         Called when user registers expressions like: lhs_alias='occ_Ba',
         rhs_expr='1 - occ_La'
@@ -138,7 +138,7 @@ class ConstraintsHandler(SingletonBase):
 
     def apply(self) -> None:
         """
-        Evaluates constraints and applies them to dependent parameters.
+        Evaluate constraints and applies them to dependent parameters.
 
         For each constraint: - Evaluate RHS using current values of
         aliases - Locate the dependent parameter by alias → uid → param

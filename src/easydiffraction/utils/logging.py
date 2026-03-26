@@ -684,7 +684,7 @@ class ConsolePrinter:
 
     @classmethod
     def section(cls, title: str) -> None:
-        """Formats a section header with bold green text."""
+        """Format a section header with bold green text."""
         full_title = f'{title.upper()}'
         line = '—' * len(full_title)
         formatted = f'[bold green]{line}\n{full_title}\n{line}[/bold green]'

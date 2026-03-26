@@ -194,12 +194,12 @@ class TotalDataBase(CategoryCollection):
     # Should be set only once
 
     def _set_point_id(self, values: object) -> None:
-        """Helper method to set point IDs."""
+        """Set point IDs."""
         for p, v in zip(self._items, values, strict=True):
             p.point_id._value = v
 
     def _set_g_r_meas(self, values: object) -> None:
-        """Helper method to set measured G(r)."""
+        """Set measured G(r)."""
         for p, v in zip(self._items, values, strict=True):
             p.g_r_meas._value = v
 
@@ -211,12 +211,12 @@ class TotalDataBase(CategoryCollection):
     # Can be set multiple times
 
     def _set_g_r_calc(self, values: object) -> None:
-        """Helper method to set calculated G(r)."""
+        """Set calculated G(r)."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.g_r_calc._value = v
 
     def _set_calc_status(self, values: object) -> None:
-        """Helper method to set calculation status."""
+        """Set calculation status."""
         for p, v in zip(self._items, values, strict=True):
             if v:
                 p.calc_status._value = 'incl'
@@ -339,7 +339,7 @@ class TotalData(TotalDataBase):
     # Should be set only once
 
     def _create_items_set_xcoord_and_id(self, values: object) -> None:
-        """Helper method to set r values."""
+        """Set r values."""
         # TODO: split into multiple methods
 
         # Create items

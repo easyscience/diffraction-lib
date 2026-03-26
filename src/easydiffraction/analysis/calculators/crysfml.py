@@ -108,7 +108,7 @@ class CrysfmlCalculator(CalculatorBase):
         target_length: int,
     ) -> List[float]:
         """
-        Adjusts the length of the pattern to match the target length.
+        Adjust the pattern length to match the target length.
 
         Parameters
         ----------
@@ -160,7 +160,7 @@ class CrysfmlCalculator(CalculatorBase):
         structure: Structure,
     ) -> Dict[str, Any]:
         """
-        Converts a structure into a dictionary format.
+        Convert a structure into a dictionary format.
 
         Parameters
         ----------
@@ -205,7 +205,7 @@ class CrysfmlCalculator(CalculatorBase):
         experiment: ExperimentBase,
     ) -> Dict[str, Any]:
         """
-        Converts an experiment into a dictionary format.
+        Convert an experiment into a dictionary format.
 
         Parameters
         ----------

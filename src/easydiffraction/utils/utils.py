@@ -308,7 +308,7 @@ def _get_version_for_url(package_name: str = 'easydiffraction') -> str:
 
 def _safe_urlopen(request_or_url: object) -> object:  # type: ignore[no-untyped-def]
     """
-    Wrapper for urlopen with prior validation.
+    Open a URL with prior validation.
 
     Centralises lint suppression for validated HTTPS requests.
     """

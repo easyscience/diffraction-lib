@@ -267,7 +267,7 @@ class ReflnData(CategoryCollection):
         indices_k: object,
         indices_l: object,
     ) -> None:
-        """Helper method to set Miller indices."""
+        """Set Miller indices."""
         # TODO: split into multiple methods
 
         # Create items
@@ -285,12 +285,12 @@ class ReflnData(CategoryCollection):
         self._set_id([str(i + 1) for i in range(indices_h.size)])
 
     def _set_id(self, values: object) -> None:
-        """Helper method to set reflection IDs."""
+        """Set reflection IDs."""
         for p, v in zip(self._items, values, strict=True):
             p.id._value = v
 
     def _set_intensity_meas(self, values: object) -> None:
-        """Helper method to set measured intensity."""
+        """Set measured intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas._value = v
 
@@ -300,24 +300,24 @@ class ReflnData(CategoryCollection):
             p.intensity_meas_su._value = v
 
     def _set_wavelength(self, values: object) -> None:
-        """Helper method to set wavelength."""
+        """Set wavelength."""
         for p, v in zip(self._items, values, strict=True):
             p.wavelength._value = v
 
     # Can be set multiple times
 
     def _set_d_spacing(self, values: object) -> None:
-        """Helper method to set d-spacing values."""
+        """Set d-spacing values."""
         for p, v in zip(self._items, values, strict=True):
             p.d_spacing._value = v
 
     def _set_sin_theta_over_lambda(self, values: object) -> None:
-        """Helper method to set sin(theta)/lambda values."""
+        """Set sin(theta)/lambda values."""
         for p, v in zip(self._items, values, strict=True):
             p.sin_theta_over_lambda._value = v
 
     def _set_intensity_calc(self, values: object) -> None:
-        """Helper method to set calculated intensity."""
+        """Set calculated intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_calc._value = v
 

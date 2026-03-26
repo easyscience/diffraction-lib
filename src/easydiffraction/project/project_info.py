@@ -118,7 +118,7 @@ class ProjectInfo(GuardedBase):
         self._last_modified = datetime.datetime.now()
 
     def parameters(self) -> None:
-        """Placeholder for parameter listing."""
+        """List parameters (not implemented)."""
         pass
 
     # TODO: Consider moving to io.cif.serialize

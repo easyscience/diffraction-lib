@@ -279,7 +279,10 @@ ignore = [
   # The following is replaced by 'D'/[tool.ruff.lint.pydocstyle] and [tool.pydoclint]
   'DOC', # https://docs.astral.sh/ruff/rules/#pydoclint-doc
   # Temporary:
-  #'D205',
+  'D100',
+  'D101',
+  'D104',
+  'D105',
   'DTZ005',
 ]
 

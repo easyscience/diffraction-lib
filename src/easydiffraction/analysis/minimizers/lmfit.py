@@ -40,7 +40,7 @@ class LmfitMinimizer(MinimizerBase):
         parameters: List[object],
     ) -> Dict[str, object]:
         """
-        Prepares the solver arguments for the lmfit minimizer.
+        Prepare the solver arguments for the lmfit minimizer.
 
         Parameters
         ----------
@@ -66,7 +66,7 @@ class LmfitMinimizer(MinimizerBase):
 
     def _run_solver(self, objective_function: object, **kwargs: object) -> object:
         """
-        Runs the lmfit solver.
+        Run the lmfit solver.
 
         Parameters
         ----------
@@ -96,7 +96,7 @@ class LmfitMinimizer(MinimizerBase):
         raw_result: object,
     ) -> None:
         """
-        Synchronizes the result from the solver to the parameters.
+        Synchronize the result from the solver to the parameters.
 
         Parameters
         ----------
@@ -117,7 +117,7 @@ class LmfitMinimizer(MinimizerBase):
 
     def _check_success(self, raw_result: object) -> bool:
         """
-        Determines success from lmfit MinimizerResult.
+        Determine success from lmfit MinimizerResult.
 
         Parameters
         ----------
@@ -140,7 +140,7 @@ class LmfitMinimizer(MinimizerBase):
         **kwargs: object,
     ) -> None:
         """
-        Callback function for each iteration of the minimizer.
+        Handle each iteration callback of the minimizer.
 
         Parameters
         ----------

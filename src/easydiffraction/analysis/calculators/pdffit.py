@@ -59,9 +59,9 @@ class PdffitCalculator(CalculatorBase):
         """Short identifier of this calculator engine."""
         return 'pdffit'
 
-    def calculate_structure_factors(self, structures: object, experiments: object) -> list:
+    def calculate_structure_factors(self, structures: object, experiments: object,) -> list:
         """
-        Placeholder — PDF does not compute HKL structure factors.
+        Return an empty list; PDF does not compute structure factors.
 
         Parameters
         ----------

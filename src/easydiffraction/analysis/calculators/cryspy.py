@@ -357,7 +357,7 @@ class CryspyCalculator(CalculatorBase):
         structure: Structure,
     ) -> str:
         """
-        Converts a structure to a Cryspy CIF string.
+        Convert a structure to a Cryspy CIF string.
 
         Parameters
         ----------
@@ -377,7 +377,7 @@ class CryspyCalculator(CalculatorBase):
         linked_structure: object,
     ) -> str:
         """
-        Converts an experiment to a Cryspy CIF string.
+        Convert an experiment to a Cryspy CIF string.
 
         Parameters
         ----------
