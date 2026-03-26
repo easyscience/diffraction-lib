@@ -354,6 +354,7 @@ max-doc-length = 72
 
 [tool.pydoclint]
 #exclude = '\.' # Temporarily disable pydoclint until we are ready
+exclude = 'src/easydiffraction/utils/_vendored/jupyter_dark_detect' # ED only
 style = 'numpy'
 check-style-mismatch = true
 check-arg-defaults = true
@@ -370,5 +371,5 @@ allow-init-docstring = true
 docstring_style = 'numpy'
 line_length = 72
 fix_rst_backticks = true
-exclude = "src/easydiffraction/utils/_vendored/jupyter_dark_detect" # ED only
+exclude = 'src/easydiffraction/utils/_vendored/jupyter_dark_detect' # ED only
 verbose = 'diff'

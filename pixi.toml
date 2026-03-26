@@ -5,7 +5,7 @@
 # Platform-independent
 
 [activation.env]
-PYTHONIOENCODING = "utf-8"
+PYTHONIOENCODING = 'utf-8'
 
 # Platform-specific
 
@@ -58,7 +58,7 @@ gsl = '*'    # GNU Scientific Library; required for pdffit2
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
 #pip = '*' # Native package installer
-easydiffraction = { path = ".", editable = true, extras = ['dev'] }
+easydiffraction = { path = '.', editable = true, extras = ['dev'] }
 
 # Specific features: Set specific Python versions
 
@@ -108,9 +108,9 @@ param-docstring-check = 'python tools/param_consistency.py src/ --check'
 docstring-lint-check = 'pydoclint --quiet src/'
 notebook-lint-check = 'nbqa ruff docs/docs/tutorials/'
 py-lint-check = 'ruff check src/ tests/ docs/docs/tutorials/'
-py-format-check = "ruff format --check src/ tests/ docs/docs/tutorials/"
-nonpy-format-check = "npx prettier --list-different --config=prettierrc.toml --ignore-unknown ."
-nonpy-format-check-modified = "python tools/nonpy_prettier_modified.py"
+py-format-check = 'ruff format --check src/ tests/ docs/docs/tutorials/'
+nonpy-format-check = 'npx prettier --list-different --config=prettierrc.toml --ignore-unknown .'
+nonpy-format-check-modified = 'python tools/nonpy_prettier_modified.py'
 
 check = 'pre-commit run --hook-stage manual --all-files'
 
@@ -122,9 +122,9 @@ param-docstring-fix = 'python tools/param_consistency.py src/ --fix'
 docstring-format-fix = 'format-docstring src/ docs/docs/tutorials/'
 notebook-lint-fix = 'nbqa ruff --fix docs/docs/tutorials/'
 py-lint-fix = 'ruff check --fix src/ tests/ docs/docs/tutorials/'
-py-format-fix = "ruff format src/ tests/ docs/docs/tutorials/"
+py-format-fix = 'ruff format src/ tests/ docs/docs/tutorials/'
 nonpy-format-fix = 'npx prettier --write --list-different --config=prettierrc.toml --ignore-unknown .'
-nonpy-format-fix-modified = "python tools/nonpy_prettier_modified.py --write"
+nonpy-format-fix-modified = 'python tools/nonpy_prettier_modified.py --write'
 success-message = 'echo "✅ All auto-formatting steps completed successfully!"'
 
 fix = { depends-on = [
@@ -182,11 +182,11 @@ notebook-prepare = { depends-on = [
 ########################
 
 docs-vars = "JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS='ignore::RuntimeWarning'"
-docs-pre = "pixi run docs-vars python -m mkdocs"
-docs-serve = "pixi run docs-pre serve -f docs/mkdocs.yml"
-docs-serve-dirty = "pixi run docs-serve --dirty"
-docs-build = "pixi run docs-pre build -f docs/mkdocs.yml"
-docs-build-local = "pixi run docs-build --no-directory-urls"
+docs-pre = 'pixi run docs-vars python -m mkdocs'
+docs-serve = 'pixi run docs-pre serve -f docs/mkdocs.yml'
+docs-serve-dirty = 'pixi run docs-serve --dirty'
+docs-build = 'pixi run docs-pre build -f docs/mkdocs.yml'
+docs-build-local = 'pixi run docs-build --no-directory-urls'
 
 docs-deploy-pre = 'mike deploy -F docs/mkdocs.yml --push --branch gh-pages --update-aliases --alias-type redirect'
 docs-set-default-pre = 'mike set-default -F docs/mkdocs.yml --push --branch gh-pages'
@@ -197,9 +197,9 @@ docs-update-assets = 'python tools/update_docs_assets.py'
 # 📦 Template Management Tasks
 ##############################
 
-copier-copy = "copier copy gh:easyscience/templates . --data-file ../diffraction/.copier-answers.yml --data template_type=lib"
-copier-recopy = "copier recopy --data-file ../diffraction/.copier-answers.yml --data template_type=lib"
-copier-update = "copier update --data-file ../diffraction/.copier-answers.yml --data template_type=lib"
+copier-copy = 'copier copy gh:easyscience/templates . --data-file ../diffraction/.copier-answers.yml --data template_type=lib'
+copier-recopy = 'copier recopy --data-file ../diffraction/.copier-answers.yml --data template_type=lib'
+copier-update = 'copier update --data-file ../diffraction/.copier-answers.yml --data template_type=lib'
 
 #####################
 # 🪝 Pre-commit Hooks
