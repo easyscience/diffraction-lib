@@ -141,25 +141,10 @@ label.md-nav__title[for="__drawer"] {
   height: 0;
 }
 
-/* Hide header title */
-/*
-.md-header__ellipsis {
+/* Hide site title (first topic) while keeping page title and version selector */
+.md-header__topic:first-child .md-ellipsis {
   display: none;
 }
-*/
-/* Hide site title text */
-/*
-.md-header__title {
-  display: none;
-}
-*/
-/* Keep the header title area (needed for mike version selector),
-   but hide only the site title text, like "EasyDiffraction Library" */
-/*
-.md-header__title .md-header__topic {
-  display: none;
-}
-*/
 
 /* Increase logo size */
 .md-logo :is(img, svg) {
@@ -237,9 +222,27 @@ Adjust the margins and paddings to fit the defaults in MkDocs Material and do no
   width: 100% !important;
   display: flex !important;
 }
+
 .jp-Notebook {
   padding: 0 !important;
   margin-top: -3em !important;
+
+  /* Ensure notebook content stretches across the page */
+  width: 100% !important;
+  max-width: 100% !important;
+
+  /* mkdocs-material + some notebook HTML end up as flex */
+  align-items: stretch !important;
+}
+
+.jp-Notebook .jp-Cell {
+  /* Key: flex children often need min-width: 0 to prevent weird shrink */
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+
+  /* Removes jupyter cell paddings */
+  padding-left: 0 !important;
 }
 
 /* Removes jupyter cell prefixes, like In[123]: */
@@ -247,11 +250,6 @@ Adjust the margins and paddings to fit the defaults in MkDocs Material and do no
 .jp-InputPrompt,
 .jp-OutputPrompt {
   display: none !important;
-}
-
-/* Removes jupyter cell paddings */
-.jp-Cell {
-  padding-left: 0 !important;
 }
 
 /* Removes jupyter output cell padding to align with input cell text */
