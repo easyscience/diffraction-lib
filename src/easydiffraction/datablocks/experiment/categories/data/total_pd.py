@@ -124,17 +124,17 @@ class TotalDataPoint(CategoryItem):
     def point_id(self) -> StringDescriptor:
         """Identifier for this data point in the dataset.
 
-        Returns:
-            StringDescriptor: Identifier for this data point in the dataset.
+        Reading this property returns the underlying
+        ``StringDescriptor` object.
         """
         return self._point_id
 
     @property
     def r(self) -> NumericDescriptor:
-        """Interatomic distance in real space.
+        """Interatomic distance in real space (Å).
 
-        Returns:
-            NumericDescriptor: Interatomic distance in real space (Å).
+        Reading this property returns the underlying
+        ``NumericDescriptor` object.
         """
         return self._r
 
@@ -142,8 +142,8 @@ class TotalDataPoint(CategoryItem):
     def g_r_meas(self) -> NumericDescriptor:
         """Measured pair distribution function G(r).
 
-        Returns:
-            NumericDescriptor: Measured pair distribution function G(r).
+        Reading this property returns the underlying
+        ``NumericDescriptor` object.
         """
         return self._g_r_meas
 
@@ -151,8 +151,8 @@ class TotalDataPoint(CategoryItem):
     def g_r_meas_su(self) -> NumericDescriptor:
         """Standard uncertainty of measured G(r).
 
-        Returns:
-            NumericDescriptor: Standard uncertainty of measured G(r).
+        Reading this property returns the underlying
+        ``NumericDescriptor` object.
         """
         return self._g_r_meas_su
 
@@ -160,8 +160,8 @@ class TotalDataPoint(CategoryItem):
     def g_r_calc(self) -> NumericDescriptor:
         """Calculated pair distribution function G(r).
 
-        Returns:
-            NumericDescriptor: Calculated pair distribution function G(r).
+        Reading this property returns the underlying
+        ``NumericDescriptor` object.
         """
         return self._g_r_calc
 
@@ -169,8 +169,8 @@ class TotalDataPoint(CategoryItem):
     def calc_status(self) -> StringDescriptor:
         """Status code of the data point in calculation.
 
-        Returns:
-            StringDescriptor: Status code of the data point in calculation.
+        Reading this property returns the underlying
+        ``StringDescriptor` object.
         """
         return self._calc_status
 

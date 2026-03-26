@@ -63,36 +63,28 @@ class Alias(CategoryItem):
     def label(self) -> StringDescriptor:
         """...
 
-        Returns:
-            StringDescriptor: ...
+        Reading this property returns the underlying
+        ``StringDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._label
 
     @label.setter
     def label(self, value: str) -> None:
-        """Set the ...
-
-        Args:
-            value (str): ...
-        """
         self._label.value = value
 
     @property
     def param_uid(self) -> StringDescriptor:
         """...
 
-        Returns:
-            StringDescriptor: ...
+        Reading this property returns the underlying
+        ``StringDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._param_uid
 
     @param_uid.setter
     def param_uid(self, value: str) -> None:
-        """Set the ...
-
-        Args:
-            value (str): ...
-        """
         self._param_uid.value = value
 
 

@@ -74,54 +74,42 @@ class ExcludedRegion(CategoryItem):
     def id(self) -> StringDescriptor:
         """Identifier for this excluded region.
 
-        Returns:
-            StringDescriptor: Identifier for this excluded region.
+        Reading this property returns the underlying
+        ``StringDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._id
 
     @id.setter
     def id(self, value: str) -> None:
-        """Set the identifier for this excluded region.
-
-        Args:
-            value (str): Identifier for this excluded region.
-        """
         self._id.value = value
 
     @property
     def start(self) -> NumericDescriptor:
         """Start of the excluded region.
 
-        Returns:
-            NumericDescriptor: Start of the excluded region.
+        Reading this property returns the underlying
+        ``NumericDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._start
 
     @start.setter
     def start(self, value: float) -> None:
-        """Set the start of the excluded region.
-
-        Args:
-            value (float): Start of the excluded region.
-        """
         self._start.value = value
 
     @property
     def end(self) -> NumericDescriptor:
         """End of the excluded region.
 
-        Returns:
-            NumericDescriptor: End of the excluded region.
+        Reading this property returns the underlying
+        ``NumericDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._end
 
     @end.setter
     def end(self, value: float) -> None:
-        """Set the end of the excluded region.
-
-        Args:
-            value (float): End of the excluded region.
-        """
         self._end.value = value
 
 

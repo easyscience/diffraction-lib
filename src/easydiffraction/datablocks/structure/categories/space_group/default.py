@@ -130,18 +130,14 @@ class SpaceGroup(CategoryItem):
     def name_h_m(self) -> StringDescriptor:
         """Hermann-Mauguin symbol of the space group.
 
-        Returns:
-            StringDescriptor: Hermann-Mauguin symbol of the space group.
+        Reading this property returns the underlying
+        ``StringDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._name_h_m
 
     @name_h_m.setter
     def name_h_m(self, value: str) -> None:
-        """Set the hermann-Mauguin symbol of the space group.
-
-        Args:
-            value (str): Hermann-Mauguin symbol of the space group.
-        """
         self._name_h_m.value = value
         self._reset_it_coordinate_system_code()
 
@@ -149,16 +145,12 @@ class SpaceGroup(CategoryItem):
     def it_coordinate_system_code(self) -> StringDescriptor:
         """A qualifier identifying which setting in IT is used.
 
-        Returns:
-            StringDescriptor: A qualifier identifying which setting in IT is used.
+        Reading this property returns the underlying
+        ``StringDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._it_coordinate_system_code
 
     @it_coordinate_system_code.setter
     def it_coordinate_system_code(self, value: str) -> None:
-        """Set the a qualifier identifying which setting in IT is used.
-
-        Args:
-            value (str): A qualifier identifying which setting in IT is used.
-        """
         self._it_coordinate_system_code.value = value

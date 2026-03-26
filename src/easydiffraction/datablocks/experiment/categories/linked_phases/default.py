@@ -56,36 +56,28 @@ class LinkedPhase(CategoryItem):
     def id(self) -> StringDescriptor:
         """Identifier of the linked phase.
 
-        Returns:
-            StringDescriptor: Identifier of the linked phase.
+        Reading this property returns the underlying
+        ``StringDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._id
 
     @id.setter
     def id(self, value: str) -> None:
-        """Set the identifier of the linked phase.
-
-        Args:
-            value (str): Identifier of the linked phase.
-        """
         self._id.value = value
 
     @property
     def scale(self) -> Parameter:
         """Scale factor of the linked phase.
 
-        Returns:
-            Parameter: Scale factor of the linked phase.
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._scale
 
     @scale.setter
     def scale(self, value: float) -> None:
-        """Set the scale factor of the linked phase.
-
-        Args:
-            value (float): Scale factor of the linked phase.
-        """
         self._scale.value = value
 
 

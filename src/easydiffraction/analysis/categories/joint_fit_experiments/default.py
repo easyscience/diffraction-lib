@@ -63,36 +63,28 @@ class JointFitExperiment(CategoryItem):
     def id(self) -> StringDescriptor:
         """Experiment identifier.
 
-        Returns:
-            StringDescriptor: Experiment identifier.
+        Reading this property returns the underlying
+        ``StringDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._id
 
     @id.setter
     def id(self, value: str) -> None:
-        """Set the experiment identifier.
-
-        Args:
-            value (str): Experiment identifier.
-        """
         self._id.value = value
 
     @property
     def weight(self) -> NumericDescriptor:
         """Weight factor.
 
-        Returns:
-            NumericDescriptor: Weight factor.
+        Reading this property returns the underlying
+        ``NumericDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._weight
 
     @weight.setter
     def weight(self, value: float) -> None:
-        """Set the weight factor.
-
-        Args:
-            value (float): Weight factor.
-        """
         self._weight.value = value
 
 

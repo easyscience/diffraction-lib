@@ -96,59 +96,42 @@ class LineSegment(CategoryItem):
     def id(self) -> StringDescriptor:
         """Identifier for this background line segment.
 
-        Returns:
-            StringDescriptor: Identifier for this background line segment.
+        Reading this property returns the underlying
+        ``StringDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._id
 
     @id.setter
     def id(self, value: str) -> None:
-        """Set the identifier for this background line segment.
-
-        Args:
-            value (str): Identifier for this background line segment.
-        """
         self._id.value = value
 
     @property
     def x(self) -> NumericDescriptor:
-        """X-coordinates used to create many straight-line segments
-        representing the background in a calculated diffractogram.
+        """X-coordinates used to create many straight-line segments representing the background in a calculated diffractogram.
 
-        Returns:
-            NumericDescriptor: X-coordinates used to create many straight-line segments representing the background in a calculated diffractogram.
+        Reading this property returns the underlying
+        ``NumericDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._x
 
     @x.setter
     def x(self, value: float) -> None:
-        """Set the x-coordinates used to create many straight-line
-        segments representing the background in a calculated
-        diffractogram.
-
-        Args:
-            value (float): X-coordinates used to create many straight-line segments representing the background in a calculated diffractogram.
-        """
         self._x.value = value
 
     @property
     def y(self) -> Parameter:
-        """Intensity used to create many straight-line segments
-        representing the background in a calculated diffractogram.
+        """Intensity used to create many straight-line segments representing the background in a calculated diffractogram.
 
-        Returns:
-            Parameter: Intensity used to create many straight-line segments representing the background in a calculated diffractogram.
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._y
 
     @y.setter
     def y(self, value: float) -> None:
-        """Set the intensity used to create many straight-line segments
-        representing the background in a calculated diffractogram.
-
-        Args:
-            value (float): Intensity used to create many straight-line segments representing the background in a calculated diffractogram.
-        """
         self._y.value = value
 
 

@@ -50,16 +50,12 @@ class FitMode(CategoryItem):
     def mode(self) -> StringDescriptor:
         """Fitting strategy.
 
-        Returns:
-            StringDescriptor: Fitting strategy.
+        Reading this property returns the underlying
+        ``StringDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._mode
 
     @mode.setter
     def mode(self, value: str) -> None:
-        """Set the fitting strategy.
-
-        Args:
-            value (str): Fitting strategy.
-        """
         self._mode.value = value

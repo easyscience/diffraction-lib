@@ -87,55 +87,42 @@ class PolynomialTerm(CategoryItem):
     def id(self) -> StringDescriptor:
         """Identifier for this background polynomial term.
 
-        Returns:
-            StringDescriptor: Identifier for this background polynomial term.
+        Reading this property returns the underlying
+        ``StringDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._id
 
     @id.setter
     def id(self, value: str) -> None:
-        """Set the identifier for this background polynomial term.
-
-        Args:
-            value (str): Identifier for this background polynomial term.
-        """
         self._id.value = value
 
     @property
     def order(self) -> NumericDescriptor:
         """Order used in a Chebyshev polynomial background term.
 
-        Returns:
-            NumericDescriptor: Order used in a Chebyshev polynomial background term.
+        Reading this property returns the underlying
+        ``NumericDescriptor` object.
+        Assigning to it updates the parameter value.
         """
         return self._order
 
     @order.setter
     def order(self, value: float) -> None:
-        """Set the order used in a Chebyshev polynomial background term.
-
-        Args:
-            value (float): Order used in a Chebyshev polynomial background term.
-        """
         self._order.value = value
 
     @property
     def coef(self) -> Parameter:
         """Coefficient used in a Chebyshev polynomial background term.
 
-        Returns:
-            Parameter: Coefficient used in a Chebyshev polynomial background term.
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._coef
 
     @coef.setter
     def coef(self, value: float) -> None:
-        """Set the coefficient used in a Chebyshev polynomial background
-        term.
-
-        Args:
-            value (float): Coefficient used in a Chebyshev polynomial background term.
-        """
         self._coef.value = value
 
 

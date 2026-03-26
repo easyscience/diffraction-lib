@@ -100,90 +100,70 @@ class TofPdInstrument(InstrumentBase):
 
     @property
     def setup_twotheta_bank(self) -> Parameter:
-        """Detector bank position.
+        """Detector bank position (deg).
 
-        Returns:
-            Parameter: Detector bank position (deg).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._setup_twotheta_bank
 
     @setup_twotheta_bank.setter
     def setup_twotheta_bank(self, value: float) -> None:
-        """Set the detector bank position.
-
-        Args:
-            value (float): Detector bank position (deg).
-        """
         self._setup_twotheta_bank.value = value
 
     @property
     def calib_d_to_tof_offset(self) -> Parameter:
-        """TOF offset.
+        """TOF offset (µs).
 
-        Returns:
-            Parameter: TOF offset (µs).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._calib_d_to_tof_offset
 
     @calib_d_to_tof_offset.setter
     def calib_d_to_tof_offset(self, value: float) -> None:
-        """Set the tOF offset.
-
-        Args:
-            value (float): TOF offset (µs).
-        """
         self._calib_d_to_tof_offset.value = value
 
     @property
     def calib_d_to_tof_linear(self) -> Parameter:
-        """TOF linear conversion.
+        """TOF linear conversion (µs/Å).
 
-        Returns:
-            Parameter: TOF linear conversion (µs/Å).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._calib_d_to_tof_linear
 
     @calib_d_to_tof_linear.setter
     def calib_d_to_tof_linear(self, value: float) -> None:
-        """Set the tOF linear conversion.
-
-        Args:
-            value (float): TOF linear conversion (µs/Å).
-        """
         self._calib_d_to_tof_linear.value = value
 
     @property
     def calib_d_to_tof_quad(self) -> Parameter:
-        """TOF quadratic correction.
+        """TOF quadratic correction (µs/Å²).
 
-        Returns:
-            Parameter: TOF quadratic correction (µs/Å²).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._calib_d_to_tof_quad
 
     @calib_d_to_tof_quad.setter
     def calib_d_to_tof_quad(self, value: float) -> None:
-        """Set the tOF quadratic correction.
-
-        Args:
-            value (float): TOF quadratic correction (µs/Å²).
-        """
         self._calib_d_to_tof_quad.value = value
 
     @property
     def calib_d_to_tof_recip(self) -> Parameter:
-        """TOF reciprocal velocity correction.
+        """TOF reciprocal velocity correction (µs·Å).
 
-        Returns:
-            Parameter: TOF reciprocal velocity correction (µs·Å).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._calib_d_to_tof_recip
 
     @calib_d_to_tof_recip.setter
     def calib_d_to_tof_recip(self, value: float) -> None:
-        """Set the tOF reciprocal velocity correction.
-
-        Args:
-            value (float): TOF reciprocal velocity correction (µs·Å).
-        """
         self._calib_d_to_tof_recip.value = value

@@ -135,8 +135,9 @@ class Cell(CategoryItem):
         """Recalculate cell parameters after a change.
 
         Args:
-            called_by_minimizer (bool): Whether the update was triggered
-                by the fitting minimizer. Currently unused.
+            called_by_minimizer (bool, default=False): Whether the
+                update was triggered by the fitting minimizer. Currently
+                unused.
         """
         del called_by_minimizer  # TODO: ???
 
@@ -148,108 +149,84 @@ class Cell(CategoryItem):
 
     @property
     def length_a(self) -> Parameter:
-        """Length of the a axis of the unit cell.
+        """Length of the a axis of the unit cell (Å).
 
-        Returns:
-            Parameter: Length of the a axis of the unit cell (Å).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._length_a
 
     @length_a.setter
     def length_a(self, value: float) -> None:
-        """Set the length of the a axis of the unit cell.
-
-        Args:
-            value (float): Length of the a axis of the unit cell (Å).
-        """
         self._length_a.value = value
 
     @property
     def length_b(self) -> Parameter:
-        """Length of the b axis of the unit cell.
+        """Length of the b axis of the unit cell (Å).
 
-        Returns:
-            Parameter: Length of the b axis of the unit cell (Å).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._length_b
 
     @length_b.setter
     def length_b(self, value: float) -> None:
-        """Set the length of the b axis of the unit cell.
-
-        Args:
-            value (float): Length of the b axis of the unit cell (Å).
-        """
         self._length_b.value = value
 
     @property
     def length_c(self) -> Parameter:
-        """Length of the c axis of the unit cell.
+        """Length of the c axis of the unit cell (Å).
 
-        Returns:
-            Parameter: Length of the c axis of the unit cell (Å).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._length_c
 
     @length_c.setter
     def length_c(self, value: float) -> None:
-        """Set the length of the c axis of the unit cell.
-
-        Args:
-            value (float): Length of the c axis of the unit cell (Å).
-        """
         self._length_c.value = value
 
     @property
     def angle_alpha(self) -> Parameter:
-        """Angle between edges b and c.
+        """Angle between edges b and c (deg).
 
-        Returns:
-            Parameter: Angle between edges b and c (deg).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._angle_alpha
 
     @angle_alpha.setter
     def angle_alpha(self, value: float) -> None:
-        """Set the angle between edges b and c.
-
-        Args:
-            value (float): Angle between edges b and c (deg).
-        """
         self._angle_alpha.value = value
 
     @property
     def angle_beta(self) -> Parameter:
-        """Angle between edges a and c.
+        """Angle between edges a and c (deg).
 
-        Returns:
-            Parameter: Angle between edges a and c (deg).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._angle_beta
 
     @angle_beta.setter
     def angle_beta(self, value: float) -> None:
-        """Set the angle between edges a and c.
-
-        Args:
-            value (float): Angle between edges a and c (deg).
-        """
         self._angle_beta.value = value
 
     @property
     def angle_gamma(self) -> Parameter:
-        """Angle between edges a and b.
+        """Angle between edges a and b (deg).
 
-        Returns:
-            Parameter: Angle between edges a and b (deg).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._angle_gamma
 
     @angle_gamma.setter
     def angle_gamma(self, value: float) -> None:
-        """Set the angle between edges a and b.
-
-        Args:
-            value (float): Angle between edges a and b (deg).
-        """
         self._angle_gamma.value = value

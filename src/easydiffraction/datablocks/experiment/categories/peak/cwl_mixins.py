@@ -78,102 +78,72 @@ class CwlBroadeningMixin:
 
     @property
     def broad_gauss_u(self) -> Parameter:
-        """Gaussian broadening coefficient (dependent on sample size and
-        instrument resolution).
+        """Gaussian broadening coefficient (dependent on sample size and instrument resolution) (deg²).
 
-        Returns:
-            Parameter: Gaussian broadening coefficient (dependent on sample size and instrument resolution) (deg²).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._broad_gauss_u
 
     @broad_gauss_u.setter
     def broad_gauss_u(self, value: float) -> None:
-        """Set the gaussian broadening coefficient (dependent on sample
-        size and instrument resolution).
-
-        Args:
-            value (float): Gaussian broadening coefficient (dependent on sample size and instrument resolution) (deg²).
-        """
         self._broad_gauss_u.value = value
 
     @property
     def broad_gauss_v(self) -> Parameter:
-        """Gaussian broadening coefficient (instrumental broadening
-        contribution).
+        """Gaussian broadening coefficient (instrumental broadening contribution) (deg²).
 
-        Returns:
-            Parameter: Gaussian broadening coefficient (instrumental broadening contribution) (deg²).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._broad_gauss_v
 
     @broad_gauss_v.setter
     def broad_gauss_v(self, value: float) -> None:
-        """Set the gaussian broadening coefficient (instrumental
-        broadening contribution).
-
-        Args:
-            value (float): Gaussian broadening coefficient (instrumental broadening contribution) (deg²).
-        """
         self._broad_gauss_v.value = value
 
     @property
     def broad_gauss_w(self) -> Parameter:
-        """Gaussian broadening coefficient (instrumental broadening
-        contribution).
+        """Gaussian broadening coefficient (instrumental broadening contribution) (deg²).
 
-        Returns:
-            Parameter: Gaussian broadening coefficient (instrumental broadening contribution) (deg²).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._broad_gauss_w
 
     @broad_gauss_w.setter
     def broad_gauss_w(self, value: float) -> None:
-        """Set the gaussian broadening coefficient (instrumental
-        broadening contribution).
-
-        Args:
-            value (float): Gaussian broadening coefficient (instrumental broadening contribution) (deg²).
-        """
         self._broad_gauss_w.value = value
 
     @property
     def broad_lorentz_x(self) -> Parameter:
-        """Lorentzian broadening coefficient (dependent on sample strain
-        effects).
+        """Lorentzian broadening coefficient (dependent on sample strain effects) (deg).
 
-        Returns:
-            Parameter: Lorentzian broadening coefficient (dependent on sample strain effects) (deg).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._broad_lorentz_x
 
     @broad_lorentz_x.setter
     def broad_lorentz_x(self, value: float) -> None:
-        """Set the lorentzian broadening coefficient (dependent on
-        sample strain effects).
-
-        Args:
-            value (float): Lorentzian broadening coefficient (dependent on sample strain effects) (deg).
-        """
         self._broad_lorentz_x.value = value
 
     @property
     def broad_lorentz_y(self) -> Parameter:
-        """Lorentzian broadening coefficient (dependent on
-        microstructural defects and strain).
+        """Lorentzian broadening coefficient (dependent on microstructural defects and strain) (deg).
 
-        Returns:
-            Parameter: Lorentzian broadening coefficient (dependent on microstructural defects and strain) (deg).
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._broad_lorentz_y
 
     @broad_lorentz_y.setter
     def broad_lorentz_y(self, value: float) -> None:
-        """Set the lorentzian broadening coefficient (dependent on
-        microstructural defects and strain).
-
-        Args:
-            value (float): Lorentzian broadening coefficient (dependent on microstructural defects and strain) (deg).
-        """
         self._broad_lorentz_y.value = value
 
 
@@ -232,72 +202,56 @@ class EmpiricalAsymmetryMixin:
     def asym_empir_1(self) -> Parameter:
         """Empirical asymmetry coefficient p1.
 
-        Returns:
-            Parameter: Empirical asymmetry coefficient p1.
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._asym_empir_1
 
     @asym_empir_1.setter
     def asym_empir_1(self, value: float) -> None:
-        """Set the empirical asymmetry coefficient p1.
-
-        Args:
-            value (float): Empirical asymmetry coefficient p1.
-        """
         self._asym_empir_1.value = value
 
     @property
     def asym_empir_2(self) -> Parameter:
         """Empirical asymmetry coefficient p2.
 
-        Returns:
-            Parameter: Empirical asymmetry coefficient p2.
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._asym_empir_2
 
     @asym_empir_2.setter
     def asym_empir_2(self, value: float) -> None:
-        """Set the empirical asymmetry coefficient p2.
-
-        Args:
-            value (float): Empirical asymmetry coefficient p2.
-        """
         self._asym_empir_2.value = value
 
     @property
     def asym_empir_3(self) -> Parameter:
         """Empirical asymmetry coefficient p3.
 
-        Returns:
-            Parameter: Empirical asymmetry coefficient p3.
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._asym_empir_3
 
     @asym_empir_3.setter
     def asym_empir_3(self, value: float) -> None:
-        """Set the empirical asymmetry coefficient p3.
-
-        Args:
-            value (float): Empirical asymmetry coefficient p3.
-        """
         self._asym_empir_3.value = value
 
     @property
     def asym_empir_4(self) -> Parameter:
         """Empirical asymmetry coefficient p4.
 
-        Returns:
-            Parameter: Empirical asymmetry coefficient p4.
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._asym_empir_4
 
     @asym_empir_4.setter
     def asym_empir_4(self, value: float) -> None:
-        """Set the empirical asymmetry coefficient p4.
-
-        Args:
-            value (float): Empirical asymmetry coefficient p4.
-        """
         self._asym_empir_4.value = value
 
 
@@ -336,34 +290,26 @@ class FcjAsymmetryMixin:
     def asym_fcj_1(self) -> Parameter:
         """Finger-Cox-Jephcoat asymmetry parameter 1.
 
-        Returns:
-            Parameter: Finger-Cox-Jephcoat asymmetry parameter 1.
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._asym_fcj_1
 
     @asym_fcj_1.setter
     def asym_fcj_1(self, value: float) -> None:
-        """Set the finger-Cox-Jephcoat asymmetry parameter 1.
-
-        Args:
-            value (float): Finger-Cox-Jephcoat asymmetry parameter 1.
-        """
         self._asym_fcj_1.value = value
 
     @property
     def asym_fcj_2(self) -> Parameter:
         """Finger-Cox-Jephcoat asymmetry parameter 2.
 
-        Returns:
-            Parameter: Finger-Cox-Jephcoat asymmetry parameter 2.
+        Reading this property returns the underlying
+        ``Parameter` object.
+        Assigning to it updates the parameter value.
         """
         return self._asym_fcj_2
 
     @asym_fcj_2.setter
     def asym_fcj_2(self, value: float) -> None:
-        """Set the finger-Cox-Jephcoat asymmetry parameter 2.
-
-        Args:
-            value (float): Finger-Cox-Jephcoat asymmetry parameter 2.
-        """
         self._asym_fcj_2.value = value
