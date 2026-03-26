@@ -222,7 +222,6 @@ nav:
           - experiment: api-reference/datablocks/experiment.md
           - structure: api-reference/datablocks/structure.md
       - display: api-reference/display.md
-      - experiments: api-reference/experiment.md
       - io: api-reference/io.md
       - project: api-reference/project.md
       - summary: api-reference/summary.md

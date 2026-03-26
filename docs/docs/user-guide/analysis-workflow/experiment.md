@@ -86,7 +86,7 @@ manually, you can use the `add_from_data_path` method of the
 need to specify the **name** of the experiment, which will be used to
 reference it later, as well as **data_path** to the measured data file
 (e.g., `.xye`, `.xy`). Supported formats are described in the
-[Measured Data Category](#5-measured-data-category) section.
+[Measured Data Category](#measured-data-category) section.
 
 Optionally, you can also specify the additional parameters that define
 the **type of experiment** you want to create. If you do not specify any
