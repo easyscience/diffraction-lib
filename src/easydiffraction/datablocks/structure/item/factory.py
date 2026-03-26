@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Factory for creating structure instances from various inputs.
+"""
+Factory for creating structure instances from various inputs.
 
 Provides individual class methods for each creation pathway:
 ``from_scratch``, ``from_cif_path``, or ``from_cif_str``.

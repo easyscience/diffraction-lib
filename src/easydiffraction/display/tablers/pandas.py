@@ -140,9 +140,9 @@ class PandasTableBackend(TableBackendBase):
         """
         Single, consistent update path for Jupyter.
 
-        If a handle with ``update()`` is provided and it's a DisplayHandle,
-        update the output area in-place using HTML. Otherwise, display once via
-        IPython ``display()``.
+        If a handle with ``update()`` is provided and it's a
+        DisplayHandle, update the output area in-place using HTML.
+        Otherwise, display once via IPython ``display()``.
 
         Parameters
         ----------
@@ -185,8 +185,8 @@ class PandasTableBackend(TableBackendBase):
         df : object
             DataFrame whose index is displayed as the first column.
         display_handle : object | None, default=None
-            Optional IPython DisplayHandle to update an existing output area
-            in place when running in Jupyter.
+            Optional IPython DisplayHandle to update an existing output
+            area in place when running in Jupyter.
 
         Returns
         -------

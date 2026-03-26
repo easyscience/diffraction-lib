@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Plotly plotting backend.
+"""
+Plotly plotting backend.
 
 Provides an interactive plotting implementation using Plotly. In
 notebooks, figures are displayed inline; in other environments a browser
@@ -95,8 +96,8 @@ class PlotlyPlotter(PlotterBase):
         Returns
         -------
         object
-            A configured :class:`plotly.graph_objects.Scatter` trace with
-            markers and error bars.
+            A configured :class:`plotly.graph_objects.Scatter` trace
+            with markers and error bars.
         """
         trace = go.Scatter(
             x=x_calc,
@@ -283,8 +284,8 @@ class PlotlyPlotter(PlotterBase):
         """
         Render a line plot for powder diffraction data.
 
-        Suitable for powder diffraction data where intensity is plotted against
-        an x-axis variable (2θ, TOF, d-spacing).
+        Suitable for powder diffraction data where intensity is plotted
+        against an x-axis variable (2θ, TOF, d-spacing).
 
         Parameters
         ----------
@@ -330,9 +331,9 @@ class PlotlyPlotter(PlotterBase):
         """
         Render a scatter plot for single crystal diffraction data.
 
-        Suitable for single crystal diffraction data where measured values are
-        plotted against calculated values with error bars and a diagonal
-        reference line.
+        Suitable for single crystal diffraction data where measured
+        values are plotted against calculated values with error bars and
+        a diagonal reference line.
 
         Parameters
         ----------

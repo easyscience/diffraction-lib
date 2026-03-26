@@ -16,7 +16,8 @@ from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
 
 
 class MinimizerBase(ABC):
-    """Abstract base for concrete minimizers.
+    """
+    Abstract base for concrete minimizers.
 
     Contract: - Subclasses must implement ``_prepare_solver_args``,
     ``_run_solver``, ``_sync_result_to_parameters`` and
@@ -91,7 +92,8 @@ class MinimizerBase(ABC):
         raw_result: object,
         parameters: List[object],
     ) -> None:
-        """Copy values from ``raw_result`` back to ``parameters`` in-
+        """
+        Copy values from ``raw_result`` back to ``parameters`` in-
         place.
         """
         pass

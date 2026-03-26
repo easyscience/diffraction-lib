@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Diagnostics helpers for logging validation messages.
+"""
+Diagnostics helpers for logging validation messages.
 
 This module centralizes human-friendly error and debug logs for
 attribute validation and configuration checks.
@@ -20,7 +21,8 @@ class Diagnostics:
 
     @staticmethod
     def type_override_error(cls_name: str, expected: object, got: object) -> None:
-        """Report an invalid DataTypes override.
+        """
+        Report an invalid DataTypes override.
 
         Used when descriptor and AttributeSpec types conflict.
         """
@@ -55,8 +57,8 @@ class Diagnostics:
         allowed: set[str],
         label: str = 'Allowed',
     ) -> None:
-        """Log access to an unknown attribute and suggest closest
-        key.
+        """
+        Log access to an unknown attribute and suggest closest key.
         """
         suggestion = Diagnostics._build_suggestion(key, allowed)
         # Use consistent (label) logic for allowed

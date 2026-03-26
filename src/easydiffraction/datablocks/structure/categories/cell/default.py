@@ -16,7 +16,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @CellFactory.register
 class Cell(CategoryItem):
-    """Unit cell with lengths *a*, *b*, *c* and angles *alpha*, *beta*,
+    """
+    Unit cell with lengths *a*, *b*, *c* and angles *alpha*, *beta*,
     *gamma*.
 
     All six lattice parameters are exposed as :class:`Parameter`
@@ -100,7 +101,8 @@ class Cell(CategoryItem):
     # ------------------------------------------------------------------
 
     def _apply_cell_symmetry_constraints(self) -> None:
-        """Apply symmetry constraints to cell parameters in place.
+        """
+        Apply symmetry constraints to cell parameters in place.
 
         Uses the parent structure's space-group symbol to determine
         which lattice parameters are dependent and sets them
@@ -151,7 +153,8 @@ class Cell(CategoryItem):
 
     @property
     def length_a(self) -> Parameter:
-        """Length of the a axis of the unit cell (Å).
+        """
+        Length of the a axis of the unit cell (Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -164,7 +167,8 @@ class Cell(CategoryItem):
 
     @property
     def length_b(self) -> Parameter:
-        """Length of the b axis of the unit cell (Å).
+        """
+        Length of the b axis of the unit cell (Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -177,7 +181,8 @@ class Cell(CategoryItem):
 
     @property
     def length_c(self) -> Parameter:
-        """Length of the c axis of the unit cell (Å).
+        """
+        Length of the c axis of the unit cell (Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -190,7 +195,8 @@ class Cell(CategoryItem):
 
     @property
     def angle_alpha(self) -> Parameter:
-        """Angle between edges b and c (deg).
+        """
+        Angle between edges b and c (deg).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -203,7 +209,8 @@ class Cell(CategoryItem):
 
     @property
     def angle_beta(self) -> Parameter:
-        """Angle between edges a and c (deg).
+        """
+        Angle between edges a and c (deg).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -216,7 +223,8 @@ class Cell(CategoryItem):
 
     @property
     def angle_gamma(self) -> Parameter:
-        """Angle between edges a and b (deg).
+        """
+        Angle between edges a and b (deg).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

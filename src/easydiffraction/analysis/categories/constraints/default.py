@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Simple symbolic constraint between parameters.
+"""
+Simple symbolic constraint between parameters.
 
 Represents an equation of the form ``lhs_alias = rhs_expr`` where
 ``rhs_expr`` is evaluated elsewhere by the analysis engine.
@@ -55,7 +56,8 @@ class Constraint(CategoryItem):
 
     @property
     def lhs_alias(self) -> StringDescriptor:
-        """Left-hand side of the equation.
+        """
+        Left-hand side of the equation.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
@@ -69,7 +71,8 @@ class Constraint(CategoryItem):
 
     @property
     def rhs_expr(self) -> StringDescriptor:
-        """Right-hand side expression.
+        """
+        Right-hand side expression.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the

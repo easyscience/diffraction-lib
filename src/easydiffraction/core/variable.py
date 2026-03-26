@@ -29,10 +29,11 @@ class GenericDescriptorBase(GuardedBase):
     """
     Base class for all parameter-like descriptors.
 
-    A descriptor encapsulates a typed value with validation, human-readable
-    name/description and a globally unique identifier that is stable across
-    the session. Concrete subclasses specialize the expected data type and
-    can extend the public API with additional behavior (e.g. units).
+    A descriptor encapsulates a typed value with validation,
+    human-readable name/description and a globally unique identifier
+    that is stable across the session. Concrete subclasses specialize
+    the expected data type and can extend the public API with additional
+    behavior (e.g. units).
     """
 
     _BOOL_SPEC_TEMPLATE = AttributeSpec(
@@ -106,7 +107,8 @@ class GenericDescriptorBase(GuardedBase):
 
     @property
     def unique_name(self) -> str:
-        """Fully qualified name including datablock, category and entry
+        """
+        Fully qualified name including datablock, category and entry
         name.
         """
         parts = [
@@ -118,8 +120,9 @@ class GenericDescriptorBase(GuardedBase):
         return '.'.join(filter(None, parts))
 
     def _parent_of_type(self, cls: type) -> object | None:
-        """Walk up the parent chain and return the first parent of type
-        `cls`.
+        """
+        Walk up the parent chain and return the first parent of type
+        ``cls``.
         """
         obj = getattr(self, '_parent', None)
         visited = set()
@@ -162,7 +165,8 @@ class GenericDescriptorBase(GuardedBase):
             parent_datablock._need_categories_update = True
 
     def _set_value_from_minimizer(self, v: object) -> None:
-        """Set the value from a minimizer, bypassing validation.
+        """
+        Set the value from a minimizer, bypassing validation.
 
         Writes ``_value`` directly — no type or range checks — but still
         marks the owning :class:`DatablockItem` dirty so that
@@ -187,7 +191,8 @@ class GenericDescriptorBase(GuardedBase):
 
     @property
     def parameters(self) -> list[GenericDescriptorBase]:
-        """Return a flat list of parameters contained by this object.
+        """
+        Return a flat list of parameters contained by this object.
 
         For a single descriptor, it returns a one-element list with
         itself. Composite objects override this to flatten nested
@@ -250,7 +255,8 @@ class GenericNumericDescriptor(GenericDescriptorBase):
 
 
 class GenericParameter(GenericNumericDescriptor):
-    """Numeric descriptor extended with fitting-related attributes.
+    """
+    Numeric descriptor extended with fitting-related attributes.
 
     Adds standard attributes used by minimizers: "free" flag,
     uncertainty, bounds and an optional starting value. Subclasses can
@@ -316,7 +322,8 @@ class GenericParameter(GenericNumericDescriptor):
         return self._constrained
 
     def _set_value_constrained(self, v: object) -> None:
-        """Set the value from a constraint expression.
+        """
+        Set the value from a constraint expression.
 
         Validates against the spec, marks the parent datablock dirty,
         and flags the parameter as constrained. Used exclusively by
@@ -339,7 +346,8 @@ class GenericParameter(GenericNumericDescriptor):
 
     @property
     def uncertainty(self) -> float | None:
-        """Estimated standard uncertainty of the fitted value, if
+        """
+        Estimated standard uncertainty of the fitted value, if
         available.
         """
         return self._uncertainty

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Factory for creating experiment instances from various inputs.
+"""
+Factory for creating experiment instances from various inputs.
 
 Provides individual class methods for each creation pathway:
 ``from_cif_path``, ``from_cif_str``, ``from_data_path``, and
@@ -74,8 +75,8 @@ class ExperimentFactory(FactoryBase):
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
     ) -> ExperimentType:
-        """Construct an ExperimentType, using defaults for omitted
-        values.
+        """
+        Construct an ExperimentType, using defaults for omitted values.
         """
         # Note: validation of input values is done via Descriptor setter
         # methods

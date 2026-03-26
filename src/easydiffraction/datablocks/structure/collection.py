@@ -11,7 +11,8 @@ from easydiffraction.utils.logging import console
 
 
 class Structures(DatablockCollection):
-    """Ordered collection of :class:`Structure` instances.
+    """
+    Ordered collection of :class:`Structure` instances.
 
     Provides convenience ``add_from_*`` methods that mirror the
     :class:`StructureFactory` classmethods plus a bare :meth:`add` for

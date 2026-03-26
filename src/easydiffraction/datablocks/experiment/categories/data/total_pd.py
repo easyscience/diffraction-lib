@@ -26,7 +26,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class TotalDataPoint(CategoryItem):
-    """Total scattering (PDF) data point in r-space (real space).
+    """
+    Total scattering (PDF) data point in r-space (real space).
 
     Note: PDF data is always in r-space regardless of whether the
     original measurement was CWL or TOF.
@@ -122,7 +123,8 @@ class TotalDataPoint(CategoryItem):
 
     @property
     def point_id(self) -> StringDescriptor:
-        """Identifier for this data point in the dataset.
+        """
+        Identifier for this data point in the dataset.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object.
@@ -131,7 +133,8 @@ class TotalDataPoint(CategoryItem):
 
     @property
     def r(self) -> NumericDescriptor:
-        """Interatomic distance in real space (Å).
+        """
+        Interatomic distance in real space (Å).
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -140,7 +143,8 @@ class TotalDataPoint(CategoryItem):
 
     @property
     def g_r_meas(self) -> NumericDescriptor:
-        """Measured pair distribution function G(r).
+        """
+        Measured pair distribution function G(r).
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -149,7 +153,8 @@ class TotalDataPoint(CategoryItem):
 
     @property
     def g_r_meas_su(self) -> NumericDescriptor:
-        """Standard uncertainty of measured G(r).
+        """
+        Standard uncertainty of measured G(r).
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -158,7 +163,8 @@ class TotalDataPoint(CategoryItem):
 
     @property
     def g_r_calc(self) -> NumericDescriptor:
-        """Calculated pair distribution function G(r).
+        """
+        Calculated pair distribution function G(r).
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -167,7 +173,8 @@ class TotalDataPoint(CategoryItem):
 
     @property
     def calc_status(self) -> StringDescriptor:
-        """Status code of the data point in calculation.
+        """
+        Status code of the data point in calculation.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object.
@@ -197,8 +204,8 @@ class TotalDataBase(CategoryCollection):
             p.g_r_meas._value = v
 
     def _set_g_r_meas_su(self, values: object) -> None:
-        """Helper method to set standard uncertainty of measured
-        G(r).
+        """
+        Helper method to set standard uncertainty of measured G(r).
         """
         for p, v in zip(self._items, values, strict=True):
             p.g_r_meas_su._value = v
@@ -303,7 +310,8 @@ class TotalDataBase(CategoryCollection):
 
 @DataFactory.register
 class TotalData(TotalDataBase):
-    """Total scattering (PDF) data collection in r-space.
+    """
+    Total scattering (PDF) data collection in r-space.
 
     Note: Works for both CWL and TOF measurements as PDF data is always
     transformed to r-space.

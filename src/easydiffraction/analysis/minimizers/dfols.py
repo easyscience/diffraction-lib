@@ -16,8 +16,9 @@ DEFAULT_MAX_ITERATIONS = 1000
 
 @MinimizerFactory.register
 class DfolsMinimizer(MinimizerBase):
-    """Minimizer using the DFO-LS package (Derivative-Free Optimization
-    for Least-Squares).
+    """
+    Minimizer using the DFO-LS package (Derivative-Free Optimization for
+    Least-Squares).
     """
 
     type_info = TypeInfo(

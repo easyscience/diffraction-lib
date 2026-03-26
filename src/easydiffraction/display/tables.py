@@ -23,7 +23,8 @@ class TableEngineEnum(str, Enum):
 
     @classmethod
     def default(cls) -> 'TableEngineEnum':
-        """Select default engine based on environment.
+        """
+        Select default engine based on environment.
 
         Returns Pandas when running in Jupyter, otherwise Rich.
         """
@@ -71,12 +72,12 @@ class TableRenderer(RendererBase):
         Parameters
         ----------
         df : object
-            DataFrame with a two-level column index where the second level
-            provides per-column alignment.
+            DataFrame with a two-level column index where the second
+            level provides per-column alignment.
         display_handle : object | None, default=None
-            Optional environment-specific handle used to update an existing
-            output area in-place (e.g., an IPython DisplayHandle or a
-            terminal live handle).
+            Optional environment-specific handle used to update an
+            existing output area in-place (e.g., an IPython
+            DisplayHandle or a terminal live handle).
 
         Returns
         -------
@@ -103,8 +104,8 @@ class TableRendererFactory(RendererFactoryBase):
 
     @classmethod
     def _registry(cls) -> dict:
-        """Build registry, adapting available engines to the
-        environment.
+        """
+        Build registry, adapting available engines to the environment.
 
         - In Jupyter: expose both 'rich' and 'pandas'. - In terminal:
         expose only 'rich' (pandas is notebook-only).

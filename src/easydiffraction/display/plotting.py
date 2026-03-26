@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Plotting facade for measured and calculated patterns.
+"""
+Plotting facade for measured and calculated patterns.
 
 Uses the common :class:`RendererBase` so plotters and tablers share a
 consistent configuration surface and engine handling.
@@ -158,7 +159,8 @@ class Plotter(RendererBase):
         scattering_type: object,
         x_axis: object,
     ) -> list:
-        """Look up axis labels for the given experiment / x-axis
+        """
+        Look up axis labels for the given experiment / x-axis
         combination.
         """
         return DEFAULT_AXES_LABELS[(sample_form, scattering_type, x_axis)]
@@ -185,7 +187,8 @@ class Plotter(RendererBase):
         expt_name : str
             Experiment name for error messages.
         expt_type : object
-            Experiment type with sample_form, scattering, and beam enums.
+            Experiment type with sample_form, scattering, and beam
+            enums.
         x_min : object
             Optional minimum x-axis limit.
         x_max : object
@@ -266,8 +269,8 @@ class Plotter(RendererBase):
         Parameters
         ----------
         expt_type : object
-            Experiment type with sample_form, scattering_type, and beam_mode
-            enums.
+            Experiment type with sample_form, scattering_type, and
+            beam_mode enums.
         x : object
             Explicit x-axis type or ``None`` to auto-detect.
 
@@ -382,8 +385,8 @@ class Plotter(RendererBase):
         Parameters
         ----------
         pattern : object
-            Object with x-axis arrays (``two_theta``, ``time_of_flight``,
-            ``d_spacing``) and ``meas`` array.
+            Object with x-axis arrays (``two_theta``,
+            ``time_of_flight``, ``d_spacing``) and ``meas`` array.
         expt_name : str
             Experiment name for the title.
         expt_type : object
@@ -432,8 +435,8 @@ class Plotter(RendererBase):
         Parameters
         ----------
         pattern : object
-            Object with x-axis arrays (``two_theta``, ``time_of_flight``,
-            ``d_spacing``) and ``calc`` array.
+            Object with x-axis arrays (``two_theta``,
+            ``time_of_flight``, ``d_spacing``) and ``calc`` array.
         expt_name : str
             Experiment name for the title.
         expt_type : object
@@ -485,8 +488,9 @@ class Plotter(RendererBase):
         For powder diffraction: - x='two_theta', 'time_of_flight', or
         'd_spacing' - Auto-detected from beam mode if not specified
 
-        For single crystal diffraction: - x='intensity_calc' (default): scatter
-        plot - x='d_spacing' or 'sin_theta_over_lambda': line plot
+        For single crystal diffraction: - x='intensity_calc' (default):
+        scatter plot - x='d_spacing' or 'sin_theta_over_lambda': line
+        plot
 
         Parameters
         ----------
@@ -495,7 +499,8 @@ class Plotter(RendererBase):
         expt_name : str
             Experiment name for the title.
         expt_type : object
-            Experiment type with sample_form, scattering, and beam enums.
+            Experiment type with sample_form, scattering, and beam
+            enums.
         x_min : object, default=None
             Optional minimum x-axis limit.
         x_max : object, default=None

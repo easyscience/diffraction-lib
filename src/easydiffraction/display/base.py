@@ -17,7 +17,8 @@ from easydiffraction.utils.logging import log
 
 
 class RendererBase(SingletonBase, ABC):
-    """Base class for display components with pluggable engines.
+    """
+    Base class for display components with pluggable engines.
 
     Subclasses provide a factory and a default engine. This class
     manages the active backend instance and exposes helpers to inspect
@@ -123,8 +124,8 @@ class RendererFactoryBase(ABC):
 
     @classmethod
     def descriptions(cls) -> List[Tuple[str, str]]:
-        """Return pairs of engine name and human-friendly
-        description.
+        """
+        Return pairs of engine name and human-friendly description.
         """
         items = cls._registry().items()
         return [(name, config.get('description')) for name, config in items]
@@ -132,7 +133,8 @@ class RendererFactoryBase(ABC):
     @classmethod
     @abstractmethod
     def _registry(cls) -> dict:
-        """Return engine registry. Implementations must provide this.
+        """
+        Return engine registry. Implementations must provide this.
 
         The returned mapping should have keys as engine names and values
         as a config dict with 'description' and 'class'. Lazy imports

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Jupyter theme detection with custom detection order.
+"""
+Jupyter theme detection with custom detection order.
 
 This module wraps the vendored jupyter_dark_detect package and provides
 a custom detection order optimized for EasyDiffraction's use case.
@@ -12,15 +13,12 @@ Detection Strategy (in priority order):
 3. JavaScript DOM inspection (for browser-based environments)
 4. System preferences (macOS, Windows) - fallback only
 
-Note:
-    The detection order differs from upstream jupyter_dark_detect.
-    We prioritize JavaScript DOM inspection over system preferences
-    because the Jupyter theme may differ from the system theme.
+Note: The detection order differs from upstream jupyter_dark_detect. We
+prioritize JavaScript DOM inspection over system preferences because the
+Jupyter theme may differ from the system theme.
 
-Example:
-    >>> from easydiffraction.utils._vendored.theme_detect import is_dark
-    >>> if is_dark():
-    ...     print('Dark mode detected')
+Example: >>> from easydiffraction.utils._vendored.theme_detect import
+is_dark >>> if is_dark(): ...     print('Dark mode detected')
 """
 
 from __future__ import annotations
@@ -37,7 +35,8 @@ from easydiffraction.utils._vendored.jupyter_dark_detect.detector import _check_
 
 
 def is_dark() -> bool:
-    """Check if the Jupyter environment is running in dark mode.
+    """
+    Check if the Jupyter environment is running in dark mode.
 
     This function uses a custom detection order that prioritizes
     Jupyter-specific detection over system preferences.
@@ -79,13 +78,14 @@ def is_dark() -> bool:
 
 
 def get_detection_result() -> dict[str, Optional[bool]]:
-    """Get results from all detection methods for debugging.
+    """
+    Get results from all detection methods for debugging.
 
     Returns
     -------
     dict[str, Optional[bool]]
-        Dictionary with detection method names as keys and
-        their results (True/False/None) as values.
+        Dictionary with detection method names as keys and their results
+        (True/False/None) as values.
     """
     return {
         'jupyterlab_settings': _check_jupyterlab_settings(),

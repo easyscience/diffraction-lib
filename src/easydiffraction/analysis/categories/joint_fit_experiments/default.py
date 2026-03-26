@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Joint-fit experiment weighting configuration.
+"""
+Joint-fit experiment weighting configuration.
 
 Stores per-experiment weights to be used when multiple experiments are
 fitted simultaneously.
@@ -58,7 +59,8 @@ class JointFitExperiment(CategoryItem):
 
     @property
     def id(self) -> StringDescriptor:
-        """Experiment identifier.
+        """
+        Experiment identifier.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
@@ -72,7 +74,8 @@ class JointFitExperiment(CategoryItem):
 
     @property
     def weight(self) -> NumericDescriptor:
-        """Weight factor.
+        """
+        Weight factor.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object. Assigning to it updates the

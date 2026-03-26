@@ -49,8 +49,8 @@ def _validate_url(url: str) -> None:
 
 
 def _filename_for_id_from_url(data_id: int | str, url: str) -> str:
-    """Return local filename like 'ed-12.xye' using extension from the
-    URL.
+    """
+    Return local filename like 'ed-12.xye' using extension from the URL.
     """
     suffix = pathlib.Path(urlparse(url).path).suffix  # includes leading dot ('.cif', '.xye', ...)
     # If URL has no suffix, fall back to no extension.
@@ -58,7 +58,8 @@ def _filename_for_id_from_url(data_id: int | str, url: str) -> str:
 
 
 def _normalize_known_hash(value: str | None) -> str | None:
-    """Return pooch-compatible known_hash or None.
+    """
+    Return pooch-compatible known_hash or None.
 
     Treat placeholder values like 'sha256:...' as unset.
     """
@@ -71,8 +72,8 @@ def _normalize_known_hash(value: str | None) -> str | None:
 
 
 def _fetch_data_index() -> dict:
-    """Fetch & cache the diffraction data index.json and return it as
-    dict.
+    """
+    Fetch & cache the diffraction data index.json and return it as dict.
     """
     index_url = 'https://raw.githubusercontent.com/easyscience/data/refs/heads/master/diffraction/index.json'
     _validate_url(index_url)
@@ -98,8 +99,8 @@ def _fetch_data_index() -> dict:
 @functools.lru_cache(maxsize=1)
 def _fetch_tutorials_index() -> dict:
     """
-    Fetch & cache the tutorials index.json from gh-pages and return it as
-    dict.
+    Fetch & cache the tutorials index.json from gh-pages and return it
+    as dict.
 
     The index is fetched from:
     https://easyscience.github.io/diffraction-lib/{version}/tutorials/index.json
@@ -259,11 +260,12 @@ def stripped_package_version(package_name: str) -> str | None:
 
 def _is_dev_version(package_name: str) -> bool:
     """
-    Check if the installed package version is a development/local version.
+    Check if the installed package version is a development/local
+    version.
 
     A version is considered "dev" if: - The raw version contains '+dev',
-    '+dirty', or '+devdirty' (local suffixes from versioningit) - The public
-    version is '999.0.0' (versioningit default-tag fallback)
+    '+dirty', or '+devdirty' (local suffixes from versioningit) - The
+    public version is '999.0.0' (versioningit default-tag fallback)
 
     Parameters
     ----------
@@ -312,7 +314,8 @@ def _get_version_for_url(package_name: str = 'easydiffraction') -> str:
 
 
 def _safe_urlopen(request_or_url: object) -> object:  # type: ignore[no-untyped-def]
-    """Wrapper for urlopen with prior validation.
+    """
+    Wrapper for urlopen with prior validation.
 
     Centralises lint suppression for validated HTTPS requests.
     """
@@ -347,7 +350,8 @@ def _resolve_tutorial_url(url_template: str) -> str:
 
 
 def list_tutorials() -> None:
-    """Display a table of available tutorial notebooks.
+    """
+    Display a table of available tutorial notebooks.
 
     Shows tutorial ID, filename, title, and description for all
     tutorials available for the current version of easydiffraction.
@@ -553,14 +557,16 @@ def tof_to_d(
     quad_eps: float = 1e-20,
 ) -> np.ndarray:
     """
-    Convert time-of-flight (TOF) to d-spacing using a quadratic calibration.
+    Convert time-of-flight (TOF) to d-spacing using a quadratic
+    calibration.
 
     Model: TOF = offset + linear * d + quad * d²
 
     The function: - Uses a linear fallback when the quadratic term is
-    effectively zero. - Solves the quadratic for d and selects the smallest
-    positive, finite root. - Returns NaN where no valid solution exists. -
-    Expects ``tof`` as a NumPy array; output matches its shape.
+    effectively zero. - Solves the quadratic for d and selects the
+    smallest positive, finite root. - Returns NaN where no valid
+    solution exists. - Expects ``tof`` as a NumPy array; output matches
+    its shape.
 
     Parameters
     ----------
@@ -721,30 +727,30 @@ def get_value_from_xye_header(file_path: str, key: str) -> float:
 
 def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
     """
-    Parse a CIF-style numeric string into a `ufloat` with an optional
+    Parse a CIF-style numeric string into a ``ufloat`` with an optional
     uncertainty.
 
-    Examples of supported input: - "3.566" → ufloat(3.566, nan) - "3.566(2)"
-    → ufloat(3.566, 0.002) - None → ufloat(default, nan)
+    Examples of supported input: - "3.566" → ufloat(3.566, nan) -
+    "3.566(2)" → ufloat(3.566, 0.002) - None → ufloat(default, nan)
 
-    Behavior: - If the input string contains a value with parentheses (e.g.
-    "3.566(2)"), the number in parentheses is interpreted as an estimated
-    standard deviation (esd) in the last digit(s). - If the input string has
-    no parentheses, an uncertainty of NaN is assigned to indicate "no esd
-    provided". - If parsing fails, the function falls back to the given
-    `default` value with uncertainty NaN.
+    Behavior: - If the input string contains a value with parentheses
+    (e.g. "3.566(2)"), the number in parentheses is interpreted as an
+    estimated standard deviation (esd) in the last digit(s). - If the
+    input string has no parentheses, an uncertainty of NaN is assigned
+    to indicate "no esd provided". - If parsing fails, the function
+    falls back to the given ``default`` value with uncertainty NaN.
 
     Parameters
     ----------
     s : Optional[str]
         Numeric string in CIF format (e.g. "3.566", "3.566(2)") or None.
     default : Optional[float], default=None
-        Default value to use if `s` is None or parsing fails.
+        Default value to use if ``s`` is None or parsing fails.
 
     Returns
     -------
     UFloat
-        An `uncertainties.UFloat` object with the parsed value and
+        An ``uncertainties.UFloat`` object with the parsed value and
         uncertainty. The uncertainty will be NaN if not specified or
         parsing failed.
     """

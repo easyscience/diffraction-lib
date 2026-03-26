@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Time-of-flight (TOF) peak-profile component classes.
+"""
+Time-of-flight (TOF) peak-profile component classes.
 
 Defines classes that add Gaussian/Lorentz broadening, mixing, and
 Ikeda–Carpenter asymmetry parameters used by TOF peak shapes. This
@@ -110,8 +111,8 @@ class TofBroadeningMixin:
 
     @property
     def broad_gauss_sigma_0(self) -> Parameter:
-        """Gaussian broadening coefficient (instrumental resolution)
-        (µs²).
+        """
+        Gaussian broadening coefficient (instrumental resolution) (µs²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -124,8 +125,8 @@ class TofBroadeningMixin:
 
     @property
     def broad_gauss_sigma_1(self) -> Parameter:
-        """Gaussian broadening coefficient (dependent on d-spacing)
-        (µs/Å).
+        """
+        Gaussian broadening coefficient (dependent on d-spacing) (µs/Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -138,7 +139,8 @@ class TofBroadeningMixin:
 
     @property
     def broad_gauss_sigma_2(self) -> Parameter:
-        """Gaussian broadening coefficient (instrument-dependent term)
+        """
+        Gaussian broadening coefficient (instrument-dependent term)
         (µs²/Å²).
 
         Reading this property returns the underlying ``Parameter``
@@ -152,7 +154,8 @@ class TofBroadeningMixin:
 
     @property
     def broad_lorentz_gamma_0(self) -> Parameter:
-        """Lorentzian broadening coefficient (dependent on microstrain
+        """
+        Lorentzian broadening coefficient (dependent on microstrain
         effects) (µs).
 
         Reading this property returns the underlying ``Parameter``
@@ -166,7 +169,8 @@ class TofBroadeningMixin:
 
     @property
     def broad_lorentz_gamma_1(self) -> Parameter:
-        """Lorentzian broadening coefficient (dependent on d-spacing)
+        """
+        Lorentzian broadening coefficient (dependent on d-spacing)
         (µs/Å).
 
         Reading this property returns the underlying ``Parameter``
@@ -180,7 +184,8 @@ class TofBroadeningMixin:
 
     @property
     def broad_lorentz_gamma_2(self) -> Parameter:
-        """Lorentzian broadening coefficient (instrument-dependent term)
+        """
+        Lorentzian broadening coefficient (instrument-dependent term)
         (µs²/Å²).
 
         Reading this property returns the underlying ``Parameter``
@@ -194,7 +199,8 @@ class TofBroadeningMixin:
 
     @property
     def broad_mix_beta_0(self) -> Parameter:
-        """Mixing parameter. Defines the ratio of Gaussian to Lorentzian
+        """
+        Mixing parameter. Defines the ratio of Gaussian to Lorentzian
         contributions in TOF profiles (deg).
 
         Reading this property returns the underlying ``Parameter``
@@ -208,7 +214,8 @@ class TofBroadeningMixin:
 
     @property
     def broad_mix_beta_1(self) -> Parameter:
-        """Mixing parameter. Defines the ratio of Gaussian to Lorentzian
+        """
+        Mixing parameter. Defines the ratio of Gaussian to Lorentzian
         contributions in TOF profiles (deg).
 
         Reading this property returns the underlying ``Parameter``
@@ -250,7 +257,8 @@ class IkedaCarpenterAsymmetryMixin:
 
     @property
     def asym_alpha_0(self) -> Parameter:
-        """Ikeda-Carpenter asymmetry parameter α₀.
+        """
+        Ikeda-Carpenter asymmetry parameter α₀.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -263,7 +271,8 @@ class IkedaCarpenterAsymmetryMixin:
 
     @property
     def asym_alpha_1(self) -> Parameter:
-        """Ikeda-Carpenter asymmetry parameter α₁.
+        """
+        Ikeda-Carpenter asymmetry parameter α₁.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

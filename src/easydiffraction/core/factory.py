@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Base factory with registration, lookup, and context-dependent
-defaults.
+"""
+Base factory with registration, lookup, and context-dependent defaults.
 
 Concrete factories inherit from ``FactoryBase`` and only need to define
 ``_default_rules``.
@@ -21,7 +21,8 @@ from easydiffraction.utils.utils import render_table
 
 
 class FactoryBase:
-    """Shared base for all factories.
+    """
+    Shared base for all factories.
 
     Subclasses must set:
 
@@ -48,7 +49,8 @@ class FactoryBase:
 
     @classmethod
     def register(cls, klass: type) -> type:
-        """Class decorator to register a concrete class.
+        """
+        Class decorator to register a concrete class.
 
         Usage::
 
@@ -83,9 +85,9 @@ class FactoryBase:
         """
         Resolve the default tag for a given experimental context.
 
-        Uses *largest-subset matching*: the rule whose key is the biggest subset
-        of the given conditions wins. A rule with an empty key (``frozenset()``)
-        acts as a universal fallback.
+        Uses *largest-subset matching*: the rule whose key is the
+        biggest subset of the given conditions wins. A rule with an
+        empty key (``frozenset()``) acts as a universal fallback.
 
         Parameters
         ----------

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Display subsystem for tables and plots.
+"""
+Display subsystem for tables and plots.
 
 This package contains user-facing facades and backend implementations to
 render tabular data and plots in different environments.

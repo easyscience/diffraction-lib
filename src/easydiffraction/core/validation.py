@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Lightweight runtime validation utilities.
+"""
+Lightweight runtime validation utilities.
 
 Provides DataTypes, type/content validators, and AttributeSpec used by
 descriptors and parameters. Only documentation was added here.
@@ -79,7 +80,8 @@ class ValidatorBase(ABC):
         default: object = None,
         current: object = None,
     ) -> object:
-        """Return a validated value or fallback.
+        """
+        Return a validated value or fallback.
 
         Subclasses must implement this method.
         """
@@ -115,7 +117,8 @@ class TypeValidator(ValidatorBase):
         current: object = None,
         allow_none: bool = False,
     ) -> object:
-        """Validate type and return value or fallback.
+        """
+        Validate type and return value or fallback.
 
         If allow_none is True, None bypasses content checks.
         """
@@ -193,9 +196,10 @@ class RangeValidator(ValidatorBase):
 
 
 class MembershipValidator(ValidatorBase):
-    """Ensure that a value is among allowed choices.
+    """
+    Ensure that a value is among allowed choices.
 
-    `allowed` may be an iterable or a callable returning a collection.
+    ``allowed`` may be an iterable or a callable returning a collection.
     """
 
     def __init__(self, allowed: object) -> None:
@@ -293,7 +297,8 @@ class AttributeSpec:
         name: str,
         current: object = None,
     ) -> object:
-        """Validate through type and content validators.
+        """
+        Validate through type and content validators.
 
         Returns validated value, possibly default or current if errors
         occur. None may short-circuit further checks when allowed.

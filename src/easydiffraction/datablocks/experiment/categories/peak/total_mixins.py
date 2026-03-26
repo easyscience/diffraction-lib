@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Total scattering / pair distribution function (PDF) peak-profile
+"""
+Total scattering / pair distribution function (PDF) peak-profile
 component classes.
 
 This module provides classes that add broadening and asymmetry
@@ -90,7 +91,8 @@ class TotalBroadeningMixin:
 
     @property
     def damp_q(self) -> Parameter:
-        """Instrumental Q-resolution damping factor (affects high-r PDF
+        """
+        Instrumental Q-resolution damping factor (affects high-r PDF
         peak amplitude) (Å⁻¹).
 
         Reading this property returns the underlying ``Parameter``
@@ -104,7 +106,8 @@ class TotalBroadeningMixin:
 
     @property
     def broad_q(self) -> Parameter:
-        """Quadratic PDF peak broadening coefficient (thermal and model
+        """
+        Quadratic PDF peak broadening coefficient (thermal and model
         uncertainty contribution) (Å⁻²).
 
         Reading this property returns the underlying ``Parameter``
@@ -118,7 +121,8 @@ class TotalBroadeningMixin:
 
     @property
     def cutoff_q(self) -> Parameter:
-        """Q-value cutoff applied to model PDF for Fourier transform
+        """
+        Q-value cutoff applied to model PDF for Fourier transform
         (controls real-space resolution) (Å⁻¹).
 
         Reading this property returns the underlying ``Parameter``
@@ -132,7 +136,8 @@ class TotalBroadeningMixin:
 
     @property
     def sharp_delta_1(self) -> Parameter:
-        """PDF peak sharpening coefficient (1/r dependence) (Å).
+        """
+        PDF peak sharpening coefficient (1/r dependence) (Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -145,7 +150,8 @@ class TotalBroadeningMixin:
 
     @property
     def sharp_delta_2(self) -> Parameter:
-        """PDF peak sharpening coefficient (1/r² dependence) (Å²).
+        """
+        PDF peak sharpening coefficient (1/r² dependence) (Å²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -158,8 +164,9 @@ class TotalBroadeningMixin:
 
     @property
     def damp_particle_diameter(self) -> Parameter:
-        """Particle diameter for spherical envelope damping correction
-        in PDF (Å).
+        """
+        Particle diameter for spherical envelope damping correction in
+        PDF (Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

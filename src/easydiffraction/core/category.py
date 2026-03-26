@@ -160,7 +160,8 @@ class CategoryItem(GuardedBase):
 
 
 class CategoryCollection(CollectionBase):
-    """Handles loop-style category containers (e.g. AtomSites).
+    """
+    Handles loop-style category containers (e.g. AtomSites).
 
     Each item is a CategoryItem (component).
     """
@@ -173,7 +174,8 @@ class CategoryCollection(CollectionBase):
         return item._identity.category_entry_name
 
     def _mark_parent_dirty(self) -> None:
-        """Set ``_need_categories_update`` on the parent datablock.
+        """
+        Set ``_need_categories_update`` on the parent datablock.
 
         Called whenever the collection content changes (items added or
         removed) so that subsequent ``_update_categories()`` calls re-
@@ -231,8 +233,8 @@ class CategoryCollection(CollectionBase):
         """
         Create a new item with the given attributes and add it.
 
-        A default instance of the collection's item type is created, then each
-        keyword argument is applied via ``setattr``.
+        A default instance of the collection's item type is created,
+        then each keyword argument is applied via ``setattr``.
 
         Parameters
         ----------

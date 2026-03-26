@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""ASCII plotting backend.
+"""
+ASCII plotting backend.
 
 Renders compact line charts in the terminal using ``asciichartpy``. This
 backend is well suited for quick feedback in CLI environments and keeps
@@ -61,9 +62,9 @@ class AsciiPlotter(PlotterBase):
         """
         Render a line plot for powder diffraction data.
 
-        Suitable for powder diffraction data where intensity is plotted against
-        an x-axis variable (2θ, TOF, d-spacing). Uses ASCII characters for
-        terminal display.
+        Suitable for powder diffraction data where intensity is plotted
+        against an x-axis variable (2θ, TOF, d-spacing). Uses ASCII
+        characters for terminal display.
 
         Parameters
         ----------
@@ -114,8 +115,8 @@ class AsciiPlotter(PlotterBase):
         """
         Render a scatter plot for single crystal diffraction data.
 
-        Creates an ASCII scatter plot showing measured vs calculated values with
-        a diagonal reference line.
+        Creates an ASCII scatter plot showing measured vs calculated
+        values with a diagonal reference line.
 
         Parameters
         ----------

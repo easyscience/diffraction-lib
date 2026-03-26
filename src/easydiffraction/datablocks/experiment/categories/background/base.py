@@ -9,7 +9,8 @@ from easydiffraction.core.category import CategoryCollection
 
 
 class BackgroundBase(CategoryCollection):
-    """Abstract base for background subcategories in experiments.
+    """
+    Abstract base for background subcategories in experiments.
 
     Concrete implementations provide parameterized background models and
     compute background intensities on the experiment grid.

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Chebyshev polynomial background model.
+"""
+Chebyshev polynomial background model.
 
 Provides a collection of polynomial terms and evaluation helpers.
 """
@@ -34,7 +35,8 @@ from easydiffraction.utils.utils import render_table
 
 
 class PolynomialTerm(CategoryItem):
-    """Chebyshev polynomial term.
+    """
+    Chebyshev polynomial term.
 
     New public attribute names: ``order`` and ``coef`` replacing the
     longer ``chebyshev_order`` / ``chebyshev_coef``. Backward-compatible
@@ -85,7 +87,8 @@ class PolynomialTerm(CategoryItem):
 
     @property
     def id(self) -> StringDescriptor:
-        """Identifier for this background polynomial term.
+        """
+        Identifier for this background polynomial term.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
@@ -99,7 +102,8 @@ class PolynomialTerm(CategoryItem):
 
     @property
     def order(self) -> NumericDescriptor:
-        """Order used in a Chebyshev polynomial background term.
+        """
+        Order used in a Chebyshev polynomial background term.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object. Assigning to it updates the
@@ -113,7 +117,8 @@ class PolynomialTerm(CategoryItem):
 
     @property
     def coef(self) -> Parameter:
-        """Coefficient used in a Chebyshev polynomial background term.
+        """
+        Coefficient used in a Chebyshev polynomial background term.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

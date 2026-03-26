@@ -1,10 +1,11 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Lightweight container for guarded items with name-based indexing.
+"""
+Lightweight container for guarded items with name-based indexing.
 
-`CollectionBase` maintains an ordered list of items and a lazily rebuilt
-index by the item's identity key. It supports dict-like access for get,
-set and delete, along with iteration over the items.
+``CollectionBase`` maintains an ordered list of items and a lazily
+rebuilt index by the item's identity key. It supports dict-like access
+for get, set and delete, along with iteration over the items.
 """
 
 from __future__ import annotations
@@ -33,7 +34,8 @@ class CollectionBase(GuardedBase):
         self._item_type = item_type
 
     def __getitem__(self, name: str) -> GuardedBase:
-        """Return an item by its identity key.
+        """
+        Return an item by its identity key.
 
         Rebuilds the internal index on a cache miss to stay consistent
         with recent mutations.
@@ -100,7 +102,8 @@ class CollectionBase(GuardedBase):
             raise
 
     def _key_for(self, item: GuardedBase) -> str | None:
-        """Return the identity key for *item*.
+        """
+        Return the identity key for *item*.
 
         Subclasses must override to return the appropriate key
         (``category_entry_name`` or ``datablock_entry_name``).

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Line-segment background model.
+"""
+Line-segment background model.
 
 Interpolate user-specified points to form a background curve.
 """
@@ -94,7 +95,8 @@ class LineSegment(CategoryItem):
 
     @property
     def id(self) -> StringDescriptor:
-        """Identifier for this background line segment.
+        """
+        Identifier for this background line segment.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
@@ -108,7 +110,8 @@ class LineSegment(CategoryItem):
 
     @property
     def x(self) -> NumericDescriptor:
-        """X-coordinates used to create many straight-line segments
+        """
+        X-coordinates used to create many straight-line segments
         representing the background in a calculated diffractogram.
 
         Reading this property returns the underlying
@@ -123,7 +126,8 @@ class LineSegment(CategoryItem):
 
     @property
     def y(self) -> Parameter:
-        """Intensity used to create many straight-line segments
+        """
+        Intensity used to create many straight-line segments
         representing the background in a calculated diffractogram.
 
         Reading this property returns the underlying ``Parameter``

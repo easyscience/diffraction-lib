@@ -34,7 +34,8 @@ if TYPE_CHECKING:
 
 
 class ExperimentBase(DatablockItem):
-    """Base class for all experiment datablock items with only core
+    """
+    Base class for all experiment datablock items with only core
     attributes.
     """
 
@@ -70,8 +71,8 @@ class ExperimentBase(DatablockItem):
 
     @property
     def type(self) -> object:  # TODO: Consider another name
-        """Experiment type descriptor (sample form, probe, beam
-        mode).
+        """
+        Experiment type descriptor (sample form, probe, beam mode).
         """
         return self._type
 
@@ -110,7 +111,8 @@ class ExperimentBase(DatablockItem):
 
     @property
     def calculator(self) -> object:
-        """The active calculator instance for this experiment.
+        """
+        The active calculator instance for this experiment.
 
         Auto-resolved on first access from the experiment's data
         category ``calculator_support`` and
@@ -135,7 +137,8 @@ class ExperimentBase(DatablockItem):
         Parameters
         ----------
         tag : str
-            Calculator tag (e.g. ``'cryspy'``, ``'crysfml'``, ``'pdffit'``).
+            Calculator tag (e.g. ``'cryspy'``, ``'crysfml'``,
+            ``'pdffit'``).
         """
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
 
@@ -153,7 +156,8 @@ class ExperimentBase(DatablockItem):
         console.print(tag)
 
     def show_supported_calculator_types(self) -> None:
-        """Print a table of calculator backends supported by this
+        """
+        Print a table of calculator backends supported by this
         experiment.
         """
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
@@ -182,9 +186,9 @@ class ExperimentBase(DatablockItem):
         console.print(self.calculator_type)
 
     def _resolve_calculator(self) -> None:
-        """Auto-resolve the default calculator from the data category's
-        ``calculator_support`` and
-        ``CalculatorFactory._default_rules``.
+        """
+        Auto-resolve the default calculator from the data category's
+        ``calculator_support`` and ``CalculatorFactory._default_rules``.
         """
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
 
@@ -198,7 +202,8 @@ class ExperimentBase(DatablockItem):
         self._calculator_type = tag
 
     def _supported_calculator_tags(self) -> list[str]:
-        """Return calculator tags supported by this experiment.
+        """
+        Return calculator tags supported by this experiment.
 
         Intersects the data category's ``calculator_support`` with
         calculators whose engines are importable.
@@ -250,7 +255,8 @@ class ScExperimentBase(ExperimentBase):
         Parameters
         ----------
         data_path : str
-            Path to data file with columns compatible with the beam mode.
+            Path to data file with columns compatible with the beam
+            mode.
         """
         pass
 
@@ -606,8 +612,8 @@ class PdExperimentBase(ExperimentBase):
         console.print(new_type)
 
     def show_supported_excluded_regions_types(self) -> None:
-        """Print a table of supported excluded-regions collection
-        types.
+        """
+        Print a table of supported excluded-regions collection types.
         """
         ExcludedRegionsFactory.show_supported()
 

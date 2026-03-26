@@ -25,8 +25,9 @@ if TYPE_CHECKING:
 
 @ExperimentFactory.register
 class BraggPdExperiment(PdExperimentBase):
-    """Standard (Bragg) Powder Diffraction experiment class with
-    specific attributes.
+    """
+    Standard (Bragg) Powder Diffraction experiment class with specific
+    attributes.
     """
 
     type_info = TypeInfo(
@@ -57,8 +58,8 @@ class BraggPdExperiment(PdExperimentBase):
         self._background = BackgroundFactory.create(self._background_type)
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load (x, y, sy) data from an ASCII file into the data
-        category.
+        """
+        Load (x, y, sy) data from an ASCII file into the data category.
 
         The file format is space/column separated with 2 or 3 columns:
         ``x y [sy]``. If ``sy`` is missing, it is approximated as

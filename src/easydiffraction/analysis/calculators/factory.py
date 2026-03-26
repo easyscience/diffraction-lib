@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Calculator factory — delegates to ``FactoryBase``.
+"""
+Calculator factory — delegates to ``FactoryBase``.
 
 Overrides ``_supported_map`` to filter out calculators whose engines are
 not importable in the current environment.
@@ -17,7 +18,8 @@ from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
 
 class CalculatorFactory(FactoryBase):
-    """Factory for creating calculation engine instances.
+    """
+    Factory for creating calculation engine instances.
 
     Only calculators whose ``engine_imported`` flag is ``True`` are
     available for creation.

@@ -35,7 +35,8 @@ except ImportError:
 
 @CalculatorFactory.register
 class CryspyCalculator(CalculatorBase):
-    """Cryspy-based diffraction calculator.
+    """
+    Cryspy-based diffraction calculator.
 
     Converts EasyDiffraction models into Cryspy objects and computes
     patterns.
@@ -62,7 +63,8 @@ class CryspyCalculator(CalculatorBase):
         called_by_minimizer: bool = False,
     ) -> None:
         """
-        Raises a NotImplementedError as HKL calculation is not implemented.
+        Raises a NotImplementedError as HKL calculation is not
+        implemented.
 
         Parameters
         ----------
@@ -121,13 +123,13 @@ class CryspyCalculator(CalculatorBase):
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
         """
-        Calculates the diffraction pattern using Cryspy for the given structure
-        and experiment.
+        Calculates the diffraction pattern using Cryspy for the given
+        structure and experiment.
 
-        We only recreate the cryspy_obj if this method is - NOT called by the
-        minimizer, or - the cryspy_dict is NOT yet created. In other cases, we
-        are modifying the existing cryspy_dict This allows significantly
-        speeding up the calculation
+        We only recreate the cryspy_obj if this method is - NOT called
+        by the minimizer, or - the cryspy_dict is NOT yet created. In
+        other cases, we are modifying the existing cryspy_dict This
+        allows significantly speeding up the calculation
 
         Parameters
         ----------
@@ -201,7 +203,8 @@ class CryspyCalculator(CalculatorBase):
         experiment: ExperimentBase,
     ) -> Dict[str, Any]:
         """
-        Recreates the Cryspy dictionary for the given structure and experiment.
+        Recreates the Cryspy dictionary for the given structure and
+        experiment.
 
         Parameters
         ----------
@@ -320,7 +323,8 @@ class CryspyCalculator(CalculatorBase):
         experiment: ExperimentBase,
     ) -> object:
         """
-        Recreates the Cryspy object for the given structure and experiment.
+        Recreates the Cryspy object for the given structure and
+        experiment.
 
         Parameters
         ----------

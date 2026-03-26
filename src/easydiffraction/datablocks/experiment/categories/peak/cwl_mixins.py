@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Constant-wavelength (CWL) peak-profile component classes.
+"""
+Constant-wavelength (CWL) peak-profile component classes.
 
 This module provides classes that add broadening and asymmetry
 parameters. They are composed into concrete peak classes elsewhere via
@@ -78,7 +79,8 @@ class CwlBroadeningMixin:
 
     @property
     def broad_gauss_u(self) -> Parameter:
-        """Gaussian broadening coefficient (dependent on sample size and
+        """
+        Gaussian broadening coefficient (dependent on sample size and
         instrument resolution) (deg²).
 
         Reading this property returns the underlying ``Parameter``
@@ -92,7 +94,8 @@ class CwlBroadeningMixin:
 
     @property
     def broad_gauss_v(self) -> Parameter:
-        """Gaussian broadening coefficient (instrumental broadening
+        """
+        Gaussian broadening coefficient (instrumental broadening
         contribution) (deg²).
 
         Reading this property returns the underlying ``Parameter``
@@ -106,7 +109,8 @@ class CwlBroadeningMixin:
 
     @property
     def broad_gauss_w(self) -> Parameter:
-        """Gaussian broadening coefficient (instrumental broadening
+        """
+        Gaussian broadening coefficient (instrumental broadening
         contribution) (deg²).
 
         Reading this property returns the underlying ``Parameter``
@@ -120,7 +124,8 @@ class CwlBroadeningMixin:
 
     @property
     def broad_lorentz_x(self) -> Parameter:
-        """Lorentzian broadening coefficient (dependent on sample strain
+        """
+        Lorentzian broadening coefficient (dependent on sample strain
         effects) (deg).
 
         Reading this property returns the underlying ``Parameter``
@@ -134,8 +139,9 @@ class CwlBroadeningMixin:
 
     @property
     def broad_lorentz_y(self) -> Parameter:
-        """Lorentzian broadening coefficient (dependent on
-        microstructural defects and strain) (deg).
+        """
+        Lorentzian broadening coefficient (dependent on microstructural
+        defects and strain) (deg).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -200,7 +206,8 @@ class EmpiricalAsymmetryMixin:
 
     @property
     def asym_empir_1(self) -> Parameter:
-        """Empirical asymmetry coefficient p1.
+        """
+        Empirical asymmetry coefficient p1.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -213,7 +220,8 @@ class EmpiricalAsymmetryMixin:
 
     @property
     def asym_empir_2(self) -> Parameter:
-        """Empirical asymmetry coefficient p2.
+        """
+        Empirical asymmetry coefficient p2.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -226,7 +234,8 @@ class EmpiricalAsymmetryMixin:
 
     @property
     def asym_empir_3(self) -> Parameter:
-        """Empirical asymmetry coefficient p3.
+        """
+        Empirical asymmetry coefficient p3.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -239,7 +248,8 @@ class EmpiricalAsymmetryMixin:
 
     @property
     def asym_empir_4(self) -> Parameter:
-        """Empirical asymmetry coefficient p4.
+        """
+        Empirical asymmetry coefficient p4.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -284,7 +294,8 @@ class FcjAsymmetryMixin:
 
     @property
     def asym_fcj_1(self) -> Parameter:
-        """Finger-Cox-Jephcoat asymmetry parameter 1.
+        """
+        Finger-Cox-Jephcoat asymmetry parameter 1.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -297,7 +308,8 @@ class FcjAsymmetryMixin:
 
     @property
     def asym_fcj_2(self) -> Parameter:
-        """Finger-Cox-Jephcoat asymmetry parameter 2.
+        """
+        Finger-Cox-Jephcoat asymmetry parameter 2.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

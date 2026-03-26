@@ -17,8 +17,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @ExtinctionFactory.register
 class ShelxExtinction(CategoryItem):
-    """Shelx-style isotropic extinction correction for single
-    crystals.
+    """
+    Shelx-style isotropic extinction correction for single crystals.
     """
 
     type_info = TypeInfo(
@@ -69,7 +69,8 @@ class ShelxExtinction(CategoryItem):
 
     @property
     def mosaicity(self) -> Parameter:
-        """Mosaicity value for extinction correction (deg).
+        """
+        Mosaicity value for extinction correction (deg).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -82,7 +83,8 @@ class ShelxExtinction(CategoryItem):
 
     @property
     def radius(self) -> Parameter:
-        """Crystal radius for extinction correction (µm).
+        """
+        Crystal radius for extinction correction (µm).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

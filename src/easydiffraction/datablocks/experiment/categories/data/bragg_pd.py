@@ -123,7 +123,8 @@ class PdDataPointBaseMixin:
 
     @property
     def point_id(self) -> StringDescriptor:
-        """Identifier for this data point in the dataset.
+        """
+        Identifier for this data point in the dataset.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object.
@@ -132,7 +133,8 @@ class PdDataPointBaseMixin:
 
     @property
     def d_spacing(self) -> NumericDescriptor:
-        """D-spacing value corresponding to this data point.
+        """
+        d-spacing value corresponding to this data point.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -141,7 +143,8 @@ class PdDataPointBaseMixin:
 
     @property
     def intensity_meas(self) -> NumericDescriptor:
-        """Intensity recorded at each measurement point as a function of
+        """
+        Intensity recorded at each measurement point as a function of
         angle/time.
 
         Reading this property returns the underlying
@@ -151,7 +154,8 @@ class PdDataPointBaseMixin:
 
     @property
     def intensity_meas_su(self) -> NumericDescriptor:
-        """Standard uncertainty of the measured intensity at this data
+        """
+        Standard uncertainty of the measured intensity at this data
         point.
 
         Reading this property returns the underlying
@@ -161,8 +165,8 @@ class PdDataPointBaseMixin:
 
     @property
     def intensity_calc(self) -> NumericDescriptor:
-        """Intensity value for a computed diffractogram at this data
-        point.
+        """
+        Intensity value for a computed diffractogram at this data point.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -171,7 +175,8 @@ class PdDataPointBaseMixin:
 
     @property
     def intensity_bkg(self) -> NumericDescriptor:
-        """Intensity value for a computed background at this data point.
+        """
+        Intensity value for a computed background at this data point.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -180,7 +185,8 @@ class PdDataPointBaseMixin:
 
     @property
     def calc_status(self) -> StringDescriptor:
-        """Status code of the data point in the calculation process.
+        """
+        Status code of the data point in the calculation process.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object.
@@ -189,8 +195,8 @@ class PdDataPointBaseMixin:
 
 
 class PdCwlDataPointMixin:
-    """Mixin for powder diffraction data points with constant
-    wavelength.
+    """
+    Mixin for powder diffraction data points with constant wavelength.
     """
 
     def __init__(self) -> None:
@@ -218,7 +224,8 @@ class PdCwlDataPointMixin:
 
     @property
     def two_theta(self) -> NumericDescriptor:
-        """Measured 2θ diffraction angle (deg).
+        """
+        Measured 2θ diffraction angle (deg).
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -249,7 +256,8 @@ class PdTofDataPointMixin:
 
     @property
     def time_of_flight(self) -> NumericDescriptor:
-        """Measured time for time-of-flight neutron measurement (µs).
+        """
+        Measured time for time-of-flight neutron measurement (µs).
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -270,8 +278,8 @@ class PdCwlDataPoint(
     #  But also says, that in fact, it is just for consistency. And both
     #  orders work.
 ):
-    """Powder diffraction data point for constant-wavelength
-    experiments.
+    """
+    Powder diffraction data point for constant-wavelength experiments.
     """
 
     def __init__(self) -> None:
@@ -319,8 +327,8 @@ class PdDataBase(CategoryCollection):
             p.intensity_meas._value = v
 
     def _set_intensity_meas_su(self, values: object) -> None:
-        """Helper method to set standard uncertainty of measured
-        intensity.
+        """
+        Helper method to set standard uncertainty of measured intensity.
         """
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas_su._value = v
@@ -513,8 +521,8 @@ class PdCwlData(PdDataBase):
 
     @property
     def two_theta(self) -> np.ndarray:
-        """Get the 2θ values for data points included in
-        calculations.
+        """
+        Get the 2θ values for data points included in calculations.
         """
         return np.fromiter(
             (p.two_theta.value for p in self._calc_items),
@@ -590,8 +598,8 @@ class PdTofData(PdDataBase):
 
     @property
     def time_of_flight(self) -> np.ndarray:
-        """Get the TOF values for data points included in
-        calculations.
+        """
+        Get the TOF values for data points included in calculations.
         """
         return np.fromiter(
             (p.time_of_flight.value for p in self._calc_items),

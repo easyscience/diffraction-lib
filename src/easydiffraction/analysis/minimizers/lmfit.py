@@ -50,7 +50,8 @@ class LmfitMinimizer(MinimizerBase):
         Returns
         -------
         Dict[str, object]
-            A dictionary containing the prepared lmfit. Parameters object.
+            A dictionary containing the prepared lmfit. Parameters
+            object.
         """
         engine_parameters = lmfit.Parameters()
         for param in parameters:

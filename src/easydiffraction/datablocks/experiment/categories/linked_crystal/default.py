@@ -21,7 +21,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @LinkedCrystalFactory.register
 class LinkedCrystal(CategoryItem):
-    """Linked crystal category for referencing from the experiment for
+    """
+    Linked crystal category for referencing from the experiment for
     single crystal diffraction.
     """
 
@@ -63,7 +64,8 @@ class LinkedCrystal(CategoryItem):
 
     @property
     def id(self) -> StringDescriptor:
-        """Identifier of the linked crystal.
+        """
+        Identifier of the linked crystal.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
@@ -77,7 +79,8 @@ class LinkedCrystal(CategoryItem):
 
     @property
     def scale(self) -> Parameter:
-        """Scale factor of the linked crystal.
+        """
+        Scale factor of the linked crystal.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

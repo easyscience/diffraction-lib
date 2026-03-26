@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""PDF calculation backend using diffpy.pdffit2 if available.
+"""
+PDF calculation backend using diffpy.pdffit2 if available.
 
 The class adapts the engine to EasyDiffraction calculator interface and
 silences stdio on import to avoid noisy output in notebooks and logs.

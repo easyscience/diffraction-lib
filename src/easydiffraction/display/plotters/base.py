@@ -18,7 +18,8 @@ DEFAULT_MAX = np.inf
 
 
 class XAxisType(str, Enum):
-    """X-axis types for diffraction plots.
+    """
+    X-axis types for diffraction plots.
 
     Values match attribute names in data models for direct use with
     ``getattr(pattern, x_axis)``.
@@ -151,7 +152,8 @@ SERIES_CONFIG = dict(
 
 
 class PlotterBase(ABC):
-    """Abstract base for plotting backends.
+    """
+    Abstract base for plotting backends.
 
     Implementations accept x values, multiple y-series, optional labels
     and render a plot to the chosen medium.
@@ -175,8 +177,8 @@ class PlotterBase(ABC):
         """
         Render a line plot for powder diffraction data.
 
-        Suitable for powder diffraction data where intensity is plotted against
-        an x-axis variable (2θ, TOF, d-spacing).
+        Suitable for powder diffraction data where intensity is plotted
+        against an x-axis variable (2θ, TOF, d-spacing).
 
         Parameters
         ----------
@@ -208,8 +210,8 @@ class PlotterBase(ABC):
         """
         Render a scatter plot for single crystal diffraction data.
 
-        Suitable for single crystal diffraction data where measured values are
-        plotted against calculated values with error bars.
+        Suitable for single crystal diffraction data where measured
+        values are plotted against calculated values with error bars.
 
         Parameters
         ----------

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Atom site category.
+"""
+Atom site category.
 
 Defines :class:`AtomSite` items and :class:`AtomSites` collection used
 in crystallographic structures.
@@ -25,7 +26,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class AtomSite(CategoryItem):
-    """Single atom site with fractional coordinates and ADP.
+    """
+    Single atom site with fractional coordinates and ADP.
 
     Attributes are represented by descriptors to support validation and
     CIF serialization.
@@ -183,7 +185,8 @@ class AtomSite(CategoryItem):
 
     @property
     def label(self) -> StringDescriptor:
-        """Unique identifier for the atom site.
+        """
+        Unique identifier for the atom site.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
@@ -197,7 +200,8 @@ class AtomSite(CategoryItem):
 
     @property
     def type_symbol(self) -> StringDescriptor:
-        """Chemical symbol of the atom at this site.
+        """
+        Chemical symbol of the atom at this site.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
@@ -211,7 +215,8 @@ class AtomSite(CategoryItem):
 
     @property
     def adp_type(self) -> StringDescriptor:
-        """Type of atomic displacement parameter (ADP) used (e.g., Biso,
+        """
+        Type of atomic displacement parameter (ADP) used (e.g., Biso,
         Uiso, Uani, Bani).
 
         Reading this property returns the underlying
@@ -226,8 +231,9 @@ class AtomSite(CategoryItem):
 
     @property
     def wyckoff_letter(self) -> StringDescriptor:
-        """Wyckoff letter indicating the symmetry of the atom site
-        within the space group.
+        """
+        Wyckoff letter indicating the symmetry of the atom site within
+        the space group.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
@@ -241,8 +247,8 @@ class AtomSite(CategoryItem):
 
     @property
     def fract_x(self) -> Parameter:
-        """Fractional x-coordinate of the atom site within the unit
-        cell.
+        """
+        Fractional x-coordinate of the atom site within the unit cell.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -255,8 +261,8 @@ class AtomSite(CategoryItem):
 
     @property
     def fract_y(self) -> Parameter:
-        """Fractional y-coordinate of the atom site within the unit
-        cell.
+        """
+        Fractional y-coordinate of the atom site within the unit cell.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -269,8 +275,8 @@ class AtomSite(CategoryItem):
 
     @property
     def fract_z(self) -> Parameter:
-        """Fractional z-coordinate of the atom site within the unit
-        cell.
+        """
+        Fractional z-coordinate of the atom site within the unit cell.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -283,7 +289,8 @@ class AtomSite(CategoryItem):
 
     @property
     def occupancy(self) -> Parameter:
-        """Occupancy of the atom site, representing the fraction of the
+        """
+        Occupancy of the atom site, representing the fraction of the
         site occupied by the atom type.
 
         Reading this property returns the underlying ``Parameter``
@@ -297,8 +304,9 @@ class AtomSite(CategoryItem):
 
     @property
     def b_iso(self) -> Parameter:
-        """Isotropic atomic displacement parameter (ADP) for the atom
-        site (Å²).
+        """
+        Isotropic atomic displacement parameter (ADP) for the atom site
+        (Å²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -328,7 +336,8 @@ class AtomSites(CategoryCollection):
     # ------------------------------------------------------------------
 
     def _apply_atomic_coordinates_symmetry_constraints(self) -> None:
-        """Apply symmetry rules to fractional coordinates of every site.
+        """
+        Apply symmetry rules to fractional coordinates of every site.
 
         Uses the parent structure's space-group symbol, IT coordinate
         system code and each atom's Wyckoff letter.  Atoms without a

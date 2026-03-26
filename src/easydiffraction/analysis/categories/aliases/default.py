@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Alias category for mapping friendly names to parameter UIDs.
+"""
+Alias category for mapping friendly names to parameter UIDs.
 
 Defines a small record type used by analysis configuration to refer to
 parameters via readable labels instead of raw unique identifiers.
@@ -22,8 +23,8 @@ class Alias(CategoryItem):
     """
     Single alias entry.
 
-    Maps a human-readable ``label`` to a concrete ``param_uid`` used by the
-    engine.
+    Maps a human-readable ``label`` to a concrete ``param_uid`` used by
+    the engine.
     """
 
     def __init__(self) -> None:
@@ -57,7 +58,8 @@ class Alias(CategoryItem):
 
     @property
     def label(self) -> StringDescriptor:
-        """...
+        """
+        ...
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
@@ -71,7 +73,8 @@ class Alias(CategoryItem):
 
     @property
     def param_uid(self) -> StringDescriptor:
-        """...
+        """
+        ...
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the

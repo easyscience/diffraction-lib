@@ -72,7 +72,8 @@ class ExcludedRegion(CategoryItem):
 
     @property
     def id(self) -> StringDescriptor:
-        """Identifier for this excluded region.
+        """
+        Identifier for this excluded region.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
@@ -86,7 +87,8 @@ class ExcludedRegion(CategoryItem):
 
     @property
     def start(self) -> NumericDescriptor:
-        """Start of the excluded region.
+        """
+        Start of the excluded region.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object. Assigning to it updates the
@@ -100,7 +102,8 @@ class ExcludedRegion(CategoryItem):
 
     @property
     def end(self) -> NumericDescriptor:
-        """End of the excluded region.
+        """
+        End of the excluded region.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object. Assigning to it updates the
@@ -115,7 +118,8 @@ class ExcludedRegion(CategoryItem):
 
 @ExcludedRegionsFactory.register
 class ExcludedRegions(CategoryCollection):
-    """Collection of ExcludedRegion instances.
+    """
+    Collection of ExcludedRegion instances.
 
     Excluded regions define closed intervals [start, end] on the x-axis
     that are to be excluded from calculations and, as a result, from

@@ -102,7 +102,8 @@ def in_github_ci() -> bool:
 
 
 def is_ipython_display_handle(obj: object) -> bool:
-    """Return True if ``obj`` is an IPython DisplayHandle instance.
+    """
+    Return True if ``obj`` is an IPython DisplayHandle instance.
 
     Tries to import ``IPython.display.DisplayHandle`` and uses
     ``isinstance`` when available. Falls back to a conservative module
@@ -126,7 +127,8 @@ def is_ipython_display_handle(obj: object) -> bool:
 
 
 def can_update_ipython_display() -> bool:
-    """Return True if IPython HTML display utilities are available.
+    """
+    Return True if IPython HTML display utilities are available.
 
     This indicates we can safely construct ``IPython.display.HTML`` and
     update a display handle.
@@ -140,7 +142,8 @@ def can_update_ipython_display() -> bool:
 
 
 def can_use_ipython_display(handle: object) -> bool:
-    """Return True if we can update the given IPython DisplayHandle.
+    """
+    Return True if we can update the given IPython DisplayHandle.
 
     Combines type checking of the handle with availability of IPython
     HTML utilities.

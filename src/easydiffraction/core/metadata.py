@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Metadata dataclasses for factory-created classes.
+"""
+Metadata dataclasses for factory-created classes.
 
 Three frozen dataclasses describe a concrete class:
 
@@ -18,8 +19,8 @@ from typing import FrozenSet
 @dataclass(frozen=True)
 class TypeInfo:
     """
-    Stable identity and human-readable description for a factory- created
-    class.
+    Stable identity and human-readable description for a factory-
+    created class.
 
     Attributes
     ----------
@@ -39,7 +40,8 @@ class TypeInfo:
 
 @dataclass(frozen=True)
 class Compatibility:
-    """Experimental conditions under which a class can be used.
+    """
+    Experimental conditions under which a class can be used.
 
     Each field is a frozenset of enum values representing the set of
     supported values for that axis.  An empty frozenset means
@@ -58,7 +60,8 @@ class Compatibility:
         beam_mode: object = None,
         radiation_probe: object = None,
     ) -> bool:
-        """Check if this compatibility matches the given conditions.
+        """
+        Check if this compatibility matches the given conditions.
 
         Each argument is an optional enum member.  Returns ``True`` if
         every provided value is in the corresponding frozenset (or the
@@ -109,8 +112,8 @@ class CalculatorSupport:
         Returns
         -------
         bool
-            ``True`` if the calculator is in the set, or if the set is empty
-            (meaning any calculator is accepted).
+            ``True`` if the calculator is in the set, or if the set is
+            empty (meaning any calculator is accepted).
         """
         if not self.calculators:
             return True

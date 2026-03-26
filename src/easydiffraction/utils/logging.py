@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Project-wide logging utilities built on top of Rich.
+"""
+Project-wide logging utilities built on top of Rich.
 
 Provides a shared Rich console, a compact/verbose logger with consistent
 formatting, Jupyter traceback handling, and a small printing façade
@@ -43,7 +44,8 @@ from easydiffraction.utils.environment import in_warp
 
 
 class IconifiedRichHandler(RichHandler):
-    """RichHandler that uses icons for log levels in compact mode, Rich
+    """
+    RichHandler that uses icons for log levels in compact mode, Rich
     default in verbose mode.
     """
 
@@ -100,8 +102,8 @@ class ConsoleManager:
         Returns
         -------
         int
-            The detected terminal width, clamped at ``_MIN_CONSOLE_WIDTH``
-            to avoid cramped layouts.
+            The detected terminal width, clamped at
+            ``_MIN_CONSOLE_WIDTH`` to avoid cramped layouts.
         """
         min_width = ConsoleManager._MIN_CONSOLE_WIDTH
         try:
@@ -191,9 +193,9 @@ class LoggerConfig:
         ----------
         logger : logging.Logger
             Logger instance to configure.
-        mode : Logger.Mode
+        mode : 'Logger.Mode'
             Output mode (compact or verbose).
-        level : Logger.Level
+        level : 'Logger.Level'
             Minimum log level to emit.
         rich_tracebacks : bool
             Whether to enable Rich tracebacks.
@@ -282,7 +284,8 @@ class ExceptionHookManager:
     @staticmethod
     def _suppress_traceback(logger: object) -> object:
         """
-        Build a Jupyter custom exception callback that logs only the message.
+        Build a Jupyter custom exception callback that logs only the
+        message.
 
         Parameters
         ----------
@@ -292,8 +295,9 @@ class ExceptionHookManager:
         Returns
         -------
         object
-            A callable suitable for IPython's set_custom_exc that suppresses
-            full tracebacks and logs only the exception message.
+            A callable suitable for IPython's set_custom_exc that
+            suppresses full tracebacks and logs only the exception
+            message.
         """
 
         def suppress_jupyter_traceback(*args: object, **kwargs: object) -> None:
@@ -311,8 +315,8 @@ class ExceptionHookManager:
     @staticmethod
     def install_jupyter_traceback_suppressor(logger: logging.Logger) -> None:
         """
-        Install a Jupyter/IPython custom exception handler that suppresses
-        tracebacks.
+        Install a Jupyter/IPython custom exception handler that
+        suppresses tracebacks.
 
         Parameters
         ----------
@@ -338,7 +342,8 @@ class ExceptionHookManager:
 
 
 class Logger:
-    """Centralized logging with Rich formatting and two modes.
+    """
+    Centralized logging with Rich formatting and two modes.
 
     Environment variables: ED_LOG_MODE: set default mode ('verbose' or
     'compact') ED_LOG_LEVEL: set default level ('DEBUG', 'INFO', etc.)
@@ -395,7 +400,8 @@ class Logger:
         reaction: Reaction | None = None,
         rich_tracebacks: bool | None = None,
     ) -> None:
-        """Configure logger.
+        """
+        Configure logger.
 
         mode: default COMPACT in Jupyter else VERBOSE level: minimum log
         level rich_tracebacks: override automatic choice
@@ -443,8 +449,8 @@ class Logger:
 
     @classmethod
     def _install_jupyter_traceback_suppressor(cls) -> None:
-        """Install traceback suppressor in Jupyter, safely and lint-
-        clean.
+        """
+        Install traceback suppressor in Jupyter, safely and lint- clean.
         """
         ExceptionHookManager.install_jupyter_traceback_suppressor(cls._logger)
 
@@ -528,15 +534,17 @@ class Logger:
 
 
 class ConsolePrinter:
-    """Printer utility that prints objects to the shared console with
-    left padding.
+    """
+    Printer utility that prints objects to the shared console with left
+    padding.
     """
 
     _console = ConsoleManager.get()
 
     @classmethod
     def print(cls, *objects: object, **kwargs: object) -> None:
-        """Print objects to the console with left padding.
+        """
+        Print objects to the console with left padding.
 
         - Renderables (Rich types like Text, Table, Panel, etc.) are
         kept as-is. - Non-renderables (ints, floats, Path, etc.) are
@@ -586,8 +594,9 @@ class ConsolePrinter:
 
     @classmethod
     def chapter(cls, title: str) -> None:
-        """Formats a chapter header with bold magenta text, uppercase,
-        and padding.
+        """
+        Formats a chapter header with bold magenta text, uppercase, and
+        padding.
         """
         width = ConsoleManager._detect_width()
         symbol = '—'

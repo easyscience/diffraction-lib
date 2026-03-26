@@ -23,7 +23,8 @@ if TYPE_CHECKING:
 
 
 def format_value(value: object) -> str:
-    """Format a single CIF value, quoting strings with whitespace, and
+    """
+    Format a single CIF value, quoting strings with whitespace, and
     format floats with global precision.
 
     .. note::     The precision must be high enough so that the
@@ -61,7 +62,8 @@ def format_value(value: object) -> str:
 
 
 def param_to_cif(param: object) -> str:
-    """Render a single descriptor/parameter to a CIF line.
+    """
+    Render a single descriptor/parameter to a CIF line.
 
     Expects ``param`` to expose ``_cif_handler.names`` and ``value``.
     """
@@ -71,7 +73,8 @@ def param_to_cif(param: object) -> str:
 
 
 def category_item_to_cif(item: object) -> str:
-    """Render a CategoryItem-like object to CIF text.
+    """
+    Render a CategoryItem-like object to CIF text.
 
     Expects ``item.parameters`` iterable of params with
     ``_cif_handler.names`` and ``value``.
@@ -86,7 +89,8 @@ def category_collection_to_cif(
     collection: object,
     max_display: Optional[int] = 20,
 ) -> str:
-    """Render a CategoryCollection-like object to CIF text.
+    """
+    Render a CategoryCollection-like object to CIF text.
 
     Uses first item to build loop header, then emits rows for each item.
     """
@@ -125,7 +129,8 @@ def category_collection_to_cif(
 
 
 def datablock_item_to_cif(datablock: object) -> str:
-    """Render a DatablockItem-like object to CIF text.
+    """
+    Render a DatablockItem-like object to CIF text.
 
     Emits a data_ header and then concatenates category CIF sections.
     """
@@ -155,8 +160,8 @@ def datablock_collection_to_cif(collection: object) -> str:
 
 
 def project_info_to_cif(info: object) -> str:
-    """Render ProjectInfo to CIF text (id, title, description,
-    dates).
+    """
+    Render ProjectInfo to CIF text (id, title, description, dates).
     """
     name = f'{info.name}'
 

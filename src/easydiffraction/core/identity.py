@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Identity helpers to build CIF-like hierarchical names.
+"""
+Identity helpers to build CIF-like hierarchical names.
 
 Used by containers and items to expose datablock/category/entry names
 without tight coupling.

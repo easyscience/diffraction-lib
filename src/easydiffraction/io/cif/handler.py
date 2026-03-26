@@ -6,7 +6,8 @@ from __future__ import annotations
 
 
 class CifHandler:
-    """Canonical CIF handler used by descriptors/parameters.
+    """
+    Canonical CIF handler used by descriptors/parameters.
 
     Holds CIF tags (names) and attaches to an owning descriptor so it
     can derive a stable uid if needed.

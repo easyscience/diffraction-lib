@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Low-level backends for rendering tables.
+"""
+Low-level backends for rendering tables.
 
 This module defines the abstract base for tabular renderers and small
 helpers for consistent styling across terminal and notebook outputs.
@@ -18,7 +19,8 @@ from easydiffraction.utils._vendored.theme_detect import is_dark
 
 
 class TableBackendBase(ABC):
-    """Abstract base class for concrete table backends.
+    """
+    Abstract base class for concrete table backends.
 
     Subclasses implement the ``render`` method which receives an index-
     aware pandas DataFrame and the alignment for each column header.
@@ -50,7 +52,8 @@ class TableBackendBase(ABC):
         return self._float_fmt(value) if isinstance(value, float) else str(value)
 
     def _is_dark_theme(self) -> bool:
-        """Return True when a dark theme is detected in Jupyter.
+        """
+        Return True when a dark theme is detected in Jupyter.
 
         If not running inside Jupyter, return a sane default (True).
         """
@@ -112,7 +115,8 @@ class TableBackendBase(ABC):
         df : object
             Index-aware DataFrame with data to render.
         display_handle : object | None, default=None
-            Optional environment-specific handle to enable in-place updates.
+            Optional environment-specific handle to enable in-place
+            updates.
 
         Returns
         -------

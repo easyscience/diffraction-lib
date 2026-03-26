@@ -12,8 +12,8 @@ from easydiffraction.core.identity import Identity
 
 
 class GuardedBase(ABC):
-    """Base class enforcing controlled attribute access and parent
-    linkage.
+    """
+    Base class enforcing controlled attribute access and parent linkage.
     """
 
     _diagnoser = Diagnostics()
@@ -80,7 +80,8 @@ class GuardedBase(ABC):
     @classmethod
     def _iter_properties(cls) -> Generator[tuple[str, property], None, None]:
         """
-        Iterate over all public properties defined in the class hierarchy.
+        Iterate over all public properties defined in the class
+        hierarchy.
 
         Yields
         ------
@@ -134,7 +135,8 @@ class GuardedBase(ABC):
     @property
     @abstractmethod
     def parameters(self) -> list:
-        """Return a list of parameter objects (to be implemented by
+        """
+        Return a list of parameter objects (to be implemented by
         subclasses).
         """
         raise NotImplementedError
@@ -142,14 +144,16 @@ class GuardedBase(ABC):
     @property
     @abstractmethod
     def as_cif(self) -> str:
-        """Return CIF representation of this object (to be implemented
-        by subclasses).
+        """
+        Return CIF representation of this object (to be implemented by
+        subclasses).
         """
         raise NotImplementedError
 
     @staticmethod
     def _first_sentence(docstring: str | None) -> str:
-        """Extract the first paragraph from a docstring.
+        """
+        Extract the first paragraph from a docstring.
 
         Returns text before the first blank line, with continuation
         lines joined into a single string.

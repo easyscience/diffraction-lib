@@ -37,7 +37,8 @@ class CwlInstrumentBase(InstrumentBase):
 
     @property
     def setup_wavelength(self) -> Parameter:
-        """Incident neutron or X-ray wavelength (Å).
+        """
+        Incident neutron or X-ray wavelength (Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -101,7 +102,8 @@ class CwlPdInstrument(CwlInstrumentBase):
 
     @property
     def calib_twotheta_offset(self) -> Parameter:
-        """Instrument misalignment offset (deg).
+        """
+        Instrument misalignment offset (deg).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

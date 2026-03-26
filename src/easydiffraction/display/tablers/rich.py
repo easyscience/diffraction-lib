@@ -111,9 +111,10 @@ class RichTableBackend(TableBackendBase):
         Single, consistent update path for Jupyter and terminal.
 
         - With a handle that has ``update()``: * If it's an IPython
-        DisplayHandle, export to HTML and update. * Otherwise, treat it as a
-        terminal/live-like handle and update with the Rich renderable. - Without
-        a handle, print once to the shared console.
+        DisplayHandle, export to HTML and update. * Otherwise, treat it
+        as a terminal/live-like handle and update with the Rich
+        renderable. - Without a handle, print once to the shared
+        console.
 
         Parameters
         ----------

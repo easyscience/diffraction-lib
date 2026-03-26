@@ -75,8 +75,8 @@ class DatablockItem(GuardedBase):
 
     @property
     def parameters(self) -> list:
-        """All parameters from all categories contained in this
-        datablock.
+        """
+        All parameters from all categories contained in this datablock.
         """
         params = []
         for v in self.categories:
@@ -118,7 +118,8 @@ class DatablockItem(GuardedBase):
 
 
 class DatablockCollection(CollectionBase):
-    """Handles top-level category collections (e.g. Structures,
+    """
+    Handles top-level category collections (e.g. Structures,
     Experiments).
 
     Each item is a DatablockItem.

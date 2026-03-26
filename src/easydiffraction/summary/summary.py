@@ -9,7 +9,8 @@ from easydiffraction.utils.utils import render_table
 
 
 class Summary:
-    """Generates reports and exports results from the project.
+    """
+    Generates reports and exports results from the project.
 
     This class collects and presents all relevant information about the
     fitted model, experiments, and analysis results.
@@ -55,7 +56,8 @@ class Summary:
             print('\n'.join(desc_lines))
 
     def show_crystallographic_data(self) -> None:
-        """Print crystallographic data including phase datablocks, space
+        """
+        Print crystallographic data including phase datablocks, space
         groups, cell parameters, and atom sites.
         """
         console.section('Crystallographic data')
@@ -117,8 +119,9 @@ class Summary:
             )
 
     def show_experimental_data(self) -> None:
-        """Print experimental data including experiment datablocks,
-        types, instrument settings, and peak profile information.
+        """
+        Print experimental data including experiment datablocks, types,
+        instrument settings, and peak profile information.
         """
         console.section('Experiments')
 
@@ -177,7 +180,8 @@ class Summary:
                     )
 
     def show_fitting_details(self) -> None:
-        """Print fitting details including calculation and minimization
+        """
+        Print fitting details including calculation and minimization
         engines, and fit quality metrics.
         """
         console.section('Fitting')
@@ -209,8 +213,8 @@ class Summary:
     # ------------------------------------------
 
     def as_cif(self) -> str:
-        """Export the final fitted data and analysis results as CIF
-        format.
+        """
+        Export the final fitted data and analysis results as CIF format.
         """
         from easydiffraction.io.cif.serialize import summary_to_cif
 

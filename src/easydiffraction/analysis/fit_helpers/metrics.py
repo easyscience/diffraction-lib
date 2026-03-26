@@ -43,7 +43,8 @@ def calculate_weighted_r_factor(
     weights: np.ndarray,
 ) -> float:
     """
-    Calculate the weighted R-factor between observed and calculated data.
+    Calculate the weighted R-factor between observed and calculated
+    data.
 
     Parameters
     ----------

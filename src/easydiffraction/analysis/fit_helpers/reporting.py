@@ -13,7 +13,8 @@ from easydiffraction.utils.utils import render_table
 
 
 class FitResults:
-    """Container for results of a single optimization run.
+    """
+    Container for results of a single optimization run.
 
     Holds success flag, chi-square metrics, iteration counts, timing,
     and parameter objects. Provides a printer to summarize key
@@ -57,9 +58,9 @@ class FitResults:
         fitting_time : Optional[float], default=None
             Time taken for the fitting process.
         **kwargs : object
-            Additional engine-specific fields. If ``redchi`` is provided and
-            ``reduced_chi_square`` is not set, it is used as the reduced
-            chi-square value.
+            Additional engine-specific fields. If ``redchi`` is provided
+            and ``reduced_chi_square`` is not set, it is used as the
+            reduced chi-square value.
         """
         self.success: bool = success
         self.parameters: List[object] = parameters if parameters is not None else []

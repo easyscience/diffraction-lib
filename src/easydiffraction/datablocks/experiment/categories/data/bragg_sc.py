@@ -26,8 +26,8 @@ from easydiffraction.utils.utils import sin_theta_over_lambda_to_d_spacing
 
 
 class Refln(CategoryItem):
-    """Single reflection for single crystal diffraction data
-    category.
+    """
+    Single reflection for single crystal diffraction data category.
     """
 
     def __init__(self) -> None:
@@ -139,7 +139,8 @@ class Refln(CategoryItem):
 
     @property
     def id(self) -> StringDescriptor:
-        """Identifier of the reflection.
+        """
+        Identifier of the reflection.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object.
@@ -148,7 +149,8 @@ class Refln(CategoryItem):
 
     @property
     def d_spacing(self) -> NumericDescriptor:
-        """The distance between lattice planes in the crystal for this
+        """
+        The distance between lattice planes in the crystal for this
         reflection (Å).
 
         Reading this property returns the underlying
@@ -158,7 +160,8 @@ class Refln(CategoryItem):
 
     @property
     def sin_theta_over_lambda(self) -> NumericDescriptor:
-        """The sin(θ)/λ value for this reflection (Å⁻¹).
+        """
+        The sin(θ)/λ value for this reflection (Å⁻¹).
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -167,7 +170,8 @@ class Refln(CategoryItem):
 
     @property
     def index_h(self) -> NumericDescriptor:
-        """Miller index h of a measured reflection.
+        """
+        Miller index h of a measured reflection.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -176,7 +180,8 @@ class Refln(CategoryItem):
 
     @property
     def index_k(self) -> NumericDescriptor:
-        """Miller index k of a measured reflection.
+        """
+        Miller index k of a measured reflection.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -185,7 +190,8 @@ class Refln(CategoryItem):
 
     @property
     def index_l(self) -> NumericDescriptor:
-        """Miller index l of a measured reflection.
+        """
+        Miller index l of a measured reflection.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -194,8 +200,8 @@ class Refln(CategoryItem):
 
     @property
     def intensity_meas(self) -> NumericDescriptor:
-        """The intensity of the reflection derived from the
-        measurements.
+        """
+        The intensity of the reflection derived from the measurements.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -204,7 +210,8 @@ class Refln(CategoryItem):
 
     @property
     def intensity_meas_su(self) -> NumericDescriptor:
-        """Standard uncertainty of the measured intensity.
+        """
+        Standard uncertainty of the measured intensity.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -213,7 +220,8 @@ class Refln(CategoryItem):
 
     @property
     def intensity_calc(self) -> NumericDescriptor:
-        """The intensity of the reflection calculated from the atom site
+        """
+        The intensity of the reflection calculated from the atom site
         data.
 
         Reading this property returns the underlying
@@ -223,8 +231,9 @@ class Refln(CategoryItem):
 
     @property
     def wavelength(self) -> NumericDescriptor:
-        """The mean wavelength of radiation used to measure this
-        reflection (Å).
+        """
+        The mean wavelength of radiation used to measure this reflection
+        (Å).
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -291,8 +300,8 @@ class ReflnData(CategoryCollection):
             p.intensity_meas._value = v
 
     def _set_intensity_meas_su(self, values: object) -> None:
-        """Helper method to set standard uncertainty of measured
-        intensity.
+        """
+        Helper method to set standard uncertainty of measured intensity.
         """
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas_su._value = v

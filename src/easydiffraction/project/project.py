@@ -22,7 +22,8 @@ from easydiffraction.utils.logging import log
 
 
 class Project(GuardedBase):
-    """Central API for managing a diffraction data analysis project.
+    """
+    Central API for managing a diffraction data analysis project.
 
     Provides access to structures, experiments, analysis, and summary.
     """
@@ -74,8 +75,8 @@ class Project(GuardedBase):
 
     @property
     def name(self) -> str:
-        """Convenience property to access the project's name
-        directly.
+        """
+        Convenience property to access the project's name directly.
         """
         return self._info.name
 
@@ -139,7 +140,8 @@ class Project(GuardedBase):
     # ------------------------------------------
 
     def load(self, dir_path: str) -> None:
-        """Load a project from a given directory.
+        """
+        Load a project from a given directory.
 
         Loads project info, structures, experiments, etc.
         """

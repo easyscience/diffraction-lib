@@ -23,8 +23,9 @@ if TYPE_CHECKING:
 
 @ExperimentFactory.register
 class CwlScExperiment(ScExperimentBase):
-    """Standard (Bragg) constant wavelength single srystal experiment
-    class with specific attributes.
+    """
+    Standard (Bragg) constant wavelength single srystal experiment class
+    with specific attributes.
     """
 
     type_info = TypeInfo(
@@ -46,7 +47,8 @@ class CwlScExperiment(ScExperimentBase):
         super().__init__(name=name, type=type)
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load measured data from an ASCII file into the data category.
+        """
+        Load measured data from an ASCII file into the data category.
 
         The file format is space/column separated with 5 columns: ``h k
         l Iobs sIobs``.
@@ -87,8 +89,9 @@ class CwlScExperiment(ScExperimentBase):
 
 @ExperimentFactory.register
 class TofScExperiment(ScExperimentBase):
-    """Standard (Bragg) time-of-flight single srystal experiment class
-    with specific attributes.
+    """
+    Standard (Bragg) time-of-flight single srystal experiment class with
+    specific attributes.
     """
 
     type_info = TypeInfo(
@@ -110,7 +113,8 @@ class TofScExperiment(ScExperimentBase):
         super().__init__(name=name, type=type)
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load measured data from an ASCII file into the data category.
+        """
+        Load measured data from an ASCII file into the data category.
 
         The file format is space/column separated with 6 columns: ``h k
         l Iobs sIobs wavelength``.

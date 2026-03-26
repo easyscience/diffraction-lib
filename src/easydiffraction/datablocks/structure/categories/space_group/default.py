@@ -21,7 +21,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @SpaceGroupFactory.register
 class SpaceGroup(CategoryItem):
-    """Space group with Hermann–Mauguin symbol and IT coordinate system
+    """
+    Space group with Hermann–Mauguin symbol and IT coordinate system
     code.
 
     Holds the space-group symbol (``name_h_m``) and the International
@@ -84,7 +85,8 @@ class SpaceGroup(CategoryItem):
     # ------------------------------------------------------------------
 
     def _reset_it_coordinate_system_code(self) -> None:
-        """Reset the IT coordinate system code to the default for the
+        """
+        Reset the IT coordinate system code to the default for the
         current group.
         """
         self._it_coordinate_system_code.value = self._it_coordinate_system_code_default_value
@@ -135,7 +137,8 @@ class SpaceGroup(CategoryItem):
 
     @property
     def name_h_m(self) -> StringDescriptor:
-        """Hermann-Mauguin symbol of the space group.
+        """
+        Hermann-Mauguin symbol of the space group.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
@@ -150,7 +153,8 @@ class SpaceGroup(CategoryItem):
 
     @property
     def it_coordinate_system_code(self) -> StringDescriptor:
-        """A qualifier identifying which setting in IT is used.
+        """
+        A qualifier identifying which setting in IT is used.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the

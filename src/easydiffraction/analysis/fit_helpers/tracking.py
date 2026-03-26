@@ -35,7 +35,8 @@ DEFAULT_ALIGNMENTS = ['center', 'center', 'center']
 
 
 class _TerminalLiveHandle:
-    """Adapter that exposes update()/close() for terminal live updates.
+    """
+    Adapter that exposes update()/close() for terminal live updates.
 
     Wraps a rich.live.Live instance but keeps the tracker decoupled from
     the underlying UI mechanism.
@@ -53,8 +54,8 @@ class _TerminalLiveHandle:
 
 
 def _make_display_handle() -> object | None:
-    """Create and initialize a display/update handle for the
-    environment.
+    """
+    Create and initialize a display/update handle for the environment.
 
     - In Jupyter, returns an IPython DisplayHandle and creates a
     placeholder. - In terminal, returns a _TerminalLiveHandle backed by
@@ -75,7 +76,8 @@ def _make_display_handle() -> object | None:
 
 
 class FitProgressTracker:
-    """Track and report reduced chi-square during optimization.
+    """
+    Track and report reduced chi-square during optimization.
 
     The tracker keeps iteration counters, remembers the best observed
     reduced chi-square and when it occurred, and can display progress as

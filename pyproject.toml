@@ -237,7 +237,7 @@ select = [
   #'PLW', # https://docs.astral.sh/ruff/rules/#warning-plw
   # flake8 rules
   #'A',     # https://docs.astral.sh/ruff/rules/#flake8-builtins-a
-  'ANN',   # https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
+  'ANN', # https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
   'ARG', # https://docs.astral.sh/ruff/rules/#flake8-unused-arguments-arg
   #'ASYNC', # https://docs.astral.sh/ruff/rules/#flake8-async-async
   'B', # https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
@@ -280,7 +280,7 @@ ignore = [
   'DOC', # https://docs.astral.sh/ruff/rules/#pydoclint-doc
   # Temporary:
   'DTZ005',
-  'W505'
+  'W505',
 
 ]
 
@@ -374,4 +374,4 @@ exclude = 'src/easydiffraction/utils/_vendored/jupyter_dark_detect' # ED only
 docstring_style = 'numpy'
 line_length = 72
 fix_rst_backticks = true
-verbose = 'diff'
+verbose = 'default'                                                 # or 'diff' to show changes made to docstrings

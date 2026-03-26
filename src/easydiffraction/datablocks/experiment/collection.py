@@ -11,7 +11,8 @@ from easydiffraction.utils.logging import console
 
 
 class Experiments(DatablockCollection):
-    """Collection of Experiment data blocks.
+    """
+    Collection of Experiment data blocks.
 
     Provides convenience constructors for common creation patterns and
     helper methods for simple presentation of collection contents.
