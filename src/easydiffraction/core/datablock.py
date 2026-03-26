@@ -158,7 +158,9 @@ class DatablockCollection(CollectionBase):
 
     @property
     def unique_name(self) -> str | None:
-        """Return None; collections do not carry their own unique name."""
+        """
+        Return None; collections do not carry their own unique name.
+        """
         return None
 
     @property
@@ -171,7 +173,9 @@ class DatablockCollection(CollectionBase):
 
     @property
     def fittable_parameters(self) -> list:
-        """All non-constrained Parameter instances in this collection."""
+        """
+        All non-constrained Parameter instances in this collection.
+        """
         return [p for p in self.parameters if isinstance(p, Parameter) and not p.constrained]
 
     @property

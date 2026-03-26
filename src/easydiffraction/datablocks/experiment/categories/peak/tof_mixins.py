@@ -24,7 +24,7 @@ class TofBroadeningMixin:
 
         self._broad_gauss_sigma_0 = Parameter(
             name='gauss_sigma_0',
-            description='Gaussian broadening coefficient (instrumental resolution)',
+            description='Gaussian broadening (instrumental resolution)',
             units='µs²',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -34,7 +34,7 @@ class TofBroadeningMixin:
         )
         self._broad_gauss_sigma_1 = Parameter(
             name='gauss_sigma_1',
-            description='Gaussian broadening coefficient (dependent on d-spacing)',
+            description='Gaussian broadening (dependent on d-spacing)',
             units='µs/Å',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -44,7 +44,7 @@ class TofBroadeningMixin:
         )
         self._broad_gauss_sigma_2 = Parameter(
             name='gauss_sigma_2',
-            description='Gaussian broadening coefficient (instrument-dependent term)',
+            description='Gaussian broadening (instrument-dependent term)',
             units='µs²/Å²',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -54,7 +54,7 @@ class TofBroadeningMixin:
         )
         self._broad_lorentz_gamma_0 = Parameter(
             name='lorentz_gamma_0',
-            description='Lorentzian broadening coefficient (dependent on microstrain effects)',
+            description='Lorentzian broadening (microstrain effects)',
             units='µs',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -64,7 +64,7 @@ class TofBroadeningMixin:
         )
         self._broad_lorentz_gamma_1 = Parameter(
             name='lorentz_gamma_1',
-            description='Lorentzian broadening coefficient (dependent on d-spacing)',
+            description='Lorentzian broadening (dependent on d-spacing)',
             units='µs/Å',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -74,7 +74,7 @@ class TofBroadeningMixin:
         )
         self._broad_lorentz_gamma_2 = Parameter(
             name='lorentz_gamma_2',
-            description='Lorentzian broadening coefficient (instrument-dependent term)',
+            description='Lorentzian broadening (instrument-dependent term)',
             units='µs²/Å²',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -84,8 +84,7 @@ class TofBroadeningMixin:
         )
         self._broad_mix_beta_0 = Parameter(
             name='mix_beta_0',
-            description='Mixing parameter. Defines the ratio of Gaussian '
-            'to Lorentzian contributions in TOF profiles',
+            description='Ratio of Gaussian to Lorentzian contributions',
             units='deg',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -95,8 +94,7 @@ class TofBroadeningMixin:
         )
         self._broad_mix_beta_1 = Parameter(
             name='mix_beta_1',
-            description='Mixing parameter. Defines the ratio of Gaussian '
-            'to Lorentzian contributions in TOF profiles',
+            description='Ratio of Gaussian to Lorentzian contributions',
             units='deg',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -112,7 +110,7 @@ class TofBroadeningMixin:
     @property
     def broad_gauss_sigma_0(self) -> Parameter:
         """
-        Gaussian broadening coefficient (instrumental resolution) (µs²).
+        Gaussian broadening (instrumental resolution) (µs²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -121,13 +119,12 @@ class TofBroadeningMixin:
 
     @broad_gauss_sigma_0.setter
     def broad_gauss_sigma_0(self, value: float) -> None:
-        """Set Gaussian broadening coefficient σ₀."""
         self._broad_gauss_sigma_0.value = value
 
     @property
     def broad_gauss_sigma_1(self) -> Parameter:
         """
-        Gaussian broadening coefficient (dependent on d-spacing) (µs/Å).
+        Gaussian broadening (dependent on d-spacing) (µs/Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -136,14 +133,12 @@ class TofBroadeningMixin:
 
     @broad_gauss_sigma_1.setter
     def broad_gauss_sigma_1(self, value: float) -> None:
-        """Set Gaussian broadening coefficient σ₁."""
         self._broad_gauss_sigma_1.value = value
 
     @property
     def broad_gauss_sigma_2(self) -> Parameter:
         """
-        Gaussian broadening coefficient (instrument-dependent term)
-        (µs²/Å²).
+        Gaussian broadening (instrument-dependent term) (µs²/Å²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -152,14 +147,12 @@ class TofBroadeningMixin:
 
     @broad_gauss_sigma_2.setter
     def broad_gauss_sigma_2(self, value: float) -> None:
-        """Set Gaussian broadening coefficient σ₂."""
         self._broad_gauss_sigma_2.value = value
 
     @property
     def broad_lorentz_gamma_0(self) -> Parameter:
         """
-        Lorentzian broadening coefficient (dependent on microstrain
-        effects) (µs).
+        Lorentzian broadening (microstrain effects) (µs).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -168,14 +161,12 @@ class TofBroadeningMixin:
 
     @broad_lorentz_gamma_0.setter
     def broad_lorentz_gamma_0(self, value: float) -> None:
-        """Set Lorentzian broadening coefficient γ₀."""
         self._broad_lorentz_gamma_0.value = value
 
     @property
     def broad_lorentz_gamma_1(self) -> Parameter:
         """
-        Lorentzian broadening coefficient (dependent on d-spacing)
-        (µs/Å).
+        Lorentzian broadening (dependent on d-spacing) (µs/Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -184,14 +175,12 @@ class TofBroadeningMixin:
 
     @broad_lorentz_gamma_1.setter
     def broad_lorentz_gamma_1(self, value: float) -> None:
-        """Set Lorentzian broadening coefficient γ₁."""
         self._broad_lorentz_gamma_1.value = value
 
     @property
     def broad_lorentz_gamma_2(self) -> Parameter:
         """
-        Lorentzian broadening coefficient (instrument-dependent term)
-        (µs²/Å²).
+        Lorentzian broadening (instrument-dependent term) (µs²/Å²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -200,14 +189,12 @@ class TofBroadeningMixin:
 
     @broad_lorentz_gamma_2.setter
     def broad_lorentz_gamma_2(self, value: float) -> None:
-        """Set Lorentzian broadening coefficient γ₂."""
         self._broad_lorentz_gamma_2.value = value
 
     @property
     def broad_mix_beta_0(self) -> Parameter:
         """
-        Mixing parameter. Defines the ratio of Gaussian to Lorentzian
-        contributions in TOF profiles (deg).
+        Ratio of Gaussian to Lorentzian contributions (deg).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -216,14 +203,12 @@ class TofBroadeningMixin:
 
     @broad_mix_beta_0.setter
     def broad_mix_beta_0(self, value: float) -> None:
-        """Set mixing parameter β₀."""
         self._broad_mix_beta_0.value = value
 
     @property
     def broad_mix_beta_1(self) -> Parameter:
         """
-        Mixing parameter. Defines the ratio of Gaussian to Lorentzian
-        contributions in TOF profiles (deg).
+        Ratio of Gaussian to Lorentzian contributions (deg).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -232,7 +217,6 @@ class TofBroadeningMixin:
 
     @broad_mix_beta_1.setter
     def broad_mix_beta_1(self, value: float) -> None:
-        """Set mixing parameter β₁."""
         self._broad_mix_beta_1.value = value
 
 
@@ -275,7 +259,6 @@ class IkedaCarpenterAsymmetryMixin:
 
     @asym_alpha_0.setter
     def asym_alpha_0(self, value: float) -> None:
-        """Set Ikeda-Carpenter asymmetry parameter α₀."""
         self._asym_alpha_0.value = value
 
     @property
@@ -290,5 +273,4 @@ class IkedaCarpenterAsymmetryMixin:
 
     @asym_alpha_1.setter
     def asym_alpha_1(self, value: float) -> None:
-        """Set Ikeda-Carpenter asymmetry parameter α₁."""
         self._asym_alpha_1.value = value

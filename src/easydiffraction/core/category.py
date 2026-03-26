@@ -202,7 +202,9 @@ class CategoryCollection(CollectionBase):
 
     @property
     def unique_name(self) -> str | None:
-        """Return None; collections do not carry their own unique name."""
+        """
+        Return None; collections do not carry their own unique name.
+        """
         return None
 
     @property

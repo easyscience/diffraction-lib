@@ -28,7 +28,7 @@ class LinkedPhase(CategoryItem):
 
         self._id = StringDescriptor(
             name='id',
-            description='Identifier of the linked phase.',
+            description='Identifier of the linked phase',
             value_spec=AttributeSpec(
                 default='Si',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
@@ -65,7 +65,6 @@ class LinkedPhase(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
-        """Set the linked-phase identifier."""
         self._id.value = value
 
     @property
@@ -80,7 +79,6 @@ class LinkedPhase(CategoryItem):
 
     @scale.setter
     def scale(self, value: float) -> None:
-        """Set the linked-phase scale factor."""
         self._scale.value = value
 
 

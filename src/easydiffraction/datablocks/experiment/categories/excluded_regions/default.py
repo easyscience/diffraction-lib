@@ -35,7 +35,7 @@ class ExcludedRegion(CategoryItem):
         # TODO: Add point_id as for the background
         self._id = StringDescriptor(
             name='id',
-            description='Identifier for this excluded region.',
+            description='Identifier for this excluded region',
             value_spec=AttributeSpec(
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -83,7 +83,6 @@ class ExcludedRegion(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
-        """Set the excluded-region identifier."""
         self._id.value = value
 
     @property
@@ -99,7 +98,6 @@ class ExcludedRegion(CategoryItem):
 
     @start.setter
     def start(self, value: float) -> None:
-        """Set the start of the excluded region."""
         self._start.value = value
 
     @property
@@ -115,7 +113,6 @@ class ExcludedRegion(CategoryItem):
 
     @end.setter
     def end(self, value: float) -> None:
-        """Set the end of the excluded region."""
         self._end.value = value
 
 

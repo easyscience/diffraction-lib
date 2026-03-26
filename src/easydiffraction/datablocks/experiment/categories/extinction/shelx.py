@@ -34,7 +34,7 @@ class ShelxExtinction(CategoryItem):
 
         self._mosaicity = Parameter(
             name='mosaicity',
-            description='Mosaicity value for extinction correction.',
+            description='Mosaicity value for extinction correction',
             units='deg',
             value_spec=AttributeSpec(
                 default=1.0,
@@ -48,7 +48,7 @@ class ShelxExtinction(CategoryItem):
         )
         self._radius = Parameter(
             name='radius',
-            description='Crystal radius for extinction correction.',
+            description='Crystal radius for extinction correction',
             units='µm',
             value_spec=AttributeSpec(
                 default=1.0,
@@ -79,7 +79,6 @@ class ShelxExtinction(CategoryItem):
 
     @mosaicity.setter
     def mosaicity(self, value: float) -> None:
-        """Set the mosaicity value."""
         self._mosaicity.value = value
 
     @property
@@ -94,5 +93,4 @@ class ShelxExtinction(CategoryItem):
 
     @radius.setter
     def radius(self, value: float) -> None:
-        """Set the crystal radius."""
         self._radius.value = value

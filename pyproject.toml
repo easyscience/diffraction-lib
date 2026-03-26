@@ -216,6 +216,7 @@ quote-style = 'single'          # But double quotes in docstrings (PEP 8, PEP 25
 select = [
   # Various rules
   #'C90',  # https://docs.astral.sh/ruff/rules/#mccabe-c90
+  'D',   # https://docs.astral.sh/ruff/rules/#pydocstyle-d
   'F',   # https://docs.astral.sh/ruff/rules/#pyflakes-f
   'FLY', # https://docs.astral.sh/ruff/rules/#flynt-fly
   #'FURB', # https://docs.astral.sh/ruff/rules/#refurb-furb
@@ -275,10 +276,10 @@ select = [
 # Ignore specific rules globally
 ignore = [
   'COM812', # https://docs.astral.sh/ruff/rules/missing-trailing-comma/
-  # The following is replaced by [tool.pydoclint]
-  'D',   # https://docs.astral.sh/ruff/rules/#pydocstyle-d
+  # The following is replaced by 'D'/[tool.ruff.lint.pydocstyle] and [tool.pydoclint]
   'DOC', # https://docs.astral.sh/ruff/rules/#pydoclint-doc
   # Temporary:
+  #'D205',
   'DTZ005',
 ]
 
@@ -289,6 +290,7 @@ ignore = [
 ]
 'tests/**' = [
   'ANN',    # https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
+  'D',   # https://docs.astral.sh/ruff/rules/#pydocstyle-d
   'DOC',    # https://docs.astral.sh/ruff/rules/#pydoclint-doc
   'INP001', # https://docs.astral.sh/ruff/rules/implicit-namespace-package/
   'S101',   # https://docs.astral.sh/ruff/rules/assert/
@@ -340,6 +342,9 @@ max-complexity = 10
 # Use 72 characters for docstrings.
 max-line-length = 99 # See also `line-length` in [tool.ruff]
 max-doc-length = 72
+
+[tool.ruff.lint.pydocstyle]
+convention = 'numpy'
 
 #############################
 # Configuration for pydoclint

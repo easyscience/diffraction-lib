@@ -34,7 +34,7 @@ class PdDataPointBaseMixin:
 
         self._point_id = StringDescriptor(
             name='point_id',
-            description='Identifier for this data point in the dataset.',
+            description='Identifier for this data point in the dataset',
             value_spec=AttributeSpec(
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -50,7 +50,7 @@ class PdDataPointBaseMixin:
         )
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
-            description='d-spacing value corresponding to this data point.',
+            description='d-spacing value corresponding to this data point',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -73,7 +73,7 @@ class PdDataPointBaseMixin:
         )
         self._intensity_meas_su = NumericDescriptor(
             name='intensity_meas_su',
-            description='Standard uncertainty of the measured intensity at this data point.',
+            description='Standard uncertainty of the measured intensity at this point',
             value_spec=AttributeSpec(
                 default=1.0,
                 validator=RangeValidator(ge=0),
@@ -87,7 +87,7 @@ class PdDataPointBaseMixin:
         )
         self._intensity_calc = NumericDescriptor(
             name='intensity_calc',
-            description='Intensity value for a computed diffractogram at this data point.',
+            description='Intensity of a computed diffractogram at this point',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -96,7 +96,7 @@ class PdDataPointBaseMixin:
         )
         self._intensity_bkg = NumericDescriptor(
             name='intensity_bkg',
-            description='Intensity value for a computed background at this data point.',
+            description='Intensity of a computed background at this point',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -105,7 +105,7 @@ class PdDataPointBaseMixin:
         )
         self._calc_status = StringDescriptor(
             name='calc_status',
-            description='Status code of the data point in the calculation process.',
+            description='Status code of the data point in the calculation process',
             value_spec=AttributeSpec(
                 default='incl',  # TODO: Make Enum
                 validator=MembershipValidator(allowed=['incl', 'excl']),
@@ -155,8 +155,7 @@ class PdDataPointBaseMixin:
     @property
     def intensity_meas_su(self) -> NumericDescriptor:
         """
-        Standard uncertainty of the measured intensity at this data
-        point.
+        Standard uncertainty of the measured intensity at this point.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -166,7 +165,7 @@ class PdDataPointBaseMixin:
     @property
     def intensity_calc(self) -> NumericDescriptor:
         """
-        Intensity value for a computed diffractogram at this data point.
+        Intensity of a computed diffractogram at this point.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -176,7 +175,7 @@ class PdDataPointBaseMixin:
     @property
     def intensity_bkg(self) -> NumericDescriptor:
         """
-        Intensity value for a computed background at this data point.
+        Intensity of a computed background at this point.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.

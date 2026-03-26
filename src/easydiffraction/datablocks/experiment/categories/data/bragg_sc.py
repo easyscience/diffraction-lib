@@ -35,7 +35,7 @@ class Refln(CategoryItem):
 
         self._id = StringDescriptor(
             name='id',
-            description='Identifier of the reflection.',
+            description='Identifier of the reflection',
             value_spec=AttributeSpec(
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -47,7 +47,7 @@ class Refln(CategoryItem):
         )
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
-            description='The distance between lattice planes in the crystal for this reflection.',
+            description='The distance between lattice planes in the crystal for this reflection',
             units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -57,7 +57,7 @@ class Refln(CategoryItem):
         )
         self._sin_theta_over_lambda = NumericDescriptor(
             name='sin_theta_over_lambda',
-            description='The sin(θ)/λ value for this reflection.',
+            description='The sin(θ)/λ value for this reflection',
             units='Å⁻¹',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -67,7 +67,7 @@ class Refln(CategoryItem):
         )
         self._index_h = NumericDescriptor(
             name='index_h',
-            description='Miller index h of a measured reflection.',
+            description='Miller index h of a measured reflection',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -76,7 +76,7 @@ class Refln(CategoryItem):
         )
         self._index_k = NumericDescriptor(
             name='index_k',
-            description='Miller index k of a measured reflection.',
+            description='Miller index k of a measured reflection',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -85,7 +85,7 @@ class Refln(CategoryItem):
         )
         self._index_l = NumericDescriptor(
             name='index_l',
-            description='Miller index l of a measured reflection.',
+            description='Miller index l of a measured reflection',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -426,7 +426,9 @@ class ReflnData(CategoryCollection):
 
     @property
     def intensity_calc(self) -> np.ndarray:
-        """Calculated structure-factor intensities for all reflections."""
+        """
+        Calculated structure-factor intensities for all reflections.
+        """
         return np.fromiter(
             (p.intensity_calc.value for p in self._items),
             dtype=float,

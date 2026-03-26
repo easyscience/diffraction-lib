@@ -39,7 +39,8 @@ class ProjectInfo(GuardedBase):
 
     @name.setter
     def name(self, value: str) -> None:
-        """Set the project name.
+        """
+        Set the project name.
 
         Parameters
         ----------
@@ -60,7 +61,8 @@ class ProjectInfo(GuardedBase):
 
     @title.setter
     def title(self, value: str) -> None:
-        """Set the project title.
+        """
+        Set the project title.
 
         Parameters
         ----------
@@ -76,7 +78,8 @@ class ProjectInfo(GuardedBase):
 
     @description.setter
     def description(self, value: str) -> None:
-        """Set the project description (whitespace normalized).
+        """
+        Set the project description (whitespace normalized).
 
         Parameters
         ----------
@@ -92,7 +95,8 @@ class ProjectInfo(GuardedBase):
 
     @path.setter
     def path(self, value: object) -> None:
-        """Set the project directory path.
+        """
+        Set the project directory path.
 
         Parameters
         ----------

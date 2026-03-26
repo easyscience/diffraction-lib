@@ -23,8 +23,7 @@ class TotalBroadeningMixin:
 
         self._damp_q = Parameter(
             name='damp_q',
-            description='Instrumental Q-resolution damping factor '
-            '(affects high-r PDF peak amplitude)',
+            description='Instrumental Q-resolution damping (affects high-r PDF peak amplitude)',
             units='Å⁻¹',
             value_spec=AttributeSpec(
                 default=0.05,
@@ -34,8 +33,7 @@ class TotalBroadeningMixin:
         )
         self._broad_q = Parameter(
             name='broad_q',
-            description='Quadratic PDF peak broadening coefficient '
-            '(thermal and model uncertainty contribution)',
+            description='Quadratic peak broadening (thermal and model uncertainty contribution)',
             units='Å⁻²',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -45,8 +43,7 @@ class TotalBroadeningMixin:
         )
         self._cutoff_q = Parameter(
             name='cutoff_q',
-            description='Q-value cutoff applied to model PDF for Fourier '
-            'transform (controls real-space resolution)',
+            description='Q-value cutoff for Fourier transform (controls real-space resolution)',
             units='Å⁻¹',
             value_spec=AttributeSpec(
                 default=25.0,
@@ -76,7 +73,7 @@ class TotalBroadeningMixin:
         )
         self._damp_particle_diameter = Parameter(
             name='damp_particle_diameter',
-            description='Particle diameter for spherical envelope damping correction in PDF',
+            description='Particle diameter for spherical envelope damping correction',
             units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -92,8 +89,8 @@ class TotalBroadeningMixin:
     @property
     def damp_q(self) -> Parameter:
         """
-        Instrumental Q-resolution damping factor (affects high-r PDF
-        peak amplitude) (Å⁻¹).
+        Instrumental Q-resolution damping (affects high-r PDF peak
+        amplitude) (Å⁻¹).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -102,14 +99,13 @@ class TotalBroadeningMixin:
 
     @damp_q.setter
     def damp_q(self, value: float) -> None:
-        """Set the Q-resolution damping factor."""
         self._damp_q.value = value
 
     @property
     def broad_q(self) -> Parameter:
         """
-        Quadratic PDF peak broadening coefficient (thermal and model
-        uncertainty contribution) (Å⁻²).
+        Quadratic peak broadening (thermal and model uncertainty
+        contribution) (Å⁻²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -118,14 +114,13 @@ class TotalBroadeningMixin:
 
     @broad_q.setter
     def broad_q(self, value: float) -> None:
-        """Set the quadratic PDF peak broadening coefficient."""
         self._broad_q.value = value
 
     @property
     def cutoff_q(self) -> Parameter:
         """
-        Q-value cutoff applied to model PDF for Fourier transform
-        (controls real-space resolution) (Å⁻¹).
+        Q-value cutoff for Fourier transform (controls real-space
+        resolution) (Å⁻¹).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -134,7 +129,6 @@ class TotalBroadeningMixin:
 
     @cutoff_q.setter
     def cutoff_q(self, value: float) -> None:
-        """Set the Q-value cutoff for the Fourier transform."""
         self._cutoff_q.value = value
 
     @property
@@ -149,7 +143,6 @@ class TotalBroadeningMixin:
 
     @sharp_delta_1.setter
     def sharp_delta_1(self, value: float) -> None:
-        """Set the PDF peak sharpening coefficient delta_1."""
         self._sharp_delta_1.value = value
 
     @property
@@ -164,14 +157,12 @@ class TotalBroadeningMixin:
 
     @sharp_delta_2.setter
     def sharp_delta_2(self, value: float) -> None:
-        """Set the PDF peak sharpening coefficient delta_2."""
         self._sharp_delta_2.value = value
 
     @property
     def damp_particle_diameter(self) -> Parameter:
         """
-        Particle diameter for spherical envelope damping correction in
-        PDF (Å).
+        Particle diameter for spherical envelope damping correction (Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -180,5 +171,4 @@ class TotalBroadeningMixin:
 
     @damp_particle_diameter.setter
     def damp_particle_diameter(self, value: float) -> None:
-        """Set the particle diameter for spherical envelope damping."""
         self._damp_particle_diameter.value = value

@@ -49,7 +49,7 @@ class PolynomialTerm(CategoryItem):
 
         self._id = StringDescriptor(
             name='id',
-            description='Identifier for this background polynomial term.',
+            description='Identifier for this background polynomial term',
             value_spec=AttributeSpec(
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -98,7 +98,6 @@ class PolynomialTerm(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
-        """Set the polynomial term identifier."""
         self._id.value = value
         """
         Order used in a Chebyshev polynomial background term.
@@ -126,7 +125,6 @@ class PolynomialTerm(CategoryItem):
 
     @coef.setter
     def coef(self, value: float) -> None:
-        """Set the polynomial coefficient."""
         self._coef.value = value
 
 

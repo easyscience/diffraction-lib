@@ -196,13 +196,6 @@ class AtomSite(CategoryItem):
 
     @label.setter
     def label(self, value: str) -> None:
-        """Set the atom site label.
-
-        Parameters
-        ----------
-        value : str
-            New label value.
-        """
         self._label.value = value
 
     @property
@@ -218,13 +211,6 @@ class AtomSite(CategoryItem):
 
     @type_symbol.setter
     def type_symbol(self, value: str) -> None:
-        """Set the chemical symbol of the atom at this site.
-
-        Parameters
-        ----------
-        value : str
-            New chemical symbol value.
-        """
         self._type_symbol.value = value
 
     @property
@@ -241,13 +227,6 @@ class AtomSite(CategoryItem):
 
     @adp_type.setter
     def adp_type(self, value: str) -> None:
-        """Set the atomic displacement parameter type.
-
-        Parameters
-        ----------
-        value : str
-            New ADP type value (e.g., ``'Biso'``).
-        """
         self._adp_type.value = value
 
     @property
@@ -264,13 +243,6 @@ class AtomSite(CategoryItem):
 
     @wyckoff_letter.setter
     def wyckoff_letter(self, value: str) -> None:
-        """Set the Wyckoff letter for this atom site.
-
-        Parameters
-        ----------
-        value : str
-            New Wyckoff letter value.
-        """
         self._wyckoff_letter.value = value
 
     @property
@@ -285,13 +257,6 @@ class AtomSite(CategoryItem):
 
     @fract_x.setter
     def fract_x(self, value: float) -> None:
-        """Set the fractional x-coordinate.
-
-        Parameters
-        ----------
-        value : float
-            New fractional x-coordinate value.
-        """
         self._fract_x.value = value
 
     @property
@@ -306,13 +271,6 @@ class AtomSite(CategoryItem):
 
     @fract_y.setter
     def fract_y(self, value: float) -> None:
-        """Set the fractional y-coordinate.
-
-        Parameters
-        ----------
-        value : float
-            New fractional y-coordinate value.
-        """
         self._fract_y.value = value
 
     @property
@@ -327,13 +285,6 @@ class AtomSite(CategoryItem):
 
     @fract_z.setter
     def fract_z(self, value: float) -> None:
-        """Set the fractional z-coordinate.
-
-        Parameters
-        ----------
-        value : float
-            New fractional z-coordinate value.
-        """
         self._fract_z.value = value
 
     @property
@@ -349,13 +300,6 @@ class AtomSite(CategoryItem):
 
     @occupancy.setter
     def occupancy(self, value: float) -> None:
-        """Set the occupancy of this atom site.
-
-        Parameters
-        ----------
-        value : float
-            New occupancy value.
-        """
         self._occupancy.value = value
 
     @property
@@ -371,13 +315,6 @@ class AtomSite(CategoryItem):
 
     @b_iso.setter
     def b_iso(self, value: float) -> None:
-        """Set the isotropic atomic displacement parameter.
-
-        Parameters
-        ----------
-        value : float
-            New B_iso value in Å².
-        """
         self._b_iso.value = value
 
 

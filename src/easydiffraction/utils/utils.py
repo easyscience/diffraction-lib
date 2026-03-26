@@ -529,8 +529,8 @@ def render_table(
     columns_headers : object, default=None
         Optional list of column header strings.
     display_handle : object, default=None
-        Optional display handle for in-place updates (e.g. in Jupyter
-        or a terminal Live context).
+        Optional display handle for in-place updates (e.g. in Jupyter or
+        a terminal Live context).
     """
     headers = [
         (col, align) for col, align in zip(columns_headers, columns_alignment, strict=False)

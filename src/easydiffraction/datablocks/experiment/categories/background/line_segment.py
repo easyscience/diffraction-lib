@@ -41,7 +41,7 @@ class LineSegment(CategoryItem):
 
         self._id = StringDescriptor(
             name='id',
-            description='Identifier for this background line segment.',
+            description='Identifier for this background line segment',
             value_spec=AttributeSpec(
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -53,10 +53,7 @@ class LineSegment(CategoryItem):
         )
         self._x = NumericDescriptor(
             name='x',
-            description=(
-                'X-coordinates used to create many straight-line segments '
-                'representing the background in a calculated diffractogram.'
-            ),
+            description='X-coordinates used to create many straight-line segments',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -70,10 +67,7 @@ class LineSegment(CategoryItem):
         )
         self._y = Parameter(
             name='y',  # TODO: rename to intensity
-            description=(
-                'Intensity used to create many straight-line segments '
-                'representing the background in a calculated diffractogram'
-            ),
+            description='Intensity used to create many straight-line segments',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -106,14 +100,12 @@ class LineSegment(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
-        """Set the line segment identifier."""
         self._id.value = value
 
     @property
     def x(self) -> NumericDescriptor:
         """
-        X-coordinates used to create many straight-line segments
-        representing the background in a calculated diffractogram.
+        X-coordinates used to create many straight-line segments.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object. Assigning to it updates the
@@ -123,14 +115,12 @@ class LineSegment(CategoryItem):
 
     @x.setter
     def x(self, value: float) -> None:
-        """Set the x-coordinate of the control point."""
         self._x.value = value
 
     @property
     def y(self) -> Parameter:
         """
-        Intensity used to create many straight-line segments
-        representing the background in a calculated diffractogram.
+        Intensity used to create many straight-line segments.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -139,7 +129,6 @@ class LineSegment(CategoryItem):
 
     @y.setter
     def y(self, value: float) -> None:
-        """Set the intensity of the control point."""
         self._y.value = value
 
 

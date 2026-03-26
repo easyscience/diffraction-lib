@@ -38,7 +38,7 @@ class TotalDataPoint(CategoryItem):
 
         self._point_id = StringDescriptor(
             name='point_id',
-            description='Identifier for this data point in the dataset.',
+            description='Identifier for this data point in the dataset',
             value_spec=AttributeSpec(
                 default='0',
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
@@ -51,7 +51,7 @@ class TotalDataPoint(CategoryItem):
         )
         self._r = NumericDescriptor(
             name='r',
-            description='Interatomic distance in real space.',
+            description='Interatomic distance in real space',
             units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -65,7 +65,7 @@ class TotalDataPoint(CategoryItem):
         )
         self._g_r_meas = NumericDescriptor(
             name='g_r_meas',
-            description='Measured pair distribution function G(r).',
+            description='Measured pair distribution function G(r)',
             value_spec=AttributeSpec(
                 default=0.0,
             ),
@@ -77,7 +77,7 @@ class TotalDataPoint(CategoryItem):
         )
         self._g_r_meas_su = NumericDescriptor(
             name='g_r_meas_su',
-            description='Standard uncertainty of measured G(r).',
+            description='Standard uncertainty of measured G(r)',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -90,7 +90,7 @@ class TotalDataPoint(CategoryItem):
         )
         self._g_r_calc = NumericDescriptor(
             name='g_r_calc',
-            description='Calculated pair distribution function G(r).',
+            description='Calculated pair distribution function G(r)',
             value_spec=AttributeSpec(
                 default=0.0,
             ),
@@ -102,7 +102,7 @@ class TotalDataPoint(CategoryItem):
         )
         self._calc_status = StringDescriptor(
             name='calc_status',
-            description='Status code of the data point in calculation.',
+            description='Status code of the data point in calculation',
             value_spec=AttributeSpec(
                 default='incl',
                 validator=MembershipValidator(allowed=['incl', 'excl']),
@@ -321,7 +321,7 @@ class TotalData(TotalDataBase):
     transformed to r-space.
     """
 
-    type_info = TypeInfo(tag='total-pd', description='Total scattering (PDF) data')
+    type_info = TypeInfo(tag='total-pd', description='Total scattering (PDF) data',)
     compatibility = Compatibility(
         sample_form=frozenset({SampleFormEnum.POWDER}),
         scattering_type=frozenset({ScatteringTypeEnum.TOTAL}),

@@ -13,17 +13,19 @@ class SampleFormEnum(str, Enum):
 
     @classmethod
     def default(cls) -> 'SampleFormEnum':
-        """Return the default sample form (POWDER).
+        """
+        Return the default sample form (POWDER).
 
         Returns
         -------
-        SampleFormEnum
+        'SampleFormEnum'
             The default enum member.
         """
         return cls.POWDER
 
     def description(self) -> str:
-        """Return a human-readable description of this sample form.
+        """
+        Return a human-readable description of this sample form.
 
         Returns
         -------
@@ -44,17 +46,19 @@ class ScatteringTypeEnum(str, Enum):
 
     @classmethod
     def default(cls) -> 'ScatteringTypeEnum':
-        """Return the default scattering type (BRAGG).
+        """
+        Return the default scattering type (BRAGG).
 
         Returns
         -------
-        ScatteringTypeEnum
+        'ScatteringTypeEnum'
             The default enum member.
         """
         return cls.BRAGG
 
     def description(self) -> str:
-        """Return a human-readable description of this scattering type.
+        """
+        Return a human-readable description of this scattering type.
 
         Returns
         -------
@@ -75,17 +79,19 @@ class RadiationProbeEnum(str, Enum):
 
     @classmethod
     def default(cls) -> 'RadiationProbeEnum':
-        """Return the default radiation probe (NEUTRON).
+        """
+        Return the default radiation probe (NEUTRON).
 
         Returns
         -------
-        RadiationProbeEnum
+        'RadiationProbeEnum'
             The default enum member.
         """
         return cls.NEUTRON
 
     def description(self) -> str:
-        """Return a human-readable description of this radiation probe.
+        """
+        Return a human-readable description of this radiation probe.
 
         Returns
         -------
@@ -107,17 +113,19 @@ class BeamModeEnum(str, Enum):
 
     @classmethod
     def default(cls) -> 'BeamModeEnum':
-        """Return the default beam mode (CONSTANT_WAVELENGTH).
+        """
+        Return the default beam mode (CONSTANT_WAVELENGTH).
 
         Returns
         -------
-        BeamModeEnum
+        'BeamModeEnum'
             The default enum member.
         """
         return cls.CONSTANT_WAVELENGTH
 
     def description(self) -> str:
-        """Return a human-readable description of this beam mode.
+        """
+        Return a human-readable description of this beam mode.
 
         Returns
         -------
@@ -160,20 +168,21 @@ class PeakProfileTypeEnum(str, Enum):
         scattering_type: ScatteringTypeEnum | None = None,
         beam_mode: BeamModeEnum | None = None,
     ) -> 'PeakProfileTypeEnum':
-        """Return the default peak profile type for a given mode.
+        """
+        Return the default peak profile type for a given mode.
 
         Parameters
         ----------
         scattering_type : ScatteringTypeEnum | None, default=None
-            Scattering type; defaults to ``ScatteringTypeEnum.default()``
-            when ``None``.
+            Scattering type; defaults to
+            ``ScatteringTypeEnum.default()`` when ``None``.
         beam_mode : BeamModeEnum | None, default=None
             Beam mode; defaults to ``BeamModeEnum.default()`` when
             ``None``.
 
         Returns
         -------
-        PeakProfileTypeEnum
+        'PeakProfileTypeEnum'
             The default profile type for the given combination.
         """
         if scattering_type is None:
@@ -191,7 +200,8 @@ class PeakProfileTypeEnum(str, Enum):
         }[(scattering_type, beam_mode)]
 
     def description(self) -> str:
-        """Return a human-readable description of this peak profile type.
+        """
+        Return a human-readable description of this peak profile type.
 
         Returns
         -------

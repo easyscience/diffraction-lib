@@ -61,5 +61,4 @@ class FitMode(CategoryItem):
 
     @mode.setter
     def mode(self, value: str) -> None:
-        """Set the fitting strategy value."""
         self._mode.value = value

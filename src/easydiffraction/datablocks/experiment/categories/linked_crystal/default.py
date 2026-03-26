@@ -39,7 +39,7 @@ class LinkedCrystal(CategoryItem):
 
         self._id = StringDescriptor(
             name='id',
-            description='Identifier of the linked crystal.',
+            description='Identifier of the linked crystal',
             value_spec=AttributeSpec(
                 default='Si',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
@@ -48,7 +48,7 @@ class LinkedCrystal(CategoryItem):
         )
         self._scale = Parameter(
             name='scale',
-            description='Scale factor of the linked crystal.',
+            description='Scale factor of the linked crystal',
             value_spec=AttributeSpec(
                 default=1.0,
                 validator=RangeValidator(),
@@ -75,7 +75,6 @@ class LinkedCrystal(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
-        """Set the linked-crystal identifier."""
         self._id.value = value
 
     @property
@@ -90,5 +89,4 @@ class LinkedCrystal(CategoryItem):
 
     @scale.setter
     def scale(self, value: float) -> None:
-        """Set the linked-crystal scale factor."""
         self._scale.value = value

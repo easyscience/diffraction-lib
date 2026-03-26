@@ -47,13 +47,12 @@ class CwlInstrumentBase(InstrumentBase):
 
     @setup_wavelength.setter
     def setup_wavelength(self, value: float) -> None:
-        """Set the incident wavelength."""
         self._setup_wavelength.value = value
 
 
 @InstrumentFactory.register
 class CwlScInstrument(CwlInstrumentBase):
-    type_info = TypeInfo(tag='cwl-sc', description='CW single-crystal diffractometer')
+    type_info = TypeInfo(tag='cwl-sc', description='CW single-crystal diffractometer',)
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
@@ -69,7 +68,7 @@ class CwlScInstrument(CwlInstrumentBase):
 
 @InstrumentFactory.register
 class CwlPdInstrument(CwlInstrumentBase):
-    type_info = TypeInfo(tag='cwl-pd', description='CW powder diffractometer')
+    type_info = TypeInfo(tag='cwl-pd', description='CW powder diffractometer',)
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG, ScatteringTypeEnum.TOTAL}),
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
@@ -113,5 +112,4 @@ class CwlPdInstrument(CwlInstrumentBase):
 
     @calib_twotheta_offset.setter
     def calib_twotheta_offset(self, value: float) -> None:
-        """Set the 2θ instrument misalignment offset."""
         self._calib_twotheta_offset.value = value

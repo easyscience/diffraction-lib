@@ -43,7 +43,8 @@ class RendererBase(SingletonBase, ABC):
 
     @property
     def engine(self) -> str:
-        """Return the name of the currently active rendering engine.
+        """
+        Return the name of the currently active rendering engine.
 
         Returns
         -------
@@ -54,7 +55,8 @@ class RendererBase(SingletonBase, ABC):
 
     @engine.setter
     def engine(self, new_engine: str) -> None:
-        """Switch to a different rendering engine.
+        """
+        Switch to a different rendering engine.
 
         Parameters
         ----------

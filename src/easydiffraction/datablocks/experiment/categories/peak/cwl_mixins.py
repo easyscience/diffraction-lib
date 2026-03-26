@@ -22,8 +22,7 @@ class CwlBroadeningMixin:
 
         self._broad_gauss_u: Parameter = Parameter(
             name='broad_gauss_u',
-            description='Gaussian broadening coefficient (dependent on '
-            'sample size and instrument resolution)',
+            description='Gaussian broadening (sample size and instrument resolution)',
             units='deg²',
             value_spec=AttributeSpec(
                 default=0.01,
@@ -33,7 +32,7 @@ class CwlBroadeningMixin:
         )
         self._broad_gauss_v: Parameter = Parameter(
             name='broad_gauss_v',
-            description='Gaussian broadening coefficient (instrumental broadening contribution)',
+            description='Gaussian broadening (instrumental broadening contribution)',
             units='deg²',
             value_spec=AttributeSpec(
                 default=-0.01,
@@ -43,7 +42,7 @@ class CwlBroadeningMixin:
         )
         self._broad_gauss_w: Parameter = Parameter(
             name='broad_gauss_w',
-            description='Gaussian broadening coefficient (instrumental broadening contribution)',
+            description='Gaussian broadening (instrumental broadening contribution)',
             units='deg²',
             value_spec=AttributeSpec(
                 default=0.02,
@@ -53,7 +52,7 @@ class CwlBroadeningMixin:
         )
         self._broad_lorentz_x: Parameter = Parameter(
             name='broad_lorentz_x',
-            description='Lorentzian broadening coefficient (dependent on sample strain effects)',
+            description='Lorentzian broadening (sample strain effects)',
             units='deg',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -63,8 +62,7 @@ class CwlBroadeningMixin:
         )
         self._broad_lorentz_y: Parameter = Parameter(
             name='broad_lorentz_y',
-            description='Lorentzian broadening coefficient (dependent on '
-            'microstructural defects and strain)',
+            description='Lorentzian broadening (microstructural defects and strain)',
             units='deg',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -80,8 +78,8 @@ class CwlBroadeningMixin:
     @property
     def broad_gauss_u(self) -> Parameter:
         """
-        Gaussian broadening coefficient (dependent on sample size and
-        instrument resolution) (deg²).
+        Gaussian broadening (sample size and instrument resolution)
+        (deg²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -90,14 +88,13 @@ class CwlBroadeningMixin:
 
     @broad_gauss_u.setter
     def broad_gauss_u(self, value: float) -> None:
-        """Set the Gaussian broadening coefficient U."""
         self._broad_gauss_u.value = value
 
     @property
     def broad_gauss_v(self) -> Parameter:
         """
-        Gaussian broadening coefficient (instrumental broadening
-        contribution) (deg²).
+        Gaussian broadening (instrumental broadening contribution)
+        (deg²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -106,14 +103,13 @@ class CwlBroadeningMixin:
 
     @broad_gauss_v.setter
     def broad_gauss_v(self, value: float) -> None:
-        """Set the Gaussian broadening coefficient V."""
         self._broad_gauss_v.value = value
 
     @property
     def broad_gauss_w(self) -> Parameter:
         """
-        Gaussian broadening coefficient (instrumental broadening
-        contribution) (deg²).
+        Gaussian broadening (instrumental broadening contribution)
+        (deg²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -122,14 +118,12 @@ class CwlBroadeningMixin:
 
     @broad_gauss_w.setter
     def broad_gauss_w(self, value: float) -> None:
-        """Set the Gaussian broadening coefficient W."""
         self._broad_gauss_w.value = value
 
     @property
     def broad_lorentz_x(self) -> Parameter:
         """
-        Lorentzian broadening coefficient (dependent on sample strain
-        effects) (deg).
+        Lorentzian broadening (sample strain effects) (deg).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -138,14 +132,13 @@ class CwlBroadeningMixin:
 
     @broad_lorentz_x.setter
     def broad_lorentz_x(self, value: float) -> None:
-        """Set the Lorentzian broadening coefficient X."""
         self._broad_lorentz_x.value = value
 
     @property
     def broad_lorentz_y(self) -> Parameter:
         """
-        Lorentzian broadening coefficient (dependent on microstructural
-        defects and strain) (deg).
+        Lorentzian broadening (microstructural defects and strain)
+        (deg).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -154,7 +147,6 @@ class CwlBroadeningMixin:
 
     @broad_lorentz_y.setter
     def broad_lorentz_y(self, value: float) -> None:
-        """Set the Lorentzian broadening coefficient Y."""
         self._broad_lorentz_y.value = value
 
 
@@ -221,7 +213,6 @@ class EmpiricalAsymmetryMixin:
 
     @asym_empir_1.setter
     def asym_empir_1(self, value: float) -> None:
-        """Set empirical asymmetry coefficient p1."""
         self._asym_empir_1.value = value
 
     @property
@@ -236,7 +227,6 @@ class EmpiricalAsymmetryMixin:
 
     @asym_empir_2.setter
     def asym_empir_2(self, value: float) -> None:
-        """Set empirical asymmetry coefficient p2."""
         self._asym_empir_2.value = value
 
     @property
@@ -251,7 +241,6 @@ class EmpiricalAsymmetryMixin:
 
     @asym_empir_3.setter
     def asym_empir_3(self, value: float) -> None:
-        """Set empirical asymmetry coefficient p3."""
         self._asym_empir_3.value = value
 
     @property
@@ -266,7 +255,6 @@ class EmpiricalAsymmetryMixin:
 
     @asym_empir_4.setter
     def asym_empir_4(self, value: float) -> None:
-        """Set empirical asymmetry coefficient p4."""
         self._asym_empir_4.value = value
 
 
@@ -313,7 +301,6 @@ class FcjAsymmetryMixin:
 
     @asym_fcj_1.setter
     def asym_fcj_1(self, value: float) -> None:
-        """Set FCJ asymmetry parameter 1."""
         self._asym_fcj_1.value = value
 
     @property
@@ -328,5 +315,4 @@ class FcjAsymmetryMixin:
 
     @asym_fcj_2.setter
     def asym_fcj_2(self, value: float) -> None:
-        """Set FCJ asymmetry parameter 2."""
         self._asym_fcj_2.value = value

@@ -21,9 +21,7 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class Constraint(CategoryItem):
-    """
-    Single constraint item.
-    """
+    """Single constraint item."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -67,7 +65,6 @@ class Constraint(CategoryItem):
 
     @lhs_alias.setter
     def lhs_alias(self, value: str) -> None:
-        """Set the left-hand side alias string."""
         self._lhs_alias.value = value
 
     @property
@@ -83,7 +80,6 @@ class Constraint(CategoryItem):
 
     @rhs_expr.setter
     def rhs_expr(self, value: str) -> None:
-        """Set the right-hand side expression string."""
         self._rhs_expr.value = value
 
 

@@ -82,7 +82,8 @@ class Project(GuardedBase):
 
     @property
     def full_name(self) -> str:
-        """Return the full project name (alias for :attr:`name`).
+        """
+        Return the full project name (alias for :attr:`name`).
 
         Returns
         -------
@@ -239,7 +240,8 @@ class Project(GuardedBase):
         x_max: float | None = None,
         x: object | None = None,
     ) -> None:
-        """Plot measured diffraction data for an experiment.
+        """
+        Plot measured diffraction data for an experiment.
 
         Parameters
         ----------
@@ -271,7 +273,8 @@ class Project(GuardedBase):
         x_max: float | None = None,
         x: object | None = None,
     ) -> None:
-        """Plot calculated diffraction pattern for an experiment.
+        """
+        Plot calculated diffraction pattern for an experiment.
 
         Parameters
         ----------
@@ -304,7 +307,8 @@ class Project(GuardedBase):
         show_residual: bool = False,
         x: object | None = None,
     ) -> None:
-        """Plot measured vs calculated data for an experiment.
+        """
+        Plot measured vs calculated data for an experiment.
 
         Parameters
         ----------

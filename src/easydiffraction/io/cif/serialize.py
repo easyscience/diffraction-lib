@@ -243,7 +243,8 @@ def param_from_cif(
     block: gemmi.cif.Block,
     idx: int = 0,
 ) -> None:
-    """Populate a single descriptor from a CIF block.
+    """
+    Populate a single descriptor from a CIF block.
 
     Parameters
     ----------
@@ -305,7 +306,8 @@ def category_collection_from_cif(
     self: CategoryCollection,
     block: gemmi.cif.Block,
 ) -> None:
-    """Populate a CategoryCollection from a CIF loop.
+    """
+    Populate a CategoryCollection from a CIF loop.
 
     Parameters
     ----------

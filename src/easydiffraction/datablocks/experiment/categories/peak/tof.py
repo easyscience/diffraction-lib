@@ -23,7 +23,7 @@ class TofPseudoVoigt(
 ):
     """Time-of-flight pseudo-Voigt peak shape."""
 
-    type_info = TypeInfo(tag='tof-pseudo-voigt', description='TOF pseudo-Voigt profile')
+    type_info = TypeInfo(tag='tof-pseudo-voigt', description='TOF pseudo-Voigt profile',)
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),

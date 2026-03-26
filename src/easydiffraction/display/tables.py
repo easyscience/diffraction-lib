@@ -35,7 +35,8 @@ class TableEngineEnum(str, Enum):
         return cls.RICH
 
     def description(self) -> str:
-        """Return a human-readable description of this table engine.
+        """
+        Return a human-readable description of this table engine.
 
         Returns
         -------
