@@ -106,7 +106,7 @@ class LineSegment(CategoryItem):
         """Set the identifier for this background line segment.
 
         Args:
-            value: Identifier for this background line segment.
+            value (str): Identifier for this background line segment.
         """
         self._id.value = value
 
@@ -127,7 +127,7 @@ class LineSegment(CategoryItem):
         diffractogram.
 
         Args:
-            value: X-coordinates used to create many straight-line segments representing the background in a calculated diffractogram.
+            value (float): X-coordinates used to create many straight-line segments representing the background in a calculated diffractogram.
         """
         self._x.value = value
 
@@ -147,7 +147,7 @@ class LineSegment(CategoryItem):
         representing the background in a calculated diffractogram.
 
         Args:
-            value: Intensity used to create many straight-line segments representing the background in a calculated diffractogram.
+            value (float): Intensity used to create many straight-line segments representing the background in a calculated diffractogram.
         """
         self._y.value = value
 

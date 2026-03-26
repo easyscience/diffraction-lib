@@ -81,7 +81,7 @@ class ShelxExtinction(CategoryItem):
         """Set the mosaicity value for extinction correction.
 
         Args:
-            value: Mosaicity value for extinction correction (deg).
+            value (float): Mosaicity value for extinction correction (deg).
         """
         self._mosaicity.value = value
 
@@ -99,6 +99,6 @@ class ShelxExtinction(CategoryItem):
         """Set the crystal radius for extinction correction.
 
         Args:
-            value: Crystal radius for extinction correction (µm).
+            value (float): Crystal radius for extinction correction (µm).
         """
         self._radius.value = value

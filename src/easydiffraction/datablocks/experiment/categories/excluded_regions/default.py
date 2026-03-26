@@ -84,7 +84,7 @@ class ExcludedRegion(CategoryItem):
         """Set the identifier for this excluded region.
 
         Args:
-            value: Identifier for this excluded region.
+            value (str): Identifier for this excluded region.
         """
         self._id.value = value
 
@@ -102,7 +102,7 @@ class ExcludedRegion(CategoryItem):
         """Set the start of the excluded region.
 
         Args:
-            value: Start of the excluded region.
+            value (float): Start of the excluded region.
         """
         self._start.value = value
 
@@ -120,7 +120,7 @@ class ExcludedRegion(CategoryItem):
         """Set the end of the excluded region.
 
         Args:
-            value: End of the excluded region.
+            value (float): End of the excluded region.
         """
         self._end.value = value
 

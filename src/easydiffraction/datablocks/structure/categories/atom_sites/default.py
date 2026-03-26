@@ -186,7 +186,7 @@ class AtomSite(CategoryItem):
         """Set the unique identifier for the atom site.
 
         Args:
-            value: Unique identifier for the atom site.
+            value (str): Unique identifier for the atom site.
         """
         self._label.value = value
 
@@ -204,7 +204,7 @@ class AtomSite(CategoryItem):
         """Set the chemical symbol of the atom at this site.
 
         Args:
-            value: Chemical symbol of the atom at this site.
+            value (str): Chemical symbol of the atom at this site.
         """
         self._type_symbol.value = value
 
@@ -224,7 +224,7 @@ class AtomSite(CategoryItem):
         (e.g., Biso, Uiso, Uani, Bani).
 
         Args:
-            value: Type of atomic displacement parameter (ADP) used (e.g., Biso, Uiso, Uani, Bani).
+            value (str): Type of atomic displacement parameter (ADP) used (e.g., Biso, Uiso, Uani, Bani).
         """
         self._adp_type.value = value
 
@@ -244,7 +244,7 @@ class AtomSite(CategoryItem):
         site within the space group.
 
         Args:
-            value: Wyckoff letter indicating the symmetry of the atom site within the space group.
+            value (str): Wyckoff letter indicating the symmetry of the atom site within the space group.
         """
         self._wyckoff_letter.value = value
 
@@ -264,7 +264,7 @@ class AtomSite(CategoryItem):
         unit cell.
 
         Args:
-            value: Fractional x-coordinate of the atom site within the unit cell.
+            value (float): Fractional x-coordinate of the atom site within the unit cell.
         """
         self._fract_x.value = value
 
@@ -284,7 +284,7 @@ class AtomSite(CategoryItem):
         unit cell.
 
         Args:
-            value: Fractional y-coordinate of the atom site within the unit cell.
+            value (float): Fractional y-coordinate of the atom site within the unit cell.
         """
         self._fract_y.value = value
 
@@ -304,7 +304,7 @@ class AtomSite(CategoryItem):
         unit cell.
 
         Args:
-            value: Fractional z-coordinate of the atom site within the unit cell.
+            value (float): Fractional z-coordinate of the atom site within the unit cell.
         """
         self._fract_z.value = value
 
@@ -324,7 +324,7 @@ class AtomSite(CategoryItem):
         of the site occupied by the atom type.
 
         Args:
-            value: Occupancy of the atom site, representing the fraction of the site occupied by the atom type.
+            value (float): Occupancy of the atom site, representing the fraction of the site occupied by the atom type.
         """
         self._occupancy.value = value
 
@@ -344,7 +344,7 @@ class AtomSite(CategoryItem):
         atom site.
 
         Args:
-            value: Isotropic atomic displacement parameter (ADP) for the atom site (Å²).
+            value (float): Isotropic atomic displacement parameter (ADP) for the atom site (Å²).
         """
         self._b_iso.value = value
 

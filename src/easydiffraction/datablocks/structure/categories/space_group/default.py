@@ -140,7 +140,7 @@ class SpaceGroup(CategoryItem):
         """Set the hermann-Mauguin symbol of the space group.
 
         Args:
-            value: Hermann-Mauguin symbol of the space group.
+            value (str): Hermann-Mauguin symbol of the space group.
         """
         self._name_h_m.value = value
         self._reset_it_coordinate_system_code()
@@ -159,6 +159,6 @@ class SpaceGroup(CategoryItem):
         """Set the a qualifier identifying which setting in IT is used.
 
         Args:
-            value: A qualifier identifying which setting in IT is used.
+            value (str): A qualifier identifying which setting in IT is used.
         """
         self._it_coordinate_system_code.value = value

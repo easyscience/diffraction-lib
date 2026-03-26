@@ -160,7 +160,7 @@ class Cell(CategoryItem):
         """Set the length of the a axis of the unit cell.
 
         Args:
-            value: Length of the a axis of the unit cell (Å).
+            value (float): Length of the a axis of the unit cell (Å).
         """
         self._length_a.value = value
 
@@ -178,7 +178,7 @@ class Cell(CategoryItem):
         """Set the length of the b axis of the unit cell.
 
         Args:
-            value: Length of the b axis of the unit cell (Å).
+            value (float): Length of the b axis of the unit cell (Å).
         """
         self._length_b.value = value
 
@@ -196,7 +196,7 @@ class Cell(CategoryItem):
         """Set the length of the c axis of the unit cell.
 
         Args:
-            value: Length of the c axis of the unit cell (Å).
+            value (float): Length of the c axis of the unit cell (Å).
         """
         self._length_c.value = value
 
@@ -214,7 +214,7 @@ class Cell(CategoryItem):
         """Set the angle between edges b and c.
 
         Args:
-            value: Angle between edges b and c (deg).
+            value (float): Angle between edges b and c (deg).
         """
         self._angle_alpha.value = value
 
@@ -232,7 +232,7 @@ class Cell(CategoryItem):
         """Set the angle between edges a and c.
 
         Args:
-            value: Angle between edges a and c (deg).
+            value (float): Angle between edges a and c (deg).
         """
         self._angle_beta.value = value
 
@@ -250,6 +250,6 @@ class Cell(CategoryItem):
         """Set the angle between edges a and b.
 
         Args:
-            value: Angle between edges a and b (deg).
+            value (float): Angle between edges a and b (deg).
         """
         self._angle_gamma.value = value

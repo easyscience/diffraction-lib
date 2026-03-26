@@ -104,7 +104,7 @@ class TotalBroadeningMixin:
         high-r PDF peak amplitude).
 
         Args:
-            value: Instrumental Q-resolution damping factor (affects high-r PDF peak amplitude) (Å⁻¹).
+            value (float): Instrumental Q-resolution damping factor (affects high-r PDF peak amplitude) (Å⁻¹).
         """
         self._damp_q.value = value
 
@@ -124,7 +124,7 @@ class TotalBroadeningMixin:
         and model uncertainty contribution).
 
         Args:
-            value: Quadratic PDF peak broadening coefficient (thermal and model uncertainty contribution) (Å⁻²).
+            value (float): Quadratic PDF peak broadening coefficient (thermal and model uncertainty contribution) (Å⁻²).
         """
         self._broad_q.value = value
 
@@ -144,7 +144,7 @@ class TotalBroadeningMixin:
         transform (controls real-space resolution).
 
         Args:
-            value: Q-value cutoff applied to model PDF for Fourier transform (controls real-space resolution) (Å⁻¹).
+            value (float): Q-value cutoff applied to model PDF for Fourier transform (controls real-space resolution) (Å⁻¹).
         """
         self._cutoff_q.value = value
 
@@ -162,7 +162,7 @@ class TotalBroadeningMixin:
         """Set the pDF peak sharpening coefficient (1/r dependence).
 
         Args:
-            value: PDF peak sharpening coefficient (1/r dependence) (Å).
+            value (float): PDF peak sharpening coefficient (1/r dependence) (Å).
         """
         self._sharp_delta_1.value = value
 
@@ -180,7 +180,7 @@ class TotalBroadeningMixin:
         """Set the pDF peak sharpening coefficient (1/r² dependence).
 
         Args:
-            value: PDF peak sharpening coefficient (1/r² dependence) (Å²).
+            value (float): PDF peak sharpening coefficient (1/r² dependence) (Å²).
         """
         self._sharp_delta_2.value = value
 
@@ -200,6 +200,6 @@ class TotalBroadeningMixin:
         correction in PDF.
 
         Args:
-            value: Particle diameter for spherical envelope damping correction in PDF (Å).
+            value (float): Particle diameter for spherical envelope damping correction in PDF (Å).
         """
         self._damp_particle_diameter.value = value

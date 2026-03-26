@@ -92,7 +92,7 @@ class CwlBroadeningMixin:
         size and instrument resolution).
 
         Args:
-            value: Gaussian broadening coefficient (dependent on sample size and instrument resolution) (deg²).
+            value (float): Gaussian broadening coefficient (dependent on sample size and instrument resolution) (deg²).
         """
         self._broad_gauss_u.value = value
 
@@ -112,7 +112,7 @@ class CwlBroadeningMixin:
         broadening contribution).
 
         Args:
-            value: Gaussian broadening coefficient (instrumental broadening contribution) (deg²).
+            value (float): Gaussian broadening coefficient (instrumental broadening contribution) (deg²).
         """
         self._broad_gauss_v.value = value
 
@@ -132,7 +132,7 @@ class CwlBroadeningMixin:
         broadening contribution).
 
         Args:
-            value: Gaussian broadening coefficient (instrumental broadening contribution) (deg²).
+            value (float): Gaussian broadening coefficient (instrumental broadening contribution) (deg²).
         """
         self._broad_gauss_w.value = value
 
@@ -152,7 +152,7 @@ class CwlBroadeningMixin:
         sample strain effects).
 
         Args:
-            value: Lorentzian broadening coefficient (dependent on sample strain effects) (deg).
+            value (float): Lorentzian broadening coefficient (dependent on sample strain effects) (deg).
         """
         self._broad_lorentz_x.value = value
 
@@ -172,7 +172,7 @@ class CwlBroadeningMixin:
         microstructural defects and strain).
 
         Args:
-            value: Lorentzian broadening coefficient (dependent on microstructural defects and strain) (deg).
+            value (float): Lorentzian broadening coefficient (dependent on microstructural defects and strain) (deg).
         """
         self._broad_lorentz_y.value = value
 
@@ -242,7 +242,7 @@ class EmpiricalAsymmetryMixin:
         """Set the empirical asymmetry coefficient p1.
 
         Args:
-            value: Empirical asymmetry coefficient p1.
+            value (float): Empirical asymmetry coefficient p1.
         """
         self._asym_empir_1.value = value
 
@@ -260,7 +260,7 @@ class EmpiricalAsymmetryMixin:
         """Set the empirical asymmetry coefficient p2.
 
         Args:
-            value: Empirical asymmetry coefficient p2.
+            value (float): Empirical asymmetry coefficient p2.
         """
         self._asym_empir_2.value = value
 
@@ -278,7 +278,7 @@ class EmpiricalAsymmetryMixin:
         """Set the empirical asymmetry coefficient p3.
 
         Args:
-            value: Empirical asymmetry coefficient p3.
+            value (float): Empirical asymmetry coefficient p3.
         """
         self._asym_empir_3.value = value
 
@@ -296,7 +296,7 @@ class EmpiricalAsymmetryMixin:
         """Set the empirical asymmetry coefficient p4.
 
         Args:
-            value: Empirical asymmetry coefficient p4.
+            value (float): Empirical asymmetry coefficient p4.
         """
         self._asym_empir_4.value = value
 
@@ -346,7 +346,7 @@ class FcjAsymmetryMixin:
         """Set the finger-Cox-Jephcoat asymmetry parameter 1.
 
         Args:
-            value: Finger-Cox-Jephcoat asymmetry parameter 1.
+            value (float): Finger-Cox-Jephcoat asymmetry parameter 1.
         """
         self._asym_fcj_1.value = value
 
@@ -364,6 +364,6 @@ class FcjAsymmetryMixin:
         """Set the finger-Cox-Jephcoat asymmetry parameter 2.
 
         Args:
-            value: Finger-Cox-Jephcoat asymmetry parameter 2.
+            value (float): Finger-Cox-Jephcoat asymmetry parameter 2.
         """
         self._asym_fcj_2.value = value

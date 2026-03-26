@@ -75,7 +75,7 @@ class LinkedCrystal(CategoryItem):
         """Set the identifier of the linked crystal.
 
         Args:
-            value: Identifier of the linked crystal.
+            value (str): Identifier of the linked crystal.
         """
         self._id.value = value
 
@@ -93,6 +93,6 @@ class LinkedCrystal(CategoryItem):
         """Set the scale factor of the linked crystal.
 
         Args:
-            value: Scale factor of the linked crystal.
+            value (float): Scale factor of the linked crystal.
         """
         self._scale.value = value

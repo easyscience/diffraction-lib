@@ -1099,26 +1099,27 @@ def length_a(self, value: float) -> None:
     """Set the length of the a axis of the unit cell.
 
     Args:
-        value: Length of the a axis of the unit cell (Å).
+        value (float): Length of the a axis of the unit cell (Å).
     """
     self._length_a.value = value
 ```
 
 **Quick-reference table:**
 
-| Location           | Text                                                    |
-| ------------------ | ------------------------------------------------------- |
-| Getter 1st line    | `"""{desc}.`                                            |
-| Getter `Returns:`  | `{Type}: {desc} ({units}).` (or `{Type}: {desc}.`)      |
-| Setter 1st line    | `"""Set the {desc, first letter lowercased}.`           |
-| Setter `Args:`     | `value: {desc} ({units}).` (or `value: {desc}.`)        |
-| Getter annotation  | `-> {Type}`                                             |
-| Setter annotation  | `value: {ann}` and `-> None`                            |
+| Location           | Text                                                              |
+| ------------------ | ----------------------------------------------------------------- |
+| Getter 1st line    | `"""{desc}.`                                                      |
+| Getter `Returns:`  | `{Type}: {desc} ({units}).` (or `{Type}: {desc}.`)                |
+| Setter 1st line    | `"""Set the {desc, first letter lowercased}.`                     |
+| Setter `Args:`     | `value ({ann}): {desc} ({units}).` (or `value ({ann}): {desc}.`)  |
+| Getter annotation  | `-> {Type}`                                                       |
+| Setter annotation  | `value: {ann}` and `-> None`                                      |
 
 **Notes:**
 
-- Do **not** repeat the type in the docstring `Args:` line (e.g. avoid
-  `value (float):`). The type is already in the function signature.
+- Include the type in the docstring `Args:` line (e.g. `value (float):`)
+  so that `pydoclint` can verify consistency between the function
+  signature and the docstring.
 - Avoid markdown emphasis (`*a*`) in docstrings; use plain text to stay
   in sync with the `description` field.
 - The CI tool `pixi run param-consistency-check` validates compliance;

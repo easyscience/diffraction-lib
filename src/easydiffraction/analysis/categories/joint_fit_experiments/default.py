@@ -73,7 +73,7 @@ class JointFitExperiment(CategoryItem):
         """Set the experiment identifier.
 
         Args:
-            value: Experiment identifier.
+            value (str): Experiment identifier.
         """
         self._id.value = value
 
@@ -91,7 +91,7 @@ class JointFitExperiment(CategoryItem):
         """Set the weight factor.
 
         Args:
-            value: Weight factor.
+            value (float): Weight factor.
         """
         self._weight.value = value
 

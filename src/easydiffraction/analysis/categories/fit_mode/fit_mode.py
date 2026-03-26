@@ -60,6 +60,6 @@ class FitMode(CategoryItem):
         """Set the fitting strategy.
 
         Args:
-            value: Fitting strategy.
+            value (str): Fitting strategy.
         """
         self._mode.value = value

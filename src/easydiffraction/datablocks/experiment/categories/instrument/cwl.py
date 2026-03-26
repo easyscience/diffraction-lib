@@ -49,7 +49,7 @@ class CwlInstrumentBase(InstrumentBase):
         """Set the incident neutron or X-ray wavelength.
 
         Args:
-            value: Incident neutron or X-ray wavelength (Å).
+            value (float): Incident neutron or X-ray wavelength (Å).
         """
         self._setup_wavelength.value = value
 
@@ -118,6 +118,6 @@ class CwlPdInstrument(CwlInstrumentBase):
         """Set the instrument misalignment offset.
 
         Args:
-            value: Instrument misalignment offset (deg).
+            value (float): Instrument misalignment offset (deg).
         """
         self._calib_twotheta_offset.value = value

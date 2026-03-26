@@ -66,7 +66,7 @@ class LinkedPhase(CategoryItem):
         """Set the identifier of the linked phase.
 
         Args:
-            value: Identifier of the linked phase.
+            value (str): Identifier of the linked phase.
         """
         self._id.value = value
 
@@ -84,7 +84,7 @@ class LinkedPhase(CategoryItem):
         """Set the scale factor of the linked phase.
 
         Args:
-            value: Scale factor of the linked phase.
+            value (float): Scale factor of the linked phase.
         """
         self._scale.value = value
 

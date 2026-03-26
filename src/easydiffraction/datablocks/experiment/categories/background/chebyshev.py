@@ -97,7 +97,7 @@ class PolynomialTerm(CategoryItem):
         """Set the identifier for this background polynomial term.
 
         Args:
-            value: Identifier for this background polynomial term.
+            value (str): Identifier for this background polynomial term.
         """
         self._id.value = value
 
@@ -115,7 +115,7 @@ class PolynomialTerm(CategoryItem):
         """Set the order used in a Chebyshev polynomial background term.
 
         Args:
-            value: Order used in a Chebyshev polynomial background term.
+            value (float): Order used in a Chebyshev polynomial background term.
         """
         self._order.value = value
 
@@ -134,7 +134,7 @@ class PolynomialTerm(CategoryItem):
         term.
 
         Args:
-            value: Coefficient used in a Chebyshev polynomial background term.
+            value (float): Coefficient used in a Chebyshev polynomial background term.
         """
         self._coef.value = value
 

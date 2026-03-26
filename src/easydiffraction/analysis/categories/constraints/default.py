@@ -70,7 +70,7 @@ class Constraint(CategoryItem):
         """Set the left-hand side of the equation.
 
         Args:
-            value: Left-hand side of the equation.
+            value (str): Left-hand side of the equation.
         """
         self._lhs_alias.value = value
 
@@ -88,7 +88,7 @@ class Constraint(CategoryItem):
         """Set the right-hand side expression.
 
         Args:
-            value: Right-hand side expression.
+            value (str): Right-hand side expression.
         """
         self._rhs_expr.value = value
 

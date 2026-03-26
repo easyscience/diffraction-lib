@@ -111,7 +111,7 @@ py-lint-check = 'ruff check src/ tests/ docs/docs/tutorials/'
 py-format-check = "ruff format --check src/ tests/ docs/docs/tutorials/"
 nonpy-format-check = "npx prettier --list-different --config=prettierrc.toml --ignore-unknown ."
 nonpy-format-check-modified = "python tools/nonpy_prettier_modified.py"
-param-consistency-check = 'python tools/param_consistency.py --check'
+param-consistency-check = 'python tools/param_consistency.py src/ --check'
 
 check = 'pre-commit run --hook-stage manual --all-files'
 
@@ -125,7 +125,7 @@ py-lint-fix = 'ruff check --fix src/ tests/ docs/docs/tutorials/'
 py-format-fix = "ruff format src/ tests/ docs/docs/tutorials/"
 nonpy-format-fix = 'npx prettier --write --list-different --config=prettierrc.toml --ignore-unknown .'
 nonpy-format-fix-modified = "python tools/nonpy_prettier_modified.py --write"
-param-consistency-fix = 'python tools/param_consistency.py --fix'
+param-consistency-fix = 'python tools/param_consistency.py src/ --fix'
 success-message-fix = 'echo "✅ All auto-formatting steps completed successfully!"'
 
 fix = { depends-on = [

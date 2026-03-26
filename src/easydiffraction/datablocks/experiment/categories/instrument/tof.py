@@ -112,7 +112,7 @@ class TofPdInstrument(InstrumentBase):
         """Set the detector bank position.
 
         Args:
-            value: Detector bank position (deg).
+            value (float): Detector bank position (deg).
         """
         self._setup_twotheta_bank.value = value
 
@@ -130,7 +130,7 @@ class TofPdInstrument(InstrumentBase):
         """Set the tOF offset.
 
         Args:
-            value: TOF offset (µs).
+            value (float): TOF offset (µs).
         """
         self._calib_d_to_tof_offset.value = value
 
@@ -148,7 +148,7 @@ class TofPdInstrument(InstrumentBase):
         """Set the tOF linear conversion.
 
         Args:
-            value: TOF linear conversion (µs/Å).
+            value (float): TOF linear conversion (µs/Å).
         """
         self._calib_d_to_tof_linear.value = value
 
@@ -166,7 +166,7 @@ class TofPdInstrument(InstrumentBase):
         """Set the tOF quadratic correction.
 
         Args:
-            value: TOF quadratic correction (µs/Å²).
+            value (float): TOF quadratic correction (µs/Å²).
         """
         self._calib_d_to_tof_quad.value = value
 
@@ -184,6 +184,6 @@ class TofPdInstrument(InstrumentBase):
         """Set the tOF reciprocal velocity correction.
 
         Args:
-            value: TOF reciprocal velocity correction (µs·Å).
+            value (float): TOF reciprocal velocity correction (µs·Å).
         """
         self._calib_d_to_tof_recip.value = value

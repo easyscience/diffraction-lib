@@ -123,7 +123,7 @@ class TofBroadeningMixin:
         resolution).
 
         Args:
-            value: Gaussian broadening coefficient (instrumental resolution) (µs²).
+            value (float): Gaussian broadening coefficient (instrumental resolution) (µs²).
         """
         self._broad_gauss_sigma_0.value = value
 
@@ -142,7 +142,7 @@ class TofBroadeningMixin:
         d-spacing).
 
         Args:
-            value: Gaussian broadening coefficient (dependent on d-spacing) (µs/Å).
+            value (float): Gaussian broadening coefficient (dependent on d-spacing) (µs/Å).
         """
         self._broad_gauss_sigma_1.value = value
 
@@ -161,7 +161,7 @@ class TofBroadeningMixin:
         term).
 
         Args:
-            value: Gaussian broadening coefficient (instrument-dependent term) (µs²/Å²).
+            value (float): Gaussian broadening coefficient (instrument-dependent term) (µs²/Å²).
         """
         self._broad_gauss_sigma_2.value = value
 
@@ -181,7 +181,7 @@ class TofBroadeningMixin:
         microstrain effects).
 
         Args:
-            value: Lorentzian broadening coefficient (dependent on microstrain effects) (µs).
+            value (float): Lorentzian broadening coefficient (dependent on microstrain effects) (µs).
         """
         self._broad_lorentz_gamma_0.value = value
 
@@ -200,7 +200,7 @@ class TofBroadeningMixin:
         d-spacing).
 
         Args:
-            value: Lorentzian broadening coefficient (dependent on d-spacing) (µs/Å).
+            value (float): Lorentzian broadening coefficient (dependent on d-spacing) (µs/Å).
         """
         self._broad_lorentz_gamma_1.value = value
 
@@ -220,7 +220,7 @@ class TofBroadeningMixin:
         dependent term).
 
         Args:
-            value: Lorentzian broadening coefficient (instrument-dependent term) (µs²/Å²).
+            value (float): Lorentzian broadening coefficient (instrument-dependent term) (µs²/Å²).
         """
         self._broad_lorentz_gamma_2.value = value
 
@@ -240,7 +240,7 @@ class TofBroadeningMixin:
         Lorentzian contributions in TOF profiles.
 
         Args:
-            value: Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles (deg).
+            value (float): Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles (deg).
         """
         self._broad_mix_beta_0.value = value
 
@@ -260,7 +260,7 @@ class TofBroadeningMixin:
         Lorentzian contributions in TOF profiles.
 
         Args:
-            value: Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles (deg).
+            value (float): Mixing parameter. Defines the ratio of Gaussian to Lorentzian contributions in TOF profiles (deg).
         """
         self._broad_mix_beta_1.value = value
 
@@ -306,7 +306,7 @@ class IkedaCarpenterAsymmetryMixin:
         """Set the ikeda-Carpenter asymmetry parameter α₀.
 
         Args:
-            value: Ikeda-Carpenter asymmetry parameter α₀.
+            value (float): Ikeda-Carpenter asymmetry parameter α₀.
         """
         self._asym_alpha_0.value = value
 
@@ -324,6 +324,6 @@ class IkedaCarpenterAsymmetryMixin:
         """Set the ikeda-Carpenter asymmetry parameter α₁.
 
         Args:
-            value: Ikeda-Carpenter asymmetry parameter α₁.
+            value (float): Ikeda-Carpenter asymmetry parameter α₁.
         """
         self._asym_alpha_1.value = value
