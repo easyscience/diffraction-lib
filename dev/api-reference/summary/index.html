@@ -1835,8 +1835,6 @@
       
         
       
-        
-      
     
     
     
@@ -2104,34 +2102,6 @@
     
   
     display
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../experiment.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    experiments
   
 
     
@@ -2706,17 +2676,7 @@ fitted model, experiments, and analysis results.</p>
 <span class="normal">208</span>
 <span class="normal">209</span>
 <span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Summary</span><span class="p">:</span>
+<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Summary</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates reports and exports results from the project.</span>
 
@@ -2740,6 +2700,7 @@ fitted model, experiments, and analysis results.</p>
     <span class="c1"># ------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">show_report</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a full project report covering all sections.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_project_info</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_crystallographic_data</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_experimental_data</span><span class="p">()</span>
@@ -2764,10 +2725,7 @@ fitted model, experiments, and analysis results.</p>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">desc_lines</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">show_crystallographic_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Print crystallographic data including phase datablocks, space</span>
-<span class="sd">        groups, cell parameters, and atom sites.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print crystallographic data for all phases.&quot;&quot;&quot;</span>
         <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Crystallographic data&#39;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -2827,10 +2785,7 @@ fitted model, experiments, and analysis results.</p>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">show_experimental_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Print experimental data including experiment datablocks, types,</span>
-<span class="sd">        instrument settings, and peak profile information.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print experimental data for all experiments.&quot;&quot;&quot;</span>
         <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Experiments&#39;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">expt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -2888,10 +2843,7 @@ fitted model, experiments, and analysis results.</p>
                     <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">show_fitting_details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Print fitting details including calculation and minimization</span>
-<span class="sd">        engines, and fit quality metrics.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print fitting details including engines and metrics.&quot;&quot;&quot;</span>
         <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Fitting&#39;</span><span class="p">)</span>
 
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Calculation engine&#39;</span><span class="p">)</span>
@@ -2921,9 +2873,7 @@ fitted model, experiments, and analysis results.</p>
     <span class="c1"># ------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Export the final fitted data and analysis results as CIF format.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export fitted data and analysis results as CIF.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.io.cif.serialize</span><span class="w"> </span><span class="kn">import</span> <span class="n">summary_to_cif</span>
 
         <span class="k">return</span> <span class="n">summary_to_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -3034,7 +2984,7 @@ fitted model, experiments, and analysis results.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Export the final fitted data and analysis results as <abbr title="Crystallographic Information File.">CIF</abbr> format.</p>
+        <p>Export fitted data and analysis results as <abbr title="Crystallographic Information File.">CIF</abbr>.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -3042,16 +2992,12 @@ fitted model, experiments, and analysis results.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/summary/summary.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Export the final fitted data and analysis results as CIF format.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Export fitted data and analysis results as CIF.&quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.io.cif.serialize</span><span class="w"> </span><span class="kn">import</span> <span class="n">summary_to_cif</span>
 
     <span class="k">return</span> <span class="n">summary_to_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -3077,8 +3023,7 @@ fitted model, experiments, and analysis results.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Print crystallographic data including phase datablocks, space
-groups, cell parameters, and atom sites.</p>
+        <p>Print crystallographic data for all phases.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -3086,8 +3031,7 @@ groups, cell parameters, and atom sites.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/summary/summary.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 58</span>
-<span class="normal"> 59</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 59</span>
 <span class="normal"> 60</span>
 <span class="normal"> 61</span>
 <span class="normal"> 62</span>
@@ -3145,13 +3089,8 @@ groups, cell parameters, and atom sites.</p>
 <span class="normal">114</span>
 <span class="normal">115</span>
 <span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_crystallographic_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Print crystallographic data including phase datablocks, space</span>
-<span class="sd">    groups, cell parameters, and atom sites.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_crystallographic_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print crystallographic data for all phases.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Crystallographic data&#39;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -3231,8 +3170,7 @@ groups, cell parameters, and atom sites.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Print experimental data including experiment datablocks, types,
-instrument settings, and peak profile information.</p>
+        <p>Print experimental data for all experiments.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -3240,7 +3178,9 @@ instrument settings, and peak profile information.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/summary/summary.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">121</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
 <span class="normal">122</span>
 <span class="normal">123</span>
 <span class="normal">124</span>
@@ -3294,16 +3234,8 @@ instrument settings, and peak profile information.</p>
 <span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_experimental_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Print experimental data including experiment datablocks, types,</span>
-<span class="sd">    instrument settings, and peak profile information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_experimental_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print experimental data for all experiments.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Experiments&#39;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">expt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -3381,8 +3313,7 @@ instrument settings, and peak profile information.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Print fitting details including calculation and minimization
-engines, and fit quality metrics.</p>
+        <p>Print fitting details including engines and metrics.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -3390,7 +3321,12 @@ engines, and fit quality metrics.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/summary/summary.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">182</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
@@ -3409,19 +3345,8 @@ engines, and fit quality metrics.</p>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_fitting_details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Print fitting details including calculation and minimization</span>
-<span class="sd">    engines, and fit quality metrics.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_fitting_details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print fitting details including engines and metrics.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Fitting&#39;</span><span class="p">)</span>
 
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Calculation engine&#39;</span><span class="p">)</span>
@@ -3475,8 +3400,7 @@ engines, and fit quality metrics.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/summary/summary.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
-<span class="normal">41</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span>
@@ -3491,7 +3415,8 @@ engines, and fit quality metrics.</p>
 <span class="normal">53</span>
 <span class="normal">54</span>
 <span class="normal">55</span>
-<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_project_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_project_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the project title and description.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Project info&#39;</span><span class="p">)</span>
 
@@ -3517,11 +3442,56 @@ engines, and fit quality metrics.</p>
 
 
 
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.summary.summary.Summary.show_report" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">show_report</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print a full project report covering all sections.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/summary/summary.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_report</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a full project report covering all sections.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">show_project_info</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">show_crystallographic_data</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">show_experimental_data</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">show_fitting_details</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
   </div>
 
     </div>
 
 </div>
+
+
+
+
 
 
 

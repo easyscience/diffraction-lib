@@ -1835,8 +1835,6 @@
       
         
       
-        
-      
     
     
     
@@ -2324,6 +2322,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#easydiffraction.core.validation.DataTypeHints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DataTypeHints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#easydiffraction.core.validation.DataTypes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2444,6 +2453,17 @@
     <span class="md-ellipsis">
       
         GenericParameter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#easydiffraction.core.variable.GenericStringDescriptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GenericStringDescriptor
       
     </span>
   </a>
@@ -2657,34 +2677,6 @@
     
   
     display
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../experiment.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    experiments
   
 
     
@@ -3185,6 +3177,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#easydiffraction.core.validation.DataTypeHints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DataTypeHints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#easydiffraction.core.validation.DataTypes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3305,6 +3308,17 @@
     <span class="md-ellipsis">
       
         GenericParameter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#easydiffraction.core.variable.GenericStringDescriptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GenericStringDescriptor
       
     </span>
   </a>
@@ -3463,9 +3477,7 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/category.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">164</span>
 <span class="normal">165</span>
 <span class="normal">166</span>
 <span class="normal">167</span>
@@ -3550,7 +3562,10 @@
 <span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
-<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CategoryCollection</span><span class="p">(</span><span class="n">CollectionBase</span><span class="p">):</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CategoryCollection</span><span class="p">(</span><span class="n">CollectionBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles loop-style category containers (e.g. AtomSites).</span>
 
@@ -3589,6 +3604,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">unique_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return None; collections have no unique name.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
@@ -3670,11 +3686,11 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/category.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
 <span class="normal">191</span>
-<span class="normal">192</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Human-readable representation of this component.&quot;&quot;&quot;</span>
     <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_name</span>
     <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -3743,17 +3759,17 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/category.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
 <span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
-<span class="normal">230</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Insert or replace a pre-built item into the collection.</span>
 
@@ -3860,10 +3876,7 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/category.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">235</span>
 <span class="normal">236</span>
 <span class="normal">237</span>
 <span class="normal">238</span>
@@ -3877,7 +3890,10 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 <span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
-<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a new item with the given attributes and add it.</span>
 
@@ -3925,9 +3941,9 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/category.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Populate this collection from a CIF block.&quot;&quot;&quot;</span>
     <span class="n">category_collection_from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3958,6 +3974,36 @@ then each keyword argument is applied via <code>setattr</code>.</p>
     <div class="doc doc-contents ">
 
         <p>All parameters from all items in this collection.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.core.category.CategoryCollection.unique_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unique_name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return None; collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4149,7 +4195,9 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 <span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
-<span class="normal">156</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CategoryItem</span><span class="p">(</span><span class="n">GuardedBase</span><span class="p">):</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CategoryItem</span><span class="p">(</span><span class="n">GuardedBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for items in a category collection.&quot;&quot;&quot;</span>
 
     <span class="c1"># TODO: Set different default priorities for CategoryItem and</span>
@@ -4170,6 +4218,7 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">unique_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fully qualified name: datablock, category, entry.&quot;&quot;&quot;</span>
         <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">datablock_entry_name</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span><span class="p">,</span>
@@ -4181,6 +4230,7 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;All GenericDescriptorBase instances on this item.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">GenericDescriptorBase</span><span class="p">)]</span>
 
     <span class="nd">@property</span>
@@ -4389,9 +4439,9 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/category.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Populate this item from a CIF block.&quot;&quot;&quot;</span>
     <span class="n">category_item_from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4424,9 +4474,7 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/category.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 63</span>
 <span class="normal"> 64</span>
 <span class="normal"> 65</span>
 <span class="normal"> 66</span>
@@ -4519,7 +4567,9 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 <span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
-<span class="normal">156</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print parameters, other properties, and methods.&quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">console</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">render_table</span>
@@ -4624,11 +4674,79 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 
 
 
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.core.category.CategoryItem.parameters" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">parameters</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>All GenericDescriptorBase instances on this item.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.core.category.CategoryItem.unique_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unique_name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Fully qualified name: datablock, category, entry.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+
+
   </div>
 
     </div>
 
 </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -5736,8 +5854,7 @@ with recent mutations.</p>
 
 
 
-        <p>Handles top-level category collections (e.g. Structures,
-Experiments).</p>
+        <p>Collection of top-level datablocks (e.g. Structures, Experiments).</p>
 <p>Each item is a DatablockItem.</p>
 <p>Subclasses provide explicit <code>add_from_*</code> convenience methods that
 delegate to the corresponding factory classmethods, then call
@@ -5818,8 +5935,7 @@ delegate to the corresponding factory classmethods, then call
 <span class="normal">180</span>
 <span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DatablockCollection</span><span class="p">(</span><span class="n">CollectionBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Handles top-level category collections (e.g. Structures,</span>
-<span class="sd">    Experiments).</span>
+<span class="sd">    Collection of top-level datablocks (e.g. Structures, Experiments).</span>
 
 <span class="sd">    Each item is a DatablockItem.</span>
 
@@ -5852,6 +5968,7 @@ delegate to the corresponding factory classmethods, then call
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">unique_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return None; collections have no unique name.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
@@ -5862,14 +5979,14 @@ delegate to the corresponding factory classmethods, then call
             <span class="n">params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">params</span>
 
-    <span class="c1"># was in class AbstractDatablock(ABC):</span>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fittable_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;All non-constrained Parameters in this collection.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">constrained</span><span class="p">]</span>
 
-    <span class="c1"># was in class AbstractDatablock(ABC):</span>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">free_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;All fittable parameters that are currently marked as free.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fittable_parameters</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">free</span><span class="p">]</span>
 
     <span class="nd">@property</span>
@@ -5910,11 +6027,11 @@ delegate to the corresponding factory classmethods, then call
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/datablock.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">148</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">147</span>
+<span class="normal">148</span>
 <span class="normal">149</span>
 <span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Human-readable representation of this component.&quot;&quot;&quot;</span>
     <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_name</span>
     <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -5984,7 +6101,8 @@ delegate to the corresponding factory classmethods, then call
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/datablock.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">136</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">135</span>
+<span class="normal">136</span>
 <span class="normal">137</span>
 <span class="normal">138</span>
 <span class="normal">139</span>
@@ -5993,8 +6111,7 @@ delegate to the corresponding factory classmethods, then call
 <span class="normal">142</span>
 <span class="normal">143</span>
 <span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">145</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add a pre-built item to the collection.</span>
 
@@ -6050,6 +6167,66 @@ delegate to the corresponding factory classmethods, then call
 
 
 
+<h4 id="easydiffraction.core.datablock.DatablockCollection.fittable_parameters" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">fittable_parameters</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>All non-constrained Parameters in this collection.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.core.datablock.DatablockCollection.free_parameters" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">free_parameters</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>All fittable parameters that are currently marked as free.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h4 id="easydiffraction.core.datablock.DatablockCollection.parameters" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">parameters</span></code>
 
@@ -6063,6 +6240,36 @@ delegate to the corresponding factory classmethods, then call
     <div class="doc doc-contents ">
 
         <p>All parameters from all datablocks in this collection.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.core.datablock.DatablockCollection.unique_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unique_name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return None; collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -6270,10 +6477,12 @@ delegate to the corresponding factory classmethods, then call
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">unique_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unique name of this datablock item (from identity).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">datablock_entry_name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">categories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;All category objects in this datablock by priority.&quot;&quot;&quot;</span>
         <span class="n">cats</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">CategoryItem</span><span class="p">,</span> <span class="n">CategoryCollection</span><span class="p">))</span>
         <span class="p">]</span>
@@ -6282,9 +6491,7 @@ delegate to the corresponding factory classmethods, then call
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        All parameters from all categories contained in this datablock.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;All parameters from all categories in this datablock.&quot;&quot;&quot;</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">:</span>
             <span class="n">params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
@@ -6444,6 +6651,36 @@ delegate to the corresponding factory classmethods, then call
 
 
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.core.datablock.DatablockItem.categories" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">categories</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>All category objects in this datablock by priority.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+
+
+
+
 <div class="doc doc-object doc-function">
 
 
@@ -6531,7 +6768,37 @@ delegate to the corresponding factory classmethods, then call
 
     <div class="doc doc-contents ">
 
-        <p>All parameters from all categories contained in this datablock.</p>
+        <p>All parameters from all categories in this datablock.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.core.datablock.DatablockItem.unique_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unique_name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Unique name of this datablock item (from identity).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -6838,9 +7105,7 @@ attribute validation and configuration checks.</p>
 <span class="normal">214</span>
 <span class="normal">215</span>
 <span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Diagnostics</span><span class="p">:</span>
+<span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Diagnostics</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Centralized logger for attribute errors and validation hints.&quot;&quot;&quot;</span>
 
     <span class="c1"># ==============================================================</span>
@@ -6885,9 +7150,7 @@ attribute validation and configuration checks.</p>
         <span class="n">allowed</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Allowed&#39;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Log access to an unknown attribute and suggest closest key.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log unknown attribute access and suggest closest key.&quot;&quot;&quot;</span>
         <span class="n">suggestion</span> <span class="o">=</span> <span class="n">Diagnostics</span><span class="o">.</span><span class="n">_build_suggestion</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">allowed</span><span class="p">)</span>
         <span class="c1"># Use consistent (label) logic for allowed</span>
         <span class="n">hint</span> <span class="o">=</span> <span class="n">suggestion</span> <span class="ow">or</span> <span class="n">Diagnostics</span><span class="o">.</span><span class="n">_build_allowed</span><span class="p">(</span><span class="n">allowed</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
@@ -7073,7 +7336,7 @@ attribute validation and configuration checks.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Log access to an unknown attribute and suggest closest key.</p>
+        <p>Log unknown attribute access and suggest closest key.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -7095,18 +7358,14 @@ attribute validation and configuration checks.</p>
 <span class="normal">64</span>
 <span class="normal">65</span>
 <span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">attr_error</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">allowed</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Allowed&#39;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Log access to an unknown attribute and suggest closest key.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Log unknown attribute access and suggest closest key.&quot;&quot;&quot;</span>
     <span class="n">suggestion</span> <span class="o">=</span> <span class="n">Diagnostics</span><span class="o">.</span><span class="n">_build_suggestion</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">allowed</span><span class="p">)</span>
     <span class="c1"># Use consistent (label) logic for allowed</span>
     <span class="n">hint</span> <span class="o">=</span> <span class="n">suggestion</span> <span class="ow">or</span> <span class="n">Diagnostics</span><span class="o">.</span><span class="n">_build_allowed</span><span class="p">(</span><span class="n">allowed</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
@@ -7148,7 +7407,9 @@ attribute validation and configuration checks.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/diagnostic.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
@@ -7160,9 +7421,7 @@ attribute validation and configuration checks.</p>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">choice_mismatch</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -7211,10 +7470,10 @@ attribute validation and configuration checks.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/diagnostic.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">no_value</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Log that default will be used due to missing value.&quot;&quot;&quot;</span>
     <span class="n">Diagnostics</span><span class="o">.</span><span class="n">_log_debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No value provided for &lt;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&gt;. Using default </span><span class="si">{</span><span class="n">default</span><span class="si">!r}</span><span class="s1">.&#39;</span><span class="p">)</span>
@@ -7252,10 +7511,10 @@ attribute validation and configuration checks.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/diagnostic.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">none_value</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Log explicit None provided by a user.&quot;&quot;&quot;</span>
     <span class="n">Diagnostics</span><span class="o">.</span><span class="n">_log_debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using `None` explicitly provided for &lt;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&gt;.&#39;</span><span class="p">)</span>
@@ -7293,12 +7552,12 @@ attribute validation and configuration checks.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/diagnostic.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">150</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">none_value_skip_range</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Log that range validation is skipped due to None.&quot;&quot;&quot;</span>
     <span class="n">Diagnostics</span><span class="o">.</span><span class="n">_log_debug</span><span class="p">(</span>
@@ -7338,7 +7597,9 @@ attribute validation and configuration checks.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/diagnostic.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 93</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
 <span class="normal"> 94</span>
 <span class="normal"> 95</span>
 <span class="normal"> 96</span>
@@ -7349,9 +7610,7 @@ attribute validation and configuration checks.</p>
 <span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">range_mismatch</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -7452,7 +7711,9 @@ attribute validation and configuration checks.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/diagnostic.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
@@ -7464,9 +7725,7 @@ attribute validation and configuration checks.</p>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">regex_mismatch</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -7515,7 +7774,9 @@ attribute validation and configuration checks.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/diagnostic.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">75</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
 <span class="normal">76</span>
 <span class="normal">77</span>
 <span class="normal">78</span>
@@ -7529,9 +7790,7 @@ attribute validation and configuration checks.</p>
 <span class="normal">86</span>
 <span class="normal">87</span>
 <span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">type_mismatch</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -7646,11 +7905,11 @@ attribute validation and configuration checks.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/diagnostic.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">157</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
 <span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validated</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">stage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Log that a value passed a validation stage.&quot;&quot;&quot;</span>
     <span class="n">stage_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">stage</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
@@ -9433,6 +9692,10 @@ TypeInfo(...)</p>
 
 
 
+
+
+
+
   </div>
 
     </div>
@@ -9494,7 +9757,7 @@ TypeInfo(...)</p>
 
 
 
-        <p>Base class enforcing controlled attribute access and parent linkage.</p>
+        <p>Base class enforcing controlled attribute access and linkage.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -9721,14 +9984,8 @@ TypeInfo(...)</p>
 <span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GuardedBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Base class enforcing controlled attribute access and parent linkage.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal">227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GuardedBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class enforcing controlled attribute access and linkage.&quot;&quot;&quot;</span>
 
     <span class="n">_diagnoser</span> <span class="o">=</span> <span class="n">Diagnostics</span><span class="p">()</span>
 
@@ -9737,12 +9994,15 @@ TypeInfo(...)</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span> <span class="o">=</span> <span class="n">Identity</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the string representation of this object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">&gt;&#39;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the developer representation of this object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Raise a descriptive error for unknown attribute access.&quot;&quot;&quot;</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">allowed</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_public_attrs</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">:</span>
@@ -9754,6 +10014,7 @@ TypeInfo(...)</p>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set an attribute with access-control diagnostics.&quot;&quot;&quot;</span>
         <span class="c1"># Always allow private or special attributes without diagnostics</span>
         <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
             <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -9794,8 +10055,7 @@ TypeInfo(...)</p>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_iter_properties</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">property</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Iterate over all public properties defined in the class</span>
-<span class="sd">        hierarchy.</span>
+<span class="sd">        Iterate over all public properties in the class hierarchy.</span>
 
 <span class="sd">        Yields</span>
 <span class="sd">        ------</span>
@@ -9835,6 +10095,7 @@ TypeInfo(...)</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">unique_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fallback unique name: the class name.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
 
     <span class="c1"># @property</span>
@@ -9849,19 +10110,13 @@ TypeInfo(...)</p>
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a list of parameter objects (to be implemented by</span>
-<span class="sd">        subclasses).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list of parameters (implemented by subclasses).&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return CIF representation of this object (to be implemented by</span>
-<span class="sd">        subclasses).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return CIF representation (implemented by subclasses).&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@staticmethod</span>
@@ -9956,6 +10211,220 @@ TypeInfo(...)</p>
 
 
 
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.core.guard.GuardedBase.__getattr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__getattr__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Raise a descriptive error for unknown attribute access.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/core/guard.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise a descriptive error for unknown attribute access.&quot;&quot;&quot;</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="n">allowed</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_public_attrs</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">:</span>
+        <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_diagnoser</span><span class="o">.</span><span class="n">attr_error</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_name</span><span class="p">,</span>
+            <span class="n">key</span><span class="p">,</span>
+            <span class="n">allowed</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Allowed readable/writable&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.core.guard.GuardedBase.__repr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__repr__</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the developer representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/core/guard.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the developer representation of this object.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.core.guard.GuardedBase.__setattr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Set an attribute with access-control diagnostics.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/core/guard.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set an attribute with access-control diagnostics.&quot;&quot;&quot;</span>
+    <span class="c1"># Always allow private or special attributes without diagnostics</span>
+    <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="c1"># Also maintain parent linkage for nested objects</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s1">&#39;_parent&#39;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">GuardedBase</span><span class="p">):</span>
+            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Handle public attributes with diagnostics</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="c1"># Prevent modification of read-only attributes</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_public_readonly_attrs</span><span class="p">():</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_diagnoser</span><span class="o">.</span><span class="n">readonly_error</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_name</span><span class="p">,</span>
+            <span class="n">key</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span>
+    <span class="c1"># Prevent assignment to unknown attributes</span>
+    <span class="c1"># Show writable attributes only as allowed</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_public_attrs</span><span class="p">():</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_public_writable_attrs</span><span class="p">()</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_diagnoser</span><span class="o">.</span><span class="n">attr_error</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_name</span><span class="p">,</span>
+            <span class="n">key</span><span class="p">,</span>
+            <span class="n">allowed</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Allowed writable&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_assign_attr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.core.guard.GuardedBase.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the string representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/core/guard.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the string representation of this object.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">&gt;&#39;</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
 <div class="doc doc-object doc-attribute">
 
 
@@ -9973,8 +10442,7 @@ TypeInfo(...)</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object (to be implemented by
-subclasses).</p>
+        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation (implemented by subclasses).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -10007,7 +10475,11 @@ subclasses).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/guard.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span>
@@ -10044,11 +10516,7 @@ subclasses).</p>
 <span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a summary of public properties and methods.&quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">console</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">render_table</span>
@@ -10118,8 +10586,37 @@ subclasses).</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return a list of parameter objects (to be implemented by
-subclasses).</p>
+        <p>Return a list of parameters (implemented by subclasses).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.core.guard.GuardedBase.unique_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unique_name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Fallback unique name: the class name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -10577,7 +11074,8 @@ calculator" (no restriction).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/metadata.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
+<span class="normal"> 89</span>
 <span class="normal"> 90</span>
 <span class="normal"> 91</span>
 <span class="normal"> 92</span>
@@ -10607,8 +11105,7 @@ calculator" (no restriction).</p>
 <span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">119</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CalculatorSupport</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Which calculation engines can handle this class.</span>
@@ -10733,7 +11230,8 @@ empty (meaning any calculator is accepted).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/metadata.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">102</span>
+<span class="normal">103</span>
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
@@ -10749,8 +11247,7 @@ empty (meaning any calculator is accepted).</p>
 <span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">supports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calculator</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">119</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">supports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calculator</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if a specific calculator can handle this class.</span>
 
@@ -10824,7 +11321,8 @@ supported values for that axis.  An empty frozenset means
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/metadata.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
+<span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span>
@@ -10868,8 +11366,7 @@ supported values for that axis.  An empty frozenset means
 <span class="normal">82</span>
 <span class="normal">83</span>
 <span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Compatibility</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Experimental conditions under which a class can be used.</span>
@@ -10953,7 +11450,8 @@ beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH, )</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/metadata.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
+<span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
@@ -10982,8 +11480,7 @@ beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH, )</p>
 <span class="normal">82</span>
 <span class="normal">83</span>
 <span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">supports</span><span class="p">(</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">supports</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">sample_form</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -11053,8 +11550,7 @@ beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH, )</p>
 
 
 
-        <p>Stable identity and human-readable description for a factory-
-created class.</p>
+        <p>Stable identity and description for a factory-created class.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -11132,12 +11628,10 @@ a factory's registry. Examples: <code>'line-segment'</code>,
 <span class="normal">34</span>
 <span class="normal">35</span>
 <span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TypeInfo</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Stable identity and human-readable description for a factory-</span>
-<span class="sd">    created class.</span>
+<span class="sd">    Stable identity and description for a factory-created class.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -11230,8 +11724,7 @@ a factory's registry. Examples: <code>'line-segment'</code>,
 
 
 
-        <p>Manages user-defined parameter constraints using aliases and
-expressions.</p>
+        <p>Manage parameter constraints using aliases and expressions.</p>
 <p>Uses the asteval interpreter for safe evaluation of mathematical
 expressions. Constraints are defined as: lhs_alias =
 expression(rhs_aliases).</p>
@@ -11339,15 +11832,9 @@ expression(rhs_aliases).</p>
 <span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConstraintsHandler</span><span class="p">(</span><span class="n">SingletonBase</span><span class="p">):</span>
+<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConstraintsHandler</span><span class="p">(</span><span class="n">SingletonBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Manages user-defined parameter constraints using aliases and</span>
-<span class="sd">    expressions.</span>
+<span class="sd">    Manage parameter constraints using aliases and expressions.</span>
 
 <span class="sd">    Uses the asteval interpreter for safe evaluation of mathematical</span>
 <span class="sd">    expressions. Constraints are defined as: lhs_alias =</span>
@@ -11368,7 +11855,7 @@ expression(rhs_aliases).</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">set_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aliases</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sets the alias map (name → parameter wrapper).</span>
+<span class="sd">        Set the alias map (name → parameter wrapper).</span>
 
 <span class="sd">        Called when user registers parameter aliases like:</span>
 <span class="sd">        alias=&#39;biso_La&#39;, param=model.atom_sites[&#39;La&#39;].b_iso</span>
@@ -11377,7 +11864,7 @@ expression(rhs_aliases).</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">set_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sets the constraints and triggers parsing into internal format.</span>
+<span class="sd">        Set the constraints and triggers parsing into internal format.</span>
 
 <span class="sd">        Called when user registers expressions like: lhs_alias=&#39;occ_Ba&#39;,</span>
 <span class="sd">        rhs_expr=&#39;1 - occ_La&#39;</span>
@@ -11386,11 +11873,7 @@ expression(rhs_aliases).</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parse_constraints</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Converts raw expression input into a normalized internal list of</span>
-<span class="sd">        (lhs_alias, rhs_expr) pairs, stripping whitespace and skipping</span>
-<span class="sd">        invalid entries.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse raw expressions into (lhs_alias, rhs_expr) pairs.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_constraints</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">expr_obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_constraints</span><span class="p">:</span>
@@ -11403,7 +11886,7 @@ expression(rhs_aliases).</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Evaluates constraints and applies them to dependent parameters.</span>
+<span class="sd">        Evaluate constraints and applies them to dependent parameters.</span>
 
 <span class="sd">        For each constraint: - Evaluate RHS using current values of</span>
 <span class="sd">        aliases - Locate the dependent parameter by alias → uid → param</span>
@@ -11465,7 +11948,7 @@ expression(rhs_aliases).</p>
 
     <div class="doc doc-contents ">
 
-        <p>Evaluates constraints and applies them to dependent parameters.</p>
+        <p>Evaluate constraints and applies them to dependent parameters.</p>
 <p>For each constraint: - Evaluate RHS using current values of
 aliases - Locate the dependent parameter by alias → uid → param
 - Update its value and mark it as constrained</p>
@@ -11476,7 +11959,12 @@ aliases - Locate the dependent parameter by alias → uid → param
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/singleton.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span>
@@ -11510,14 +11998,9 @@ aliases - Locate the dependent parameter by alias → uid → param
 <span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Evaluates constraints and applies them to dependent parameters.</span>
+<span class="sd">    Evaluate constraints and applies them to dependent parameters.</span>
 
 <span class="sd">    For each constraint: - Evaluate RHS using current values of</span>
 <span class="sd">    aliases - Locate the dependent parameter by alias → uid → param</span>
@@ -11577,7 +12060,7 @@ aliases - Locate the dependent parameter by alias → uid → param
 
     <div class="doc doc-contents ">
 
-        <p>Sets the alias map (name → parameter wrapper).</p>
+        <p>Set the alias map (name → parameter wrapper).</p>
 <p>Called when user registers parameter aliases like:
 alias='biso_La', param=model.atom_sites['La'].b_iso</p>
 <!-- prettier-ignore-start -->
@@ -11587,16 +12070,16 @@ alias='biso_La', param=model.atom_sites['La'].b_iso</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/singleton.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
+<span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aliases</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aliases</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Sets the alias map (name → parameter wrapper).</span>
+<span class="sd">    Set the alias map (name → parameter wrapper).</span>
 
 <span class="sd">    Called when user registers parameter aliases like:</span>
 <span class="sd">    alias=&#39;biso_La&#39;, param=model.atom_sites[&#39;La&#39;].b_iso</span>
@@ -11624,7 +12107,7 @@ alias='biso_La', param=model.atom_sites['La'].b_iso</p>
 
     <div class="doc doc-contents ">
 
-        <p>Sets the constraints and triggers parsing into internal format.</p>
+        <p>Set the constraints and triggers parsing into internal format.</p>
 <p>Called when user registers expressions like: lhs_alias='occ_Ba',
 rhs_expr='1 - occ_La'</p>
 <!-- prettier-ignore-start -->
@@ -11634,17 +12117,17 @@ rhs_expr='1 - occ_La'</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/singleton.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">117</span>
+<span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
 <span class="normal">123</span>
 <span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Sets the constraints and triggers parsing into internal format.</span>
+<span class="sd">    Set the constraints and triggers parsing into internal format.</span>
 
 <span class="sd">    Called when user registers expressions like: lhs_alias=&#39;occ_Ba&#39;,</span>
 <span class="sd">    rhs_expr=&#39;1 - occ_La&#39;</span>
@@ -11729,7 +12212,7 @@ for managing shared state across the library.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the shared instance, creating it if needed.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the shared instance, creating it if needed.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
@@ -11761,7 +12244,7 @@ for managing shared state across the library.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Returns the shared instance, creating it if needed.</p>
+        <p>Return the shared instance, creating it if needed.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -11776,7 +12259,7 @@ for managing shared state across the library.</p>
 <span class="normal">32</span>
 <span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the shared instance, creating it if needed.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the shared instance, creating it if needed.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
     <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
@@ -11877,12 +12360,12 @@ for managing shared state across the library.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_uid_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_uid_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the current UID-to-Parameter map.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the current UID-to-Parameter map.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uid_map</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_to_uid_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds a single Parameter or Descriptor object to the UID map.</span>
+<span class="sd">        Add a single Parameter or Descriptor object to the UID map.</span>
 
 <span class="sd">        Only Descriptor or Parameter instances are allowed (not</span>
 <span class="sd">        Components or others).</span>
@@ -11898,7 +12381,7 @@ for managing shared state across the library.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">replace_uid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_uid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_uid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Replaces an existing UID key in the UID map with a new UID.</span>
+<span class="sd">        Replace an existing UID key in the UID map with a new UID.</span>
 
 <span class="sd">        Moves the associated parameter from old_uid to new_uid. Raises a</span>
 <span class="sd">        KeyError if the old_uid doesn&#39;t exist.</span>
@@ -11932,7 +12415,7 @@ for managing shared state across the library.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Adds a single Parameter or Descriptor object to the UID map.</p>
+        <p>Add a single Parameter or Descriptor object to the UID map.</p>
 <p>Only Descriptor or Parameter instances are allowed (not
 Components or others).</p>
 <!-- prettier-ignore-start -->
@@ -11958,7 +12441,7 @@ Components or others).</p>
 <span class="normal">63</span>
 <span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_to_uid_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Adds a single Parameter or Descriptor object to the UID map.</span>
+<span class="sd">    Add a single Parameter or Descriptor object to the UID map.</span>
 
 <span class="sd">    Only Descriptor or Parameter instances are allowed (not</span>
 <span class="sd">    Components or others).</span>
@@ -11993,7 +12476,7 @@ Components or others).</p>
 
     <div class="doc doc-contents ">
 
-        <p>Returns the current UID-to-Parameter map.</p>
+        <p>Return the current UID-to-Parameter map.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -12004,7 +12487,7 @@ Components or others).</p>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_uid_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the current UID-to-Parameter map.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current UID-to-Parameter map.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uid_map</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -12028,7 +12511,7 @@ Components or others).</p>
 
     <div class="doc doc-contents ">
 
-        <p>Replaces an existing UID key in the UID map with a new UID.</p>
+        <p>Replace an existing UID key in the UID map with a new UID.</p>
 <p>Moves the associated parameter from old_uid to new_uid. Raises a
 KeyError if the old_uid doesn't exist.</p>
 <!-- prettier-ignore-start -->
@@ -12051,7 +12534,7 @@ KeyError if the old_uid doesn't exist.</p>
 <span class="normal">76</span>
 <span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replace_uid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_uid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_uid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Replaces an existing UID key in the UID map with a new UID.</span>
+<span class="sd">    Replace an existing UID key in the UID map with a new UID.</span>
 
 <span class="sd">    Moves the associated parameter from old_uid to new_uid. Raises a</span>
 <span class="sd">    KeyError if the old_uid doesn&#39;t exist.</span>
@@ -12155,13 +12638,7 @@ descriptors and parameters. Only documentation was added here.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">284</span>
 <span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span>
@@ -12211,7 +12688,13 @@ descriptors and parameters. Only documentation was added here.</p>
 <span class="normal">331</span>
 <span class="normal">332</span>
 <span class="normal">333</span>
-<span class="normal">334</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AttributeSpec</span><span class="p">:</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AttributeSpec</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Hold metadata and validators for a single attribute.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -12302,13 +12785,7 @@ occur. None may short-circuit further checks when allowed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">300</span>
 <span class="normal">301</span>
 <span class="normal">302</span>
 <span class="normal">303</span>
@@ -12342,7 +12819,13 @@ occur. None may short-circuit further checks when allowed.</p>
 <span class="normal">331</span>
 <span class="normal">332</span>
 <span class="normal">333</span>
-<span class="normal">334</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validated</span><span class="p">(</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validated</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -12407,6 +12890,68 @@ occur. None may short-circuit further checks when allowed.</p>
 
 
 
+<h3 id="easydiffraction.core.validation.DataTypeHints" class="doc doc-heading">
+            <code>DataTypeHints</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Type hint aliases for numeric, string, and boolean types.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataTypeHints</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Type hint aliases for numeric, string, and boolean types.&quot;&quot;&quot;</span>
+
+    <span class="n">Numeric</span> <span class="o">=</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span>
+    <span class="n">String</span> <span class="o">=</span> <span class="nb">str</span>
+    <span class="n">Bool</span> <span class="o">=</span> <span class="nb">bool</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
 <h3 id="easydiffraction.core.validation.DataTypes" class="doc doc-heading">
             <code>DataTypes</code>
 
@@ -12420,6 +12965,11 @@ occur. None may short-circuit further checks when allowed.</p>
 
 
 
+        <p>Enumeration of supported data types for descriptors.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
 
 
 
@@ -12429,9 +12979,7 @@ occur. None may short-circuit further checks when allowed.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
@@ -12441,13 +12989,21 @@ occur. None may short-circuit further checks when allowed.</p>
 <span class="normal">44</span>
 <span class="normal">45</span>
 <span class="normal">46</span>
-<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enumeration of supported data types for descriptors.&quot;&quot;&quot;</span>
+
     <span class="n">NUMERIC</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">)</span>
     <span class="n">STRING</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">,)</span>
     <span class="n">BOOL</span> <span class="o">=</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,)</span>
     <span class="n">ANY</span> <span class="o">=</span> <span class="p">(</span><span class="nb">object</span><span class="p">,)</span>  <span class="c1"># fallback for unconstrained</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the lowercase name of the data type.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -12461,6 +13017,41 @@ occur. None may short-circuit further checks when allowed.</p>
 
 <div class="doc doc-children">
 
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.core.validation.DataTypes.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the lowercase name of the data type.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the lowercase name of the data type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 
@@ -12542,13 +13133,7 @@ occur. None may short-circuit further checks when allowed.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
 <span class="normal">205</span>
 <span class="normal">206</span>
 <span class="normal">207</span>
@@ -12579,7 +13164,13 @@ occur. None may short-circuit further checks when allowed.</p>
 <span class="normal">232</span>
 <span class="normal">233</span>
 <span class="normal">234</span>
-<span class="normal">235</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MembershipValidator</span><span class="p">(</span><span class="n">ValidatorBase</span><span class="p">):</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MembershipValidator</span><span class="p">(</span><span class="n">ValidatorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ensure that a value is among allowed choices.</span>
 
@@ -12649,13 +13240,7 @@ occur. None may short-circuit further checks when allowed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
 <span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
@@ -12675,7 +13260,13 @@ occur. None may short-circuit further checks when allowed.</p>
 <span class="normal">232</span>
 <span class="normal">233</span>
 <span class="normal">234</span>
-<span class="normal">235</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validated</span><span class="p">(</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validated</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -12753,13 +13344,7 @@ occur. None may short-circuit further checks when allowed.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">163</span>
 <span class="normal">164</span>
 <span class="normal">165</span>
 <span class="normal">166</span>
@@ -12788,7 +13373,13 @@ occur. None may short-circuit further checks when allowed.</p>
 <span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
-<span class="normal">192</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RangeValidator</span><span class="p">(</span><span class="n">ValidatorBase</span><span class="p">):</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RangeValidator</span><span class="p">(</span><span class="n">ValidatorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure a numeric value lies within [ge, le].&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -12856,13 +13447,7 @@ occur. None may short-circuit further checks when allowed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">174</span>
 <span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
@@ -12880,7 +13465,13 @@ occur. None may short-circuit further checks when allowed.</p>
 <span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
-<span class="normal">192</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validated</span><span class="p">(</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validated</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -12956,13 +13547,7 @@ occur. None may short-circuit further checks when allowed.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
 <span class="normal">250</span>
@@ -12985,7 +13570,13 @@ occur. None may short-circuit further checks when allowed.</p>
 <span class="normal">267</span>
 <span class="normal">268</span>
 <span class="normal">269</span>
-<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RegexValidator</span><span class="p">(</span><span class="n">ValidatorBase</span><span class="p">):</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RegexValidator</span><span class="p">(</span><span class="n">ValidatorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure that a string matches a given regular expression.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -13047,13 +13638,7 @@ occur. None may short-circuit further checks when allowed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">253</span>
 <span class="normal">254</span>
 <span class="normal">255</span>
 <span class="normal">256</span>
@@ -13070,7 +13655,13 @@ occur. None may short-circuit further checks when allowed.</p>
 <span class="normal">267</span>
 <span class="normal">268</span>
 <span class="normal">269</span>
-<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validated</span><span class="p">(</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validated</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -13145,13 +13736,7 @@ occur. None may short-circuit further checks when allowed.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
@@ -13194,7 +13779,13 @@ occur. None may short-circuit further checks when allowed.</p>
 <span class="normal">148</span>
 <span class="normal">149</span>
 <span class="normal">150</span>
-<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TypeValidator</span><span class="p">(</span><span class="n">ValidatorBase</span><span class="p">):</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TypeValidator</span><span class="p">(</span><span class="n">ValidatorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure a value is of the expected data type.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_type</span><span class="p">:</span> <span class="n">DataTypes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -13277,13 +13868,7 @@ occur. None may short-circuit further checks when allowed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
@@ -13316,7 +13901,13 @@ occur. None may short-circuit further checks when allowed.</p>
 <span class="normal">148</span>
 <span class="normal">149</span>
 <span class="normal">150</span>
-<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validated</span><span class="p">(</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validated</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -13407,16 +13998,17 @@ occur. None may short-circuit further checks when allowed.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span>
-<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ValidationStage</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ValidationStage</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Phases of validation for diagnostic logging.&quot;&quot;&quot;</span>
 
     <span class="n">TYPE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -13425,6 +14017,7 @@ occur. None may short-circuit further checks when allowed.</p>
     <span class="n">REGEX</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the lowercase name of the validation stage.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -13433,6 +14026,41 @@ occur. None may short-circuit further checks when allowed.</p>
 
 <div class="doc doc-children">
 
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.core.validation.ValidationStage.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the lowercase name of the validation stage.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the lowercase name of the validation stage.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 
@@ -13479,31 +14107,31 @@ occur. None may short-circuit further checks when allowed.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ValidatorBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ValidatorBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for all validators.&quot;&quot;&quot;</span>
 
     <span class="nd">@abstractmethod</span>
@@ -13565,20 +14193,20 @@ occur. None may short-circuit further checks when allowed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/validation.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">81</span>
 <span class="normal">82</span>
 <span class="normal">83</span>
 <span class="normal">84</span>
 <span class="normal">85</span>
 <span class="normal">86</span>
 <span class="normal">87</span>
-<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validated</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -13879,12 +14507,7 @@ behavior (e.g. units).</p>
 <span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GenericDescriptorBase</span><span class="p">(</span><span class="n">GuardedBase</span><span class="p">):</span>
+<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GenericDescriptorBase</span><span class="p">(</span><span class="n">GuardedBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for all parameter-like descriptors.</span>
 
@@ -13957,6 +14580,7 @@ behavior (e.g. units).</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">default</span><span class="p">()</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">default</span><span class="p">)</span> <span class="k">else</span> <span class="n">default</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the string representation of this descriptor.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="si">}</span><span class="s1"> = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">!r}</span><span class="s1">&gt;&#39;</span>
 
     <span class="nd">@property</span>
@@ -13966,10 +14590,7 @@ behavior (e.g. units).</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">unique_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fully qualified name including datablock, category and entry</span>
-<span class="sd">        name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fully qualified name: datablock, category and entry.&quot;&quot;&quot;</span>
         <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">datablock_entry_name</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span><span class="p">,</span>
@@ -13979,10 +14600,7 @@ behavior (e.g. units).</p>
         <span class="k">return</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">parts</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_parent_of_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Walk up the parent chain and return the first parent of type</span>
-<span class="sd">        ``cls``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Traverse parents and return the first of type cls.&quot;&quot;&quot;</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">while</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
@@ -14291,6 +14909,41 @@ behavior (e.g. units).</p>
 
 
 
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.core.variable.GenericDescriptorBase.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the string representation of this descriptor.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the string representation of this descriptor.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="si">}</span><span class="s1"> = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">!r}</span><span class="s1">&gt;&#39;</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
 <div class="doc doc-object doc-attribute">
 
 
@@ -14370,9 +15023,9 @@ behavior (e.g. units).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Populate this parameter from a CIF block.&quot;&quot;&quot;</span>
     <span class="n">param_from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -14465,8 +15118,7 @@ structures.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Fully qualified name including datablock, category and entry
-name.</p>
+        <p>Fully qualified name: datablock, category and entry.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -14537,6 +15189,11 @@ name.</p>
 
 
 
+        <p>Base descriptor that constrains values to numbers.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
 
 
 
@@ -14546,7 +15203,10 @@ name.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">229</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
 <span class="normal">230</span>
 <span class="normal">231</span>
 <span class="normal">232</span>
@@ -14569,6 +15229,8 @@ name.</p>
 <span class="normal">249</span>
 <span class="normal">250</span>
 <span class="normal">251</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GenericNumericDescriptor</span><span class="p">(</span><span class="n">GenericDescriptorBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base descriptor that constrains values to numbers.&quot;&quot;&quot;</span>
+
     <span class="n">_value_type</span> <span class="o">=</span> <span class="n">DataTypes</span><span class="o">.</span><span class="n">NUMERIC</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -14581,6 +15243,7 @@ name.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_units</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">units</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the string representation including units.&quot;&quot;&quot;</span>
         <span class="n">s</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># strip &lt;&gt;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">:</span>
@@ -14598,6 +15261,49 @@ name.</p>
 
 <div class="doc doc-children">
 
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.core.variable.GenericNumericDescriptor.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the string representation including units.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the string representation including units.&quot;&quot;&quot;</span>
+    <span class="n">s</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># strip &lt;&gt;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&lt;</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">&gt;&#39;</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 
@@ -14802,9 +15508,7 @@ integrate with specific backends while preserving this interface.</p>
 <span class="normal">379</span>
 <span class="normal">380</span>
 <span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GenericParameter</span><span class="p">(</span><span class="n">GenericNumericDescriptor</span><span class="p">):</span>
+<span class="normal">382</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GenericParameter</span><span class="p">(</span><span class="n">GenericNumericDescriptor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Numeric descriptor extended with fitting-related attributes.</span>
 
@@ -14841,6 +15545,7 @@ integrate with specific backends while preserving this interface.</p>
         <span class="n">UidMapHandler</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">add_to_uid_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return string representation with uncertainty and free.&quot;&quot;&quot;</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">GenericDescriptorBase</span><span class="o">.</span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># strip &lt;&gt;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uncertainty</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -14896,10 +15601,7 @@ integrate with specific backends while preserving this interface.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">uncertainty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Estimated standard uncertainty of the fitted value, if</span>
-<span class="sd">        available.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Estimated standard uncertainty of the fitted value.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uncertainty</span>
 
     <span class="nd">@uncertainty</span><span class="o">.</span><span class="n">setter</span>
@@ -14939,6 +15641,55 @@ integrate with specific backends while preserving this interface.</p>
 
 <div class="doc doc-children">
 
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.core.variable.GenericParameter.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return string representation with uncertainty and free.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return string representation with uncertainty and free.&quot;&quot;&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">GenericDescriptorBase</span><span class="o">.</span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># strip &lt;&gt;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uncertainty</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; ± </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uncertainty</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; (free=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">free</span><span class="si">}</span><span class="s1">)&#39;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&lt;</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">&gt;&#39;</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 
@@ -15115,8 +15866,7 @@ integrate with specific backends while preserving this interface.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Estimated standard uncertainty of the fitted value, if
-available.</p>
+        <p>Estimated standard uncertainty of the fitted value.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -15124,6 +15874,78 @@ available.</p>
     </div>
 
 </div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="easydiffraction.core.variable.GenericStringDescriptor" class="doc doc-heading">
+            <code>GenericStringDescriptor</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;GenericDescriptorBase&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.GenericDescriptorBase&lt;/code&gt;)" href="#easydiffraction.core.variable.GenericDescriptorBase">GenericDescriptorBase</a></code></p>
+
+
+
+        <p>Base descriptor that constrains values to strings.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GenericStringDescriptor</span><span class="p">(</span><span class="n">GenericDescriptorBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base descriptor that constrains values to strings.&quot;&quot;&quot;</span>
+
+    <span class="n">_value_type</span> <span class="o">=</span> <span class="n">DataTypes</span><span class="o">.</span><span class="n">STRING</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
 
 
 
@@ -15160,6 +15982,11 @@ available.</p>
 
 
 
+        <p>Numeric descriptor bound to a <abbr title="Crystallographic Information File.">CIF</abbr> handler.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
 
 
 
@@ -15188,7 +16015,11 @@ available.</p>
 <span class="normal">431</span>
 <span class="normal">432</span>
 <span class="normal">433</span>
-<span class="normal">434</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NumericDescriptor</span><span class="p">(</span><span class="n">GenericNumericDescriptor</span><span class="p">):</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NumericDescriptor</span><span class="p">(</span><span class="n">GenericNumericDescriptor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Numeric descriptor bound to a CIF handler.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -15293,9 +16124,7 @@ available.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">416</span>
-<span class="normal">417</span>
-<span class="normal">418</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">418</span>
 <span class="normal">419</span>
 <span class="normal">420</span>
 <span class="normal">421</span>
@@ -15311,7 +16140,9 @@ available.</p>
 <span class="normal">431</span>
 <span class="normal">432</span>
 <span class="normal">433</span>
-<span class="normal">434</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">cif_handler</span><span class="p">:</span> <span class="n">CifHandler</span><span class="p">,</span>
@@ -15367,6 +16198,11 @@ available.</p>
 
 
 
+        <p>Fittable parameter bound to a <abbr title="Crystallographic Information File.">CIF</abbr> handler.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
 
 
 
@@ -15376,9 +16212,7 @@ available.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">442</span>
 <span class="normal">443</span>
 <span class="normal">444</span>
 <span class="normal">445</span>
@@ -15395,7 +16229,13 @@ available.</p>
 <span class="normal">456</span>
 <span class="normal">457</span>
 <span class="normal">458</span>
-<span class="normal">459</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Parameter</span><span class="p">(</span><span class="n">GenericParameter</span><span class="p">):</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Parameter</span><span class="p">(</span><span class="n">GenericParameter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fittable parameter bound to a CIF handler.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -15500,11 +16340,7 @@ available.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">441</span>
-<span class="normal">442</span>
-<span class="normal">443</span>
-<span class="normal">444</span>
-<span class="normal">445</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">445</span>
 <span class="normal">446</span>
 <span class="normal">447</span>
 <span class="normal">448</span>
@@ -15518,7 +16354,11 @@ available.</p>
 <span class="normal">456</span>
 <span class="normal">457</span>
 <span class="normal">458</span>
-<span class="normal">459</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">cif_handler</span><span class="p">:</span> <span class="n">CifHandler</span><span class="p">,</span>
@@ -15574,9 +16414,14 @@ available.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="easydiffraction.core.variable.GenericStringDescriptor">GenericStringDescriptor</span></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;GenericStringDescriptor&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.GenericStringDescriptor&lt;/code&gt;)" href="#easydiffraction.core.variable.GenericStringDescriptor">GenericStringDescriptor</a></code></p>
 
 
+
+        <p>String descriptor bound to a <abbr title="Crystallographic Information File.">CIF</abbr> handler.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
 
 
 
@@ -15587,7 +16432,9 @@ available.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">390</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
 <span class="normal">391</span>
 <span class="normal">392</span>
 <span class="normal">393</span>
@@ -15607,6 +16454,8 @@ available.</p>
 <span class="normal">407</span>
 <span class="normal">408</span>
 <span class="normal">409</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StringDescriptor</span><span class="p">(</span><span class="n">GenericStringDescriptor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;String descriptor bound to a CIF handler.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -15614,7 +16463,7 @@ available.</p>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        String descriptor bound to a CIF handler.</span>
+<span class="sd">        Initialize a string descriptor bound to a CIF handler.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -15650,7 +16499,7 @@ available.</p>
 
     <div class="doc doc-contents ">
 
-        <p>String descriptor bound to a <abbr title="Crystallographic Information File.">CIF</abbr> handler.</p>
+        <p>Initialize a string descriptor bound to a <abbr title="Crystallographic Information File.">CIF</abbr> handler.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -15736,7 +16585,7 @@ available.</p>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    String descriptor bound to a CIF handler.</span>
+<span class="sd">    Initialize a string descriptor bound to a CIF handler.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -15762,6 +16611,10 @@ available.</p>
     </div>
 
 </div>
+
+
+
+
 
 
 

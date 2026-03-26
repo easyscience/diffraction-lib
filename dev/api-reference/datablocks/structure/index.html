@@ -1835,8 +1835,6 @@
       
         
       
-        
-      
     
     
     
@@ -2270,34 +2268,6 @@
     
   
     display
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../experiment.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    experiments
   
 
     
@@ -3047,11 +3017,7 @@ in crystallographic structures.</p>
 <span class="normal">311</span>
 <span class="normal">312</span>
 <span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSite</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">314</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSite</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Single atom site with fractional coordinates and ADP.</span>
 
@@ -3242,8 +3208,7 @@ in crystallographic structures.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">adp_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StringDescriptor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Type of atomic displacement parameter (ADP) used (e.g., Biso,</span>
-<span class="sd">        Uiso, Uani, Bani).</span>
+<span class="sd">        ADP type used (e.g., Biso, Uiso, Uani, Bani).</span>
 
 <span class="sd">        Reading this property returns the underlying</span>
 <span class="sd">        ``StringDescriptor`` object. Assigning to it updates the</span>
@@ -3258,8 +3223,7 @@ in crystallographic structures.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">wyckoff_letter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StringDescriptor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Wyckoff letter indicating the symmetry of the atom site within</span>
-<span class="sd">        the space group.</span>
+<span class="sd">        Wyckoff letter for the atom site symmetry position.</span>
 
 <span class="sd">        Reading this property returns the underlying</span>
 <span class="sd">        ``StringDescriptor`` object. Assigning to it updates the</span>
@@ -3316,8 +3280,7 @@ in crystallographic structures.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">occupancy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Occupancy of the atom site, representing the fraction of the</span>
-<span class="sd">        site occupied by the atom type.</span>
+<span class="sd">        Occupancy fraction of the atom type at this site.</span>
 
 <span class="sd">        Reading this property returns the underlying ``Parameter``</span>
 <span class="sd">        object. Assigning to it updates the parameter value.</span>
@@ -3331,8 +3294,7 @@ in crystallographic structures.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">b_iso</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Isotropic atomic displacement parameter (ADP) for the atom site</span>
-<span class="sd">        (Å²).</span>
+<span class="sd">        Isotropic ADP for the atom site (Å²).</span>
 
 <span class="sd">        Reading this property returns the underlying ``Parameter``</span>
 <span class="sd">        object. Assigning to it updates the parameter value.</span>
@@ -3601,8 +3563,7 @@ in crystallographic structures.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Type of atomic displacement parameter (ADP) used (e.g., Biso,
-Uiso, Uani, Bani).</p>
+        <p>ADP type used (e.g., Biso, Uiso, Uani, Bani).</p>
 <p>Reading this property returns the underlying
 <code>StringDescriptor</code> object. Assigning to it updates the
 parameter value.</p>
@@ -3636,8 +3597,7 @@ parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Isotropic atomic displacement parameter (ADP) for the atom site
-(Å²).</p>
+        <p>Isotropic ADP for the atom site (Å²).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
 <!-- prettier-ignore-start -->
@@ -3803,8 +3763,7 @@ parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Occupancy of the atom site, representing the fraction of the
-site occupied by the atom type.</p>
+        <p>Occupancy fraction of the atom type at this site.</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
 <!-- prettier-ignore-start -->
@@ -3871,8 +3830,7 @@ parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Wyckoff letter indicating the symmetry of the atom site within
-the space group.</p>
+        <p>Wyckoff letter for the atom site symmetry position.</p>
 <p>Reading this property returns the underlying
 <code>StringDescriptor</code> object. Assigning to it updates the
 parameter value.</p>
@@ -3929,7 +3887,11 @@ parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/default.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">321</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
 <span class="normal">322</span>
 <span class="normal">323</span>
 <span class="normal">324</span>
@@ -3988,11 +3950,7 @@ parameter value.</p>
 <span class="normal">377</span>
 <span class="normal">378</span>
 <span class="normal">379</span>
-<span class="normal">380</span>
-<span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AtomSitesFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">380</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AtomSitesFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AtomSites</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collection of :class:`AtomSite` instances.&quot;&quot;&quot;</span>
 
@@ -4088,9 +4046,9 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise an empty atom-sites collection.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">item_type</span><span class="o">=</span><span class="n">AtomSite</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4382,8 +4340,7 @@ parameter value.</p>
 
 
 
-        <p>Unit cell with lengths <em>a</em>, <em>b</em>, <em>c</em> and angles <em>alpha</em>, <em>beta</em>,
-<em>gamma</em>.</p>
+        <p>Unit cell with lengths a, b, c and angles alpha, beta, gamma.</p>
 <p>All six lattice parameters are exposed as :class:<code>Parameter</code>
 descriptors supporting validation, fitting and <abbr title="Crystallographic Information File.">CIF</abbr> serialization.</p>
 <!-- prettier-ignore-start -->
@@ -4617,12 +4574,10 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
 <span class="normal">232</span>
 <span class="normal">233</span>
 <span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CellFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">235</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CellFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Cell</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Unit cell with lengths *a*, *b*, *c* and angles *alpha*, *beta*,</span>
-<span class="sd">    *gamma*.</span>
+<span class="sd">    Unit cell with lengths a, b, c and angles alpha, beta, gamma.</span>
 
 <span class="sd">    All six lattice parameters are exposed as :class:`Parameter`</span>
 <span class="sd">    descriptors supporting validation, fitting and CIF serialization.</span>
@@ -4639,7 +4594,7 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_length_a</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_a&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the a axis of the unit cell.&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the a axis of the unit cell&#39;</span><span class="p">,</span>
             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
@@ -4649,7 +4604,7 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_length_b</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_b&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the b axis of the unit cell.&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the b axis of the unit cell&#39;</span><span class="p">,</span>
             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
@@ -4659,7 +4614,7 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_length_c</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_c&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the c axis of the unit cell.&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the c axis of the unit cell&#39;</span><span class="p">,</span>
             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
@@ -4669,7 +4624,7 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_angle_alpha</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_alpha&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges b and c.&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges b and c&#39;</span><span class="p">,</span>
             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
@@ -4679,7 +4634,7 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_angle_beta</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_beta&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and c.&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and c&#39;</span><span class="p">,</span>
             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
@@ -4689,7 +4644,7 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_angle_gamma</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_gamma&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and b.&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and b&#39;</span><span class="p">,</span>
             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
@@ -4870,7 +4825,8 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/cell/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
+<span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span>
@@ -4934,14 +4890,13 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
 <span class="normal">93</span>
 <span class="normal">94</span>
 <span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise the unit cell with default parameter values.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_length_a</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_a&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the a axis of the unit cell.&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the a axis of the unit cell&#39;</span><span class="p">,</span>
         <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
@@ -4951,7 +4906,7 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_length_b</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_b&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the b axis of the unit cell.&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the b axis of the unit cell&#39;</span><span class="p">,</span>
         <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
@@ -4961,7 +4916,7 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_length_c</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_c&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the c axis of the unit cell.&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the c axis of the unit cell&#39;</span><span class="p">,</span>
         <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
@@ -4971,7 +4926,7 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_angle_alpha</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_alpha&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges b and c.&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges b and c&#39;</span><span class="p">,</span>
         <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
@@ -4981,7 +4936,7 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_angle_beta</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_beta&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and c.&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and c&#39;</span><span class="p">,</span>
         <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
@@ -4991,7 +4946,7 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_angle_gamma</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_gamma&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and b.&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and b&#39;</span><span class="p">,</span>
         <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
@@ -5472,8 +5427,7 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
-        <p>Space group with Hermann–Mauguin symbol and IT coordinate system
-code.</p>
+        <p>Space group with H-M symbol and IT coordinate system code.</p>
 <p>Holds the space-group symbol (<code>name_h_m</code>) and the International
 Tables coordinate-system qualifier (<code>it_coordinate_system_code</code>).
 Changing the symbol automatically resets the coordinate-system code
@@ -5632,15 +5586,10 @@ to the first allowed value for the new group.</p>
 <span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@SpaceGroupFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@SpaceGroupFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpaceGroup</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Space group with Hermann–Mauguin symbol and IT coordinate system</span>
-<span class="sd">    code.</span>
+<span class="sd">    Space group with H-M symbol and IT coordinate system code.</span>
 
 <span class="sd">    Holds the space-group symbol (``name_h_m``) and the International</span>
 <span class="sd">    Tables coordinate-system qualifier (``it_coordinate_system_code``).</span>
@@ -5702,10 +5651,7 @@ to the first allowed value for the new group.</p>
     <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_reset_it_coordinate_system_code</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Reset the IT coordinate system code to the default for the</span>
-<span class="sd">        current group.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset IT coordinate system code to default for this group.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code_default_value</span>
 
     <span class="nd">@property</span>
@@ -5814,7 +5760,8 @@ to the first allowed value for the new group.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+<span class="normal">39</span>
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
@@ -5855,8 +5802,7 @@ to the first allowed value for the new group.</p>
 <span class="normal">77</span>
 <span class="normal">78</span>
 <span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise the space group with default values.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -7155,9 +7101,7 @@ inserting pre-built structures.</p>
 <span class="normal">252</span>
 <span class="normal">253</span>
 <span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Structure</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
+<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Structure</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Structure datablock item.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -7386,9 +7330,7 @@ inserting pre-built structures.</p>
     <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Display an ASCII projection of the structure on a 2D plane.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Display an ASCII projection of the structure in 2D.&quot;&quot;&quot;</span>
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Structure 🧩 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Not implemented yet.&#39;</span><span class="p">)</span>
 
@@ -7601,7 +7543,7 @@ inserting pre-built structures.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Display an ASCII projection of the structure on a 2D plane.</p>
+        <p>Display an ASCII projection of the structure in 2D.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -7612,12 +7554,8 @@ inserting pre-built structures.</p>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Display an ASCII projection of the structure on a 2D plane.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Display an ASCII projection of the structure in 2D.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Structure 🧩 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Not implemented yet.&#39;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -7650,10 +7588,10 @@ inserting pre-built structures.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the CIF text for this structure in the terminal.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Structure 🧩 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; as cif&quot;</span><span class="p">)</span>
     <span class="n">render_cif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_cif</span><span class="p">)</span>
