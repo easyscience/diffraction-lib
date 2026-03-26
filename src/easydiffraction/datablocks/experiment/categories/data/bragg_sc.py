@@ -257,7 +257,12 @@ class ReflnData(CategoryCollection):
 
     # Should be set only once
 
-    def _create_items_set_hkl_and_id(self, indices_h: object, indices_k: object, indices_l: object) -> None:
+    def _create_items_set_hkl_and_id(
+        self,
+        indices_h: object,
+        indices_k: object,
+        indices_l: object,
+    ) -> None:
         """Helper method to set Miller indices."""
         # TODO: split into multiple methods
 

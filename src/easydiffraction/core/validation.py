@@ -41,7 +41,7 @@ class DataTypes(Enum):
         return self.name.lower()
 
     @property
-    def expected_type(self) -> DataTypes:
+    def expected_type(self) -> tuple:
         """Convenience alias for tuple of allowed Python types."""
         return self.value
 
@@ -72,7 +72,13 @@ class ValidatorBase(ABC):
     """Abstract base class for all validators."""
 
     @abstractmethod
-    def validated(self, value: object, name: str, default: object = None, current: object = None) -> object:
+    def validated(
+        self,
+        value: object,
+        name: str,
+        default: object = None,
+        current: object = None,
+    ) -> object:
         """Return a validated value or fallback.
 
         Subclasses must implement this method.

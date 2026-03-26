@@ -80,7 +80,13 @@ class Plotter(RendererBase):
     #  Private helper methods
     # ------------------------------------------------------------------
 
-    def _auto_x_range_for_ascii(self, pattern: object, x_array: object, x_min: object, x_max: object) -> tuple:
+    def _auto_x_range_for_ascii(
+        self,
+        pattern: object,
+        x_array: object,
+        x_min: object,
+        x_max: object,
+    ) -> tuple:
         """
         For the ASCII engine, narrow the range around the tallest peak.
 
@@ -144,7 +150,12 @@ class Plotter(RendererBase):
 
         return filtered_y_array
 
-    def _get_axes_labels(self, sample_form: object, scattering_type: object, x_axis: object) -> list:
+    def _get_axes_labels(
+        self,
+        sample_form: object,
+        scattering_type: object,
+        x_axis: object,
+    ) -> list:
         """Look up axis labels for the given experiment / x-axis
         combination.
         """
