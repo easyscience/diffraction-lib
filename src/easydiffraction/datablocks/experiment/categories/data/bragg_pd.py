@@ -409,6 +409,7 @@ class PdDataBase(CategoryCollection):
 
     @property
     def calc_status(self) -> np.ndarray:
+        """Refinement-status flags for each data point as an array."""
         return np.fromiter(
             (p.calc_status.value for p in self._items),
             dtype=object,  # TODO: needed? DataTypes.NUMERIC?
@@ -416,6 +417,7 @@ class PdDataBase(CategoryCollection):
 
     @property
     def d_spacing(self) -> np.ndarray:
+        """D-spacing values for active (non-excluded) data points."""
         return np.fromiter(
             (p.d_spacing.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
@@ -423,6 +425,7 @@ class PdDataBase(CategoryCollection):
 
     @property
     def intensity_meas(self) -> np.ndarray:
+        """Measured intensities for active data points."""
         return np.fromiter(
             (p.intensity_meas.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
@@ -430,6 +433,12 @@ class PdDataBase(CategoryCollection):
 
     @property
     def intensity_meas_su(self) -> np.ndarray:
+        """
+        Standard uncertainties of the measured intensities.
+
+        Values smaller than 0.0001 are replaced with 1.0 to prevent
+        fitting failures.
+        """
         # TODO: The following is a temporary workaround to handle zero
         #  or near-zero uncertainties in the data, when dats is loaded
         #  from CIF files. This is necessary because zero uncertainties
@@ -452,6 +461,7 @@ class PdDataBase(CategoryCollection):
 
     @property
     def intensity_calc(self) -> np.ndarray:
+        """Calculated intensities for active data points."""
         return np.fromiter(
             (p.intensity_calc.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
@@ -459,6 +469,7 @@ class PdDataBase(CategoryCollection):
 
     @property
     def intensity_bkg(self) -> np.ndarray:
+        """Background intensities for active data points."""
         return np.fromiter(
             (p.intensity_bkg.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?

@@ -69,6 +69,7 @@ class Alias(CategoryItem):
 
     @label.setter
     def label(self, value: str) -> None:
+        """Set the alias label."""
         self._label.value = value
 
     @property
@@ -84,6 +85,7 @@ class Alias(CategoryItem):
 
     @param_uid.setter
     def param_uid(self, value: str) -> None:
+        """Set the parameter UID."""
         self._param_uid.value = value
 
 

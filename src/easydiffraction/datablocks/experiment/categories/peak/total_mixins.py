@@ -102,6 +102,7 @@ class TotalBroadeningMixin:
 
     @damp_q.setter
     def damp_q(self, value: float) -> None:
+        """Set the Q-resolution damping factor."""
         self._damp_q.value = value
 
     @property
@@ -117,6 +118,7 @@ class TotalBroadeningMixin:
 
     @broad_q.setter
     def broad_q(self, value: float) -> None:
+        """Set the quadratic PDF peak broadening coefficient."""
         self._broad_q.value = value
 
     @property
@@ -132,6 +134,7 @@ class TotalBroadeningMixin:
 
     @cutoff_q.setter
     def cutoff_q(self, value: float) -> None:
+        """Set the Q-value cutoff for the Fourier transform."""
         self._cutoff_q.value = value
 
     @property
@@ -146,6 +149,7 @@ class TotalBroadeningMixin:
 
     @sharp_delta_1.setter
     def sharp_delta_1(self, value: float) -> None:
+        """Set the PDF peak sharpening coefficient delta_1."""
         self._sharp_delta_1.value = value
 
     @property
@@ -160,6 +164,7 @@ class TotalBroadeningMixin:
 
     @sharp_delta_2.setter
     def sharp_delta_2(self, value: float) -> None:
+        """Set the PDF peak sharpening coefficient delta_2."""
         self._sharp_delta_2.value = value
 
     @property
@@ -175,4 +180,5 @@ class TotalBroadeningMixin:
 
     @damp_particle_diameter.setter
     def damp_particle_diameter(self, value: float) -> None:
+        """Set the particle diameter for spherical envelope damping."""
         self._damp_particle_diameter.value = value

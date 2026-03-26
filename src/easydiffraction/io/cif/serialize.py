@@ -243,6 +243,17 @@ def param_from_cif(
     block: gemmi.cif.Block,
     idx: int = 0,
 ) -> None:
+    """Populate a single descriptor from a CIF block.
+
+    Parameters
+    ----------
+    self : GenericDescriptorBase
+        The descriptor instance to populate.
+    block : gemmi.cif.Block
+        Parsed CIF block to read values from.
+    idx : int, default=0
+        Row index used when the tag belongs to a loop.
+    """
     found_values: list[Any] = []
 
     # Try to find the value(s) from the CIF block iterating over
@@ -294,6 +305,20 @@ def category_collection_from_cif(
     self: CategoryCollection,
     block: gemmi.cif.Block,
 ) -> None:
+    """Populate a CategoryCollection from a CIF loop.
+
+    Parameters
+    ----------
+    self : CategoryCollection
+        The collection instance to populate.
+    block : gemmi.cif.Block
+        Parsed CIF block to read the loop from.
+
+    Raises
+    ------
+    ValueError
+        If the collection has no ``_item_type`` defined.
+    """
     # TODO: Find a better way and then remove TODO in the AtomSite
     #  class
     # TODO: Rename to _item_cls?

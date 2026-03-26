@@ -65,6 +65,7 @@ class LinkedPhase(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
+        """Set the linked-phase identifier."""
         self._id.value = value
 
     @property
@@ -79,6 +80,7 @@ class LinkedPhase(CategoryItem):
 
     @scale.setter
     def scale(self, value: float) -> None:
+        """Set the linked-phase scale factor."""
         self._scale.value = value
 
 

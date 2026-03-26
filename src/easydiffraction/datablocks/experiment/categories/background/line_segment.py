@@ -106,6 +106,7 @@ class LineSegment(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
+        """Set the line segment identifier."""
         self._id.value = value
 
     @property
@@ -122,6 +123,7 @@ class LineSegment(CategoryItem):
 
     @x.setter
     def x(self, value: float) -> None:
+        """Set the x-coordinate of the control point."""
         self._x.value = value
 
     @property
@@ -137,6 +139,7 @@ class LineSegment(CategoryItem):
 
     @y.setter
     def y(self, value: float) -> None:
+        """Set the intensity of the control point."""
         self._y.value = value
 
 

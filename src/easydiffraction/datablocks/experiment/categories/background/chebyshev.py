@@ -98,10 +98,8 @@ class PolynomialTerm(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
+        """Set the polynomial term identifier."""
         self._id.value = value
-
-    @property
-    def order(self) -> NumericDescriptor:
         """
         Order used in a Chebyshev polynomial background term.
 
@@ -113,6 +111,7 @@ class PolynomialTerm(CategoryItem):
 
     @order.setter
     def order(self, value: float) -> None:
+        """Set the polynomial order."""
         self._order.value = value
 
     @property
@@ -127,6 +126,7 @@ class PolynomialTerm(CategoryItem):
 
     @coef.setter
     def coef(self, value: float) -> None:
+        """Set the polynomial coefficient."""
         self._coef.value = value
 
 

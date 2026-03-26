@@ -35,6 +35,13 @@ class TableEngineEnum(str, Enum):
         return cls.RICH
 
     def description(self) -> str:
+        """Return a human-readable description of this table engine.
+
+        Returns
+        -------
+        str
+            Description string for the current enum member.
+        """
         if self is TableEngineEnum.RICH:
             return 'Console rendering with Rich'
         elif self is TableEngineEnum.PANDAS:

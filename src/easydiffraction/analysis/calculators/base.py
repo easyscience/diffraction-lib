@@ -17,11 +17,13 @@ class CalculatorBase(ABC):
     @property
     @abstractmethod
     def name(self) -> str:
+        """Short identifier of the calculation engine."""
         pass
 
     @property
     @abstractmethod
     def engine_imported(self) -> bool:
+        """Whether the underlying calculation library could be imported."""
         pass
 
     @abstractmethod

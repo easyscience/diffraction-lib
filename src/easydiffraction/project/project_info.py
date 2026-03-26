@@ -39,6 +39,13 @@ class ProjectInfo(GuardedBase):
 
     @name.setter
     def name(self, value: str) -> None:
+        """Set the project name.
+
+        Parameters
+        ----------
+        value : str
+            New project name.
+        """
         self._name = value
 
     @property
@@ -53,6 +60,13 @@ class ProjectInfo(GuardedBase):
 
     @title.setter
     def title(self, value: str) -> None:
+        """Set the project title.
+
+        Parameters
+        ----------
+        value : str
+            New project title.
+        """
         self._title = value
 
     @property
@@ -62,6 +76,13 @@ class ProjectInfo(GuardedBase):
 
     @description.setter
     def description(self, value: str) -> None:
+        """Set the project description (whitespace normalized).
+
+        Parameters
+        ----------
+        value : str
+            New description text.
+        """
         self._description = ' '.join(value.split())
 
     @property
@@ -71,6 +92,13 @@ class ProjectInfo(GuardedBase):
 
     @path.setter
     def path(self, value: object) -> None:
+        """Set the project directory path.
+
+        Parameters
+        ----------
+        value : object
+            New path as a :class:`str` or :class:`pathlib.Path`.
+        """
         # Accept str or Path; normalize to Path
         self._path = pathlib.Path(value)
 

@@ -46,9 +46,18 @@ class _TerminalLiveHandle:
         self._live = live
 
     def update(self, renderable: object) -> None:
+        """
+        Refresh the live display with a new renderable.
+
+        Parameters
+        ----------
+        renderable : object
+            A Rich-compatible renderable to display.
+        """
         self._live.update(renderable, refresh=True)
 
     def close(self) -> None:
+        """Stop the live display, suppressing any errors."""
         with suppress(Exception):
             self._live.stop()
 

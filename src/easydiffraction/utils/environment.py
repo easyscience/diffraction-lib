@@ -9,10 +9,27 @@ from importlib.util import find_spec
 
 
 def in_pytest() -> bool:
+    """
+    Determine whether the code is running inside a pytest session.
+
+    Returns
+    -------
+    bool
+        True if pytest is loaded, False otherwise.
+    """
     return 'pytest' in sys.modules
 
 
 def in_warp() -> bool:
+    """
+    Determine whether the terminal is the Warp terminal emulator.
+
+    Returns
+    -------
+    bool
+        True if the TERM_PROGRAM environment variable equals
+        ``'WarpTerminal'``, False otherwise.
+    """
     return os.getenv('TERM_PROGRAM') == 'WarpTerminal'
 
 

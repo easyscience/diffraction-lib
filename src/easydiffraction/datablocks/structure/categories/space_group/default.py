@@ -148,6 +148,13 @@ class SpaceGroup(CategoryItem):
 
     @name_h_m.setter
     def name_h_m(self, value: str) -> None:
+        """Set the Hermann-Mauguin symbol and reset the coordinate code.
+
+        Parameters
+        ----------
+        value : str
+            New Hermann-Mauguin symbol.
+        """
         self._name_h_m.value = value
         self._reset_it_coordinate_system_code()
 
@@ -164,4 +171,11 @@ class SpaceGroup(CategoryItem):
 
     @it_coordinate_system_code.setter
     def it_coordinate_system_code(self, value: str) -> None:
+        """Set the IT coordinate system code.
+
+        Parameters
+        ----------
+        value : str
+            New IT coordinate system code.
+        """
         self._it_coordinate_system_code.value = value

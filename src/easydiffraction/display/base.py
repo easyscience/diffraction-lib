@@ -43,10 +43,25 @@ class RendererBase(SingletonBase, ABC):
 
     @property
     def engine(self) -> str:
+        """Return the name of the currently active rendering engine.
+
+        Returns
+        -------
+        str
+            Identifier of the active engine.
+        """
         return self._engine
 
     @engine.setter
     def engine(self, new_engine: str) -> None:
+        """Switch to a different rendering engine.
+
+        Parameters
+        ----------
+        new_engine : str
+            Identifier of the engine to activate.  Must be a key
+            returned by ``_factory()._registry()``.
+        """
         if new_engine == self._engine:
             log.info(f"Engine is already set to '{new_engine}'. No change made.")
             return

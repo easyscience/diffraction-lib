@@ -82,6 +82,13 @@ class Project(GuardedBase):
 
     @property
     def full_name(self) -> str:
+        """Return the full project name (alias for :attr:`name`).
+
+        Returns
+        -------
+        str
+            The project name.
+        """
         return self.name
 
     @property
@@ -232,6 +239,19 @@ class Project(GuardedBase):
         x_max: float | None = None,
         x: object | None = None,
     ) -> None:
+        """Plot measured diffraction data for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
 
@@ -251,6 +271,19 @@ class Project(GuardedBase):
         x_max: float | None = None,
         x: object | None = None,
     ) -> None:
+        """Plot calculated diffraction pattern for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
 
@@ -271,6 +304,21 @@ class Project(GuardedBase):
         show_residual: bool = False,
         x: object | None = None,
     ) -> None:
+        """Plot measured vs calculated data for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        show_residual : bool, default=False
+            When ``True``, include the residual (difference) curve.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
 

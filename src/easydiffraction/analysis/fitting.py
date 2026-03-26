@@ -64,6 +64,19 @@ class Fitter:
             param._fit_start_value = param.value
 
         def objective_function(engine_params: Dict[str, Any]) -> np.ndarray:
+            """
+            Evaluate the residual for the current minimizer parameters.
+
+            Parameters
+            ----------
+            engine_params : Dict[str, Any]
+                Parameter values provided by the minimizer engine.
+
+            Returns
+            -------
+            np.ndarray
+                Residual array passed back to the minimizer.
+            """
             return self._residual_function(
                 engine_params=engine_params,
                 parameters=params,

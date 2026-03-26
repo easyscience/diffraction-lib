@@ -276,30 +276,34 @@ class TotalDataBase(CategoryCollection):
 
     @property
     def calc_status(self) -> np.ndarray:
+        """Refinement-status flags for each data point as an array."""
         return np.fromiter(
             (p.calc_status.value for p in self._items),
-            dtype=object,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=object,
         )
 
     @property
     def intensity_meas(self) -> np.ndarray:
+        """Measured G(r) values for active data points."""
         return np.fromiter(
             (p.g_r_meas.value for p in self._calc_items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def intensity_meas_su(self) -> np.ndarray:
+        """Standard uncertainties of the measured G(r) values."""
         return np.fromiter(
             (p.g_r_meas_su.value for p in self._calc_items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def intensity_calc(self) -> np.ndarray:
+        """Calculated G(r) values for active data points."""
         return np.fromiter(
             (p.g_r_calc.value for p in self._calc_items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property

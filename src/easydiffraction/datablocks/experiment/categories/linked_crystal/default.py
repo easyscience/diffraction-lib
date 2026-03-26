@@ -75,6 +75,7 @@ class LinkedCrystal(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
+        """Set the linked-crystal identifier."""
         self._id.value = value
 
     @property
@@ -89,4 +90,5 @@ class LinkedCrystal(CategoryItem):
 
     @scale.setter
     def scale(self, value: float) -> None:
+        """Set the linked-crystal scale factor."""
         self._scale.value = value

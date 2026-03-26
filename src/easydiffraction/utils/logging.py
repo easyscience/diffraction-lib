@@ -62,6 +62,19 @@ class IconifiedRichHandler(RichHandler):
         self.mode = mode
 
     def get_level_text(self, record: logging.LogRecord) -> Text:
+        """
+        Return an icon or level name for the log record.
+
+        Parameters
+        ----------
+        record : logging.LogRecord
+            The log record being rendered.
+
+        Returns
+        -------
+        Text
+            A Rich Text object with the level indicator.
+        """
         if self.mode == 'compact':
             icon = self._icons.get(record.levelno, record.levelname)
             if in_warp() and not in_jupyter() and icon in ['⚠️', '⚙️', 'ℹ️']:
@@ -72,9 +85,21 @@ class IconifiedRichHandler(RichHandler):
             return super().get_level_text(record)
 
     def render_message(self, record: logging.LogRecord, message: str) -> Text:
-        # In compact mode, let the icon come from get_level_text and
-        # keep the message body unadorned. In verbose mode, defer to
-        # RichHandler.
+        """
+        Render the log message body as a Rich Text object.
+
+        Parameters
+        ----------
+        record : logging.LogRecord
+            The log record being rendered.
+        message : str
+            Pre-formatted log message string.
+
+        Returns
+        -------
+        Text
+            A Rich Text object with the rendered message.
+        """
         if self.mode == 'compact':
             try:
                 return Text.from_markup(message)
@@ -237,6 +262,7 @@ class ExceptionHookManager:
             exc: BaseException,
             tb: 'TracebackType | None',
         ) -> None:
+            """Log the exception with full traceback via Rich."""
             original_args = getattr(exc, 'args', tuple())
             message = str(exc)
             with suppress(Exception):
@@ -269,6 +295,7 @@ class ExceptionHookManager:
             exc: BaseException,
             _tb: 'TracebackType | None',
         ) -> None:
+            """Log the exception message and exit."""
             logger.error(str(exc))
             raise SystemExit(1)
 
@@ -301,6 +328,7 @@ class ExceptionHookManager:
         """
 
         def suppress_jupyter_traceback(*args: object, **kwargs: object) -> None:
+            """Log only the exception message, suppressing the traceback."""
             try:
                 _evalue = (
                     args[2] if len(args) > 2 else kwargs.get('_evalue') or kwargs.get('evalue')
@@ -358,6 +386,7 @@ class Logger:
 
         @classmethod
         def default(cls) -> Logger.Mode:
+            """Return the default output mode (compact)."""
             return cls.COMPACT
 
     class Level(IntEnum):
@@ -371,6 +400,7 @@ class Logger:
 
         @classmethod
         def default(cls) -> Logger.Level:
+            """Return the default log level (WARNING)."""
             return cls.WARNING
 
     class Reaction(Enum):
@@ -381,6 +411,7 @@ class Logger:
 
         @classmethod
         def default(cls) -> Logger.Reaction:
+            """Return the default error reaction (RAISE)."""
             return cls.RAISE
 
     # --- Internal state ---
@@ -457,14 +488,38 @@ class Logger:
     # ===== Helpers =====
     @classmethod
     def set_mode(cls, mode: Mode) -> None:
+        """
+        Set the output mode and reconfigure the logger.
+
+        Parameters
+        ----------
+        mode : Mode
+            The desired output mode (VERBOSE or COMPACT).
+        """
         cls.configure(mode=mode, level=cls.Level(cls._logger.level))
 
     @classmethod
     def set_level(cls, level: Level) -> None:
+        """
+        Set the minimum log level and reconfigure the logger.
+
+        Parameters
+        ----------
+        level : Level
+            The desired minimum log level.
+        """
         cls.configure(mode=cls._mode, level=level)
 
     @classmethod
     def mode(cls) -> Mode:
+        """
+        Return the currently active output mode.
+
+        Returns
+        -------
+        Mode
+            The current Logger.Mode value.
+        """
         return cls._mode
 
     @classmethod
@@ -509,22 +564,68 @@ class Logger:
 
     @classmethod
     def debug(cls, *messages: str) -> None:
+        """
+        Log one or more messages at DEBUG level.
+
+        Parameters
+        ----------
+        *messages : str
+            Message parts joined with a space before logging.
+        """
         cls.handle(*messages, level=cls.Level.DEBUG, exc_type=None)
 
     @classmethod
     def info(cls, *messages: str) -> None:
+        """
+        Log one or more messages at INFO level.
+
+        Parameters
+        ----------
+        *messages : str
+            Message parts joined with a space before logging.
+        """
         cls.handle(*messages, level=cls.Level.INFO, exc_type=None)
 
     @classmethod
     def warning(cls, *messages: str, exc_type: type[BaseException] | None = None) -> None:
+        """
+        Log one or more messages at WARNING level.
+
+        Parameters
+        ----------
+        *messages : str
+            Message parts joined with a space before logging.
+        exc_type : type[BaseException] | None, default=None
+            If provided, raise this exception type instead of logging.
+        """
         cls.handle(*messages, level=cls.Level.WARNING, exc_type=exc_type)
 
     @classmethod
     def error(cls, *messages: str, exc_type: type[BaseException] = AttributeError) -> None:
+        """
+        Log one or more messages at ERROR level.
+
+        Parameters
+        ----------
+        *messages : str
+            Message parts joined with a space before logging.
+        exc_type : type[BaseException], default=AttributeError
+            Exception type to raise in VERBOSE/COMPACT mode.
+        """
         cls.handle(*messages, level=cls.Level.ERROR, exc_type=exc_type)
 
     @classmethod
     def critical(cls, *messages: str, exc_type: type[BaseException] = RuntimeError) -> None:
+        """
+        Log one or more messages at CRITICAL level.
+
+        Parameters
+        ----------
+        *messages : str
+            Message parts joined with a space before logging.
+        exc_type : type[BaseException], default=RuntimeError
+            Exception type to raise in VERBOSE/COMPACT mode.
+        """
         cls.handle(*messages, level=cls.Level.CRITICAL, exc_type=exc_type)
 
 
@@ -570,6 +671,15 @@ class ConsolePrinter:
 
     @classmethod
     def paragraph(cls, title: str) -> None:
+        """
+        Print a bold blue paragraph heading.
+
+        Parameters
+        ----------
+        title : str
+            Heading text; substrings enclosed in single quotes are
+            rendered without the bold-blue style.
+        """
         parts = re.split(r"('.*?')", title)
         text = Text()
         for part in parts:

@@ -195,6 +195,7 @@ class BraggPdExperiment(PdExperimentBase):
 
     @property
     def background(self) -> object:
+        """Active background model for this experiment."""
         return self._background
 
     def show_supported_background_types(self) -> None:

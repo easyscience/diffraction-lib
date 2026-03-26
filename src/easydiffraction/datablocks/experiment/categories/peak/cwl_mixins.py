@@ -90,6 +90,7 @@ class CwlBroadeningMixin:
 
     @broad_gauss_u.setter
     def broad_gauss_u(self, value: float) -> None:
+        """Set the Gaussian broadening coefficient U."""
         self._broad_gauss_u.value = value
 
     @property
@@ -105,6 +106,7 @@ class CwlBroadeningMixin:
 
     @broad_gauss_v.setter
     def broad_gauss_v(self, value: float) -> None:
+        """Set the Gaussian broadening coefficient V."""
         self._broad_gauss_v.value = value
 
     @property
@@ -120,6 +122,7 @@ class CwlBroadeningMixin:
 
     @broad_gauss_w.setter
     def broad_gauss_w(self, value: float) -> None:
+        """Set the Gaussian broadening coefficient W."""
         self._broad_gauss_w.value = value
 
     @property
@@ -135,6 +138,7 @@ class CwlBroadeningMixin:
 
     @broad_lorentz_x.setter
     def broad_lorentz_x(self, value: float) -> None:
+        """Set the Lorentzian broadening coefficient X."""
         self._broad_lorentz_x.value = value
 
     @property
@@ -150,6 +154,7 @@ class CwlBroadeningMixin:
 
     @broad_lorentz_y.setter
     def broad_lorentz_y(self, value: float) -> None:
+        """Set the Lorentzian broadening coefficient Y."""
         self._broad_lorentz_y.value = value
 
 
@@ -216,6 +221,7 @@ class EmpiricalAsymmetryMixin:
 
     @asym_empir_1.setter
     def asym_empir_1(self, value: float) -> None:
+        """Set empirical asymmetry coefficient p1."""
         self._asym_empir_1.value = value
 
     @property
@@ -230,6 +236,7 @@ class EmpiricalAsymmetryMixin:
 
     @asym_empir_2.setter
     def asym_empir_2(self, value: float) -> None:
+        """Set empirical asymmetry coefficient p2."""
         self._asym_empir_2.value = value
 
     @property
@@ -244,6 +251,7 @@ class EmpiricalAsymmetryMixin:
 
     @asym_empir_3.setter
     def asym_empir_3(self, value: float) -> None:
+        """Set empirical asymmetry coefficient p3."""
         self._asym_empir_3.value = value
 
     @property
@@ -258,6 +266,7 @@ class EmpiricalAsymmetryMixin:
 
     @asym_empir_4.setter
     def asym_empir_4(self, value: float) -> None:
+        """Set empirical asymmetry coefficient p4."""
         self._asym_empir_4.value = value
 
 
@@ -304,6 +313,7 @@ class FcjAsymmetryMixin:
 
     @asym_fcj_1.setter
     def asym_fcj_1(self, value: float) -> None:
+        """Set FCJ asymmetry parameter 1."""
         self._asym_fcj_1.value = value
 
     @property
@@ -318,4 +328,5 @@ class FcjAsymmetryMixin:
 
     @asym_fcj_2.setter
     def asym_fcj_2(self, value: float) -> None:
+        """Set FCJ asymmetry parameter 2."""
         self._asym_fcj_2.value = value

@@ -36,6 +36,9 @@ class CategoryItem(GuardedBase):
 
     @property
     def unique_name(self) -> str:
+        """
+        Fully qualified name combining datablock, category, and entry.
+        """
         parts = [
             self._identity.datablock_entry_name,
             self._identity.category_code,
@@ -47,6 +50,7 @@ class CategoryItem(GuardedBase):
 
     @property
     def parameters(self) -> list:
+        """All GenericDescriptorBase instances on this item."""
         return [v for v in vars(self).values() if isinstance(v, GenericDescriptorBase)]
 
     @property
@@ -198,6 +202,7 @@ class CategoryCollection(CollectionBase):
 
     @property
     def unique_name(self) -> str | None:
+        """Return None; collections do not carry their own unique name."""
         return None
 
     @property

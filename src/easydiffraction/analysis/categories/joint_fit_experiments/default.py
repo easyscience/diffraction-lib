@@ -70,6 +70,7 @@ class JointFitExperiment(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
+        """Set the experiment identifier."""
         self._id.value = value
 
     @property
@@ -85,6 +86,7 @@ class JointFitExperiment(CategoryItem):
 
     @weight.setter
     def weight(self, value: float) -> None:
+        """Set the experiment weight factor."""
         self._weight.value = value
 
 

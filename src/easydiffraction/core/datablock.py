@@ -63,10 +63,15 @@ class DatablockItem(GuardedBase):
 
     @property
     def unique_name(self) -> str | None:
+        """Unique name of this datablock item (from identity)."""
         return self._identity.datablock_entry_name
 
     @property
     def categories(self) -> list:
+        """
+        All category objects in this datablock, sorted by update
+        priority.
+        """
         cats = [
             v for v in vars(self).values() if isinstance(v, (CategoryItem, CategoryCollection))
         ]
@@ -153,6 +158,7 @@ class DatablockCollection(CollectionBase):
 
     @property
     def unique_name(self) -> str | None:
+        """Return None; collections do not carry their own unique name."""
         return None
 
     @property
@@ -163,14 +169,14 @@ class DatablockCollection(CollectionBase):
             params.extend(db.parameters)
         return params
 
-    # was in class AbstractDatablock(ABC):
     @property
     def fittable_parameters(self) -> list:
+        """All non-constrained Parameter instances in this collection."""
         return [p for p in self.parameters if isinstance(p, Parameter) and not p.constrained]
 
-    # was in class AbstractDatablock(ABC):
     @property
     def free_parameters(self) -> list:
+        """All fittable parameters that are currently marked as free."""
         return [p for p in self.fittable_parameters if p.free]
 
     @property

@@ -47,6 +47,7 @@ class CwlInstrumentBase(InstrumentBase):
 
     @setup_wavelength.setter
     def setup_wavelength(self, value: float) -> None:
+        """Set the incident wavelength."""
         self._setup_wavelength.value = value
 
 
@@ -112,4 +113,5 @@ class CwlPdInstrument(CwlInstrumentBase):
 
     @calib_twotheta_offset.setter
     def calib_twotheta_offset(self, value: float) -> None:
+        """Set the 2θ instrument misalignment offset."""
         self._calib_twotheta_offset.value = value

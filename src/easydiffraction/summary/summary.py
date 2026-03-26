@@ -32,6 +32,7 @@ class Summary:
     # ------------------------------------------
 
     def show_report(self) -> None:
+        """Print a full project report covering all sections."""
         self.show_project_info()
         self.show_crystallographic_data()
         self.show_experimental_data()

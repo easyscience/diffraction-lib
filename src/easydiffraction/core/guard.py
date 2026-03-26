@@ -121,6 +121,7 @@ class GuardedBase(ABC):
 
     @property
     def unique_name(self) -> str:
+        """Fallback unique name: the class name."""
         return type(self).__name__
 
     # @property

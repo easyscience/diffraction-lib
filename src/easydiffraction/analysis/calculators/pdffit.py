@@ -39,6 +39,9 @@ except ImportError:
     # print("⚠️ 'pdffit' module not found. This calculation engine will
     # not be available.")
     PdfFit = None
+    redirect_stdout = None
+    pdffit_cif_parser = None
+    _pdffit_devnull = None
 
 
 @CalculatorFactory.register
@@ -53,9 +56,25 @@ class PdffitCalculator(CalculatorBase):
 
     @property
     def name(self) -> str:
+        """Short identifier of this calculator engine."""
         return 'pdffit'
 
     def calculate_structure_factors(self, structures: object, experiments: object) -> list:
+        """
+        Placeholder — PDF does not compute HKL structure factors.
+
+        Parameters
+        ----------
+        structures : object
+            Unused; kept for interface consistency.
+        experiments : object
+            Unused; kept for interface consistency.
+
+        Returns
+        -------
+        list
+            An empty list.
+        """
         # PDF doesn't compute HKL but we keep interface consistent
         # Intentionally unused, required by public API/signature
         del structures, experiments
@@ -68,6 +87,20 @@ class PdffitCalculator(CalculatorBase):
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
     ) -> None:
+        """
+        Calculate the PDF pattern using PDFfit2.
+
+        Parameters
+        ----------
+        structure : Structure
+            The structure object supplying atom sites and cell
+            parameters.
+        experiment : ExperimentBase
+            The experiment object supplying instrument and peak
+            parameters.
+        called_by_minimizer : bool, default=False
+            Unused; kept for interface consistency.
+        """
         # Intentionally unused, required by public API/signature
         del called_by_minimizer
 

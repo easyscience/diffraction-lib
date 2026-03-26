@@ -516,6 +516,22 @@ def render_table(
     columns_headers: object = None,
     display_handle: object = None,
 ) -> None:
+    """
+    Render tabular data to the active display backend.
+
+    Parameters
+    ----------
+    columns_data : object
+        A list of rows, where each row is a list of cell values.
+    columns_alignment : object
+        A list of alignment strings (e.g. ``'left'``, ``'right'``,
+        ``'center'``) matching the number of columns.
+    columns_headers : object, default=None
+        Optional list of column header strings.
+    display_handle : object, default=None
+        Optional display handle for in-place updates (e.g. in Jupyter
+        or a terminal Live context).
+    """
     headers = [
         (col, align) for col, align in zip(columns_headers, columns_alignment, strict=False)
     ]

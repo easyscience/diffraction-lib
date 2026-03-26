@@ -83,6 +83,7 @@ class ExcludedRegion(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
+        """Set the excluded-region identifier."""
         self._id.value = value
 
     @property
@@ -98,6 +99,7 @@ class ExcludedRegion(CategoryItem):
 
     @start.setter
     def start(self, value: float) -> None:
+        """Set the start of the excluded region."""
         self._start.value = value
 
     @property
@@ -113,6 +115,7 @@ class ExcludedRegion(CategoryItem):
 
     @end.setter
     def end(self, value: float) -> None:
+        """Set the end of the excluded region."""
         self._end.value = value
 
 

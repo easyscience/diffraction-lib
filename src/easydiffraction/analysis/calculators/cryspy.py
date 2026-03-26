@@ -50,6 +50,7 @@ class CryspyCalculator(CalculatorBase):
 
     @property
     def name(self) -> str:
+        """Short identifier of this calculator engine."""
         return 'cryspy'
 
     def __init__(self) -> None:

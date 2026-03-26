@@ -41,6 +41,7 @@ class CrysfmlCalculator(CalculatorBase):
 
     @property
     def name(self) -> str:
+        """Short identifier of this calculator engine."""
         return 'crysfml'
 
     def calculate_structure_factors(

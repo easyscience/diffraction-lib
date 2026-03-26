@@ -110,6 +110,7 @@ class TofPdInstrument(InstrumentBase):
 
     @setup_twotheta_bank.setter
     def setup_twotheta_bank(self, value: float) -> None:
+        """Set the detector bank 2θ position."""
         self._setup_twotheta_bank.value = value
 
     @property
@@ -124,6 +125,7 @@ class TofPdInstrument(InstrumentBase):
 
     @calib_d_to_tof_offset.setter
     def calib_d_to_tof_offset(self, value: float) -> None:
+        """Set the TOF calibration offset."""
         self._calib_d_to_tof_offset.value = value
 
     @property
@@ -138,6 +140,7 @@ class TofPdInstrument(InstrumentBase):
 
     @calib_d_to_tof_linear.setter
     def calib_d_to_tof_linear(self, value: float) -> None:
+        """Set the TOF linear calibration coefficient."""
         self._calib_d_to_tof_linear.value = value
 
     @property
@@ -152,6 +155,7 @@ class TofPdInstrument(InstrumentBase):
 
     @calib_d_to_tof_quad.setter
     def calib_d_to_tof_quad(self, value: float) -> None:
+        """Set the TOF quadratic calibration coefficient."""
         self._calib_d_to_tof_quad.value = value
 
     @property
@@ -166,4 +170,5 @@ class TofPdInstrument(InstrumentBase):
 
     @calib_d_to_tof_recip.setter
     def calib_d_to_tof_recip(self, value: float) -> None:
+        """Set the TOF reciprocal velocity calibration coefficient."""
         self._calib_d_to_tof_recip.value = value

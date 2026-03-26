@@ -370,63 +370,72 @@ class ReflnData(CategoryCollection):
 
     @property
     def d_spacing(self) -> np.ndarray:
+        """D-spacing values for all reflection data points."""
         return np.fromiter(
             (p.d_spacing.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def sin_theta_over_lambda(self) -> np.ndarray:
+        """sinθ/λ values for all reflection data points."""
         return np.fromiter(
             (p.sin_theta_over_lambda.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def index_h(self) -> np.ndarray:
+        """Miller h indices for all reflection data points."""
         return np.fromiter(
             (p.index_h.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def index_k(self) -> np.ndarray:
+        """Miller k indices for all reflection data points."""
         return np.fromiter(
             (p.index_k.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def index_l(self) -> np.ndarray:
+        """Miller l indices for all reflection data points."""
         return np.fromiter(
             (p.index_l.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def intensity_meas(self) -> np.ndarray:
+        """Measured structure-factor intensities for all reflections."""
         return np.fromiter(
             (p.intensity_meas.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def intensity_meas_su(self) -> np.ndarray:
+        """Standard uncertainties of the measured intensities."""
         return np.fromiter(
             (p.intensity_meas_su.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def intensity_calc(self) -> np.ndarray:
+        """Calculated structure-factor intensities for all reflections."""
         return np.fromiter(
             (p.intensity_calc.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def wavelength(self) -> np.ndarray:
+        """Wavelengths associated with each reflection."""
         return np.fromiter(
             (p.wavelength.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )

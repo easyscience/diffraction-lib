@@ -121,6 +121,7 @@ class TofBroadeningMixin:
 
     @broad_gauss_sigma_0.setter
     def broad_gauss_sigma_0(self, value: float) -> None:
+        """Set Gaussian broadening coefficient σ₀."""
         self._broad_gauss_sigma_0.value = value
 
     @property
@@ -135,6 +136,7 @@ class TofBroadeningMixin:
 
     @broad_gauss_sigma_1.setter
     def broad_gauss_sigma_1(self, value: float) -> None:
+        """Set Gaussian broadening coefficient σ₁."""
         self._broad_gauss_sigma_1.value = value
 
     @property
@@ -150,6 +152,7 @@ class TofBroadeningMixin:
 
     @broad_gauss_sigma_2.setter
     def broad_gauss_sigma_2(self, value: float) -> None:
+        """Set Gaussian broadening coefficient σ₂."""
         self._broad_gauss_sigma_2.value = value
 
     @property
@@ -165,6 +168,7 @@ class TofBroadeningMixin:
 
     @broad_lorentz_gamma_0.setter
     def broad_lorentz_gamma_0(self, value: float) -> None:
+        """Set Lorentzian broadening coefficient γ₀."""
         self._broad_lorentz_gamma_0.value = value
 
     @property
@@ -180,6 +184,7 @@ class TofBroadeningMixin:
 
     @broad_lorentz_gamma_1.setter
     def broad_lorentz_gamma_1(self, value: float) -> None:
+        """Set Lorentzian broadening coefficient γ₁."""
         self._broad_lorentz_gamma_1.value = value
 
     @property
@@ -195,6 +200,7 @@ class TofBroadeningMixin:
 
     @broad_lorentz_gamma_2.setter
     def broad_lorentz_gamma_2(self, value: float) -> None:
+        """Set Lorentzian broadening coefficient γ₂."""
         self._broad_lorentz_gamma_2.value = value
 
     @property
@@ -210,6 +216,7 @@ class TofBroadeningMixin:
 
     @broad_mix_beta_0.setter
     def broad_mix_beta_0(self, value: float) -> None:
+        """Set mixing parameter β₀."""
         self._broad_mix_beta_0.value = value
 
     @property
@@ -225,6 +232,7 @@ class TofBroadeningMixin:
 
     @broad_mix_beta_1.setter
     def broad_mix_beta_1(self, value: float) -> None:
+        """Set mixing parameter β₁."""
         self._broad_mix_beta_1.value = value
 
 
@@ -267,6 +275,7 @@ class IkedaCarpenterAsymmetryMixin:
 
     @asym_alpha_0.setter
     def asym_alpha_0(self, value: float) -> None:
+        """Set Ikeda-Carpenter asymmetry parameter α₀."""
         self._asym_alpha_0.value = value
 
     @property
@@ -281,4 +290,5 @@ class IkedaCarpenterAsymmetryMixin:
 
     @asym_alpha_1.setter
     def asym_alpha_1(self, value: float) -> None:
+        """Set Ikeda-Carpenter asymmetry parameter α₁."""
         self._asym_alpha_1.value = value

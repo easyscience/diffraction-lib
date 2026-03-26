@@ -15,9 +15,11 @@ class FitModeEnum(str, Enum):
 
     @classmethod
     def default(cls) -> FitModeEnum:
+        """Return the default fit mode (SINGLE)."""
         return cls.SINGLE
 
     def description(self) -> str:
+        """Return a human-readable description of this fit mode."""
         if self is FitModeEnum.SINGLE:
             return 'Independent fitting of each experiment; no shared parameters'
         elif self is FitModeEnum.JOINT:

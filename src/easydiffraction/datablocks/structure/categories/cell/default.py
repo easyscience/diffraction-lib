@@ -163,6 +163,13 @@ class Cell(CategoryItem):
 
     @length_a.setter
     def length_a(self, value: float) -> None:
+        """Set the length of the a axis.
+
+        Parameters
+        ----------
+        value : float
+            New length value in Å.
+        """
         self._length_a.value = value
 
     @property
@@ -177,6 +184,13 @@ class Cell(CategoryItem):
 
     @length_b.setter
     def length_b(self, value: float) -> None:
+        """Set the length of the b axis.
+
+        Parameters
+        ----------
+        value : float
+            New length value in Å.
+        """
         self._length_b.value = value
 
     @property
@@ -191,6 +205,13 @@ class Cell(CategoryItem):
 
     @length_c.setter
     def length_c(self, value: float) -> None:
+        """Set the length of the c axis.
+
+        Parameters
+        ----------
+        value : float
+            New length value in Å.
+        """
         self._length_c.value = value
 
     @property
@@ -205,6 +226,13 @@ class Cell(CategoryItem):
 
     @angle_alpha.setter
     def angle_alpha(self, value: float) -> None:
+        """Set the angle alpha (between b and c axes).
+
+        Parameters
+        ----------
+        value : float
+            New angle value in degrees.
+        """
         self._angle_alpha.value = value
 
     @property
@@ -219,6 +247,13 @@ class Cell(CategoryItem):
 
     @angle_beta.setter
     def angle_beta(self, value: float) -> None:
+        """Set the angle beta (between a and c axes).
+
+        Parameters
+        ----------
+        value : float
+            New angle value in degrees.
+        """
         self._angle_beta.value = value
 
     @property
@@ -233,4 +268,11 @@ class Cell(CategoryItem):
 
     @angle_gamma.setter
     def angle_gamma(self, value: float) -> None:
+        """Set the angle gamma (between a and b axes).
+
+        Parameters
+        ----------
+        value : float
+            New angle value in degrees.
+        """
         self._angle_gamma.value = value

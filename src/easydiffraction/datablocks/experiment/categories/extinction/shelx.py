@@ -79,6 +79,7 @@ class ShelxExtinction(CategoryItem):
 
     @mosaicity.setter
     def mosaicity(self, value: float) -> None:
+        """Set the mosaicity value."""
         self._mosaicity.value = value
 
     @property
@@ -93,4 +94,5 @@ class ShelxExtinction(CategoryItem):
 
     @radius.setter
     def radius(self, value: float) -> None:
+        """Set the crystal radius."""
         self._radius.value = value
