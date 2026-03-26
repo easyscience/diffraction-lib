@@ -65,6 +65,7 @@ from __future__ import annotations
 import argparse
 import ast
 import sys
+import textwrap
 from dataclasses import dataclass
 from dataclasses import field
 from pathlib import Path
@@ -78,6 +79,9 @@ _SRC_ROOT = (
     / 'src'
     / 'easydiffraction'
 )
+
+# Must match [tool.ruff.lint.pycodestyle] max-doc-length.
+_MAX_DOC_LENGTH = 72
 
 _DESCRIPTOR_TYPES = frozenset(
     {'Parameter', 'NumericDescriptor', 'StringDescriptor'}
@@ -162,22 +166,39 @@ def _getter_docstring(
     """Build the expected getter docstring."""
     d = _strip_dot(desc)
     summary = f'{d} ({units}).' if units else f'{d}.'
-    body = (
-        f'Reading this property returns the underlying\n'
-        f'{indent}``{type_name}` object.\n'
-        f'{indent}Assigning to it updates the parameter value.'
-        if has_setter
-        else (
-            f'Reading this property returns the underlying\n'
-            f'{indent}``{type_name}` object.'
+    summary_lines = textwrap.wrap(
+        summary,
+        width=_MAX_DOC_LENGTH,
+        initial_indent=f'{indent}"""',
+        subsequent_indent=indent,
+    )
+
+    if has_setter:
+        body_text = (
+            'Reading this property returns the '
+            f'underlying ``{type_name}`` object. '
+            'Assigning to it updates the '
+            'parameter value.'
         )
+    else:
+        body_text = (
+            'Reading this property returns the '
+            f'underlying ``{type_name}`` object.'
+        )
+    body_lines = textwrap.wrap(
+        body_text,
+        width=_MAX_DOC_LENGTH,
+        initial_indent=indent,
+        subsequent_indent=indent,
     )
-    return (
-        f'{indent}"""{summary}\n'
-        f'\n'
-        f'{indent}{body}\n'
-        f'{indent}"""\n'
+
+    parts = (
+        summary_lines
+        + ['']
+        + body_lines
+        + [f'{indent}"""']
     )
+    return '\n'.join(parts) + '\n'
 
 
 def _normalize(text: str) -> str:
@@ -463,12 +484,25 @@ def _analyze_property(
         )
     else:
         actual_src = ''.join(lines[doc_s:doc_e])
-        if _normalize(actual_src) != _normalize(
+        content_ok = _normalize(actual_src) == _normalize(
             expected_doc
-        ):
+        )
+        lines_ok = all(
+            len(line.rstrip('\n')) <= _MAX_DOC_LENGTH
+            for line in lines[doc_s:doc_e]
+        )
+        if not content_ok:
             result.issues.append(
                 f'{loc}: getter docstring '
                 'does not match template'
+            )
+            result.edits.append(
+                Edit(doc_s, doc_e, expected_doc)
+            )
+        elif not lines_ok:
+            result.issues.append(
+                f'{loc}: getter docstring '
+                'has lines exceeding max-doc-length'
             )
             result.edits.append(
                 Edit(doc_s, doc_e, expected_doc)
