@@ -18,6 +18,8 @@ from easydiffraction.utils.logging import log
 
 
 class TableEngineEnum(str, Enum):
+    """Available table rendering backends."""
+
     RICH = 'rich'
     PANDAS = 'pandas'
 

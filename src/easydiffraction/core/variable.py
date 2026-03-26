@@ -208,6 +208,8 @@ class GenericDescriptorBase(GuardedBase):
 
 
 class GenericStringDescriptor(GenericDescriptorBase):
+    """Base descriptor that constrains values to strings."""
+
     _value_type = DataTypes.STRING
 
     def __init__(
@@ -221,6 +223,8 @@ class GenericStringDescriptor(GenericDescriptorBase):
 
 
 class GenericNumericDescriptor(GenericDescriptorBase):
+    """Base descriptor that constrains values to numbers."""
+
     _value_type = DataTypes.NUMERIC
 
     def __init__(
@@ -379,6 +383,8 @@ class GenericParameter(GenericNumericDescriptor):
 
 
 class StringDescriptor(GenericStringDescriptor):
+    """String descriptor bound to a CIF handler."""
+
     def __init__(
         self,
         *,
@@ -404,6 +410,8 @@ class StringDescriptor(GenericStringDescriptor):
 
 
 class NumericDescriptor(GenericNumericDescriptor):
+    """Numeric descriptor bound to a CIF handler."""
+
     def __init__(
         self,
         *,
@@ -429,6 +437,8 @@ class NumericDescriptor(GenericNumericDescriptor):
 
 
 class Parameter(GenericParameter):
+    """Fittable parameter bound to a CIF handler."""
+
     def __init__(
         self,
         *,

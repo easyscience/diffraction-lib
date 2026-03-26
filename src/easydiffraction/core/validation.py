@@ -24,6 +24,8 @@ from easydiffraction.core.diagnostic import Diagnostics
 
 # TODO: MkDocs doesn't unpack types
 class DataTypeHints:
+    """Type hint aliases for numeric, string, and boolean types."""
+
     Numeric = int | float | np.integer | np.floating
     String = str
     Bool = bool
@@ -33,6 +35,8 @@ class DataTypeHints:
 
 
 class DataTypes(Enum):
+    """Enumeration of supported data types for descriptors."""
+
     NUMERIC = (int, float, np.integer, np.floating)
     STRING = (str,)
     BOOL = (bool,)

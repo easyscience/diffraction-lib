@@ -296,6 +296,8 @@ class PdTofDataPoint(
 
 
 class PdDataBase(CategoryCollection):
+    """Base class for powder diffraction data collections."""
+
     # TODO: ???
 
     # Redefine update priority to ensure data updated after other
@@ -470,6 +472,8 @@ class PdDataBase(CategoryCollection):
 
 @DataFactory.register
 class PdCwlData(PdDataBase):
+    """Bragg powder CWL data collection."""
+
     # TODO: ???
     # _description: str = 'Powder diffraction data points for
     # constant-wavelength experiments.'
@@ -546,6 +550,8 @@ class PdCwlData(PdDataBase):
 
 @DataFactory.register
 class PdTofData(PdDataBase):
+    """Bragg powder TOF data collection."""
+
     type_info = TypeInfo(tag='bragg-pd-tof', description='Bragg powder TOF data')
     compatibility = Compatibility(
         sample_form=frozenset({SampleFormEnum.POWDER}),

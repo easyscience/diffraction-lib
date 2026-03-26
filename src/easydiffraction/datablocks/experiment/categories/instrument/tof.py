@@ -18,6 +18,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @InstrumentFactory.register
 class TofScInstrument(InstrumentBase):
+    """TOF single-crystal diffractometer."""
+
     type_info = TypeInfo(
         tag='tof-sc',
         description='TOF single-crystal diffractometer',
@@ -37,6 +39,8 @@ class TofScInstrument(InstrumentBase):
 
 @InstrumentFactory.register
 class TofPdInstrument(InstrumentBase):
+    """TOF powder diffractometer."""
+
     type_info = TypeInfo(
         tag='tof-pd',
         description='TOF powder diffractometer',

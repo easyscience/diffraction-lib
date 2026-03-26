@@ -282,7 +282,7 @@ ignore = [
   'D200', # https://docs.astral.sh/ruff/rules/unnecessary-multiline-docstring/
   # Temporary:
   'D100',
-  'D101',
+  #'D101',
   'D104',
   'D105',
   'DTZ005',
@@ -386,4 +386,4 @@ exclude = 'src/easydiffraction/utils/_vendored/jupyter_dark_detect' # ED only
 docstring_style = 'numpy'
 line_length = 72
 fix_rst_backticks = true
-verbose = 'default'                                                 # or 'diff' to show changes made to docstrings
+verbose = 'default'

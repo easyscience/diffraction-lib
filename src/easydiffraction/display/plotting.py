@@ -29,6 +29,8 @@ from easydiffraction.utils.logging import log
 
 
 class PlotterEngineEnum(str, Enum):
+    """Available plotting engine backends."""
+
     ASCII = 'asciichartpy'
     PLOTLY = 'plotly'
 

@@ -132,6 +132,8 @@ class PolynomialTerm(CategoryItem):
 
 @BackgroundFactory.register
 class ChebyshevPolynomialBackground(BackgroundBase):
+    """Chebyshev polynomial background model."""
+
     type_info = TypeInfo(
         tag='chebyshev',
         description='Chebyshev polynomial background',

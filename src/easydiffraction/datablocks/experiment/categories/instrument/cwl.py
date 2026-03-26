@@ -17,6 +17,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class CwlInstrumentBase(InstrumentBase):
+    """Base class for constant-wavelength instruments."""
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -52,6 +54,8 @@ class CwlInstrumentBase(InstrumentBase):
 
 @InstrumentFactory.register
 class CwlScInstrument(CwlInstrumentBase):
+    """CW single-crystal diffractometer."""
+
     type_info = TypeInfo(
         tag='cwl-sc',
         description='CW single-crystal diffractometer',
@@ -71,6 +75,8 @@ class CwlScInstrument(CwlInstrumentBase):
 
 @InstrumentFactory.register
 class CwlPdInstrument(CwlInstrumentBase):
+    """CW powder diffractometer."""
+
     type_info = TypeInfo(
         tag='cwl-pd',
         description='CW powder diffractometer',

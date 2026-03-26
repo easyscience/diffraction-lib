@@ -134,6 +134,8 @@ class LineSegment(CategoryItem):
 
 @BackgroundFactory.register
 class LineSegmentBackground(BackgroundBase):
+    """Linear-interpolation background between user-defined points."""
+
     type_info = TypeInfo(
         tag='line-segment',
         description='Linear interpolation between points',
