@@ -33,11 +33,6 @@ class Analysis:
     This class wires calculators and minimizers, exposes a compact
     interface for parameters, constraints and results, and coordinates
     computations across the project's structures and experiments.
-
-    Typical usage:
-    - Display or filter parameters to fit.
-    - Select a calculator/minimizer implementation.
-    - Calculate patterns and run single or joint fits.
     """
 
     def __init__(self, project: object) -> None:

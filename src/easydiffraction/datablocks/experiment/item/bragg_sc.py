@@ -14,6 +14,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
+from easydiffraction.io.ascii import load_numeric_block
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
@@ -50,14 +51,7 @@ class CwlScExperiment(ScExperimentBase):
         The file format is space/column separated with 5 columns: ``h k
         l Iobs sIobs``.
         """
-        try:
-            data = np.loadtxt(data_path)
-        except Exception as e:
-            log.error(
-                f'Failed to read data from {data_path}: {e}',
-                exc_type=IOError,
-            )
-            return
+        data = load_numeric_block(data_path)
 
         if data.shape[1] < 5:
             log.error(
@@ -114,8 +108,8 @@ class TofScExperiment(ScExperimentBase):
         l Iobs sIobs wavelength``.
         """
         try:
-            data = np.loadtxt(data_path)
-        except Exception as e:
+            data = load_numeric_block(data_path)
+        except IOError as e:
             log.error(
                 f'Failed to read data from {data_path}: {e}',
                 exc_type=IOError,
