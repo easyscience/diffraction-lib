@@ -205,11 +205,8 @@ jobs:
             echo "Adding Python $py_ver"
             pixi add "python=$py_ver"
 
-            # diffpy.pdffit2 wheel needs libgsl on macOS. Added as 
-            # platform-specific deps so this is a no-op on Linux/Windows.
             echo "Adding GNU Scientific Library (required by diffpy.pdffit2)"
-            pixi add --platform osx-arm64 gsl
-            pixi add --platform osx-64 gsl
+            pixi add gsl
 
             # diffpy.pdffit2 wheel links @rpath/libc++.1.dylib, which must be
             # present in the conda env lib/ dir on macOS (Python propagates its

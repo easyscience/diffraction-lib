@@ -52,14 +52,9 @@ macos = '14.0'
 
 # Default feature configuration
 
-[target.osx-arm64.dependencies]
-gsl = '*' # GNU Scientific Library; required for pdffit2
-
-[target.osx.dependencies]
-gsl = '*' # GNU Scientific Library; required for pdffit2
-
 [dependencies]
 nodejs = '*' # Required for Prettier (non-Python formatting)
+gsl = '*'    # GNU Scientific Library; required for diffpy.pdffit2
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
 #pip = '*' # Native package installer
