@@ -75,7 +75,7 @@ def _fetch_data_index() -> dict:
     _validate_url(index_url)
 
     # macOS: sha256sum index.json
-    index_hash = 'sha256:55bc9b16be65e78563cb69903ac561f84a06722e25ac46c822a47f6fc5f97827'
+    index_hash = 'sha256:29019e8c98632457a1244a5ad55a39a5b00dcc3d002c89f880d9fa49e3ce581f'
     destination_dirname = 'easydiffraction'
     destination_fname = 'data-index.json'
     cache_dir = pooch.os_cache(destination_dirname)
