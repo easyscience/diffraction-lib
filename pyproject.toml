@@ -322,6 +322,10 @@ ignore = [
 'docs/**' = [
   'INP001', # https://docs.astral.sh/ruff/rules/implicit-namespace-package/
   'T201',   # https://docs.astral.sh/ruff/rules/print/
+  # Temporary:
+  'ANN',
+  'D',
+  'W',
 ]
 
 # Specific options for certain rules
