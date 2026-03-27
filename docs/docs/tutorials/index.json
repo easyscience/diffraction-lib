@@ -86,7 +86,7 @@
   "13": {
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-13/ed-13.ipynb",
     "original_name": "dmsc-summer-school-2025_analysis-powder-diffraction",
-    "title": "DMSC Summer School 2025: Powder Diffraction Analysis",
+    "title": "DMSC Summer School: Powder Diffraction Analysis",
     "description": "Comprehensive workshop tutorial covering Rietveld refinement of Si and La0.5Ba0.5CoO3 using simulated powder diffraction data",
     "level": "workshop"
   },

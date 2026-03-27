@@ -346,8 +346,8 @@ def list_tutorials() -> None:
     """
     Display a table of available tutorial notebooks.
 
-    Shows tutorial ID, filename, title, and description for all
-    tutorials available for the current version of easydiffraction.
+    Shows tutorial ID, filename and title for all tutorials available
+    for the current version of easydiffraction.
     """
     index = _fetch_tutorials_index()
     if not index:
@@ -355,19 +355,17 @@ def list_tutorials() -> None:
         return
 
     version = _get_version_for_url()
-    console.print(f'Tutorials available for easydiffraction v{version}:')
-    console.print('')
+    console.paragraph(f'Tutorials available for easydiffraction v{version}:')
 
-    columns_headers = ['id', 'file', 'title', 'description']
-    columns_alignment = ['right', 'left', 'left', 'left']
+    columns_headers = ['id', 'file', 'title']
+    columns_alignment = ['right', 'left', 'left']
     columns_data = []
 
-    for tutorial_id in sorted(index.keys(), key=lambda x: int(x) if x.isdigit() else x):
+    for tutorial_id in index.keys():
         record = index[tutorial_id]
         filename = f'ed-{tutorial_id}.ipynb'
         title = record.get('title', '')
-        description = record.get('description', '')
-        columns_data.append([tutorial_id, filename, title, description])
+        columns_data.append([tutorial_id, filename, title])
 
     render_table(
         columns_headers=columns_headers,
