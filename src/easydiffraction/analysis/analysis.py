@@ -633,6 +633,9 @@ class Analysis:
                 weights=self._joint_fit_experiments,
                 analysis=self,
             )
+            if self.project.info.path is not None:
+                self.project.save()
+
         elif mode is FitModeEnum.SINGLE:
             # TODO: Find a better way without creating dummy
             #  experiments?
@@ -652,6 +655,10 @@ class Analysis:
                     dummy_experiments,
                     analysis=self,
                 )
+
+                if self.project.info.path is not None:
+                    self.project.save()
+
         else:
             raise NotImplementedError(f'Fit mode {mode.value} not implemented yet.')
 
