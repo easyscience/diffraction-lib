@@ -19,6 +19,7 @@ from easydiffraction.datablocks.experiment.categories.experiment_type import Exp
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+from easydiffraction.io.ascii import extract_data_paths_from_zip
 from easydiffraction.io.cif.parse import document_from_path
 from easydiffraction.io.cif.parse import document_from_string
 from easydiffraction.io.cif.parse import name_from_block
@@ -262,3 +263,58 @@ class ExperimentFactory(FactoryBase):
         )
         expt_obj._load_ascii_data_to_experiment(data_path)
         return expt_obj
+
+    @classmethod
+    @typechecked
+    def from_zip_path(
+        cls,
+        *,
+        name_prefix: str,
+        zip_path: str,
+        sample_form: str | None = None,
+        beam_mode: str | None = None,
+        radiation_probe: str | None = None,
+        scattering_type: str | None = None,
+    ) -> list[ExperimentBase]:
+        """
+        Create experiments from data files inside a ZIP archive.
+
+        Each file in the archive becomes a separate experiment.
+        Experiments are named ``'{name_prefix}_{i}'`` where *i* is a
+        one-based index matching the lexicographic file order.
+
+        Parameters
+        ----------
+        name_prefix : str
+            Common prefix for generated experiment names.
+        zip_path : str
+            Path to the ZIP archive containing data files.
+        sample_form : str | None, default=None
+            Sample form (e.g. ``'powder'``).
+        beam_mode : str | None, default=None
+            Beam mode (e.g. ``'constant wavelength'``).
+        radiation_probe : str | None, default=None
+            Radiation probe (e.g. ``'neutron'``).
+        scattering_type : str | None, default=None
+            Scattering type (e.g. ``'bragg'``).
+
+        Returns
+        -------
+        list[ExperimentBase]
+            One experiment per data file found in the archive.
+        """
+        data_paths = extract_data_paths_from_zip(zip_path)
+
+        experiments: list[ExperimentBase] = []
+        for i, data_path in enumerate(data_paths, start=1):
+            expt = cls.from_data_path(
+                name=f'{name_prefix}_{i}',
+                data_path=data_path,
+                sample_form=sample_form,
+                beam_mode=beam_mode,
+                radiation_probe=radiation_probe,
+                scattering_type=scattering_type,
+            )
+            experiments.append(expt)
+
+        return experiments

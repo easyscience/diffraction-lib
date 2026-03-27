@@ -134,6 +134,50 @@ class Experiments(DatablockCollection):
         )
         self.add(experiment)
 
+    @typechecked
+    def add_from_zip_path(
+        self,
+        *,
+        name_prefix: str,
+        zip_path: str,
+        sample_form: str | None = None,
+        beam_mode: str | None = None,
+        radiation_probe: str | None = None,
+        scattering_type: str | None = None,
+    ) -> None:
+        """
+        Add experiments from data files inside a ZIP archive.
+
+        Each file in the archive becomes a separate experiment named
+        ``'{name_prefix}_{i}'`` where *i* is a one-based index matching
+        the lexicographic file order.
+
+        Parameters
+        ----------
+        name_prefix : str
+            Common prefix for generated experiment names.
+        zip_path : str
+            Path to the ZIP archive containing data files.
+        sample_form : str | None, default=None
+            Sample form (e.g. ``'powder'``).
+        beam_mode : str | None, default=None
+            Beam mode (e.g. ``'constant wavelength'``).
+        radiation_probe : str | None, default=None
+            Radiation probe (e.g. ``'neutron'``).
+        scattering_type : str | None, default=None
+            Scattering type (e.g. ``'bragg'``).
+        """
+        experiments = ExperimentFactory.from_zip_path(
+            name_prefix=name_prefix,
+            zip_path=zip_path,
+            sample_form=sample_form,
+            beam_mode=beam_mode,
+            radiation_probe=radiation_probe,
+            scattering_type=scattering_type,
+        )
+        for experiment in experiments:
+            self.add(experiment)
+
     # TODO: Move to DatablockCollection?
     def show_names(self) -> None:
         """List all experiment names in the collection."""
