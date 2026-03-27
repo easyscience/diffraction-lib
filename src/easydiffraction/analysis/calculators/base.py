@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from abc import ABC
@@ -17,11 +17,13 @@ class CalculatorBase(ABC):
     @property
     @abstractmethod
     def name(self) -> str:
+        """Short identifier of the calculation engine."""
         pass
 
     @property
     @abstractmethod
     def engine_imported(self) -> bool:
+        """True if the underlying calculation library is available."""
         pass
 
     @abstractmethod
@@ -31,9 +33,7 @@ class CalculatorBase(ABC):
         experiment: ExperimentBase,
         called_by_minimizer: bool,
     ) -> None:
-        """Calculate structure factors for a single structure and
-        experiment.
-        """
+        """Calculate structure factors for one experiment."""
         pass
 
     @abstractmethod
@@ -43,16 +43,22 @@ class CalculatorBase(ABC):
         experiment: ExperimentBase,
         called_by_minimizer: bool,
     ) -> np.ndarray:
-        """Calculate the diffraction pattern for a single structure and
-        experiment.
+        """
+        Calculate diffraction pattern for one structure-experiment pair.
 
-        Args:
-            structure: The structure object.
-            experiment: The experiment object.
-            called_by_minimizer: Whether the calculation is called by a
-                minimizer.
+        Parameters
+        ----------
+        structure : Structures
+            The structure object.
+        experiment : ExperimentBase
+            The experiment object.
+        called_by_minimizer : bool
+            Whether the calculation is called by a minimizer. Default is
+            False.
 
-        Returns:
+        Returns
+        -------
+        np.ndarray
             The calculated diffraction pattern as a NumPy array.
         """
         pass

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Any
@@ -16,7 +16,8 @@ T = TypeVar('T', bound='SingletonBase')
 
 
 class SingletonBase:
-    """Base class to implement Singleton pattern.
+    """
+    Base class to implement Singleton pattern.
 
     Ensures only one shared instance of a class is ever created. Useful
     for managing shared state across the library.
@@ -26,7 +27,7 @@ class SingletonBase:
 
     @classmethod
     def get(cls: Type[T]) -> T:
-        """Returns the shared instance, creating it if needed."""
+        """Return the shared instance, creating it if needed."""
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance
@@ -43,11 +44,12 @@ class UidMapHandler(SingletonBase):
         self._uid_map: Dict[str, Any] = {}
 
     def get_uid_map(self) -> Dict[str, Any]:
-        """Returns the current UID-to-Parameter map."""
+        """Return the current UID-to-Parameter map."""
         return self._uid_map
 
-    def add_to_uid_map(self, parameter):
-        """Adds a single Parameter or Descriptor object to the UID map.
+    def add_to_uid_map(self, parameter: object) -> None:
+        """
+        Add a single Parameter or Descriptor object to the UID map.
 
         Only Descriptor or Parameter instances are allowed (not
         Components or others).
@@ -61,8 +63,9 @@ class UidMapHandler(SingletonBase):
             )
         self._uid_map[parameter.uid] = parameter
 
-    def replace_uid(self, old_uid, new_uid):
-        """Replaces an existing UID key in the UID map with a new UID.
+    def replace_uid(self, old_uid: str, new_uid: str) -> None:
+        """
+        Replace an existing UID key in the UID map with a new UID.
 
         Moves the associated parameter from old_uid to new_uid. Raises a
         KeyError if the old_uid doesn't exist.
@@ -82,8 +85,8 @@ class UidMapHandler(SingletonBase):
 # TODO: Implement changing atrr '.constrained' back to False
 #  when removing constraints
 class ConstraintsHandler(SingletonBase):
-    """Manages user-defined parameter constraints using aliases and
-    expressions.
+    """
+    Manage parameter constraints using aliases and expressions.
 
     Uses the asteval interpreter for safe evaluation of mathematical
     expressions. Constraints are defined as: lhs_alias =
@@ -102,29 +105,27 @@ class ConstraintsHandler(SingletonBase):
         # Internally parsed constraints as (lhs_alias, rhs_expr) tuples
         self._parsed_constraints: List[Tuple[str, str]] = []
 
-    def set_aliases(self, aliases):
-        """Sets the alias map (name → parameter wrapper).
+    def set_aliases(self, aliases: object) -> None:
+        """
+        Set the alias map (name → parameter wrapper).
 
         Called when user registers parameter aliases like:
-            alias='biso_La', param=model.atom_sites['La'].b_iso
+        alias='biso_La', param=model.atom_sites['La'].b_iso
         """
         self._alias_to_param = dict(aliases.items())
 
-    def set_constraints(self, constraints):
-        """Sets the constraints and triggers parsing into internal
-        format.
+    def set_constraints(self, constraints: object) -> None:
+        """
+        Set the constraints and triggers parsing into internal format.
 
-        Called when user registers expressions like:
-            lhs_alias='occ_Ba', rhs_expr='1 - occ_La'
+        Called when user registers expressions like: lhs_alias='occ_Ba',
+        rhs_expr='1 - occ_La'
         """
         self._constraints = constraints._items
         self._parse_constraints()
 
     def _parse_constraints(self) -> None:
-        """Converts raw expression input into a normalized internal list
-        of (lhs_alias, rhs_expr) pairs, stripping whitespace and
-        skipping invalid entries.
-        """
+        """Parse raw expressions into (lhs_alias, rhs_expr) pairs."""
         self._parsed_constraints = []
 
         for expr_obj in self._constraints:
@@ -136,12 +137,11 @@ class ConstraintsHandler(SingletonBase):
                 self._parsed_constraints.append(constraint)
 
     def apply(self) -> None:
-        """Evaluates constraints and applies them to dependent
-        parameters.
+        """
+        Evaluate constraints and applies them to dependent parameters.
 
-        For each constraint:
-        - Evaluate RHS using current values of aliases
-        - Locate the dependent parameter by alias → uid → param
+        For each constraint: - Evaluate RHS using current values of
+        aliases - Locate the dependent parameter by alias → uid → param
         - Update its value and mark it as constrained
         """
         if not self._parsed_constraints:

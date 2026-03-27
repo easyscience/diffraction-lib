@@ -1,11 +1,10 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Table rendering engines: console (Rich) and Jupyter (pandas)."""
 
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
 
 import pandas as pd
 
@@ -19,12 +18,15 @@ from easydiffraction.utils.logging import log
 
 
 class TableEngineEnum(str, Enum):
+    """Available table rendering backends."""
+
     RICH = 'rich'
     PANDAS = 'pandas'
 
     @classmethod
     def default(cls) -> 'TableEngineEnum':
-        """Select default engine based on environment.
+        """
+        Select default engine based on environment.
 
         Returns Pandas when running in Jupyter, otherwise Rich.
         """
@@ -35,6 +37,14 @@ class TableEngineEnum(str, Enum):
         return cls.RICH
 
     def description(self) -> str:
+        """
+        Return a human-readable description of this table engine.
+
+        Returns
+        -------
+        str
+            Description string for the current enum member.
+        """
         if self is TableEngineEnum.RICH:
             return 'Console rendering with Rich'
         elif self is TableEngineEnum.PANDAS:
@@ -65,17 +75,23 @@ class TableRenderer(RendererBase):
         console.paragraph('Current tabler configuration')
         TableRenderer.get().render(df)
 
-    def render(self, df, display_handle: Any | None = None) -> Any:
-        """Render a DataFrame as a table using the active backend.
+    def render(self, df: object, display_handle: object | None = None) -> object:
+        """
+        Render a DataFrame as a table using the active backend.
 
-        Args:
-            df: DataFrame with a two-level column index where the
-                second level provides per-column alignment.
-            display_handle: Optional environment-specific handle used
-                to update an existing output area in-place (e.g., an
-                IPython DisplayHandle or a terminal live handle).
+        Parameters
+        ----------
+        df : object
+            DataFrame with a two-level column index where the second
+            level provides per-column alignment.
+        display_handle : object | None, default=None
+            Optional environment-specific handle used to update an
+            existing output area in-place (e.g., an IPython
+            DisplayHandle or a terminal live handle).
 
-        Returns:
+        Returns
+        -------
+        object
             Backend-specific return value (usually ``None``).
         """
         # Work on a copy to avoid mutating the original DataFrame
@@ -98,11 +114,11 @@ class TableRendererFactory(RendererFactoryBase):
 
     @classmethod
     def _registry(cls) -> dict:
-        """Build registry, adapting available engines to the
-        environment.
+        """
+        Build registry, adapting available engines to the environment.
 
-        - In Jupyter: expose both 'rich' and 'pandas'.
-        - In terminal: expose only 'rich' (pandas is notebook-only).
+        - In Jupyter: expose both 'rich' and 'pandas'. - In terminal:
+        expose only 'rich' (pandas is notebook-only).
         """
         base = {
             TableEngineEnum.RICH.value: {

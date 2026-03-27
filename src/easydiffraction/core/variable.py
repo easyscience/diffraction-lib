@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -6,7 +6,6 @@ from __future__ import annotations
 import secrets
 import string
 from typing import TYPE_CHECKING
-from typing import Any
 
 import numpy as np
 
@@ -27,18 +26,14 @@ if TYPE_CHECKING:
 
 
 class GenericDescriptorBase(GuardedBase):
-    """Base class for all parameter-like descriptors.
+    """
+    Base class for all parameter-like descriptors.
 
     A descriptor encapsulates a typed value with validation,
     human-readable name/description and a globally unique identifier
     that is stable across the session. Concrete subclasses specialize
-    the expected data type and can extend the public API with
-    additional behavior (e.g. units).
-
-    Attributes:
-        name: Local parameter name (e.g. 'a', 'b_iso').
-        description: Optional human-readable description.
-        uid: Stable random identifier for external references.
+    the expected data type and can extend the public API with additional
+    behavior (e.g. units).
     """
 
     _BOOL_SPEC_TEMPLATE = AttributeSpec(
@@ -52,13 +47,18 @@ class GenericDescriptorBase(GuardedBase):
         value_spec: AttributeSpec,
         name: str,
         description: str = None,
-    ):
-        """Initialize the descriptor with validation and identity.
+    ) -> None:
+        """
+        Initialize the descriptor with validation and identity.
 
-        Args:
-            value_spec: Validation specification for the value.
-            name: Local name of the descriptor within its category.
-            description: Optional human-readable description.
+        Parameters
+        ----------
+        value_spec : AttributeSpec
+            Validation specification for the value.
+        name : str
+            Local name of the descriptor within its category.
+        description : str, default=None
+            Optional human-readable description.
         """
         super().__init__()
 
@@ -98,6 +98,7 @@ class GenericDescriptorBase(GuardedBase):
         self._value = default() if callable(default) else default
 
     def __str__(self) -> str:
+        """Return the string representation of this descriptor."""
         return f'<{self.unique_name} = {self.value!r}>'
 
     @property
@@ -106,11 +107,8 @@ class GenericDescriptorBase(GuardedBase):
         return self._name
 
     @property
-    def unique_name(self):
-        """Fully qualified name including datablock, category and entry
-        name.
-        """
-        # 7c: Use filter(None, [...])
+    def unique_name(self) -> str:
+        """Fully qualified name: datablock, category and entry."""
         parts = [
             self._identity.datablock_entry_name,
             self._identity.category_code,
@@ -119,10 +117,8 @@ class GenericDescriptorBase(GuardedBase):
         ]
         return '.'.join(filter(None, parts))
 
-    def _parent_of_type(self, cls):
-        """Walk up the parent chain and return the first parent of type
-        `cls`.
-        """
+    def _parent_of_type(self, cls: type) -> object | None:
+        """Traverse parents and return the first of type cls."""
         obj = getattr(self, '_parent', None)
         visited = set()
         while obj is not None and id(obj) not in visited:
@@ -132,19 +128,19 @@ class GenericDescriptorBase(GuardedBase):
             obj = getattr(obj, '_parent', None)
         return None
 
-    def _datablock_item(self):
+    def _datablock_item(self) -> object | None:
         """Return the DatablockItem ancestor, if any."""
         from easydiffraction.core.datablock import DatablockItem
 
         return self._parent_of_type(DatablockItem)
 
     @property
-    def value(self):
+    def value(self) -> object:
         """Current validated value."""
         return self._value
 
     @value.setter
-    def value(self, v):
+    def value(self, v: object) -> None:
         """Set a new value after validating against the spec."""
         # Do nothing if the value is unchanged
         if self._value == v:
@@ -163,19 +159,20 @@ class GenericDescriptorBase(GuardedBase):
         if parent_datablock is not None:
             parent_datablock._need_categories_update = True
 
-    def _set_value_from_minimizer(self, v) -> None:
-        """Set the value from a minimizer, bypassing validation.
+    def _set_value_from_minimizer(self, v: object) -> None:
+        """
+        Set the value from a minimizer, bypassing validation.
 
-        Writes ``_value`` directly — no type or range checks — but
-        still marks the owning :class:`DatablockItem` dirty so that
+        Writes ``_value`` directly — no type or range checks — but still
+        marks the owning :class:`DatablockItem` dirty so that
         ``_update_categories()`` knows work is needed.
 
         This exists because:
 
         1. Physical-range validators (e.g. intensity ≥ 0) would reject
-           trial values the minimizer needs to explore.
-        2. Validation overhead is measurable over thousands of
-           objective-function evaluations.
+        trial values the minimizer needs to explore. 2. Validation
+        overhead is measurable over thousands of    objective-function
+        evaluations.
         """
         self._value = v
         parent_datablock = self._datablock_item()
@@ -183,13 +180,14 @@ class GenericDescriptorBase(GuardedBase):
             parent_datablock._need_categories_update = True
 
     @property
-    def description(self):
+    def description(self) -> str | None:
         """Optional human-readable description."""
         return self._description
 
     @property
-    def parameters(self):
-        """Return a flat list of parameters contained by this object.
+    def parameters(self) -> list[GenericDescriptorBase]:
+        """
+        Return a flat list of parameters contained by this object.
 
         For a single descriptor, it returns a one-element list with
         itself. Composite objects override this to flatten nested
@@ -202,7 +200,7 @@ class GenericDescriptorBase(GuardedBase):
         """Serialize this descriptor to a CIF-formatted string."""
         return param_to_cif(self)
 
-    def from_cif(self, block, idx=0):
+    def from_cif(self, block: object, idx: int = 0) -> None:
         """Populate this parameter from a CIF block."""
         param_from_cif(self, block, idx)
 
@@ -211,11 +209,13 @@ class GenericDescriptorBase(GuardedBase):
 
 
 class GenericStringDescriptor(GenericDescriptorBase):
+    """Base descriptor that constrains values to strings."""
+
     _value_type = DataTypes.STRING
 
     def __init__(
         self,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         super().__init__(**kwargs)
 
@@ -224,18 +224,21 @@ class GenericStringDescriptor(GenericDescriptorBase):
 
 
 class GenericNumericDescriptor(GenericDescriptorBase):
+    """Base descriptor that constrains values to numbers."""
+
     _value_type = DataTypes.NUMERIC
 
     def __init__(
         self,
         *,
         units: str = '',
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         super().__init__(**kwargs)
         self._units: str = units
 
     def __str__(self) -> str:
+        """Return the string representation including units."""
         s: str = super().__str__()
         s = s[1:-1]  # strip <>
         if self.units:
@@ -252,7 +255,8 @@ class GenericNumericDescriptor(GenericDescriptorBase):
 
 
 class GenericParameter(GenericNumericDescriptor):
-    """Numeric descriptor extended with fitting-related attributes.
+    """
+    Numeric descriptor extended with fitting-related attributes.
 
     Adds standard attributes used by minimizers: "free" flag,
     uncertainty, bounds and an optional starting value. Subclasses can
@@ -261,8 +265,8 @@ class GenericParameter(GenericNumericDescriptor):
 
     def __init__(
         self,
-        **kwargs: Any,
-    ):
+        **kwargs: object,
+    ) -> None:
         super().__init__(**kwargs)
 
         # Initial validated states
@@ -287,6 +291,7 @@ class GenericParameter(GenericNumericDescriptor):
         UidMapHandler.get().add_to_uid_map(self)
 
     def __str__(self) -> str:
+        """Return string representation with uncertainty and free."""
         s = GenericDescriptorBase.__str__(self)
         s = s[1:-1]  # strip <>
         if self.uncertainty is not None:
@@ -302,23 +307,24 @@ class GenericParameter(GenericNumericDescriptor):
         return ''.join(secrets.choice(letters) for _ in range(length))
 
     @property
-    def uid(self):
+    def uid(self) -> str:
         """Stable random identifier for this descriptor."""
         return self._uid
 
     @property
-    def _minimizer_uid(self):
+    def _minimizer_uid(self) -> str:
         """Variant of uid that is safe for minimizer engines."""
         # return self.unique_name.replace('.', '__')
         return self.uid
 
     @property
-    def constrained(self):
+    def constrained(self) -> bool:
         """Whether this parameter is part of a constraint expression."""
         return self._constrained
 
-    def _set_value_constrained(self, v) -> None:
-        """Set the value from a constraint expression.
+    def _set_value_constrained(self, v: object) -> None:
+        """
+        Set the value from a constraint expression.
 
         Validates against the spec, marks the parent datablock dirty,
         and flags the parameter as constrained. Used exclusively by
@@ -328,50 +334,48 @@ class GenericParameter(GenericNumericDescriptor):
         self._constrained = True
 
     @property
-    def free(self):
+    def free(self) -> bool:
         """Whether this parameter is currently varied during fitting."""
         return self._free
 
     @free.setter
-    def free(self, v):
+    def free(self, v: bool) -> None:
         """Set the "free" flag after validation."""
         self._free = self._free_spec.validated(
             v, name=f'{self.unique_name}.free', current=self._free
         )
 
     @property
-    def uncertainty(self):
-        """Estimated standard uncertainty of the fitted value, if
-        available.
-        """
+    def uncertainty(self) -> float | None:
+        """Estimated standard uncertainty of the fitted value."""
         return self._uncertainty
 
     @uncertainty.setter
-    def uncertainty(self, v):
+    def uncertainty(self, v: float | None) -> None:
         """Set the uncertainty value (must be non-negative or None)."""
         self._uncertainty = self._uncertainty_spec.validated(
             v, name=f'{self.unique_name}.uncertainty', current=self._uncertainty
         )
 
     @property
-    def fit_min(self):
+    def fit_min(self) -> float:
         """Lower fitting bound."""
         return self._fit_min
 
     @fit_min.setter
-    def fit_min(self, v):
+    def fit_min(self, v: float) -> None:
         """Set the lower bound for the parameter value."""
         self._fit_min = self._fit_min_spec.validated(
             v, name=f'{self.unique_name}.fit_min', current=self._fit_min
         )
 
     @property
-    def fit_max(self):
+    def fit_max(self) -> float:
         """Upper fitting bound."""
         return self._fit_max
 
     @fit_max.setter
-    def fit_max(self, v):
+    def fit_max(self, v: float) -> None:
         """Set the upper bound for the parameter value."""
         self._fit_max = self._fit_max_spec.validated(
             v, name=f'{self.unique_name}.fit_max', current=self._fit_max
@@ -382,17 +386,23 @@ class GenericParameter(GenericNumericDescriptor):
 
 
 class StringDescriptor(GenericStringDescriptor):
+    """String descriptor bound to a CIF handler."""
+
     def __init__(
         self,
         *,
         cif_handler: CifHandler,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
-        """String descriptor bound to a CIF handler.
+        """
+        Initialize a string descriptor bound to a CIF handler.
 
-        Args:
-            cif_handler: Object that tracks CIF identifiers.
-            **kwargs: Forwarded to GenericStringDescriptor.
+        Parameters
+        ----------
+        cif_handler : CifHandler
+            Object that tracks CIF identifiers.
+        **kwargs : object
+            Forwarded to GenericStringDescriptor.
         """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
@@ -403,17 +413,23 @@ class StringDescriptor(GenericStringDescriptor):
 
 
 class NumericDescriptor(GenericNumericDescriptor):
+    """Numeric descriptor bound to a CIF handler."""
+
     def __init__(
         self,
         *,
         cif_handler: CifHandler,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
-        """Numeric descriptor bound to a CIF handler.
+        """
+        Numeric descriptor bound to a CIF handler.
 
-        Args:
-            cif_handler: Object that tracks CIF identifiers.
-            **kwargs: Forwarded to GenericNumericDescriptor.
+        Parameters
+        ----------
+        cif_handler : CifHandler
+            Object that tracks CIF identifiers.
+        **kwargs : object
+            Forwarded to GenericNumericDescriptor.
         """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
@@ -424,17 +440,23 @@ class NumericDescriptor(GenericNumericDescriptor):
 
 
 class Parameter(GenericParameter):
+    """Fittable parameter bound to a CIF handler."""
+
     def __init__(
         self,
         *,
         cif_handler: CifHandler,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
-        """Fittable parameter bound to a CIF handler.
+        """
+        Fittable parameter bound to a CIF handler.
 
-        Args:
-            cif_handler: Object that tracks CIF identifiers.
-            **kwargs: Forwarded to GenericParameter.
+        Parameters
+        ----------
+        cif_handler : CifHandler
+            Object that tracks CIF identifiers.
+        **kwargs : object
+            Forwarded to GenericParameter.
         """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler

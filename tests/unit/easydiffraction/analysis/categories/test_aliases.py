@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.analysis.categories.aliases import Alias
@@ -7,8 +7,8 @@ from easydiffraction.analysis.categories.aliases import Aliases
 
 def test_alias_creation_and_collection():
     a = Alias()
-    a.label='x'
-    a.param_uid='p1'
+    a.label = 'x'
+    a.param_uid = 'p1'
     assert a.label.value == 'x'
     coll = Aliases()
     coll.create(label='x', param_uid='p1')

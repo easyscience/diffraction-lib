@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Default linked-crystal reference (id + scale)."""
 
@@ -21,9 +21,7 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @LinkedCrystalFactory.register
 class LinkedCrystal(CategoryItem):
-    """Linked crystal category for referencing from the experiment for
-    single crystal diffraction.
-    """
+    """Linked crystal reference for single-crystal diffraction."""
 
     type_info = TypeInfo(
         tag='default',
@@ -38,7 +36,7 @@ class LinkedCrystal(CategoryItem):
 
         self._id = StringDescriptor(
             name='id',
-            description='Identifier of the linked crystal.',
+            description='Identifier of the linked crystal',
             value_spec=AttributeSpec(
                 default='Si',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
@@ -47,7 +45,7 @@ class LinkedCrystal(CategoryItem):
         )
         self._scale = Parameter(
             name='scale',
-            description='Scale factor of the linked crystal.',
+            description='Scale factor of the linked crystal',
             value_spec=AttributeSpec(
                 default=1.0,
                 validator=RangeValidator(),
@@ -63,16 +61,29 @@ class LinkedCrystal(CategoryItem):
 
     @property
     def id(self) -> StringDescriptor:
+        """
+        Identifier of the linked crystal.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._id
 
     @id.setter
-    def id(self, value: str):
+    def id(self, value: str) -> None:
         self._id.value = value
 
     @property
     def scale(self) -> Parameter:
+        """
+        Scale factor of the linked crystal.
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
         return self._scale
 
     @scale.setter
-    def scale(self, value: float):
+    def scale(self, value: float) -> None:
         self._scale.value = value

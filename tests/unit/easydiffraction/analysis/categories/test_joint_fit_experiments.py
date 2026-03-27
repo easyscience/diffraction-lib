@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiment
@@ -7,8 +7,8 @@ from easydiffraction.analysis.categories.joint_fit_experiments import JointFitEx
 
 def test_joint_fit_experiment_and_collection():
     j = JointFitExperiment()
-    j.id='ex1'
-    j.weight=0.5
+    j.id = 'ex1'
+    j.weight = 0.5
     assert j.id.value == 'ex1'
     assert j.weight.value == 0.5
     coll = JointFitExperiments()

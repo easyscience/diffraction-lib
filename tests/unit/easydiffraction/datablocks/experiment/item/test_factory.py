@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+
 
 def test_module_import():
     import easydiffraction.datablocks.experiment.item.factory as MUT
@@ -25,4 +26,3 @@ def test_experiment_factory_from_scratch():
     )
     # Instance should be created (BraggPdExperiment)
     assert hasattr(ex, 'type') and ex.type.sample_form.value == SampleFormEnum.POWDER.value
-

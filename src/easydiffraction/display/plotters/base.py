@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Abstract base and shared constants for plotting backends."""
 
@@ -18,10 +18,11 @@ DEFAULT_MAX = np.inf
 
 
 class XAxisType(str, Enum):
-    """X-axis types for diffraction plots.
+    """
+    X-axis types for diffraction plots.
 
-    Values match attribute names in data models for direct use
-    with ``getattr(pattern, x_axis)``.
+    Values match attribute names in data models for direct use with
+    ``getattr(pattern, x_axis)``.
     """
 
     TWO_THETA = 'two_theta'
@@ -151,64 +152,80 @@ SERIES_CONFIG = dict(
 
 
 class PlotterBase(ABC):
-    """Abstract base for plotting backends.
+    """
+    Abstract base for plotting backends.
 
     Implementations accept x values, multiple y-series, optional labels
     and render a plot to the chosen medium.
 
-    Two main plot types are supported:
-    - ``plot_powder``: Line plots for powder diffraction patterns
-      (intensity vs. 2θ/TOF/d-spacing).
-    - ``plot_single_crystal``: Scatter plots comparing measured vs.
-      calculated values (e.g., F²meas vs F²calc for single crystal).
+    Two main plot types are supported: - ``plot_powder``: Line plots for
+    powder diffraction patterns   (intensity vs. 2θ/TOF/d-spacing). -
+    ``plot_single_crystal``: Scatter plots comparing measured vs.
+    calculated values (e.g., F²meas vs F²calc for single crystal).
     """
 
     @abstractmethod
     def plot_powder(
         self,
-        x,
-        y_series,
-        labels,
-        axes_labels,
-        title,
-        height,
-    ):
-        """Render a line plot for powder diffraction data.
+        x: object,
+        y_series: object,
+        labels: object,
+        axes_labels: object,
+        title: str,
+        height: int | None,
+    ) -> None:
+        """
+        Render a line plot for powder diffraction data.
 
         Suitable for powder diffraction data where intensity is plotted
         against an x-axis variable (2θ, TOF, d-spacing).
 
-        Args:
-            x: 1D array of x-axis values.
-            y_series: Sequence of y arrays to plot.
-            labels: Identifiers corresponding to y_series.
-            axes_labels: Pair of strings for the x and y titles.
-            title: Figure title.
-            height: Backend-specific height (text rows or pixels).
+        Parameters
+        ----------
+        x : object
+            1D array of x-axis values.
+        y_series : object
+            Sequence of y arrays to plot.
+        labels : object
+            Identifiers corresponding to y_series.
+        axes_labels : object
+            Pair of strings for the x and y titles.
+        title : str
+            Figure title.
+        height : int | None
+            Backend-specific height (text rows or pixels).
         """
         pass
 
     @abstractmethod
     def plot_single_crystal(
         self,
-        x_calc,
-        y_meas,
-        y_meas_su,
-        axes_labels,
-        title,
-        height,
-    ):
-        """Render a scatter plot for single crystal diffraction data.
+        x_calc: object,
+        y_meas: object,
+        y_meas_su: object,
+        axes_labels: object,
+        title: str,
+        height: int | None,
+    ) -> None:
+        """
+        Render a scatter plot for single crystal diffraction data.
 
         Suitable for single crystal diffraction data where measured
         values are plotted against calculated values with error bars.
 
-        Args:
-            x_calc: 1D array of calculated values (x-axis).
-            y_meas: 1D array of measured values (y-axis).
-            y_meas_su: 1D array of measurement uncertainties.
-            axes_labels: Pair of strings for the x and y titles.
-            title: Figure title.
-            height: Backend-specific height (text rows or pixels).
+        Parameters
+        ----------
+        x_calc : object
+            1D array of calculated values (x-axis).
+        y_meas : object
+            1D array of measured values (y-axis).
+        y_meas_su : object
+            1D array of measurement uncertainties.
+        axes_labels : object
+            Pair of strings for the x and y titles.
+        title : str
+            Figure title.
+        height : int | None
+            Backend-specific height (text rows or pixels).
         """
         pass

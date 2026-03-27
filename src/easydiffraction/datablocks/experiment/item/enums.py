@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Enumerations for experiment configuration (forms, modes, types)."""
 
@@ -13,9 +13,25 @@ class SampleFormEnum(str, Enum):
 
     @classmethod
     def default(cls) -> 'SampleFormEnum':
+        """
+        Return the default sample form (POWDER).
+
+        Returns
+        -------
+        'SampleFormEnum'
+            The default enum member.
+        """
         return cls.POWDER
 
     def description(self) -> str:
+        """
+        Return a human-readable description of this sample form.
+
+        Returns
+        -------
+        str
+            Description string for the current enum member.
+        """
         if self is SampleFormEnum.POWDER:
             return 'Powdered or polycrystalline sample.'
         elif self is SampleFormEnum.SINGLE_CRYSTAL:
@@ -30,9 +46,25 @@ class ScatteringTypeEnum(str, Enum):
 
     @classmethod
     def default(cls) -> 'ScatteringTypeEnum':
+        """
+        Return the default scattering type (BRAGG).
+
+        Returns
+        -------
+        'ScatteringTypeEnum'
+            The default enum member.
+        """
         return cls.BRAGG
 
     def description(self) -> str:
+        """
+        Return a human-readable description of this scattering type.
+
+        Returns
+        -------
+        str
+            Description string for the current enum member.
+        """
         if self is ScatteringTypeEnum.BRAGG:
             return 'Bragg diffraction for conventional structure refinement.'
         elif self is ScatteringTypeEnum.TOTAL:
@@ -47,9 +79,25 @@ class RadiationProbeEnum(str, Enum):
 
     @classmethod
     def default(cls) -> 'RadiationProbeEnum':
+        """
+        Return the default radiation probe (NEUTRON).
+
+        Returns
+        -------
+        'RadiationProbeEnum'
+            The default enum member.
+        """
         return cls.NEUTRON
 
     def description(self) -> str:
+        """
+        Return a human-readable description of this radiation probe.
+
+        Returns
+        -------
+        str
+            Description string for the current enum member.
+        """
         if self is RadiationProbeEnum.NEUTRON:
             return 'Neutron diffraction.'
         elif self is RadiationProbeEnum.XRAY:
@@ -65,9 +113,25 @@ class BeamModeEnum(str, Enum):
 
     @classmethod
     def default(cls) -> 'BeamModeEnum':
+        """
+        Return the default beam mode (CONSTANT_WAVELENGTH).
+
+        Returns
+        -------
+        'BeamModeEnum'
+            The default enum member.
+        """
         return cls.CONSTANT_WAVELENGTH
 
     def description(self) -> str:
+        """
+        Return a human-readable description of this beam mode.
+
+        Returns
+        -------
+        str
+            Description string for the current enum member.
+        """
         if self is BeamModeEnum.CONSTANT_WAVELENGTH:
             return 'Constant wavelength (CW) diffraction.'
         elif self is BeamModeEnum.TIME_OF_FLIGHT:
@@ -104,6 +168,23 @@ class PeakProfileTypeEnum(str, Enum):
         scattering_type: ScatteringTypeEnum | None = None,
         beam_mode: BeamModeEnum | None = None,
     ) -> 'PeakProfileTypeEnum':
+        """
+        Return the default peak profile type for a given mode.
+
+        Parameters
+        ----------
+        scattering_type : ScatteringTypeEnum | None, default=None
+            Scattering type; defaults to
+            ``ScatteringTypeEnum.default()`` when ``None``.
+        beam_mode : BeamModeEnum | None, default=None
+            Beam mode; defaults to ``BeamModeEnum.default()`` when
+            ``None``.
+
+        Returns
+        -------
+        'PeakProfileTypeEnum'
+            The default profile type for the given combination.
+        """
         if scattering_type is None:
             scattering_type = ScatteringTypeEnum.default()
         if beam_mode is None:
@@ -119,6 +200,14 @@ class PeakProfileTypeEnum(str, Enum):
         }[(scattering_type, beam_mode)]
 
     def description(self) -> str:
+        """
+        Return a human-readable description of this peak profile type.
+
+        Returns
+        -------
+        str
+            Description string for the current enum member.
+        """
         if self is PeakProfileTypeEnum.PSEUDO_VOIGT:
             return 'Pseudo-Voigt profile'
         elif self is PeakProfileTypeEnum.SPLIT_PSEUDO_VOIGT:

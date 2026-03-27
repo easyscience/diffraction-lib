@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -38,15 +38,14 @@ class TotalPdExperiment(PdExperimentBase):
         self,
         name: str,
         type: ExperimentType,
-    ):
+    ) -> None:
         super().__init__(name=name, type=type)
 
-    def _load_ascii_data_to_experiment(self, data_path):
-        """Loads x, y, sy values from an ASCII data file into the
-        experiment.
+    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+        """
+        Load x, y, sy values from an ASCII file into the experiment.
 
-        The file must be structured as:
-            x  y  sy
+        The file must be structured as:     x  y  sy
         """
         try:
             from diffpy.utils.parsers.loaddata import loadData

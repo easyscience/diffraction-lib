@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Factory for creating experiment instances from various inputs.
+"""
+Factory for creating experiment instances from various inputs.
 
 Provides individual class methods for each creation pathway:
 ``from_cif_path``, ``from_cif_str``, ``from_data_path``, and
@@ -55,7 +56,7 @@ class ExperimentFactory(FactoryBase):
     }
 
     # TODO: Add to core/factory.py?
-    def __init__(self):
+    def __init__(self) -> None:
         log.error(
             'Experiment objects must be created using class methods such as '
             '`ExperimentFactory.from_cif_str(...)`, etc.'
@@ -74,9 +75,7 @@ class ExperimentFactory(FactoryBase):
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
     ) -> ExperimentType:
-        """Construct an ExperimentType, using defaults for omitted
-        values.
-        """
+        """Construct ExperimentType with defaults for omitted values."""
         # Note: validation of input values is done via Descriptor setter
         # methods
 
@@ -95,7 +94,7 @@ class ExperimentFactory(FactoryBase):
 
     @classmethod
     @typechecked
-    def _resolve_class(cls, expt_type: ExperimentType):
+    def _resolve_class(cls, expt_type: ExperimentType) -> type:
         """Look up the experiment class from the type enums."""
         tag = cls.default_tag(
             scattering_type=expt_type.scattering_type.value,
@@ -140,16 +139,25 @@ class ExperimentFactory(FactoryBase):
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
     ) -> ExperimentBase:
-        """Create an experiment without measured data.
+        """
+        Create an experiment without measured data.
 
-        Args:
-            name: Experiment identifier.
-            sample_form: Sample form (e.g. ``'powder'``).
-            beam_mode: Beam mode (e.g. ``'constant wavelength'``).
-            radiation_probe: Radiation probe (e.g. ``'neutron'``).
-            scattering_type: Scattering type (e.g. ``'bragg'``).
+        Parameters
+        ----------
+        name : str
+            Experiment identifier.
+        sample_form : str | None, default=None
+            Sample form (e.g. ``'powder'``).
+        beam_mode : str | None, default=None
+            Beam mode (e.g. ``'constant wavelength'``).
+        radiation_probe : str | None, default=None
+            Radiation probe (e.g. ``'neutron'``).
+        scattering_type : str | None, default=None
+            Scattering type (e.g. ``'bragg'``).
 
-        Returns:
+        Returns
+        -------
+        ExperimentBase
             An experiment instance with only metadata.
         """
         expt_type = cls._create_experiment_type(
@@ -169,12 +177,17 @@ class ExperimentFactory(FactoryBase):
         cls,
         cif_str: str,
     ) -> ExperimentBase:
-        """Create an experiment from a CIF string.
+        """
+        Create an experiment from a CIF string.
 
-        Args:
-            cif_str: Full CIF document as a string.
+        Parameters
+        ----------
+        cif_str : str
+            Full CIF document as a string.
 
-        Returns:
+        Returns
+        -------
+        ExperimentBase
             A populated experiment instance.
         """
         doc = document_from_string(cif_str)
@@ -188,12 +201,17 @@ class ExperimentFactory(FactoryBase):
         cls,
         cif_path: str,
     ) -> ExperimentBase:
-        """Create an experiment from a CIF file path.
+        """
+        Create an experiment from a CIF file path.
 
-        Args:
-            cif_path: Path to a CIF file.
+        Parameters
+        ----------
+        cif_path : str
+            Path to a CIF file.
 
-        Returns:
+        Returns
+        -------
+        ExperimentBase
             A populated experiment instance.
         """
         doc = document_from_path(cif_path)
@@ -212,17 +230,27 @@ class ExperimentFactory(FactoryBase):
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
     ) -> ExperimentBase:
-        """Create an experiment from a raw data ASCII file.
+        """
+        Create an experiment from a raw data ASCII file.
 
-        Args:
-            name: Experiment identifier.
-            data_path: Path to the measured data file.
-            sample_form: Sample form (e.g. ``'powder'``).
-            beam_mode: Beam mode (e.g. ``'constant wavelength'``).
-            radiation_probe: Radiation probe (e.g. ``'neutron'``).
-            scattering_type: Scattering type (e.g. ``'bragg'``).
+        Parameters
+        ----------
+        name : str
+            Experiment identifier.
+        data_path : str
+            Path to the measured data file.
+        sample_form : str | None, default=None
+            Sample form (e.g. ``'powder'``).
+        beam_mode : str | None, default=None
+            Beam mode (e.g. ``'constant wavelength'``).
+        radiation_probe : str | None, default=None
+            Radiation probe (e.g. ``'neutron'``).
+        scattering_type : str | None, default=None
+            Scattering type (e.g. ``'bragg'``).
 
-        Returns:
+        Returns
+        -------
+        ExperimentBase
             An experiment instance with measured data attached.
         """
         expt_obj = cls.from_scratch(

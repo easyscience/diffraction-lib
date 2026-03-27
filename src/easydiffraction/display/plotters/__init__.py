@@ -1,10 +1,11 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Plotting backends.
+"""
+Plotting backends.
 
 This subpackage implements plotting engines used by the high-level
 plotting facade:
 
-- :mod:`.ascii` for terminal-friendly ASCII plots.
-- :mod:`.plotly` for interactive plots in notebooks or browsers.
+- :mod:`.ascii` for terminal-friendly ASCII plots. - :mod:`.plotly` for
+interactive plots in notebooks or browsers.
 """

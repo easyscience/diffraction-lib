@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+
 
 def test_module_import():
     import easydiffraction.datablocks.experiment.collection as MUT
@@ -10,8 +11,8 @@ def test_module_import():
 
 
 def test_experiments_show_and_remove(monkeypatch, capsys):
-    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
     from easydiffraction.datablocks.experiment.collection import Experiments
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 
     class DummyType:
         def __init__(self):

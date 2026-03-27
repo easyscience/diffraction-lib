@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Linked phases allow combining phases with scale factors."""
 
@@ -23,12 +23,12 @@ from easydiffraction.io.cif.handler import CifHandler
 class LinkedPhase(CategoryItem):
     """Link to a phase by id with a scale factor."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._id = StringDescriptor(
             name='id',
-            description='Identifier of the linked phase.',
+            description='Identifier of the linked phase',
             value_spec=AttributeSpec(
                 default='Si',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
@@ -54,18 +54,31 @@ class LinkedPhase(CategoryItem):
 
     @property
     def id(self) -> StringDescriptor:
+        """
+        Identifier of the linked phase.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._id
 
     @id.setter
-    def id(self, value: str):
+    def id(self, value: str) -> None:
         self._id.value = value
 
     @property
     def scale(self) -> Parameter:
+        """
+        Scale factor of the linked phase.
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
         return self._scale
 
     @scale.setter
-    def scale(self, value: float):
+    def scale(self, value: float) -> None:
         self._scale.value = value
 
 
@@ -81,6 +94,6 @@ class LinkedPhases(CategoryCollection):
         sample_form=frozenset({SampleFormEnum.POWDER}),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create an empty collection of linked phases."""
         super().__init__(item_type=LinkedPhase)

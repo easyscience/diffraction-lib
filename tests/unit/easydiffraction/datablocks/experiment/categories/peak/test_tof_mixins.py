@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
@@ -6,10 +6,16 @@ import numpy as np
 
 def test_tof_broadening_and_asymmetry_mixins():
     from easydiffraction.datablocks.experiment.categories.peak.base import PeakBase
-    from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import IkedaCarpenterAsymmetryMixin
+    from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import (
+        IkedaCarpenterAsymmetryMixin,
+    )
     from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import TofBroadeningMixin
 
-    class TofPeak(PeakBase, TofBroadeningMixin, IkedaCarpenterAsymmetryMixin,):
+    class TofPeak(
+        PeakBase,
+        TofBroadeningMixin,
+        IkedaCarpenterAsymmetryMixin,
+    ):
         def __init__(self):
             super().__init__()
 

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Time-of-flight peak profile classes."""
 
@@ -23,7 +23,10 @@ class TofPseudoVoigt(
 ):
     """Time-of-flight pseudo-Voigt peak shape."""
 
-    type_info = TypeInfo(tag='tof-pseudo-voigt', description='TOF pseudo-Voigt profile')
+    type_info = TypeInfo(
+        tag='tof-pseudo-voigt',
+        description='TOF pseudo-Voigt profile',
+    )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),

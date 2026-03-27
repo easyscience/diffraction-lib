@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import List
@@ -27,31 +27,27 @@ from easydiffraction.utils.utils import render_table
 
 
 class Analysis:
-    """High-level orchestration of analysis tasks for a Project.
+    """
+    High-level orchestration of analysis tasks for a Project.
 
     This class wires calculators and minimizers, exposes a compact
     interface for parameters, constraints and results, and coordinates
     computations across the project's structures and experiments.
 
     Typical usage:
-
     - Display or filter parameters to fit.
     - Select a calculator/minimizer implementation.
     - Calculate patterns and run single or joint fits.
-
-    Attributes:
-    project: The parent Project object.
-        aliases: A registry of human-friendly aliases for parameters.
-        constraints: Symbolic constraints between parameters.
-    calculator: Active calculator used for computations.
-        fitter: Active fitter/minimizer driver.
     """
 
-    def __init__(self, project) -> None:
-        """Create a new Analysis instance bound to a project.
+    def __init__(self, project: object) -> None:
+        """
+        Create a new Analysis instance bound to a project.
 
-        Args:
-            project: The project that owns models and experiments.
+        Parameters
+        ----------
+        project : object
+            The project that owns models and experiments.
         """
         self.project = project
         self._aliases_type: str = AliasesFactory.default_tag()
@@ -136,10 +132,13 @@ class Analysis:
 
     @aliases_type.setter
     def aliases_type(self, new_type: str) -> None:
-        """Switch to a different aliases collection type.
+        """
+        Switch to a different aliases collection type.
 
-        Args:
-            new_type: Aliases tag (e.g. ``'default'``).
+        Parameters
+        ----------
+        new_type : str
+            Aliases tag (e.g. ``'default'``).
         """
         supported_tags = AliasesFactory.supported_tags()
         if new_type not in supported_tags:
@@ -174,10 +173,13 @@ class Analysis:
 
     @constraints_type.setter
     def constraints_type(self, new_type: str) -> None:
-        """Switch to a different constraints collection type.
+        """
+        Switch to a different constraints collection type.
 
-        Args:
-            new_type: Constraints tag (e.g. ``'default'``).
+        Parameters
+        ----------
+        new_type : str
+            Constraints tag (e.g. ``'default'``).
         """
         supported_tags = ConstraintsFactory.supported_tags()
         if new_type not in supported_tags:
@@ -205,12 +207,17 @@ class Analysis:
         self,
         params: List[Union[NumericDescriptor, Parameter]],
     ) -> pd.DataFrame:
-        """Convert a list of parameters to a DataFrame.
+        """
+        Convert a list of parameters to a DataFrame.
 
-        Args:
-            params: List of DescriptorFloat or Parameter objects.
+        Parameters
+        ----------
+        params : List[Union[NumericDescriptor, Parameter]]
+            List of DescriptorFloat or Parameter objects.
 
-        Returns:
+        Returns
+        -------
+        pd.DataFrame
             A pandas DataFrame containing parameter information.
         """
         records = []
@@ -246,9 +253,7 @@ class Analysis:
         return df
 
     def show_all_params(self) -> None:
-        """Print a table with all parameters for structures and
-        experiments.
-        """
+        """Print all parameters for structures and experiments."""
         structures_params = self.project.structures.parameters
         experiments_params = self.project.experiments.parameters
 
@@ -278,9 +283,7 @@ class Analysis:
         tabler.render(filtered_df)
 
     def show_fittable_params(self) -> None:
-        """Print a table with parameters that can be included in
-        fitting.
-        """
+        """Print all fittable parameters."""
         structures_params = self.project.structures.fittable_parameters
         experiments_params = self.project.experiments.fittable_parameters
 
@@ -312,9 +315,7 @@ class Analysis:
         tabler.render(filtered_df)
 
     def show_free_params(self) -> None:
-        """Print a table with only currently-free (varying)
-        parameters.
-        """
+        """Print only currently free (varying) parameters."""
         structures_params = self.project.structures.free_parameters
         experiments_params = self.project.experiments.free_parameters
         free_params = structures_params + experiments_params
@@ -345,7 +346,8 @@ class Analysis:
         tabler.render(filtered_df)
 
     def how_to_access_parameters(self) -> None:
-        """Show Python access paths for all parameters.
+        """
+        Show Python access paths for all parameters.
 
         The output explains how to reference specific parameters in
         code.
@@ -409,7 +411,8 @@ class Analysis:
         )
 
     def show_parameter_cif_uids(self) -> None:
-        """Show CIF unique IDs for all parameters.
+        """
+        Show CIF unique IDs for all parameters.
 
         The output explains which unique identifiers are used when
         creating CIF-based constraints.
@@ -472,9 +475,7 @@ class Analysis:
 
     @staticmethod
     def show_available_minimizers() -> None:
-        """Print a table of available minimizer drivers on this
-        system.
-        """
+        """Print available minimizer drivers on this system."""
         MinimizerFactory.show_supported()
 
     @property
@@ -484,10 +485,13 @@ class Analysis:
 
     @current_minimizer.setter
     def current_minimizer(self, selection: str) -> None:
-        """Switch to a different minimizer implementation.
+        """
+        Switch to a different minimizer implementation.
 
-        Args:
-            selection: Minimizer selection string, e.g. 'lmfit'.
+        Parameters
+        ----------
+        selection : str
+            Minimizer selection string, e.g. 'lmfit'.
         """
         self.fitter = Fitter(selection)
         console.paragraph('Current minimizer changed to')
@@ -498,7 +502,7 @@ class Analysis:
     # ------------------------------------------------------------------
 
     @property
-    def fit_mode(self):
+    def fit_mode(self) -> object:
         """Fit-mode category item holding the active strategy."""
         return self._fit_mode
 
@@ -509,10 +513,13 @@ class Analysis:
 
     @fit_mode_type.setter
     def fit_mode_type(self, new_type: str) -> None:
-        """Switch to a different fit-mode category type.
+        """
+        Switch to a different fit-mode category type.
 
-        Args:
-            new_type: Fit-mode tag (e.g. ``'default'``).
+        Parameters
+        ----------
+        new_type : str
+            Fit-mode tag (e.g. ``'default'``).
         """
         supported_tags = FitModeFactory.supported_tags()
         if new_type not in supported_tags:
@@ -541,7 +548,7 @@ class Analysis:
     # ------------------------------------------------------------------
 
     @property
-    def joint_fit_experiments(self):
+    def joint_fit_experiments(self) -> object:
         """Per-experiment weight collection for joint fitting."""
         return self._joint_fit_experiments
 
@@ -573,10 +580,8 @@ class Analysis:
             columns_data=rows,
         )
 
-    def apply_constraints(self):
-        """Apply the currently defined constraints to the active
-        project.
-        """
+    def apply_constraints(self) -> None:
+        """Apply currently defined constraints to the project."""
         if not self.constraints._items:
             log.warning('No constraints defined.')
             return
@@ -585,27 +590,27 @@ class Analysis:
         self.constraints_handler.set_constraints(self.constraints)
         self.constraints_handler.apply()
 
-    def fit(self):
-        """Execute fitting using the selected mode, calculator and
-        minimizer.
+    def fit(self) -> None:
+        """
+        Execute fitting for all experiments.
 
         This method performs the optimization but does not display
         results automatically. Call :meth:`show_fit_results` after
         fitting to see a summary of the fit quality and parameter
         values.
 
-        In 'single' mode, fits each experiment independently. In
-        'joint' mode, performs a simultaneous fit across experiments
-        with weights.
+        In 'single' mode, fits each experiment independently. In 'joint'
+        mode, performs a simultaneous fit across experiments with
+        weights.
 
         Sets :attr:`fit_results` on success, which can be accessed
-        programmatically
-        (e.g., ``analysis.fit_results.reduced_chi_square``).
+        programmatically (e.g.,
+        ``analysis.fit_results.reduced_chi_square``).
 
         Example::
 
-            project.analysis.fit()
-            project.analysis.show_fit_results()  # Display results
+        project.analysis.fit() project.analysis.show_fit_results()  #
+        Display results
         """
         structures = self.project.structures
         if not structures:
@@ -659,7 +664,8 @@ class Analysis:
         self.fit_results = self.fitter.results
 
     def show_fit_results(self) -> None:
-        """Display a summary of the fit results.
+        """
+        Display a summary of the fit results.
 
         Renders the fit quality metrics (reduced χ², R-factors) and a
         table of fitted parameters with their starting values, final
@@ -670,8 +676,7 @@ class Analysis:
 
         Example::
 
-            project.analysis.fit()
-            project.analysis.show_fit_results()
+        project.analysis.fit() project.analysis.show_fit_results()
         """
         if not hasattr(self, 'fit_results') or self.fit_results is None:
             log.warning('No fit results available. Run fit() first.')
@@ -682,14 +687,17 @@ class Analysis:
 
         self.fitter._process_fit_results(structures, experiments)
 
-    def _update_categories(self, called_by_minimizer=False) -> None:
-        """Update all categories owned by Analysis.
+    def _update_categories(self, called_by_minimizer: bool = False) -> None:
+        """
+        Update all categories owned by Analysis.
 
         This ensures aliases and constraints are up-to-date before
         serialization or after parameter changes.
 
-        Args:
-            called_by_minimizer: Whether this is called during fitting.
+        Parameters
+        ----------
+        called_by_minimizer : bool, default=False
+            Whether this is called during fitting.
         """
         # Apply constraints to sync dependent parameters
         if self.constraints._items:
@@ -701,10 +709,13 @@ class Analysis:
             if hasattr(category, '_update'):
                 category._update(called_by_minimizer=called_by_minimizer)
 
-    def as_cif(self):
-        """Serialize the analysis section to a CIF string.
+    def as_cif(self) -> str:
+        """
+        Serialize the analysis section to a CIF string.
 
-        Returns:
+        Returns
+        -------
+        str
             The analysis section represented as a CIF document string.
         """
         from easydiffraction.io.cif.serialize import analysis_to_cif
@@ -713,9 +724,7 @@ class Analysis:
         return analysis_to_cif(self)
 
     def show_as_cif(self) -> None:
-        """Render the analysis section as CIF in a formatted console
-        view.
-        """
+        """Render the analysis section as CIF in console."""
         cif_text: str = self.as_cif()
         paragraph_title: str = 'Analysis 🧮 info as cif'
         console.paragraph(paragraph_title)

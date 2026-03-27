@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
@@ -142,4 +142,3 @@ def test_pd_data_intensity_meas_su_zero_replacement():
     assert su[0] == 1.0  # replaced
     assert su[1] == 1.0  # replaced
     assert su[2] == 5.0  # kept
-

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
@@ -90,4 +90,3 @@ def test_refln_data_type_info():
 
     assert ReflnData.type_info.tag == 'bragg-sc'
     assert ReflnData.type_info.description == 'Bragg single-crystal reflection data'
-

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -30,12 +30,13 @@ class CategoryItem(GuardedBase):
         return f'<{name} ({params})>'
 
     # TODO: Common for all categories
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         del called_by_minimizer
         pass
 
     @property
-    def unique_name(self):
+    def unique_name(self) -> str:
+        """Fully qualified name: datablock, category, entry."""
         parts = [
             self._identity.datablock_entry_name,
             self._identity.category_code,
@@ -46,7 +47,8 @@ class CategoryItem(GuardedBase):
         return '.'.join(str_parts)
 
     @property
-    def parameters(self):
+    def parameters(self) -> list:
+        """All GenericDescriptorBase instances on this item."""
         return [v for v in vars(self).values() if isinstance(v, GenericDescriptorBase)]
 
     @property
@@ -54,7 +56,7 @@ class CategoryItem(GuardedBase):
         """Return CIF representation of this object."""
         return category_item_to_cif(self)
 
-    def from_cif(self, block, idx=0):
+    def from_cif(self, block: object, idx: int = 0) -> None:
         """Populate this item from a CIF block."""
         category_item_from_cif(self, block, idx)
 
@@ -160,7 +162,8 @@ class CategoryItem(GuardedBase):
 
 
 class CategoryCollection(CollectionBase):
-    """Handles loop-style category containers (e.g. AtomSites).
+    """
+    Handles loop-style category containers (e.g. AtomSites).
 
     Each item is a CategoryItem (component).
     """
@@ -168,16 +171,17 @@ class CategoryCollection(CollectionBase):
     # TODO: Common for all categories
     _update_priority = 10  # Default. Lower values run first.
 
-    def _key_for(self, item):
+    def _key_for(self, item: object) -> str | None:
         """Return the category-level identity key for *item*."""
         return item._identity.category_entry_name
 
     def _mark_parent_dirty(self) -> None:
-        """Set ``_need_categories_update`` on the parent datablock.
+        """
+        Set ``_need_categories_update`` on the parent datablock.
 
         Called whenever the collection content changes (items added or
-        removed) so that subsequent ``_update_categories()`` calls
-        re-run all category updates.
+        removed) so that subsequent ``_update_categories()`` calls re-
+        run all category updates.
         """
         parent = getattr(self, '_parent', None)
         if parent is not None and hasattr(parent, '_need_categories_update'):
@@ -190,16 +194,17 @@ class CategoryCollection(CollectionBase):
         return f'<{name} collection ({size} items)>'
 
     # TODO: Common for all categories
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         del called_by_minimizer
         pass
 
     @property
-    def unique_name(self):
+    def unique_name(self) -> str | None:
+        """Return None; collections have no unique name."""
         return None
 
     @property
-    def parameters(self):
+    def parameters(self) -> list:
         """All parameters from all items in this collection."""
         params = []
         for item in self._items:
@@ -211,27 +216,33 @@ class CategoryCollection(CollectionBase):
         """Return CIF representation of this object."""
         return category_collection_to_cif(self)
 
-    def from_cif(self, block):
+    def from_cif(self, block: object) -> None:
         """Populate this collection from a CIF block."""
         category_collection_from_cif(self, block)
 
-    def add(self, item) -> None:
-        """Insert or replace a pre-built item into the collection.
+    def add(self, item: object) -> None:
+        """
+        Insert or replace a pre-built item into the collection.
 
-        Args:
-            item: A ``CategoryItem`` instance to add.
+        Parameters
+        ----------
+        item : object
+            A ``CategoryItem`` instance to add.
         """
         self[item._identity.category_entry_name] = item
         self._mark_parent_dirty()
 
-    def create(self, **kwargs) -> None:
-        """Create a new item with the given attributes and add it.
+    def create(self, **kwargs: object) -> None:
+        """
+        Create a new item with the given attributes and add it.
 
         A default instance of the collection's item type is created,
         then each keyword argument is applied via ``setattr``.
 
-        Args:
-            **kwargs: Attribute names and values for the new item.
+        Parameters
+        ----------
+        **kwargs : object
+            Attribute names and values for the new item.
         """
         child_obj = self._item_type()
 

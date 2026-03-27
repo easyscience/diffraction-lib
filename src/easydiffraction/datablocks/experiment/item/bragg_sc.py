@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -23,9 +23,7 @@ if TYPE_CHECKING:
 
 @ExperimentFactory.register
 class CwlScExperiment(ScExperimentBase):
-    """Standard (Bragg) constant wavelength single srystal experiment
-    class with specific attributes.
-    """
+    """Bragg constant-wavelength single-crystal experiment."""
 
     type_info = TypeInfo(
         tag='bragg-sc-cwl',
@@ -46,10 +44,11 @@ class CwlScExperiment(ScExperimentBase):
         super().__init__(name=name, type=type)
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load measured data from an ASCII file into the data category.
+        """
+        Load measured data from an ASCII file into the data category.
 
-        The file format is space/column separated with 5 columns:
-        ``h k l Iobs sIobs``.
+        The file format is space/column separated with 5 columns: ``h k
+        l Iobs sIobs``.
         """
         try:
             data = np.loadtxt(data_path)
@@ -87,9 +86,7 @@ class CwlScExperiment(ScExperimentBase):
 
 @ExperimentFactory.register
 class TofScExperiment(ScExperimentBase):
-    """Standard (Bragg) time-of-flight single srystal experiment class
-    with specific attributes.
-    """
+    """Bragg time-of-flight single-crystal experiment."""
 
     type_info = TypeInfo(
         tag='bragg-sc-tof',
@@ -110,10 +107,11 @@ class TofScExperiment(ScExperimentBase):
         super().__init__(name=name, type=type)
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load measured data from an ASCII file into the data category.
+        """
+        Load measured data from an ASCII file into the data category.
 
-        The file format is space/column separated with 6 columns:
-        ``h k l Iobs sIobs wavelength``.
+        The file format is space/column separated with 6 columns: ``h k
+        l Iobs sIobs wavelength``.
         """
         try:
             data = np.loadtxt(data_path)

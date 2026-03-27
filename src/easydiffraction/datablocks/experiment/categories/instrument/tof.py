@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.core.metadata import CalculatorSupport
@@ -18,7 +18,12 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @InstrumentFactory.register
 class TofScInstrument(InstrumentBase):
-    type_info = TypeInfo(tag='tof-sc', description='TOF single-crystal diffractometer')
+    """TOF single-crystal diffractometer."""
+
+    type_info = TypeInfo(
+        tag='tof-sc',
+        description='TOF single-crystal diffractometer',
+    )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
@@ -34,7 +39,12 @@ class TofScInstrument(InstrumentBase):
 
 @InstrumentFactory.register
 class TofPdInstrument(InstrumentBase):
-    type_info = TypeInfo(tag='tof-pd', description='TOF powder diffractometer')
+    """TOF powder diffractometer."""
+
+    type_info = TypeInfo(
+        tag='tof-pd',
+        description='TOF powder diffractometer',
+    )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
@@ -99,41 +109,71 @@ class TofPdInstrument(InstrumentBase):
         )
 
     @property
-    def setup_twotheta_bank(self):
+    def setup_twotheta_bank(self) -> Parameter:
+        """
+        Detector bank position (deg).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
         return self._setup_twotheta_bank
 
     @setup_twotheta_bank.setter
-    def setup_twotheta_bank(self, value):
+    def setup_twotheta_bank(self, value: float) -> None:
         self._setup_twotheta_bank.value = value
 
     @property
-    def calib_d_to_tof_offset(self):
+    def calib_d_to_tof_offset(self) -> Parameter:
+        """
+        TOF offset (µs).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
         return self._calib_d_to_tof_offset
 
     @calib_d_to_tof_offset.setter
-    def calib_d_to_tof_offset(self, value):
+    def calib_d_to_tof_offset(self, value: float) -> None:
         self._calib_d_to_tof_offset.value = value
 
     @property
-    def calib_d_to_tof_linear(self):
+    def calib_d_to_tof_linear(self) -> Parameter:
+        """
+        TOF linear conversion (µs/Å).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
         return self._calib_d_to_tof_linear
 
     @calib_d_to_tof_linear.setter
-    def calib_d_to_tof_linear(self, value):
+    def calib_d_to_tof_linear(self, value: float) -> None:
         self._calib_d_to_tof_linear.value = value
 
     @property
-    def calib_d_to_tof_quad(self):
+    def calib_d_to_tof_quad(self) -> Parameter:
+        """
+        TOF quadratic correction (µs/Å²).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
         return self._calib_d_to_tof_quad
 
     @calib_d_to_tof_quad.setter
-    def calib_d_to_tof_quad(self, value):
+    def calib_d_to_tof_quad(self, value: float) -> None:
         self._calib_d_to_tof_quad.value = value
 
     @property
-    def calib_d_to_tof_recip(self):
+    def calib_d_to_tof_recip(self) -> Parameter:
+        """
+        TOF reciprocal velocity correction (µs·Å).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
         return self._calib_d_to_tof_recip
 
     @calib_d_to_tof_recip.setter
-    def calib_d_to_tof_recip(self, value):
+    def calib_d_to_tof_recip(self, value: float) -> None:
         self._calib_d_to_tof_recip.value = value

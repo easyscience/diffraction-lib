@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
@@ -7,9 +7,9 @@ import numpy as np
 def test_background_base_minimal_impl_and_collection_cif():
     from easydiffraction.core.category import CategoryItem
     from easydiffraction.core.collection import CollectionBase
-    from easydiffraction.core.variable import Parameter
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.validation import DataTypes
+    from easydiffraction.core.variable import Parameter
     from easydiffraction.datablocks.experiment.categories.background.base import BackgroundBase
     from easydiffraction.io.cif.handler import CifHandler
 

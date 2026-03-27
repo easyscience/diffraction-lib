@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Simple symbolic constraint between parameters.
+"""
+Simple symbolic constraint between parameters.
 
 Represents an equation of the form ``lhs_alias = rhs_expr`` where
 ``rhs_expr`` is evaluated elsewhere by the analysis engine.
@@ -20,12 +21,7 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class Constraint(CategoryItem):
-    """Single constraint item.
-
-    Args:
-        lhs_alias: Left-hand side alias name being constrained.
-        rhs_expr: Right-hand side expression as a string.
-    """
+    """Single constraint item."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -57,19 +53,33 @@ class Constraint(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def lhs_alias(self):
+    def lhs_alias(self) -> StringDescriptor:
+        """
+        Left-hand side of the equation.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._lhs_alias
 
     @lhs_alias.setter
-    def lhs_alias(self, value):
+    def lhs_alias(self, value: str) -> None:
         self._lhs_alias.value = value
 
     @property
-    def rhs_expr(self):
+    def rhs_expr(self) -> StringDescriptor:
+        """
+        Right-hand side expression.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._rhs_expr
 
     @rhs_expr.setter
-    def rhs_expr(self, value):
+    def rhs_expr(self, value: str) -> None:
         self._rhs_expr.value = value
 
 
@@ -84,11 +94,11 @@ class Constraints(CategoryCollection):
 
     _update_priority = 90  # After most others, but before data categories
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create an empty constraints collection."""
         super().__init__(item_type=Constraint)
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         del called_by_minimizer
 
         constraints = ConstraintsHandler.get()

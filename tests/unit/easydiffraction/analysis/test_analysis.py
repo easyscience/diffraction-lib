@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+
 
 def test_module_import():
     import easydiffraction.analysis.analysis as MUT
@@ -34,7 +35,6 @@ def test_show_current_minimizer_prints(capsys):
     out = capsys.readouterr().out
     assert 'Current minimizer' in out
     assert 'lmfit' in out
-
 
 
 def test_fit_mode_category_and_joint_fit_experiments(monkeypatch, capsys):

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Any
@@ -41,6 +41,7 @@ class CrysfmlCalculator(CalculatorBase):
 
     @property
     def name(self) -> str:
+        """Short identifier of this calculator engine."""
         return 'crysfml'
 
     def calculate_structure_factors(
@@ -48,13 +49,20 @@ class CrysfmlCalculator(CalculatorBase):
         structures: Structures,
         experiments: Experiments,
     ) -> None:
-        """Call Crysfml to calculate structure factors.
+        """
+        Call Crysfml to calculate structure factors.
 
-        Args:
-            structures: The structures to calculate structure
-                factors for.
-            experiments: The experiments associated with the sample
-                models.
+        Parameters
+        ----------
+        structures : Structures
+            The structures to calculate structure factors for.
+        experiments : Experiments
+            The experiments associated with the sample models.
+
+        Raises
+        ------
+        NotImplementedError
+            HKL calculation is not implemented for CrysfmlCalculator.
         """
         raise NotImplementedError('HKL calculation is not implemented for CrysfmlCalculator.')
 
@@ -64,18 +72,23 @@ class CrysfmlCalculator(CalculatorBase):
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
     ) -> Union[np.ndarray, List[float]]:
-        """Calculates the diffraction pattern using Crysfml for the
-        given structure and experiment.
+        """
+        Calculate the diffraction pattern using Crysfml.
 
-        Args:
-            structure: The structure to calculate the pattern for.
-            experiment: The experiment associated with the structure.
-            called_by_minimizer: Whether the calculation is called by a
-            minimizer.
+        Parameters
+        ----------
+        structure : Structures
+            The structure to calculate the pattern for.
+        experiment : ExperimentBase
+            The experiment associated with the structure.
+        called_by_minimizer : bool, default=False
+            Whether the calculation is called by a minimizer.
 
-        Returns:
+        Returns
+        -------
+        Union[np.ndarray, List[float]]
             The calculated diffraction pattern as a NumPy array or a
-                list of floats.
+            list of floats.
         """
         # Intentionally unused, required by public API/signature
         del called_by_minimizer
@@ -94,13 +107,19 @@ class CrysfmlCalculator(CalculatorBase):
         pattern: List[float],
         target_length: int,
     ) -> List[float]:
-        """Adjusts the length of the pattern to match the target length.
+        """
+        Adjust the pattern length to match the target length.
 
-        Args:
-            pattern: The pattern to adjust.
-            target_length: The desired length of the pattern.
+        Parameters
+        ----------
+        pattern : List[float]
+            The pattern to adjust.
+        target_length : int
+            The desired length of the pattern.
 
-        Returns:
+        Returns
+        -------
+        List[float]
             The adjusted pattern.
         """
         # TODO: Check the origin of this discrepancy coming from
@@ -114,16 +133,20 @@ class CrysfmlCalculator(CalculatorBase):
         structure: Structures,
         experiment: ExperimentBase,
     ) -> Dict[str, Union[ExperimentBase, Structure]]:
-        """Converts the structure and experiment into a dictionary
-        format for Crysfml.
+        """
+        Convert structure and experiment into a Crysfml dictionary.
 
-        Args:
-            structure: The structure to convert.
-            experiment: The experiment to convert.
+        Parameters
+        ----------
+        structure : Structures
+            The structure to convert.
+        experiment : ExperimentBase
+            The experiment to convert.
 
-        Returns:
-            A dictionary representation of the structure and
-                experiment.
+        Returns
+        -------
+        Dict[str, Union[ExperimentBase, Structure]]
+            A dictionary representation of the structure and experiment.
         """
         structure_dict = self._convert_structure_to_dict(structure)
         experiment_dict = self._convert_experiment_to_dict(experiment)
@@ -136,12 +159,17 @@ class CrysfmlCalculator(CalculatorBase):
         self,
         structure: Structure,
     ) -> Dict[str, Any]:
-        """Converts a structure into a dictionary format.
+        """
+        Convert a structure into a dictionary format.
 
-        Args:
-            structure: The structure to convert.
+        Parameters
+        ----------
+        structure : Structure
+            The structure to convert.
 
-        Returns:
+        Returns
+        -------
+        Dict[str, Any]
             A dictionary representation of the structure.
         """
         structure_dict = {
@@ -176,12 +204,17 @@ class CrysfmlCalculator(CalculatorBase):
         self,
         experiment: ExperimentBase,
     ) -> Dict[str, Any]:
-        """Converts an experiment into a dictionary format.
+        """
+        Convert an experiment into a dictionary format.
 
-        Args:
-            experiment: The experiment to convert.
+        Parameters
+        ----------
+        experiment : ExperimentBase
+            The experiment to convert.
 
-        Returns:
+        Returns
+        -------
+        Dict[str, Any]
             A dictionary representation of the experiment.
         """
         expt_type = getattr(experiment, 'type', None)

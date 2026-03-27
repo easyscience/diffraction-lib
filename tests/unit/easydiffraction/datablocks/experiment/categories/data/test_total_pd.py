@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
@@ -89,4 +89,3 @@ def test_total_data_type_info():
 
     assert TotalData.type_info.tag == 'total-pd'
     assert TotalData.type_info.description == 'Total scattering (PDF) data'
-

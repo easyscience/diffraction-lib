@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Any
@@ -21,14 +21,19 @@ def apply_cell_symmetry_constraints(
     cell: Dict[str, float],
     name_hm: str,
 ) -> Dict[str, float]:
-    """Apply symmetry constraints to unit cell parameters based on space
-    group.
+    """
+    Apply symmetry constraints to unit cell parameters.
 
-    Args:
-        cell: Dictionary containing lattice parameters.
-        name_hm: Hermann-Mauguin symbol of the space group.
+    Parameters
+    ----------
+    cell : Dict[str, float]
+        Dictionary containing lattice parameters.
+    name_hm : str
+        Hermann-Mauguin symbol of the space group.
 
-    Returns:
+    Returns
+    -------
+    Dict[str, float]
         The cell dictionary with applied symmetry constraints.
     """
     it_number = get_it_number_by_name_hm_short(name_hm)
@@ -90,16 +95,23 @@ def apply_atom_site_symmetry_constraints(
     coord_code: int,
     wyckoff_letter: str,
 ) -> Dict[str, Any]:
-    """Apply symmetry constraints to atomic coordinates based on site
-    symmetry.
+    """
+    Apply symmetry constraints to atom site coordinates.
 
-    Args:
-        atom_site: Dictionary containing atom position data.
-        name_hm: Hermann-Mauguin symbol of the space group.
-        coord_code: Coordinate system code.
-        wyckoff_letter: Wyckoff position letter.
+    Parameters
+    ----------
+    atom_site : Dict[str, Any]
+        Dictionary containing atom position data.
+    name_hm : str
+        Hermann-Mauguin symbol of the space group.
+    coord_code : int
+        Coordinate system code.
+    wyckoff_letter : str
+        Wyckoff position letter.
 
-    Returns:
+    Returns
+    -------
+    Dict[str, Any]
         The atom_site dictionary with applied symmetry constraints.
     """
     it_number = get_it_number_by_name_hm_short(name_hm)

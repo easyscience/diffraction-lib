@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -18,9 +18,7 @@ except Exception:
 
 
 class JupyterScrollManager:
-    """Ensures that Jupyter output cells are not scrollable (applied
-    once).
-    """
+    """Ensures Jupyter output cells are not scrollable (once)."""
 
     _applied: ClassVar[bool] = False
 

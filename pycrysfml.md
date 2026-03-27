@@ -12,7 +12,8 @@
   ```bash
   otool -L .venv/lib/python3.12/site-packages/pycrysfml/crysfml08lib.so
   ```
-- If the library is linked to the wrong Python version, you can fix it with:
+- If the library is linked to the wrong Python version, you can fix it
+  with:
   ```bash
   install_name_tool -change `python3-config --prefix`/Python `python3-config --prefix`/lib/libpython3.12.dylib .venv/lib/python3.12/site-packages/pycrysfml/crysfml08lib.so
   ```

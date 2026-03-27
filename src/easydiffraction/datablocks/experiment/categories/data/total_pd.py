@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Data categories for total scattering (PDF) experiments."""
 
@@ -26,7 +26,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class TotalDataPoint(CategoryItem):
-    """Total scattering (PDF) data point in r-space (real space).
+    """
+    Total scattering (PDF) data point in r-space (real space).
 
     Note: PDF data is always in r-space regardless of whether the
     original measurement was CWL or TOF.
@@ -37,7 +38,7 @@ class TotalDataPoint(CategoryItem):
 
         self._point_id = StringDescriptor(
             name='point_id',
-            description='Identifier for this data point in the dataset.',
+            description='Identifier for this data point in the dataset',
             value_spec=AttributeSpec(
                 default='0',
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
@@ -50,7 +51,7 @@ class TotalDataPoint(CategoryItem):
         )
         self._r = NumericDescriptor(
             name='r',
-            description='Interatomic distance in real space.',
+            description='Interatomic distance in real space',
             units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -64,7 +65,7 @@ class TotalDataPoint(CategoryItem):
         )
         self._g_r_meas = NumericDescriptor(
             name='g_r_meas',
-            description='Measured pair distribution function G(r).',
+            description='Measured pair distribution function G(r)',
             value_spec=AttributeSpec(
                 default=0.0,
             ),
@@ -76,7 +77,7 @@ class TotalDataPoint(CategoryItem):
         )
         self._g_r_meas_su = NumericDescriptor(
             name='g_r_meas_su',
-            description='Standard uncertainty of measured G(r).',
+            description='Standard uncertainty of measured G(r)',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -89,7 +90,7 @@ class TotalDataPoint(CategoryItem):
         )
         self._g_r_calc = NumericDescriptor(
             name='g_r_calc',
-            description='Calculated pair distribution function G(r).',
+            description='Calculated pair distribution function G(r)',
             value_spec=AttributeSpec(
                 default=0.0,
             ),
@@ -101,7 +102,7 @@ class TotalDataPoint(CategoryItem):
         )
         self._calc_status = StringDescriptor(
             name='calc_status',
-            description='Status code of the data point in calculation.',
+            description='Status code of the data point in calculation',
             value_spec=AttributeSpec(
                 default='incl',
                 validator=MembershipValidator(allowed=['incl', 'excl']),
@@ -122,26 +123,62 @@ class TotalDataPoint(CategoryItem):
 
     @property
     def point_id(self) -> StringDescriptor:
+        """
+        Identifier for this data point in the dataset.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object.
+        """
         return self._point_id
 
     @property
     def r(self) -> NumericDescriptor:
+        """
+        Interatomic distance in real space (Å).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._r
 
     @property
     def g_r_meas(self) -> NumericDescriptor:
+        """
+        Measured pair distribution function G(r).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._g_r_meas
 
     @property
     def g_r_meas_su(self) -> NumericDescriptor:
+        """
+        Standard uncertainty of measured G(r).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._g_r_meas_su
 
     @property
     def g_r_calc(self) -> NumericDescriptor:
+        """
+        Calculated pair distribution function G(r).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._g_r_calc
 
     @property
     def calc_status(self) -> StringDescriptor:
+        """
+        Status code of the data point in calculation.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object.
+        """
         return self._calc_status
 
 
@@ -156,32 +193,30 @@ class TotalDataBase(CategoryCollection):
 
     # Should be set only once
 
-    def _set_point_id(self, values) -> None:
-        """Helper method to set point IDs."""
+    def _set_point_id(self, values: object) -> None:
+        """Set point IDs."""
         for p, v in zip(self._items, values, strict=True):
             p.point_id._value = v
 
-    def _set_g_r_meas(self, values) -> None:
-        """Helper method to set measured G(r)."""
+    def _set_g_r_meas(self, values: object) -> None:
+        """Set measured G(r)."""
         for p, v in zip(self._items, values, strict=True):
             p.g_r_meas._value = v
 
-    def _set_g_r_meas_su(self, values) -> None:
-        """Helper method to set standard uncertainty of measured
-        G(r).
-        """
+    def _set_g_r_meas_su(self, values: object) -> None:
+        """Set standard uncertainty of measured G(r) values."""
         for p, v in zip(self._items, values, strict=True):
             p.g_r_meas_su._value = v
 
     # Can be set multiple times
 
-    def _set_g_r_calc(self, values) -> None:
-        """Helper method to set calculated G(r)."""
+    def _set_g_r_calc(self, values: object) -> None:
+        """Set calculated G(r)."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.g_r_calc._value = v
 
-    def _set_calc_status(self, values) -> None:
-        """Helper method to set calculation status."""
+    def _set_calc_status(self, values: object) -> None:
+        """Set calculation status."""
         for p, v in zip(self._items, values, strict=True):
             if v:
                 p.calc_status._value = 'incl'
@@ -197,13 +232,13 @@ class TotalDataBase(CategoryCollection):
         return self.calc_status == 'incl'
 
     @property
-    def _calc_items(self):
+    def _calc_items(self) -> list:
         """Get only the items included in calculations."""
         return [item for item, mask in zip(self._items, self._calc_mask, strict=False) if mask]
 
     # Misc
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         experiment = self._parent
         experiments = experiment._parent
         project = experiments._parent
@@ -239,30 +274,34 @@ class TotalDataBase(CategoryCollection):
 
     @property
     def calc_status(self) -> np.ndarray:
+        """Refinement-status flags for each data point as an array."""
         return np.fromiter(
             (p.calc_status.value for p in self._items),
-            dtype=object,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=object,
         )
 
     @property
     def intensity_meas(self) -> np.ndarray:
+        """Measured G(r) values for active data points."""
         return np.fromiter(
             (p.g_r_meas.value for p in self._calc_items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def intensity_meas_su(self) -> np.ndarray:
+        """Standard uncertainties of the measured G(r) values."""
         return np.fromiter(
             (p.g_r_meas_su.value for p in self._calc_items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def intensity_calc(self) -> np.ndarray:
+        """Calculated G(r) values for active data points."""
         return np.fromiter(
             (p.g_r_calc.value for p in self._calc_items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
@@ -273,13 +312,17 @@ class TotalDataBase(CategoryCollection):
 
 @DataFactory.register
 class TotalData(TotalDataBase):
-    """Total scattering (PDF) data collection in r-space.
+    """
+    Total scattering (PDF) data collection in r-space.
 
-    Note: Works for both CWL and TOF measurements as PDF data
-    is always transformed to r-space.
+    Note: Works for both CWL and TOF measurements as PDF data is always
+    transformed to r-space.
     """
 
-    type_info = TypeInfo(tag='total-pd', description='Total scattering (PDF) data')
+    type_info = TypeInfo(
+        tag='total-pd',
+        description='Total scattering (PDF) data',
+    )
     compatibility = Compatibility(
         sample_form=frozenset({SampleFormEnum.POWDER}),
         scattering_type=frozenset({ScatteringTypeEnum.TOTAL}),
@@ -289,7 +332,7 @@ class TotalData(TotalDataBase):
         calculators=frozenset({CalculatorEnum.PDFFIT}),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=TotalDataPoint)
 
     #################
@@ -298,8 +341,8 @@ class TotalData(TotalDataBase):
 
     # Should be set only once
 
-    def _create_items_set_xcoord_and_id(self, values) -> None:
-        """Helper method to set r values."""
+    def _create_items_set_xcoord_and_id(self, values: object) -> None:
+        """Set r values."""
         # TODO: split into multiple methods
 
         # Create items

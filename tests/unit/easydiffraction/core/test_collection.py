@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+
 
 def test_collection_add_get_delete_and_names():
     from easydiffraction.core.collection import CollectionBase
@@ -55,10 +56,10 @@ def test_collection_contains():
 
 
 def test_collection_remove():
+    import pytest
+
     from easydiffraction.core.collection import CollectionBase
     from easydiffraction.core.identity import Identity
-
-    import pytest
 
     class Item:
         def __init__(self, name):
@@ -119,4 +120,3 @@ def test_collection_datablock_keyed_items():
     del c['beta']
     assert 'beta' not in c
     assert len(c) == 1
-

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.core.metadata import CalculatorSupport
@@ -17,6 +17,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class CwlInstrumentBase(InstrumentBase):
+    """Base class for constant-wavelength instruments."""
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -36,19 +38,28 @@ class CwlInstrumentBase(InstrumentBase):
         )
 
     @property
-    def setup_wavelength(self):
-        """Incident wavelength parameter (Å)."""
+    def setup_wavelength(self) -> Parameter:
+        """
+        Incident neutron or X-ray wavelength (Å).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
         return self._setup_wavelength
 
     @setup_wavelength.setter
-    def setup_wavelength(self, value):
-        """Set incident wavelength value (Å)."""
+    def setup_wavelength(self, value: float) -> None:
         self._setup_wavelength.value = value
 
 
 @InstrumentFactory.register
 class CwlScInstrument(CwlInstrumentBase):
-    type_info = TypeInfo(tag='cwl-sc', description='CW single-crystal diffractometer')
+    """CW single-crystal diffractometer."""
+
+    type_info = TypeInfo(
+        tag='cwl-sc',
+        description='CW single-crystal diffractometer',
+    )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
@@ -64,7 +75,12 @@ class CwlScInstrument(CwlInstrumentBase):
 
 @InstrumentFactory.register
 class CwlPdInstrument(CwlInstrumentBase):
-    type_info = TypeInfo(tag='cwl-pd', description='CW powder diffractometer')
+    """CW powder diffractometer."""
+
+    type_info = TypeInfo(
+        tag='cwl-pd',
+        description='CW powder diffractometer',
+    )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG, ScatteringTypeEnum.TOTAL}),
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
@@ -97,11 +113,15 @@ class CwlPdInstrument(CwlInstrumentBase):
         )
 
     @property
-    def calib_twotheta_offset(self):
-        """Instrument misalignment two-theta offset (deg)."""
+    def calib_twotheta_offset(self) -> Parameter:
+        """
+        Instrument misalignment offset (deg).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
         return self._calib_twotheta_offset
 
     @calib_twotheta_offset.setter
-    def calib_twotheta_offset(self, value):
-        """Set two-theta offset value (deg)."""
+    def calib_twotheta_offset(self, value: float) -> None:
         self._calib_twotheta_offset.value = value

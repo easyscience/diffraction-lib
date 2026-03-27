@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Chebyshev polynomial background model.
+"""
+Chebyshev polynomial background model.
 
 Provides a collection of polynomial terms and evaluation helpers.
 """
@@ -34,7 +35,8 @@ from easydiffraction.utils.utils import render_table
 
 
 class PolynomialTerm(CategoryItem):
-    """Chebyshev polynomial term.
+    """
+    Chebyshev polynomial term.
 
     New public attribute names: ``order`` and ``coef`` replacing the
     longer ``chebyshev_order`` / ``chebyshev_coef``. Backward-compatible
@@ -47,7 +49,7 @@ class PolynomialTerm(CategoryItem):
 
         self._id = StringDescriptor(
             name='id',
-            description='Identifier for this background polynomial term.',
+            description='Identifier for this background polynomial term',
             value_spec=AttributeSpec(
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -84,32 +86,54 @@ class PolynomialTerm(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def id(self):
+    def id(self) -> StringDescriptor:
+        """
+        Identifier for this background polynomial term.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._id
 
     @id.setter
-    def id(self, value):
+    def id(self, value: str) -> None:
         self._id.value = value
 
     @property
-    def order(self):
+    def order(self) -> NumericDescriptor:
+        """
+        Order used in a Chebyshev polynomial background term.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._order
 
     @order.setter
-    def order(self, value):
+    def order(self, value: float) -> None:
         self._order.value = value
 
     @property
-    def coef(self):
+    def coef(self) -> Parameter:
+        """
+        Coefficient used in a Chebyshev polynomial background term.
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
         return self._coef
 
     @coef.setter
-    def coef(self, value):
+    def coef(self, value: float) -> None:
         self._coef.value = value
 
 
 @BackgroundFactory.register
 class ChebyshevPolynomialBackground(BackgroundBase):
+    """Chebyshev polynomial background model."""
+
     type_info = TypeInfo(
         tag='chebyshev',
         description='Chebyshev polynomial background',
@@ -127,10 +151,10 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         }),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=PolynomialTerm)
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         """Evaluate polynomial background over x data."""
         del called_by_minimizer
 

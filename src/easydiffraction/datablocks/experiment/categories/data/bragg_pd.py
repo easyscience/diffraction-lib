@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -29,12 +29,12 @@ from easydiffraction.utils.utils import twotheta_to_d
 class PdDataPointBaseMixin:
     """Single base data point mixin for powder diffraction data."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._point_id = StringDescriptor(
             name='point_id',
-            description='Identifier for this data point in the dataset.',
+            description='Identifier for this data point in the dataset',
             value_spec=AttributeSpec(
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -50,7 +50,7 @@ class PdDataPointBaseMixin:
         )
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
-            description='d-spacing value corresponding to this data point.',
+            description='d-spacing value corresponding to this data point',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -59,7 +59,7 @@ class PdDataPointBaseMixin:
         )
         self._intensity_meas = NumericDescriptor(
             name='intensity_meas',
-            description='Intensity recorded at each measurement point as a function of angle/time',
+            description='Intensity recorded at each measurement point (angle/time)',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -73,7 +73,7 @@ class PdDataPointBaseMixin:
         )
         self._intensity_meas_su = NumericDescriptor(
             name='intensity_meas_su',
-            description='Standard uncertainty of the measured intensity at this data point.',
+            description='Standard uncertainty of the measured intensity at this point',
             value_spec=AttributeSpec(
                 default=1.0,
                 validator=RangeValidator(ge=0),
@@ -87,7 +87,7 @@ class PdDataPointBaseMixin:
         )
         self._intensity_calc = NumericDescriptor(
             name='intensity_calc',
-            description='Intensity value for a computed diffractogram at this data point.',
+            description='Intensity of a computed diffractogram at this point',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -96,7 +96,7 @@ class PdDataPointBaseMixin:
         )
         self._intensity_bkg = NumericDescriptor(
             name='intensity_bkg',
-            description='Intensity value for a computed background at this data point.',
+            description='Intensity of a computed background at this point',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -105,7 +105,7 @@ class PdDataPointBaseMixin:
         )
         self._calc_status = StringDescriptor(
             name='calc_status',
-            description='Status code of the data point in the calculation process.',
+            description='Status code of the data point in the calculation process',
             value_spec=AttributeSpec(
                 default='incl',  # TODO: Make Enum
                 validator=MembershipValidator(allowed=['incl', 'excl']),
@@ -123,39 +123,79 @@ class PdDataPointBaseMixin:
 
     @property
     def point_id(self) -> StringDescriptor:
+        """
+        Identifier for this data point in the dataset.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object.
+        """
         return self._point_id
 
     @property
     def d_spacing(self) -> NumericDescriptor:
+        """
+        d-spacing value corresponding to this data point.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._d_spacing
 
     @property
     def intensity_meas(self) -> NumericDescriptor:
+        """
+        Intensity recorded at each measurement point (angle/time).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._intensity_meas
 
     @property
     def intensity_meas_su(self) -> NumericDescriptor:
+        """
+        Standard uncertainty of the measured intensity at this point.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._intensity_meas_su
 
     @property
     def intensity_calc(self) -> NumericDescriptor:
+        """
+        Intensity of a computed diffractogram at this point.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._intensity_calc
 
     @property
     def intensity_bkg(self) -> NumericDescriptor:
+        """
+        Intensity of a computed background at this point.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._intensity_bkg
 
     @property
     def calc_status(self) -> StringDescriptor:
+        """
+        Status code of the data point in the calculation process.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object.
+        """
         return self._calc_status
 
 
 class PdCwlDataPointMixin:
-    """Mixin for powder diffraction data points with constant
-    wavelength.
-    """
+    """Mixin for CWL powder diffraction data points."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._two_theta = NumericDescriptor(
@@ -179,14 +219,20 @@ class PdCwlDataPointMixin:
     # ------------------------------------------------------------------
 
     @property
-    def two_theta(self):
+    def two_theta(self) -> NumericDescriptor:
+        """
+        Measured 2θ diffraction angle (deg).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._two_theta
 
 
 class PdTofDataPointMixin:
     """Mixin for powder diffraction data points with time-of-flight."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._time_of_flight = NumericDescriptor(
@@ -205,7 +251,13 @@ class PdTofDataPointMixin:
     # ------------------------------------------------------------------
 
     @property
-    def time_of_flight(self):
+    def time_of_flight(self) -> NumericDescriptor:
+        """
+        Measured time for time-of-flight neutron measurement (µs).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._time_of_flight
 
 
@@ -222,9 +274,7 @@ class PdCwlDataPoint(
     #  But also says, that in fact, it is just for consistency. And both
     #  orders work.
 ):
-    """Powder diffraction data point for constant-wavelength
-    experiments.
-    """
+    """Powder diffraction data point for CWL experiments."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -246,6 +296,8 @@ class PdTofDataPoint(
 
 
 class PdDataBase(CategoryCollection):
+    """Base class for powder diffraction data collections."""
+
     # TODO: ???
 
     # Redefine update priority to ensure data updated after other
@@ -260,42 +312,40 @@ class PdDataBase(CategoryCollection):
 
     # Should be set only once
 
-    def _set_point_id(self, values) -> None:
-        """Helper method to set point IDs."""
+    def _set_point_id(self, values: object) -> None:
+        """Set point IDs."""
         for p, v in zip(self._items, values, strict=True):
             p.point_id._value = v
 
-    def _set_intensity_meas(self, values) -> None:
-        """Helper method to set measured intensity."""
+    def _set_intensity_meas(self, values: object) -> None:
+        """Set measured intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas._value = v
 
-    def _set_intensity_meas_su(self, values) -> None:
-        """Helper method to set standard uncertainty of measured
-        intensity.
-        """
+    def _set_intensity_meas_su(self, values: object) -> None:
+        """Set standard uncertainty of measured intensity values."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas_su._value = v
 
     # Can be set multiple times
 
-    def _set_d_spacing(self, values) -> None:
-        """Helper method to set d-spacing values."""
+    def _set_d_spacing(self, values: object) -> None:
+        """Set d-spacing values."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.d_spacing._value = v
 
-    def _set_intensity_calc(self, values) -> None:
-        """Helper method to set calculated intensity."""
+    def _set_intensity_calc(self, values: object) -> None:
+        """Set calculated intensity."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_calc._value = v
 
-    def _set_intensity_bkg(self, values) -> None:
-        """Helper method to set background intensity."""
+    def _set_intensity_bkg(self, values: object) -> None:
+        """Set background intensity."""
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_bkg._value = v
 
-    def _set_calc_status(self, values) -> None:
-        """Helper method to set refinement status."""
+    def _set_calc_status(self, values: object) -> None:
+        """Set refinement status."""
         for p, v in zip(self._items, values, strict=True):
             if v:
                 p.calc_status._value = 'incl'
@@ -311,13 +361,13 @@ class PdDataBase(CategoryCollection):
         return self.calc_status == 'incl'
 
     @property
-    def _calc_items(self):
+    def _calc_items(self) -> list:
         """Get only the items included in calculations."""
         return [item for item, mask in zip(self._items, self._calc_mask, strict=False) if mask]
 
     # Misc
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         experiment = self._parent
         experiments = experiment._parent
         project = experiments._parent
@@ -353,6 +403,7 @@ class PdDataBase(CategoryCollection):
 
     @property
     def calc_status(self) -> np.ndarray:
+        """Refinement-status flags for each data point as an array."""
         return np.fromiter(
             (p.calc_status.value for p in self._items),
             dtype=object,  # TODO: needed? DataTypes.NUMERIC?
@@ -360,6 +411,7 @@ class PdDataBase(CategoryCollection):
 
     @property
     def d_spacing(self) -> np.ndarray:
+        """D-spacing values for active (non-excluded) data points."""
         return np.fromiter(
             (p.d_spacing.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
@@ -367,6 +419,7 @@ class PdDataBase(CategoryCollection):
 
     @property
     def intensity_meas(self) -> np.ndarray:
+        """Measured intensities for active data points."""
         return np.fromiter(
             (p.intensity_meas.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
@@ -374,6 +427,12 @@ class PdDataBase(CategoryCollection):
 
     @property
     def intensity_meas_su(self) -> np.ndarray:
+        """
+        Standard uncertainties of the measured intensities.
+
+        Values smaller than 0.0001 are replaced with 1.0 to prevent
+        fitting failures.
+        """
         # TODO: The following is a temporary workaround to handle zero
         #  or near-zero uncertainties in the data, when dats is loaded
         #  from CIF files. This is necessary because zero uncertainties
@@ -396,6 +455,7 @@ class PdDataBase(CategoryCollection):
 
     @property
     def intensity_calc(self) -> np.ndarray:
+        """Calculated intensities for active data points."""
         return np.fromiter(
             (p.intensity_calc.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
@@ -403,6 +463,7 @@ class PdDataBase(CategoryCollection):
 
     @property
     def intensity_bkg(self) -> np.ndarray:
+        """Background intensities for active data points."""
         return np.fromiter(
             (p.intensity_bkg.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
@@ -411,6 +472,8 @@ class PdDataBase(CategoryCollection):
 
 @DataFactory.register
 class PdCwlData(PdDataBase):
+    """Bragg powder CWL data collection."""
+
     # TODO: ???
     # _description: str = 'Powder diffraction data points for
     # constant-wavelength experiments.'
@@ -424,7 +487,7 @@ class PdCwlData(PdDataBase):
         calculators=frozenset({CalculatorEnum.CRYSPY}),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=PdCwlDataPoint)
 
     #################
@@ -433,8 +496,8 @@ class PdCwlData(PdDataBase):
 
     # Should be set only once
 
-    def _create_items_set_xcoord_and_id(self, values) -> None:
-        """Helper method to set 2θ values."""
+    def _create_items_set_xcoord_and_id(self, values: object) -> None:
+        """Set 2θ values."""
         # TODO: split into multiple methods
 
         # Create items
@@ -449,7 +512,7 @@ class PdCwlData(PdDataBase):
 
     # Misc
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         super()._update(called_by_minimizer)
 
         experiment = self._parent
@@ -465,9 +528,7 @@ class PdCwlData(PdDataBase):
 
     @property
     def two_theta(self) -> np.ndarray:
-        """Get the 2θ values for data points included in
-        calculations.
-        """
+        """Get 2θ values for data points included in calculations."""
         return np.fromiter(
             (p.two_theta.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
@@ -489,6 +550,8 @@ class PdCwlData(PdDataBase):
 
 @DataFactory.register
 class PdTofData(PdDataBase):
+    """Bragg powder TOF data collection."""
+
     type_info = TypeInfo(tag='bragg-pd-tof', description='Bragg powder TOF data')
     compatibility = Compatibility(
         sample_form=frozenset({SampleFormEnum.POWDER}),
@@ -499,7 +562,7 @@ class PdTofData(PdDataBase):
         calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=PdTofDataPoint)
 
     #################
@@ -508,8 +571,8 @@ class PdTofData(PdDataBase):
 
     # Should be set only once
 
-    def _create_items_set_xcoord_and_id(self, values) -> None:
-        """Helper method to set time-of-flight values."""
+    def _create_items_set_xcoord_and_id(self, values: object) -> None:
+        """Set time-of-flight values."""
         # TODO: split into multiple methods
 
         # Create items
@@ -524,7 +587,7 @@ class PdTofData(PdDataBase):
 
     # Misc
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         super()._update(called_by_minimizer)
 
         experiment = self._parent
@@ -542,9 +605,7 @@ class PdTofData(PdDataBase):
 
     @property
     def time_of_flight(self) -> np.ndarray:
-        """Get the TOF values for data points included in
-        calculations.
-        """
+        """Get TOF values for data points included in calculations."""
         return np.fromiter(
             (p.time_of_flight.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?

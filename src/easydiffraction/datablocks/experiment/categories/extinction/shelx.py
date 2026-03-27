@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Shelx-style isotropic extinction correction."""
 
@@ -17,9 +17,7 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @ExtinctionFactory.register
 class ShelxExtinction(CategoryItem):
-    """Shelx-style isotropic extinction correction for single
-    crystals.
-    """
+    """Shelx-style extinction correction for single crystals."""
 
     type_info = TypeInfo(
         tag='shelx',
@@ -34,7 +32,7 @@ class ShelxExtinction(CategoryItem):
 
         self._mosaicity = Parameter(
             name='mosaicity',
-            description='Mosaicity value for extinction correction.',
+            description='Mosaicity value for extinction correction',
             units='deg',
             value_spec=AttributeSpec(
                 default=1.0,
@@ -48,7 +46,7 @@ class ShelxExtinction(CategoryItem):
         )
         self._radius = Parameter(
             name='radius',
-            description='Crystal radius for extinction correction.',
+            description='Crystal radius for extinction correction',
             units='µm',
             value_spec=AttributeSpec(
                 default=1.0,
@@ -68,17 +66,29 @@ class ShelxExtinction(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def mosaicity(self):
+    def mosaicity(self) -> Parameter:
+        """
+        Mosaicity value for extinction correction (deg).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
         return self._mosaicity
 
     @mosaicity.setter
-    def mosaicity(self, value):
+    def mosaicity(self, value: float) -> None:
         self._mosaicity.value = value
 
     @property
-    def radius(self):
+    def radius(self) -> Parameter:
+        """
+        Crystal radius for extinction correction (µm).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
         return self._radius
 
     @radius.setter
-    def radius(self, value):
+    def radius(self, value: float) -> None:
         self._radius.value = value

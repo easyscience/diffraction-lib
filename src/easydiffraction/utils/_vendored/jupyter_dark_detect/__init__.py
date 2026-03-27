@@ -1,7 +1,7 @@
-"""jupyter-dark-detect: Detect dark mode in Jupyter environments.
+"""Jupyter-dark-detect: Detect dark mode in Jupyter environments.
 
-This package provides a simple API to detect whether Jupyter Notebook/Lab
-is running in dark mode across different environments.
+This package provides a simple API to detect whether Jupyter
+Notebook/Lab is running in dark mode across different environments.
 """
 
 from .detector import is_dark

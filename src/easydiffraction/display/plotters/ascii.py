@@ -1,10 +1,11 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""ASCII plotting backend.
+"""
+ASCII plotting backend.
 
-Renders compact line charts in the terminal using
-``asciichartpy``. This backend is well suited for quick feedback in
-CLI environments and keeps a consistent API with other plotters.
+Renders compact line charts in the terminal using ``asciichartpy``. This
+backend is well suited for quick feedback in CLI environments and keeps
+a consistent API with other plotters.
 """
 
 import asciichartpy
@@ -25,16 +26,21 @@ DEFAULT_COLORS = {
 class AsciiPlotter(PlotterBase):
     """Terminal-based plotter using ASCII art."""
 
-    def _get_legend_item(self, label):
-        """Return a colored legend entry for a given series label.
+    def _get_legend_item(self, label: str) -> str:
+        """
+        Return a colored legend entry for a given series label.
 
-        The legend uses a colored line matching the series color and
-        the human-readable name from :data:`SERIES_CONFIG`.
+        The legend uses a colored line matching the series color and the
+        human-readable name from :data:`SERIES_CONFIG`.
 
-        Args:
-            label: Series identifier (e.g., ``'meas'``).
+        Parameters
+        ----------
+        label : str
+            Series identifier (e.g., ``'meas'``).
 
-        Returns:
+        Returns
+        -------
+        str
             A formatted legend string with color escapes.
         """
         color_start = DEFAULT_COLORS[label]
@@ -46,27 +52,34 @@ class AsciiPlotter(PlotterBase):
 
     def plot_powder(
         self,
-        x,
-        y_series,
-        labels,
-        axes_labels,
-        title,
-        height=None,
-    ):
-        """Render a line plot for powder diffraction data.
+        x: object,
+        y_series: object,
+        labels: object,
+        axes_labels: object,
+        title: str,
+        height: int | None = None,
+    ) -> None:
+        """
+        Render a line plot for powder diffraction data.
 
         Suitable for powder diffraction data where intensity is plotted
         against an x-axis variable (2θ, TOF, d-spacing). Uses ASCII
         characters for terminal display.
 
-        Args:
-            x: 1D array-like of x values (only used for range
-                display).
-            y_series: Sequence of y arrays to plot.
-            labels: Series identifiers corresponding to y_series.
-            axes_labels: Ignored; kept for API compatibility.
-            title: Figure title printed above the chart.
-            height: Number of text rows to allocate for the chart.
+        Parameters
+        ----------
+        x : object
+            1D array-like of x values (only used for range display).
+        y_series : object
+            Sequence of y arrays to plot.
+        labels : object
+            Series identifiers corresponding to y_series.
+        axes_labels : object
+            Ignored; kept for API compatibility.
+        title : str
+            Figure title printed above the chart.
+        height : int | None, default=None
+            Number of text rows to allocate for the chart.
         """
         # Intentionally unused; kept for a consistent display API
         del axes_labels
@@ -92,26 +105,34 @@ class AsciiPlotter(PlotterBase):
 
     def plot_single_crystal(
         self,
-        x_calc,
-        y_meas,
-        y_meas_su,
-        axes_labels,
-        title,
-        height=None,
-    ):
-        """Render a scatter plot for single crystal diffraction data.
+        x_calc: object,
+        y_meas: object,
+        y_meas_su: object,
+        axes_labels: object,
+        title: str,
+        height: int | None = None,
+    ) -> None:
+        """
+        Render a scatter plot for single crystal diffraction data.
 
         Creates an ASCII scatter plot showing measured vs calculated
         values with a diagonal reference line.
 
-        Args:
-            x_calc: 1D array-like of calculated values (x-axis).
-            y_meas: 1D array-like of measured values (y-axis).
-            y_meas_su: 1D array-like of measurement uncertainties
-                (ignored in ASCII mode).
-            axes_labels: Pair of strings for the x and y titles.
-            title: Figure title.
-            height: Number of text rows for the chart (default: 15).
+        Parameters
+        ----------
+        x_calc : object
+            1D array-like of calculated values (x-axis).
+        y_meas : object
+            1D array-like of measured values (y-axis).
+        y_meas_su : object
+            1D array-like of measurement uncertainties (ignored in ASCII
+            mode).
+        axes_labels : object
+            Pair of strings for the x and y titles.
+        title : str
+            Figure title.
+        height : int | None, default=None
+            Number of text rows for the chart (default: 15).
         """
         # Intentionally unused; ASCII scatter doesn't show error bars
         del y_meas_su

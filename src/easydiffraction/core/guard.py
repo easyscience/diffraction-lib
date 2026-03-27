@@ -1,33 +1,35 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
+from typing import Generator
 
 from easydiffraction.core.diagnostic import Diagnostics
 from easydiffraction.core.identity import Identity
 
 
 class GuardedBase(ABC):
-    """Base class enforcing controlled attribute access and parent
-    linkage.
-    """
+    """Base class enforcing controlled attribute access and linkage."""
 
     _diagnoser = Diagnostics()
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._identity = Identity(owner=self)
 
     def __str__(self) -> str:
+        """Return the string representation of this object."""
         return f'<{self.unique_name}>'
 
     def __repr__(self) -> str:
+        """Return the developer representation of this object."""
         return self.__str__()
 
-    def __getattr__(self, key: str):
+    def __getattr__(self, key: str) -> None:
+        """Raise a descriptive error for unknown attribute access."""
         cls = type(self)
         allowed = cls._public_attrs()
         if key not in allowed:
@@ -38,7 +40,8 @@ class GuardedBase(ABC):
                 label='Allowed readable/writable',
             )
 
-    def __setattr__(self, key: str, value):
+    def __setattr__(self, key: str, value: object) -> None:
+        """Set an attribute with access-control diagnostics."""
         # Always allow private or special attributes without diagnostics
         if key.startswith('_'):
             object.__setattr__(self, key, value)
@@ -70,20 +73,21 @@ class GuardedBase(ABC):
 
         self._assign_attr(key, value)
 
-    def _assign_attr(self, key, value):
+    def _assign_attr(self, key: str, value: object) -> None:
         """Low-level assignment with parent linkage."""
         object.__setattr__(self, key, value)
         if key != '_parent' and isinstance(value, GuardedBase):
             object.__setattr__(value, '_parent', self)
 
     @classmethod
-    def _iter_properties(cls):
-        """Iterate over all public properties defined in the class
-        hierarchy.
+    def _iter_properties(cls) -> Generator[tuple[str, property], None, None]:
+        """
+        Iterate over all public properties in the class hierarchy.
 
-        Yields:
-            tuple[str, property]: Each (key, property) pair for public
-            attributes.
+        Yields
+        ------
+        tuple[str, property]
+            Each (key, property) pair for public attributes.
         """
         for base in cls.mro():
             for key, attr in base.__dict__.items():
@@ -92,12 +96,12 @@ class GuardedBase(ABC):
                 yield key, attr
 
     @classmethod
-    def _public_attrs(cls):
+    def _public_attrs(cls) -> set[str]:
         """All public properties (read-only + writable)."""
         return {key for key, _ in cls._iter_properties()}
 
     @classmethod
-    def _public_readonly_attrs(cls):
+    def _public_readonly_attrs(cls) -> set[str]:
         """Public properties without a setter."""
         return {key for key, prop in cls._iter_properties() if prop.fset is None}
 
@@ -106,18 +110,19 @@ class GuardedBase(ABC):
         """Public properties with a setter."""
         return {key for key, prop in cls._iter_properties() if prop.fset is not None}
 
-    def _allowed_attrs(self, writable_only=False):
+    def _allowed_attrs(self, writable_only: bool = False) -> set[str]:
         cls = type(self)
         if writable_only:
             return cls._public_writable_attrs()
         return cls._public_attrs()
 
     @property
-    def _log_name(self):
+    def _log_name(self) -> str:
         return self.unique_name or type(self).__name__
 
     @property
-    def unique_name(self):
+    def unique_name(self) -> str:
+        """Fallback unique name: the class name."""
         return type(self).__name__
 
     # @property
@@ -131,23 +136,20 @@ class GuardedBase(ABC):
 
     @property
     @abstractmethod
-    def parameters(self):
-        """Return a list of parameter objects (to be implemented by
-        subclasses).
-        """
+    def parameters(self) -> list:
+        """Return a list of parameters (implemented by subclasses)."""
         raise NotImplementedError
 
     @property
     @abstractmethod
     def as_cif(self) -> str:
-        """Return CIF representation of this object (to be implemented
-        by subclasses).
-        """
+        """Return CIF representation (implemented by subclasses)."""
         raise NotImplementedError
 
     @staticmethod
     def _first_sentence(docstring: str | None) -> str:
-        """Extract the first paragraph from a docstring.
+        """
+        Extract the first paragraph from a docstring.
 
         Returns text before the first blank line, with continuation
         lines joined into a single string.
@@ -158,11 +160,14 @@ class GuardedBase(ABC):
         return ' '.join(line.strip() for line in first_para.splitlines())
 
     @classmethod
-    def _iter_methods(cls):
-        """Iterate over public methods in the class hierarchy.
+    def _iter_methods(cls) -> Generator[tuple[str, object], None, None]:
+        """
+        Iterate over public methods in the class hierarchy.
 
-        Yields:
-            tuple[str, callable]: Each (name, function) pair.
+        Yields
+        ------
+        tuple[str, object]
+            Each (name, function) pair.
         """
         seen: set = set()
         for base in cls.mro():

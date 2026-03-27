@@ -1,12 +1,13 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+
 def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
-    from easydiffraction.analysis.analysis import Analysis
-    from easydiffraction.core.variable import Parameter
-    from easydiffraction.core.validation import AttributeSpec
-    from easydiffraction.io.cif.handler import CifHandler
     import easydiffraction.analysis.analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
 
     # Build two parameters with identity metadata set directly
     def make_param(db, cat, entry, name, val):

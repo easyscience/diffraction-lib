@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Atom site category.
+"""
+Atom site category.
 
 Defines :class:`AtomSite` items and :class:`AtomSites` collection used
 in crystallographic structures.
@@ -25,7 +26,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class AtomSite(CategoryItem):
-    """Single atom site with fractional coordinates and ADP.
+    """
+    Single atom site with fractional coordinates and ADP.
 
     Attributes are represented by descriptors to support validation and
     CIF serialization.
@@ -138,19 +140,25 @@ class AtomSite(CategoryItem):
 
     @property
     def _type_symbol_allowed_values(self) -> list[str]:
-        """Return chemical symbols accepted by *cryspy*.
+        """
+        Return chemical symbols accepted by *cryspy*.
 
-        Returns:
-            list[str]: Unique element/isotope symbols from the database.
+        Returns
+        -------
+        list[str]
+            Unique element/isotope symbols from the database.
         """
         return list({key[1] for key in DATABASE['Isotopes']})
 
     @property
     def _wyckoff_letter_allowed_values(self) -> list[str]:
-        """Return allowed Wyckoff-letter symbols.
+        """
+        Return allowed Wyckoff-letter symbols.
 
-        Returns:
-            list[str]: Currently a hard-coded placeholder list.
+        Returns
+        -------
+        list[str]
+            Currently a hard-coded placeholder list.
         """
         # TODO: Need to now current space group. How to access it? Via
         #  parent Cell? Then letters =
@@ -160,10 +168,13 @@ class AtomSite(CategoryItem):
 
     @property
     def _wyckoff_letter_default_value(self) -> str:
-        """Return the default Wyckoff letter.
+        """
+        Return the default Wyckoff letter.
 
-        Returns:
-            str: First element of the allowed values list.
+        Returns
+        -------
+        str
+            First element of the allowed values list.
         """
         # TODO: What to pass as default?
         return self._wyckoff_letter_allowed_values[0]
@@ -174,165 +185,132 @@ class AtomSite(CategoryItem):
 
     @property
     def label(self) -> StringDescriptor:
-        """Unique label for this atom site.
+        """
+        Unique identifier for the atom site.
 
-        Returns:
-            StringDescriptor: Descriptor holding the site label.
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._label
 
     @label.setter
     def label(self, value: str) -> None:
-        """Set the atom-site label.
-
-        Args:
-            value (str): New label string.
-        """
         self._label.value = value
 
     @property
     def type_symbol(self) -> StringDescriptor:
-        """Chemical element or isotope symbol.
+        """
+        Chemical symbol of the atom at this site.
 
-        Returns:
-            StringDescriptor: Descriptor holding the type symbol.
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._type_symbol
 
     @type_symbol.setter
     def type_symbol(self, value: str) -> None:
-        """Set the chemical element or isotope symbol.
-
-        Args:
-            value (str): New type symbol (must be in the *cryspy*
-                database).
-        """
         self._type_symbol.value = value
 
     @property
     def adp_type(self) -> StringDescriptor:
-        """Type of atomic displacement parameter (e.g. ``'Biso'``).
+        """
+        ADP type used (e.g., Biso, Uiso, Uani, Bani).
 
-        Returns:
-            StringDescriptor: Descriptor holding the ADP type.
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._adp_type
 
     @adp_type.setter
     def adp_type(self, value: str) -> None:
-        """Set the ADP type.
-
-        Args:
-            value (str): New ADP type string.
-        """
         self._adp_type.value = value
 
     @property
     def wyckoff_letter(self) -> StringDescriptor:
-        """Wyckoff letter for the symmetry site.
+        """
+        Wyckoff letter for the atom site symmetry position.
 
-        Returns:
-            StringDescriptor: Descriptor holding the Wyckoff letter.
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
         """
         return self._wyckoff_letter
 
     @wyckoff_letter.setter
     def wyckoff_letter(self, value: str) -> None:
-        """Set the Wyckoff letter.
-
-        Args:
-            value (str): New Wyckoff letter.
-        """
         self._wyckoff_letter.value = value
 
     @property
     def fract_x(self) -> Parameter:
-        """Fractional *x*-coordinate within the unit cell.
+        """
+        Fractional x-coordinate of the atom site within the unit cell.
 
-        Returns:
-            Parameter: Descriptor for the *x* coordinate.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._fract_x
 
     @fract_x.setter
     def fract_x(self, value: float) -> None:
-        """Set the fractional *x*-coordinate.
-
-        Args:
-            value (float): New *x* coordinate.
-        """
         self._fract_x.value = value
 
     @property
     def fract_y(self) -> Parameter:
-        """Fractional *y*-coordinate within the unit cell.
+        """
+        Fractional y-coordinate of the atom site within the unit cell.
 
-        Returns:
-            Parameter: Descriptor for the *y* coordinate.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._fract_y
 
     @fract_y.setter
     def fract_y(self, value: float) -> None:
-        """Set the fractional *y*-coordinate.
-
-        Args:
-            value (float): New *y* coordinate.
-        """
         self._fract_y.value = value
 
     @property
     def fract_z(self) -> Parameter:
-        """Fractional *z*-coordinate within the unit cell.
+        """
+        Fractional z-coordinate of the atom site within the unit cell.
 
-        Returns:
-            Parameter: Descriptor for the *z* coordinate.
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._fract_z
 
     @fract_z.setter
     def fract_z(self, value: float) -> None:
-        """Set the fractional *z*-coordinate.
-
-        Args:
-            value (float): New *z* coordinate.
-        """
         self._fract_z.value = value
 
     @property
     def occupancy(self) -> Parameter:
-        """Site occupancy fraction.
+        """
+        Occupancy fraction of the atom type at this site.
 
-        Returns:
-            Parameter: Descriptor for the occupancy (0–1).
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._occupancy
 
     @occupancy.setter
     def occupancy(self, value: float) -> None:
-        """Set the site occupancy.
-
-        Args:
-            value (float): New occupancy fraction.
-        """
         self._occupancy.value = value
 
     @property
     def b_iso(self) -> Parameter:
-        r"""Isotropic atomic displacement parameter (*B*-factor).
+        """
+        Isotropic ADP for the atom site (Å²).
 
-        Returns:
-            Parameter: Descriptor for *B*\_iso (Å²).
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._b_iso
 
     @b_iso.setter
     def b_iso(self, value: float) -> None:
-        r"""Set the isotropic displacement parameter.
-
-        Args:
-            value (float): New *B*\_iso value in Å².
-        """
         self._b_iso.value = value
 
 
@@ -354,7 +332,8 @@ class AtomSites(CategoryCollection):
     # ------------------------------------------------------------------
 
     def _apply_atomic_coordinates_symmetry_constraints(self) -> None:
-        """Apply symmetry rules to fractional coordinates of every site.
+        """
+        Apply symmetry rules to fractional coordinates of every site.
 
         Uses the parent structure's space-group symbol, IT coordinate
         system code and each atom's Wyckoff letter.  Atoms without a
@@ -387,11 +366,14 @@ class AtomSites(CategoryCollection):
         self,
         called_by_minimizer: bool = False,
     ) -> None:
-        """Recalculate atom sites after a change.
+        """
+        Recalculate atom sites after a change.
 
-        Args:
-            called_by_minimizer (bool): Whether the update was triggered
-                by the fitting minimizer. Currently unused.
+        Parameters
+        ----------
+        called_by_minimizer : bool, default=False
+            Whether the update was triggered by the fitting minimizer.
+            Currently unused.
         """
         del called_by_minimizer
 

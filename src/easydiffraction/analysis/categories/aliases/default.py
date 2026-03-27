@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Alias category for mapping friendly names to parameter UIDs.
+"""
+Alias category for mapping friendly names to parameter UIDs.
 
 Defines a small record type used by analysis configuration to refer to
 parameters via readable labels instead of raw unique identifiers.
@@ -19,15 +20,11 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class Alias(CategoryItem):
-    """Single alias entry.
+    """
+    Single alias entry.
 
     Maps a human-readable ``label`` to a concrete ``param_uid`` used by
     the engine.
-
-    Args:
-        label: Alias label. Must match ``^[A-Za-z_][A-Za-z0-9_]*$``.
-        param_uid: Target parameter uid. Same identifier pattern as
-            ``label``.
     """
 
     def __init__(self) -> None:
@@ -60,19 +57,33 @@ class Alias(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def label(self):
+    def label(self) -> StringDescriptor:
+        """
+        ...
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._label
 
     @label.setter
-    def label(self, value):
+    def label(self, value: str) -> None:
         self._label.value = value
 
     @property
-    def param_uid(self):
+    def param_uid(self) -> StringDescriptor:
+        """
+        ...
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._param_uid
 
     @param_uid.setter
-    def param_uid(self, value):
+    def param_uid(self, value: str) -> None:
         self._param_uid.value = value
 
 
@@ -85,6 +96,6 @@ class Aliases(CategoryCollection):
         description='Parameter alias mappings',
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create an empty collection of aliases."""
         super().__init__(item_type=Alias)

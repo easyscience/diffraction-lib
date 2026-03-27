@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 
@@ -86,5 +86,3 @@ def test_linked_crystal_factory_default_tag():
     )
 
     assert LinkedCrystalFactory.default_tag() == 'default'
-
-

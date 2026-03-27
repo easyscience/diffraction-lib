@@ -1,8 +1,6 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Joint-fit-experiments factory — delegates entirely to
-``FactoryBase``.
-"""
+"""Joint-fit-experiments factory — delegates to ``FactoryBase``."""
 
 from __future__ import annotations
 

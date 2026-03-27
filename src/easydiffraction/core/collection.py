@@ -1,33 +1,41 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Lightweight container for guarded items with name-based indexing.
+"""
+Lightweight container for guarded items with name-based indexing.
 
-`CollectionBase` maintains an ordered list of items and a lazily rebuilt
-index by the item's identity key. It supports dict-like access for get,
-set and delete, along with iteration over the items.
+``CollectionBase`` maintains an ordered list of items and a lazily
+rebuilt index by the item's identity key. It supports dict-like access
+for get, set and delete, along with iteration over the items.
 """
 
 from __future__ import annotations
+
+from typing import Generator
+from typing import Iterator
 
 from easydiffraction.core.guard import GuardedBase
 
 
 class CollectionBase(GuardedBase):
-    """A minimal collection with stable iteration and name indexing.
+    """
+    A minimal collection with stable iteration and name indexing.
 
-    Args:
-        item_type: Type of items accepted by the collection. Used for
-            validation and tooling; not enforced at runtime here.
+    Parameters
+    ----------
+    item_type : type
+        Type of items accepted by the collection. Used for validation
+        and tooling; not enforced at runtime here.
     """
 
-    def __init__(self, item_type) -> None:
+    def __init__(self, item_type: type) -> None:
         super().__init__()
         self._items: list = []
         self._index: dict = {}
         self._item_type = item_type
 
-    def __getitem__(self, name: str):
-        """Return an item by its identity key.
+    def __getitem__(self, name: str) -> GuardedBase:
+        """
+        Return an item by its identity key.
 
         Rebuilds the internal index on a cache miss to stay consistent
         with recent mutations.
@@ -38,7 +46,7 @@ class CollectionBase(GuardedBase):
             self._rebuild_index()
             return self._index[name]
 
-    def __setitem__(self, name: str, item) -> None:
+    def __setitem__(self, name: str, item: GuardedBase) -> None:
         """Insert or replace an item under the given identity key."""
         # Check if item with same key exists; if so, replace it
         for i, existing_item in enumerate(self._items):
@@ -66,7 +74,7 @@ class CollectionBase(GuardedBase):
         self._rebuild_index()
         return name in self._index
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[GuardedBase]:
         """Iterate over items in insertion order."""
         return iter(self._items)
 
@@ -75,18 +83,27 @@ class CollectionBase(GuardedBase):
         return len(self._items)
 
     def remove(self, name: str) -> None:
-        """Remove an item by its key.
-
-        Args:
-            name: Identity key of the item to remove.
-
-        Raises:
-            KeyError: If no item with the given key exists.
         """
-        del self[name]
+        Remove an item by its key.
 
-    def _key_for(self, item):
-        """Return the identity key for *item*.
+        Parameters
+        ----------
+        name : str
+            Identity key of the item to remove.
+
+        Raises
+        ------
+        KeyError
+            If no item with the given key exists.
+        """
+        try:
+            del self[name]
+        except KeyError:
+            raise
+
+    def _key_for(self, item: GuardedBase) -> str | None:
+        """
+        Return the identity key for *item*.
 
         Subclasses must override to return the appropriate key
         (``category_entry_name`` or ``datablock_entry_name``).
@@ -101,20 +118,20 @@ class CollectionBase(GuardedBase):
             if key:
                 self._index[key] = item
 
-    def keys(self):
+    def keys(self) -> Generator[str | None, None, None]:
         """Yield keys for all items in insertion order."""
         return (self._key_for(item) for item in self._items)
 
-    def values(self):
+    def values(self) -> Generator[GuardedBase, None, None]:
         """Yield items in insertion order."""
         return (item for item in self._items)
 
-    def items(self):
+    def items(self) -> Generator[tuple[str | None, GuardedBase], None, None]:
         """Yield ``(key, item)`` pairs in insertion order."""
         return ((self._key_for(item), item) for item in self._items)
 
     @property
-    def names(self):
+    def names(self) -> list[str | None]:
         """List of all item keys in the collection."""
         return list(self.keys())
 

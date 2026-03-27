@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -26,16 +26,14 @@ from easydiffraction.utils.utils import sin_theta_over_lambda_to_d_spacing
 
 
 class Refln(CategoryItem):
-    """Single reflection for single crystal diffraction data
-    category.
-    """
+    """Single reflection for single-crystal diffraction data."""
 
     def __init__(self) -> None:
         super().__init__()
 
         self._id = StringDescriptor(
             name='id',
-            description='Identifier of the reflection.',
+            description='Identifier of the reflection',
             value_spec=AttributeSpec(
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -47,7 +45,7 @@ class Refln(CategoryItem):
         )
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
-            description='The distance between lattice planes in the crystal for this reflection.',
+            description='Distance between lattice planes for this reflection',
             units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -57,7 +55,7 @@ class Refln(CategoryItem):
         )
         self._sin_theta_over_lambda = NumericDescriptor(
             name='sin_theta_over_lambda',
-            description='The sin(θ)/λ value for this reflection.',
+            description='The sin(θ)/λ value for this reflection',
             units='Å⁻¹',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -67,7 +65,7 @@ class Refln(CategoryItem):
         )
         self._index_h = NumericDescriptor(
             name='index_h',
-            description='Miller index h of a measured reflection.',
+            description='Miller index h of a measured reflection',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -76,7 +74,7 @@ class Refln(CategoryItem):
         )
         self._index_k = NumericDescriptor(
             name='index_k',
-            description='Miller index k of a measured reflection.',
+            description='Miller index k of a measured reflection',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -85,7 +83,7 @@ class Refln(CategoryItem):
         )
         self._index_l = NumericDescriptor(
             name='index_l',
-            description='Miller index l of a measured reflection.',
+            description='Miller index l of a measured reflection',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -112,7 +110,7 @@ class Refln(CategoryItem):
         )
         self._intensity_calc = NumericDescriptor(
             name='intensity_calc',
-            description='The intensity of the reflection calculated from the atom site data.',
+            description='Intensity of the reflection calculated from atom site data',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -121,7 +119,7 @@ class Refln(CategoryItem):
         )
         self._wavelength = NumericDescriptor(
             name='wavelength',
-            description='The mean wavelength of radiation used to measure this reflection.',
+            description='Mean wavelength of radiation for this reflection',
             units='Å',
             value_spec=AttributeSpec(
                 default=0.0,
@@ -139,42 +137,102 @@ class Refln(CategoryItem):
 
     @property
     def id(self) -> StringDescriptor:
+        """
+        Identifier of the reflection.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object.
+        """
         return self._id
 
     @property
     def d_spacing(self) -> NumericDescriptor:
+        """
+        Distance between lattice planes for this reflection (Å).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._d_spacing
 
     @property
     def sin_theta_over_lambda(self) -> NumericDescriptor:
+        """
+        The sin(θ)/λ value for this reflection (Å⁻¹).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._sin_theta_over_lambda
 
     @property
     def index_h(self) -> NumericDescriptor:
+        """
+        Miller index h of a measured reflection.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._index_h
 
     @property
     def index_k(self) -> NumericDescriptor:
+        """
+        Miller index k of a measured reflection.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._index_k
 
     @property
     def index_l(self) -> NumericDescriptor:
+        """
+        Miller index l of a measured reflection.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._index_l
 
     @property
     def intensity_meas(self) -> NumericDescriptor:
+        """
+        The intensity of the reflection derived from the measurements.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._intensity_meas
 
     @property
     def intensity_meas_su(self) -> NumericDescriptor:
+        """
+        Standard uncertainty of the measured intensity.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._intensity_meas_su
 
     @property
     def intensity_calc(self) -> NumericDescriptor:
+        """
+        Intensity of the reflection calculated from atom site data.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._intensity_calc
 
     @property
     def wavelength(self) -> NumericDescriptor:
+        """
+        Mean wavelength of radiation for this reflection (Å).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object.
+        """
         return self._wavelength
 
 
@@ -194,7 +252,7 @@ class ReflnData(CategoryCollection):
 
     _update_priority = 100
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=Refln)
 
     #################
@@ -203,8 +261,13 @@ class ReflnData(CategoryCollection):
 
     # Should be set only once
 
-    def _create_items_set_hkl_and_id(self, indices_h, indices_k, indices_l) -> None:
-        """Helper method to set Miller indices."""
+    def _create_items_set_hkl_and_id(
+        self,
+        indices_h: object,
+        indices_k: object,
+        indices_l: object,
+    ) -> None:
+        """Set Miller indices."""
         # TODO: split into multiple methods
 
         # Create items
@@ -221,48 +284,46 @@ class ReflnData(CategoryCollection):
         # Set reflection IDs
         self._set_id([str(i + 1) for i in range(indices_h.size)])
 
-    def _set_id(self, values) -> None:
-        """Helper method to set reflection IDs."""
+    def _set_id(self, values: object) -> None:
+        """Set reflection IDs."""
         for p, v in zip(self._items, values, strict=True):
             p.id._value = v
 
-    def _set_intensity_meas(self, values) -> None:
-        """Helper method to set measured intensity."""
+    def _set_intensity_meas(self, values: object) -> None:
+        """Set measured intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas._value = v
 
-    def _set_intensity_meas_su(self, values) -> None:
-        """Helper method to set standard uncertainty of measured
-        intensity.
-        """
+    def _set_intensity_meas_su(self, values: object) -> None:
+        """Set standard uncertainty of measured intensity values."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas_su._value = v
 
-    def _set_wavelength(self, values) -> None:
-        """Helper method to set wavelength."""
+    def _set_wavelength(self, values: object) -> None:
+        """Set wavelength."""
         for p, v in zip(self._items, values, strict=True):
             p.wavelength._value = v
 
     # Can be set multiple times
 
-    def _set_d_spacing(self, values) -> None:
-        """Helper method to set d-spacing values."""
+    def _set_d_spacing(self, values: object) -> None:
+        """Set d-spacing values."""
         for p, v in zip(self._items, values, strict=True):
             p.d_spacing._value = v
 
-    def _set_sin_theta_over_lambda(self, values) -> None:
-        """Helper method to set sin(theta)/lambda values."""
+    def _set_sin_theta_over_lambda(self, values: object) -> None:
+        """Set sin(theta)/lambda values."""
         for p, v in zip(self._items, values, strict=True):
             p.sin_theta_over_lambda._value = v
 
-    def _set_intensity_calc(self, values) -> None:
-        """Helper method to set calculated intensity."""
+    def _set_intensity_calc(self, values: object) -> None:
+        """Set calculated intensity."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_calc._value = v
 
     # Misc
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         experiment = self._parent
         experiments = experiment._parent
         project = experiments._parent
@@ -302,63 +363,72 @@ class ReflnData(CategoryCollection):
 
     @property
     def d_spacing(self) -> np.ndarray:
+        """D-spacing values for all reflection data points."""
         return np.fromiter(
             (p.d_spacing.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def sin_theta_over_lambda(self) -> np.ndarray:
+        """sinθ/λ values for all reflection data points."""
         return np.fromiter(
             (p.sin_theta_over_lambda.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def index_h(self) -> np.ndarray:
+        """Miller h indices for all reflection data points."""
         return np.fromiter(
             (p.index_h.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def index_k(self) -> np.ndarray:
+        """Miller k indices for all reflection data points."""
         return np.fromiter(
             (p.index_k.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def index_l(self) -> np.ndarray:
+        """Miller l indices for all reflection data points."""
         return np.fromiter(
             (p.index_l.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def intensity_meas(self) -> np.ndarray:
+        """Measured structure-factor intensities for all reflections."""
         return np.fromiter(
             (p.intensity_meas.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def intensity_meas_su(self) -> np.ndarray:
+        """Standard uncertainties of the measured intensities."""
         return np.fromiter(
             (p.intensity_meas_su.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def intensity_calc(self) -> np.ndarray:
+        """Calculated intensities for all reflections."""
         return np.fromiter(
             (p.intensity_calc.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )
 
     @property
     def wavelength(self) -> np.ndarray:
+        """Wavelengths associated with each reflection."""
         return np.fromiter(
             (p.wavelength.value for p in self._items),
-            dtype=float,  # TODO: needed? DataTypes.NUMERIC?
+            dtype=float,
         )

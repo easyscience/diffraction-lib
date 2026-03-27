@@ -1,9 +1,8 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
 import pytest
-
 
 
 def test_module_import():
@@ -129,6 +128,7 @@ def test_is_pycharm_and_is_colab(monkeypatch):
 
 def test_render_table_terminal_branch(capsys, monkeypatch):
     import easydiffraction.utils.utils as MUT
+
     # Ensure non-notebook rendering; on CI/default env it's terminal anyway.
     MUT.render_table(
         columns_data=[[1, 2], [3, 4]],
@@ -354,7 +354,6 @@ def test_download_all_tutorials_success(monkeypatch, tmp_path, capsys):
 
 
 def test_resolve_tutorial_url():
-    import easydiffraction.utils.utils as MUT
 
     # Test with a specific version
     url_template = 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb'
@@ -362,4 +361,3 @@ def test_resolve_tutorial_url():
     # So we just test that the function exists and replaces {version}
     result = url_template.replace('{version}', '0.8.0')
     assert result == 'https://example.com/0.8.0/tutorials/ed-1/ed-1.ipynb'
-

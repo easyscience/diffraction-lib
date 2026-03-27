@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 """Unit tests for theme detection module."""
@@ -23,12 +23,7 @@ class TestCheckJupyterlabSettings:
         )
 
         settings_dir = (
-            tmp_path
-            / '.jupyter'
-            / 'lab'
-            / 'user-settings'
-            / '@jupyterlab'
-            / 'apputils-extension'
+            tmp_path / '.jupyter' / 'lab' / 'user-settings' / '@jupyterlab' / 'apputils-extension'
         )
         settings_dir.mkdir(parents=True)
 
@@ -45,12 +40,7 @@ class TestCheckJupyterlabSettings:
         )
 
         settings_dir = (
-            tmp_path
-            / '.jupyter'
-            / 'lab'
-            / 'user-settings'
-            / '@jupyterlab'
-            / 'apputils-extension'
+            tmp_path / '.jupyter' / 'lab' / 'user-settings' / '@jupyterlab' / 'apputils-extension'
         )
         settings_dir.mkdir(parents=True)
 
@@ -76,12 +66,7 @@ class TestCheckJupyterlabSettings:
         )
 
         settings_dir = (
-            tmp_path
-            / '.jupyter'
-            / 'lab'
-            / 'user-settings'
-            / '@jupyterlab'
-            / 'apputils-extension'
+            tmp_path / '.jupyter' / 'lab' / 'user-settings' / '@jupyterlab' / 'apputils-extension'
         )
         settings_dir.mkdir(parents=True)
 
@@ -119,9 +104,7 @@ class TestCheckVscodeSettings:
         vscode_dir.mkdir()
 
         settings_file = vscode_dir / 'settings.json'
-        settings_file.write_text(
-            json.dumps({'workbench.colorTheme': 'One Dark Pro'})
-        )
+        settings_file.write_text(json.dumps({'workbench.colorTheme': 'One Dark Pro'}))
 
         with mock.patch.dict(os.environ, {'VSCODE_PID': '12345'}):
             with mock.patch.object(Path, 'cwd', return_value=tmp_path):
@@ -137,9 +120,7 @@ class TestCheckVscodeSettings:
         vscode_dir.mkdir()
 
         settings_file = vscode_dir / 'settings.json'
-        settings_file.write_text(
-            json.dumps({'workbench.colorTheme': 'Light+ (default light)'})
-        )
+        settings_file.write_text(json.dumps({'workbench.colorTheme': 'Light+ (default light)'}))
 
         with mock.patch.dict(os.environ, {'VSCODE_PID': '12345'}):
             with mock.patch.object(Path, 'cwd', return_value=tmp_path):
@@ -160,9 +141,7 @@ class TestCheckVscodeSettings:
 class TestCheckSystemPreferences:
     """Tests for _check_system_preferences function."""
 
-    @pytest.mark.skipif(
-        not os.sys.platform.startswith('darwin'), reason='macOS only test'
-    )
+    @pytest.mark.skipif(not os.sys.platform.startswith('darwin'), reason='macOS only test')
     def test_macos_dark_mode(self) -> None:
         """Test macOS dark mode detection."""
         from easydiffraction.utils._vendored.jupyter_dark_detect.detector import (
@@ -174,9 +153,7 @@ class TestCheckSystemPreferences:
             mock_run.return_value.stdout = 'Dark'
             assert _check_system_preferences() is True
 
-    @pytest.mark.skipif(
-        not os.sys.platform.startswith('darwin'), reason='macOS only test'
-    )
+    @pytest.mark.skipif(not os.sys.platform.startswith('darwin'), reason='macOS only test')
     def test_macos_light_mode(self) -> None:
         """Test macOS light mode detection."""
         from easydiffraction.utils._vendored.jupyter_dark_detect.detector import (
@@ -195,86 +172,82 @@ class TestIsDark:
         """Test that is_dark defaults to False when no detection works."""
         from easydiffraction.utils._vendored.theme_detect import is_dark
 
-        with mock.patch(
-            'easydiffraction.utils._vendored.theme_detect.'
-            '_check_jupyterlab_settings',
-            return_value=None,
-        ):
-            with mock.patch(
-                'easydiffraction.utils._vendored.theme_detect.'
-                '_check_vscode_settings',
+        with (
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_jupyterlab_settings',
                 return_value=None,
-            ):
-                with mock.patch(
-                    'easydiffraction.utils._vendored.theme_detect.'
-                    '_check_javascript_detection',
-                    return_value=None,
-                ):
-                    with mock.patch(
-                        'easydiffraction.utils._vendored.theme_detect.'
-                        '_check_system_preferences',
-                        return_value=None,
-                    ):
-                        assert is_dark() is False
+            ),
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_vscode_settings',
+                return_value=None,
+            ),
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_javascript_detection',
+                return_value=None,
+            ),
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_system_preferences',
+                return_value=None,
+            ),
+        ):
+            assert is_dark() is False
 
     def test_jupyterlab_priority(self) -> None:
         """Test that JupyterLab settings take priority."""
         from easydiffraction.utils._vendored.theme_detect import is_dark
 
-        with mock.patch(
-            'easydiffraction.utils._vendored.theme_detect.'
-            '_check_jupyterlab_settings',
-            return_value=True,
-        ):
-            with mock.patch(
-                'easydiffraction.utils._vendored.theme_detect.'
-                '_check_vscode_settings',
+        with (
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_jupyterlab_settings',
+                return_value=True,
+            ),
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_vscode_settings',
                 return_value=False,
-            ):
-                assert is_dark() is True
+            ),
+        ):
+            assert is_dark() is True
 
     def test_vscode_second_priority(self) -> None:
         """Test that VS Code settings are checked after JupyterLab."""
         from easydiffraction.utils._vendored.theme_detect import is_dark
 
-        with mock.patch(
-            'easydiffraction.utils._vendored.theme_detect.'
-            '_check_jupyterlab_settings',
-            return_value=None,
-        ):
-            with mock.patch(
-                'easydiffraction.utils._vendored.theme_detect.'
-                '_check_vscode_settings',
+        with (
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_jupyterlab_settings',
+                return_value=None,
+            ),
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_vscode_settings',
                 return_value=True,
-            ):
-                assert is_dark() is True
+            ),
+        ):
+            assert is_dark() is True
 
     def test_javascript_before_system(self) -> None:
         """Test that JS detection comes before system preferences."""
         from easydiffraction.utils._vendored.theme_detect import is_dark
 
-        with mock.patch(
-            'easydiffraction.utils._vendored.theme_detect.'
-            '_check_jupyterlab_settings',
-            return_value=None,
-        ):
-            with mock.patch(
-                'easydiffraction.utils._vendored.theme_detect.'
-                '_check_vscode_settings',
+        with (
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_jupyterlab_settings',
                 return_value=None,
-            ):
-                with mock.patch(
-                    'easydiffraction.utils._vendored.theme_detect.'
-                    '_check_javascript_detection',
-                    return_value=True,
-                ):
-                    with mock.patch(
-                        'easydiffraction.utils._vendored.theme_detect.'
-                        '_check_system_preferences',
-                        return_value=False,
-                    ):
-                        # JS detection should win over system prefs
-                        assert is_dark() is True
+            ),
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_vscode_settings',
+                return_value=None,
+            ),
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_javascript_detection',
+                return_value=True,
+            ),
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_system_preferences',
+                return_value=False,
+            ),
+        ):
+            # JS detection should win over system prefs
+            assert is_dark() is True
 
 
 class TestGetDetectionResult:
@@ -284,37 +257,35 @@ class TestGetDetectionResult:
         """Test that get_detection_result returns all detection methods."""
         from easydiffraction.utils._vendored.theme_detect import get_detection_result
 
-        with mock.patch(
-            'easydiffraction.utils._vendored.theme_detect.'
-            '_check_jupyterlab_settings',
-            return_value=True,
-        ):
-            with mock.patch(
-                'easydiffraction.utils._vendored.theme_detect.'
-                '_check_vscode_settings',
+        with (
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_jupyterlab_settings',
+                return_value=True,
+            ),
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_vscode_settings',
                 return_value=None,
-            ):
-                with mock.patch(
-                    'easydiffraction.utils._vendored.theme_detect.'
-                    '_check_javascript_detection',
-                    return_value=None,
-                ):
-                    with mock.patch(
-                        'easydiffraction.utils._vendored.theme_detect.'
-                        '_check_system_preferences',
-                        return_value=False,
-                    ):
-                        result = get_detection_result()
+            ),
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_javascript_detection',
+                return_value=None,
+            ),
+            mock.patch(
+                'easydiffraction.utils._vendored.theme_detect._check_system_preferences',
+                return_value=False,
+            ),
+        ):
+            result = get_detection_result()
 
-                        assert 'jupyterlab_settings' in result
-                        assert 'vscode_settings' in result
-                        assert 'javascript_dom' in result
-                        assert 'system_preferences' in result
+            assert 'jupyterlab_settings' in result
+            assert 'vscode_settings' in result
+            assert 'javascript_dom' in result
+            assert 'system_preferences' in result
 
-                        assert result['jupyterlab_settings'] is True
-                        assert result['vscode_settings'] is None
-                        assert result['javascript_dom'] is None
-                        assert result['system_preferences'] is False
+            assert result['jupyterlab_settings'] is True
+            assert result['vscode_settings'] is None
+            assert result['javascript_dom'] is None
+            assert result['system_preferences'] is False
 
 
 class TestImports:

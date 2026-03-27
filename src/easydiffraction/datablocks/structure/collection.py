@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Collection of structure data blocks."""
 
@@ -11,7 +11,8 @@ from easydiffraction.utils.logging import console
 
 
 class Structures(DatablockCollection):
-    """Ordered collection of :class:`Structure` instances.
+    """
+    Ordered collection of :class:`Structure` instances.
 
     Provides convenience ``add_from_*`` methods that mirror the
     :class:`StructureFactory` classmethods plus a bare :meth:`add` for
@@ -33,10 +34,13 @@ class Structures(DatablockCollection):
         *,
         name: str,
     ) -> None:
-        """Create a minimal structure and add it to the collection.
+        """
+        Create a minimal structure and add it to the collection.
 
-        Args:
-            name (str): Identifier for the new structure.
+        Parameters
+        ----------
+        name : str
+            Identifier for the new structure.
         """
         structure = StructureFactory.from_scratch(name=name)
         self.add(structure)
@@ -47,10 +51,13 @@ class Structures(DatablockCollection):
         self,
         cif_str: str,
     ) -> None:
-        """Create a structure from CIF content and add it.
+        """
+        Create a structure from CIF content and add it.
 
-        Args:
-            cif_str (str): CIF file content as a string.
+        Parameters
+        ----------
+        cif_str : str
+            CIF file content as a string.
         """
         structure = StructureFactory.from_cif_str(cif_str)
         self.add(structure)
@@ -61,10 +68,13 @@ class Structures(DatablockCollection):
         self,
         cif_path: str,
     ) -> None:
-        """Create a structure from a CIF file and add it.
+        """
+        Create a structure from a CIF file and add it.
 
-        Args:
-            cif_path (str): Filesystem path to a CIF file.
+        Parameters
+        ----------
+        cif_path : str
+            Filesystem path to a CIF file.
         """
         structure = StructureFactory.from_cif_path(cif_path)
         self.add(structure)

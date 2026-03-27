@@ -1,9 +1,10 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Experiment type descriptor (form, beam, probe, scattering).
+"""
+Experiment type descriptor (form, beam, probe, scattering).
 
-This lightweight container stores the categorical attributes defining
-an experiment configuration and handles CIF serialization via
+This lightweight container stores the categorical attributes defining an
+experiment configuration and handles CIF serialization via
 ``CifHandler``.
 """
 
@@ -26,27 +27,19 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @ExperimentTypeFactory.register
 class ExperimentType(CategoryItem):
-    """Container of categorical attributes defining experiment flavor.
-
-    Args:
-        sample_form: Powder or Single crystal.
-        beam_mode: Constant wavelength (CW) or time-of-flight (TOF).
-        radiation_probe: Neutrons or X-rays.
-        scattering_type: Bragg or Total.
-    """
+    """Container of attributes defining the experiment type."""
 
     type_info = TypeInfo(
         tag='default',
         description='Experiment type descriptor',
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._sample_form = StringDescriptor(
             name='sample_form',
-            description='Specifies whether the diffraction data corresponds to '
-            'powder diffraction or single crystal diffraction',
+            description='Powder diffraction or single crystal diffraction',
             value_spec=AttributeSpec(
                 default=SampleFormEnum.default().value,
                 validator=MembershipValidator(allowed=[member.value for member in SampleFormEnum]),
@@ -56,8 +49,7 @@ class ExperimentType(CategoryItem):
 
         self._beam_mode = StringDescriptor(
             name='beam_mode',
-            description='Defines whether the measurement is performed with a '
-            'constant wavelength (CW) or time-of-flight (TOF) method',
+            description='Constant wavelength (CW) or time-of-flight (TOF) measurement',
             value_spec=AttributeSpec(
                 default=BeamModeEnum.default().value,
                 validator=MembershipValidator(allowed=[member.value for member in BeamModeEnum]),
@@ -66,7 +58,7 @@ class ExperimentType(CategoryItem):
         )
         self._radiation_probe = StringDescriptor(
             name='radiation_probe',
-            description='Specifies whether the measurement uses neutrons or X-rays',
+            description='Neutron or X-ray diffraction measurement',
             value_spec=AttributeSpec(
                 default=RadiationProbeEnum.default().value,
                 validator=MembershipValidator(
@@ -77,9 +69,7 @@ class ExperimentType(CategoryItem):
         )
         self._scattering_type = StringDescriptor(
             name='scattering_type',
-            description='Specifies whether the experiment uses Bragg scattering '
-            '(for conventional structure refinement) or total scattering '
-            '(for pair distribution function analysis - PDF)',
+            description='Conventional Bragg diffraction or total scattering (PDF)',
             value_spec=AttributeSpec(
                 default=ScatteringTypeEnum.default().value,
                 validator=MembershipValidator(
@@ -112,17 +102,41 @@ class ExperimentType(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def sample_form(self):
+    def sample_form(self) -> StringDescriptor:
+        """
+        Powder diffraction or single crystal diffraction.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object.
+        """
         return self._sample_form
 
     @property
-    def beam_mode(self):
+    def beam_mode(self) -> StringDescriptor:
+        """
+        Constant wavelength (CW) or time-of-flight (TOF) measurement.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object.
+        """
         return self._beam_mode
 
     @property
-    def radiation_probe(self):
+    def radiation_probe(self) -> StringDescriptor:
+        """
+        Neutron or X-ray diffraction measurement.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object.
+        """
         return self._radiation_probe
 
     @property
-    def scattering_type(self):
+    def scattering_type(self) -> StringDescriptor:
+        """
+        Conventional Bragg diffraction or total scattering (PDF).
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object.
+        """
         return self._scattering_type

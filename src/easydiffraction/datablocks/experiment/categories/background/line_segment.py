@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Line-segment background model.
+"""
+Line-segment background model.
 
 Interpolate user-specified points to form a background curve.
 """
@@ -40,7 +41,7 @@ class LineSegment(CategoryItem):
 
         self._id = StringDescriptor(
             name='id',
-            description='Identifier for this background line segment.',
+            description='Identifier for this background line segment',
             value_spec=AttributeSpec(
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -52,10 +53,7 @@ class LineSegment(CategoryItem):
         )
         self._x = NumericDescriptor(
             name='x',
-            description=(
-                'X-coordinates used to create many straight-line segments '
-                'representing the background in a calculated diffractogram.'
-            ),
+            description='X-coordinates used to create many straight-line segments',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -69,10 +67,7 @@ class LineSegment(CategoryItem):
         )
         self._y = Parameter(
             name='y',  # TODO: rename to intensity
-            description=(
-                'Intensity used to create many straight-line segments '
-                'representing the background in a calculated diffractogram'
-            ),
+            description='Intensity used to create many straight-line segments',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -93,32 +88,54 @@ class LineSegment(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def id(self):
+    def id(self) -> StringDescriptor:
+        """
+        Identifier for this background line segment.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._id
 
     @id.setter
-    def id(self, value):
+    def id(self, value: str) -> None:
         self._id.value = value
 
     @property
-    def x(self):
+    def x(self) -> NumericDescriptor:
+        """
+        X-coordinates used to create many straight-line segments.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._x
 
     @x.setter
-    def x(self, value):
+    def x(self, value: float) -> None:
         self._x.value = value
 
     @property
-    def y(self):
+    def y(self) -> Parameter:
+        """
+        Intensity used to create many straight-line segments.
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
         return self._y
 
     @y.setter
-    def y(self, value):
+    def y(self, value: float) -> None:
         self._y.value = value
 
 
 @BackgroundFactory.register
 class LineSegmentBackground(BackgroundBase):
+    """Linear-interpolation background between user-defined points."""
+
     type_info = TypeInfo(
         tag='line-segment',
         description='Linear interpolation between points',
@@ -130,10 +147,10 @@ class LineSegmentBackground(BackgroundBase):
         calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=LineSegment)
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         """Interpolate background points over x data."""
         del called_by_minimizer
 

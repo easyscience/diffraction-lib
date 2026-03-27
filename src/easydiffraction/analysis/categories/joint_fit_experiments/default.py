@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Joint-fit experiment weighting configuration.
+"""
+Joint-fit experiment weighting configuration.
 
 Stores per-experiment weights to be used when multiple experiments are
 fitted simultaneously.
@@ -23,12 +24,7 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class JointFitExperiment(CategoryItem):
-    """A single joint-fit entry.
-
-    Args:
-        id: Experiment identifier used in the fit session.
-        weight: Relative weight factor in the combined objective.
-    """
+    """A single joint-fit entry."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -60,19 +56,33 @@ class JointFitExperiment(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def id(self):
+    def id(self) -> StringDescriptor:
+        """
+        Experiment identifier.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._id
 
     @id.setter
-    def id(self, value):
+    def id(self, value: str) -> None:
         self._id.value = value
 
     @property
-    def weight(self):
+    def weight(self) -> NumericDescriptor:
+        """
+        Weight factor.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._weight
 
     @weight.setter
-    def weight(self, value):
+    def weight(self, value: float) -> None:
         self._weight.value = value
 
 
@@ -85,6 +95,6 @@ class JointFitExperiments(CategoryCollection):
         description='Joint-fit experiment weights',
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create an empty joint-fit experiments collection."""
         super().__init__(item_type=JointFitExperiment)

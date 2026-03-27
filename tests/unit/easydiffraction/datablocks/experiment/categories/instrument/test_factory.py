@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import pytest
@@ -6,7 +6,9 @@ import pytest
 
 def test_instrument_factory_default_and_errors():
     try:
-        from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
+        from easydiffraction.datablocks.experiment.categories.instrument.factory import (
+            InstrumentFactory,
+        )
         from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
         from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
     except ImportError as e:  # pragma: no cover - environment-specific circular import

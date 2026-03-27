@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Fit-mode category item.
+"""
+Fit-mode category item.
 
 Stores the active fitting strategy as a CIF-serializable descriptor
 validated by ``FitModeEnum``.
@@ -20,7 +21,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @FitModeFactory.register
 class FitMode(CategoryItem):
-    """Fitting strategy selector.
+    """
+    Fitting strategy selector.
 
     Holds a single ``mode`` descriptor whose value is one of
     ``FitModeEnum`` members (``'single'`` or ``'joint'``).
@@ -47,15 +49,16 @@ class FitMode(CategoryItem):
         self._identity.category_code = 'fit_mode'
 
     @property
-    def mode(self):
-        """Active fitting strategy descriptor."""
+    def mode(self) -> StringDescriptor:
+        """
+        Fitting strategy.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._mode
 
     @mode.setter
     def mode(self, value: str) -> None:
-        """Set the fitting strategy value.
-
-        Args:
-            value: ``'single'`` or ``'joint'``.
-        """
         self._mode.value = value

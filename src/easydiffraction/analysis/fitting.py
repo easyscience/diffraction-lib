@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import TYPE_CHECKING
@@ -33,20 +33,26 @@ class Fitter:
         structures: Structures,
         experiments: Experiments,
         weights: Optional[np.array] = None,
-        analysis=None,
+        analysis: object = None,
     ) -> None:
-        """Run the fitting process.
+        """
+        Run the fitting process.
 
         This method performs the optimization but does not display
-        results. Use :meth:`show_fit_results` on the Analysis object
-        to display the fit results after fitting is complete.
+        results. Use :meth:`show_fit_results` on the Analysis object to
+        display the fit results after fitting is complete.
 
-        Args:
-            structures: Collection of structures.
-            experiments: Collection of experiments.
-            weights: Optional weights for joint fitting.
-            analysis: Optional Analysis object to update its categories
-                during fitting.
+        Parameters
+        ----------
+        structures : Structures
+            Collection of structures.
+        experiments : Experiments
+            Collection of experiments.
+        weights : Optional[np.array], default=None
+            Optional weights for joint fitting.
+        analysis : object, default=None
+            Optional Analysis object to update its categories during
+            fitting.
         """
         params = structures.free_parameters + experiments.free_parameters
 
@@ -58,6 +64,19 @@ class Fitter:
             param._fit_start_value = param.value
 
         def objective_function(engine_params: Dict[str, Any]) -> np.ndarray:
+            """
+            Evaluate the residual for the current minimizer parameters.
+
+            Parameters
+            ----------
+            engine_params : Dict[str, Any]
+                Parameter values provided by the minimizer engine.
+
+            Returns
+            -------
+            np.ndarray
+                Residual array passed back to the minimizer.
+            """
             return self._residual_function(
                 engine_params=engine_params,
                 parameters=params,
@@ -75,16 +94,20 @@ class Fitter:
         structures: Structures,
         experiments: Experiments,
     ) -> None:
-        """Collect reliability inputs and display fit results.
+        """
+        Collect reliability inputs and display fit results.
 
         This method is typically called by
         :meth:`Analysis.show_fit_results` rather than directly. It
-        calculates R-factors and other metrics, then renders them to
-        the console.
+        calculates R-factors and other metrics, then renders them to the
+        console.
 
-        Args:
-            structures: Collection of structures.
-            experiments: Collection of experiments.
+        Parameters
+        ----------
+        structures : Structures
+            Collection of structures.
+        experiments : Experiments
+            Collection of experiments.
         """
         y_obs, y_calc, y_err = get_reliability_inputs(
             structures,
@@ -108,13 +131,19 @@ class Fitter:
         structures: Structures,
         experiments: Experiments,
     ) -> List[Parameter]:
-        """Collect free parameters from structures and experiments.
+        """
+        Collect free parameters from structures and experiments.
 
-        Args:
-            structures: Collection of structures.
-            experiments: Collection of experiments.
+        Parameters
+        ----------
+        structures : Structures
+            Collection of structures.
+        experiments : Experiments
+            Collection of experiments.
 
-        Returns:
+        Returns
+        -------
+        List[Parameter]
             List of free parameters.
         """
         free_params: List[Parameter] = structures.free_parameters + experiments.free_parameters
@@ -127,22 +156,33 @@ class Fitter:
         structures: Structures,
         experiments: Experiments,
         weights: Optional[np.array] = None,
-        analysis=None,
+        analysis: object = None,
     ) -> np.ndarray:
-        """Residual function computes the difference between measured
-        and calculated patterns. It updates the parameter values
-        according to the optimizer-provided engine_params.
+        """
+        Compute residuals between measured and calculated patterns.
 
-        Args:
-            engine_params: Engine-specific parameter dict.
-            parameters: List of parameters being optimized.
-            structures: Collection of structures.
-            experiments: Collection of experiments.
-            weights: Optional weights for joint fitting.
-            analysis: Optional Analysis object to update its categories
-                during fitting.
+        It updates the parameter values according to the
+        optimizer-provided engine_params.
 
-        Returns:
+        Parameters
+        ----------
+        engine_params : Dict[str, Any]
+            Engine-specific parameter dict.
+        parameters : List[Parameter]
+            List of parameters being optimized.
+        structures : Structures
+            Collection of structures.
+        experiments : Experiments
+            Collection of experiments.
+        weights : Optional[np.array], default=None
+            Optional weights for joint fitting.
+        analysis : object, default=None
+            Optional Analysis object to update its categories during
+            fitting.
+
+        Returns
+        -------
+        np.ndarray
             Array of weighted residuals.
         """
         # Sync parameters back to objects

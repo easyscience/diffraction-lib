@@ -1,9 +1,8 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-import importlib
-import types
 import sys
+import types
 
 
 def test_module_import():
@@ -36,10 +35,34 @@ def test_default_axes_labels_keys_present():
     from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
     # Powder Bragg
-    assert (SampleFormEnum.POWDER, ScatteringTypeEnum.BRAGG, pb.XAxisType.TWO_THETA) in pb.DEFAULT_AXES_LABELS
-    assert (SampleFormEnum.POWDER, ScatteringTypeEnum.BRAGG, pb.XAxisType.TIME_OF_FLIGHT) in pb.DEFAULT_AXES_LABELS
-    assert (SampleFormEnum.POWDER, ScatteringTypeEnum.BRAGG, pb.XAxisType.D_SPACING) in pb.DEFAULT_AXES_LABELS
+    assert (
+        SampleFormEnum.POWDER,
+        ScatteringTypeEnum.BRAGG,
+        pb.XAxisType.TWO_THETA,
+    ) in pb.DEFAULT_AXES_LABELS
+    assert (
+        SampleFormEnum.POWDER,
+        ScatteringTypeEnum.BRAGG,
+        pb.XAxisType.TIME_OF_FLIGHT,
+    ) in pb.DEFAULT_AXES_LABELS
+    assert (
+        SampleFormEnum.POWDER,
+        ScatteringTypeEnum.BRAGG,
+        pb.XAxisType.D_SPACING,
+    ) in pb.DEFAULT_AXES_LABELS
     # Single crystal Bragg
-    assert (SampleFormEnum.SINGLE_CRYSTAL, ScatteringTypeEnum.BRAGG, pb.XAxisType.INTENSITY_CALC) in pb.DEFAULT_AXES_LABELS
-    assert (SampleFormEnum.SINGLE_CRYSTAL, ScatteringTypeEnum.BRAGG, pb.XAxisType.D_SPACING) in pb.DEFAULT_AXES_LABELS
-    assert (SampleFormEnum.SINGLE_CRYSTAL, ScatteringTypeEnum.BRAGG, pb.XAxisType.SIN_THETA_OVER_LAMBDA) in pb.DEFAULT_AXES_LABELS
+    assert (
+        SampleFormEnum.SINGLE_CRYSTAL,
+        ScatteringTypeEnum.BRAGG,
+        pb.XAxisType.INTENSITY_CALC,
+    ) in pb.DEFAULT_AXES_LABELS
+    assert (
+        SampleFormEnum.SINGLE_CRYSTAL,
+        ScatteringTypeEnum.BRAGG,
+        pb.XAxisType.D_SPACING,
+    ) in pb.DEFAULT_AXES_LABELS
+    assert (
+        SampleFormEnum.SINGLE_CRYSTAL,
+        ScatteringTypeEnum.BRAGG,
+        pb.XAxisType.SIN_THETA_OVER_LAMBDA,
+    ) in pb.DEFAULT_AXES_LABELS

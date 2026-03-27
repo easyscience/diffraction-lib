@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Base classes for experiment datablock items."""
 
@@ -34,16 +34,14 @@ if TYPE_CHECKING:
 
 
 class ExperimentBase(DatablockItem):
-    """Base class for all experiment datablock items with only core
-    attributes.
-    """
+    """Base class for all experiment datablock items."""
 
     def __init__(
         self,
         *,
         name: str,
         type: ExperimentType,
-    ):
+    ) -> None:
         super().__init__()
         self._name = name
         self._type = type
@@ -58,18 +56,19 @@ class ExperimentBase(DatablockItem):
 
     @name.setter
     def name(self, new: str) -> None:
-        """Rename the experiment.
+        """
+        Rename the experiment.
 
-        Args:
-            new: New name for this experiment.
+        Parameters
+        ----------
+        new : str
+            New name for this experiment.
         """
         self._name = new
 
     @property
-    def type(self):  # TODO: Consider another name
-        """Experiment type descriptor (sample form, probe, beam
-        mode).
-        """
+    def type(self) -> object:  # TODO: Consider another name
+        """Experiment type: sample form, probe, beam mode."""
         return self._type
 
     @property
@@ -86,10 +85,18 @@ class ExperimentBase(DatablockItem):
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load ASCII data from file into the experiment data category.
+        """
+        Load ASCII data from file into the experiment data category.
 
-        Args:
-            data_path: Path to the ASCII file to load.
+        Parameters
+        ----------
+        data_path : str
+            Path to the ASCII file to load.
+
+        Raises
+        ------
+        NotImplementedError
+            Subclasses must implement this method.
         """
         raise NotImplementedError()
 
@@ -98,8 +105,9 @@ class ExperimentBase(DatablockItem):
     # ------------------------------------------------------------------
 
     @property
-    def calculator(self):
-        """The active calculator instance for this experiment.
+    def calculator(self) -> object:
+        """
+        The active calculator instance for this experiment.
 
         Auto-resolved on first access from the experiment's data
         category ``calculator_support`` and
@@ -118,11 +126,14 @@ class ExperimentBase(DatablockItem):
 
     @calculator_type.setter
     def calculator_type(self, tag: str) -> None:
-        """Switch to a different calculator backend.
+        """
+        Switch to a different calculator backend.
 
-        Args:
-            tag: Calculator tag (e.g. ``'cryspy'``, ``'crysfml'``,
-                ``'pdffit'``).
+        Parameters
+        ----------
+        tag : str
+            Calculator tag (e.g. ``'cryspy'``, ``'crysfml'``,
+            ``'pdffit'``).
         """
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
 
@@ -140,9 +151,7 @@ class ExperimentBase(DatablockItem):
         console.print(tag)
 
     def show_supported_calculator_types(self) -> None:
-        """Print a table of calculator backends supported by this
-        experiment.
-        """
+        """Print a table of supported calculator backends."""
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
 
         supported_tags = self._supported_calculator_tags()
@@ -169,10 +178,7 @@ class ExperimentBase(DatablockItem):
         console.print(self.calculator_type)
 
     def _resolve_calculator(self) -> None:
-        """Auto-resolve the default calculator from the data category's
-        ``calculator_support`` and
-        ``CalculatorFactory._default_rules``.
-        """
+        """Auto-resolve the default calculator from data category."""
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
 
         tag = CalculatorFactory.default_tag(
@@ -185,7 +191,8 @@ class ExperimentBase(DatablockItem):
         self._calculator_type = tag
 
     def _supported_calculator_tags(self) -> list[str]:
-        """Return calculator tags supported by this experiment.
+        """
+        Return calculator tags supported by this experiment.
 
         Intersects the data category's ``calculator_support`` with
         calculators whose engines are importable.
@@ -231,11 +238,14 @@ class ScExperimentBase(ExperimentBase):
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load single crystal data from an ASCII file.
+        """
+        Load single crystal data from an ASCII file.
 
-        Args:
-            data_path: Path to data file with columns compatible with
-                the beam mode.
+        Parameters
+        ----------
+        data_path : str
+            Path to data file with columns compatible with the beam
+            mode.
         """
         pass
 
@@ -244,7 +254,7 @@ class ScExperimentBase(ExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def extinction(self):
+    def extinction(self) -> object:
         """Active extinction correction model."""
         return self._extinction
 
@@ -255,10 +265,13 @@ class ScExperimentBase(ExperimentBase):
 
     @extinction_type.setter
     def extinction_type(self, new_type: str) -> None:
-        """Switch to a different extinction correction model.
+        """
+        Switch to a different extinction correction model.
 
-        Args:
-            new_type: Extinction tag (e.g. ``'shelx'``).
+        Parameters
+        ----------
+        new_type : str
+            Extinction tag (e.g. ``'shelx'``).
         """
         supported_tags = ExtinctionFactory.supported_tags()
         if new_type not in supported_tags:
@@ -288,7 +301,7 @@ class ScExperimentBase(ExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def linked_crystal(self):
+    def linked_crystal(self) -> object:
         """Linked crystal model for this experiment."""
         return self._linked_crystal
 
@@ -299,10 +312,13 @@ class ScExperimentBase(ExperimentBase):
 
     @linked_crystal_type.setter
     def linked_crystal_type(self, new_type: str) -> None:
-        """Switch to a different linked-crystal reference type.
+        """
+        Switch to a different linked-crystal reference type.
 
-        Args:
-            new_type: Linked-crystal tag (e.g. ``'default'``).
+        Parameters
+        ----------
+        new_type : str
+            Linked-crystal tag (e.g. ``'default'``).
         """
         supported_tags = LinkedCrystalFactory.supported_tags()
         if new_type not in supported_tags:
@@ -332,7 +348,7 @@ class ScExperimentBase(ExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def instrument(self):
+    def instrument(self) -> object:
         """Active instrument model for this experiment."""
         return self._instrument
 
@@ -343,10 +359,13 @@ class ScExperimentBase(ExperimentBase):
 
     @instrument_type.setter
     def instrument_type(self, new_type: str) -> None:
-        """Switch to a different instrument type.
+        """
+        Switch to a different instrument type.
 
-        Args:
-            new_type: Instrument tag (e.g. ``'cwl-sc'``).
+        Parameters
+        ----------
+        new_type : str
+            Instrument tag (e.g. ``'cwl-sc'``).
         """
         supported = InstrumentFactory.supported_for(
             scattering_type=self.type.scattering_type.value,
@@ -384,7 +403,7 @@ class ScExperimentBase(ExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def data(self):
+    def data(self) -> object:
         """Data collection for this experiment."""
         return self._data
 
@@ -395,10 +414,13 @@ class ScExperimentBase(ExperimentBase):
 
     @data_type.setter
     def data_type(self, new_type: str) -> None:
-        """Switch to a different data collection type.
+        """
+        Switch to a different data collection type.
 
-        Args:
-            new_type: Data tag (e.g. ``'bragg-sc'``).
+        Parameters
+        ----------
+        new_type : str
+            Data tag (e.g. ``'bragg-sc'``).
         """
         supported_tags = DataFactory.supported_tags()
         if new_type not in supported_tags:
@@ -454,12 +476,17 @@ class PdExperimentBase(ExperimentBase):
         self,
         structures: Structures,
     ) -> List[Any]:
-        """Get valid linked phases for this experiment.
+        """
+        Get valid linked phases for this experiment.
 
-        Args:
-            structures: Collection of structures.
+        Parameters
+        ----------
+        structures : Structures
+            Collection of structures.
 
-        Returns:
+        Returns
+        -------
+        List[Any]
             A list of valid linked phases.
         """
         if not self.linked_phases:
@@ -485,16 +512,19 @@ class PdExperimentBase(ExperimentBase):
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load powder diffraction data from an ASCII file.
+        """
+        Load powder diffraction data from an ASCII file.
 
-        Args:
-            data_path: Path to data file with columns compatible with
-                the beam mode (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
+        Parameters
+        ----------
+        data_path : str
+            Path to data file with columns compatible with the beam mode
+            (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
         """
         pass
 
     @property
-    def linked_phases(self):
+    def linked_phases(self) -> object:
         """Collection of phases linked to this experiment."""
         return self._linked_phases
 
@@ -505,10 +535,13 @@ class PdExperimentBase(ExperimentBase):
 
     @linked_phases_type.setter
     def linked_phases_type(self, new_type: str) -> None:
-        """Switch to a different linked-phases collection type.
+        """
+        Switch to a different linked-phases collection type.
 
-        Args:
-            new_type: Linked-phases tag (e.g. ``'default'``).
+        Parameters
+        ----------
+        new_type : str
+            Linked-phases tag (e.g. ``'default'``).
         """
         supported_tags = LinkedPhasesFactory.supported_tags()
         if new_type not in supported_tags:
@@ -534,7 +567,7 @@ class PdExperimentBase(ExperimentBase):
         console.print(self.linked_phases_type)
 
     @property
-    def excluded_regions(self):
+    def excluded_regions(self) -> object:
         """Collection of excluded regions for the x-grid."""
         return self._excluded_regions
 
@@ -545,10 +578,13 @@ class PdExperimentBase(ExperimentBase):
 
     @excluded_regions_type.setter
     def excluded_regions_type(self, new_type: str) -> None:
-        """Switch to a different excluded-regions collection type.
+        """
+        Switch to a different excluded-regions collection type.
 
-        Args:
-            new_type: Excluded-regions tag (e.g. ``'default'``).
+        Parameters
+        ----------
+        new_type : str
+            Excluded-regions tag (e.g. ``'default'``).
         """
         supported_tags = ExcludedRegionsFactory.supported_tags()
         if new_type not in supported_tags:
@@ -565,9 +601,7 @@ class PdExperimentBase(ExperimentBase):
         console.print(new_type)
 
     def show_supported_excluded_regions_types(self) -> None:
-        """Print a table of supported excluded-regions collection
-        types.
-        """
+        """Print a table of supported excluded-regions types."""
         ExcludedRegionsFactory.show_supported()
 
     def show_current_excluded_regions_type(self) -> None:
@@ -580,7 +614,7 @@ class PdExperimentBase(ExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def data(self):
+    def data(self) -> object:
         """Data collection for this experiment."""
         return self._data
 
@@ -591,10 +625,13 @@ class PdExperimentBase(ExperimentBase):
 
     @data_type.setter
     def data_type(self, new_type: str) -> None:
-        """Switch to a different data collection type.
+        """
+        Switch to a different data collection type.
 
-        Args:
-            new_type: Data tag (e.g. ``'bragg-pd-cwl'``).
+        Parameters
+        ----------
+        new_type : str
+            Data tag (e.g. ``'bragg-pd-cwl'``).
         """
         supported_tags = DataFactory.supported_tags()
         if new_type not in supported_tags:
@@ -619,21 +656,24 @@ class PdExperimentBase(ExperimentBase):
         console.print(self.data_type)
 
     @property
-    def peak(self):
+    def peak(self) -> object:
         """Peak category object with profile parameters and mixins."""
         return self._peak
 
     @property
-    def peak_profile_type(self):
+    def peak_profile_type(self) -> object:
         """Currently selected peak profile type enum."""
         return self._peak_profile_type
 
     @peak_profile_type.setter
-    def peak_profile_type(self, new_type: str):
-        """Change the active peak profile type, if supported.
+    def peak_profile_type(self, new_type: str) -> None:
+        """
+        Change the active peak profile type, if supported.
 
-        Args:
-            new_type: New profile type as tag string.
+        Parameters
+        ----------
+        new_type : str
+            New profile type as tag string.
         """
         supported = PeakFactory.supported_for(
             scattering_type=self.type.scattering_type.value,
@@ -659,14 +699,14 @@ class PdExperimentBase(ExperimentBase):
         console.paragraph(f"Peak profile type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_peak_profile_types(self):
+    def show_supported_peak_profile_types(self) -> None:
         """Print available peak profile types for this experiment."""
         PeakFactory.show_supported(
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
         )
 
-    def show_current_peak_profile_type(self):
+    def show_current_peak_profile_type(self) -> None:
         """Print the currently selected peak profile type."""
         console.paragraph('Current peak profile type')
         console.print(self.peak_profile_type)

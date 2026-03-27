@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
@@ -20,8 +20,6 @@ def _mk_type_powder_cwl_bragg():
     et._set_radiation_probe(RadiationProbeEnum.NEUTRON.value)
     et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
     return et
-
-
 
 
 def test_background_defaults_and_change():

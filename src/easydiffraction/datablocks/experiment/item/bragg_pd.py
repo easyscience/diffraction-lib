@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -25,9 +25,7 @@ if TYPE_CHECKING:
 
 @ExperimentFactory.register
 class BraggPdExperiment(PdExperimentBase):
-    """Standard (Bragg) Powder Diffraction experiment class with
-    specific attributes.
-    """
+    """Standard Bragg powder diffraction experiment."""
 
     type_info = TypeInfo(
         tag='bragg-pd',
@@ -57,8 +55,8 @@ class BraggPdExperiment(PdExperimentBase):
         self._background = BackgroundFactory.create(self._background_type)
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-        """Load (x, y, sy) data from an ASCII file into the data
-        category.
+        """
+        Load (x, y, sy) data from an ASCII file into the data category.
 
         The file format is space/column separated with 2 or 3 columns:
         ``x y [sy]``. If ``sy`` is missing, it is approximated as
@@ -105,7 +103,7 @@ class BraggPdExperiment(PdExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def instrument(self):
+    def instrument(self) -> object:
         """Active instrument model for this experiment."""
         return self._instrument
 
@@ -116,10 +114,13 @@ class BraggPdExperiment(PdExperimentBase):
 
     @instrument_type.setter
     def instrument_type(self, new_type: str) -> None:
-        """Switch to a different instrument type.
+        """
+        Switch to a different instrument type.
 
-        Args:
-            new_type: Instrument tag (e.g. ``'cwl-pd'``).
+        Parameters
+        ----------
+        new_type : str
+            Instrument tag (e.g. ``'cwl-pd'``).
         """
         supported = InstrumentFactory.supported_for(
             scattering_type=self.type.scattering_type.value,
@@ -157,12 +158,12 @@ class BraggPdExperiment(PdExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def background_type(self):
+    def background_type(self) -> object:
         """Current background type enum value."""
         return self._background_type
 
     @background_type.setter
-    def background_type(self, new_type):
+    def background_type(self, new_type: str) -> None:
         """Set a new background type and recreate background object."""
         if self._background_type == new_type:
             console.paragraph(f"Background type for experiment '{self.name}' already set to")
@@ -190,14 +191,15 @@ class BraggPdExperiment(PdExperimentBase):
         console.print(new_type)
 
     @property
-    def background(self):
+    def background(self) -> object:
+        """Active background model for this experiment."""
         return self._background
 
-    def show_supported_background_types(self):
+    def show_supported_background_types(self) -> None:
         """Print a table of supported background types."""
         BackgroundFactory.show_supported()
 
-    def show_current_background_type(self):
+    def show_current_background_type(self) -> None:
         """Print the currently used background type."""
         console.paragraph('Current background type')
         console.print(self.background_type)

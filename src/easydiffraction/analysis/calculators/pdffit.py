@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""PDF calculation backend using diffpy.pdffit2 if available.
+"""
+PDF calculation backend using diffpy.pdffit2 if available.
 
 The class adapts the engine to EasyDiffraction calculator interface and
 silences stdio on import to avoid noisy output in notebooks and logs.
@@ -38,6 +39,9 @@ except ImportError:
     # print("⚠️ 'pdffit' module not found. This calculation engine will
     # not be available.")
     PdfFit = None
+    redirect_stdout = None
+    pdffit_cif_parser = None
+    _pdffit_devnull = None
 
 
 @CalculatorFactory.register
@@ -51,10 +55,30 @@ class PdffitCalculator(CalculatorBase):
     engine_imported: bool = PdfFit is not None
 
     @property
-    def name(self):
+    def name(self) -> str:
+        """Short identifier of this calculator engine."""
         return 'pdffit'
 
-    def calculate_structure_factors(self, structures, experiments):
+    def calculate_structure_factors(
+        self,
+        structures: object,
+        experiments: object,
+    ) -> list:
+        """
+        Return an empty list; PDF does not compute structure factors.
+
+        Parameters
+        ----------
+        structures : object
+            Unused; kept for interface consistency.
+        experiments : object
+            Unused; kept for interface consistency.
+
+        Returns
+        -------
+        list
+            An empty list.
+        """
         # PDF doesn't compute HKL but we keep interface consistent
         # Intentionally unused, required by public API/signature
         del structures, experiments
@@ -66,7 +90,21 @@ class PdffitCalculator(CalculatorBase):
         structure: Structure,
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
-    ):
+    ) -> None:
+        """
+        Calculate the PDF pattern using PDFfit2.
+
+        Parameters
+        ----------
+        structure : Structure
+            The structure object supplying atom sites and cell
+            parameters.
+        experiment : ExperimentBase
+            The experiment object supplying instrument and peak
+            parameters.
+        called_by_minimizer : bool, default=False
+            Unused; kept for interface consistency.
+        """
         # Intentionally unused, required by public API/signature
         del called_by_minimizer
 

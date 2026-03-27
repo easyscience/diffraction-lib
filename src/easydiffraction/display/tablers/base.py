@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Low-level backends for rendering tables.
+"""
+Low-level backends for rendering tables.
 
 This module defines the abstract base for tabular renderers and small
 helpers for consistent styling across terminal and notebook outputs.
@@ -10,7 +11,6 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
-from typing import Any
 
 from IPython import get_ipython
 from rich.color import Color
@@ -19,11 +19,11 @@ from easydiffraction.utils._vendored.theme_detect import is_dark
 
 
 class TableBackendBase(ABC):
-    """Abstract base class for concrete table backends.
+    """
+    Abstract base class for concrete table backends.
 
-    Subclasses implement the ``render`` method which receives an
-    index-aware pandas DataFrame and the alignment for each column
-    header.
+    Subclasses implement the ``render`` method which receives an index-
+    aware pandas DataFrame and the alignment for each column header.
     """
 
     FLOAT_PRECISION = 5
@@ -34,20 +34,26 @@ class TableBackendBase(ABC):
         super().__init__()
         self._float_fmt = f'{{:.{self.FLOAT_PRECISION}f}}'.format
 
-    def _format_value(self, value: Any) -> Any:
-        """Format floats with fixed precision and others as strings.
+    def _format_value(self, value: object) -> object:
+        """
+        Format floats with fixed precision and others as strings.
 
-        Args:
-            value: Cell value to format.
+        Parameters
+        ----------
+        value : object
+            Cell value to format.
 
-        Returns:
+        Returns
+        -------
+        object
             A string representation with fixed precision for floats or
             ``str(value)`` for other types.
         """
         return self._float_fmt(value) if isinstance(value, float) else str(value)
 
     def _is_dark_theme(self) -> bool:
-        """Return True when a dark theme is detected in Jupyter.
+        """
+        Return True when a dark theme is detected in Jupyter.
 
         If not running inside Jupyter, return a sane default (True).
         """
@@ -62,14 +68,18 @@ class TableBackendBase(ABC):
 
         return is_dark()
 
-    def _rich_to_hex(self, color):
-        """Convert a Rich color name to a CSS-style hex string.
+    def _rich_to_hex(self, color: str) -> str:
+        """
+        Convert a Rich color name to a CSS-style hex string.
 
-        Args:
-            color: Rich color name or specification parsable by
-                :mod:`rich`.
+        Parameters
+        ----------
+        color : str
+            Rich color name or specification parsable by :mod:`rich`.
 
-        Returns:
+        Returns
+        -------
+        str
             Hex color string in the form ``#RRGGBB``.
         """
         c = Color.parse(color)
@@ -90,21 +100,27 @@ class TableBackendBase(ABC):
     @abstractmethod
     def render(
         self,
-        alignments,
-        df,
-        display_handle: Any | None = None,
-    ) -> Any:
-        """Render the provided DataFrame with backend-specific styling.
+        alignments: object,
+        df: object,
+        display_handle: object | None = None,
+    ) -> object:
+        """
+        Render the provided DataFrame with backend-specific styling.
 
-        Args:
-            alignments: Iterable of column justifications (e.g.,
-                ``'left'`` or ``'center'``) corresponding to the data
-                columns.
-            df: Index-aware DataFrame with data to render.
-            display_handle: Optional environment-specific handle to
-                enable in-place updates.
+        Parameters
+        ----------
+        alignments : object
+            Iterable of column justifications (e.g., ``'left'`` or
+            ``'center'``) corresponding to the data columns.
+        df : object
+            Index-aware DataFrame with data to render.
+        display_handle : object | None, default=None
+            Optional environment-specific handle to enable in-place
+            updates.
 
-        Returns:
+        Returns
+        -------
+        object
             Backend-defined return value (commonly ``None``).
         """
         pass

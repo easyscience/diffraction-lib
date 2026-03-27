@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Structure datablock item."""
 
@@ -40,20 +40,26 @@ class Structure(DatablockItem):
 
     @property
     def name(self) -> str:
-        """Name identifier for this structure.
+        """
+        Name identifier for this structure.
 
-        Returns:
-            str: The structure's name.
+        Returns
+        -------
+        str
+            The structure's name.
         """
         return self._name
 
     @name.setter
     @typechecked
     def name(self, new: str) -> None:
-        """Set the name identifier for this structure.
+        """
+        Set the name identifier for this structure.
 
-        Args:
-            new (str): New name string.
+        Parameters
+        ----------
+        new : str
+            New name string.
         """
         self._name = new
 
@@ -69,10 +75,13 @@ class Structure(DatablockItem):
     @cell.setter
     @typechecked
     def cell(self, new: Cell) -> None:
-        """Replace the unit-cell category for this structure.
+        """
+        Replace the unit-cell category for this structure.
 
-        Args:
-            new (Cell): New unit-cell instance.
+        Parameters
+        ----------
+        new : Cell
+            New unit-cell instance.
         """
         self._cell = new
 
@@ -83,10 +92,13 @@ class Structure(DatablockItem):
 
     @cell_type.setter
     def cell_type(self, new_type: str) -> None:
-        """Switch to a different unit-cell type.
+        """
+        Switch to a different unit-cell type.
 
-        Args:
-            new_type: Cell tag (e.g. ``'default'``).
+        Parameters
+        ----------
+        new_type : str
+            Cell tag (e.g. ``'default'``).
         """
         supported_tags = CellFactory.supported_tags()
         if new_type not in supported_tags:
@@ -122,10 +134,13 @@ class Structure(DatablockItem):
     @space_group.setter
     @typechecked
     def space_group(self, new: SpaceGroup) -> None:
-        """Replace the space-group category for this structure.
+        """
+        Replace the space-group category for this structure.
 
-        Args:
-            new (SpaceGroup): New space-group instance.
+        Parameters
+        ----------
+        new : SpaceGroup
+            New space-group instance.
         """
         self._space_group = new
 
@@ -136,10 +151,13 @@ class Structure(DatablockItem):
 
     @space_group_type.setter
     def space_group_type(self, new_type: str) -> None:
-        """Switch to a different space-group type.
+        """
+        Switch to a different space-group type.
 
-        Args:
-            new_type: Space-group tag (e.g. ``'default'``).
+        Parameters
+        ----------
+        new_type : str
+            Space-group tag (e.g. ``'default'``).
         """
         supported_tags = SpaceGroupFactory.supported_tags()
         if new_type not in supported_tags:
@@ -175,10 +193,13 @@ class Structure(DatablockItem):
     @atom_sites.setter
     @typechecked
     def atom_sites(self, new: AtomSites) -> None:
-        """Replace the atom-sites collection for this structure.
+        """
+        Replace the atom-sites collection for this structure.
 
-        Args:
-            new (AtomSites): New atom-sites collection.
+        Parameters
+        ----------
+        new : AtomSites
+            New atom-sites collection.
         """
         self._atom_sites = new
 
@@ -189,10 +210,13 @@ class Structure(DatablockItem):
 
     @atom_sites_type.setter
     def atom_sites_type(self, new_type: str) -> None:
-        """Switch to a different atom-sites collection type.
+        """
+        Switch to a different atom-sites collection type.
 
-        Args:
-            new_type: Atom-sites tag (e.g. ``'default'``).
+        Parameters
+        ----------
+        new_type : str
+            Atom-sites tag (e.g. ``'default'``).
         """
         supported_tags = AtomSitesFactory.supported_tags()
         if new_type not in supported_tags:
@@ -221,9 +245,7 @@ class Structure(DatablockItem):
     # ------------------------------------------------------------------
 
     def show(self) -> None:
-        """Display an ASCII projection of the structure on a 2D
-        plane.
-        """
+        """Display an ASCII projection of the structure in 2D."""
         console.paragraph(f"Structure 🧩 '{self.name}'")
         console.print('Not implemented yet.')
 

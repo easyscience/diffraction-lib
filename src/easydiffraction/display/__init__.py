@@ -1,14 +1,15 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Display subsystem for tables and plots.
+"""
+Display subsystem for tables and plots.
 
-This package contains user-facing facades and backend implementations
-to render tabular data and plots in different environments.
+This package contains user-facing facades and backend implementations to
+render tabular data and plots in different environments.
 
 - Tables: see :mod:`easydiffraction.display.tables` and the engines in
-        :mod:`easydiffraction.display.tablers`.
-- Plots: see :mod:`easydiffraction.display.plotting` and the engines in
-        :mod:`easydiffraction.display.plotters`.
+:mod:`easydiffraction.display.tablers`. - Plots: see
+:mod:`easydiffraction.display.plotting` and the engines in
+:mod:`easydiffraction.display.plotters`.
 """
 
 # TODO: The following works in Jupyter, but breaks MkDocs builds.

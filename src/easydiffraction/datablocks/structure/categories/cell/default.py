@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Unit cell parameters category for structures."""
 
@@ -16,8 +16,8 @@ from easydiffraction.io.cif.handler import CifHandler
 
 @CellFactory.register
 class Cell(CategoryItem):
-    """Unit cell with lengths *a*, *b*, *c* and angles *alpha*, *beta*,
-    *gamma*.
+    """
+    Unit cell with lengths a, b, c and angles alpha, beta, gamma.
 
     All six lattice parameters are exposed as :class:`Parameter`
     descriptors supporting validation, fitting and CIF serialization.
@@ -34,7 +34,7 @@ class Cell(CategoryItem):
 
         self._length_a = Parameter(
             name='length_a',
-            description='Length of the a axis of the unit cell.',
+            description='Length of the a axis of the unit cell',
             units='Å',
             value_spec=AttributeSpec(
                 default=10.0,
@@ -44,7 +44,7 @@ class Cell(CategoryItem):
         )
         self._length_b = Parameter(
             name='length_b',
-            description='Length of the b axis of the unit cell.',
+            description='Length of the b axis of the unit cell',
             units='Å',
             value_spec=AttributeSpec(
                 default=10.0,
@@ -54,7 +54,7 @@ class Cell(CategoryItem):
         )
         self._length_c = Parameter(
             name='length_c',
-            description='Length of the c axis of the unit cell.',
+            description='Length of the c axis of the unit cell',
             units='Å',
             value_spec=AttributeSpec(
                 default=10.0,
@@ -64,7 +64,7 @@ class Cell(CategoryItem):
         )
         self._angle_alpha = Parameter(
             name='angle_alpha',
-            description='Angle between edges b and c.',
+            description='Angle between edges b and c',
             units='deg',
             value_spec=AttributeSpec(
                 default=90.0,
@@ -74,7 +74,7 @@ class Cell(CategoryItem):
         )
         self._angle_beta = Parameter(
             name='angle_beta',
-            description='Angle between edges a and c.',
+            description='Angle between edges a and c',
             units='deg',
             value_spec=AttributeSpec(
                 default=90.0,
@@ -84,7 +84,7 @@ class Cell(CategoryItem):
         )
         self._angle_gamma = Parameter(
             name='angle_gamma',
-            description='Angle between edges a and b.',
+            description='Angle between edges a and b',
             units='deg',
             value_spec=AttributeSpec(
                 default=90.0,
@@ -100,7 +100,8 @@ class Cell(CategoryItem):
     # ------------------------------------------------------------------
 
     def _apply_cell_symmetry_constraints(self) -> None:
-        """Apply symmetry constraints to cell parameters in place.
+        """
+        Apply symmetry constraints to cell parameters in place.
 
         Uses the parent structure's space-group symbol to determine
         which lattice parameters are dependent and sets them
@@ -132,11 +133,14 @@ class Cell(CategoryItem):
         self,
         called_by_minimizer: bool = False,
     ) -> None:
-        """Recalculate cell parameters after a change.
+        """
+        Recalculate cell parameters after a change.
 
-        Args:
-            called_by_minimizer (bool): Whether the update was triggered
-                by the fitting minimizer. Currently unused.
+        Parameters
+        ----------
+        called_by_minimizer : bool, default=False
+            Whether the update was triggered by the fitting minimizer.
+            Currently unused.
         """
         del called_by_minimizer  # TODO: ???
 
@@ -148,108 +152,84 @@ class Cell(CategoryItem):
 
     @property
     def length_a(self) -> Parameter:
-        """Length of the *a* axis.
+        """
+        Length of the a axis of the unit cell (Å).
 
-        Returns:
-            Parameter: Descriptor for lattice parameter *a* (Å).
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._length_a
 
     @length_a.setter
     def length_a(self, value: float) -> None:
-        """Set the length of the *a* axis.
-
-        Args:
-            value (float): New length in ångströms.
-        """
         self._length_a.value = value
 
     @property
     def length_b(self) -> Parameter:
-        """Length of the *b* axis.
+        """
+        Length of the b axis of the unit cell (Å).
 
-        Returns:
-            Parameter: Descriptor for lattice parameter *b* (Å).
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._length_b
 
     @length_b.setter
     def length_b(self, value: float) -> None:
-        """Set the length of the *b* axis.
-
-        Args:
-            value (float): New length in ångströms.
-        """
         self._length_b.value = value
 
     @property
     def length_c(self) -> Parameter:
-        """Length of the *c* axis.
+        """
+        Length of the c axis of the unit cell (Å).
 
-        Returns:
-            Parameter: Descriptor for lattice parameter *c* (Å).
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._length_c
 
     @length_c.setter
     def length_c(self, value: float) -> None:
-        """Set the length of the *c* axis.
-
-        Args:
-            value (float): New length in ångströms.
-        """
         self._length_c.value = value
 
     @property
     def angle_alpha(self) -> Parameter:
-        """Angle between edges *b* and *c*.
+        """
+        Angle between edges b and c (deg).
 
-        Returns:
-            Parameter: Descriptor for angle *α* (degrees).
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._angle_alpha
 
     @angle_alpha.setter
     def angle_alpha(self, value: float) -> None:
-        """Set the angle between edges *b* and *c*.
-
-        Args:
-            value (float): New angle in degrees.
-        """
         self._angle_alpha.value = value
 
     @property
     def angle_beta(self) -> Parameter:
-        """Angle between edges *a* and *c*.
+        """
+        Angle between edges a and c (deg).
 
-        Returns:
-            Parameter: Descriptor for angle *β* (degrees).
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._angle_beta
 
     @angle_beta.setter
     def angle_beta(self, value: float) -> None:
-        """Set the angle between edges *a* and *c*.
-
-        Args:
-            value (float): New angle in degrees.
-        """
         self._angle_beta.value = value
 
     @property
     def angle_gamma(self) -> Parameter:
-        """Angle between edges *a* and *b*.
+        """
+        Angle between edges a and b (deg).
 
-        Returns:
-            Parameter: Descriptor for angle *γ* (degrees).
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
         """
         return self._angle_gamma
 
     @angle_gamma.setter
     def angle_gamma(self, value: float) -> None:
-        """Set the angle between edges *a* and *b*.
-
-        Args:
-            value (float): New angle in degrees.
-        """
         self._angle_gamma.value = value

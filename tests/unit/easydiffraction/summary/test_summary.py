@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+
 
 def test_summary_as_cif_returns_placeholder_string():
     from easydiffraction.summary.summary import Summary
@@ -44,11 +45,6 @@ def test_summary_show_report_prints_sections(capsys):
     assert 'CRYSTALLOGRAPHIC DATA' in out
     assert 'EXPERIMENTS' in out
     assert 'FITTING' in out
-
-
-
-
-
 
 
 def test_module_import():

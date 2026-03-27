@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+
 
 def test_project_save_uses_cwd_when_no_explicit_path(monkeypatch, tmp_path, capsys):
     # Default ProjectInfo.path is cwd; ensure save writes into a temp cwd, not repo root

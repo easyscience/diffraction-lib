@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Exclude ranges of x from fitting/plotting (masked regions)."""
 
@@ -29,13 +29,13 @@ from easydiffraction.utils.utils import render_table
 class ExcludedRegion(CategoryItem):
     """Closed interval [start, end] to be excluded."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         # TODO: Add point_id as for the background
         self._id = StringDescriptor(
             name='id',
-            description='Identifier for this excluded region.',
+            description='Identifier for this excluded region',
             value_spec=AttributeSpec(
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -71,33 +71,55 @@ class ExcludedRegion(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def id(self):
+    def id(self) -> StringDescriptor:
+        """
+        Identifier for this excluded region.
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._id
 
     @id.setter
-    def id(self, value):
+    def id(self, value: str) -> None:
         self._id.value = value
 
     @property
     def start(self) -> NumericDescriptor:
+        """
+        Start of the excluded region.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._start
 
     @start.setter
-    def start(self, value: float):
+    def start(self, value: float) -> None:
         self._start.value = value
 
     @property
     def end(self) -> NumericDescriptor:
+        """
+        End of the excluded region.
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
         return self._end
 
     @end.setter
-    def end(self, value: float):
+    def end(self, value: float) -> None:
         self._end.value = value
 
 
 @ExcludedRegionsFactory.register
 class ExcludedRegions(CategoryCollection):
-    """Collection of ExcludedRegion instances.
+    """
+    Collection of ExcludedRegion instances.
 
     Excluded regions define closed intervals [start, end] on the x-axis
     that are to be excluded from calculations and, as a result, from
@@ -112,10 +134,10 @@ class ExcludedRegions(CategoryCollection):
         sample_form=frozenset({SampleFormEnum.POWDER}),
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(item_type=ExcludedRegion)
 
-    def _update(self, called_by_minimizer=False):
+    def _update(self, called_by_minimizer: bool = False) -> None:
         del called_by_minimizer
 
         data = self._parent.data
