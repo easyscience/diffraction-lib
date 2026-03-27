@@ -125,26 +125,16 @@ structure.atom_sites.create(
 #
 # #### Download Measured Data
 
-
 # %%
-def get_paths(folder, pattern):
-    from pathlib import Path
-
-    path = Path(__file__).resolve().parent / folder
-    return sorted(str(p) for p in path.glob(pattern))
-
-
-data_paths = get_paths(folder='_data', pattern='*.dat')
+data_path = ed.download_data(id=23, destination='data')
 
 # %% [markdown]
 # #### Create Experiments
 
-# %%
-for i, data_path in enumerate(data_paths):
-    project.experiments.add_from_data_path(
-        name=f'd20_{i + 1}',
-        data_path=data_path,
-    )
+project.experiments.add_from_zip_path(
+    name_prefix='d20',
+    zip_path=data_path,
+)
 
 # %% [markdown]
 # #### Set Instrument
