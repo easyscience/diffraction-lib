@@ -361,7 +361,7 @@ def list_tutorials() -> None:
     columns_alignment = ['right', 'left', 'left']
     columns_data = []
 
-    for tutorial_id in index.keys():
+    for tutorial_id in index:
         record = index[tutorial_id]
         filename = f'ed-{tutorial_id}.ipynb'
         title = record.get('title', '')
