@@ -230,6 +230,7 @@ class ExperimentFactory(FactoryBase):
         beam_mode: str | None = None,
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
+        temperature_regex: str | None = None,
     ) -> ExperimentBase:
         """
         Create an experiment from a raw data ASCII file.
@@ -261,7 +262,10 @@ class ExperimentFactory(FactoryBase):
             radiation_probe=radiation_probe,
             scattering_type=scattering_type,
         )
-        expt_obj._load_ascii_data_to_experiment(data_path)
+        expt_obj._load_ascii_data_to_experiment(
+            data_path,
+            temperature_regex=temperature_regex,
+        )
         return expt_obj
 
     @classmethod
@@ -275,6 +279,7 @@ class ExperimentFactory(FactoryBase):
         beam_mode: str | None = None,
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
+        temperature_regex: str | None = None,
     ) -> list[ExperimentBase]:
         """
         Create experiments from data files inside a ZIP archive.
@@ -314,6 +319,7 @@ class ExperimentFactory(FactoryBase):
                 beam_mode=beam_mode,
                 radiation_probe=radiation_probe,
                 scattering_type=scattering_type,
+                temperature_regex=temperature_regex,
             )
             experiments.append(expt)
 

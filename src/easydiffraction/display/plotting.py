@@ -11,6 +11,7 @@ from enum import Enum
 
 import numpy as np
 import pandas as pd
+from matplotlib.pyplot import title
 
 from easydiffraction.display.base import RendererBase
 from easydiffraction.display.base import RendererFactoryBase
@@ -565,6 +566,63 @@ class Plotter(RendererBase):
             y_series=ctx['y_series'],
             labels=ctx['y_labels'],
             axes_labels=ctx['axes_labels'],
+            title=title,
+            height=self.height,
+        )
+
+    def plot_param(
+            self,
+            unique_name: str,
+            x_axis: str,
+            fit_results: dict[str, object],
+    ) -> None:
+        """
+        Plot the value of a parameter across all fit results.
+
+        Parameters
+        ----------
+        unique_name : str
+            Unique name of the parameter to plot.
+        fit_results : dict[str, object]
+            Dictionary of fit results.
+        """
+        x = []
+        y = []
+        sy = []
+        axes_labels = []
+        title = ''
+
+        for idx, expt in enumerate(fit_results.values(), start=1):
+            conditions = expt['conditions']
+            x_axis_param = getattr(conditions, x_axis, None)
+            if x_axis_param is not None:
+                value = x_axis_param.value
+            else:
+                value = idx
+            x.append(value)
+
+            param_dict = expt['results'].final_parameters_dict[unique_name]
+            y.append(param_dict['value'])
+            sy.append(param_dict['uncertainty'])
+
+            if x_axis_param is not None:
+                axes_labels = [
+                    x_axis.capitalize(),
+                    f"Parameter value ({param_dict['units']})",
+                ]
+            else:
+                axes_labels = [
+                    'Experiment No.',
+                    f"Parameter value ({param_dict['units']})",
+                ]
+
+            title = f"Parameter '{unique_name}' across fit results"
+
+        self._backend.plot_scatter(
+            x=x,
+            y=y,
+            sy=sy,
+            axes_labels=axes_labels,
             title=title,
             height=self.height,
         )

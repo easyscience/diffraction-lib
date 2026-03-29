@@ -23,6 +23,9 @@ import easydiffraction as ed
 # Create minimal project without name and description
 project = ed.Project()
 
+# %%
+project.save_as(dir_path='multi')
+
 # %% [markdown]
 # ## Set Plotting Engine
 
@@ -131,9 +134,11 @@ data_path = ed.download_data(id=25, destination='data')
 # %% [markdown]
 # #### Create Experiments
 
+# %%
 project.experiments.add_from_zip_path(
     name_prefix='d20',
     zip_path=data_path,
+    temperature_regex=r'^TEMP\s+([0-9.]+)'
 )
 
 # %% [markdown]
@@ -282,18 +287,38 @@ project.analysis.fit_mode.mode = 'single'
 
 # %%
 project.analysis.fit()
-# project.analysis.show_fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-# project.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+last_expt_name = project.experiments.names[-1]
+project.plot_meas_vs_calc(expt_name=last_expt_name, show_residual=True)
+
+# %% [markdown]
+# #### Plot parameters evolution
 
 # %%
-project.plot_meas_vs_calc(
-    expt_name='d20_1',
-    x_min=41,
-    x_max=54,
-    show_residual=True,
-)
+print(project.structures['cosio'].cell.length_a.unique_name)
+
+# %%
+project.plot_param(structure.cell.length_a, x_axis='temperature')
+
+
+
+project.plot_param(structure.cell.length_a, x_axis='temperature')
+project.plot_param(structure.cell.length_b, x_axis='temperature')
+project.plot_param(structure.cell.length_c, x_axis='temperature')
+
+# %%
+print(project.structures['cosio'].atom_sites['O3'].b_iso.unique_name)
+
+# %%
+project.plot_param(structure.atom_sites['Co1'].b_iso, x_axis='temperature')
+project.plot_param(structure.atom_sites['Co2'].b_iso, x_axis='temperature')
+project.plot_param(structure.atom_sites['Si'].b_iso, x_axis='temperature')
+project.plot_param(structure.atom_sites['O1'].b_iso, x_axis='temperature')
+project.plot_param(structure.atom_sites['O2'].b_iso, x_axis='temperature')
+project.plot_param(structure.atom_sites['O3'].b_iso, x_axis='temperature')
+
+# %%

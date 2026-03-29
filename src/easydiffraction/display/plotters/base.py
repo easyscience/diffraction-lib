@@ -229,3 +229,14 @@ class PlotterBase(ABC):
             Backend-specific height (text rows or pixels).
         """
         pass
+
+    def plot_scatter(
+        self,
+        x: object,
+        y: object,
+        sy: object,
+        axes_labels: object,
+        title: str,
+        height: int | None,
+    ) -> None:
+        pass

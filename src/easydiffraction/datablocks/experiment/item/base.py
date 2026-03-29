@@ -10,6 +10,7 @@ from typing import Any
 from typing import List
 
 from easydiffraction.core.datablock import DatablockItem
+from easydiffraction.datablocks.experiment.categories.conditions.factory import ConditionsFactory
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
 from easydiffraction.datablocks.experiment.categories.excluded_regions.factory import (
     ExcludedRegionsFactory,
@@ -45,9 +46,14 @@ class ExperimentBase(DatablockItem):
         super().__init__()
         self._name = name
         self._type = type
+        self._conditions = ConditionsFactory()
         self._calculator = None
         self._calculator_type: str | None = None
         self._identity.datablock_entry_name = lambda: self.name
+
+        self._conditions_type = ConditionsFactory.default_tag()
+        self._conditions = ConditionsFactory.create(self._conditions_type)
+
 
     @property
     def name(self) -> str:
@@ -70,6 +76,10 @@ class ExperimentBase(DatablockItem):
     def type(self) -> object:  # TODO: Consider another name
         """Experiment type: sample form, probe, beam mode."""
         return self._type
+
+    @property
+    def conditions(self) -> object:
+        return self._conditions
 
     @property
     def as_cif(self) -> str:

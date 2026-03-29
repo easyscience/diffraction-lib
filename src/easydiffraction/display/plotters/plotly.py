@@ -369,3 +369,46 @@ class PlotlyPlotter(PlotterBase):
 
         fig = self._get_figure(data, layout)
         self._show_figure(fig)
+
+
+    def plot_scatter(
+        self,
+        x: object,
+        y: object,
+        sy: object,
+        axes_labels: object,
+        title: str,
+        height: int | None = None,
+    ) -> None:
+        # Intentionally unused; accepted for API compatibility
+        del height
+
+        trace = go.Scatter(
+            x=x,
+            y=y,
+            mode='markers+lines',
+            marker=dict(
+                symbol='circle',
+                size=10,
+                line=dict(width=0.5),
+                color=DEFAULT_COLORS['meas'],
+            ),
+            line=dict(
+                width=1,
+                color=DEFAULT_COLORS['meas'],
+            ),
+            error_y=dict(
+                type='data',
+                array=sy,
+                visible=True,
+            ),
+            hovertemplate='x: %{x}<br>y: %{y}<br><extra></extra>',
+        )
+
+        layout = self._get_layout(
+            title,
+            axes_labels,
+        )
+
+        fig = self._get_figure(trace, layout)
+        self._show_figure(fig)

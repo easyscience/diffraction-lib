@@ -331,3 +331,19 @@ class Project(GuardedBase):
             show_residual=show_residual,
             x=x,
         )
+
+    def plot_param(self, param, x_axis: str) -> None:
+        """
+        Plot the value of a parameter across all fit results.
+
+        Parameters
+        ----------
+        unique_name : str
+            Unique name of the parameter to plot.
+        """
+        unique_name = param.unique_name
+        self.plotter.plot_param(
+            unique_name,
+            x_axis,
+            self.analysis.fit_results,
+        )

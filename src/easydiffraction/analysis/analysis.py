@@ -54,6 +54,7 @@ class Analysis:
         self._fit_mode = FitModeFactory.create(self._fit_mode_type)
         self._joint_fit_experiments = JointFitExperiments()
         self.fitter = Fitter('lmfit')
+        self.fit_results = {}
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
@@ -633,8 +634,13 @@ class Analysis:
                 weights=self._joint_fit_experiments,
                 analysis=self,
             )
-            if self.project.info.path is not None:
-                self.project.save()
+
+            # After fitting, get the results
+            self.fit_results['default'] = self.fitter.results
+            #self.fit_results['default'] = {
+            #    'results': self.fitter.results,
+            #    'conditions': experiment.conditions,
+            #}
 
         elif mode is FitModeEnum.SINGLE:
             # TODO: Find a better way without creating dummy
@@ -656,14 +662,22 @@ class Analysis:
                     analysis=self,
                 )
 
-                if self.project.info.path is not None:
-                    self.project.save()
+                # After fitting, get the results
+                self.fit_results[expt_name] = {
+                    'results': self.fitter.results,
+                    'conditions': experiment.conditions,
+                }
+
 
         else:
             raise NotImplementedError(f'Fit mode {mode.value} not implemented yet.')
 
-        # After fitting, get the results
-        self.fit_results = self.fitter.results
+        # After fitting, save the project
+        # TODO: Consider saving individual data during sequential
+        #  (single) fitting, instead of waiting until the end and save
+        #  only the last one
+        if self.project.info.path is not None:
+            self.project.save()
 
     def show_fit_results(self) -> None:
         """

@@ -144,6 +144,7 @@ class Experiments(DatablockCollection):
         beam_mode: str | None = None,
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
+        temperature_regex: str | None = None,
     ) -> None:
         """
         Add experiments from data files inside a ZIP archive.
@@ -174,6 +175,7 @@ class Experiments(DatablockCollection):
             beam_mode=beam_mode,
             radiation_probe=radiation_probe,
             scattering_type=scattering_type,
+            temperature_regex=temperature_regex,
         )
         for experiment in experiments:
             self.add(experiment)

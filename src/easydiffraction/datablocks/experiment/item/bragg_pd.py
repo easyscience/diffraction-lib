@@ -55,7 +55,11 @@ class BraggPdExperiment(PdExperimentBase):
         self._background_type: str = BackgroundFactory.default_tag()
         self._background = BackgroundFactory.create(self._background_type)
 
-    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+    def _load_ascii_data_to_experiment(
+            self,
+            data_path: str,
+            temperature_regex: str | None = None,
+    ) -> None:
         """
         Load (x, y, sy) data from an ASCII file into the data category.
 
@@ -97,8 +101,36 @@ class BraggPdExperiment(PdExperimentBase):
         self.data._set_intensity_meas(y)
         self.data._set_intensity_meas_su(sy)
 
+        # Extract temperature from file content using regex if provided
+        import re
+        from pathlib import Path
+
+        # Extract temperature from file content using regex if provided
+        #self_conditions_temperature = None
+        if temperature_regex is not None:
+            content = Path(data_path).read_text(encoding='utf-8', errors='ignore')
+            match = re.search(temperature_regex, content, re.MULTILINE)
+
+            if match is None:
+                log.warning("Temperature regex was provided, but no match was found in file.")
+            else:
+                temperature_str = match.group(1)
+                try:
+                    temperature_float = float(temperature_str)
+                except ValueError:
+                    log.warning(f"Failed to convert extracted temperature '{temperature_str}' to float.")
+                else:
+                    #self_conditions_temperature = temperature_float
+                    self.conditions.temperature = temperature_float
+
+        temperature = ''
+        if self.conditions.temperature is not None: # TODO: this was initialized with 0.0!?
+            temperature = f" Temperature: {self.conditions.temperature.value:.3f} K."
+
         console.paragraph('Data loaded successfully')
-        console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
+        console.print(f"Experiment 🔬 '{self.name}'. "
+                      f"Number of data points: {len(x)}."
+                      f"{temperature}")
 
     # ------------------------------------------------------------------
     #  Instrument (switchable-category pattern)
