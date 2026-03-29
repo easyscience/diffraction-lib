@@ -249,6 +249,9 @@ class ExperimentFactory(FactoryBase):
             Radiation probe (e.g. ``'neutron'``).
         scattering_type : str | None, default=None
             Scattering type (e.g. ``'bragg'``).
+        temperature_regex : str | None, default=None
+            Regex with one capture group to extract temperature from the
+            data file header.
 
         Returns
         -------
@@ -302,6 +305,9 @@ class ExperimentFactory(FactoryBase):
             Radiation probe (e.g. ``'neutron'``).
         scattering_type : str | None, default=None
             Scattering type (e.g. ``'bragg'``).
+        temperature_regex : str | None, default=None
+            Regex with one capture group to extract temperature from
+            each data file header.
 
         Returns
         -------

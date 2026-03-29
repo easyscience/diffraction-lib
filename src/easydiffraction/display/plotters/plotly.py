@@ -370,7 +370,6 @@ class PlotlyPlotter(PlotterBase):
         fig = self._get_figure(data, layout)
         self._show_figure(fig)
 
-
     def plot_scatter(
         self,
         x: object,
@@ -380,8 +379,8 @@ class PlotlyPlotter(PlotterBase):
         title: str,
         height: int | None = None,
     ) -> None:
-        # Intentionally unused; accepted for API compatibility
-        del height
+        """Render a scatter plot with error bars via Plotly."""
+        _ = height  # not used by Plotly backend
 
         trace = go.Scatter(
             x=x,

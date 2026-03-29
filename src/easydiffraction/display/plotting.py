@@ -11,7 +11,6 @@ from enum import Enum
 
 import numpy as np
 import pandas as pd
-from matplotlib.pyplot import title
 
 from easydiffraction.display.base import RendererBase
 from easydiffraction.display.base import RendererFactoryBase
@@ -571,20 +570,22 @@ class Plotter(RendererBase):
         )
 
     def plot_param(
-            self,
-            unique_name: str,
-            x_axis: str,
-            fit_results: dict[str, object],
+        self,
+        unique_name: str,
+        x_axis: str,
+        fit_results: dict[str, object],
     ) -> None:
         """
-        Plot the value of a parameter across all fit results.
+        Plot a parameter's value across all fit results.
 
         Parameters
         ----------
         unique_name : str
             Unique name of the parameter to plot.
+        x_axis : str
+            Condition to use as x-axis (e.g. ``'temperature'``).
         fit_results : dict[str, object]
-            Dictionary of fit results.
+            Dictionary of fit results keyed by experiment name.
         """
         x = []
         y = []
@@ -593,9 +594,19 @@ class Plotter(RendererBase):
         title = ''
 
         for idx, expt in enumerate(fit_results.values(), start=1):
-            conditions = expt['conditions']
-            x_axis_param = getattr(conditions, x_axis, None)
-            if x_axis_param is not None:
+            diffrn = expt['diffrn']
+            if x_axis == 'temperature':
+                x_axis_param = diffrn.ambient_temperature
+            elif x_axis == 'pressure':
+                x_axis_param = diffrn.ambient_pressure
+            elif x_axis == 'magnetic_field':
+                x_axis_param = diffrn.ambient_magnetic_field
+            elif x_axis == 'electric_field':
+                x_axis_param = diffrn.ambient_electric_field
+            else:
+                x_axis_param = None
+
+            if x_axis_param is not None and x_axis_param.value is not None:
                 value = x_axis_param.value
             else:
                 value = idx

@@ -332,14 +332,17 @@ class Project(GuardedBase):
             x=x,
         )
 
-    def plot_param(self, param, x_axis: str) -> None:
+    def plot_param(self, param: object, x_axis: str) -> None:
         """
-        Plot the value of a parameter across all fit results.
+        Plot a parameter's value across sequential fit results.
 
         Parameters
         ----------
-        unique_name : str
-            Unique name of the parameter to plot.
+        param : object
+            Parameter descriptor whose ``unique_name`` identifies the
+            values to plot.
+        x_axis : str
+            Condition to use as x-axis (e.g. ``'temperature'``).
         """
         unique_name = param.unique_name
         self.plotter.plot_param(

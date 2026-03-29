@@ -637,10 +637,6 @@ class Analysis:
 
             # After fitting, get the results
             self.fit_results['default'] = self.fitter.results
-            #self.fit_results['default'] = {
-            #    'results': self.fitter.results,
-            #    'conditions': experiment.conditions,
-            #}
 
         elif mode is FitModeEnum.SINGLE:
             # TODO: Find a better way without creating dummy
@@ -665,9 +661,8 @@ class Analysis:
                 # After fitting, get the results
                 self.fit_results[expt_name] = {
                     'results': self.fitter.results,
-                    'conditions': experiment.conditions,
+                    'diffrn': experiment.diffrn,
                 }
-
 
         else:
             raise NotImplementedError(f'Fit mode {mode.value} not implemented yet.')

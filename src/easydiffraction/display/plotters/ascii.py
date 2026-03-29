@@ -181,3 +181,26 @@ class AsciiPlotter(PlotterBase):
             print(f'  {line}')
         print(f'  {x_axis}')
         console.print(f'{" " * (width - 3)}{axes_labels[0]}')
+
+    def plot_scatter(
+        self,
+        x: object,
+        y: object,
+        sy: object,
+        axes_labels: object,
+        title: str,
+        height: int | None = None,
+    ) -> None:
+        """Render a scatter plot with error bars in ASCII."""
+        _ = x, sy  # ASCII backend does not use x ticks or error bars
+
+        if height is None:
+            height = DEFAULT_HEIGHT
+
+        config = {'height': height, 'colors': [asciichartpy.blue]}
+        chart = asciichartpy.plot([list(y)], config)
+
+        console.paragraph(f'{title}')
+        console.print(f'{axes_labels[1]} vs {axes_labels[0]}')
+        padded = '\n'.join(' ' + line for line in chart.splitlines())
+        print(padded)

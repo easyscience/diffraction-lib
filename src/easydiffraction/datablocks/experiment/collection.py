@@ -167,6 +167,9 @@ class Experiments(DatablockCollection):
             Radiation probe (e.g. ``'neutron'``).
         scattering_type : str | None, default=None
             Scattering type (e.g. ``'bragg'``).
+        temperature_regex : str | None, default=None
+            Regex with one capture group to extract temperature from
+            each data file header.
         """
         experiments = ExperimentFactory.from_zip_path(
             name_prefix=name_prefix,

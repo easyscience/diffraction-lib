@@ -230,6 +230,7 @@ class PlotterBase(ABC):
         """
         pass
 
+    @abstractmethod
     def plot_scatter(
         self,
         x: object,
@@ -239,4 +240,22 @@ class PlotterBase(ABC):
         title: str,
         height: int | None,
     ) -> None:
+        """
+        Render a scatter plot with error bars.
+
+        Parameters
+        ----------
+        x : object
+            1-D array of x-axis values.
+        y : object
+            1-D array of y-axis values.
+        sy : object
+            1-D array of y uncertainties.
+        axes_labels : object
+            Pair of strings for x and y axis titles.
+        title : str
+            Figure title.
+        height : int | None
+            Backend-specific height (text rows or pixels).
+        """
         pass
