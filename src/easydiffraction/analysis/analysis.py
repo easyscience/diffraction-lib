@@ -11,7 +11,6 @@ from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
 from easydiffraction.analysis.categories.fit_mode import FitModeEnum
 from easydiffraction.analysis.categories.fit_mode import FitModeFactory
-from easydiffraction.analysis.categories.fit_mode import FitVerbosityEnum
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
@@ -21,6 +20,7 @@ from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.display.tables import TableRenderer
+from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
@@ -577,7 +577,7 @@ class Analysis:
         self.constraints_handler.set_constraints(self.constraints)
         self.constraints_handler.apply()
 
-    def fit(self, verbosity: str = 'full') -> None:
+    def fit(self, verbosity: str | None = None) -> None:
         """
         Execute fitting for all experiments.
 
@@ -596,18 +596,18 @@ class Analysis:
 
         Parameters
         ----------
-        verbosity : str, default='full'
+        verbosity : str | None, default=None
             Console output verbosity: ``'full'`` for detailed per-
             experiment progress, ``'short'`` for a
             one-row-per-experiment summary table, or ``'silent'`` for no
-            output.
+            output. When ``None``, uses ``project.verbosity``.
 
         Raises
         ------
         NotImplementedError
             If the fit mode is not ``'single'`` or ``'joint'``.
         """
-        verb = FitVerbosityEnum(verbosity)
+        verb = VerbosityEnum(verbosity if verbosity is not None else self.project.verbosity)
 
         structures = self.project.structures
         if not structures:
@@ -626,7 +626,7 @@ class Analysis:
             if not len(self._joint_fit_experiments):
                 for id in experiments.names:
                     self._joint_fit_experiments.create(id=id, weight=0.5)
-            if verb is not FitVerbosityEnum.SILENT:
+            if verb is not VerbosityEnum.SILENT:
                 console.paragraph(
                     f"Using all experiments 🔬 {experiments.names} for '{mode.value}' fitting"
                 )
@@ -650,7 +650,7 @@ class Analysis:
             short_alignments = ['left', 'right', 'right', 'center']
             short_rows: list[list[str]] = []
             short_display_handle: object | None = None
-            if verb is FitVerbosityEnum.SHORT:
+            if verb is VerbosityEnum.SHORT:
                 from easydiffraction.analysis.fit_helpers.tracking import _make_display_handle
 
                 first = expt_names[0]
@@ -667,7 +667,7 @@ class Analysis:
             # TODO: Find a better way without creating dummy
             #  experiments?
             for _idx, expt_name in enumerate(expt_names, start=1):
-                if verb is FitVerbosityEnum.FULL:
+                if verb is VerbosityEnum.FULL:
                     console.paragraph(
                         f"Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting"
                     )
@@ -702,7 +702,7 @@ class Analysis:
                 self.fit_results = results
 
                 # Short mode: append one summary row and update in-place
-                if verb is FitVerbosityEnum.SHORT:
+                if verb is VerbosityEnum.SHORT:
                     chi2_str = (
                         f'{results.reduced_chi_square:.2f}'
                         if results.reduced_chi_square is not None

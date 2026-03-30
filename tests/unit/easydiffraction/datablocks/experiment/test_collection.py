@@ -23,8 +23,8 @@ def test_experiments_show_and_remove(monkeypatch, capsys):
         def __init__(self, name='e1'):
             super().__init__(name=name, type=DummyType())
 
-        def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-            pass
+        def _load_ascii_data_to_experiment(self, data_path: str) -> int:
+            return 0
 
     exps = Experiments()
     exps.add(DummyExp('a'))

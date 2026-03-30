@@ -17,6 +17,7 @@ from easydiffraction.display.tables import TableRenderer
 from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.project.project_info import ProjectInfo
 from easydiffraction.summary.summary import Summary
+from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
@@ -48,6 +49,7 @@ class Project(GuardedBase):
         self._summary = Summary(self)
         self._saved = False
         self._varname = varname()
+        self._verbosity: VerbosityEnum = VerbosityEnum.FULL
 
     # ------------------------------------------------------------------
     # Dunder methods
@@ -140,6 +142,31 @@ class Project(GuardedBase):
         """Export whole project as CIF text."""
         # Concatenate sections using centralized CIF serializers
         return project_to_cif(self)
+
+    @property
+    def verbosity(self) -> str:
+        """
+        Project-wide console output verbosity.
+
+        Returns
+        -------
+        str
+            One of ``'full'``, ``'short'``, or ``'silent'``.
+        """
+        return self._verbosity.value
+
+    @verbosity.setter
+    def verbosity(self, value: str) -> None:
+        """
+        Set project-wide console output verbosity.
+
+        Parameters
+        ----------
+        value : str
+            ``'full'`` for multi-line output, ``'short'`` for one-line
+            status messages, or ``'silent'`` for no output.
+        """
+        self._verbosity = VerbosityEnum(value)
 
     # ------------------------------------------
     #  Project File I/O

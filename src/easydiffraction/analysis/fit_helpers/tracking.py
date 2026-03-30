@@ -18,8 +18,8 @@ except ImportError:
     display = None
     clear_output = None
 
-from easydiffraction.analysis.categories.fit_mode.enums import FitVerbosityEnum
 from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
+from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.utils import render_table
 
@@ -102,7 +102,7 @@ class FitProgressTracker:
         self._best_chi2: Optional[float] = None
         self._best_iteration: Optional[int] = None
         self._fitting_time: Optional[float] = None
-        self._verbosity: FitVerbosityEnum = FitVerbosityEnum.FULL
+        self._verbosity: VerbosityEnum = VerbosityEnum.FULL
 
         self._df_rows: List[List[str]] = []
         self._display_handle: Optional[object] = None
@@ -225,9 +225,9 @@ class FitProgressTracker:
         minimizer_name : str
             Name of the minimizer used for the run.
         """
-        if self._verbosity is FitVerbosityEnum.SILENT:
+        if self._verbosity is VerbosityEnum.SILENT:
             return
-        if self._verbosity is FitVerbosityEnum.SHORT:
+        if self._verbosity is VerbosityEnum.SHORT:
             return
 
         console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
@@ -255,7 +255,7 @@ class FitProgressTracker:
             Columns corresponding to DEFAULT_HEADERS.
         """
         self._df_rows.append(row)
-        if self._verbosity is not FitVerbosityEnum.FULL:
+        if self._verbosity is not VerbosityEnum.FULL:
             return
         # Append and update via the active handle (Jupyter or
         # terminal live)
@@ -276,7 +276,7 @@ class FitProgressTracker:
         ]
         self.add_tracking_info(row)
 
-        if self._verbosity is not FitVerbosityEnum.FULL:
+        if self._verbosity is not VerbosityEnum.FULL:
             return
 
         # Close terminal live if used

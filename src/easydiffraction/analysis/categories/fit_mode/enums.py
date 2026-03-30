@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Enumerations for fit-mode and fit-verbosity values."""
+"""Enumeration for fit-mode values."""
 
 from __future__ import annotations
 
@@ -24,16 +24,3 @@ class FitModeEnum(str, Enum):
             return 'Independent fitting of each experiment; no shared parameters'
         elif self is FitModeEnum.JOINT:
             return 'Simultaneous fitting of all experiments; some parameters are shared'
-
-
-class FitVerbosityEnum(str, Enum):
-    """Console output verbosity during fitting."""
-
-    FULL = 'full'
-    SHORT = 'short'
-    SILENT = 'silent'
-
-    @classmethod
-    def default(cls) -> FitVerbosityEnum:
-        """Return the default verbosity (FULL)."""
-        return cls.FULL

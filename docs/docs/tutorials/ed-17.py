@@ -20,8 +20,14 @@ import easydiffraction as ed
 # analysis.
 
 # %%
-# Create minimal project without name and description
 project = ed.Project()
+
+# %% [markdown]
+# Set output verbosity level to "short" to show only one-line status
+# messages during the analysis process.
+
+# %%
+project.verbosity = 'short'
 
 # %% [markdown]
 # ## Step 2: Define Crystal Structure
@@ -276,7 +282,7 @@ project.analysis.fit_mode.mode = 'single'
 # #### Run Fitting
 
 # %%
-project.analysis.fit(verbosity='short')
+project.analysis.fit()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
@@ -287,14 +293,22 @@ project.plot_meas_vs_calc(expt_name=last_expt_name, show_residual=True)
 
 # %% [markdown]
 # #### Plot parameters evolution
+#
+# Define the parameter to be used as x-axis in the following plots.
 
 # %%
 temperature = project.experiments[0].diffrn.ambient_temperature
+
+# %% [markdown]
+# Plot evolution of unit cell parameters with temperature.
 
 # %%
 project.plot_param_series(structure.cell.length_a, versus=temperature)
 project.plot_param_series(structure.cell.length_b, versus=temperature)
 project.plot_param_series(structure.cell.length_c, versus=temperature)
+
+# %% [markdown]
+# Plot evolution of isotropic displacement parameters with temperature.
 
 # %%
 project.plot_param_series(structure.atom_sites['Co1'].b_iso, versus=temperature)
@@ -302,6 +316,9 @@ project.plot_param_series(structure.atom_sites['Si'].b_iso, versus=temperature)
 project.plot_param_series(structure.atom_sites['O1'].b_iso, versus=temperature)
 project.plot_param_series(structure.atom_sites['O2'].b_iso, versus=temperature)
 project.plot_param_series(structure.atom_sites['O3'].b_iso, versus=temperature)
+
+# %% [markdown]
+# Plot evolution of selected fractional coordinates with temperature.
 
 # %%
 project.plot_param_series(structure.atom_sites['Co2'].fract_x, versus=temperature)

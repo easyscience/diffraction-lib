@@ -689,6 +689,7 @@ It owns and coordinates all components:
 | `project.analysis`    | `Analysis`    | Calculator, minimiser, fitting           |
 | `project.summary`     | `Summary`     | Report generation                        |
 | `project.plotter`     | `Plotter`     | Visualisation                            |
+| `project.verbosity`   | `str`         | Console output level (full/short/silent) |
 
 ### 7.1 Data Flow
 
@@ -720,6 +721,47 @@ project_dir/
 └── experiments/
     └── hrpt.cif         # One file per experiment
 ```
+
+### 7.3 Verbosity
+
+`Project.verbosity` controls how much console output operations produce.
+It is backed by `VerbosityEnum` (in `utils/enums.py`) and accepts three
+values:
+
+| Level    | Enum member            | Behaviour                                          |
+| -------- | ---------------------- | -------------------------------------------------- |
+| `full`   | `VerbosityEnum.FULL`   | Multi-line output with headers, tables, and detail |
+| `short`  | `VerbosityEnum.SHORT`  | One-line status message per action                 |
+| `silent` | `VerbosityEnum.SILENT` | No console output                                  |
+
+The default is `'full'`.
+
+```python
+project.verbosity = 'short'
+```
+
+**Resolution order:** methods that produce console output (e.g.
+`analysis.fit()`, `experiments.add_from_data_path()`) accept an optional
+`verbosity` keyword argument. When the argument is `None` (the default),
+the method reads `project.verbosity`. When a string is passed, it
+overrides the project-level setting for that single call.
+
+```python
+# Use project-level default for all operations
+project.verbosity = 'short'
+project.analysis.fit()                         # → short mode
+
+# Override for a single call
+project.analysis.fit(verbosity='silent')       # → silent, project stays short
+```
+
+**Output styles per level:**
+
+- **Data loading** — `full`: paragraph header + detail line; `short`:
+  `✅ Data loaded: Experiment 🔬 'name'. N points.`; `silent`: nothing.
+- **Fitting** — `full`: per-iteration progress table with improvement
+  percentages; `short`: one-row-per-experiment summary table; `silent`:
+  nothing.
 
 ---
 

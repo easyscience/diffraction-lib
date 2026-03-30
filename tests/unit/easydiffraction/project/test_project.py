@@ -20,3 +20,32 @@ def test_project_help(capsys):
     assert 'experiments' in out
     assert 'analysis' in out
     assert 'summary' in out
+
+
+def test_project_verbosity_default():
+    from easydiffraction.project.project import Project
+
+    p = Project()
+    assert p.verbosity == 'full'
+
+
+def test_project_verbosity_setter():
+    from easydiffraction.project.project import Project
+
+    p = Project()
+    p.verbosity = 'short'
+    assert p.verbosity == 'short'
+    p.verbosity = 'silent'
+    assert p.verbosity == 'silent'
+    p.verbosity = 'full'
+    assert p.verbosity == 'full'
+
+
+def test_project_verbosity_invalid():
+    import pytest
+
+    from easydiffraction.project.project import Project
+
+    p = Project()
+    with pytest.raises(ValueError):
+        p.verbosity = 'verbose'

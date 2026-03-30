@@ -9,12 +9,12 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction.analysis.categories.fit_mode.enums import FitVerbosityEnum
 from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
 from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.datablocks.structure.collection import Structures
+from easydiffraction.utils.enums import VerbosityEnum
 
 if TYPE_CHECKING:
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
@@ -35,7 +35,7 @@ class Fitter:
         experiments: Experiments,
         weights: Optional[np.array] = None,
         analysis: object = None,
-        verbosity: FitVerbosityEnum = FitVerbosityEnum.FULL,
+        verbosity: VerbosityEnum = VerbosityEnum.FULL,
     ) -> None:
         """
         Run the fitting process.
@@ -55,7 +55,7 @@ class Fitter:
         analysis : object, default=None
             Optional Analysis object to update its categories during
             fitting.
-        verbosity : FitVerbosityEnum, default=FitVerbosityEnum.FULL
+        verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
         """
         params = structures.free_parameters + experiments.free_parameters

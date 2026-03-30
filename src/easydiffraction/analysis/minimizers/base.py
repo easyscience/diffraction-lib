@@ -11,9 +11,9 @@ from typing import Optional
 
 import numpy as np
 
-from easydiffraction.analysis.categories.fit_mode.enums import FitVerbosityEnum
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
+from easydiffraction.utils.enums import VerbosityEnum
 
 
 class MinimizerBase(ABC):
@@ -46,7 +46,7 @@ class MinimizerBase(ABC):
     def _start_tracking(
         self,
         minimizer_name: str,
-        verbosity: FitVerbosityEnum = FitVerbosityEnum.FULL,
+        verbosity: VerbosityEnum = VerbosityEnum.FULL,
     ) -> None:
         """
         Initialize progress tracking and timer.
@@ -55,7 +55,7 @@ class MinimizerBase(ABC):
         ----------
         minimizer_name : str
             Human-readable name shown in progress.
-        verbosity : FitVerbosityEnum, default=FitVerbosityEnum.FULL
+        verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
         """
         self.tracker.reset()
@@ -144,7 +144,7 @@ class MinimizerBase(ABC):
         self,
         parameters: List[object],
         objective_function: Callable[..., object],
-        verbosity: FitVerbosityEnum = FitVerbosityEnum.FULL,
+        verbosity: VerbosityEnum = VerbosityEnum.FULL,
     ) -> FitResults:
         """
         Run the full minimization workflow.
@@ -156,7 +156,7 @@ class MinimizerBase(ABC):
         objective_function : Callable[..., object]
             Callable returning residuals for a given set of engine
             arguments.
-        verbosity : FitVerbosityEnum, default=FitVerbosityEnum.FULL
+        verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
 
         Returns
