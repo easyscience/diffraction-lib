@@ -2294,6 +2294,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#easydiffraction.utils.enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        enums
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="enums">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#easydiffraction.utils.enums.VerbosityEnum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VerbosityEnum
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#easydiffraction.utils.environment" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2693,6 +2721,34 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#easydiffraction.utils.enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        enums
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="enums">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#easydiffraction.utils.enums.VerbosityEnum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VerbosityEnum
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#easydiffraction.utils.environment" class="md-nav__link">
@@ -3100,6 +3156,198 @@
 
 <div class="doc doc-children">
 
+
+
+
+
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="easydiffraction.utils.enums" class="doc doc-heading">
+            <code>enums</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+        <p>General-purpose enumerations shared across the library.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="easydiffraction.utils.enums.VerbosityEnum" class="doc doc-heading">
+            <code>VerbosityEnum</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="str">str</span></code>, <code><span title="enum.Enum">Enum</span></code></p>
+
+
+
+        <p>Console output verbosity level.</p>
+<p>Controls how much information is printed during operations such as
+data loading, fitting, and saving.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<details class="members" open>
+  <summary><p>Members</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end --></summary>
+  <p>FULL Multi-line output with headers, tables, and details. SHORT
+Single-line status messages per action. SILENT No console output.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+</details>
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/utils/enums.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerbosityEnum</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Console output verbosity level.</span>
+
+<span class="sd">    Controls how much information is printed during operations such as</span>
+<span class="sd">    data loading, fitting, and saving.</span>
+
+<span class="sd">    Members</span>
+<span class="sd">    -------</span>
+<span class="sd">    FULL Multi-line output with headers, tables, and details. SHORT</span>
+<span class="sd">    Single-line status messages per action. SILENT No console output.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">FULL</span> <span class="o">=</span> <span class="s1">&#39;full&#39;</span>
+    <span class="n">SHORT</span> <span class="o">=</span> <span class="s1">&#39;short&#39;</span>
+    <span class="n">SILENT</span> <span class="o">=</span> <span class="s1">&#39;silent&#39;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VerbosityEnum</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the default verbosity (FULL).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">FULL</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.utils.enums.VerbosityEnum.default" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">default</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the default verbosity (FULL).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/utils/enums.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VerbosityEnum</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the default verbosity (FULL).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">FULL</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 

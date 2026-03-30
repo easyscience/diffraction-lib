@@ -1,8 +1,8 @@
 # %% [markdown]
 # # Structure Refinement: Co2SiO4, D20 (T-scan)
 #
-# This example demonstrates a Rietveld refinement of Co2SiO4 crystal
-# structure using constant wavelength neutron powder diffraction data
+# This example demonstrates a Rietveld refinement of the Co2SiO4 crystal
+# structure using constant-wavelength neutron powder diffraction data
 # from D20 at ILL. A sequential refinement of the same structure against
 # a temperature scan is performed to show how to manage multiple
 # experiments in a project.
@@ -16,12 +16,17 @@ import easydiffraction as ed
 # %% [markdown]
 # ## Step 1: Define Project
 #
-# The project object is used to manage the structure, experiment, and
-# analysis.
+# The project object manages structures, experiments, and analysis.
 
 # %%
-# Create minimal project without name and description
 project = ed.Project()
+
+# %% [markdown]
+# Set output verbosity level to "short" to show only one-line status
+# messages during the analysis process.
+
+# %%
+project.verbosity = 'short'
 
 # %% [markdown]
 # ## Step 2: Define Crystal Structure
@@ -110,10 +115,10 @@ structure.atom_sites.create(
 )
 
 # %% [markdown]
-# ## Define Experiment
+# ## Step 3: Define Experiments
 #
 # This section shows how to add experiments, configure their parameters,
-# and link the structures defined in the previous step.
+# and link the structures defined above.
 #
 # #### Download Measured Data
 
@@ -191,10 +196,10 @@ for expt in project.experiments:
     expt.linked_phases.create(id='cosio', scale=1.2)
 
 # %% [markdown]
-# ## Perform Analysis
+# ## Step 4: Perform Analysis
 #
-# This section shows the analysis process, including how to set up
-# calculation and fitting engines.
+# This section shows how to set free parameters, define constraints,
+# and run the refinement.
 
 # %% [markdown]
 # #### Set Free Parameters
@@ -267,7 +272,7 @@ project.analysis.constraints.create(
 project.analysis.apply_constraints()
 
 # %% [markdown]
-# #### Set Fit Mode and Weights
+# #### Set Fit Mode
 
 # %%
 project.analysis.fit_mode.mode = 'single'
@@ -286,15 +291,23 @@ last_expt_name = project.experiments.names[-1]
 project.plot_meas_vs_calc(expt_name=last_expt_name, show_residual=True)
 
 # %% [markdown]
-# #### Plot parameters evolution
+# #### Plot Parameter Evolution
+#
+# Define the quantity to use as the x-axis in the following plots.
 
 # %%
 temperature = project.experiments[0].diffrn.ambient_temperature
+
+# %% [markdown]
+# Plot unit cell parameters vs. temperature.
 
 # %%
 project.plot_param_series(structure.cell.length_a, versus=temperature)
 project.plot_param_series(structure.cell.length_b, versus=temperature)
 project.plot_param_series(structure.cell.length_c, versus=temperature)
+
+# %% [markdown]
+# Plot isotropic displacement parameters vs. temperature.
 
 # %%
 project.plot_param_series(structure.atom_sites['Co1'].b_iso, versus=temperature)
@@ -302,3 +315,13 @@ project.plot_param_series(structure.atom_sites['Si'].b_iso, versus=temperature)
 project.plot_param_series(structure.atom_sites['O1'].b_iso, versus=temperature)
 project.plot_param_series(structure.atom_sites['O2'].b_iso, versus=temperature)
 project.plot_param_series(structure.atom_sites['O3'].b_iso, versus=temperature)
+
+# %% [markdown]
+# Plot selected fractional coordinates vs. temperature.
+
+# %%
+project.plot_param_series(structure.atom_sites['Co2'].fract_x, versus=temperature)
+project.plot_param_series(structure.atom_sites['Co2'].fract_z, versus=temperature)
+project.plot_param_series(structure.atom_sites['O1'].fract_z, versus=temperature)
+project.plot_param_series(structure.atom_sites['O2'].fract_z, versus=temperature)
+project.plot_param_series(structure.atom_sites['O3'].fract_z, versus=temperature)
