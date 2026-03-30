@@ -26,7 +26,7 @@ def test_fitter_early_exit_when_no_params(capsys, monkeypatch):
     class DummyMin:
         tracker = type('T', (), {'track': staticmethod(lambda a, b: a)})()
 
-        def fit(self, params, obj):
+        def fit(self, params, obj, verbosity=None):
             return None
 
     f = Fitter()
@@ -66,7 +66,7 @@ def test_fitter_fit_does_not_call_process_fit_results(monkeypatch):
     class DummyMin:
         tracker = type('T', (), {'track': staticmethod(lambda a, b: a)})()
 
-        def fit(self, params, obj):
+        def fit(self, params, obj, verbosity=None):
             return MockFitResults()
 
         def _sync_result_to_parameters(self, params, engine_params):
