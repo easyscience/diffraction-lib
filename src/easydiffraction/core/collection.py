@@ -42,12 +42,13 @@ class CollectionBase(GuardedBase):
         key : str | int
             Identity key (str) or zero-based positional index (int).
 
+        Returns
+        -------
+        GuardedBase
+            The item matching the given key or index.
+
         Raises
         ------
-        KeyError
-            If a string key is not found.
-        IndexError
-            If an integer index is out of range.
         TypeError
             If *key* is neither ``str`` nor ``int``.
         """
