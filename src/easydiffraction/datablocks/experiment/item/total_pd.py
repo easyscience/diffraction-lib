@@ -46,10 +46,24 @@ class TotalPdExperiment(PdExperimentBase):
 
         The file must be structured as:     x  y  sy
 
+        Parameters
+        ----------
+        data_path : str
+            Path to the ASCII data file.
+
         Returns
         -------
         int
             Number of loaded data points.
+
+        Raises
+        ------
+        ImportError
+            If the ``diffpy`` package is not installed.
+        IOError
+            If the data file cannot be read.
+        ValueError
+            If the data file has fewer than two columns.
         """
         try:
             from diffpy.utils.parsers.loaddata import loadData

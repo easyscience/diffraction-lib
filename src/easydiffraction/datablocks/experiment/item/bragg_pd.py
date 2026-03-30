@@ -69,6 +69,11 @@ class BraggPdExperiment(PdExperimentBase):
         If ``sy`` has values smaller than ``0.0001``, they are replaced
         with ``1.0``.
 
+        Parameters
+        ----------
+        data_path : str
+            Path to the ASCII data file.
+
         Returns
         -------
         int

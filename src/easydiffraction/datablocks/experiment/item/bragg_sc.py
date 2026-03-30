@@ -50,6 +50,11 @@ class CwlScExperiment(ScExperimentBase):
         The file format is space/column separated with 5 columns: ``h k
         l Iobs sIobs``.
 
+        Parameters
+        ----------
+        data_path : str
+            Path to the ASCII data file.
+
         Returns
         -------
         int
@@ -109,6 +114,11 @@ class TofScExperiment(ScExperimentBase):
 
         The file format is space/column separated with 6 columns: ``h k
         l Iobs sIobs wavelength``.
+
+        Parameters
+        ----------
+        data_path : str
+            Path to the ASCII data file.
 
         Returns
         -------
