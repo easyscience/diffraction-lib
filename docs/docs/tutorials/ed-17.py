@@ -276,7 +276,7 @@ project.analysis.fit_mode.mode = 'single'
 # #### Run Fitting
 
 # %%
-project.analysis.fit()
+project.analysis.fit(verbosity='short')
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
@@ -302,3 +302,10 @@ project.plot_param_series(structure.atom_sites['Si'].b_iso, versus=temperature)
 project.plot_param_series(structure.atom_sites['O1'].b_iso, versus=temperature)
 project.plot_param_series(structure.atom_sites['O2'].b_iso, versus=temperature)
 project.plot_param_series(structure.atom_sites['O3'].b_iso, versus=temperature)
+
+# %%
+project.plot_param_series(structure.atom_sites['Co2'].fract_x, versus=temperature)
+project.plot_param_series(structure.atom_sites['Co2'].fract_z, versus=temperature)
+project.plot_param_series(structure.atom_sites['O1'].fract_z, versus=temperature)
+project.plot_param_series(structure.atom_sites['O2'].fract_z, versus=temperature)
+project.plot_param_series(structure.atom_sites['O3'].fract_z, versus=temperature)
