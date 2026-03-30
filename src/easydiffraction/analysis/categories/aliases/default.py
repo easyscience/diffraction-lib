@@ -34,7 +34,7 @@ class Alias(CategoryItem):
             name='label',
             description='...',  # TODO
             value_spec=AttributeSpec(
-                default='_',
+                default='_',  # TODO, Maybe None?
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(names=['_alias.label']),

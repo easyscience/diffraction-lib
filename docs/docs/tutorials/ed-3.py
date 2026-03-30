@@ -578,7 +578,7 @@ project.analysis.aliases.create(
 # Set constraints.
 
 # %%
-project.analysis.constraints.create(lhs_alias='biso_Ba', rhs_expr='biso_La')
+project.analysis.constraints.create(expression='biso_Ba = biso_La')
 
 # %% [markdown]
 # Show defined constraints.
@@ -648,8 +648,7 @@ project.analysis.aliases.create(
 
 # %%
 project.analysis.constraints.create(
-    lhs_alias='occ_Ba',
-    rhs_expr='1 - occ_La',
+    expression='occ_Ba = 1 - occ_La',
 )
 
 # %% [markdown]

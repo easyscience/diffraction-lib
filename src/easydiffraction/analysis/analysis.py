@@ -551,29 +551,18 @@ class Analysis:
 
     def show_constraints(self) -> None:
         """Print a table of all user-defined symbolic constraints."""
-        constraints_dict = dict(self.constraints)
-
         if not self.constraints._items:
             log.warning('No constraints defined.')
             return
 
         rows = []
-        for constraint in constraints_dict.values():
-            row = {
-                'lhs_alias': constraint.lhs_alias.value,
-                'rhs_expr': constraint.rhs_expr.value,
-                'full expression': f'{constraint.lhs_alias.value} = {constraint.rhs_expr.value}',
-            }
-            rows.append(row)
-
-        headers = ['lhs_alias', 'rhs_expr', 'full expression']
-        alignments = ['left', 'left', 'left']
-        rows = [[row[header] for header in headers] for row in rows]
+        for constraint in self.constraints:
+            rows.append([constraint.expression.value])
 
         console.paragraph('User defined constraints')
         render_table(
-            columns_headers=headers,
-            columns_alignment=alignments,
+            columns_headers=['expression'],
+            columns_alignment=['left'],
             columns_data=rows,
         )
 

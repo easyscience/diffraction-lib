@@ -7,10 +7,10 @@ from easydiffraction.analysis.categories.constraints import Constraints
 
 def test_constraint_creation_and_collection():
     c = Constraint()
-    c.lhs_alias = 'a'
-    c.rhs_expr = 'b + c'
-    assert c.lhs_alias.value == 'a'
+    c.expression = 'a = b + c'
+    assert c.lhs_alias == 'a'
+    assert c.rhs_expr == 'b + c'
     coll = Constraints()
-    coll.create(lhs_alias='a', rhs_expr='b + c')
+    coll.create(expression='a = b + c')
     assert 'a' in coll.names
-    assert coll['a'].rhs_expr.value == 'b + c'
+    assert coll['a'].rhs_expr == 'b + c'
