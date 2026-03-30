@@ -129,8 +129,8 @@ class ConstraintsHandler(SingletonBase):
         self._parsed_constraints = []
 
         for expr_obj in self._constraints:
-            lhs_alias = expr_obj.lhs_alias.value
-            rhs_expr = expr_obj.rhs_expr.value
+            lhs_alias = expr_obj.lhs_alias
+            rhs_expr = expr_obj.rhs_expr
 
             if lhs_alias and rhs_expr:
                 constraint = (lhs_alias.strip(), rhs_expr.strip())

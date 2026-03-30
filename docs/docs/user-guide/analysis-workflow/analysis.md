@@ -294,23 +294,17 @@ project.analysis.aliases.create(
 ### Setting Constraints
 
 Now that you have set the aliases, you can define constraints using the
-`add` method of the `constraints` object. Constraints are defined by
-specifying the **left-hand side (lhs) alias** and the **right-hand side
-(rhs) expression**. The rhs expression can be a simple alias or a more
-complex expression involving other aliases.
+`create` method of the `constraints` object. Each constraint is a single
+expression string of the form `lhs = rhs`, where the left-hand side is
+an alias and the right-hand side is an expression involving other
+aliases.
 
 An example of setting constraints for the aliases defined above:
 
 ```python
-project.analysis.constraints.create(
-    lhs_alias='biso_Ba',
-    rhs_expr='biso_La',
-)
+project.analysis.constraints.create(expression='biso_Ba = biso_La')
 
-project.analysis.constraints.create(
-    lhs_alias='occ_Ba',
-    rhs_expr='1 - occ_La',
-)
+project.analysis.constraints.create(expression='occ_Ba = 1 - occ_La')
 ```
 
 These constraints ensure that the `biso_Ba` parameter is equal to
@@ -332,10 +326,10 @@ The example of the output is:
 
 User defined constraints
 
-| lhs_alias | rhs_expr   | full expression     |
-| --------- | ---------- | ------------------- |
-| biso_Ba   | biso_La    | biso_Ba = biso_La   |
-| occ_Ba    | 1 - occ_La | occ_Ba = 1 - occ_La |
+| expression          |
+| ------------------- |
+| biso_Ba = biso_La   |
+| occ_Ba = 1 - occ_La |
 
 ## Analysis as CIF
 
@@ -363,10 +357,9 @@ Example output:
 │ occ_Ba   lbco.atom_site.Ba.occupancy           │
 │                                                │
 │ loop_                                          │
-│ _constraint.lhs_alias                          │
-│ _constraint.rhs_expr                           │
-│ biso_Ba  biso_La                               │
-│ occ_Ba   "1 - occ_La"                          │
+│ _constraint.expression                         │
+│ "biso_Ba = biso_La"                            │
+│ "occ_Ba = 1 - occ_La"                         │
 ╘════════════════════════════════════════════════╛
 ```
 

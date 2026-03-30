@@ -25,7 +25,7 @@ class ProjectInfo(GuardedBase):
         self._name = name
         self._title = title
         self._description = description
-        self._path: pathlib.Path = pathlib.Path.cwd()
+        self._path: pathlib.Path | None = None  # pathlib.Path.cwd()
         self._created: datetime.datetime = datetime.datetime.now()
         self._last_modified: datetime.datetime = datetime.datetime.now()
 
@@ -86,7 +86,7 @@ class ProjectInfo(GuardedBase):
         self._description = ' '.join(value.split())
 
     @property
-    def path(self) -> pathlib.Path:
+    def path(self) -> pathlib.Path | None:
         """Return the project path as a Path object."""
         return self._path
 

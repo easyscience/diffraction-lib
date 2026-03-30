@@ -260,5 +260,6 @@ class ExperimentFactory(FactoryBase):
             radiation_probe=radiation_probe,
             scattering_type=scattering_type,
         )
+
         expt_obj._load_ascii_data_to_experiment(data_path)
         return expt_obj

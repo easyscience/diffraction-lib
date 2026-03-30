@@ -85,6 +85,9 @@ The tutorials are organized into the following categories.
   diffraction (SEPD) and pair distribution function (NOMAD) analysis. A
   single shared structure is refined simultaneously against both
   datasets.
+- [Co2SiO4 Temperature scan](ed-17.ipynb) – Sequential Rietveld
+  refinement of Co2SiO4 using constant wavelength neutron powder
+  diffraction data from D20 at ILL across a temperature scan.
 
 ## Workshops & Schools
 

@@ -260,10 +260,9 @@ occ_La   lbco.atom_site.La.occupancy
 occ_Ba   lbco.atom_site.Ba.occupancy
 
 loop_
-<span class="green"><b>_constraint</b>.lhs_alias</span>
-<span class="green"><b>_constraint</b>.rhs_expr</span>
-biso_Ba  biso_La
-occ_Ba   "1 - occ_La"
+<span class="green"><b>_constraint</b>.expression</span>
+"biso_Ba = biso_La"
+"occ_Ba = 1 - occ_La"
 </pre>
 </div>
 

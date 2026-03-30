@@ -3,8 +3,9 @@
 """
 Simple symbolic constraint between parameters.
 
-Represents an equation of the form ``lhs_alias = rhs_expr`` where
-``rhs_expr`` is evaluated elsewhere by the analysis engine.
+Represents an equation of the form ``lhs_alias = rhs_expr`` stored as a
+single expression string.  The left- and right-hand sides are derived by
+splitting the expression at the ``=`` sign.
 """
 
 from __future__ import annotations
@@ -21,66 +22,70 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class Constraint(CategoryItem):
-    """Single constraint item."""
+    """Single constraint item stored as ``lhs = rhs`` expression."""
 
     def __init__(self) -> None:
         super().__init__()
 
-        self._lhs_alias = StringDescriptor(
-            name='lhs_alias',
-            description='Left-hand side of the equation.',  # TODO
+        self._expression = StringDescriptor(
+            name='expression',
+            description='Constraint equation, e.g. "occ_Ba = 1 - occ_La".',
             value_spec=AttributeSpec(
-                default='...',  # TODO
+                default='_',  # TODO, Maybe None?
                 validator=RegexValidator(pattern=r'.*'),
             ),
-            cif_handler=CifHandler(names=['_constraint.lhs_alias']),
-        )
-        self._rhs_expr = StringDescriptor(
-            name='rhs_expr',
-            description='Right-hand side expression.',  # TODO
-            value_spec=AttributeSpec(
-                default='...',  # TODO
-                validator=RegexValidator(pattern=r'.*'),
-            ),
-            cif_handler=CifHandler(names=['_constraint.rhs_expr']),
+            cif_handler=CifHandler(names=['_constraint.expression']),
         )
 
         self._identity.category_code = 'constraint'
-        self._identity.category_entry_name = lambda: str(self.lhs_alias.value)
+        self._identity.category_entry_name = lambda: self.lhs_alias
 
     # ------------------------------------------------------------------
     #  Public properties
     # ------------------------------------------------------------------
 
     @property
-    def lhs_alias(self) -> StringDescriptor:
+    def expression(self) -> StringDescriptor:
         """
-        Left-hand side of the equation.
+        Full constraint equation (e.g. ``'occ_Ba = 1 - occ_La'``).
 
         Reading this property returns the underlying
-        ``StringDescriptor`` object. Assigning to it updates the
-        parameter value.
+        ``StringDescriptor`` object. Assigning to it updates the value.
         """
-        return self._lhs_alias
+        return self._expression
 
-    @lhs_alias.setter
-    def lhs_alias(self, value: str) -> None:
-        self._lhs_alias.value = value
+    @expression.setter
+    def expression(self, value: str) -> None:
+        self._expression.value = value
 
     @property
-    def rhs_expr(self) -> StringDescriptor:
-        """
-        Right-hand side expression.
+    def lhs_alias(self) -> str:
+        """Left-hand side alias derived from the expression."""
+        return self._split_expression()[0]
 
-        Reading this property returns the underlying
-        ``StringDescriptor`` object. Assigning to it updates the
-        parameter value.
-        """
-        return self._rhs_expr
+    @property
+    def rhs_expr(self) -> str:
+        """Right-hand side expression derived from the expression."""
+        return self._split_expression()[1]
 
-    @rhs_expr.setter
-    def rhs_expr(self, value: str) -> None:
-        self._rhs_expr.value = value
+    # ------------------------------------------------------------------
+    #  Internal helpers
+    # ------------------------------------------------------------------
+
+    def _split_expression(self) -> tuple[str, str]:
+        """
+        Split the expression at the first ``=`` sign.
+
+        Returns
+        -------
+        tuple[str, str]
+            ``(lhs_alias, rhs_expr)`` with whitespace stripped.
+        """
+        raw = self._expression.value or ''
+        if '=' not in raw:
+            return (raw.strip(), '')
+        lhs, rhs = raw.split('=', 1)
+        return (lhs.strip(), rhs.strip())
 
 
 @ConstraintsFactory.register
@@ -97,6 +102,20 @@ class Constraints(CategoryCollection):
     def __init__(self) -> None:
         """Create an empty constraints collection."""
         super().__init__(item_type=Constraint)
+
+    def create(self, *, expression: str) -> None:
+        """
+        Create a constraint from an expression string.
+
+        Parameters
+        ----------
+        expression : str
+            Constraint equation, e.g. ``'biso_Co2 = biso_Co1'`` or
+            ``'occ_Ba = 1 - occ_La'``.
+        """
+        item = Constraint()
+        item.expression = expression
+        self.add(item)
 
     def _update(self, called_by_minimizer: bool = False) -> None:
         del called_by_minimizer

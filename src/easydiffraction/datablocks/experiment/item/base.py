@@ -11,6 +11,7 @@ from typing import List
 
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
+from easydiffraction.datablocks.experiment.categories.diffrn.factory import DiffrnFactory
 from easydiffraction.datablocks.experiment.categories.excluded_regions.factory import (
     ExcludedRegionsFactory,
 )
@@ -49,6 +50,9 @@ class ExperimentBase(DatablockItem):
         self._calculator_type: str | None = None
         self._identity.datablock_entry_name = lambda: self.name
 
+        self._diffrn_type: str = DiffrnFactory.default_tag()
+        self._diffrn = DiffrnFactory.create(self._diffrn_type)
+
     @property
     def name(self) -> str:
         """Human-readable name of the experiment."""
@@ -70,6 +74,53 @@ class ExperimentBase(DatablockItem):
     def type(self) -> object:  # TODO: Consider another name
         """Experiment type: sample form, probe, beam mode."""
         return self._type
+
+    # ------------------------------------------------------------------
+    #  Diffrn conditions (switchable-category pattern)
+    # ------------------------------------------------------------------
+
+    @property
+    def diffrn(self) -> object:
+        """Ambient conditions recorded during measurement."""
+        return self._diffrn
+
+    @property
+    def diffrn_type(self) -> str:
+        """Tag of the active diffraction conditions type."""
+        return self._diffrn_type
+
+    @diffrn_type.setter
+    def diffrn_type(self, new_type: str) -> None:
+        """
+        Switch to a different diffraction conditions type.
+
+        Parameters
+        ----------
+        new_type : str
+            Diffrn conditions tag (e.g. ``'default'``).
+        """
+        supported_tags = DiffrnFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported diffrn type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_diffrn_types()'",
+            )
+            return
+
+        self._diffrn = DiffrnFactory.create(new_type)
+        self._diffrn_type = new_type
+        console.paragraph(f"Diffrn type for experiment '{self.name}' changed to")
+        console.print(new_type)
+
+    def show_supported_diffrn_types(self) -> None:
+        """Print a table of supported diffraction conditions types."""
+        DiffrnFactory.show_supported()
+
+    def show_current_diffrn_type(self) -> None:
+        """Print the currently used diffraction conditions type."""
+        console.paragraph('Current diffrn type')
+        console.print(self.diffrn_type)
 
     @property
     def as_cif(self) -> str:

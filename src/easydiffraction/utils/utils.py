@@ -6,7 +6,6 @@ from __future__ import annotations
 import functools
 import json
 import pathlib
-import re
 import urllib.request
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
@@ -75,7 +74,7 @@ def _fetch_data_index() -> dict:
     _validate_url(index_url)
 
     # macOS: sha256sum index.json
-    index_hash = 'sha256:9aceaf51d298992058c80903283c9a83543329a063692d49b7aaee1156e76884'
+    index_hash = 'sha256:f421aab32ec532782dc62f4440a97320e5cec23b9e64f5ae3f8a3e818d013430'
     destination_dirname = 'easydiffraction'
     destination_fname = 'data-index.json'
     cache_dir = pooch.os_cache(destination_dirname)
@@ -694,39 +693,6 @@ def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda: object) -> object:
         # Set non-positive inputs to NaN
         d = np.where(sin_theta_over_lambda > 0, d, np.nan)
     return d
-
-
-def get_value_from_xye_header(file_path: str, key: str) -> float:
-    """
-    Extract a float from the first line of the file by key.
-
-    Parameters
-    ----------
-    file_path : str
-        Path to the input file.
-    key : str
-        The key to extract ('DIFC' or 'two_theta').
-
-    Returns
-    -------
-    float
-        The extracted value.
-
-    Raises
-    ------
-    ValueError
-        If the key is not found.
-    """
-    pattern = rf'{key}\s*=\s*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)'
-
-    with pathlib.Path(file_path).open('r') as f:
-        first_line = f.readline()
-
-    match = re.search(pattern, first_line)
-    if match:
-        return float(match.group(1))
-    else:
-        raise ValueError(f'{key} not found in the header.')
 
 
 def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:

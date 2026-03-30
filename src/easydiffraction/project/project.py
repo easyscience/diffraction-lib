@@ -156,7 +156,7 @@ class Project(GuardedBase):
 
     def save(self) -> None:
         """Save the project into the existing project directory."""
-        if not self._info.path:
+        if self._info.path is None:
             log.error('Project path not specified. Use save_as() to define the path first.')
             return
 
@@ -174,12 +174,10 @@ class Project(GuardedBase):
         # Save structures
         sm_dir = self._info.path / 'structures'
         sm_dir.mkdir(parents=True, exist_ok=True)
-        # Iterate over structure objects (MutableMapping iter gives
-        # keys)
+        console.print('├── 📁 structures/')
         for structure in self.structures.values():
             file_name: str = f'{structure.name}.cif'
             file_path = sm_dir / file_name
-            console.print('├── 📁 structures')
             with file_path.open('w') as f:
                 f.write(structure.as_cif)
                 console.print(f'│   └── 📄 {file_name}')
@@ -187,10 +185,10 @@ class Project(GuardedBase):
         # Save experiments
         expt_dir = self._info.path / 'experiments'
         expt_dir.mkdir(parents=True, exist_ok=True)
+        console.print('├── 📁 experiments/')
         for experiment in self.experiments.values():
             file_name: str = f'{experiment.name}.cif'
             file_path = expt_dir / file_name
-            console.print('├── 📁 experiments')
             with file_path.open('w') as f:
                 f.write(experiment.as_cif)
                 console.print(f'│   └── 📄 {file_name}')
@@ -332,4 +330,28 @@ class Project(GuardedBase):
             x_max=x_max,
             show_residual=show_residual,
             x=x,
+        )
+
+    def plot_param_series(self, param: object, versus: object | None = None) -> None:
+        """
+        Plot a parameter's value across sequential fit results.
+
+        Parameters
+        ----------
+        param : object
+            Parameter descriptor whose ``unique_name`` identifies the
+            values to plot.
+        versus : object | None, default=None
+            A diffrn descriptor (e.g.
+            ``expt.diffrn.ambient_temperature``) whose value is used as
+            the x-axis for each experiment.  When ``None``, the
+            experiment sequence number is used instead.
+        """
+        unique_name = param.unique_name
+        versus_name = versus.name if versus is not None else None
+        self.plotter.plot_param_series(
+            unique_name,
+            versus_name,
+            self.experiments,
+            self.analysis._parameter_snapshots,
         )

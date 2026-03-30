@@ -33,11 +33,6 @@ class Analysis:
     This class wires calculators and minimizers, exposes a compact
     interface for parameters, constraints and results, and coordinates
     computations across the project's structures and experiments.
-
-    Typical usage:
-    - Display or filter parameters to fit.
-    - Select a calculator/minimizer implementation.
-    - Calculate patterns and run single or joint fits.
     """
 
     def __init__(self, project: object) -> None:
@@ -59,6 +54,8 @@ class Analysis:
         self._fit_mode = FitModeFactory.create(self._fit_mode_type)
         self._joint_fit_experiments = JointFitExperiments()
         self.fitter = Fitter('lmfit')
+        self.fit_results = None
+        self._parameter_snapshots: dict[str, dict[str, dict]] = {}
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
@@ -554,29 +551,18 @@ class Analysis:
 
     def show_constraints(self) -> None:
         """Print a table of all user-defined symbolic constraints."""
-        constraints_dict = dict(self.constraints)
-
         if not self.constraints._items:
             log.warning('No constraints defined.')
             return
 
         rows = []
-        for constraint in constraints_dict.values():
-            row = {
-                'lhs_alias': constraint.lhs_alias.value,
-                'rhs_expr': constraint.rhs_expr.value,
-                'full expression': f'{constraint.lhs_alias.value} = {constraint.rhs_expr.value}',
-            }
-            rows.append(row)
-
-        headers = ['lhs_alias', 'rhs_expr', 'full expression']
-        alignments = ['left', 'left', 'left']
-        rows = [[row[header] for header in headers] for row in rows]
+        for constraint in self.constraints:
+            rows.append([constraint.expression.value])
 
         console.paragraph('User defined constraints')
         render_table(
-            columns_headers=headers,
-            columns_alignment=alignments,
+            columns_headers=['expression'],
+            columns_alignment=['left'],
             columns_data=rows,
         )
 
@@ -638,6 +624,10 @@ class Analysis:
                 weights=self._joint_fit_experiments,
                 analysis=self,
             )
+
+            # After fitting, get the results
+            self.fit_results = self.fitter.results
+
         elif mode is FitModeEnum.SINGLE:
             # TODO: Find a better way without creating dummy
             #  experiments?
@@ -657,11 +647,29 @@ class Analysis:
                     dummy_experiments,
                     analysis=self,
                 )
+
+                # After fitting, snapshot parameter values before
+                # they get overwritten by the next experiment's fit
+                results = self.fitter.results
+                snapshot: dict[str, dict] = {}
+                for param in results.parameters:
+                    snapshot[param.unique_name] = {
+                        'value': param.value,
+                        'uncertainty': param.uncertainty,
+                        'units': param.units,
+                    }
+                self._parameter_snapshots[expt_name] = snapshot
+                self.fit_results = results
+
         else:
             raise NotImplementedError(f'Fit mode {mode.value} not implemented yet.')
 
-        # After fitting, get the results
-        self.fit_results = self.fitter.results
+        # After fitting, save the project
+        # TODO: Consider saving individual data during sequential
+        #  (single) fitting, instead of waiting until the end and save
+        #  only the last one
+        if self.project.info.path is not None:
+            self.project.save()
 
     def show_fit_results(self) -> None:
         """
@@ -678,7 +686,7 @@ class Analysis:
 
         project.analysis.fit() project.analysis.show_fit_results()
         """
-        if not hasattr(self, 'fit_results') or self.fit_results is None:
+        if self.fit_results is None:
             log.warning('No fit results available. Run fit() first.')
             return
 

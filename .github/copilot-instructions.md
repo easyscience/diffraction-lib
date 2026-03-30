@@ -100,6 +100,13 @@
   case.
 - Don't add dependencies without asking.
 
+## Tutorials
+
+- Jupyter notebooks (`docs/docs/tutorials/*.ipynb`) are **generated
+  artifacts** — never edit them by hand. Edit only the corresponding
+  `*.py` script, then run `pixi run notebook-convert` followed by
+  `pixi run notebook-prepare` to regenerate the notebook.
+
 ## Changes
 
 - Before implementing any structural or design change (new categories,

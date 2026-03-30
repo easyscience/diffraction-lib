@@ -293,8 +293,8 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     )
 
     # Set constraints
-    project.analysis.constraints.create(lhs_alias='biso_Ba', rhs_expr='biso_La')
-    project.analysis.constraints.create(lhs_alias='occ_Ba', rhs_expr='1 - occ_La')
+    project.analysis.constraints.create(expression='biso_Ba = biso_La')
+    project.analysis.constraints.create(expression='occ_Ba = 1 - occ_La')
 
     # Apply constraints
     project.analysis.apply_constraints()

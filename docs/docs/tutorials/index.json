@@ -110,5 +110,12 @@
     "title": "Advanced: Si Joint Bragg+PDF Fit",
     "description": "Joint refinement of Si crystal structure combining Bragg diffraction (SEPD) and pair distribution function (NOMAD) analysis",
     "level": "advanced"
+  },
+  "17": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-17/ed-17.ipynb",
+    "original_name": "",
+    "title": "Structure Refinement: Co2SiO4, D20 (Temperature scan)",
+    "description": "Sequential Rietveld refinement of Co2SiO4 using constant wavelength neutron powder diffraction data from D20 at ILL across a temperature scan",
+    "level": "advanced"
   }
 }

@@ -3,14 +3,14 @@
 
 
 def test_project_save_uses_cwd_when_no_explicit_path(monkeypatch, tmp_path, capsys):
-    # Default ProjectInfo.path is cwd; ensure save writes into a temp cwd, not repo root
+    # ProjectInfo.path defaults to None; save() requires save_as() first
     from easydiffraction.project.project import Project
 
     monkeypatch.chdir(tmp_path)
     p = Project()
-    p.save()
+    p.save_as(str(tmp_path))
     out = capsys.readouterr().out
-    # It should announce saving and create the three core files in cwd
+    # It should announce saving and create the three core files
     assert 'Saving project' in out
     assert (tmp_path / 'project.cif').exists()
     assert (tmp_path / 'analysis.cif').exists()

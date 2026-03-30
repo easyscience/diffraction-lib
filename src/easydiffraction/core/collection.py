@@ -33,18 +33,34 @@ class CollectionBase(GuardedBase):
         self._index: dict = {}
         self._item_type = item_type
 
-    def __getitem__(self, name: str) -> GuardedBase:
+    def __getitem__(self, key: str | int) -> GuardedBase:
         """
-        Return an item by its identity key.
+        Return an item by name or positional index.
 
-        Rebuilds the internal index on a cache miss to stay consistent
-        with recent mutations.
+        Parameters
+        ----------
+        key : str | int
+            Identity key (str) or zero-based positional index (int).
+
+        Returns
+        -------
+        GuardedBase
+            The item matching the given key or index.
+
+        Raises
+        ------
+        TypeError
+            If *key* is neither ``str`` nor ``int``.
         """
-        try:
-            return self._index[name]
-        except KeyError:
-            self._rebuild_index()
-            return self._index[name]
+        if isinstance(key, int):
+            return self._items[key]
+        if isinstance(key, str):
+            try:
+                return self._index[key]
+            except KeyError:
+                self._rebuild_index()
+                return self._index[key]
+        raise TypeError(f'Collection indices must be str or int, not {type(key).__name__}')
 
     def __setitem__(self, name: str, item: GuardedBase) -> None:
         """Insert or replace an item under the given identity key."""

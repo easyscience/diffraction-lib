@@ -211,6 +211,7 @@ nav:
           - PbSO4 NPD+XRD: tutorials/ed-4.ipynb
           - LBCO+Si McStas: tutorials/ed-9.ipynb
           - Si Bragg+PDF: tutorials/ed-16.ipynb
+          - Co2SiO4 T-scan: tutorials/ed-17.ipynb
       - Workshops & Schools:
           - DMSC Summer School: tutorials/ed-13.ipynb
   - API Reference:

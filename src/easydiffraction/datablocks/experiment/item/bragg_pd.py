@@ -16,6 +16,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
+from easydiffraction.io.ascii import load_numeric_block
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
@@ -54,7 +55,10 @@ class BraggPdExperiment(PdExperimentBase):
         self._background_type: str = BackgroundFactory.default_tag()
         self._background = BackgroundFactory.create(self._background_type)
 
-    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+    def _load_ascii_data_to_experiment(
+        self,
+        data_path: str,
+    ) -> None:
         """
         Load (x, y, sy) data from an ASCII file into the data category.
 
@@ -65,16 +69,17 @@ class BraggPdExperiment(PdExperimentBase):
         If ``sy`` has values smaller than ``0.0001``, they are replaced
         with ``1.0``.
         """
-        try:
-            data = np.loadtxt(data_path)
-        except Exception as e:
-            raise IOError(f'Failed to read data from {data_path}: {e}') from e
+        data = load_numeric_block(data_path)
 
         if data.shape[1] < 2:
-            raise ValueError('Data file must have at least two columns: x and y.')
+            log.error(
+                'Data file must have at least two columns: x and y.',
+                exc_type=ValueError,
+            )
+            return
 
         if data.shape[1] < 3:
-            print('Warning: No uncertainty (sy) column provided. Defaulting to sqrt(y).')
+            log.warning('No uncertainty (sy) column provided. Defaulting to sqrt(y).')
 
         # Extract x, y data
         x: np.ndarray = data[:, 0]
@@ -95,8 +100,14 @@ class BraggPdExperiment(PdExperimentBase):
         self.data._set_intensity_meas(y)
         self.data._set_intensity_meas_su(sy)
 
+        temperature = ''
+        if self.diffrn.ambient_temperature.value is not None:
+            temperature = f' Temperature: {self.diffrn.ambient_temperature.value:.3f} K.'
+
         console.paragraph('Data loaded successfully')
-        console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
+        console.print(
+            f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}.{temperature}"
+        )
 
     # ------------------------------------------------------------------
     #  Instrument (switchable-category pattern)

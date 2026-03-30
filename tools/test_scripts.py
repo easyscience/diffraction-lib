@@ -51,6 +51,7 @@ def test_script_runs(script_path: Path):
         env=env,
         capture_output=True,
         text=True,
+        encoding='utf-8',
     )
     if result.returncode != 0:
         details = (result.stdout or '') + (result.stderr or '')
