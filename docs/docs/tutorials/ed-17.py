@@ -24,14 +24,6 @@ import easydiffraction as ed
 project = ed.Project()
 
 # %% [markdown]
-# ## Set Plotting Engine
-
-# %%
-# Keep the auto-selected engine. Alternatively, you can uncomment the
-# line below to explicitly set the engine to the required one.
-# project.plotter.engine = 'plotly'
-
-# %% [markdown]
 # ## Step 2: Define Crystal Structure
 #
 # This section shows how to add structures and modify their
@@ -135,9 +127,14 @@ file_path = ed.download_data(id=25, destination='data')
 data_paths = ed.extract_data_paths_from_zip(file_path)
 for i, data_path in enumerate(data_paths, start=1):
     name = f'd20_{i}'
-    project.experiments.add_from_data_path(name=name, data_path=data_path)
-    project.experiments[name].diffrn.ambient_temperature = ed.extract_metadata(
-        data_path, r'^TEMP\s+([0-9.]+)'
+    project.experiments.add_from_data_path(
+        name=name,
+        data_path=data_path,
+    )
+    expt = project.experiments[name]
+    expt.diffrn.ambient_temperature = ed.extract_metadata(
+        file_path=data_path,
+        pattern=r'^TEMP\s+([0-9.]+)',
     )
 
 # %% [markdown]
@@ -198,11 +195,6 @@ for expt in project.experiments:
 #
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
-#
-# #### Set Minimizer
-
-# %%
-project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]
 # #### Set Free Parameters
@@ -251,29 +243,29 @@ for expt in project.experiments:
 # Set aliases for parameters.
 
 # %%
-# project.analysis.aliases.create(
-#    label='biso_Co1',
-#    param_uid=project.structures['cosio'].atom_sites['Co1'].b_iso.uid,
-# )
-# project.analysis.aliases.create(
-#    label='biso_Co2',
-#    param_uid=project.structures['cosio'].atom_sites['Co2'].b_iso.uid,
-# )
+project.analysis.aliases.create(
+    label='biso_Co1',
+    param_uid=structure.atom_sites['Co1'].b_iso.uid,
+)
+project.analysis.aliases.create(
+    label='biso_Co2',
+    param_uid=structure.atom_sites['Co2'].b_iso.uid,
+)
 
 # %% [markdown]
 # Set constraints.
 
 # %%
-# project.analysis.constraints.create(
-#    lhs_alias='biso_Co2',
-#    rhs_expr='biso_Co1',
-# )
+project.analysis.constraints.create(
+    lhs_alias='biso_Co2',
+    rhs_expr='biso_Co1',
+)
 
 # %% [markdown]
 # Apply constraints.
 
 # %%
-# project.analysis.apply_constraints()
+project.analysis.apply_constraints()
 
 # %% [markdown]
 # #### Set Fit Mode and Weights
@@ -307,10 +299,7 @@ project.plot_param_series(structure.cell.length_c, versus=temperature)
 
 # %%
 project.plot_param_series(structure.atom_sites['Co1'].b_iso, versus=temperature)
-project.plot_param_series(structure.atom_sites['Co2'].b_iso, versus=temperature)
 project.plot_param_series(structure.atom_sites['Si'].b_iso, versus=temperature)
 project.plot_param_series(structure.atom_sites['O1'].b_iso, versus=temperature)
 project.plot_param_series(structure.atom_sites['O2'].b_iso, versus=temperature)
 project.plot_param_series(structure.atom_sites['O3'].b_iso, versus=temperature)
-
-# %%
