@@ -44,6 +44,7 @@ def extract_data_paths_from_zip(zip_path: str | Path) -> list[str]:
     if not zip_path.exists():
         raise FileNotFoundError(f'ZIP file not found: {zip_path}')
 
+    # TODO: Unify mkdir with other uses in the code
     extract_dir = Path(tempfile.mkdtemp(prefix='ed_zip_'))
 
     with zipfile.ZipFile(zip_path, 'r') as zf:
@@ -59,6 +60,87 @@ def extract_data_paths_from_zip(zip_path: str | Path) -> list[str]:
         raise ValueError(f'No data files found in ZIP archive: {zip_path}')
 
     return paths
+
+
+def extract_data_paths_from_dir(
+    dir_path: str | Path,
+    file_pattern: str = '*',
+) -> list[str]:
+    """
+    List data files in a directory and return their sorted paths.
+
+    Hidden files (names starting with ``'.'`` or ``'__'``) are excluded.
+    The returned paths are sorted lexicographically by file name.
+
+    Parameters
+    ----------
+    dir_path : str | Path
+        Path to the directory containing data files.
+    file_pattern : str, default='*'
+        Glob pattern to filter files (e.g. ``'*.dat'``, ``'*.xye'``).
+
+    Returns
+    -------
+    list[str]
+        Sorted absolute paths to the matching data files.
+
+    Raises
+    ------
+    FileNotFoundError
+        If *dir_path* does not exist or is not a directory.
+    ValueError
+        If no matching data files are found.
+    """
+    dir_path = Path(dir_path)
+    if not dir_path.is_dir():
+        raise FileNotFoundError(f'Directory not found: {dir_path}')
+
+    paths = sorted(
+        str(p)
+        for p in dir_path.glob(file_pattern)
+        if p.is_file() and not p.name.startswith('.') and not p.name.startswith('__')
+    )
+
+    if not paths:
+        raise ValueError(f"No files matching '{file_pattern}' found in directory: {dir_path}")
+
+    return paths
+
+
+def extract_metadata(
+    file_path: str | Path,
+    pattern: str,
+) -> float | None:
+    """
+    Extract a single numeric value from a file using a regex pattern.
+
+    The entire file content is searched (not just the header).  The
+    **first** match is used.  The regex must contain exactly one capture
+    group whose match is convertible to ``float``.
+
+    Parameters
+    ----------
+    file_path : str | Path
+        Path to the input file.
+    pattern : str
+        Regex with one capture group that matches the numeric value.
+
+    Returns
+    -------
+    float | None
+        The extracted value, or ``None`` if the pattern did not match or
+        the captured text could not be converted to float.
+    """
+    import re
+
+    content = Path(file_path).read_text(encoding='utf-8', errors='ignore')
+    match = re.search(pattern, content, re.MULTILINE)
+    if match is None:
+        return None
+    try:
+        return float(match.group(1))
+    except (ValueError, IndexError):
+        return None
 
 
 def load_numeric_block(data_path: str | Path) -> np.ndarray:

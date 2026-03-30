@@ -619,12 +619,12 @@ class Plotter(RendererBase):
             if x_axis_param is not None:
                 axes_labels = [
                     x_axis.capitalize(),
-                    f"Parameter value ({param_dict['units']})",
+                    f'Parameter value ({param_dict["units"]})',
                 ]
             else:
                 axes_labels = [
                     'Experiment No.',
-                    f"Parameter value ({param_dict['units']})",
+                    f'Parameter value ({param_dict["units"]})',
                 ]
 
             title = f"Parameter '{unique_name}' across fit results"

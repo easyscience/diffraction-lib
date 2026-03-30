@@ -17,7 +17,7 @@ def test_lazy_attributes_resolve_and_are_accessible():
 
     # Access utility functions from utils via lazy getattr
     assert callable(ed.show_version)
-    assert callable(ed.get_value_from_xye_header)
+    assert callable(ed.extract_metadata)
 
     # Import once to exercise __getattr__; subsequent access should be cached by Python
     _ = ed.Project

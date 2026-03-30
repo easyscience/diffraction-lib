@@ -68,20 +68,18 @@ def test_str_to_ufloat_no_esd_defaults_nan():
     assert np.isclose(expected_value, actual_value) and np.isnan(u.std_dev)
 
 
-def test_get_value_from_xye_header(tmp_path):
-    import easydiffraction.utils.utils as MUT
+def test_extract_metadata(tmp_path):
+    import easydiffraction.io.ascii as ascii_io
 
-    text = 'DIFC = 123.45 two_theta = 67.89\nrest of file\n'
+    text = '# DIFC = 123.45 two_theta = 67.89\nrest of file\n'
     p = tmp_path / 'file.xye'
     p.write_text(text)
-    expected_difc = 123.45
-    expected_two_theta = 67.89
-    actual = np.array([
-        MUT.get_value_from_xye_header(p, 'DIFC'),
-        MUT.get_value_from_xye_header(p, 'two_theta'),
-    ])
-    expected = np.array([expected_difc, expected_two_theta])
-    assert np.allclose(expected, actual)
+    difc = ascii_io.extract_metadata(str(p), r'DIFC\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)')
+    two_theta = ascii_io.extract_metadata(
+        str(p), r'two_theta\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
+    )
+    assert np.isclose(difc, 123.45)
+    assert np.isclose(two_theta, 67.89)
 
 
 def test_validate_url_rejects_non_http_https():

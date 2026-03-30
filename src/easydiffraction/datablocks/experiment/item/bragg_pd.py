@@ -56,9 +56,8 @@ class BraggPdExperiment(PdExperimentBase):
         self._background = BackgroundFactory.create(self._background_type)
 
     def _load_ascii_data_to_experiment(
-            self,
-            data_path: str,
-            temperature_regex: str | None = None,
+        self,
+        data_path: str,
     ) -> None:
         """
         Load (x, y, sy) data from an ASCII file into the data category.
@@ -101,36 +100,13 @@ class BraggPdExperiment(PdExperimentBase):
         self.data._set_intensity_meas(y)
         self.data._set_intensity_meas_su(sy)
 
-        # Extract temperature from file content using regex if provided
-        if temperature_regex is not None:
-            import re
-            from pathlib import Path
-
-            content = Path(data_path).read_text(encoding='utf-8', errors='ignore')
-            match = re.search(temperature_regex, content, re.MULTILINE)
-
-            if match is None:
-                log.warning('Temperature regex provided, but no match found in file.')
-            else:
-                temperature_str = match.group(1)
-                try:
-                    temperature_float = float(temperature_str)
-                except ValueError:
-                    log.warning(
-                        f"Failed to convert extracted temperature '{temperature_str}' to float."
-                    )
-                else:
-                    self.diffrn.ambient_temperature = temperature_float
-
         temperature = ''
         if self.diffrn.ambient_temperature.value is not None:
-            temperature = f" Temperature: {self.diffrn.ambient_temperature.value:.3f} K."
+            temperature = f' Temperature: {self.diffrn.ambient_temperature.value:.3f} K.'
 
         console.paragraph('Data loaded successfully')
         console.print(
-            f"Experiment 🔬 '{self.name}'. "
-            f"Number of data points: {len(x)}."
-            f"{temperature}"
+            f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}.{temperature}"
         )
 
     # ------------------------------------------------------------------

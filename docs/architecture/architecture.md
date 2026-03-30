@@ -727,6 +727,12 @@ project_dir/
 
 All examples below are drawn from the actual tutorials (`tutorials/`).
 
+> **Notebook workflow:** Jupyter notebooks (`*.ipynb`) in
+> `docs/docs/tutorials/` are generated artifacts. Edit only the
+> corresponding `*.py` script, then run `pixi run notebook-convert`
+> followed by `pixi run notebook-prepare` to regenerate the notebook.
+> Never edit `*.ipynb` files by hand.
+
 ### 8.1 Project Setup
 
 ```python

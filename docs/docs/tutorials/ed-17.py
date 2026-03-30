@@ -129,17 +129,19 @@ structure.atom_sites.create(
 # #### Download Measured Data
 
 # %%
-data_path = ed.download_data(id=25, destination='data')
+file_path = ed.download_data(id=25, destination='data')
 
 # %% [markdown]
-# #### Create Experiments
+# #### Create Experiments and Set Temperature
 
 # %%
-project.experiments.add_from_zip_path(
-    name_prefix='d20',
-    zip_path=data_path,
-    temperature_regex=r'^TEMP\s+([0-9.]+)'
-)
+data_paths = ed.extract_data_paths_from_zip(file_path)
+for i, data_path in enumerate(data_paths, start=1):
+    name = f'd20_{i}'
+    project.experiments.add_from_data_path(name=name, data_path=data_path)
+    project.experiments[name].diffrn.ambient_temperature = ed.extract_metadata(
+        data_path, r'^TEMP\s+([0-9.]+)'
+    )
 
 # %% [markdown]
 # #### Set Instrument
@@ -303,7 +305,6 @@ print(project.structures['cosio'].cell.length_a.unique_name)
 
 # %%
 project.plot_param(structure.cell.length_a, x_axis='temperature')
-
 
 
 project.plot_param(structure.cell.length_a, x_axis='temperature')
