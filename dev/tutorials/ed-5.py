@@ -267,8 +267,7 @@ project.analysis.aliases.create(
 
 # %%
 project.analysis.constraints.create(
-    lhs_alias='biso_Co2',
-    rhs_expr='biso_Co1',
+    expression='biso_Co2 = biso_Co1',
 )
 
 # %% [markdown]

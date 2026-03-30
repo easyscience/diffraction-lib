@@ -212,7 +212,7 @@ project_1.plot_meas(expt_name='sim_si')
 # TOF, respectively.
 #
 # You can set them manually, but it is more convenient to use the
-# `get_value_from_xye_header` function from the EasyDiffraction library.
+# `extract_metadata` function from the EasyDiffraction library.
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
@@ -220,11 +220,11 @@ project_1.plot_meas(expt_name='sim_si')
 # for more details about the instrument parameters.
 
 # %%
-project_1.experiments['sim_si'].instrument.setup_twotheta_bank = ed.get_value_from_xye_header(
-    si_xye_path, 'two_theta'
+project_1.experiments['sim_si'].instrument.setup_twotheta_bank = ed.extract_metadata(
+    si_xye_path, r'two_theta\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
 )
-project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear = ed.get_value_from_xye_header(
-    si_xye_path, 'DIFC'
+project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear = ed.extract_metadata(
+    si_xye_path, r'DIFC\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
 )
 
 # %% [markdown]
@@ -804,11 +804,11 @@ project_2.plot_meas(expt_name='sim_lbco')
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.experiments['sim_lbco'].instrument.setup_twotheta_bank = ed.get_value_from_xye_header(
-    lbco_xye_path, 'two_theta'
+project_2.experiments['sim_lbco'].instrument.setup_twotheta_bank = ed.extract_metadata(
+    lbco_xye_path, r'two_theta\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
 )
-project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.get_value_from_xye_header(
-    lbco_xye_path, 'DIFC'
+project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.extract_metadata(
+    lbco_xye_path, r'DIFC\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
 )
 
 # %% [markdown]

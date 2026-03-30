@@ -1845,6 +1845,8 @@
       
         
       
+        
+      
     
     
     
@@ -1956,6 +1958,34 @@
     
   
     Si Bragg+PDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-17/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Co2SiO4 T-scan
   
 
     
@@ -3023,20 +3053,14 @@ readable way, making it easier to manage constraints.</p>
 </code></pre></div>
 <h3 id="setting-constraints">Setting Constraints</h3>
 <p>Now that you have set the aliases, you can define constraints using the
-<code>add</code> method of the <code>constraints</code> object. Constraints are defined by
-specifying the <strong>left-hand side (lhs) alias</strong> and the <strong>right-hand side
-(rhs) expression</strong>. The rhs expression can be a simple alias or a more
-complex expression involving other aliases.</p>
+<code>create</code> method of the <code>constraints</code> object. Each constraint is a single
+expression string of the form <code>lhs = rhs</code>, where the left-hand side is
+an alias and the right-hand side is an expression involving other
+aliases.</p>
 <p>An example of setting constraints for the aliases defined above:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-    <span class="n">lhs_alias</span><span class="o">=</span><span class="s1">&#39;biso_Ba&#39;</span><span class="p">,</span>
-    <span class="n">rhs_expr</span><span class="o">=</span><span class="s1">&#39;biso_La&#39;</span><span class="p">,</span>
-<span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;biso_Ba = biso_La&#39;</span><span class="p">)</span>
 
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-    <span class="n">lhs_alias</span><span class="o">=</span><span class="s1">&#39;occ_Ba&#39;</span><span class="p">,</span>
-    <span class="n">rhs_expr</span><span class="o">=</span><span class="s1">&#39;1 - occ_La&#39;</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;occ_Ba = 1 - occ_La&#39;</span><span class="p">)</span>
 </code></pre></div>
 <p>These constraints ensure that the <code>biso_Ba</code> parameter is equal to
 <code>biso_La</code>, and the <code>occ_Ba</code> parameter is equal to <code>1 - occ_La</code>. This
@@ -3053,20 +3077,14 @@ method:</p>
 <table>
 <thead>
 <tr>
-<th>lhs_alias</th>
-<th>rhs_expr</th>
-<th>full expression</th>
+<th>expression</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>biso_Ba</td>
-<td>biso_La</td>
 <td>biso_Ba = biso_La</td>
 </tr>
 <tr>
-<td>occ_Ba</td>
-<td>1 - occ_La</td>
 <td>occ_Ba = 1 - occ_La</td>
 </tr>
 </tbody>
@@ -3091,10 +3109,9 @@ method:</p>
 │ occ_Ba   lbco.atom_site.Ba.occupancy           │
 │                                                │
 │ loop_                                          │
-│ _constraint.lhs_alias                          │
-│ _constraint.rhs_expr                           │
-│ biso_Ba  biso_La                               │
-│ occ_Ba   &quot;1 - occ_La&quot;                          │
+│ _constraint.expression                         │
+│ &quot;biso_Ba = biso_La&quot;                            │
+│ &quot;occ_Ba = 1 - occ_La&quot;                         │
 ╘════════════════════════════════════════════════╛
 </code></pre></div>
 <h2 id="saving-an-analysis">Saving an Analysis</h2>

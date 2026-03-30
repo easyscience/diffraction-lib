@@ -5,6 +5,11 @@ _expt_type.beam_mode time-of-flight
 _expt_type.radiation_probe      neutron
 _expt_type.scattering_type        bragg
 
+_diffrn.ambient_temperature None
+_diffrn.ambient_pressure None
+_diffrn.ambient_magnetic_field None
+_diffrn.ambient_electric_field None
+
 _peak.asym_alpha_0  -0.00711764
 _peak.asym_alpha_1   0.01733511
 _peak.gauss_sigma_0 89477.67336207
