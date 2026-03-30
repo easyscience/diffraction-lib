@@ -348,5 +348,6 @@ class Project(GuardedBase):
         self.plotter.plot_param(
             unique_name,
             x_axis,
-            self.analysis.fit_results,
+            self.experiments,
+            self.analysis._parameter_snapshots,
         )

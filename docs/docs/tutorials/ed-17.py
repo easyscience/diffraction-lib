@@ -24,7 +24,7 @@ import easydiffraction as ed
 project = ed.Project()
 
 # %%
-project.save_as(dir_path='multi')
+# project.save_as(dir_path='multi')
 
 # %% [markdown]
 # ## Set Plotting Engine

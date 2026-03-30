@@ -54,7 +54,8 @@ class Analysis:
         self._fit_mode = FitModeFactory.create(self._fit_mode_type)
         self._joint_fit_experiments = JointFitExperiments()
         self.fitter = Fitter('lmfit')
-        self.fit_results = {}
+        self.fit_results = None
+        self._parameter_snapshots: dict[str, dict[str, dict]] = {}
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
@@ -636,7 +637,7 @@ class Analysis:
             )
 
             # After fitting, get the results
-            self.fit_results['default'] = self.fitter.results
+            self.fit_results = self.fitter.results
 
         elif mode is FitModeEnum.SINGLE:
             # TODO: Find a better way without creating dummy
@@ -658,11 +659,18 @@ class Analysis:
                     analysis=self,
                 )
 
-                # After fitting, get the results
-                self.fit_results[expt_name] = {
-                    'results': self.fitter.results,
-                    'diffrn': experiment.diffrn,
-                }
+                # After fitting, snapshot parameter values before
+                # they get overwritten by the next experiment's fit
+                results = self.fitter.results
+                snapshot: dict[str, dict] = {}
+                for param in results.parameters:
+                    snapshot[param.unique_name] = {
+                        'value': param.value,
+                        'uncertainty': param.uncertainty,
+                        'units': param.units,
+                    }
+                self._parameter_snapshots[expt_name] = snapshot
+                self.fit_results = results
 
         else:
             raise NotImplementedError(f'Fit mode {mode.value} not implemented yet.')
@@ -689,7 +697,7 @@ class Analysis:
 
         project.analysis.fit() project.analysis.show_fit_results()
         """
-        if not hasattr(self, 'fit_results') or self.fit_results is None:
+        if self.fit_results is None:
             log.warning('No fit results available. Run fit() first.')
             return
 

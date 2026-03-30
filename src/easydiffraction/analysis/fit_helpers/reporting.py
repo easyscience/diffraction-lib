@@ -74,17 +74,9 @@ class FitResults:
             starting_parameters if starting_parameters is not None else []
         )
         self.fitting_time: Optional[float] = fitting_time
-        self.final_parameters_dict: dict[str, object] = {}
 
         if 'redchi' in kwargs and self.reduced_chi_square is None:
             self.reduced_chi_square = kwargs.get('redchi')
-
-        for parameter in self.parameters:
-            self.final_parameters_dict[parameter.unique_name] = {
-                'value': parameter.value,
-                'uncertainty': parameter.uncertainty,
-                'units': parameter.units,
-            }
 
         for key, value in kwargs.items():
             setattr(self, key, value)

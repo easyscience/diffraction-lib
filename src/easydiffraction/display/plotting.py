@@ -573,10 +573,11 @@ class Plotter(RendererBase):
         self,
         unique_name: str,
         x_axis: str,
-        fit_results: dict[str, object],
+        experiments: object,
+        parameter_snapshots: dict[str, dict[str, dict]],
     ) -> None:
         """
-        Plot a parameter's value across all fit results.
+        Plot a parameter's value across sequential fit results.
 
         Parameters
         ----------
@@ -584,8 +585,11 @@ class Plotter(RendererBase):
             Unique name of the parameter to plot.
         x_axis : str
             Condition to use as x-axis (e.g. ``'temperature'``).
-        fit_results : dict[str, object]
-            Dictionary of fit results keyed by experiment name.
+        experiments : object
+            Experiments collection for accessing diffrn conditions.
+        parameter_snapshots : dict[str, dict[str, dict]]
+            Per-experiment parameter value snapshots keyed by experiment
+            name, then by parameter unique name.
         """
         x = []
         y = []
@@ -593,8 +597,10 @@ class Plotter(RendererBase):
         axes_labels = []
         title = ''
 
-        for idx, expt in enumerate(fit_results.values(), start=1):
-            diffrn = expt['diffrn']
+        for idx, expt_name in enumerate(parameter_snapshots, start=1):
+            experiment = experiments[expt_name]
+            diffrn = experiment.diffrn
+
             if x_axis == 'temperature':
                 x_axis_param = diffrn.ambient_temperature
             elif x_axis == 'pressure':
@@ -612,19 +618,19 @@ class Plotter(RendererBase):
                 value = idx
             x.append(value)
 
-            param_dict = expt['results'].final_parameters_dict[unique_name]
-            y.append(param_dict['value'])
-            sy.append(param_dict['uncertainty'])
+            param_data = parameter_snapshots[expt_name][unique_name]
+            y.append(param_data['value'])
+            sy.append(param_data['uncertainty'])
 
             if x_axis_param is not None:
                 axes_labels = [
                     x_axis.capitalize(),
-                    f'Parameter value ({param_dict["units"]})',
+                    f'Parameter value ({param_data["units"]})',
                 ]
             else:
                 axes_labels = [
                     'Experiment No.',
-                    f'Parameter value ({param_dict["units"]})',
+                    f'Parameter value ({param_data["units"]})',
                 ]
 
             title = f"Parameter '{unique_name}' across fit results"
