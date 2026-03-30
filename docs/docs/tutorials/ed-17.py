@@ -23,9 +23,6 @@ import easydiffraction as ed
 # Create minimal project without name and description
 project = ed.Project()
 
-# %%
-# project.save_as(dir_path='multi')
-
 # %% [markdown]
 # ## Set Plotting Engine
 
@@ -304,8 +301,6 @@ project.plot_meas_vs_calc(expt_name=last_expt_name, show_residual=True)
 print(project.structures['cosio'].cell.length_a.unique_name)
 
 # %%
-project.plot_param(structure.cell.length_a, x_axis='temperature')
-
 
 project.plot_param(structure.cell.length_a, x_axis='temperature')
 project.plot_param(structure.cell.length_b, x_axis='temperature')
