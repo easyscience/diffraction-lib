@@ -569,10 +569,10 @@ class Plotter(RendererBase):
             height=self.height,
         )
 
-    def plot_param(
+    def plot_param_series(
         self,
         unique_name: str,
-        x_axis: str,
+        versus_name: str | None,
         experiments: object,
         parameter_snapshots: dict[str, dict[str, dict]],
     ) -> None:
@@ -583,8 +583,10 @@ class Plotter(RendererBase):
         ----------
         unique_name : str
             Unique name of the parameter to plot.
-        x_axis : str
-            Condition to use as x-axis (e.g. ``'temperature'``).
+        versus_name : str | None
+            Name of the diffrn descriptor to use as the x-axis (e.g.
+            ``'ambient_temperature'``).  When ``None``, the experiment
+            sequence index is used instead.
         experiments : object
             Experiments collection for accessing diffrn conditions.
         parameter_snapshots : dict[str, dict[str, dict]]
@@ -601,16 +603,7 @@ class Plotter(RendererBase):
             experiment = experiments[expt_name]
             diffrn = experiment.diffrn
 
-            if x_axis == 'temperature':
-                x_axis_param = diffrn.ambient_temperature
-            elif x_axis == 'pressure':
-                x_axis_param = diffrn.ambient_pressure
-            elif x_axis == 'magnetic_field':
-                x_axis_param = diffrn.ambient_magnetic_field
-            elif x_axis == 'electric_field':
-                x_axis_param = diffrn.ambient_electric_field
-            else:
-                x_axis_param = None
+            x_axis_param = self._resolve_diffrn_descriptor(diffrn, versus_name)
 
             if x_axis_param is not None and x_axis_param.value is not None:
                 value = x_axis_param.value
@@ -624,7 +617,7 @@ class Plotter(RendererBase):
 
             if x_axis_param is not None:
                 axes_labels = [
-                    x_axis.capitalize(),
+                    x_axis_param.description or x_axis_param.name,
                     f'Parameter value ({param_data["units"]})',
                 ]
             else:
@@ -643,6 +636,39 @@ class Plotter(RendererBase):
             title=title,
             height=self.height,
         )
+
+    @staticmethod
+    def _resolve_diffrn_descriptor(
+        diffrn: object,
+        name: str | None,
+    ) -> object | None:
+        """
+        Return the diffrn descriptor matching *name*, or ``None``.
+
+        Parameters
+        ----------
+        diffrn : object
+            The diffrn category of an experiment.
+        name : str | None
+            Descriptor name (e.g. ``'ambient_temperature'``).
+
+        Returns
+        -------
+        object | None
+            The matching ``NumericDescriptor``, or ``None`` when *name*
+            is ``None`` or unrecognised.
+        """
+        if name is None:
+            return None
+        if name == 'ambient_temperature':
+            return diffrn.ambient_temperature
+        if name == 'ambient_pressure':
+            return diffrn.ambient_pressure
+        if name == 'ambient_magnetic_field':
+            return diffrn.ambient_magnetic_field
+        if name == 'ambient_electric_field':
+            return diffrn.ambient_electric_field
+        return None
 
 
 class PlotterFactory(RendererFactoryBase):

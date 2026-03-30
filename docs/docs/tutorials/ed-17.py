@@ -298,23 +298,19 @@ project.plot_meas_vs_calc(expt_name=last_expt_name, show_residual=True)
 # #### Plot parameters evolution
 
 # %%
-print(project.structures['cosio'].cell.length_a.unique_name)
+temperature = project.experiments[0].diffrn.ambient_temperature
 
 # %%
-
-project.plot_param(structure.cell.length_a, x_axis='temperature')
-project.plot_param(structure.cell.length_b, x_axis='temperature')
-project.plot_param(structure.cell.length_c, x_axis='temperature')
-
-# %%
-print(project.structures['cosio'].atom_sites['O3'].b_iso.unique_name)
+project.plot_param_series(structure.cell.length_a, versus=temperature)
+project.plot_param_series(structure.cell.length_b, versus=temperature)
+project.plot_param_series(structure.cell.length_c, versus=temperature)
 
 # %%
-project.plot_param(structure.atom_sites['Co1'].b_iso, x_axis='temperature')
-project.plot_param(structure.atom_sites['Co2'].b_iso, x_axis='temperature')
-project.plot_param(structure.atom_sites['Si'].b_iso, x_axis='temperature')
-project.plot_param(structure.atom_sites['O1'].b_iso, x_axis='temperature')
-project.plot_param(structure.atom_sites['O2'].b_iso, x_axis='temperature')
-project.plot_param(structure.atom_sites['O3'].b_iso, x_axis='temperature')
+project.plot_param_series(structure.atom_sites['Co1'].b_iso, versus=temperature)
+project.plot_param_series(structure.atom_sites['Co2'].b_iso, versus=temperature)
+project.plot_param_series(structure.atom_sites['Si'].b_iso, versus=temperature)
+project.plot_param_series(structure.atom_sites['O1'].b_iso, versus=temperature)
+project.plot_param_series(structure.atom_sites['O2'].b_iso, versus=temperature)
+project.plot_param_series(structure.atom_sites['O3'].b_iso, versus=temperature)
 
 # %%

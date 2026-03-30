@@ -332,7 +332,7 @@ class Project(GuardedBase):
             x=x,
         )
 
-    def plot_param(self, param: object, x_axis: str) -> None:
+    def plot_param_series(self, param: object, versus: object | None = None) -> None:
         """
         Plot a parameter's value across sequential fit results.
 
@@ -341,13 +341,17 @@ class Project(GuardedBase):
         param : object
             Parameter descriptor whose ``unique_name`` identifies the
             values to plot.
-        x_axis : str
-            Condition to use as x-axis (e.g. ``'temperature'``).
+        versus : object | None, default=None
+            A diffrn descriptor (e.g.
+            ``expt.diffrn.ambient_temperature``) whose value is used as
+            the x-axis for each experiment.  When ``None``, the
+            experiment sequence number is used instead.
         """
         unique_name = param.unique_name
-        self.plotter.plot_param(
+        versus_name = versus.name if versus is not None else None
+        self.plotter.plot_param_series(
             unique_name,
-            x_axis,
+            versus_name,
             self.experiments,
             self.analysis._parameter_snapshots,
         )
