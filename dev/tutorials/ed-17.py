@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Structure Refinement: Co2SiO4, D20 (Temperature scan)
+# # Structure Refinement: Co2SiO4, D20 (T-scan)
 #
 # This example demonstrates a Rietveld refinement of Co2SiO4 crystal
 # structure using constant wavelength neutron powder diffraction data
@@ -118,7 +118,7 @@ structure.atom_sites.create(
 # #### Download Measured Data
 
 # %%
-file_path = ed.download_data(id=26, destination='data')
+file_path = ed.download_data(id=27, destination='data')
 
 # %% [markdown]
 # #### Create Experiments and Set Temperature
