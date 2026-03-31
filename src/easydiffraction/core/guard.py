@@ -75,9 +75,9 @@ class GuardedBase(ABC):
 
     def _assign_attr(self, key: str, value: object) -> None:
         """Low-level assignment with parent linkage."""
-        object.__setattr__(self, key, value)
+        object.__setattr__(self, key, value)  # noqa: PLC2801
         if key != '_parent' and isinstance(value, GuardedBase):
-            object.__setattr__(value, '_parent', self)
+            object.__setattr__(value, '_parent', self)  # noqa: PLC2801
 
     @classmethod
     def _iter_properties(cls) -> Generator[tuple[str, property], None, None]:
@@ -185,8 +185,8 @@ class GuardedBase(ABC):
 
     def help(self) -> None:
         """Print a summary of public properties and methods."""
-        from easydiffraction.utils.logging import console
-        from easydiffraction.utils.utils import render_table
+        from easydiffraction.utils.logging import console  # noqa: PLC0415
+        from easydiffraction.utils.utils import render_table  # noqa: PLC0415
 
         cls = type(self)
         console.paragraph(f"Help for '{cls.__name__}'")

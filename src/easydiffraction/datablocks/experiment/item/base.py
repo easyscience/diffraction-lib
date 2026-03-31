@@ -28,6 +28,7 @@ from easydiffraction.io.cif.serialize import experiment_to_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
+from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
@@ -186,7 +187,7 @@ class ExperimentBase(DatablockItem):
             Calculator tag (e.g. ``'cryspy'``, ``'crysfml'``,
             ``'pdffit'``).
         """
-        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         supported = self._supported_calculator_tags()
         if tag not in supported:
@@ -203,7 +204,7 @@ class ExperimentBase(DatablockItem):
 
     def show_supported_calculator_types(self) -> None:
         """Print a table of supported calculator backends."""
-        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         supported_tags = self._supported_calculator_tags()
         all_classes = CalculatorFactory._supported_map()
@@ -214,7 +215,6 @@ class ExperimentBase(DatablockItem):
             for tag, cls in all_classes.items()
             if tag in supported_tags
         ]
-        from easydiffraction.utils.utils import render_table
 
         console.paragraph('Supported calculator types')
         render_table(
@@ -230,7 +230,7 @@ class ExperimentBase(DatablockItem):
 
     def _resolve_calculator(self) -> None:
         """Auto-resolve the default calculator from data category."""
-        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         tag = CalculatorFactory.default_tag(
             scattering_type=self.type.scattering_type.value,
@@ -248,7 +248,7 @@ class ExperimentBase(DatablockItem):
         Intersects the data category's ``calculator_support`` with
         calculators whose engines are importable.
         """
-        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         available = CalculatorFactory.supported_tags()
         data = getattr(self, '_data', None)

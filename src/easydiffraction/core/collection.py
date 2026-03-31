@@ -156,8 +156,8 @@ class CollectionBase(GuardedBase):
         """Print a summary of public attributes and contained items."""
         super().help()
 
-        from easydiffraction.utils.logging import console
-        from easydiffraction.utils.utils import render_table
+        from easydiffraction.utils.logging import console  # noqa: PLC0415
+        from easydiffraction.utils.utils import render_table  # noqa: PLC0415
 
         if self._items:
             console.paragraph(f'Items ({len(self._items)})')

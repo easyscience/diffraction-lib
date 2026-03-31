@@ -54,7 +54,7 @@ class UidMapHandler(SingletonBase):
         Only Descriptor or Parameter instances are allowed (not
         Components or others).
         """
-        from easydiffraction.core.variable import GenericDescriptorBase
+        from easydiffraction.core.variable import GenericDescriptorBase  # noqa: PLC0415
 
         if not isinstance(parameter, GenericDescriptorBase):
             msg = (

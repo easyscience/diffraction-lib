@@ -133,8 +133,8 @@ def datablock_item_to_cif(datablock: object) -> str:
     Emits a data_ header and then concatenates category CIF sections.
     """
     # Local imports to avoid import-time cycles
-    from easydiffraction.core.category import CategoryCollection
-    from easydiffraction.core.category import CategoryItem
+    from easydiffraction.core.category import CategoryCollection  # noqa: PLC0415
+    from easydiffraction.core.category import CategoryItem  # noqa: PLC0415
 
     header = f'data_{datablock._identity.datablock_entry_name}'
     parts: list[str] = [header]
@@ -355,7 +355,7 @@ def category_collection_from_cif(
 
     # Set parent for each item to enable identity resolution
     for item in self._items:
-        object.__setattr__(item, '_parent', self)
+        object.__setattr__(item, '_parent', self)  # noqa: PLC2801
 
     # Set those items' parameters, which are present in the loop
     for row_idx in range(num_rows):

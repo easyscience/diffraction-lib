@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import re
 import tempfile
 import zipfile
 from io import StringIO
@@ -135,8 +136,6 @@ def extract_metadata(
         The extracted value, or ``None`` if the pattern did not match or
         the captured text could not be converted to float.
     """
-    import re
-
     content = Path(file_path).read_text(encoding='utf-8', errors='ignore')
     match = re.search(pattern, content, re.MULTILINE)
     if match is None:

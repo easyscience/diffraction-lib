@@ -86,7 +86,7 @@ class DatablockItem(GuardedBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
-        from easydiffraction.io.cif.serialize import datablock_item_to_cif
+        from easydiffraction.io.cif.serialize import datablock_item_to_cif  # noqa: PLC0415
 
         self._update_categories()
         return datablock_item_to_cif(self)
@@ -95,8 +95,8 @@ class DatablockItem(GuardedBase):
         """Print a summary of public attributes and categories."""
         super().help()
 
-        from easydiffraction.utils.logging import console
-        from easydiffraction.utils.utils import render_table
+        from easydiffraction.utils.logging import console  # noqa: PLC0415
+        from easydiffraction.utils.utils import render_table  # noqa: PLC0415
 
         cats = self.categories
         if cats:
@@ -176,6 +176,6 @@ class DatablockCollection(CollectionBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
-        from easydiffraction.io.cif.serialize import datablock_collection_to_cif
+        from easydiffraction.io.cif.serialize import datablock_collection_to_cif  # noqa: PLC0415
 
         return datablock_collection_to_cif(self)

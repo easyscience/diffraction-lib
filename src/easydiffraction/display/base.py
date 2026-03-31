@@ -93,7 +93,7 @@ class RendererBase(SingletonBase, ABC):
         df = pd.DataFrame(rows, columns=pd.MultiIndex.from_tuples(headers))
         console.paragraph('Supported engines')
         # Delegate table rendering to the TableRenderer singleton
-        from easydiffraction.display.tables import TableRenderer  # local import to avoid cycles
+        from easydiffraction.display.tables import TableRenderer  # noqa: PLC0415
 
         TableRenderer.get().render(df)
 

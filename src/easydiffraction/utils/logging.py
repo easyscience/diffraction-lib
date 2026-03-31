@@ -345,7 +345,7 @@ class ExceptionHookManager:
             Logger used to emit error messages.
         """
         try:
-            from IPython import get_ipython
+            from IPython import get_ipython  # noqa: PLC0415
 
             ip = get_ipython()
             if ip is not None:

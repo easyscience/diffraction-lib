@@ -4,6 +4,7 @@
 from textwrap import wrap
 from typing import List
 
+from easydiffraction.io.cif.serialize import summary_to_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
 
@@ -206,6 +207,4 @@ class Summary:
 
     def as_cif(self) -> str:
         """Export fitted data and analysis results as CIF."""
-        from easydiffraction.io.cif.serialize import summary_to_cif
-
         return summary_to_cif(self)
